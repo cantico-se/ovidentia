@@ -1,0 +1,66 @@
+<!--#begin editorfaq -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+
+function func(faqid,title)
+	{
+	var target = 1;
+	var checkb = document.getElementById('tg');
+	if (checkb.checked) target = 1;
+	else target = 0;
+	window.opener.{ cb }(faqid,title,target);
+	window.close();
+	}
+//-->
+</script>
+</HEAD>
+<BODY>
+<table border="0" width="200" cellpadding="1" cellspacing="0" align="left" >
+<!--#if q -->
+<tr>
+<td>
+<a href="{ backlink }">. . </a>
+</td>
+</tr>
+<!--#endif q -->
+	<!--#in getnext -->
+	<!--#if display -->
+	<tr >
+	<td align="left">
+	<!--#if q -->
+	{ titledisp }
+	</td>
+	<td align="right">
+	<a href="#" title="{ resp }" onclick="func({ faqid },'{ title }')"><img border="0" src="{ babSkinPath }images/Puces/PuceArrowRight.gif"></a>
+	<!--#else q -->
+		<!--#if displink -->
+		<a title="{ desc }" href="{ url }" nowrap>{ title }</a>
+		<!--#else displink -->
+		{ title }
+		<!--#endif displink -->
+	</td>
+	<td>
+	&nbsp;
+	<!--#endif q -->
+	</td>
+	</tr>
+	<!--#endif display -->
+	<!--#endin getnext -->
+<!--#if q -->
+<tr>
+	<td valign="middle"><br>
+	<input type="checkbox" id="tg" name="tg" checked> { target_txt }
+	</td>
+</tr>
+<!--#endif q -->
+</table>
+</BODY>
+</HTML>
+<!--#end editorfaq -->
