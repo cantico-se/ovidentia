@@ -930,17 +930,6 @@ switch($tg)
 		$babLevelTwo = bab_translate("");
 		$incl = "entry";
 		break;
-	case "soapsrv":
-		$babLevelOne = bab_translate("Home");
-		$babLevelTwo = bab_translate("");
-		include $babInstallPath."soapsrv.php";
-		exit;
-		break;
-	case "soapcli":
-		$babLevelOne = bab_translate("Home");
-		$babLevelTwo = bab_translate("");
-		include $babInstallPath."soapcli.php";
-		break;
 	default:
 		$babLevelOne = "";
 		$babLevelTwo = "";
