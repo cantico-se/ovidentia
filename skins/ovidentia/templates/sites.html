@@ -150,11 +150,112 @@
           <tr valign="middle"> 
             <td nowrap align="left">&nbsp;</td>
             <td> 
-              <input type="submit" name="Submit" value="{ create }">
+<br><br>              
 <br>
 </td>
 </tr>
-</table>
+
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ name_order_title }</td>
+            <td width="70%"> 
+				<select name="name_order">
+				<!--#if dbvalue[name_order] "== F L" -->
+				<option value="F L" selected>{ firstlast }</option>
+				<option value="L F">{ lastfirst }</option>
+				<!--#else dbvalue[name_order] -->
+				<option value="F L">{ firstlast }</option>
+				<option value="L F" selected>{ lastfirst }</option>
+				<!--#endif dbvalue[name_order] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_nickname_title }</td>
+            <td width="70%"> 
+				<select name="change_nickname">
+				<!--#if dbvalue[change_nickname] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[change_nickname] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[change_nickname] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_password_title }</td>
+            <td width="70%"> 
+				<select name="change_password">
+				<!--#if dbvalue[change_password] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[change_password] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[change_password] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ remember_login_title }</td>
+            <td width="70%"> 
+				<select name="remember_login">
+				<!--#if dbvalue[remember_login] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[remember_login] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[remember_login] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
+            <td width="70%"> 
+				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
+            <td width="70%"> 
+				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ dbvalue[uploadpath] }">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
+            <td width="70%"> 
+				<input type="text" name="maxfilesize" size="20" maxlength="255" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
+            <td width="70%"> 
+				<input type="text" name="folder_diskspace" size="20" maxlength="255" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
+            <td width="70%"> 
+				<input type="text" name="user_diskspace" size="20" maxlength="255" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
+            <td width="70%"> 
+				<input type="text" name="total_diskspace" size="20" maxlength="255" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			&nbsp;
+			</td>
+			<td><br>
+			<input type="submit" name="Submit" value="{ create }">
+			</td>
+		</tr>
+		</table>
 </td>
 </tr>
 </table>
@@ -217,7 +318,7 @@ function validateNum(field)
 <input type="hidden" name="tg" value="site">
 <input type="hidden" name="idx" value="modify">
 <input type="hidden" name="item" value="{ id }">
-<input type="hidden" name="modify" value="modify">
+<input type="hidden" name="modify" value="bloc1">
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -376,66 +477,73 @@ function validateNum(field)
 </td>
 </tr>
 </table>
-
+</form>
 <br><br>
+
+
+<form name="formsite_bloc2" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="modify" value="bloc2">
 
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
         <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabSiteAdminTitleFontBackground">
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ namecomposeorder_title }</td>
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ name_order_title }</td>
             <td width="70%"> 
-				<select name="namecomposeorder">
-				<!--#if dbvalue[namecomposeorder] "== FL" -->
-				<option value="FL" selected>{ firstlast }</option>
-				<option value="LF">{ lastfirst }</option>
-				<!--#else dbvalue[namecomposeorder] -->
-				<option value="FL">{ firstlast }</option>
-				<option value="LF" selected>{ lastfirst }</option>
-				<!--#endif dbvalue[namecomposeorder] -->
+				<select name="name_order">
+				<!--#if dbvalue[name_order] "== F L" -->
+				<option value="F L" selected>{ firstlast }</option>
+				<option value="L F">{ lastfirst }</option>
+				<!--#else dbvalue[name_order] -->
+				<option value="F L">{ firstlast }</option>
+				<option value="L F" selected>{ lastfirst }</option>
+				<!--#endif dbvalue[name_order] -->
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ changenickenable_title }</td>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_nickname_title }</td>
             <td width="70%"> 
-				<select name="changenickenable">
-				<!--#if dbvalue[changenickenable] "== Y" -->
+				<select name="change_nickname">
+				<!--#if dbvalue[change_nickname] "== Y" -->
 				<option value="Y" selected>{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[changenickenable] -->
+				<!--#else dbvalue[change_nickname] -->
 				<option value="Y">{ yes }</option>
 				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[changenickenable] -->
+				<!--#endif dbvalue[change_nickname] -->
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ changepassenable_title }</td>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_password_title }</td>
             <td width="70%"> 
-				<select name="changepassenable">
-				<!--#if dbvalue[changepassenable] "== Y" -->
+				<select name="change_password">
+				<!--#if dbvalue[change_password] "== Y" -->
 				<option value="Y" selected>{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[changepassenable] -->
+				<!--#else dbvalue[change_password] -->
 				<option value="Y">{ yes }</option>
 				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[changepassenable] -->
+				<!--#endif dbvalue[change_password] -->
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ cookieident_title }</td>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ remember_login_title }</td>
             <td width="70%"> 
-				<select name="cookieident">
-				<!--#if dbvalue[cookieident] "== Y" -->
+				<select name="remember_login">
+				<!--#if dbvalue[remember_login] "== Y" -->
 				<option value="Y" selected>{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[cookieident] -->
+				<!--#else dbvalue[remember_login] -->
 				<option value="Y">{ yes }</option>
 				<option value="N" selected>{ no }</option>
-				<!--#endif dbvalue[cookieident] -->
+				<!--#endif dbvalue[remember_login] -->
 				</select>
 			</td>
 		</tr>
@@ -458,21 +566,21 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxgroupsize_title }</td>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
             <td width="70%"> 
-				<input type="text" name="maxgroupsize" size="20" maxlength="255" value="{ dbvalue[maxgroupsize] }" onKeyUp="validateNum(this)">
+				<input type="text" name="folder_diskspace" size="20" maxlength="255" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)">
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxusersize_title }</td>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
             <td width="70%"> 
-				<input type="text" name="maxusersize" size="20" maxlength="255" value="{ dbvalue[maxusersize] }" onKeyUp="validateNum(this)">
+				<input type="text" name="user_diskspace" size="20" maxlength="255" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)">
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxtotalsize_title }</td>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
             <td width="70%"> 
-				<input type="text" name="maxtotalsize" size="20" maxlength="255" value="{ dbvalue[maxtotalsize] }" onKeyUp="validateNum(this)">
+				<input type="text" name="total_diskspace" size="20" maxlength="255" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)">
 			</td>
 		</tr>
 		<tr>

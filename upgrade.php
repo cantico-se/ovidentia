@@ -2241,7 +2241,7 @@ if( !$res)
 return $ret;
 }
 
-function upgrade405to410()
+function upgrade405to406()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
@@ -2262,7 +2262,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxtotalsize` INT( 11 ) UNSIGNED DEFAULT '200000000' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `total_diskspace` INT( 11 ) UNSIGNED DEFAULT '200000000' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2270,7 +2270,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxusersize` INT( 11 ) UNSIGNED DEFAULT '30000000' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `user_diskspace` INT( 11 ) UNSIGNED DEFAULT '30000000' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2278,7 +2278,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxgroupsize` INT( 11 ) UNSIGNED DEFAULT '50000000' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `folder_diskspace` INT( 11 ) UNSIGNED DEFAULT '50000000' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2310,7 +2310,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `cookieident` ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `remember_login` ENUM('Y','N') DEFAULT 'N' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2318,7 +2318,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `changepassenable` ENUM('Y','N') DEFAULT 'Y' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `change_password` ENUM('Y','N') DEFAULT 'Y' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2326,7 +2326,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `changenickenable` ENUM('Y','N') DEFAULT 'Y' NOT NULL ";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `change_nickname` ENUM('Y','N') DEFAULT 'Y' NOT NULL ";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2334,7 +2334,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `namecomposeorder` ENUM('FL','LF') DEFAULT 'FL' NOT NULL ";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `name_order` ENUM('F L','L F') DEFAULT 'F L' NOT NULL ";
 $res = $db->db_query($req);
 if( !$res)
 	{

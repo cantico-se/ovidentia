@@ -123,10 +123,14 @@ function bab_printOvmlTemplate( $file, $args=array())
 	return $tpl->printout(implode("", file($filepath)));
 	}
 
-function bab_composeUserName( $firstname, $lastname)
+function bab_composeUserName( $F, $L)
 	{
-	return trim($firstname . " " . $lastname);
+	global $babBody;
+	eval("\$var0 = \$".$babBody->nameorder[0].";");
+	eval("\$var1 = \$".$babBody->nameorder[1].";");
+	return trim(sprintf("%s %s", $var0 ,$var1));
 	}
+
 
 function bab_browserOS()
 	{
@@ -1762,7 +1766,7 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 
-	$req="select skin, style, adminemail, lang, langfilter from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
 	if( $arr['skin'] != "")
@@ -1797,6 +1801,55 @@ function bab_updateSiteSettings()
 		}
 	else
 		$GLOBALS['babLangFilter']->setFilter(0);
+	// options bloc2
+	if( $arr['total_diskspace'] != "")
+		{
+		$GLOBALS['babMaxTotalSize'] = $arr['total_diskspace'];
+		}
+	else
+		$GLOBALS['babMaxTotalSize'] = "200000000";
+	if( $arr['user_diskspace'] != "")
+		{
+		$GLOBALS['babMaxUserSize'] = $arr['user_diskspace'];
+		}
+	else
+		$GLOBALS['babMaxUserSize'] = "30000000";
+	if( $arr['folder_diskspace'] != "")
+		{
+		$GLOBALS['babMaxGroupSize'] = $arr['folder_diskspace'];
+		}
+	else
+		$GLOBALS['babMaxGroupSize'] = "50000000";
+	if( $arr['maxfilesize'] != "")
+		{
+		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize'];
+		}
+	else
+		$GLOBALS['babMaxFileSize'] = "30000000";
+	if( $arr['uploadpath'] != "")
+		{
+		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
+		}
+	else
+		$GLOBALS['babUploadPath'] = "";
+	if( $arr['babslogan'] != "")
+		{
+		$GLOBALS['babSlogan'] = $arr['babslogan'];
+		}
+	else
+		$GLOBALS['babSlogan'] = "";
+	if( $arr['name_order'] != "")
+		{
+		$GLOBALS['babBody']->nameorder = explode(" ",$arr['name_order']);
+		}
+	else
+		$GLOBALS['babBody']->nameorder = Array('F','L');
+	if( $arr['remember_login'] == "Y")
+		{
+		$GLOBALS['babCookieIdent'] = true;
+		}
+	else
+		$GLOBALS['babCookieIdent'] = false;
 }
 
 class babLanguageFilter
