@@ -337,11 +337,11 @@ function displayDb($id)
 			{
 			global $babDB;
 			$this->id = $id;
-			$this->listftxt = "---- ".bab_translate("Fields")." ----";
-			$this->listdftxt = "---- ".bab_translate("Fields to display")." ----";
-			$this->moveup = bab_translate("Move Up");
-			$this->movedown = bab_translate("Move Down");
-			$this->update = bab_translate("Update");
+			$this->listftxt = "---- ".ad_translate("Fields")." ----";
+			$this->listdftxt = "---- ".ad_translate("Fields to display")." ----";
+			$this->moveup = ad_translate("Move Up");
+			$this->movedown = ad_translate("Move Down");
+			$this->update = ad_translate("Update");
 			$this->resf = $babDB->db_query("select id, id_field from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."' and ordering='0'");
 			$this->countf = $babDB->db_num_rows($this->resf);
 			$this->resfd = $babDB->db_query("select id, id_field from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."' and ordering!='0' order by ordering asc");
