@@ -115,7 +115,7 @@ function printBody()
 		var $sitename;
 		var $style;
 		var $script;
-		var $slogan;
+		var $babSlogan;
 		var $login;
 		var $logurl;
 		var $babLogoLB;
@@ -177,6 +177,11 @@ function printBody()
 				{
 				$this->bsearch = 0;
 				}
+
+			if ($GLOBALS['babMarquee'] == "")
+				$this->babSlogan = $babSlogan;
+			else
+				$this->babSlogan = $GLOBALS['babMarquee'];
 			$this->menukeys = array_keys($babBody->menu->items);
 			$this->menuvals = array_values($babBody->menu->items);
 			$this->menuitems = count($this->menukeys);
@@ -327,6 +332,10 @@ switch($tg)
 	case "topcats":
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/topcats";
+		break;
+	case "apprflow":
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+			$incl = "admin/apprflow";
 		break;
 	case "topman":
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
