@@ -25,6 +25,7 @@ include_once "base.php";
 
 function dire_ext($rep,$ext )
 {
+	$fichier = array();
 	if (!is_dir($rep)) return false;
 	$reper = opendir($rep);
 	$i = 0;

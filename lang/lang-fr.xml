@@ -1747,4 +1747,19 @@
 <string id="Vacation has been deleted">La période de congé a été annulée</string>
 <string id="Vacation has been scheduled">La période de congé suivante a été programmée</string>
 <string id="Show / hide left pane">Cacher / afficher le panneau latéral</string>
+<string id="CSS styles">Styles CSS</string>
+<string id="Insert image">Insérer une image</string>
+<string id="Insert file link">Insérer un lien vers un fichier</string>
+<string id="Insert article link">Insérer un lien vers un article</string>
+<string id="Insert FAQ link">Insérer un lien vers une FAQ</string>
+<string id="Insert OVML file">Insérer un fichier OVML</string>
+<string id="Insert contact link">Insérer un lien vers un contact</string>
+<string id="Clear MSOffice tags">Enlever les tags MSOffice</string>
+<string id="Remove formatting">Enlever le formatage</string>
+<string id="Remove link">Enlever le lien</string>
+<string id="Font">Police</string>
+<string id="Heading">Titre</string>
+<string id="Paragraph">Paragraphe</string>
+<string id="Address">Adresse</string>
+<string id="Formated">Formaté</string>
 </fr>

@@ -120,6 +120,11 @@ if(!isset($cb))
 	$cb = "EditorOnInsertFaq";
 	}
 
+if(!isset($idx))
+	{
+	$idx = "browse";
+	}
+
 switch($idx)
 	{
 	default:

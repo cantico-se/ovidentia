@@ -36,7 +36,17 @@ function editor_js($mode)
 			$this->t_bab_article = bab_translate("Insert article link");
 			$this->t_bab_faq = bab_translate("Insert FAQ link");
 			$this->t_bab_ovml = bab_translate("Insert OVML file");
-			$this->t_bab_contdir = bab_translate("Insert OVML file");
+			$this->t_bab_contdir = bab_translate("Insert contact link");
+			$this->t_killword = bab_translate("Clear MSOffice tags");
+			$this->t_removeformat = bab_translate("Remove formatting");
+			$this->t_bab_unlink = bab_translate("Remove link");
+			$this->t_font = bab_translate("Font");
+			$this->t_size = bab_translate("Size");
+			$this->t_format = bab_translate("Format");
+			$this->t_heading = bab_translate("Heading");
+			$this->t_paragraph = bab_translate("Paragraph");
+			$this->t_address = bab_translate("Address");
+			$this->t_formated = bab_translate("Formated");
 	
 			$this->linebreak = "\n";
 			if ($GLOBALS['babSkin'] == "ovidentia")

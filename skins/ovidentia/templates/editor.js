@@ -13,7 +13,7 @@ var global_editor = null;
 	[ "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator",
 	  "orderedlist", "unorderedlist", "outdent", "indent", "separator",
 	  "forecolor", "hilitecolor", "separator",
-	  "inserthorizontalrule", "createlink", "inserttable",  "killword", "htmlmode", "popupeditor" ],
+	  "createlink", "bab_unlink", "inserttable", "removeformat", "killword", "htmlmode", "popupeditor" ],
 	  
 	 ["copy", "cut", "paste", "space", "undo", "redo", "separator",
 	  "bold", "italic", "underline", "separator",
@@ -27,8 +27,52 @@ var global_editor = null;
 		 <!--#endif mode -->
 	];
 
-	 
+	
+	config.btnList.removeformat[0] = '{ t_removeformat }';
+	config.btnList.killword[0] = '{ t_killword }';
+	<!--#if babLanguage "!= en" -->
+	config.btnList.bold[1] = _editor_url + 'images/{ babLanguage }/ed_format_bold.gif';
+	config.btnList.underline[1] = _editor_url + 'images/{ babLanguage }/ed_format_underline.gif';
+	<!--#endif babLanguage -->
 
+	config.fontname = { //}
+		"&mdash; { t_font } &mdash;":         '',
+		"Arial":	   'arial,helvetica,sans-serif',
+		"Courier New":	   'courier new,courier,monospace',
+		"Georgia":	   'georgia,times new roman,times,serif',
+		"Tahoma":	   'tahoma,arial,helvetica,sans-serif',
+		"Times New Roman": 'times new roman,times,serif',
+		"Verdana":	   'verdana,arial,helvetica,sans-serif',
+		"impact":	   'impact',
+		"WingDings":	   'wingdings'
+	};
+
+	config.fontsize = {//}
+		"&mdash; { t_size } &mdash;"  : "",
+		"1 (8 pt)" : "1",
+		"2 (10 pt)": "2",
+		"3 (12 pt)": "3",
+		"4 (14 pt)": "4",
+		"5 (18 pt)": "5",
+		"6 (24 pt)": "6",
+		"7 (36 pt)": "7"
+	};
+
+
+	config.formatblock = {//}
+		"&mdash; { t_format } &mdash;"  : "",
+		"{ t_heading } 1": "h1",
+		"{ t_heading } 2": "h2",
+		"{ t_heading } 3": "h3",
+		"{ t_heading } 4": "h4",
+		"{ t_heading } 5": "h5",
+		"{ t_heading } 6": "h6",
+		"{ t_paragraph }": "p",
+		"{ t_address }"  : "address",
+		"{ t_formated }": "pre"
+	};
+
+	//alert(typeof config.fontsize["&mdash; size &mdash;"]);
 	
 
 	config.pageStyle = '{ css_styles }';
@@ -36,7 +80,7 @@ var global_editor = null;
 	config.registerButton({
 	  id        : "bab_image",
 	  tooltip   : "{ t_bab_image }",
-	  image     : "{ babScriptPath }htmlarea/images/ed_bab_image.gif",
+	  image     : _editor_url + 'images/ed_bab_image.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
@@ -49,7 +93,7 @@ var global_editor = null;
 	config.registerButton({
 	  id        : "bab_file",
 	  tooltip   : "{ t_bab_file }",
-	  image     : "{ babScriptPath }htmlarea/images/ed_bab_file.gif",
+	  image     : _editor_url + 'images/ed_bab_file.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
@@ -62,7 +106,7 @@ var global_editor = null;
 	config.registerButton({
 	  id        : "bab_article",
 	  tooltip   : "{ t_bab_article }",
-	  image     : "{ babScriptPath }htmlarea/images/ed_bab_articleid.gif",
+	  image     : _editor_url + 'images/ed_bab_articleid.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
@@ -75,7 +119,7 @@ var global_editor = null;
 	config.registerButton({
 	  id        : "bab_faq",
 	  tooltip   : "{ t_bab_faq }",
-	  image     : "{ babScriptPath }htmlarea/images/ed_bab_faqid.gif",
+	  image     : _editor_url + 'images/ed_bab_faqid.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
@@ -88,7 +132,7 @@ var global_editor = null;
 	config.registerButton({
 	  id        : "bab_ovml",
 	  tooltip   : "{ t_bab_ovml }",
-	  image     : "{ babScriptPath }htmlarea/images/ed_bab_ovml.gif",
+	  image     : _editor_url + 'images/ed_bab_ovml.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
@@ -100,12 +144,23 @@ var global_editor = null;
 	config.registerButton({
 	  id        : "bab_contdir",
 	  tooltip   : "{ t_bab_contdir }",
-	  image     : "{ babScriptPath }htmlarea/images/ed_bab_contdir.gif",
+	  image     : _editor_url + 'images/ed_bab_contdir.gif',
 	  textMode  : false,
 	  action    : function(editor, id) {
 					//}
 					global_editor = editor;
 					window.open('{ babUrlScript }?tg=editorcontdir','bab_contdir','toolbar=no,menubar=no,personalbar=no,width=450,height=470,scrollbars=yes,resizable=yes');
+				  }
+	});
+
+
+	config.registerButton({
+	  id        : "bab_unlink",
+	  tooltip   : "{ t_bab_unlink }",
+	  image     : _editor_url + 'images/ed_unlink.gif',
+	  textMode  : false,
+	  action    : function(editor, id) {
+					editor.execCommand("unlink");
 				  }
 	});
 
@@ -174,13 +229,20 @@ var global_editor = null;
 
 					if( currentvalue )
 						{
+						
 						if (HTMLArea.is_ie && value == 'normal' )
 							{
 							range.execCommand('RemoveFormat');
 							span.removeNode(false);
 							}
+						
+						else if (HTMLArea.is_gecko && value == 'normal' )
+							{
+							editor.execCommand("RemoveFormat");
+							}
 						else
 							span.className = value;
+						
 						}
 					else if (value != 'removeformat')
 					{
@@ -203,16 +265,6 @@ var global_editor = null;
 
 	
 
-
-function print_r(obj)
-{
-	var str = '';
-	for (var i in obj )
-		{
-		str += i+' '+obj[i]+'\t';
-		}
-	alert(obj+' '+str);
-}
 
 
 function getSelection()
