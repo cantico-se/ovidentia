@@ -10,16 +10,6 @@ include $babInstallPath."utilit/template.php";
 include $babInstallPath."utilit/userincl.php";
 include $babInstallPath."utilit/calincl.php";
 
-$babMonths = array(1=>babTranslate("January"), babTranslate("February"), babTranslate("March"), babTranslate("April"),
-                        babTranslate("May"), babTranslate("June"), babTranslate("July"), babTranslate("August"),
-                        babTranslate("September"), babTranslate("October"), babTranslate("November"), babTranslate("December"));
-
-$babDays = array(babTranslate("Sunday"), babTranslate("Monday"),
-				babTranslate("Tuesday"), babTranslate("Wednesday"), babTranslate("Thursday"),
-				babTranslate("Friday"), babTranslate("Saturday"));
-
-$babSearchUrl = "";
-
 function isEmailValid ($email)
 	{
 	return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
