@@ -45,10 +45,11 @@ $ver_from = $dbver[0].$dbver[1].$dbver[2];
 $ver_to = $GLOBALS['bab_ver_major'].$GLOBALS['bab_ver_minor'].$GLOBALS['bab_ver_build'];
 if( $ver_from == $ver_to )
 	{
+	include_once $GLOBALS['babInstallPath']."upgrade.php";
 	$func = "upgrade".$ver_from."betas";
+	$beta = "";
 	if( function_exists($func))
 		{
-		$beta = "";
 		$ret = $func($beta);
 		if( !empty($ret))
 			return $ret;
@@ -63,7 +64,7 @@ if( $ver_from == $ver_to )
 $i_from = bab_array_search($ver_from, $bab_versions);
 $i_to = bab_array_search($ver_to, $bab_versions);
 
-include $GLOBALS['babInstallPath']."upgrade.php";
+include_once $GLOBALS['babInstallPath']."upgrade.php";
 for( $i = $i_from; $i < $i_to; $i++)
 	{
 	$func = "upgrade".$bab_versions[$i]."to".$bab_versions[$i+1];
