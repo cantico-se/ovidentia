@@ -21,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
+include_once "base.php";
 define("BAB_TAG_CONTAINER", "OC");
 define("BAB_TAG_VARIABLE", "OV");
 define("BAB_TAG_FUNCTION", "OF");
@@ -735,6 +736,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
@@ -792,6 +794,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
@@ -890,7 +893,7 @@ class bab_ForumNext extends bab_Forum
 
 	function bab_ForumNext( &$ctx)
 	{
-		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		$this->handler = $ctx->get_handler('bab_Forums');
 		if( $this->handler !== false && $this->handler !== '' )
 			{
 			if( $this->handler->index < $this->handler->count)
@@ -1432,6 +1435,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$i++;
 			$this->index = $i;
@@ -1708,19 +1712,18 @@ class bab_WaitingArticles extends bab_handler
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 			$this->topicid = $ctx->get_value('topicid');
-			$req = "select id, id_topic from ".BAB_ARTICLES_TBL." where confirmed='N'";
+			$req = "select a.id from ".BAB_ARTICLES_TBL." a join ".BAB_FAR_INSTANCES_TBL." fi where a.confirmed='N'";
 			if( $this->topicid !== false && $this->topicid !== '' )
-				$req .= " and id_topic IN (".implode(',', $this->topicid).")";
+				$req .= " and a.id_topic IN (".$this->topicid.")";
+
+			$req .= " and fi.idschi=a.idfai and fi.iduser='".$GLOBALS['BAB_SESS_USERID']."' and fi.result='' and  fi.notified='Y'";
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select idsaart  from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
-				if( isUserApproverFlow($rr['idsaart'], $GLOBALS['BAB_SESS_USERID']))
-					{
-					$this->idEntries[] = $arr['id'];
-					}
+				$this->idEntries[] = $arr['id'];
 				}
+
 			$this->count = count($this->idEntries);
 			}
 		else
@@ -1744,6 +1747,8 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewa&article=".$arr['id']."&topics=".$arr['id_topic']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1774,18 +1779,16 @@ class bab_WaitingComments extends bab_handler
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
 			$this->articleid = $ctx->get_value('articleid');
-			$req = "select id, id_topic from ".BAB_COMMENTS_TBL." where confirmed='N'";
+			$req = "select c.id from ".BAB_COMMENTS_TBL." c join ".BAB_FAR_INSTANCES_TBL." fi where c.confirmed='N'";
 			if( $this->articleid !== false && $this->articleid !== '' )
-				$req .= " and id_article IN (".implode(',', $this->articleid).")";
-			
+				$req .= " and c.id_article IN (".$this->articleid.")";
+
+			$req .= " and fi.idschi=c.idfai and fi.iduser='".$GLOBALS['BAB_SESS_USERID']."' and fi.result='' and  fi.notified='Y'";
+
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select idsacom  from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
-				if( isUserApproverFlow($rr['idsacom'], $GLOBALS['BAB_SESS_USERID']))
-					{
-					$this->idEntries[] = $arr['id'];
-					}
+				$this->idEntries[] = $arr['id'];
 				}
 			$this->count = count($this->idEntries);
 			}
@@ -1809,6 +1812,8 @@ class bab_WaitingComments extends bab_handler
 			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=ReadC&com=".$arr['id']."&topics=".$arr['id_topic']."&article=".$arr['id_article']);
+			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1839,18 +1844,16 @@ class bab_WaitingFiles extends bab_handler
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
 			$this->folderid = $ctx->get_value('folderid');
-			$req = "select id, id_owner from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N'";
+			$req = "select f.id from ".BAB_FILES_TBL." f join ".BAB_FAR_INSTANCES_TBL." fi where f.bgroup='Y' and f.confirmed='N'";
 			if( $this->folderid !== false && $this->folderid !== '' )
-				$req .= " and id_owner IN (".implode(',', $this->folderid).")";
-			
+				$req .= " and f.id_owner IN (".$this->folderid.")";
+
+			$req .= " and fi.idschi=f.idfai and fi.iduser='".$GLOBALS['BAB_SESS_USERID']."' and fi.result='' and  fi.notified='Y'";
+
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select idsa  from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
-				if( isUserApproverFlow($rr['idsa'], $GLOBALS['BAB_SESS_USERID']))
-					{
-					$this->idEntries[] = $arr['id'];
-					}
+				$this->idEntries[] = $arr['id'];
 				}
 			$this->count = count($this->idEntries);
 			}
@@ -1872,10 +1875,11 @@ class bab_WaitingFiles extends bab_handler
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FilePath', $arr['path']);
 			$this->ctx->curctx->push('FileDesc', $arr['description']);
-			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
-			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
+			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
+			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
+			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1886,6 +1890,344 @@ class bab_WaitingFiles extends bab_handler
 			return false;
 			}
 		}
+}
+
+
+class bab_WaitingPosts extends bab_handler
+{
+	var $res;
+	var $index;
+	var $count;
+	var $topicid;
+
+	function bab_WaitingPosts($ctx)
+		{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+
+		if( $GLOBALS['BAB_SESS_USERID'] != '')
+			{
+			$this->forumid = $ctx->get_value('forumid');
+			$req = "SELECT p.*, t.forum  FROM  ".BAB_POSTS_TBL." p, ".BAB_FORUMS_TBL." f, ".BAB_THREADS_TBL." t WHERE p.confirmed ='N' AND t.forum = f.id AND t.id = p.id_thread and f.moderator='".$GLOBALS['BAB_SESS_USERID']."'";
+
+			if( $this->forumid !== false && $this->forumid !== '' )
+				$req .= " and f.id IN (".$this->forumid.")";
+
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+		else
+			$this->count = 0;
+
+		$this->ctx->curctx->push('CCount', $this->count);
+		}
+
+	function getnext()
+		{
+		global $babBody, $babDB;
+		static $i=0;
+		if( $i < $this->count)
+			{
+			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('PostTitle', $arr['subject']);
+			$this->ctx->curctx->push('PostText', $arr['message']);
+			$this->ctx->curctx->push('PostId', $arr['id']);
+			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
+			$this->ctx->curctx->push('PostAuthor', $arr['author']);
+			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+			}
+		else
+			{
+			$i = 0;
+			return false;
+			}
+		}
+}
+
+
+class bab_Faqs extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_Faqs( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$faqid = $ctx->get_value('faqid');
+		$req = "select id from ".BAB_FAQCAT_TBL;
+		if( $faqid !== false && $faqid !== '' )
+			$req .= " where id IN (".$faqid.")";
+
+		$res = $babDB->db_query($req);
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
+				{
+				array_push($this->IdEntries, $row['id']);
+				}
+			}
+
+		$this->count = count($this->IdEntries);
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$this->IdEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FaqName', $arr['category']);
+			$this->ctx->curctx->push('FaqDescription', $arr['description']);
+			$this->ctx->curctx->push('FaqId', $arr['id']);
+			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_FaqPrevious extends bab_Faq
+{
+	var $handler;
+
+	function bab_FaqPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Faqs');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('faqid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_Faq($ctx);
+	}
+
+}
+
+class bab_FaqNext extends bab_Faq
+{
+	var $handler;
+
+	function bab_FaqNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Faqs');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('faqid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_Faq($ctx);
+	}
+
+}
+
+
+
+class bab_Faq extends bab_handler
+{
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_Faq( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$ctx->get_value('faqid')."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		else
+			$this->count = 0;
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FaqName', $arr['category']);
+			$this->ctx->curctx->push('FaqDescription', $arr['description']);
+			$this->ctx->curctx->push('FaqId', $arr['id']);
+			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_FaqQuestions extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_FaqQuestions( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$faqid = $ctx->get_value('faqid');
+		$req = "select id, idcat from ".BAB_FAQQR_TBL;
+		if( $faqid !== false && $faqid !== '' )
+			$req .= " where idcat IN (".$faqid.")";
+
+		$res = $babDB->db_query($req);
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['idcat']))
+				{
+				array_push($this->IdEntries, $row['id']);
+				}
+			}
+
+		$this->count = count($this->IdEntries);
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$this->IdEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
+			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_FaqQuestionPrevious extends bab_FaqQuestion
+{
+	var $handler;
+
+	function bab_FaqQuestionPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_FaqQuestions');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('questionid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_FaqQuestion($ctx);
+	}
+
+}
+
+class bab_FaqQuestionNext extends bab_FaqQuestion
+{
+	var $handler;
+
+	function bab_FaqQuestionNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_FaqQuestions');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('questionid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_FaqQuestion($ctx);
+	}
+
+}
+
+
+
+class bab_FaqQuestion extends bab_handler
+{
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_FaqQuestion( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$ctx->get_value('questionid')."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		else
+			$this->count = 0;
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
+			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
 }
 
 
