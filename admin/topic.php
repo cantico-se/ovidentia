@@ -618,11 +618,13 @@ if( isset($action) && $action == "Yes")
 	{
 	if( $idx == "Delete" )
 		{
+		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteTopic($category);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		}
 	else if( $idx == "Deletea")
 		{
+		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteArticles($items);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		}

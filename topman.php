@@ -473,6 +473,7 @@ if( isset($action) && $action == "Yes" && $manager)
 	{
 	if( $idx == "Deletea")
 		{
+		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteArticles($items);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
 		}

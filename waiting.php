@@ -514,6 +514,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	switch($res)
 		{
 		case 0:
+			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 			bab_confirmDeleteArticle($article);
 			$subject = bab_translate("Your article has been refused");
 			break;
@@ -667,6 +668,7 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 	switch($res)
 		{
 		case 0:
+			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 			$subject = "Your comment has been refused";
 			bab_deleteComments($com);
 			break;

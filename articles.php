@@ -1025,6 +1025,7 @@ if( isset($addart) && $addart == "add" && ($approver || bab_isAccessValid(BAB_TO
 
 if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != "" && $approver)
 	{
+	include_once $babInstallPath."utilit/delincl.php";
 	bab_confirmDeleteArticle($article);
 	}
 

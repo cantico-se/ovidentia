@@ -286,6 +286,7 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 function confirmDeleteComment($topics, $article, $com)
 	{
 	// delete comments
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	bab_deleteComments($com);
 	}
 
