@@ -27,6 +27,88 @@ include $babInstallPath."utilit/dbutil.php";
 include $babInstallPath."utilit/template.php";
 include $babInstallPath."utilit/userincl.php";
 
+function bab_formatDate($format, $time)
+{
+	global $babDays, $babMonths;
+	$txt = $format;
+	if(preg_match_all("/%(.)/", $format, $m))
+		{
+		for( $i = 0; $i< count($m[1]); $i++)
+			{
+			switch($m[1][$i])
+				{
+				case 'd': /* A short textual representation of a day, three letters */
+					$val = substr($babDays[date("w", $time)], 0 , 3);
+					break;
+				case 'D': /* day */
+					$val = $babDays[date("w", $time)];
+					break;
+				case 'j': /* Day of the month with leading zeros */ 
+					$val = date("d", $time);
+					break;
+				case 'm': /* A short textual representation of a month, three letters */
+					$val = substr($babMonths[date("n", $time)], 0 , 3);
+					break;
+				case 'M': /* Month */
+					$val = $babMonths[date("n", $time)];
+					break;
+				case 'n': /* Numeric representation of a month, with leading zeros */
+					$val = date("m", $time);
+					break;
+				case 'Y': /* A full numeric representation of a year, 4 digits */
+					$val = date("Y", $time);
+					break;
+				case 'y': /* A two digit representation of a year */
+					$val = date("y", $time);
+					break;
+				case 'H': /* 24-hour format of an hour with leading zeros */
+					$val = date("H", $time);
+					break;
+				case 'i': /* Minutes with leading zeros */
+					$val = date("i", $time);
+					break;
+				}
+			$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
+			}
+		}
+	return $txt;
+}
+
+function bab_formatAuthor($format, $id)
+{
+	global $babDB;
+
+	$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+		$arr = $babDB->db_fetch_array($res);
+		$txt = $format;
+		if(preg_match_all("/%(.)/", $format, $m))
+			{
+			for( $i = 0; $i< count($m[1]); $i++)
+				{
+				switch($m[1][$i])
+					{
+					case 'F':
+						$val = $arr['givenname'];
+						break;
+					case 'L':
+						$val = $arr['sn'];
+						break;
+					case 'M':
+						$val = $arr['mn'];
+						break;
+					}
+				$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
+				}
+			}
+		}
+	else
+		$txt = bab_translate("Anonymous");
+
+	return $txt;
+}
+
 function bab_stripDomainName ($txt)
 	{
 	return eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], "\\1", $txt);
