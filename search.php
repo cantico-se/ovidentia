@@ -525,7 +525,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if ($this->like || $this->like2)
 					$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
-				else $reqsup = 0;
 				
 				$req = "insert into artresults SELECT a.id, a.id_topic, a.title title,a.head, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." and confirmed='Y' and id_topic in (".implode($babBody->topview,",").") ".$crit_art." order by $order ";
 				$this->db->db_query($req);
