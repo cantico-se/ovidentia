@@ -1,5 +1,5 @@
 /************************************************************************/
-Juillet 2002: Version 3.4.0
+October 2002: Version 3.4.0
 /************************************************************************/
 - Possibility to enable or disable mail, notes, calendar and contacts by group
 - Groups members can be notified when article has been submited or updated
