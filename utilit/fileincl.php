@@ -6,10 +6,15 @@
  ***********************************************************************/
 function getFullPath($gr, $id)
 {
-	if( $gr == "Y")
-		return $GLOBALS['babUploadPath']."/G".$id."/";
+	if( substr($GLOBALS['babUploadPath'], -1) == "/" )
+		$path = $GLOBALS['babUploadPath'];
 	else
-		return $GLOBALS['babUploadPath']."/U".$id."/";
+		$path = $GLOBALS['babUploadPath']."/";
+
+	if( $gr == "Y")
+		return $path."G".$id."/";
+	else
+		return $path."U".$id."/";
 }
 
 function formatSize($size, $roundoff = true)
