@@ -605,7 +605,7 @@ function listWaitingAddons()
 			$this->call = $title."_getWaitingItems";
 			}
 
-		function getnextaddon()
+		function getnextaddon(&$skip)
 			{
 			$this->addonTitle = '';
 			$this->arr = array();
@@ -615,6 +615,9 @@ function listWaitingAddons()
 				{
 				$this->_setGlobals($this->addonId,$title);
 				call_user_func_array($this->call, array(&$this->addonTitle, &$this->arr));
+
+				if (count($this->arr) == 0)
+					$skip = 1;
 				
 				return true;
 				}

@@ -318,6 +318,8 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->count = 0;
 				}
 
+			$this->bgroup = $arr['id_group'] > 0;
+
 			/* find prefered mail account */
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and prefered='Y'";
 			$res = $this->db->db_query($req);
@@ -512,6 +514,8 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 
 	$temp = new temp($id, $pos, $xf, $badd);
 	$babBody->babecho( bab_printTemplate($temp, "directory.html", "adbrowse"));
+
+	return $temp->bgroup;
 }
 
 function summaryLdapContact($id, $cn)
@@ -1994,14 +1998,15 @@ switch($idx)
 		$babBody->title = bab_translate("Database Directory").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		if( !isset($xf ))
 			$xf = '';
-		browseDbDirectory($id, $pos, $xf, $badd);
+		$bgroup = browseDbDirectory($id, $pos, $xf, $badd);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdb", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)
 			{
 			$babBody->addItemMenu("dbimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbimp&id=".$id);
 			$babBody->addItemMenu("dbexp", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbexp&id=".$id);
-			$babBody->addItemMenu("empdb", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
+			if (!$bgroup)
+				$babBody->addItemMenu("empdb", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
 			}
 		break;
 

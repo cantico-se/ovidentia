@@ -767,11 +767,11 @@ function addEvent(&$message)
 	$yearbegin = $_POST['yearbegin'];
 	$monthbegin = $_POST['monthbegin'];
 	$daybegin = $_POST['daybegin'];
-	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : '00:00';
+	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
 	$yearend = $_POST['yearend'];
 	$monthend = $_POST['monthend'];
 	$dayend = $_POST['dayend'];
-	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : '23:59';
+	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
 	$bprivate = isset($_POST['bprivate']) ? $_POST['bprivate'] : 'N';
 	$block = isset($_POST['block']) ? $_POST['block'] : 'N';
 	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';

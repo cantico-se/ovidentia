@@ -16,17 +16,13 @@
 			<td>{ arr[name] }</td>
 			<td>{ arr[description] }</td>
 			<td>
-				
 				<a href="{ babUrlScript }?tg=vacchart&idx=entity_members&ide={ arr[id] }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_members }" border="0" /></a>
-				
 			</td>
 			<td>
-				<a href="{ babUrlScript }?tg=vacchart&idx=entity_cal&ide={ arr[id] }&popup=1&emptylines=0" onclick="bab_popup(this.href,4,1);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
+				<a href="{ babUrlScript }?tg=vacchart&idx=entity_cal&ide={ arr[id] }&popup=1&emptylines=1" onclick="bab_popup(this.href,4,1);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
 			</td>
 			<td>
-				
 				<a href="{ babUrlScript }?tg=vacchart&idx=entity_requests&ide={ arr[id] }">{ t_requests }</a>
-				
 			</td>
 		</tr>
 		<!--#endin getnext -->

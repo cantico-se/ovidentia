@@ -143,7 +143,7 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 	$mail->mailBody($message, "html");
 	$mail->mailAltBody($messagetxt);
 
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='".$forum."'");
 	$arrusers = array();
 	if( $res && $db->db_num_rows($res) > 0 )
@@ -159,20 +159,20 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 				case 2:
 					return;
 				default:
-					$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
+					$res2 = $db->db_query("select u.id, u.email, u.firstname, u.lastname from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." g where u.is_confirmed='1' and u.disabled='0' and g.id_group='".$row['id_group']."' and g.id_object=u.id");
 					break;
 				}
 
 			if( $res2 && $db->db_num_rows($res2) > 0 )
 				{
 				$count = 0;
-				$mail->mailTo('');
+				
 				while(($arr = $db->db_fetch_array($res2)))
 					{
-					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
+					if( !in_array($arr['id'], $arrusers))
 						{
 						$arrusers[] = $arr['id'];
-						$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+						$mail->mailBcc($arr['email']);
 						$count++;
 						}
 
@@ -188,6 +188,7 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 				if( $count > 0 )
 					{
 					$mail->send();
+					echo $mail->ErrorInfo();
 					$mail->clearBcc();
 					$mail->clearTo();
 					$count = 0;

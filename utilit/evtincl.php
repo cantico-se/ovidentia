@@ -633,7 +633,7 @@ function notifyEventUpdate($evtid, $bdelete)
 		if( $all )
 			{
 			$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-			echo "select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'";
+			
 			}
 		else
 			{
@@ -651,8 +651,7 @@ function notifyEventUpdate($evtid, $bdelete)
 
 			if( count($arrusers) > 0 )
 				{
-				$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0' and id in (".implode(',', array_keys($arrusers)).")");
-				echo "select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0' and id in (".implode(',', array_keys($arrusers)).")";
+				$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." WHERE is_confirmed='1' and disabled='0' and id in (".implode(',', array_keys($arrusers)).") AND id <> '".$GLOBALS['BAB_SESS_USERID']."'");
 				}
 			}
 
@@ -669,7 +668,7 @@ function notifyEventUpdate($evtid, $bdelete)
 			$count = 0;
 			while(($row = $babDB->db_fetch_array($res2)))
 				{
-				$mail->mailBcc($row['email'], bab_composeUserName($row['firstname'],$row['lastname']));
+				$mail->mailBcc($row['email']); // , bab_composeUserName($row['firstname'],$row['lastname'])
 				$count++;
 
 				if( $count > 25 )

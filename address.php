@@ -146,7 +146,7 @@ function listAddress($pos)
 				$arr = $this->db->db_fetch_array($this->resgrpm);
 				$this->nameval = bab_composeUserName($arr['firstname'],$arr['lastname']);
 				$this->emailval = $arr['email'];
-				$this->checkval = $this->nameval."(g)";
+				$this->checkval = $arr['firstname'].' '.$arr['lastname']."(g)";
 				$j++;
 				return true;
 				}
