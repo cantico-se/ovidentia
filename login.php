@@ -391,7 +391,7 @@ function userLogin($nickname,$password)
 					switch($key)
 						{
 						case "jpegphoto":
-							$res = $ldap->read("cn=".$entries[0]['cn'][0].",".$babBody->babsite['ldap_searchdn'], "objectClass=*", array("jpegphoto"));
+							$res = $ldap->read($entries[0]['dn'], "objectClass=*", array("jpegphoto"));
 							if( $res)
 								{
 								$ei = $ldap->first_entry($res);
