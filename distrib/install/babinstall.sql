@@ -2444,10 +2444,12 @@ CREATE TABLE `bab_vac_rights_rules` (
   `period_end` date NOT NULL default '0000-00-00',
   `trigger_nbdays_min` float NOT NULL default '0',
   `trigger_nbdays_max` float NOT NULL default '0',
+  `trigger_type` int(10) unsigned NOT NULL default '0',
   `trigger_inperiod` tinyint(4) NOT NULL default '0',
   `right_inperiod` tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  KEY `id_right` (`id_right`,`period_start`,`period_end`)
+  KEY `id_right` (`id_right`,`period_start`,`period_end`),
+  KEY `trigger_type` (`trigger_type`)
 );
 
 CREATE TABLE bab_users_unavailability (

@@ -287,6 +287,17 @@ function calwin(callback)
 					</td>
 				</tr>
 				<tr> 
+					<td align="right">{ t_trigger_type }:</td>
+					<td > 
+						<select name="trigger_type">
+							<option value="0">{ t_all }</option>
+							<!--#in getnexttype -->
+							<option value="{ typeid }">{ typename }</option>
+							<!--#endin getnexttype -->
+						</select>
+					</td>
+				</tr>
+				<tr> 
 					<td align="right">{ t_trigger_inperiod }:</td>
 					<td > 
 						<select name="trigger_inperiod">
@@ -307,6 +318,7 @@ function calwin(callback)
 
 						<script type="text/javascript">
 						<!--
+						document.forms['rightsedit'].trigger_type.value = '{ arr[trigger_type] }';
 						document.forms['rightsedit'].trigger_inperiod.value = '{ arr[trigger_inperiod] }';
 						document.forms['rightsedit'].right_inperiod.value = '{ arr[right_inperiod] }';
 						-->

@@ -1702,4 +1702,5 @@
 <string id="Users with waiting requests will not be modified">Les utilisateurs avec des demandes en attente ne serons pas modifiés</string>
 <string id="Personnel associated with type">Personnel associé au type</string>
 <string id="Non-used days">Jours non-utilisés</string>
+<string id="Allow rule with type">Autoriser la condition avec le type</string>
 </fr>

@@ -263,8 +263,21 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 						$req = '';
 						break;
 					}
+
 				
-				$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_entry=e.id ".$req;
+				if (!empty($arr['trigger_type']))
+					{
+					$table = ", ".BAB_VAC_RIGHTS_TBL." r ";
+					$where = " AND el.id_type=r.id AND r.id_type='".$arr['trigger_type']."' ";
+					}
+				else
+					{
+					$table = '';
+					$where = '';
+					}
+				
+				$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e ".$table." where e.id_user='".$id_user."' and e.status='Y' and el.id_entry=e.id ".$req.$where;
+
 
 				list($nbdays) = $db->db_fetch_array($db->db_query($req));
 

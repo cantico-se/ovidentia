@@ -495,6 +495,8 @@ function addModifyVacationRigths($id = false)
 			$this->t_outperiod = bab_translate("Out of period");
 			$this->t_right_inperiod = bab_translate("Apply right");
 			$this->t_record = bab_translate("Record");
+			$this->t_trigger_type = bab_translate("Allow rule with type");
+			$this->t_all = bab_translate("All");
 		
 
 			$this->yes = bab_translate("Yes");
@@ -503,7 +505,7 @@ function addModifyVacationRigths($id = false)
 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
 			$this->db = & $GLOBALS['babDB'];
-			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod','use_rules');
+			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod', 'use_rules', 'trigger_type');
 
 			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end');
 			
@@ -514,7 +516,28 @@ function addModifyVacationRigths($id = false)
 				}
 			elseif ($id)
 				{
-				$this->arr = $this->db->db_fetch_array($this->db->db_query("SELECT t1.*,t2.id use_rules,t2.period_start, t2.period_end, t2.trigger_nbdays_min, t2.trigger_nbdays_max, t2.trigger_inperiod, t2.right_inperiod, t3.name type FROM ".BAB_VAC_RIGHTS_TBL." t1 LEFT JOIN ".BAB_VAC_RIGHTS_RULES_TBL." t2 ON t2.id_right=t1.id LEFT JOIN ".BAB_VAC_TYPES_TBL." t3 ON t3.id = t1.id_type WHERE t1.id='".$id."'"));
+				$this->arr = $this->db->db_fetch_array($this->db->db_query(
+					"SELECT 
+						t1.*,
+						t2.id use_rules,
+						t2.period_start, 
+						t2.period_end, 
+						t2.trigger_nbdays_min, 
+						t2.trigger_nbdays_max, 
+						t2.trigger_inperiod,
+						t2.trigger_type,
+						t2.right_inperiod, 
+						t3.name type 
+					FROM 
+						".BAB_VAC_RIGHTS_TBL." t1
+					LEFT JOIN 
+						".BAB_VAC_RIGHTS_RULES_TBL." t2 
+					ON t2.id_right=t1.id 
+					LEFT JOIN 
+						".BAB_VAC_TYPES_TBL." t3 
+					ON t3.id = t1.id_type 
+					WHERE t1.id='".$id."'"));
+
 				$this->collid = "";
 
 				foreach($dates_to_init as $field)
@@ -977,11 +1000,41 @@ function updateVacationRight()
 			if ($babDB->db_num_rows($res) > 0)
 				{
 				list($id_rule) = $babDB->db_fetch_array($res);
-				$babDB->db_query("UPDATE ".BAB_VAC_RIGHTS_RULES_TBL." set period_start='".$post['period_start']."', period_end='".$post['period_end']."', trigger_nbdays_min='".$post['trigger_nbdays_min']."',  trigger_nbdays_max='".$post['trigger_nbdays_max']."', trigger_inperiod='".$post['trigger_inperiod']."', right_inperiod='".$post['right_inperiod']."' where id='".$id_rule."'");
+				$babDB->db_query("
+						UPDATE ".BAB_VAC_RIGHTS_RULES_TBL." 
+						SET 
+							period_start='".$post['period_start']."', 
+							period_end='".$post['period_end']."', 
+							trigger_nbdays_min='".$post['trigger_nbdays_min']."',  trigger_nbdays_max='".$post['trigger_nbdays_max']."', 
+							trigger_inperiod='".$post['trigger_inperiod']."', 
+							trigger_type='".$post['trigger_type']."', 
+							right_inperiod='".$post['right_inperiod']."' 
+						WHERE 
+							id='".$id_rule."'
+						");
 				}
 			else
 				{
-				$babDB->db_query("INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL." ( id_right, period_start, period_end, trigger_nbdays_min, trigger_nbdays_max, trigger_inperiod, right_inperiod ) VALUES ( '".$id."', '".$post['period_start']."', '".$post['period_end']."','".$post['trigger_nbdays_min']."','".$post['trigger_nbdays_max']."', '".$post['trigger_inperiod']."', '".$post['right_inperiod']."' )");
+				$babDB->db_query("
+						INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL."
+						( id_right, 
+							period_start, 
+							period_end, 
+							trigger_nbdays_min, 
+							trigger_nbdays_max, 
+							trigger_inperiod, 
+							trigger_type,
+							right_inperiod ) 
+						VALUES 
+							( '".$id."',
+							'".$post['period_start']."', 
+							'".$post['period_end']."', 
+							'".$post['trigger_nbdays_min']."', 
+							'".$post['trigger_nbdays_max']."', 
+							'".$post['trigger_inperiod']."', 
+							'".$post['trigger_type']."', 
+							'".$post['right_inperiod']."' )
+							");
 				}
 			}
 
