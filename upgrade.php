@@ -3321,4 +3321,20 @@ if( !$res)
 
 return $ret;
 }
+
+function upgrade500to501()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_PROFILES_TBL." ADD `required` ENUM( 'N', 'Y' ) DEFAULT 'N' NOT NULL AFTER inscription";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_PROFILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+return $ret;
+}
+
 ?>

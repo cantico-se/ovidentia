@@ -938,7 +938,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1877,6 +1877,7 @@ CREATE TABLE bab_profiles (
   description varchar(255) NOT NULL default '',
   multiplicity enum('Y','N') NOT NULL default 'Y',
   inscription enum('N','Y') NOT NULL default 'N',
+  required enum('N','Y') NOT NULL default 'N',
   id_dgowner int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
