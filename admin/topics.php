@@ -122,7 +122,7 @@ function listCategories($cat, $adminid)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->urlgroups = $GLOBALS['babUrl']."index.php?tg=topic&idx=Groups&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->urlcomments = $GLOBALS['babUrl']."index.php?tg=topic&idx=Comments&item=".$this->arr['id']."&cat=".$this->idcat;
-				$this->urlsubmi = $GLOBALS['babUrl']."index.php?tg=topic&idx=Submit&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlsubmit = $GLOBALS['babUrl']."index.php?tg=topic&idx=Submit&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->arr['description'] = $this->arr['description'];//nl2br($this->arr['description']);
 				$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->namecategory = $this->arr['category'];
