@@ -540,6 +540,7 @@ CREATE TABLE bab_users_log (
    forwarded_for varchar(255) NOT NULL default '',
    id_dggroup int(11) unsigned NOT NULL default '0',
    cnx_try int(2) unsigned NOT NULL default '0',
+   cpw varchar(255) NOT NULL default '',
    PRIMARY KEY (id),
    KEY id_user (id_user)
 );
