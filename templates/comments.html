@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle1.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<br><br><br><br><br>
+<!--#begin commentcreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="comments">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="com" value="{ com }">
+<input type="hidden" name="addcomment" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right" nowrap>{ name }:</td>
+<td width="103" nowrap>
+<!--#if anonyme "== 0" --><b>{ username }</b><!--#endif anonyme -->
+<!--#if anonyme "== 1" --><input type="text" name="name" size="60" maxlength="60"><!--#endif anonyme -->
+</td>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>{ subject }:</td>
+<td width="103"><input type="text" name="subject" size="60" maxlength="60" value="{ subjectval }"></td>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>{ message }:</td>
+<td width="103"><textarea cols="50" rows="10" name="message"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end commentcreate -->
+<br><br><br><br><br>
+<!--#begin commentslist -->
+<center>
+<table border="0" width="95%" cellpadding="0" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="3" cellspacing="0">
+<TBODY>
+<!--#in getnext -->
+<!--#if alternate "== 1" --><tr><td class="BabListTitleBgnd" nowrap><a class=BabMenuLink href="{ subjecturl }">{ subjectname }</a></td><td class="BabListTitleBgnd" nowrap>{ arr[name] }</td><td class="BabListTitleBgnd" nowrap>{ arr[date] }</td></tr>
+<!--#else alternate --><tr><td nowrap><a class=BabMenuLink href="{ subjecturl }">{ subjectname }</a></td><td nowrap>{ arr[name] }</td><td nowrap>{ arr[date] }</td></tr>
+<!--#endif alternate -->
+<!--#endin getnext -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end commentslist -->
+<br><br><br><br><br>
+<!--#begin commentread -->
+<center>
+<table border="0" width="95%" cellpadding="0" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr><td class="BabListTitleBgnd"><font face="courier">
+{ arr[date] }
+<br>{ by }: { arr[name] }
+<br>{ subject }: { arr[subject] }
+<br><br>{ arr[message] }
+</font></td></tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end commentread -->
+<br><br><br><br><br>
+</BODY>
+</HTML>

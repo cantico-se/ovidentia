@@ -1,0 +1,156 @@
+<?php
+include $babInstallPath."admin/acl.php";
+include $babInstallPath."utilit/topincl.php";
+
+function addCategory()
+	{
+	global $body;
+	class temp
+		{
+		var $category;
+		var $description;
+		var $approver;
+		var $add;
+
+		function temp()
+			{
+			$this->category = babTranslate("Category");
+			$this->description = babTranslate("Description");
+			$this->approver = babTranslate("Approver email");
+			$this->add = babTranslate("Add");
+			}
+		}
+
+	$temp = new temp();
+	$body->babecho(	babPrintTemplate($temp,"topics.html", "categorycreate"));
+	}
+
+function listCategories()
+	{
+	global $body;
+	class temp
+		{
+		
+		var $id;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $select;
+		var $approver;
+		var $urlcategory;
+		var $namecategory;
+
+		function temp()
+			{
+			$this->db = new db_mysql();
+			$req = "select * from topics";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				if( $i == 0)
+					$this->select = "checked";
+				else
+					$this->select = "";
+					
+				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->arr[description] = nl2br($this->arr[description]);
+				$this->urlcategory = $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$this->arr[id];
+				$this->namecategory = $this->arr[category];
+				$req = "select * from users where id='".$this->arr[id_approver]."'";
+				$res = $this->db->db_query($req);
+				$arr2 = $this->db->db_fetch_array($res);
+				$this->approver = $arr2[fullname];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	$temp = new temp();
+	$body->babecho(	babPrintTemplate($temp,"topics.html", "categorylist"));
+	return $temp->count;
+	}
+
+function saveCategory($category, $description, $approver)
+	{
+	global $body;
+	if( empty($category))
+		{
+		$body->msgerror = babTranslate("ERROR: You must provide a category !!");
+		return;
+		}
+
+	if( empty($approver))
+		{
+		$body->msgerror = babTranslate("ERROR: You must provide an approver !!");
+		return;
+		}
+
+	$db = new db_mysql();
+	$query = "select * from users where email='$approver'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) < 1)
+		{
+		$body->msgerror = babTranslate("ERROR: The approver doesn't exist !!");
+		return;
+		}
+	$arr = $db->db_fetch_array($res);
+
+	$query = "select * from topics where category='$category'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$body->msgerror = babTranslate("ERROR: This category already exists");
+		}
+	else
+		{
+		$query = "insert into topics (id_approver, category, description) values ('" .$arr[id]. "', '" . $category. "', '" . $description. "')";
+		$db->db_query($query);
+		}
+	}
+
+
+/* main */
+if(!isset($idx))
+	{
+	$idx = "Categories";
+	}
+
+if( isset($add))
+	{
+	saveCategory($category, $description, $approver);
+	}
+
+switch($idx)
+	{
+	case "Add Category":
+		$body->title = babTranslate("Add a new categorie");
+		addCategory();
+		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
+		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Add Category");
+		break;
+
+	default:
+	case "Categories":
+		$body->title = babTranslate("List of all categories");
+		if( listCategories() > 0 )
+			{
+			$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
+			}
+		else
+			$body->title = babTranslate("There is no category");
+
+		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Add Category");
+		break;
+	}
+$body->setCurrentItemMenu($idx);
+
+?>

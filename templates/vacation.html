@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/vtd8.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<br><br><br><br><br>
+<!--#begin newvacation -->
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function updateDates(elemDay, elemMonth, elemYear)
+{
+	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < elemDay.length; i++)
+	{
+	elemDay.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+	elemDay.options[i] = new Option(i+1);
+	}
+	elemDay.options[0].selected = true;
+}
+
+
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "CalendarWindow", "width=250,height=250,status=no,resizable=no,top=200,left=200");
+}
+
+function dateBegin(day, month, year)
+{
+	document.vacform.elements['daybegin'].options[day-1].selected = true;
+	document.vacform.elements['monthbegin'].options[month-1].selected = true;
+	document.vacform.elements['yearbegin'].options[year-2001].selected = true;
+
+}
+
+function dateEnd(day, month, year)
+{
+	document.vacform.elements['dayend'].options[day-1].selected = true;
+	document.vacform.elements['monthend'].options[month-1].selected = true;
+	document.vacform.elements['yearend'].options[year-{ yearbegin }].selected = true;
+
+}
+//-->
+</SCRIPT>
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form name="vacform" method="post" action="index.php" >
+<input type="hidden" name="tg" value="vacation">
+<input type="hidden" name="idx" value="confirmvac">
+<input type="hidden" name="newvacation" value="newvacation">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right" nowrap><a class="BabDialogLink" href="{ datebegin }">{ datebegintxt }</a>:</td>
+<td>
+<select name="daybegin">
+<!--#in getnextday -->
+<option value="{ dayid }" { selected }>{ dayid }</option>
+<!--#endin getnextday -->
+</select>
+</td>
+<td>
+<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+<!--#in getnextmonth -->
+<option value="{ monthid }" { selected }>{ monthname }</option>
+<!--#endin getnextmonth -->
+</select>
+</td>
+<td>
+<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+<!--#in getnextyear -->
+<option value="{ yearid }" >{ yearidval }</option>
+<!--#endin getnextyear -->
+</select>
+</td>
+<td>
+<select name="halfdaybegin">
+<!--#in getnexthalf -->
+<option value="{ halfid }" >{ halfname }</option>
+<!--#endin getnexthalf -->
+</select>
+</td>
+</tr>
+<tr>
+<td align="right" nowrap><a class="BabDialogLink" href="{ dateend }">{ dateendtxt }</a>:</td>
+<td>
+<select name="dayend">
+<!--#in getnextday -->
+<option value="{ dayid }"  { selected }>{ dayid }</option>
+<!--#endin getnextday -->
+</select >
+</td>
+<td>
+<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+<!--#in getnextmonth -->
+<option value="{ monthid }"  { selected }>{ monthname }</option>
+<!--#endin getnextmonth -->
+</select >
+</td>
+<td>
+<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+<!--#in getnextyear -->
+<option value="{ yearid }" >{ yearidval }</option>
+<!--#endin getnextyear -->
+</select >
+</td>
+<td>
+<select name="halfdayend">
+<!--#in getnexthalf -->
+<option value="{ halfid }" >{ halfname }</option>
+<!--#endin getnexthalf -->
+</select >
+</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ vactype }:</td>
+<td colspan="4">
+<select name="vactype">
+<!--#in getnextvac -->
+<option value="{ vacid }" >{ vacname }</option>
+<!--#endin getnextvac -->
+</select>
+</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ remark }:</td>
+<td colspan="4"><input type="text" name="remarks" size="60" maxlength="255" value=""></td>
+</tr>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td colspan="4"><input type="submit" name="Submit" value="{ addvac }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end newvacation -->
+<br><br><br><br><br>
+<!--#begin confirmvacation -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php" enctype="multipart/form-data">
+<input type="hidden" name="tg" value="vacation">
+<input type="hidden" name="idx" value="">
+<input type="hidden" name="begindate" value="{ begindate }">
+<input type="hidden" name="halfdaybegin" value="{ halfdaybegin }">
+<input type="hidden" name="enddate" value="{ enddate }">
+<input type="hidden" name="halfdayend" value="{ halfdayend }">
+<input type="hidden" name="vactype" value="{ vactype }">
+<input type="hidden" name="remarks" value="{ remarks }">
+<input type="hidden" name="addvacation" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right" nowrap>{ from }:</td><td>&nbsp;</td>
+<td nowrap>{ datefrom } { halfdayfrom }</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ to }:</td><td>&nbsp;</td>
+<td nowrap>{ dateto }&nbsp;{ halfdayto }</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ type }:</td><td>&nbsp;</td>
+<td>{ typename }</td>
+<tr>
+<td align="right" nowrap>{ remarkstext }:</td><td>&nbsp;</td>
+<td nowrap>{ remarks }</td>
+</tr>
+</tr>
+<td align="right">&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tr>
+<td align="right">&nbsp;</td><td>&nbsp;</td>
+<td><input type="submit" name="submit" value="{ confirm }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end confirmvacation -->
+<!--#begin vacationslist -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ type }</b></td>
+<td class="BabListTitleBgnd" align="center"><b>{ begin }</b></td>
+<td class="BabListTitleBgnd" align="center"><b>{ end }</b></td>
+<td class="BabListTitleBgnd" align="center"><b>{ status }</b></td>
+</tr>
+<!--#in getnext -->
+<tr><td nowrap>{ typename }</td>
+<td align="center">{ datebegin }</td>
+<td align="center">{ dateend }</td>
+<td align="center">{ statusval }</td>
+</tr>
+<!--#endin getnext -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end vacationslist -->
+<br><br><br><br>
+<br><br><br><br><br>
+</BODY>
+</HTML>

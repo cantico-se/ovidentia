@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle1.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<br><br><br><br><br>
+<!--#begin introlist -->
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="articles">
+<input type="hidden" name="idx" value="Articles">
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr><td class="BabArticleTitleBgnd" nowrap><b>{ arr[title] }</b></td>
+</tr>
+<tr><td>{ content }</td>
+</tr>
+<tr><td class="BabArticleTitleBgnd" align="right" nowrap><a class=BabMenuLink href="{ moreurl }">{ morename }</a></td></tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+</form>
+<!--#end introlist -->
+<br><br><br><br><br>
+<!--#begin readmore -->
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr><td class="BabArticleTitleBgnd" nowrap><b>{ arr[title] }</b></td>
+</tr>
+<tr><td>{ content }</td>
+</tr>
+<tr><td colspan="2" class="BabArticleTitleBgnd" align="right" nowrap></td></tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+<!--#end readmore -->
+<br><br><br><br><br>
+<!--#begin modifyarticle -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="waiting">
+<input type="hidden" name="idx" value="More">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="modify" value="modify">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ head }</td>
+<td width="103"><textarea cols="70" rows="10" name="headtext">{ headval }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">{ body }</td>
+<td width="103"><textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end modifyarticle -->
+<br><br><br><br><br>
+<!--#begin confirmarticle -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="waiting">
+<input type="hidden" name="idx" value="{ idxval }">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="comment" value="{ com }">
+<input type="hidden" name="new" value="{ new }">
+<input type="hidden" name="author" value="{ author }">
+<input type="hidden" name="confirm" value="{ confval }">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ name }:</td>
+<td width="103" nowrap><b>{ fullname }</b></td>
+</tr>
+<tr>
+<td width="107" align="right">{ action }:</td>
+<td width="103">
+<select name="action">
+<option value="1" selected>{ confirm }</option>
+<option value="0" >{ refuse }</option>
+</select>
+</td>
+<tr>
+<td width="107" align="right"></td>
+<td width="103" nowrap>
+<input type="checkbox" name="send" value="1"> { what }
+</td>
+</tr>
+<tr>
+<td width="107" align="right">{ message }:</td>
+<td width="103"><textarea cols="50" rows="10" name="message"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end confirmarticle -->
+</BODY>
+</HTML>

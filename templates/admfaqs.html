@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle1.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin categorycreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="admfaqs">
+<input type="hidden" name="idx" value="Categories">
+<input type="hidden" name="add" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ category }</td>
+<td width="103"><input type="text" name="category" size="60" maxlength="60"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ description }</td>
+<td width="103"><textarea cols="50" rows="10" name="description"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">{ manager }</td>
+<td width="103"><input type="text" name="manager" size="60"></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end categorycreate -->
+<br><br><br><br><br>
+<!--#begin categorylist -->
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="admfaqs">
+<input type="hidden" name="idx" value="Categories">
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr><td class="BabFaqTitleBgnd" nowrap><a class=BabMenuLink href="{ urlcategory }">{ namecategory }</a></td>
+</tr>
+<tr><td>{ arr[description] }</td>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+</form>
+<!--#end categorylist -->
+<br><br><br><br><br>
+<!--#begin categorymodify -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="admfaq">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="update" value="update">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ category }</td>
+<td width="103"><input type="text" name="category" size="60" maxlength="60" value="{ arr[category] }"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ description }</td>
+<td width="103"><textarea cols="50" rows="10" name="description">{ arr[description] }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">{ manager }</td>
+<td width="103"><input type="text" name="manager" size="60" value="{ arr2[email] }"></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end categorymodify -->
+<br><br><br><br><br>
+</BODY>
+</HTML>

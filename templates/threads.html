@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle1.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<br><br><br><br><br>
+<br><br><br><br><br>
+<!--#begin threadlist -->
+<center>
+<table class="BabListPostContentBgnd" border="0" width="95%" cellpadding="0" cellspacing="0">
+<tr>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ topurl }">{ topname }</a></td>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ prevurl }">{ prevname }</a></td>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ nexturl }">{ nextname }</a></td>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ bottomurl }">{ bottomname }</a></td>
+</tr>
+</table>
+<br>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListThreadContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr>
+<td class="BabListThreadTitleBgnd" align="center"></td>
+<td class="BabListThreadTitleBgnd" align="center"><b>{ thread }</b></td>
+<td class="BabListThreadTitleBgnd" align="center"><b>{ starter }</b></td>
+<td class="BabListThreadTitleBgnd" align="center"><b>{ replies }</b></td>
+<td class="BabListThreadTitleBgnd" align="center"><b>{ views }</b></td>
+<td class="BabListThreadTitleBgnd" align="center"><b>{ lastpost }</b></td>
+</tr>
+<!--#in getnext -->
+<tr>
+<!--#if status "== *" --><td><img src="images/waiting.gif" alt=""></td><!--#else status -->
+<!--#if arrthread[active] "== Y" --><td><img src="images/forumo.gif" alt=""></td><!--#else arrthread[active] -->
+<td><img src="images/forumc.gif" alt=""></td><!--#endif arrthread[active] --><!--#endif status -->
+<td><a class=BabMenuLink href="{ subjecturl }">{ subjectname }</a></td>
+<td nowrap>{ arrpost[author] }</td>
+<td align="center">{ replies }</td>
+<td align="center">{ arrthread[views] }</td>
+<td nowrap>{ lastpostdate }</td>
+</tr>
+<!--#endin getnext -->
+<tr><td colspan="6">
+<table class=BabListThreadContentBgnd border="0" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ topurl }">{ topname }</a></td>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ prevurl }">{ prevname }</a></td>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ nexturl }">{ nextname }</a></td>
+<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ bottomurl }">{ bottomname }</a></td>
+</tr>
+</table>
+</td>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end threadlist -->
+<br><br><br><br><br>
+<!--#begin threadcreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="threads">
+<input type="hidden" name="idx" value="addthread">
+<input type="hidden" name="forum" value="{ forum }">
+<input type="hidden" name="add" value="addthread">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right" nowrap>{ name }:</td>
+<td width="103" nowrap>
+<!--#if anonyme "== 0" --><b>{ username }</b><!--#endif anonyme -->
+<!--#if anonyme "== 1" --><input type="text" name="name" size="60" maxlength="60"><!--#endif anonyme -->
+</td>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>{ subject }:</td>
+<td width="103"><input type="text" name="subject" size="60" maxlength="60" value=""></td>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>{ message }:</td>
+<td width="103"><textarea cols="60" rows="20" name="message"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="checkbox" name="notifyme" value="Y">{ notifyme }</td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end threadcreate -->
+</BODY>
+</HTML>

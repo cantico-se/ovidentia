@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>{ sitename }</TITLE>
+<META content="text/html; charset=windows-1252" http-equiv=Content-Type>
+<STYLE type=text/css>
+DT {
+	FONT-WEIGHT: bold; MARGIN-TOP: 2ex
+}
+DD {
+	MARGIN-LEFT: 1em
+}
+P {
+	MARGIN: 0px
+}
+</STYLE>
+<BODY bgColor="#ffffff" text="#000000">
+<H2>{ arr1[category] }</H2>
+<HR>
+<A name="top"></A>
+<H2>{ indexquestions }</H2>
+<UL>
+<!--#in getnext -->
+<LI><A href="#{ index }">{ arr[question] }</A></LI> 
+<!--#endin getnext -->
+</UL>
+<br>
+<!--#in getnextbis -->
+<DL><A name="{ index }"></A></DL>
+<DT><STRONG>{ arr[question] }</STRONG></DT>
+<DD><BR>{ arr[response] }</DD>
+<BR>
+<P align="right"><A href="#top">{ return }</A></P>
+<!--#endin getnextbis -->
+<center><a href="{ urlsite }">{ sitename }</a>
+</BODY>

@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/vtd8.css" rel=stylesheet>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin sectionscreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="sections">
+<input type="hidden" name="idx" value="0">
+<input type="hidden" name="create" value="create">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ title }</td>
+<td width="103"><input type="text" name="title"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ description }</td>
+<td width="103"><input type="text" name="description"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ position }</td>
+<td width="103">
+<select name="position">
+<option value="0" selected>{ left }</option>
+<option value="1">{ right }</option>
+</select>
+</td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103" nowrap><input type="checkbox" name="script" value="Y">{ script }</td>
+</tr>
+<tr>
+<td width="107" align="right">{ content }</td>
+<td width="103"><textarea cols="50" rows="20" name="content"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="Submit" value="{ create }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end sectionscreate -->
+<br><br><br><br><br>
+<!--#begin sectionslist -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr><td class="BabListTitleBgnd" align="center"  nowrap><b>{ title }</b></td><td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td></tr>
+<!--#in getnext -->
+<tr><td nowrap><a class=BabMenuLink href="{ url }">{ urltitle }</a></td><td nowrap>&nbsp;{ arr[description] }</td>
+</tr>
+<!--#endin getnext -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end sectionslist -->
+
+<br><br><br><br><br>
+<!--#begin sectionsmodify -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="section">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="modify" value="modify">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ title }</td>
+<td width="103"><input type="text" name="title" value="{ titleval }"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ description }</td>
+<td width="103"><input type="text" name="description" value="{ descval }"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ position }</td>
+<td width="103">
+<select name="position">
+<option value="0" <!--#if pos "== 0" -->selected<!--#endif pos -->>{ left }</option>
+<option value="1" <!--#if pos "== 1" -->selected<!--#endif pos -->>{ right }</option>
+</select>
+</td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103" nowrap><input type="checkbox" name="script" value="Y" { ischecked }>{ script }</td>
+</tr>
+<tr>
+<td width="107" align="right">{ content }</td>
+<td width="103"><textarea cols="50" rows="20" name="content">{ contentval }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end sectionsmodify -->
+</BODY>
+</HTML>

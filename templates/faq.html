@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle1.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin categorylist -->
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
+<TBODY>
+<tr><td class="BabFaqTitleBgnd"><a class=BabFaqLink href="{ urlcategory }">{ namecategory }</a></td>
+</tr>
+<tr><td>{ arr[description] }</td>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+<!--#end categorylist -->
+<br><br><br><br><br>
+<!--#begin questionlist -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<!--#in getnext -->
+<tr><td class="BabFaqTitleBgnd"><a class=BabFaqLink href="{ questionurl }">{ question }</a></td></tr>
+<!--#endin getnext -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+</center>
+<!--#end questionlist -->
+<br><br><br><br><br>
+<!--#begin admquestionlist -->
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
+<TBODY>
+<tr><td class="BabFaqTitleBgnd">{ arr[question] }</td>
+<td width="2%" class="BabFaqTitleBgnd"><a class=BabFaqLink href="{ editurl }">{ editname }</a></td>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+<!--#end admquestionlist -->
+<!--#begin admquestioncreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="faq">
+<input type="hidden" name="idx" value="questions">
+<input type="hidden" name="item" value="{ idcat }">
+<input type="hidden" name="addquestion" value="addquestion">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ question }</td>
+<td width="103"><input type="text" name="question" size="80" maxlength="100"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ response }</td>
+<td width="103"><textarea cols="50" rows="10" name="response"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end admquestioncreate -->
+<br><br><br><br><br>
+<!--#begin admquestionmodify -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="faq">
+<input type="hidden" name="idx" value="questions">
+<input type="hidden" name="item" value="{ idcat }">
+<input type="hidden" name="idq" value="{ arr[id] }">
+<input type="hidden" name="updatequestion" value="updatequestion">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ question }</td>
+<td width="103"><input type="text" name="question" size="80" maxlength="80" value="{ arr[question] }"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ response }</td>
+<td width="103"><textarea cols="50" rows="10" name="response">{ arr[response] }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<br>
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
+<TBODY>
+<tr><td class="BabFaqTitleBgnd">{ arr[question] }</td></tr>
+<tr><td class="BabFaqContentBgnd">{ arr[response] }</td>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<br>
+<!--#end admquestionmodify -->
+<br><br><br><br><br>
+<!--#begin viewquestion -->
+<br>
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
+<TBODY>
+<tr><td class="BabFaqTitleBgnd">{ arr[question] }</td></tr>
+<tr><td class="BabFaqContentBgnd">{ arr[response] }</td>
+<tr><td class="BabFaqTitleBgnd"><a class=BabFaqLink href="{ returnurl }">{ return }</a></td></tr>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<br>
+<!--#end viewquestion -->
+</BODY>
+</HTML>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/vtd8.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin groupscreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="groups">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="add" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">{ name }:</td>
+<td ><input type="text" name="name" size="20" maxlength="20"></td>
+</tr>
+<tr>
+<td align="right">{ description }:</td>
+<td><input type="text" name="description" size="30" maxlength="60"></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="Add Group"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end groupscreate -->
+
+<br><br><br><br>
+<!--#begin groupslist -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ name }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td></tr>
+<!--#in getnext -->
+<tr><td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td><td nowrap>&nbsp;{ arr[description] }</td>
+</tr>
+<!--#endin getnext -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end groupslist -->
+
+<br><br><br><br>
+<!--#begin groupsmodify -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="group">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="oldname" value="{ arr[name] }">
+<input type="hidden" name="modify" value="modify">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">{ name }:</td>
+<td ><input type="text" name="name" size="20" maxlength="20" value="{ arr[name] }"></td>
+</tr>
+<tr>
+<td align="right">{ description }:</td>
+<td ><input type="text" name="description" size="30" maxlength="60" value="{ arr[description] }"></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td ><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end groupsmodify -->
+<br><br><br><br>
+<!--#begin memberslist -->
+<center>
+<table border="0" width="50%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabError"><center>{ group }</center></td>
+</tr>
+</table>
+<br>
+<table border="0" width="90%" cellpadding="" cellspacing="0">
+<tr><td>
+<center>
+<table border="1" width="90%" cellpadding="2" cellspacing="0">
+<TBODY><tr><td class="BabListTitleBgnd" align=center nowrap>{ fullname }</td></tr>
+<!--#in getnext -->
+<tr><td class="BabListContentBgnd" nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td>
+</tr>
+<!--#endin getnext -->
+</TBODY>
+</table>
+</center>
+</td></tr>
+</table>
+</center>
+<!--#end memberslist -->
+<!--#begin groupvacation -->
+<center>
+<table border="0" width="50%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabError"><center>{ group }</center></td>
+</tr>
+</table>
+<br>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="group">
+<input type="hidden" name="idx" value="Vacation">
+<input type="hidden" name="item" value="{ groupid }">
+<input type="hidden" name="count" value="{ count }">
+<input type="hidden" name="vacation" value="update">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">&nbsp;</td>
+<td ><input type="checkbox" name="usevacation" value="Y" { checked }>{ usevacation }</td>
+</tr>
+<!--#in getnextapprover -->
+<tr>
+<td align="right" nowrap>{ approvertext }:</td>
+<td ><input type="text" name="{ approvername }" size="30" maxlength="60" value="{ approvervalue }"></td>
+</tr>
+<!--#endin getnextapprover -->
+<tr>
+<td align="right">&nbsp;</td>
+<td ><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end groupvacation -->
+<br><br><br><br>
+</BODY>
+</HTML>

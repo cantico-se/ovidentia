@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/vtd8.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin notescreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="notes">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="create" value="create">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ notes }</td>
+<td width="103"><textarea cols="50" rows="10" name="content"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ create }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end notescreate -->
+<br><br><br><br><br>
+<!--#begin noteslist -->
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabNotesContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
+<TBODY>
+<tr><td class="BabNotesTitleBgnd" nowrap>{ arr[date] }</td>
+<td width="2%" class="BabNotesTitleBgnd"><a class=BabMenuLink href="{ editurl }">{ editname }</a></td>
+</tr>
+<tr><td colspan="2">{ arr[content] }</td>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+<!--#end noteslist -->
+
+<br><br><br><br><br>
+<!--#begin notesmodify -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="note">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="update" value="update">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right">{ notes }</td>
+<td width="103"><textarea cols="50" rows="10" name="content">{ arr[content] }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end notesmodify -->
+<br><br><br><br><br>
+</BODY>
+</HTML>

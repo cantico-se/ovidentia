@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle1.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<br><br><br><br><br>
+<!--#begin articlecreatebyfile -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php" enctype="multipart/form-data">
+<input type="hidden" name="tg" value="articles">
+<input type="hidden" name="idx" value="Articles">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="addarticle" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right" nowrap>{ title }</td>
+<td width="103"><input type="text" name="title" size="60"></td>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>{ doctag }</td>
+<td width="103"><input type="text" name="doctag" size="30"></td>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>{ introtag }</td>
+<td width="103"><input type="text" name="introtag" size="30"></td>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>{ filename }</td>
+<td width="103"><input type="file" name="filename" size="60"></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end articlecreatebyfile -->
+<br><br><br><br><br>
+<!--#begin introlist -->
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="0">
+<TBODY>
+<tr><td colspan="2" class="BabArticleTitleBgnd"><b>{ arr[title] }</b></td>
+</tr>
+<tr><td colspan="2">{ content }</td>
+</tr>
+<tr>
+<td class="BabArticleTitleBgnd" nowrap>{ author }</td>
+<td class="BabArticleTitleBgnd" align="right" nowrap><a class=BabMenuLink href="{ commentsurl }">{ commentsname }</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ moreurl }">{ morename }</a></td>
+</tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+<!--#end introlist -->
+<br><br><br><br><br>
+<!--#begin readmore -->
+<center>
+<!--#in getnext -->
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr><td class="BabArticleTitleBgnd" align="center" nowrap><b>{ arr[title] }</b></td></tr>
+<tr><td>{ content }</td></tr>
+<tr><td colspan="2" class="BabArticleTitleBgnd" align="right" nowrap></td></tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endin getnext -->
+</center>
+<!--#end readmore -->
+<br><br><br><br><br>
+<!--#begin modifyarticle -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="articles">
+<input type="hidden" name="idx" value="More">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="modify" value="modify">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right" nowrap>{ title }</td>
+<td width="103"><input type="text" name="title" size="60" value="{ titleval }"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ head }</td>
+<td width="103"><textarea cols="70" rows="10" name="headtext">{ headval }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">{ body }</td>
+<td width="103"><textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end modifyarticle -->
+<br><br><br><br><br>
+<!--#begin createarticle -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="articles">
+<input type="hidden" name="idx" value="More">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="addart" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td width="107" align="right" nowrap>{ title }</td>
+<td width="103"><input type="text" name="title" size="60"></td>
+</tr>
+<tr>
+<td width="107" align="right">{ head }</td>
+<td width="103"><textarea cols="70" rows="10" name="headtext"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">{ body }</td>
+<td width="103"><textarea cols="70" rows="20" name="bodytext"></textarea></td>
+</tr>
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end createarticle -->
+</BODY>
+</HTML>
