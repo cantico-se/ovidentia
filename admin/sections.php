@@ -88,6 +88,7 @@ function sectionCreate()
 		var $left;
 		var $right;
 		var $script;
+		var $msie;
 
 		function temp()
 			{
@@ -99,6 +100,10 @@ function sectionCreate()
 			$this->left = babTranslate("Left");
 			$this->right = babTranslate("Right");
 			$this->script = babTranslate("PHP script");
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 

@@ -47,6 +47,7 @@ function sectionModify($id)
 		var $arr = array();
 		var $db;
 		var $res;
+		var $msie;
 
 		function temp($id)
 			{
@@ -74,6 +75,10 @@ function sectionModify($id)
 				else
 					$this->ischecked = "";
 				}
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 
 		function getnext()

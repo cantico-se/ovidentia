@@ -20,16 +20,16 @@
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
 <tr>
-<td width="107" align="right">{ title }</td>
-<td width="103"><input type="text" name="title"></td>
+<td align="right">{ title }</td>
+<td><input type="text" name="title"></td>
 </tr>
 <tr>
-<td width="107" align="right">{ description }</td>
-<td width="103"><input type="text" name="description"></td>
+<td align="right">{ description }</td>
+<td><input type="text" name="description"></td>
 </tr>
 <tr>
-<td width="107" align="right">{ position }</td>
-<td width="103">
+<td align="right">{ position }</td>
+<td>
 <select name="position">
 <option value="0" selected>{ left }</option>
 <option value="1">{ right }</option>
@@ -37,17 +37,54 @@
 </td>
 </tr>
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103" nowrap><input type="checkbox" name="script" value="Y">{ script }</td>
+<td align="right">&nbsp;</td>
+<td nowrap><input type="checkbox" name="script" value="Y">{ script }</td>
+</tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content"></textarea></td>
 </tr>
 <tr>
-<td width="107" align="right">{ content }</td>
-<td width="103"><textarea cols="50" rows="20" name="content"></textarea></td>
+<td align="right" nowrap>&nbsp;</td>
+<td>
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
 </tr>
+<!--#endif msie -->
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="Submit" value="{ create }"></td>
+<td align="right">{ content }</td>
+<td>
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "content", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+<textarea cols="50" rows="20" name="content"></textarea>
+<!--#endif msie -->
+</td>
 </tr>
+<!--#if msie "== 1" -->
+<tr>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ create }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="Submit" value="{ create }"></td>
+</tr>
+<!--#endif msie -->
 </table>
 </center>
 </form>
@@ -106,14 +143,51 @@
 <td width="107" align="right">&nbsp;</td>
 <td width="103" nowrap><input type="checkbox" name="script" value="Y" { ischecked }>{ script }</td>
 </tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content">{ contentval }</textarea></td>
+</tr>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td>
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
 <tr>
 <td width="107" align="right">{ content }</td>
-<td width="103"><textarea cols="50" rows="20" name="content">{ contentval }</textarea></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "content", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+	<textarea cols="50" rows="10" name="content">{ contentval }</textarea>
+<!--#endif msie -->
+</td>
 </tr>
+<!--#if msie "== 1" -->
+<tr>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 <tr>
 <td width="107" align="right">&nbsp;</td>
 <td width="103"><input type="submit" name="submit" value="{ modify }"></td>
 </tr>
+<!--#endif msie -->
 </table>
 </center>
 </form>
