@@ -792,7 +792,7 @@ function viewFile($id, $w)
 				$this->created = date("d/m/Y H:i", bab_mktime($this->arr['created']));
 				$this->postedby = bab_getUserName($this->arr['author']);
 				$this->modifiedby = bab_getUserName($this->arr['modifiedby']);
-				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".$this->arr['path']."&file=".$this->arr['name'];
+				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']);
 				if( $this->arr['bgroup'] == "Y")
 					$fstat = stat($GLOBALS['babUploadPath']."/G".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				else
