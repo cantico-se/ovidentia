@@ -185,6 +185,7 @@ function topcatsList($idp)
 		var $parentval;
 		var $parenturl;
 		var $burl;
+		var $altbg = true;
 
 		function temp($idp)
 			{
