@@ -224,6 +224,7 @@ function modifyArticle($topics, $article)
 		var $db;
 		var $count;
 		var $res;
+		var $msie;
 
 		function temp($topics, $article)
 			{
@@ -244,6 +245,10 @@ function modifyArticle($topics, $article)
 				$this->bodyval = htmlentities($this->arr[body]);
 				$this->titleval = $this->arr[title];
 				}
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 	
