@@ -607,6 +607,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->directory=bab_translate("Site directory");
 			$this->department=bab_translate("Department");
 			$this->t_archive = bab_translate("archive");
+			$this->t_from = bab_translate("date_from");
+			$this->t_to = bab_translate("date_to");
+			$this->t_private = bab_translate("Private");
 
 			$this->fields = $GLOBALS['HTTP_POST_VARS'];
 
@@ -1254,18 +1257,20 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$select_idcal = '';
 				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
-					$crit_date = " and ce.start_date >= '".$this->fields['after']." 00:00:00'";
+					$crit_date = " ce.start_date >= '".$this->fields['after']." 00:00:00'";
 					}
 				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
-					$crit_date .= " and ce.end_date <= '".$this->fields['before']."' 23:59:59";
+					if (!empty($crit_date))
+						$crit_date .= " and ";
+					$crit_date .= "ce.end_date <= '".$this->fields['before']." 23:59:59'";
 					}
 				if (isset($this->fields['h_calendar']) && trim($this->fields['h_calendar']) != "")
 					{
 					$select_idcal = " and ceo.id_cal = '".$this->fields['h_calendar']."'";
 					}
 
-				$req = "create temporary table ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo, ".BAB_CAL_EVENTS_TBL." ce, ".BAB_CAL_CATEGORIES_TBL." cct where 0";
+				$req = "create temporary table ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc, ce.bprivate from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo, ".BAB_CAL_EVENTS_TBL." ce, ".BAB_CAL_CATEGORIES_TBL." cct where 0";
 				$this->db->db_query($req);
 				
 				$list_id_cal = array();
@@ -1286,7 +1291,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (count($list_id_cal) > 0) 
 					{
-					$req = "insert into ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cct on cct.id=ce.id_cat where ".$reqsup." ".$crit_date." and ceo.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ".$order;
+					if (!empty($reqsup))
+						{
+						$reqsup .= ' and ';
+						}
+					if (!empty($crit_date))
+						$crit_date .= ' and ';
+
+					$req = "insert into ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc, ce.bprivate from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cct on cct.id=ce.id_cat where ".$reqsup." ".$crit_date." ceo.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ce.start_date";
 					$this->db->db_query($req);
 					}
 
@@ -1631,6 +1643,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->ageend_date = $this->dateformat(bab_mktime($arr['end_date']));
 				$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 				$this->agecreator = $iarr['name'];
+				$this->private = $arr['bprivate'] == 'Y' && $arr['owner'] != $GLOBALS['BAB_SESS_USERID'];
 				switch ($iarr['type'])
 					{
 					case BAB_CAL_USER_TYPE:

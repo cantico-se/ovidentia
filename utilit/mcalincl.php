@@ -869,7 +869,7 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 
 			$this->freeevents = array();
 
-			$db = &$GLOBALS['babDB'];
+			$db = & $GLOBALS['babDB'];
 
 			$workdays = array();
 			$workdays_user = array();
@@ -888,6 +888,8 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 
 			$starttime_sec = 0;
 			$endtime_sec = 3600*24;
+
+			$calopt = array();
 
 			$res = $db->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$this->idcals).") AND o.id_user = c.owner AND c.type='1'");
 

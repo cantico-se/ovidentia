@@ -312,6 +312,9 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$this->t_private = bab_translate('Private');
 			$this->t_from = bab_translate('Par');
 			$this->t_category = bab_translate('Category');
+			$this->t_show_hide = bab_translate('Show / hide finished events');
+
+			$last_ts = 0;
 
 			foreach ($idcals as $idcal)
 				{
@@ -339,8 +342,14 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$evt['cals'][$arr['id_cal']] = array('name' => $this->mcals->getCalendarName($arr['id_cal']), 'type' => $type);
 					$evt['title'] = $arr['title'];
 					$evt['description'] = $arr['description'];
+					$ts = bab_mktime($arr['end_date']);
+					if ($ts <= time() && $last_ts < $ts)
+						{
+						$last_ts = $ts;
+						$this->last_id = $arr['id_event'];
+						}
 					$evt['start_date'] = bab_longDate(bab_mktime($arr['start_date']));
-					$evt['end_date'] = bab_longDate(bab_mktime($arr['end_date']));
+					$evt['end_date'] = bab_longDate($ts);
 					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['name'] : '';
 					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['description'] : '';
 					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['bgcolor'] : $arr['color'];

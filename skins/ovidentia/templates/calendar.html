@@ -413,8 +413,8 @@ function dateEnd(day, month, year)
 		<td align="right">{ optiontxt }:</td>
 		<td> 
 			<select name="bopt">
-			<option value="Y" selected >{ yes }</option>
-			<option value="N">{ no }</option>
+			<option value="Y" <!--#if bopt "== Y" --> selected="selected" <!--#endif bopt --> >{ yes }</option>
+			<option value="N" <!--#if bopt "== N" --> selected="selected" <!--#endif bopt --> >{ no }</option>
 			</select>
 		</td>
 	</tr>
@@ -464,6 +464,7 @@ function dateEnd(day, month, year)
 	<!--#if evt[private] -->
 	<li id="event{ idevent }" style="color:#{ evt[color] }">
 		<h3>{ t_private }</h3>
+		<h4>{ evt[start_date] } <span>-</span> { evt[end_date] }</h4>
 	<!--#else evt[private] -->
 	<li id="event{ idevent }" style="color:#{ evt[color] }">
 		<h3>{ evt[title] }</h3>
@@ -491,7 +492,49 @@ function dateEnd(day, month, year)
 	
 <!--#endin getnextevent -->
 </ul>
+
+<script type="text/javascript">
+<!--
+
+function prevs(obj)
+	{
+	obj = obj.previousSibling;
+	if (!obj)
+		return false;
+	while(obj.nodeType!=1)
+		{
+		obj = obj.previousSibling;
+		if (!obj)
+			return false;
+		}
+	
+
+	return obj;
+	}
+
+function showhidebefore(id)
+	{
+	var li = document.getElementById(id);
+	
+	if (li.style.display == 'none')
+		var display = true;
+	else
+		var display = false;
+	while(li)
+		{
+		if (display)
+			li.style.display = '';
+		else
+			li.style.display = 'none';
+		li = prevs(li);
+		}
+	}
+
+//-->
+</script>
+
 <div class="bab_cal_buttons">
 <a class="print" href="javascript:window.print()">{ t_print }</a>
+<a class="events" href="javascript:showhidebefore('event{ last_id }')">{ t_show_hide }</a>
 </div>
 <!--#end eventlist -->

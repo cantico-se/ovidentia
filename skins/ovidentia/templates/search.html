@@ -584,10 +584,26 @@ setselects(document.forms.searchForm.g_directory);
 <!--#in getnextage -->
 <li>
 	 <p>
-	<strong>{ agecat } &gt; 
-	<a class="BabFaqLink" href="javascript:bab_popup('{ ageurl }')" title="{ agecatdesc }">{ agetitle }</a></strong><br /> 
-	 { agedescription }<br />
-	 <!--#if agecreator --><!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --><a href="mailto:{ agecreatormail }"><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED -->{ agecreator }<!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --></a><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED --> -  <!--#endif agecreator --><em>{ agestart_date }</em> <span class="BabErrorMessage">&gt;</span> <em>{ ageend_date }</em>
+		
+		<!--#if private -->
+		{ t_private }<br />
+		<!--#else private -->
+			<strong>
+			<!--#if agecat -->{ agecat } &gt;<!--#endif agecat --> 
+			<a class="BabFaqLink" href="javascript:bab_popup('{ ageurl }')" title="{ agecatdesc }">{ agetitle }</a>
+			</strong><br /> 
+			<!--#if agedescription -->{ agedescription }<br /><!--#endif agedescription -->
+		<!--#endif private -->
+		<!--#if agecreator -->
+
+				<!--#if agecreatormail -->
+					<a href="mailto:{ agecreatormail }">{ agecreator }</a>
+				<!--#else agecreatormail -->
+					{ agecreator }
+				<!--#endif agecreatormail -->
+  
+		<!--#endif agecreator -->
+		<strong>{ t_from } : </strong> <em>{ agestart_date }</em> <strong>{ t_to } : </strong> <em>{ ageend_date }</em>
 	  </p>
  </li>
 <!--#endin getnextage -->

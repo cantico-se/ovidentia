@@ -88,13 +88,13 @@ class bab_event
 		$this->t_weeks = bab_translate("weeks");
 		$this->t_days = bab_translate("days");
 
-		$this->t_sun = bab_translate("Sunday");
-		$this->t_mon = bab_translate("Monday");
-		$this->t_tue = bab_translate("Tuesday");
-		$this->t_wen = bab_translate("Wednesday");
-		$this->t_thu = bab_translate("Thursday");
-		$this->t_fri = bab_translate("Friday");
-		$this->t_sat = bab_translate("Saturday");
+		$this->t_sun = substr(bab_translate("Sunday"),0,3);
+		$this->t_mon = substr(bab_translate("Monday"),0,3);
+		$this->t_tue = substr(bab_translate("Tuesday"),0,3);
+		$this->t_wen = substr(bab_translate("Wednesday"),0,3);
+		$this->t_thu = substr(bab_translate("Thursday"),0,3);
+		$this->t_fri = substr(bab_translate("Friday"),0,3);
+		$this->t_sat = substr(bab_translate("Saturday"),0,3);
 
 		$this->t_color = bab_translate("Color");
 		$this->t_bprivate = bab_translate("Private");

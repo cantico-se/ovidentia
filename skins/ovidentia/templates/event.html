@@ -12,7 +12,18 @@
 <table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+	<tr id="avariability_check">
+		<td colspan="2">
+		{ avariability_message }<br />
+		<ol>
+			<!--#in getnextavariability -->
+			<li>{ conflict }</li>
+			<!--#endin getnextavariability -->
+		</ol>
+		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br />
+		</td>
+	</tr>
 	<tbody id="main_form">
 	<tr> 
 		<td align="right">
@@ -123,7 +134,7 @@
 				<label for="repeat_wd_0">{ t_sun }</label><input id="repeat_wd_0" type="checkbox" name="repeat_wd[]" value="0" { repeat_wd_checked[0] } />
 				<label for="repeat_wd_1">{ t_mon }</label><input id="repeat_wd_1" type="checkbox" name="repeat_wd[]" value="1" { repeat_wd_checked[1] } />
 				<label for="repeat_wd_2">{ t_tue }</label><input id="repeat_wd_2" type="checkbox" name="repeat_wd[]" value="2" { repeat_wd_checked[2] } />
-				<label for="repeat_wd_3">{ t_wen }</label><input id="repeat_wd_3" type="checkbox" name="repeat_wd[]" value="3" { repeat_wd_checked[3] } /><br />
+				<label for="repeat_wd_3">{ t_wen }</label><input id="repeat_wd_3" type="checkbox" name="repeat_wd[]" value="3" { repeat_wd_checked[3] } />
 				<label for="repeat_wd_4">{ t_thu }</label><input id="repeat_wd_4" type="checkbox" name="repeat_wd[]" value="4" { repeat_wd_checked[4] } />
 				<label for="repeat_wd_5">{ t_fri }</label><input id="repeat_wd_5" type="checkbox" name="repeat_wd[]" value="5" { repeat_wd_checked[5] } />
 				<label for="repeat_wd_6">{ t_sat }</label><input id="repeat_wd_6" type="checkbox" name="repeat_wd[]" value="6" { repeat_wd_checked[6] } />
@@ -247,16 +258,6 @@
 		<td colspan="2">{ calendars }</td>
 	</tr>
 	</tbody>
-	<tr id="avariability_check">
-		<td colspan="2">{ avariability_message }<br />
-		<ol>
-			<!--#in getnextavariability -->
-			<li>{ conflict }</li>
-			<!--#endin getnextavariability -->
-		</ol>
-		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br /><br />
-		</td>
-	</tr>
 	<tr>
 		<td colspan="2" align="center"><input type="submit" name="Submit" value="{ addvac }" /></td>
 	</tr>
