@@ -1,4 +1,5 @@
 <?php
+include $babInstallPath."utilit/topincl.php";
 
 function upComingEvents($idcal)
 {
@@ -85,6 +86,87 @@ function upComingEvents($idcal)
 	$body->babecho(	babPrintTemplate($temp,"calview.html", "eventslist"));
 }
 
+function newArticles()
+{
+	global $body;
+
+	class temp2
+		{
+
+		var $db;
+		var $arrid = array();
+		var $count;
+		var $resarticles;
+		var $countarticles;
+		var $datelog;
+		var $newarticles;
+
+		function temp2()
+			{
+			global $BAB_SESS_USERID;
+			$this->db = new db_mysql();
+			$req = "select * from users_log where id_user='".$BAB_SESS_USERID."'";
+			$res = $this->db->db_query($req);
+			$row = $this->db->db_fetch_array($res);
+			$this->datelog = $row[datelog];
+
+			$req = "select * from topics";
+			$res = $this->db->db_query($req);
+			while( $row = $this->db->db_fetch_array($res))
+				{
+				if(isAccessValid("topicsview_groups", $row[id]))
+					{
+					array_push($this->arrid, $row[id]);
+					}
+				}
+			$this->count = count($this->arrid);
+			$this->newarticles = babTranslate("New articles");
+			}
+
+		function getnexttopic()
+			{
+			static $k=0;
+			if( $k < $this->count)
+				{
+				$req = "select * from articles where id_topic='".$this->arrid[$k]."' and confirmed='Y' and date >= '".$this->datelog."' order by date desc";
+				$this->resarticles = $this->db->db_query($req);
+				$this->countarticles = $this->db->db_num_rows($this->resarticles);
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+
+
+		function getarticle()
+			{
+			static $k=0;
+			if( $k < $this->countarticles)
+				{
+				$arr = $this->db->db_fetch_array($this->resarticles);
+				$this->title = $arr[title];
+				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$arr[id_topic]."&article=".$arr[id];
+				$this->author = getArticleAuthor($arr[id]);
+				$this->date = getArticleDate($arr[id]);
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new temp2();
+	$body->babecho(	babPrintTemplate($temp,"calview.html", "articleslist"));
+}
 
 /* main */
 if(!isset($idx))
@@ -109,6 +191,7 @@ switch($idx)
 				}
 			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&calendarid=0");
 		}
+		newArticles();
 		break;
 	}
 $body->setCurrentItemMenu($idx);
