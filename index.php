@@ -801,24 +801,31 @@ switch($tg)
 			{
 			$db = $GLOBALS['babDB'];
 			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr[1]))
-				{
-				$res = $db->db_query("select title from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
+				{								// paul ajout version
+				$res = $db->db_query("select title,version from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
 				if( $res && $db->db_num_rows($res) > 0)
 					{
 					$row = $db->db_fetch_array($res);
-					$incl = "addons/".$row['title'];
-					if( is_dir( $GLOBALS['babInstallPath'].$incl))
+					// paul
+					$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+					if ($arr_ini['version'] == $row['version'])
 						{
-						for($i = 2; $i < sizeof($arr); $i++)
-							$incl .= "/".$arr[$i];
-						$GLOBALS['babAddonFolder'] = $row['title'];
-						$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
-						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
-						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-						$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+						$incl = "addons/".$row['title'];
+						if( is_dir( $GLOBALS['babInstallPath'].$incl))
+							{
+							for($i = 2; $i < sizeof($arr); $i++)
+								$incl .= "/".$arr[$i];
+							$GLOBALS['babAddonFolder'] = $row['title'];
+							$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
+							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
+							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+							$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+							}
+						else
+							$incl = "entry";
 						}
 					else
-						$incl = "entry";
+						$babBody->msgerror = bab_translate("The new version need to be installed");
 					}
 				}
 			else
