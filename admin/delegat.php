@@ -51,6 +51,7 @@ function delgatList($res)
 		var $count;
 		var $memberstxt;
 		var $urlmem;
+		var $altbg = true;
 
 		function temp($res)
 			{
@@ -71,7 +72,7 @@ function delgatList($res)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
+				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->delegval = $arr['description'];
 				$this->urltxt = $arr['name'];
@@ -177,6 +178,7 @@ function groupDelegatCreate($gname, $description)
 		var $tgval;
 		var $what;
 		var $bdel;
+		var $count1 = 0;
 
 		function temp($gname, $description)
 			{
@@ -204,7 +206,7 @@ function groupDelegatCreate($gname, $description)
 			$this->what = "add";
 			$this->checked = '';
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' and id_dggroup='0' order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$GLOBALS['babBody']->currentAdmGroup."' and id_dggroup='0' order by id asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
@@ -328,7 +330,7 @@ function groupDelegatModify($gname, $description, $id)
 			$this->res1 = $this->db->db_query($req);
 			$this->count1 = $this->db->db_num_rows($this->res1);
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' and (id_dggroup='0' or id_dggroup='".$id."') order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$GLOBALS['babBody']->currentAdmGroup."' and (id_dggroup='0' or id_dggroup='".$id."') order by id asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
