@@ -1,0 +1,354 @@
+
+<!--#begin useradlist -->
+<!--#if countldap "> 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center" >{ ldaptitle }</td>
+</tr></table>
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ directories }</b> </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="left"><b>&nbsp;{ desctxt }</b></td>
+</tr>
+<!--#in getnextldap -->
+<tr> 
+<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
+<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ description }</td>
+</tr>
+<!--#endin getnextldap -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endif countldap -->
+<!--#if countdb "> 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center" >{ databasetitle }</td>
+</tr></table>
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ directories }</b> </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="left" colspan="2"><b>&nbsp;{ desctxt }</b></td>
+</tr>
+<!--#in getnextdb -->
+<tr> 
+<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
+<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ description }</td>
+<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;
+<!--#if badd -->
+<a class="BabSiteAdminListLink" href="{ emptyurl }">{ emptyname }</a>
+<!--#endif badd -->
+</td>
+</tr>
+<!--#endin getnextdb -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endif countdb -->
+<!--#end useradlist -->
+
+<!--#begin adbrowse -->
+<script language="javascript">
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
+}
+
+</script>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLetterlists" colspan="3"> 
+<!--#if allselected "== 1" -->
+{ allname }&nbsp;&nbsp; 
+<!--#else allselected -->
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }&nbsp;&nbsp; 
+<!--#else selected -->
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
+<!--#endif selected -->
+<!--#endin getnextselect -->
+</td>
+<td class="BabLetterlists" align="right">&nbsp;
+<!--#if badd -->
+<a class="BabAlphabetLink" href="{ addurl }">{ addname }</a>
+<!--#endif badd -->
+</td>
+</tr><tr> 
+<td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ cntxt }</b> </td>
+<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ emailtxt }</b></td>
+<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ bteltxt }</b></td>
+<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ hteltxt }</b></td>
+</tr>
+<!--#in getnext -->
+<tr><td valign="middle"><a class="BabNameEmailLink" href="{ url }">{ cn }</a></td>
+<td align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="{ urlmail }">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
+<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ btel }</td>
+<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ htel }</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<!--#end adbrowse -->
+
+<!--#begin summarycontact -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center" >{ name }</td>
+</tr></table></center>
+<br>
+<center><img src="{ urlimg }" border="0" alt="{ name }"></center>
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextfield -->
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ fieldn }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ fieldv }</td>
+</tr>
+<!--#endin getnextfield -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td align="center">&nbsp;
+<!--#if modify -->
+<a class="BabSiteAdminListLink" href="{ modifyurl }">{ modifytxt }</a>
+<!--#endif modify -->
+&nbsp;<!--#if del -->
+<a class="BabSiteAdminListLink" href="{ delurl }">{ deltxt }</a>
+<!--#endif del -->
+</td>
+</tr></table></center>
+<br>
+</BODY>
+</HTML>
+<!--#end summarycontact -->
+
+<!--#begin modifycontact -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY>
+<!--#if error -->
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center">{ msgerror }</td>
+</tr></table></center>
+<!--#endif error -->
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center" >{ name }</td>
+</tr></table></center>
+<br>
+<center><img src="{ urlimg }" border="0" alt="{ name }"></center>
+<br>
+<form name="admodify" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="tg" value="{ babAddonTarget }/main">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="idu" value="{ idu }">
+<input type="hidden" name="modify" value="{ what }">
+<!--#if modify -->
+<center><b>{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value=""></center>
+<br>
+<!--#endif modify -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextfield -->
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right"><b><!--#if required "== Y" -->*&nbsp;<!--#endif required -->
+{ fieldn }</b>
+</td>
+<td class="BabSiteAdminFontBackground">
+<!--#if modify -->
+<!--#if fieldt "== N" -->
+<input type="text" name="fields[{ fieldv }]" size="40" value="{ fvalue }">
+<!--#else fieldt -->
+<textarea cols="30" rows="4" name="fields[{ fieldv }]">{ fvalue }</textarea>
+<!--#endif fieldt -->
+<!--#else modify -->
+{ fvalue }
+<!--#endif modify -->
+</td>
+</tr>
+<!--#endin getnextfield -->
+<tr>
+<td valign="middle" colspan="4">
+<center><input type="submit" name="dbcupdate" value="{ update }"></center>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+</BODY>
+</HTML>
+<!--#end modifycontact -->
+
+<!--#begin dbfile -->
+<form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="MAX_FILE_SIZE" value="1000000">
+<input type="hidden" name="tg" value="{ babAddonTarget }/main">
+<input type="hidden" name="idx" value="dbmap">
+<input type="hidden" name="id" value="{ id }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="file" name="uploadf" size="40" maxlength="255" value="">
+</td>
+</tr>
+<tr>
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="Submit" value="{ import }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end dbfile -->
+
+<!--#begin dbmapfile -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ babAddonTarget }/main">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="pfile" value="{ pfile }">
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextfield -->
+<tr> 
+<td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ ofieldname }</td>
+<td class="BabLoginMenuBackground" width="50%" valign="middle">
+<select name="{ ofieldv }">
+<option value=""></option>
+<!--#in getnextval -->
+<option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
+<!--#endin getnextval -->
+</select>
+</td>
+</tr>
+<!--#endin getnextfield -->
+<tr> 
+<td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ handling }</td>
+<td class="BabLoginMenuBackground" width="50%" align="left" nowrap valign="middle">
+<input type="radio" name="duphand" value="0">{ duphand0 }<br>
+<input type="radio" name="duphand" value="1" checked>{ duphand1 }<br>
+<input type="radio" name="duphand" value="2">{ duphand2 }<br>
+</td>
+</tr>
+<tr>
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="Submit" value="{ process }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end dbmapfile -->
+
+<!--#begin dbcontactunload -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+
+</HEAD>
+<BODY onUnload="this.opener.location.reload()">
+<br><br><br><br>
+<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+</tr>
+<tr align="left" valign="middle">
+<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
+close }</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+<script type="text/javascript">
+	setTimeout("this.close()","1000");
+</script>
+
+</BODY>
+</HTML>
+<!--#end dbcontactunload -->
