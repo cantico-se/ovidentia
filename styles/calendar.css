@@ -59,7 +59,8 @@ table.bab_calendar {
 	}
 
 table.bab_calendar td {
-	padding:2px;
+	padding:0 2px;
+
 	}
 
 a img {
@@ -73,6 +74,7 @@ a img {
 	white-space:nowrap;
 	width:1%;
 	padding:0 .4em 0 .1em;
+	
 	}
 	
 
@@ -83,10 +85,12 @@ a img {
 	font-weight:bold;
 	text-align:center;
 	white-space:nowrap;
+		
 	}
 
 .bab_calendar .innertable tbody tr, .bab_calendar th div {
 	height:30px;
+
 	}
 
 .bab_calendar .free, .bab_calendar .freeover, .bab_calendar .event {
