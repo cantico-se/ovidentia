@@ -611,7 +611,7 @@ function bab_replace( $txt )
 	$reg = "/\\\$FILE\((.*?),(.*?)\)/";
 	if( preg_match_all($reg, $txt, $m))
 		{
-		include $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
 			$req = "select * from ".BAB_FILES_TBL." where id='".trim($m[1][$k])."' and state='' and confirmed='Y'";
