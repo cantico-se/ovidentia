@@ -103,7 +103,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
         var $count;
         var $langval;
 
-        var $arrdir = array();
+        var $arrskins = array();
 		var $skin;
 
         var $scount;
@@ -169,17 +169,24 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
             closedir($h);
             $this->count = count($this->arrfiles);
 
-			$h = opendir($GLOBALS['babInstallPath']."skins/"); 
-            while ( $file = readdir($h))
-                { 
-                if ($file != "." && $file != "..")
-                    {
-					if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
-						$this->arrdir[] = $file; 
-                    } 
-                }
-            closedir($h);
-            $this->scount = count($this->arrdir);
+			if( is_dir($GLOBALS['babInstallPath']."skins/"))
+				{
+				$h = opendir($GLOBALS['babInstallPath']."skins/"); 
+				while ( $file = readdir($h))
+					{ 
+					if ($file != "." && $file != "..")
+						{
+						if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
+							{
+								$this->arrskins[] = $file; 
+							}
+						} 
+					}
+				closedir($h);
+				$this->cntskins = count($this->arrskins);
+				}
+            $this->skselectedindex = 0;
+            $this->stselectedindex = 0;
 			}
 		function getnextlang()
 			{
@@ -197,19 +204,76 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 		function getnextskin()
 			{
 			static $i = 0;
-			if( $i < $this->scount)
+			if( $i < $this->cntskins)
 				{
-                $this->skinval = $this->arrdir[$i];
+				$this->iindex = $i;
+                $this->skinname = $this->arrskins[$i];
+                $this->skinval = $this->arrskins[$i];
+				$this->arrstyles = array();
+				if( is_dir("skins/".$this->skinname."/styles/"))
+					{
+					$h = opendir("skins/".$this->skinname."/styles/"); 
+					while ( $file = readdir($h))
+						{ 
+						if ($file != "." && $file != "..")
+							{
+							if( is_file("skins/".$this->skinname."/styles/".$file))
+								{
+									$this->arrstyles[] = $file; 
+								}
+							} 
+						}
+					closedir($h);
+					}
+
+				if( is_dir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"))
+					{
+					$h = opendir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"); 
+					while ( $file = readdir($h))
+						{ 
+						if ($file != "." && $file != "..")
+							{
+							if( is_file($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/".$file))
+								{
+									if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
+										$this->arrstyles[] = $file; 
+								}
+							} 
+						}
+					closedir($h);
+					}
+				$this->cntstyles = count($this->arrstyles);
 				$i++;
 				return true;
 				}
 			else
+				{
+				$i = 0;
 				return false;
+				}
+			}
+
+		function getnextstyle()
+			{
+			static $j = 0;
+			if( $j < $this->cntstyles)
+				{
+                $this->stylename = $this->arrstyles[$j];
+                $this->styleval = $this->arrstyles[$j];
+				$j++;
+				return true;
+				}
+			else
+				{
+				$j = 0;
+				return false;
+				}
 			}
 		}
 
 	$temp = new temp($name, $description, $siteemail, $server, $serverport);
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "sitecreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "skinscripts"));
 	}
 
 
@@ -247,7 +311,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport)
+function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport)
 	{
 	global $babBody;
 	if( empty($name))
@@ -281,7 +345,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $register, $con
 		}
 	else
 		{
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, registration, email_confirm, mailfunc, smtpserver, smtpport) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport."')";
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport."')";
 		$db->db_query($query);
 		}
 	return true;
@@ -291,7 +355,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $register, $con
 /* main */
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport))
+	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport))
 		$idx = "create";
 	}
 

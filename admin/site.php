@@ -109,6 +109,7 @@ function siteModify($id)
 				$this->descriptionval = $arr['description'];
 				$this->langsite = $arr['lang'];
 				$this->skinsite = $arr['skin'];
+				$this->stylesite = $arr['style'];
 				$this->siteemailval = $arr['adminemail'];
 				$this->serverval = $arr['smtpserver'];
 				$this->serverportval = $arr['smtpport'];
@@ -164,17 +165,24 @@ function siteModify($id)
             closedir($h);
 			$this->count = count($this->arrfiles);
 
-			$h = opendir($GLOBALS['babInstallPath']."skins/"); 
-            while ( $file = readdir($h))
-                { 
-                if ($file != "." && $file != "..")
-                    {
-					if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
-						$this->arrdir[] = $file; 
-                    } 
-                }
-            closedir($h);
-            $this->scount = count($this->arrdir);
+			if( is_dir($GLOBALS['babInstallPath']."skins/"))
+				{
+				$h = opendir($GLOBALS['babInstallPath']."skins/"); 
+				while ( $file = readdir($h))
+					{ 
+					if ($file != "." && $file != "..")
+						{
+						if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
+							{
+								$this->arrskins[] = $file; 
+							}
+						} 
+					}
+				closedir($h);
+				$this->cntskins = count($this->arrskins);
+				}
+            $this->skselectedindex = 0;
+            $this->stselectedindex = 0;
 			}
 		
 		function getnextlang()
@@ -197,23 +205,86 @@ function siteModify($id)
 		function getnextskin()
 			{
 			static $i = 0;
-			if( $i < $this->scount)
+			if( $i < $this->cntskins)
 				{
-                $this->skinval = $this->arrdir[$i];
-                if( $this->skinsite == $this->skinval )
+				$this->iindex = $i;
+                $this->skinname = $this->arrskins[$i];
+                $this->skinval = $this->arrskins[$i];
+                if( $this->skinname == $this->skinsite )
+					{
+	                $this->skselectedindex = $i;
                     $this->skinselected = "selected";
+					}
                 else
                     $this->skinselected = "";
+
+				$this->arrstyles = array();
+				if( is_dir("skins/".$this->skinname."/styles/"))
+					{
+					$h = opendir("skins/".$this->skinname."/styles/"); 
+					while ( $file = readdir($h))
+						{ 
+						if ($file != "." && $file != "..")
+							{
+							if( is_file("skins/".$this->skinname."/styles/".$file))
+								{
+									$this->arrstyles[] = $file; 
+								}
+							} 
+						}
+					closedir($h);
+					}
+
+				if( is_dir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"))
+					{
+					$h = opendir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"); 
+					while ( $file = readdir($h))
+						{ 
+						if ($file != "." && $file != "..")
+							{
+							if( is_file($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/".$file))
+								{
+									if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
+										$this->arrstyles[] = $file; 
+								}
+							} 
+						}
+					closedir($h);
+					}
+				$this->cntstyles = count($this->arrstyles);
 				$i++;
 				return true;
 				}
 			else
+				{
+				$i = 0;
 				return false;
+				}
+			}
+
+		function getnextstyle()
+			{
+			static $j = 0;
+			if( $j < $this->cntstyles)
+				{
+                $this->stylename = $this->arrstyles[$j];
+                $this->styleval = $this->arrstyles[$j];
+                if( $this->skinname == $this->skinsite && $this->stylesite == $this->styleval)
+					$this->stselectedindex = $j;
+				$j++;
+				return true;
+				}
+			else
+				{
+				$j = 0;
+				return false;
+				}
 			}
 		}
 
 	$temp = new temp($id);
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "sitemodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "skinscripts"));
 	}
 
 function siteHomePage0($id)
@@ -410,7 +481,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport)
+function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport)
 	{
 	global $babBody;
 	if( empty($name))
@@ -444,7 +515,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $registe
 		}
 	else
 		{
-		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."' where id='".$id."'";
+		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."' where id='".$id."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -493,7 +564,7 @@ if( isset($modify))
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport))
+		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport))
 			$idx = "modify";
 		}
 	else if( !empty($delete))
