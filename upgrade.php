@@ -4505,4 +4505,13 @@ if( !$res)
 
 return $ret;
 }
+
+function upgrade552to553()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
+
 ?>
