@@ -154,7 +154,7 @@ function calendarOptions($calid)
 			$this->modify = bab_translate("Modify");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
-			$this->elapstime = bab_translate("Echelle du temps");
+			$this->elapstime = bab_translate("Time scale");
 			$this->minutes = bab_translate("Minutes");
 			$db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
