@@ -292,51 +292,62 @@ href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>
 <input type="hidden" name="idx" value="deletea">
 <input type="hidden" name="item" value="{ item }">
 <input type="hidden" name="upart" value="articles">
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr> 
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('hart0', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart0', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('hart1', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart1', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ titlename }</b></td>
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td align="left" valign="middle" width="1%">
-<input width="2%" type="checkbox" name="hart0[]" value="{ articleid }" { checked0 }>
-</td>
-<td align="left" valign="middle" width="1%">
-<input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 }>
-</td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', 'OviTopicsA', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
-<td align="left" valign="middle" width="1%">
-<input width="2%" type="checkbox" name="art[]" value="{ articleid }">
-</td>
-<!--#endin getnext -->
-</tr>
-<tr> 
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" width="12" height="13" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" width="12" height="13" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;</td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" width="12" height="13" border="0"></a></td>
-</tr>
-</table>
+<table border="0" width="100%" cellpadding="2" cellspacing="0">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td width="1%"><a href="javascript:onCheckAll('hart0', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart0', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+		<td width="1%"><a href="javascript:onCheckAll('hart1', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart1', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+		<td valign="middle" ><b>{ titlename }</b></td>
+		<td width="1%"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+	</tr>
+	<!--#in getnext -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td align="left" valign="middle" width="1%">
+		<input width="2%" type="checkbox" name="hart0[]" value="{ articleid }" { checked0 } />
+		</td>
+		<td align="left" valign="middle" width="1%">
+		<input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 } />
+		</td>
+		<td valign="middle" width="90%"><a href="{ urltitle }" onclick="bab_popup(this.href);return false;">{ title }</a></td>
+		<td align="left" valign="middle" width="1%">
+		<input width="2%" type="checkbox" name="art[]" value="{ articleid }" />
+		</td>
+	</tr>
+	<!--#endin getnext -->
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td align="center"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" border="0" /></a></td>
+		<td align="center"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" border="0" /></a></td>
+		<td>&nbsp;</td>
+		<td align="center"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0" /></a></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
 <br>
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ deletealt }" width="12" height="13" border="0"></a></td><td class="BabTopicsAdminListTitle">{ art0help }</td></tr>
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ deletealt }" width="12" height="13" border="0"></a></td><td class="BabTopicsAdminListTitle">{ art1help }</td></tr>
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" width="12" height="13" border="0"></a></td><td class="BabTopicsAdminListTitle">{ deletehelp }</td></tr>
+	<table class="BabSiteAdminTitleFontBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+		<tr>
+			<td>&nbsp;<img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ deletealt }" border="0" /></a></td>
+			<td>{ art0help }</td>
+		</tr>
+		<tr>
+			<td>&nbsp;<img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ deletealt }"  border="0" /></a></td>
+			<td>{ art1help }</td>
+		</tr>
+		<tr>
+			<td>&nbsp;<img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
+			<td>{ deletehelp }</td>
+		</tr>
+	</table>
+</td>
+</tr>
 </table>
-</td></tr></table>
 <br>
 <!--#if bshowhpg -->
 <center><a class="BabSectionsLinkColor" href="{ homepagesurl }">{ homepages }</a></center>
