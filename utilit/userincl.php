@@ -470,10 +470,10 @@ function bab_getUserGroups($id = "")
 	if( !empty($id))
 		{
 		$db = $GLOBALS['babDB'];
-		$res = $db->query("select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=".$id." and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group");
-		if( $res && $db->db->num_rows($res) > 0 )
+		$res = $db->db_query("select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=".$id." and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group");
+		if( $res && $db->db_num_rows($res) > 0 )
 			{
-			while( $r = $db->db_fetch_array($res)
+			while( $r = $db->db_fetch_array($res))
 				{
 				$arr['id'][] = $r['id'];
 				$arr['name'][] = $r['name'];
