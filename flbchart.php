@@ -1043,7 +1043,7 @@ function updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles)
 		}
 	}
 
-	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(orut.id) as total from ".BAB_OC_ROLES_USERS_TBL." orut left join ".BAB_OC_ROLES_TBL." ort on ort.id=orut.id_role left join ".BAB_OC_ENTITIES_TBL." oct on oct.id=ort.id_entity where orut.id_user='".$idduser."' and ort.id_entity='".$oeid."'"));
+	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(orut.id) as total from ".BAB_OC_ROLES_USERS_TBL." orut left join ".BAB_OC_ROLES_TBL." ort on ort.id=orut.id_role left join ".BAB_OC_ENTITIES_TBL." oct on oct.id=ort.id_entity where orut.id_user='".$iduser."' and ort.id_entity='".$oeid."'"));
 	if($total)
 	{
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
@@ -1177,6 +1177,7 @@ else if( isset($movoce) )
 	}
 }else if( isset($updru) && $updru == "updru" )
 {
+	if( !isset($ruid)) { $ruid = array();}
 	updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles);
 }
 

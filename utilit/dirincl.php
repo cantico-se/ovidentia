@@ -50,12 +50,12 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 			$this->allname = bab_translate("All");
 			$this->id = $id;
 			$this->pos = $pos;
-			$this->badd = $badd;
+			$this->badd = false;
 			$this->xf = $xf;
 			$this->cb=$cb;
-			if( $pos[0] == "-" )
+			if( !empty($pos) && $pos[0] == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = strlen($pos) > 1? $pos[1]: '';
 				$this->ord = "";
 				}
 			else
@@ -83,6 +83,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 				$this->countcol = 0;
 				$this->count = 0;
 				}
+			$this->altbg = false;
 			}
 
 		function getnextcol()
