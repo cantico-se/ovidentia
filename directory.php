@@ -60,7 +60,6 @@ function listUserAds()
 			$this->desctxt = bab_translate("Description");
 			$this->databasetitle = bab_translate("Databases Directories list");
 			$this->ldaptitle = bab_translate("Ldap Directories list");
-			$this->emptyname = bab_translate("Empty");
 			$this->db = $GLOBALS['babDB'];
 			$this->badd = false;
 			$res = $this->db->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL."");
@@ -114,7 +113,7 @@ function listUserAds()
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->dbid[$i]."'"));
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i];
-				$this->emptyurl = $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$this->dbid[$i];
+				//$this->emptyurl = $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$this->dbid[$i];
 				$this->urlname = $arr['name'];
 				$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $this->dbid[$i]);
 				if( $this->badd && $arr['id_group'] != 0 )
@@ -1682,6 +1681,7 @@ switch($idx)
 			{
 			$babBody->addItemMenu("dbimp", bab_translate("Import"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbimp&id=".$id);
 			$babBody->addItemMenu("dbexp", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=directory&idx=dbexp&id=".$id);
+			$babBody->addItemMenu("empdb", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
 			}
 		break;
 
@@ -1739,8 +1739,9 @@ switch($idx)
 			emptyDb($id);
 		else
 			$babBody->msgerror = bab_translate("Access denied");
-
+		
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
+		$babBody->addItemMenu("empdb", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
 		break;
 
 	case "list":
