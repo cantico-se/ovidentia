@@ -677,7 +677,7 @@ function modifyAdLdap($id, $name, $description, $host, $basedn, $userdn, $passwo
 		{
 		$req = "update ".BAB_LDAP_DIRECTORIES_TBL." set name='".$name."', description='".$description."', host='".$host."', basedn='".$basedn."', userdn='".$userdn."'";
 		if( !empty($password1) )
-			$req .= ", password='ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")'";
+			$req .= ", password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
 		$req .= " where id='".$id."'";
 		$db->db_query($req);
 		}
