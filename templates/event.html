@@ -1,16 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/vtd8.css" rel=stylesheet>
-</HEAD>
-
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
 <!--#begin newevent -->
 <SCRIPT LANGUAGE="JavaScript">
 <!--
@@ -55,9 +42,8 @@ function dateEnd(day, month, year)
 }
 //-->
 </SCRIPT>
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
+
 <form name="vacform" method="post" action="index.php" >
 <input type="hidden" name="tg" value="event">
 <input type="hidden" name="idx" value="addevent">
@@ -67,111 +53,116 @@ function dateEnd(day, month, year)
 <input type="hidden" name="curview" value="{ curview }">
 <input type="hidden" name="calid" value="{ calid }">
 <input type="hidden" name="addevent" value="add">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap><a class="BabDialogLink" href="{ datebegin }">{ datebegintxt }</a>:</td>
-<td>
-<select name="daybegin">
+  <table class="BabEventEditorCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr><td>
+        <table class="BabEventEditorBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+          <tr valign="middle"> 
+            <td align="right" nowrap><a class="BabEventEditorLink" href="{ datebegin }">{ 
+              datebegintxt }</a>:</td>
+            <td> 
+              <select name="daybegin">
 <!--#in getnextday -->
 <option value="{ dayid }" { selected }>{ dayid }</option>
 <!--#endin getnextday -->
 </select>
 </td>
-<td>
-<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+            <td> 
+              <select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 <!--#in getnextmonth -->
 <option value="{ monthid }" { selected }>{ monthname }</option>
 <!--#endin getnextmonth -->
 </select>
 </td>
-<td>
-<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+            <td> 
+              <select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 <!--#in getnextyear -->
 <option value="{ yearid }"  { selected }>{ yearidval }</option>
 <!--#endin getnextyear -->
 </select>
 </td>
 </tr>
-<tr>
-<td align="right" nowrap>{ daytype }:</td>
-<td colspan="4">
-<input type="checkbox" name="daytype" value="y" { daytypechecked }></td>
+          <tr valign="middle"> 
+            <td align="right" nowrap>{ daytype }:</td>
+            <td colspan="4"> 
+              <input type="checkbox" name="daytype" value="y" { daytypechecked }></td>
 </tr>
-<tr>
-<td align="right" nowrap>{ or }:</td>
-<td align="right" nowrap>{ from }</td>
-<td>
-<select name="timebegin">
+          <tr valign="middle"> 
+            <td align="right" nowrap>{ or }:</td>
+            <td align="right" nowrap>{ from }</td>
+            <td> 
+              <select name="timebegin">
 <!--#in getnexttime -->
 <option value="{ time }" { selected }>{ time }</option>
 <!--#endin getnexttime -->
 </select >
 </td>
-<td align="right" nowrap>{ to }</td>
-<td>
-<select name="timeend">
+            <td align="right" nowrap>{ to }</td>
+            <td> 
+              <select name="timeend">
 <!--#in getnexttime -->
 <option value="{ time }" { selected }>{ time }</option>
 <!--#endin getnexttime -->
 </select >
 </td>
 </tr>
-<tr>
-<td align="right" nowrap>{ repeat }:</td>
-<td colspan="4">
-<input type="checkbox" name="repeat" value="y"></td>
+          <tr valign="middle"> 
+            <td align="right" nowrap>{ repeat }:</td>
+            <td colspan="4"> 
+              <input type="checkbox" name="repeat" value="y"></td>
 </tr>
 <tr>
-<tr>
-<td align="right" nowrap>{ daystext }:</td>
-<td colspan="4">
-<select multiple name="days[]" size="7">
+          <tr valign="middle"> 
+            <td align="right" nowrap>{ daystext }:</td>
+            <td colspan="4"> 
+              <select multiple name="days[]" size="7">
 <!--#in getnextdays -->
 <option value="{ days }">{ daysname }</option>
 <!--#endin getnextdays -->
 </select >
 </td>
 </tr>
-<tr>
-<td align="right" nowrap><a class="BabDialogLink" href="{ dateend }">{ dateendtxt }</a>:</td>
-<td>
-<select name="dayend">
+          <tr valign="middle"> 
+            <td align="right" nowrap><a class="BabEventEditorLink" href="{ dateend }">{ 
+              dateendtxt }</a>:</td>
+            <td> 
+              <select name="dayend">
 <!--#in getnextday -->
 <option value="{ dayid }" { selected }>{ dayid }</option>
 <!--#endin getnextday -->
 </select>
 </td>
-<td>
-<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+            <td> 
+              <select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 <!--#in getnextmonth -->
 <option value="{ monthid }" { selected }>{ monthname }</option>
 <!--#endin getnextmonth -->
 </select>
 </td>
-<td>
-<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+            <td> 
+              <select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 <!--#in getnextyear -->
 <option value="{ yearid }"  { selected }>{ yearidval }</option>
 <!--#endin getnextyear -->
 </select>
 </td>
 </tr>
-<tr>
-<td align="right">{ title }:</td>
-<td colspan="4"><input type="text" name="title" size="60" maxlength="255"></td>
+          <tr valign="middle"> 
+            <td align="right">{ title }:</td>
+            <td colspan="4"> 
+              <input type="text" name="title" size="60" maxlength="255"></td>
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
 <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td colspan="4"><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="description"></textarea></td>
+          <tr valign="middle"> 
+            <td align="right" nowrap>&nbsp;</td>
+            <td colspan="4"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description"></textarea></td>
 </tr>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td colspan="4">
-<SCRIPT LANGUAGE="JavaScript"> 
+          <tr valign="middle"> 
+            <td align="right" nowrap>&nbsp;</td>
+            <td colspan="4"> 
+              <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
 	editor.ToolBar();
@@ -179,11 +170,11 @@ function dateEnd(day, month, year)
 </td>
 </tr>
 <!--#endif msie -->
-<tr>
-<td align="right">{ description }</td>
-<td colspan="4">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
+          <tr valign="middle"> 
+            <td align="right" valign="top">{ description }</td>
+            <td colspan="4"> 
+              <!--#if msie "== 1" -->
+              <SCRIPT LANGUAGE="JavaScript">
 	editor.InFrame(0, "description", "0", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
@@ -193,10 +184,10 @@ function dateEnd(day, month, year)
 </tr>
 
 <!--#if bcategory "== 1" -->
-<tr>
-<td align="right">{ category }</td>
-<td colspan="4">
-<select name="category">
+          <tr valign="middle"> 
+            <td align="right">{ category }</td>
+            <td colspan="4"> 
+              <select name="category">
 <option value="" selected ></option>
 <!--#in getnextcat -->
 <option value="{ catid }">{ catname }</option>
@@ -208,26 +199,29 @@ function dateEnd(day, month, year)
 
 
 <!--#if msie "== 1" -->
-<tr>
-<td align="right">&nbsp;</td>
-<td colspan="4"><input onclick=SetVals() type="submit" name="Submit" value="{ addvac }"></td>
+          <tr valign="middle"> 
+            <td align="right">&nbsp;</td>
+            <td colspan="4"> 
+              <input onclick=SetVals() type="submit" name="Submit" value="{ addvac }"></td>
 </tr>
 <SCRIPT LANGUAGE="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
 </SCRIPT>
 <!--#else msie -->
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td colspan="4"><input type="submit" name="Submit" value="{ addvac }"></td>
+          <tr valign="middle"> 
+            <td align="right" nowrap>&nbsp;</td>
+            <td colspan="4"> 
+              <input type="submit" name="Submit" value="{ addvac }"></td>
 </tr>
 <!--#endif msie -->
 </table>
-</center>
-</form>
-</td></tr>
+</td>
+</tr>
 </table>
-</center>
+
+</form>
+
 <!--#end newevent -->
 <br><br><br><br><br>
 <!--#begin modifyevent -->
@@ -274,9 +268,7 @@ function dateEnd(day, month, year)
 }
 //-->
 </SCRIPT>
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 <form name="evtform" method="post" action="index.php" >
 <input type="hidden" name="tg" value="event">
 <input type="hidden" name="idx" value="modify">
@@ -287,88 +279,93 @@ function dateEnd(day, month, year)
 <input type="hidden" name="calid" value="{ calid }">
 <input type="hidden" name="evtid" value="{ evtid }">
 <input type="hidden" name="modifyevent" value="modify">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap><a class="BabDialogLink" href="{ datebegin }">{ datebegintxt }</a>:</td>
-<td>
-<select name="daybegin">
+  <table class="BabEventEditorCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr><td>
+        <table class="BabEventEditorBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+          <tr valign="middle"> 
+            <td align="right" nowrap><a class="BabEventEditorLink" href="{ datebegin }">{ 
+              datebegintxt }</a>:</td>
+            <td> 
+              <select name="daybegin">
 <!--#in getnextday -->
 <option value="{ dayid }" { selected }>{ dayid }</option>
 <!--#endin getnextday -->
 </select>
 </td>
-<td>
-<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+            <td> 
+              <select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 <!--#in getnextmonth -->
 <option value="{ monthid }" { selected }>{ monthname }</option>
 <!--#endin getnextmonth -->
 </select>
 </td>
-<td>
-<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+            <td> 
+              <select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 <!--#in getnextyear -->
 <option value="{ yearid }"  { selected }>{ yearidval }</option>
 <!--#endin getnextyear -->
 </select>
 </td>
 </tr>
-<tr>
-<td align="right" nowrap><a class="BabDialogLink" href="{ dateend }">{ dateendtxt }</a>:</td>
-<td>
-<select name="dayend">
+          <tr valign="middle"> 
+            <td align="right" nowrap><a class="BabEventEditorLink" href="{ dateend }">{ 
+              dateendtxt }</a>:</td>
+            <td> 
+              <select name="dayend">
 <!--#in getnextday -->
 <option value="{ dayid }" { selected }>{ dayid }</option>
 <!--#endin getnextday -->
 </select>
 </td>
-<td>
-<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+            <td> 
+              <select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 <!--#in getnextmonth -->
 <option value="{ monthid }" { selected }>{ monthname }</option>
 <!--#endin getnextmonth -->
 </select>
 </td>
-<td>
-<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+            <td> 
+              <select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 <!--#in getnextyear -->
 <option value="{ yearid }"  { selected }>{ yearidval }</option>
 <!--#endin getnextyear -->
 </select>
 </td>
 </tr>
-<tr>
-<td align="right" nowrap>{ from }</td>
-<td>
-<select name="timebegin">
-<!--#in getnexttime -->
-<option value="{ time }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-<td align="right" nowrap>{ to }</td>
-<td>
-<select name="timeend">
+          <tr valign="middle"> 
+            <td align="right" nowrap>{ from }</td>
+            <td> 
+              <select name="timebegin">
+                <!--#in getnexttime -->
+                <option value="{ time }" { selected }>{ time }</option>
+                <!--#endin getnexttime -->
+              </select >
+            </td>
+            <td align="center" nowrap>{ to }</td>
+            <td> 
+              <select name="timeend">
 <!--#in getnexttime -->
 <option value="{ time }" { selected }>{ time }</option>
 <!--#endin getnexttime -->
 </select >
 </td>
 </tr>
-<tr>
-<td align="right">{ title }:</td>
-<td colspan="4"><input type="text" name="title" size="60" maxlength="255" value="{ evtarr[title] }"></td>
+          <tr valign="middle"> 
+            <td align="right">{ title }:</td>
+            <td colspan="4"> 
+              <input type="text" name="title" size="60" maxlength="255" value="{ evtarr[title] }"></td>
 </tr>
 <tr>
-<tr>
-<td align="right">{ description }</td>
-<td colspan="4"><textarea cols="40" rows="5" name="description">{ evtarr[description] }</textarea></td>
+          <tr valign="middle"> 
+            <td align="right" valign="top">{ description }</td>
+            <td colspan="4"> 
+              <textarea cols="40" rows="5" name="description">{ evtarr[description] }</textarea></td>
 </tr>
 <!--#if bcategory "== 1" -->
-<tr>
-<td align="right">{ category }</td>
-<td colspan="4">
-<select name="category">
+          <tr valign="middle"> 
+            <td align="right">{ category }</td>
+            <td colspan="4"> 
+              <select name="category">
 <option value="" selected ></option>
 <!--#in getnextcat -->
 <option value="{ catid }" { selected }>{ catname }</option>
@@ -377,46 +374,50 @@ function dateEnd(day, month, year)
 </td>
 </tr>
 <!--#endif bcategory -->
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td colspan="4"><input type="submit" name="Submit" value="{ modify }"></td>
+          <tr valign="middle"> 
+            <td align="right" nowrap>&nbsp;</td>
+            <td colspan="4"> 
+              <input type="submit" name="Submit" value="{ modify }"></td>
+</tr>
+</table></td>
 </tr>
 </table>
-</center>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end modifyevent -->
 <br><br><br><br><br>
 <!--#begin viewevent -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap><b>{ titlename }</b></td>
-<td>{ title }</td>
-</tr>
-<tr>
-<td align="right" nowrap><b>{ startdatename }</b></td>
-<td>{ startdate }</td>
-</tr>
-<tr>
-<td align="right" nowrap><b>{ enddatename }</b></td>
-<td>{ enddate }</td>
-</tr>
-<tr>
-<td align="right" nowrap><b>{ descriptionname }</b></td>
-<td><span>{ description }</span></td>
-</tr>
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><b>{ 
+            titlename }</b></td>
+          <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">{ 
+            title } </td>
+        </tr>
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><b>{ 
+            startdatename }</b></td>
+          <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">{ 
+            startdate } </td>
+        </tr>
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><b>{ 
+            enddatename }</b></td>
+          <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">{ 
+            enddate } </td>
+        </tr>
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><b>{ 
+            descriptionname }</b></td>
+          <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"><span>{ 
+            description }</span> </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 </table>
-</center>
-</td></tr>
-</table>
-</center>
 <!--#end viewevent -->
-<br><br><br><br><br>
-</BODY>
-</HTML>
+

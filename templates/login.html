@@ -1,151 +1,215 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/vtd8.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
+
 <!--#begin login -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
-
 <form method="post" action="index.php">
+
 <input type="hidden" name="tg" value="login">
+
 <input type="hidden" name="login" value="login">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td width="107" align="right" nowrap>{ nickname }:</td>
-<td width="103"><input type="text" name="nickname" size="30" maxlength="60"></td>
-</tr>
-<tr>
-<td width="107" align="right" nowrap>{ password }:</td>
-<td width="103"><input type="password" name="password" size="20" maxlength="15"></td>
-</tr>
-<tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ login }"></td>
-</tr>
-</table>
-</center>
+
+
+<br><br> 
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle">
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              nickname } : </td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="nickname" size="30" maxlength="60">
+            </td>
+    </tr>
+    <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              password } : </td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="password" name="password" size="20" maxlength="15">
+            </td>
+    </tr>
+    <tr valign="middle"> 
+      <td class="BabLoginMenuBackground" colspan="2" align="center"> 
+        <input type="submit" name="submit" value="{ login }">
+      </td>
+    </tr>
+  </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
 <!--#end login -->
-<br><br><br><br><br>
+<br>
+<br><br><br><br>
 <!--#begin changepassword -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
+
+
 
 <form method="post" action="index.php">
+
 <input type="hidden" name="tg" value="login">
+
 <input type="hidden" name="update" value="update">
+
 <center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ oldpwd }:</td>
-<td><input type="password" name="oldpwd" size="20" maxlength="15"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ newpwd }:</td>
-<td><input type="password" name="newpwd1" size="20" maxlength="15"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ renewpwd }:</td>
-<td><input type="password" name="newpwd2" size="20" maxlength="15"></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="{ update }"></td>
-</tr>
-</table>
-</center>
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                oldpwd } :</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="password" name="oldpwd" size="20" maxlength="15">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                newpwd } :</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="password" name="newpwd1" size="20" maxlength="15">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                renewpwd } :</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="password" name="newpwd2" size="20" maxlength="15">
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" colspan="2" align="center"> 
+                <input type="submit" name="submit2" value="{ update }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+
 </form>
-</td></tr>
-</table>
-</center>
+
+
+
 <!--#end changepassword -->
+
 <br><br><br><br><br>
+
 <!--#begin usercreate -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
+
+
+
+
+
 
 <form method="post" action="index.php">
+
 <input type="hidden" name="tg" value="login">
+
 <input type="hidden" name="adduser" value="register">
+
 <center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ firstname }:</td>
-<td ><input type="text" name="firstname" size="30" maxlength="60" value="{ firstnameval }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ lastname }:</td>
-<td ><input type="text" name="lastname" size="30" maxlength="60" value="{ lastnameval }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ nickname }:</td>
-<td ><input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ email }:</td>
-<td><input type="text" name="email" size="30" maxlength="60" value="{ emailval }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ password }:</td>
-<td><input type="password" name="password1" size="20" maxlength="15"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ repassword }:</td>
-<td><input type="password" name="password2" size="20" maxlength="15"></td>
-</tr>
-<tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="Submit" value="{ adduser }"></td>
-</tr>
-</table>
-</center>
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"> 
+                { firstname } : </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="text" name="firstname" size="30" maxlength="60" value="{ firstnameval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"> 
+                { lastname } : </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="text" name="lastname" size="30" maxlength="60" value="{ lastnameval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"> 
+                { nickname } : </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                email } : </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="text" name="email" size="30" maxlength="60" value="{ emailval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"> 
+                { password } : </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="password" name="password1" size="20" maxlength="15">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"> 
+                { repassword } : </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="password" name="password2" size="20" maxlength="15">
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" colspan="2" align="center">
+                <input type="submit" name="Submit2" value="{ adduser }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+
 </form>
-</td></tr>
-</table>
-</center>
+
+
 <!--#end usercreate -->
-<br><br><br><br><br>
+<br>
+<br><br><br><br>
+
 <!--#begin emailpassword -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
+
+
 
 <form method="post" action="index.php">
+
 <input type="hidden" name="tg" value="login">
+
 <input type="hidden" name="sendpassword" value="send">
+
 <center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ nickname }:</td>
-<td><input type="text" name="nickname" size="30" maxlength="60"></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="Submit" value="{ send }"></td>
-</tr>
-</table>
-</center>
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                nickname } : </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <input type="text" name="nickname" size="30" maxlength="60">
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" colspan="2" align="center">
+                <input type="submit" name="Submit" value="{ send }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+
 </form>
-</td></tr>
-</table>
-</center>
+
+
 <!--#end emailpassword -->
-<br><br><br><br><br>
-</BODY>
-</HTML>

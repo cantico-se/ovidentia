@@ -1,16 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle2.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
 <!--#begin mailcompose -->
 <script language="JavaScript">
 function Start(page)
@@ -31,9 +19,7 @@ function mm()
 //-->
 </script>
 <!--#endif bhtml -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 
 <form method="post" name="composef" action="index.php" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="mail">
@@ -42,109 +28,137 @@ function mm()
 <input type="hidden" name="criteria" value="{ criteria }">
 <input type="hidden" name="reverse" value="{ reverse }">
 <input type="hidden" name="compose" value="message">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ from }</td>
-<td><b>{ fromval }</b></td>
-</tr>
-<tr>
-<td align="right"><a class="BabDialogLink" href="{ urlto }">{ to }</a></td>
-<td><input type="text" name="to" size="80" value="{ toval }"></td>
-</tr>
-<tr>
-<td align="right"><a class="BabDialogLink" href="{ urlto }">{ cc }</a></td>
-<td><input type="text" name="cc" size="80" value="{ ccval }"></td>
-</tr>
-<tr>
-<td align="right"><a class="BabDialogLink" href="{ urlto }">{ bcc }</a></td>
-<td><input type="text" name="bcc" size="80" value="{ bccval }"></td>
-</tr>
-<tr>
-<td align="right">{ subject }</td>
-<td><input type="text" name="subject" size="80" value="{ subjectval }"></td>
-</tr>
-<tr>
-<td align="right">{ attachments }</td>
-<td><input type="file" name="files[]" size="50" value="{ file1 }"></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="file" name="files[]" size="50" value="{ file2 }"></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="file" name="files[]" size="50" value="{ file3 }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ format }:</td>
-<td>
-<select name="format" 
-<!--#if bhtml "== 1" --> 
-onChange="mm()"<!--#endif bhtml -->>
-<option value="plain" { plainselect }>{ plain }</option>
-<option value="html" { htmlselect }>{ html }</option>
-</select>
-</td>
-</tr>
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="message">{ messageval }</textarea></td>
-</tr>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td>
-<SCRIPT LANGUAGE="JavaScript"> 
+  <table  class="BabMailEditCadreFontBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabMailEditCadreFontBackground" align="center" valign="middle"> 
+        <table  class="BabMailEditBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabMailEditFromFontBackground" width="20%" align="right" nowrap valign="middle">{ 
+              from }</td>
+            <td class="BabMailEditFromFontBackground" width="80%" align="left" valign="middle"><b>{ 
+              fromval }</b></td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditForFontBackground" width="20%" align="right" nowrap valign="middle"><a class="BabMailEditLink" href="{ urlto }">{ 
+              to }</a></td>
+            <td class="BabMailEditForFontBackground" width="80%" align="left" valign="middle"> 
+              <input type="text" name="to" size="40" maxlength="50" value="{ toval }" maxlength="80">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditForFontBackground" width="20%" align="right" nowrap valign="middle"><a class="BabMailEditLink" href="{ urlto }">{ 
+              cc }</a></td>
+            <td class="BabMailEditForFontBackground" width="80%" align="left" valign="middle"> 
+              <input type="text" name="cc" size="40" maxlength="50" value="{ ccval }" maxlength="80">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditForFontBackground" width="20%" align="right" nowrap valign="middle"><a class="BabMailEditLink" href="{ urlto }">{ 
+              bcc }</a></td>
+            <td class="BabMailEditForFontBackground" width="80%" align="left" valign="middle"> 
+              <input type="text" name="bcc" size="40" maxlength="50" value="{ bccval }" maxlength="80">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditSubjectFontBackground" width="20%" align="right" nowrap valign="middle">{ 
+              subject }</td>
+            <td class="BabMailEditSubjectFontBackground" width="80%" align="left" valign="middle"> 
+              <input type="text" name="subject" size="60" maxlength="70" value="{ subjectval }" maxlength="80">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditJointFontBackground" width="20%" align="right" nowrap valign="middle">{ 
+              attachments }</td>
+            <td class="BabMailEditJointFontBackground" width="80%" align="left" valign="middle"> 
+              <input type="file" name="files[]" size="40" maxlength="50" value="{ file1 }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditJointFontBackground" width="20%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabMailEditJointFontBackground" width="80%" align="left" valign="middle"> 
+              <input type="file" name="files[]" size="40" maxlength="50" value="{ file2 }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditJointFontBackground" width="20%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabMailEditJointFontBackground" width="80%" align="left" valign="middle"> 
+              <input type="file" name="files[]" size="40" maxlength="50" value="{ file3 }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditFormatFontBackground" width="20%" align="right" nowrap valign="middle">{ 
+              format }</td>
+            <td class="BabMailEditFormatFontBackground" width="80%" align="left" valign="middle"> <select name="format" 
+
+                 
+              <!--#if bhtml "== 1" -->
+              onChange="mm()" 
+              <!--#endif bhtml -->
+              > <option value="plain" { plainselect }>{ plain }</option> <option value="html" { htmlselect }>{ 
+              html }</option> </select> </td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+          <tr> 
+            <td class="" width="20%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="" width="70%" align="left" valign="middle"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message">{ messageval }</textarea>
+            </td>
+          </tr>
+          <tr> 
+            <td class="" colspan="2" align="center" nowrap valign="middle"> 
+              <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
 	editor.ToolBar();
-</SCRIPT>
-</td>
-</tr>
-<!--#endif msie -->
-<tr>
-<td colspan="2">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+            </td>
+          </tr>
+          <!--#endif msie -->
+          <tr> 
+            <td class="" colspan="2" align="center" nowrap valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
 	editor.InFrame(0, "message", "0", "100%", "160");
-</SCRIPT>
-<!--#else msie -->
-<textarea cols="70" rows="20" name="message">{ messageval }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
-<tr>
-<td colspan="2" align="center">
-<select name="sigid">
-<option value="0" { defaultselected }>{ selectsig }</option>
-<!--#in getnextsig -->
-<option value="{ sigid }"  { sigselected }>{ signame }</option>
-<!--#endin getnextsig -->
-</select>
-</td>
-</tr>
-<!--#if msie "== 1" -->
-<tr>
-<td colspan="2" align="center"><input onclick=SetVals() type="submit" name="submit" value="{ send }"></td>
-</tr>
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+              <!--#else msie -->
+              <textarea cols="60" rows="20" name="message">{ messageval }</textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabMailEditSignFontBackground" colspan="2" align="center" nowrap valign="middle"> 
+              <select name="sigid">
+                <option value="0" { defaultselected }>{ selectsig }</option>
+                <!--#in getnextsig -->
+                <option value="{ sigid }"  { sigselected }>{ signame }</option>
+                <!--#endin getnextsig -->
+              </select>
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td class="" colspan="2" align="center" nowrap valign="middle"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ send }">
+            </td>
+          </tr>
+          <SCRIPT LANGUAGE="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
 </SCRIPT>
-<!--#else msie -->
-<tr>
-<td colspan="2" align="center"><input type="submit" name="submit" value="{ send }"></td>
-</tr>
-<!--#endif msie -->
-</table>
-</center>
+          <!--#else msie -->
+          <tr> 
+            <td class="" colspan="2" align="center" nowrap valign="middle"> 
+              <input type="submit" name="submit" value="{ send }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end mailcompose -->
-</BODY>
-</HTML>
+

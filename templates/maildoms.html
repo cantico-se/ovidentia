@@ -1,19 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/vtd8.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
 <!--#begin domaincreate -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="maildoms">
@@ -21,171 +8,243 @@
 <input type="hidden" name="userid" value="{ userid }">
 <input type="hidden" name="bgrp" value="{ bgrp }">
 <input type="hidden" name="adddom" value="add">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ name }:</td>
-<td ><input type="text" name="name" size="60" maxlength="255"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ description }:</td>
-<td><input type="text" name="description" size="60" maxlength="255"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ accessmethod }:</td>
-<td>
-<select name="accessmethod" size="1">
-<option value="pop3" selected>POP3</option>
-<option value="imap">IMAP</option>
-</select>
-</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ inmailserver }:</td>
-<td><input type="text" name="inmailserver" size="60" maxlength="255"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ inportserver }:</td>
-<td><input type="text" name="inportserver" size="5" maxlength="5" value="110"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ outmailserver }:</td>
-<td><input type="text" name="outmailserver" size="60" maxlength="255"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ outportserver }:</td>
-<td><input type="text" name="outportserver" size="5" maxlength="5" value="25"></td>
-</tr>
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              name }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="name" size="30" maxlength="255">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              description }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="description" size="30" maxlength="255">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              accessmethod }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <select name="accessmethod" size="1">
+                <option value="pop3" selected>POP3</option>
+                <option value="imap">IMAP</option>
+              </select>
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              inmailserver }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="inmailserver" size="30" maxlength="255">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              inportserver }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="inportserver" size="5" maxlength="5" value="110">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              outmailserver }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="outmailserver" size="30" maxlength="255">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              outportserver }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="outportserver" size="5" maxlength="5" value="25">
+            </td>
+          </tr>
+       
+
 <!--#if count "!= 0" -->
+
 <tr>
-<td align="right" nowrap>{ groupsname }:</td>
-<td>
+
+<td class="BabLoginMenuBackground" align="right" nowrap>{ groupsname }:</td>
+
+<td class="BabLoginMenuBackground">
+
 <select multiple name="groups[]" size="10">
+
 <!--#in getnextgroup -->
+
 <option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+
 <!--#endin getnextgroup -->
+
 </select>
+
 </td>
+
 </tr>
-<!--#endif count --><tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="{ add }"></td>
-</tr>
-</table>
-</center>
+
+<!--#endif count -->
+
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end domaincreate -->
 
 <br><br><br><br>
 <!--#begin domainslist -->
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ name }</b></td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ group }</b></td>
-<!--#in getnextadm -->
-<tr><td nowrap>
-<!--#if burl "== 1" -->
-<a class=BabMenuLink href="{ url }">{ urlname }</a>
-<!--#else burl -->
-{ urlname }
-<!--#endif burl -->
-</td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td>
-</tr>
-<!--#endin getnextadm -->
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr> 
+          <td class="BabSiteAdminTitleFontBackground" width="20%" align="left" valign="middle"><b>{ 
+            name }</b></td>
+          <td class="BabSiteAdminTitleFontBackground" width="20%" align="left" valign="middle"><b>{ 
+            description }</b></td>
+          <td class="BabSiteAdminTitleFontBackground" width="50%" align="left" valign="middle"><b>{ 
+            group }</b></td>
+        </tr>
+     <!--#in getnextadm -->
+        <tr> 
+          <td class="BabSiteAdminLanguageFontBackground" width="20%" align="left" valign="middle">&nbsp;
+            <!--#if burl "== 1" -->
+            <a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+            <!--#else burl -->
+            { urlname } 
+            <!--#endif burl -->
+          </td>
+          <td class="BabSiteAdminEmailFontBackground" width="20%" align="left" valign="middle">&nbsp;&nbsp;{ 
+            arr[description] }</td>
+          <td class="BabSiteAdminDescriptionFontBackground" width="50%" align="left" valign="middle">&nbsp;{ 
+            groupname }</td>
+        </tr><!--#endin getnextadm -->
 <!--#in getnextgrp -->
-<tr><td nowrap>
-<!--#if burl "== 1" -->
-<a class=BabMenuLink href="{ url }">{ urlname }</a>
-<!--#else burl -->
-{ urlname }
-<!--#endif burl -->
-</td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td>
-</tr>
-<!--#endin getnextgrp -->
-<!--#in getnextusr -->
-<tr><td nowrap>
-<!--#if burl "== 1" -->
-<a class=BabMenuLink href="{ url }">{ urlname }</a>
-<!--#else burl -->
-{ urlname }
-<!--#endif burl -->
-</td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td>
-</tr>
-<!--#endin getnextusr -->
-</TBODY>
+        <tr> 
+          <td class="BabSiteAdminLanguageFontBackground" width="20%" align="left" valign="middle">
+            <!--#if burl "== 1" -->
+            <a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+            <!--#else burl -->
+            { urlname } 
+            <!--#endif burl -->
+          </td>
+          <td class="BabSiteAdminEmailFontBackground" width="20%" align="left" valign="middle">&nbsp;{ 
+            arr[description] }</td>
+          <td class="BabSiteAdminDescriptionFontBackground" width="50%" align="left" valign="middle">&nbsp;{ 
+            groupname }</td>
+        </tr> <!--#endin getnextgrp -->
+        <!--#in getnextusr --><tr> 
+          <td class="BabSiteAdminLanguageFontBackground" width="20%" align="left" valign="middle">
+            <!--#if burl "== 1" -->
+            <a class="" href="{ url }">{ urlname }</a> 
+            <!--#else burl -->
+            { urlname } 
+            <!--#endif burl -->
+          </td>
+          <td class="BabSiteAdminEmailFontBackground" width="20%" align="left" valign="middle">{ 
+            arr[description] }</td>
+          <td class="BabSiteAdminDescriptionFontBackground" width="50%" align="left" valign="middle">&nbsp;{ 
+            groupname }</td>
+        </tr>
+      <!--#endin getnextusr -->
+      </table>
+    </td>
+  </tr>
 </table>
-</td></tr>
-</table>
-</center>
 <!--#end domainslist -->
 
 <br><br><br><br>
 <!--#begin domainmodify -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 
 <form method="post" action="index.php">
-<input type="hidden" name="tg" value="maildom">
-<input type="hidden" name="idx" value="modify">
+  <input type="hidden" name="idx" value="modify">
 <input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="oldname" value="{ arr[name] }">
+<input type="hidden" name="babname" value="{ arr[name] }">
 <input type="hidden" name="userid" value="{ userid }">
 <input type="hidden" name="bgrp" value="{ bgrp }">
 <input type="hidden" name="modify" value="moddom">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ name }:</td>
-<td ><input type="text" name="name" size="60" maxlength="255" value="{ arr[name] }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ description }:</td>
-<td><input type="text" name="description" size="60" maxlength="255" value="{ arr[description] }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ accessmethod }:</td>
-<td>
-<select name="accessmethod" size="1">
-<option value="pop3" { popselected }>POP3</option>
-<option value="imap" { imapselected }>IMAP</option>
-</select>
-</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ inmailserver }:</td>
-<td><input type="text" name="inmailserver" size="60" maxlength="255" value="{ arr[inserver] }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ inportserver }:</td>
-<td><input type="text" name="inportserver" size="5" maxlength="5" value="110" value="{ arr[inport] }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ outmailserver }:</td>
-<td><input type="text" name="outmailserver" size="60" maxlength="255" value="{ arr[outserver] }"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ outportserver }:</td>
-<td><input type="text" name="outportserver" size="5" maxlength="5" value="25" value="{ arr[outport] }"></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td ><input type="submit" name="submit" value="{ modify }"></td>
-</tr>
-</table>
-</center>
+  <input type="hidden" name="tg" value="maildom">
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              name }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="name" size="30" maxlength="255" value="{ arr[name] }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              description }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="description" size="30" maxlength="255" value="{ arr[description] }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              accessmethod }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <select name="accessmethod" size="1">
+                <option value="pop3" { popselected }>POP3</option>
+                <option value="imap" { imapselected }>IMAP</option>
+              </select>
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              inmailserver }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="inmailserver" size="30" maxlength="255" value="{ arr[inserver] }">
+            </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center">{ inportserver 
+              }:</td>
+            <td class="BabLoginMenuBackground" align="left">
+              <input type="text" name="inportserver" size="5" maxlength="5" value="110">
+            </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center">{ outmailserver 
+              }</td>
+            <td class="BabLoginMenuBackground" align="left">
+              <input type="text" name="outmailserver" size="30" maxlength="255" value="{ arr[outserver] }">
+            </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center">{ outportserver 
+              }</td>
+            <td class="BabLoginMenuBackground" align="left">
+              <input type="text" name="outportserver" size="5" maxlength="5" value="25">
+            </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center">&nbsp;</td>
+            <td class="BabLoginMenuBackground" align="left">
+              <input type="submit" name="submit" value="{ modify }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end domainmodify -->
-<br><br><br><br>
-</BODY>
-</HTML>
+

@@ -1,150 +1,138 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle1.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
 <!--#begin categorylist -->
-<center>
+
 <!--#in getnext -->
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
-<TBODY>
-<tr><td class="BabFaqTitleBgnd"><a class=BabMenuLink href="{ urlcategory }">{ namecategory }</a></td>
-</tr>
-<tr><td>{ arr[description] }</td>
-</tr>
-</TBODY>
-</table>
-</td></tr>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabFaqTitleFontBackground" nowrap align="left" valign="middle"><a class="BabFaqLink" href="{ urlcategory }">{ 
+      namecategory }</a> </td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabFaq1BodyFontBackground" valign="top">{ arr[description] } </td>
+  </tr>
 </table>
 <br>
 <!--#endin getnext -->
-</center>
+
 <!--#end categorylist -->
 <br><br><br><br><br>
 <!--#begin questionlist -->
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<!--#in getnext -->
-<tr><td class="BabFaqTitleBgnd"><a class=BabMenuLink href="{ questionurl }">{ question }</a></td></tr>
-<!--#endin getnext -->
-</TBODY>
-</table>
-</td></tr>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center"><!--#in getnext -->
+  <tr colspan="2" align="left"> 
+    <td class="BabFaq1BodyFontBackground" valign="top"><a class="BabFaqLink" href="{ questionurl }">{ 
+      question }</a></td>
+  </tr><!--#endin getnext -->
 </table>
 <br>
-</center>
+
 <!--#end questionlist -->
 <br><br><br><br><br>
 <!--#begin admquestionlist -->
-<center>
 <!--#in getnext -->
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
-<TBODY>
-<tr><td class="BabFaqTitleBgnd">{ arr[question] }</td>
-<td width="2%" class="BabFaqTitleBgnd"><a class=BabMenuLink href="{ editurl }">{ editname }</a></td>
-</tr>
-</TBODY>
-</table>
-</td></tr>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr colspan="2" align="left"> 
+    <td class="BabFaq1BodyFontBackground" valign="top" height="90%">{ arr[question] 
+      }</td>
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ editurl }">{ 
+      editname }</a></td>
+  </tr>
 </table>
 <br>
 <!--#endin getnext -->
-</center>
+
 <!--#end admquestionlist -->
 <!--#begin admquestioncreate -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
+
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="faq">
 <input type="hidden" name="idx" value="questions">
 <input type="hidden" name="item" value="{ idcat }">
 <input type="hidden" name="addquestion" value="addquestion">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
-<tr>
-<input type="text" name="question" style="VISIBILITY: hidden" size="0">
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="response"></textarea>
-</tr>
-<tr>
-<td width="107" align="right" nowrap>&nbsp;</td>
-<td width="103">
-<SCRIPT LANGUAGE="JavaScript"> 
+  <table class="BabFaqCadreFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabFaqBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr class="" align="left"> 
+            <td align="center" valign="middle"> </td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <script src="templates/SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%" align="center"> 
+              <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
 	editor.ToolBar();
-</SCRIPT>
-</td>
-</tr>
-<!--#endif msie -->
-<!-- -->
-
-<tr>
-<td width="107" align="right">{ question }</td>
-<td width="103">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "question", "0", "100%", "20");
-</SCRIPT>
-<!--#else msie -->
-	<input type="text" name="question" size="80" maxlength="100"></td>
-<!--#endif msie -->
-
-</tr>
-<tr>
-<td width="107" align="right">{ response }</td>
-<td width="103">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%">
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="response"></textarea>
+			  <input type="text" name="question" style="visibility: hidden" size="0">
+            </td>
+          </tr> <!--#endif msie -->
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%"> { question }</td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+			<!--#if msie "== 1" -->
+			<script language="JavaScript">
+			editor.InFrame(0, "question", "0", "100%", "20");
+			</script>
+			<!--#else msie -->
+              <input type="text" name="question" size="80" maxlength="100">
+			  <!--#endif msie -->
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%">{ response }</td>
+          </tr>
+         
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
 	editor.InFrame(1, "response", "0", "100%", "160");
-</SCRIPT>
-<!--#else msie -->
-	<textarea cols="50" rows="10" name="response"></textarea></td>
-<!--#endif msie -->
-</tr>
-
-<!--#if msie "== 1" -->
-<tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
-</tr>
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+              <!--#else msie -->
+              <textarea cols="50" rows="20" name="response"></textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.FinalInstantiate(1);
 	editor.CloseInitSection();
-</SCRIPT>
-<!--#else msie -->
-<tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ add }"></td>
-</tr>
-<!--#endif msie -->
-</table>
-</center>
+</script>
+          <!--#else msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
+
 <!--#end admquestioncreate -->
 <br><br><br><br><br>
 <!--#begin admquestionmodify -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
+
 
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="faq">
@@ -152,106 +140,102 @@
 <input type="hidden" name="item" value="{ idcat }">
 <input type="hidden" name="idq" value="{ arr[id] }">
 <input type="hidden" name="updatequestion" value="updatequestion">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
-<tr>
-<input type="text" name="question" style="VISIBILITY: hidden" size="0" value="{ arr[question] }">
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="response">{ arr[response] }</textarea>
-</tr>
-<tr>
-<td width="107" align="right" nowrap>&nbsp;</td>
-<td width="103">
-<SCRIPT LANGUAGE="JavaScript"> 
+  <table class="BabFaqCadreFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabFaqBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr class="" align="left"> 
+            <td align="center" valign="middle"> </td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <script src="templates/SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%" align="center"> 
+              <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
 	editor.ToolBar();
-</SCRIPT>
-</td>
-</tr>
-<!--#endif msie -->
-<!-- -->
-
-<tr>
-<td width="107" align="right">{ question }</td>
-<td width="103">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "question", "0", "100%", "20");
-</SCRIPT>
-<!--#else msie -->
-	<input type="text" name="question" size="80" maxlength="80" value="{ arr[question] }"></td>
-<!--#endif msie -->
-</tr>
-<tr>
-<td width="107" align="right">{ response }</td>
-<td width="103">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="response">{ arr[response] }</textarea>
+              <input type="text" name="question" style="visibility: hidden" size="0" value="{ arr[question] }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%"> { question }</td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
+			editor.InFrame(0, "question", "0", "100%", "20");
+			</script>
+              <!--#else msie -->
+              <input type="text" name="question" size="80" maxlength="100"  value="{ arr[question] }">
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%">{ response }</td>
+          </tr>
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
 	editor.InFrame(1, "response", "0", "100%", "160");
-</SCRIPT>
-<!--#else msie -->
-	<textarea cols="50" rows="10" name="response">{ arr[response] }</textarea></td>
-<!--#endif msie -->
-</tr>
-
-<!--#if msie "== 1" -->
-<tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
-</tr>
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+              <!--#else msie -->
+              <textarea cols="50" rows="20" name="response">{ arr[response] }</textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.FinalInstantiate(1);
 	editor.CloseInitSection();
-</SCRIPT>
-<!--#else msie -->
-<tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ add }"></td>
-</tr>
-<!--#endif msie -->
-
-</table>
-</center>
+</script>
+          <!--#else msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
-<br>
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
-<TBODY>
-<tr><td class="BabFaqTitleBgnd">{ arr[question] }</td></tr>
-<tr><td class="BabFaqContentBgnd">{ arr[response] }</td>
-</tr>
-</TBODY>
-</table>
-</td></tr>
-</table>
-</center>
+
+
 <br>
 <!--#end admquestionmodify -->
 <br><br><br><br><br>
 <!--#begin viewquestion -->
 <br>
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="2">
-<TBODY>
-<tr><td class="BabFaqTitleBgnd">{ arr[question] }</td></tr>
-<tr><td class="BabFaqContentBgnd">{ arr[response] }</td>
-<tr><td class="BabFaqTitleBgnd"><a class=BabMenuLink href="{ returnurl }">{ return }</a></td></tr>
-</tr>
-</TBODY>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabFaq1BodyFontBackground" nowrap align="left" valign="middle">{ 
+      arr[question] }</td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabFaq1BodyFontBackground" valign="top">{ arr[response] }</td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabFaqTitleFontBackground" valign="top"><a class="BabFaqLink" href="{ returnurl }">{ 
+      return }</a></td>
+  </tr>
 </table>
-</td></tr>
-</table>
-</center>
 <br>
 <!--#end viewquestion -->
-</BODY>
-</HTML>

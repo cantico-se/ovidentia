@@ -1,99 +1,86 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/vtd8.css" rel=stylesheet>
-</HEAD>
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
+
 <!--#begin findvacations -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+<BR>
 <form name="vacform" method="post" action="index.php" >
 <input type="hidden" name="tg" value="vacapp">
 <input type="hidden" name="idx" value="listvac">
 <input type="hidden" name="findvac" value="vac">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ group }:</td><td>&nbsp;</td>
-<td nowrap>
-<select name="group">
-<option value="0" selected >{ all }</option>
-<!--#in getnextgroup -->
-<option value="{ groupid }">{ groupname }</option>
-<!--#endin getnextgroup -->
-</select>
-</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ status }:</td><td>&nbsp;</td>
-<td nowrap>
-<select name="status">
-<option value="0" selected >{ all }</option>
-<!--#in getnextstatus -->
-<option value="{ statusid }" >{ statusname }</option>
-<!--#endin getnextstatus -->
-</select>
-</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ user }:</td><td>&nbsp;</td>
-<td><input type="text" name="email" size="30" maxlength="60"></td>
-</tr>
-<td align="right">&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-</tr>
-<td align="right">&nbsp;</td><td>&nbsp;</td>
-<td><input type="submit" name="submit" value="{ search }"></td>
-</tr>
-</table>
-</center>
+  <table class="BabVacationCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabVacationTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr align="right" valign="middle"> 
+            <td  width="30%" align="center">{ group }:</td>
+            <td  width="70%" align="left">
+              <select name="group">
+                <option value="0" selected >{ all }</option>
+                <!--#in getnextgroup -->
+                <option value="{ groupid }">{ groupname }</option>
+                <!--#endin getnextgroup -->
+              </select>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td  width="30%">{ status }:</td>
+            <td align="left" width="70%">
+              <select name="status">
+                <option value="0" selected >{ all }</option>
+                <!--#in getnextstatus -->
+                <option value="{ statusid }" >{ statusname }</option>
+                <!--#endin getnextstatus -->
+              </select>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td  width="30%">{ user }</td>
+            <td width="70%" align="left">
+              <input type="text" name="email" size="30" maxlength="60">
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td  align="center">
+              <input type="submit" name="submit" value="{ search }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end findvacations -->
 <br><br><br><br><br>
 <!--#begin vacationslist -->
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr>
-<td class="BabListTitleBgnd" align="center"><b>{ user }</b></td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ type }</b></td>
-<td class="BabListTitleBgnd" align="center"><b>{ begin }</b></td>
-<td class="BabListTitleBgnd" align="center"><b>{ end }</b></td>
-</tr>
-<!--#in getnextgroup -->
+<BR>
+<table class="BabVacationCadreFontBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+    <td> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr align="right" valign="middle"> 
+          <td  class="BabVacationTitleFontBackground" width="20%" align="center"><b>{ user }</b></td>
+          <td  class="BabVacationTitleFontBackground" width="20%" align="left"><b>{ type }</b> </td>
+          <td  class="BabVacationTitleFontBackground" width="30%" align="left"><b>{ begin }</b> </td>
+          <td class="BabVacationTitleFontBackground" width="30%" align="left"><b>{ end }</b></td>
+        </tr><!--#in getnextgroup -->
 <!--#in getnextuser -->
 <!--#in getnextvac -->
-<tr><td nowrap>&nbsp;<a class="BabMenuLink" href="{ userurl }">{ username }</a>&nbsp;</td>
-<td nowrap>{ typename }</td>
-<td align="center">{ datebegin }</td>
-<td align="center">{ dateend }</td>
-</tr>
-<!--#endin getnextvac -->
+        <tr align="center" valign="middle"> 
+          <td  class="BabVacationBodyFontBackground">&nbsp;<a class="BabVacationLink" href="{ userurl }">{ username 
+            }</a>&nbsp;</td>
+          <td class="BabVacationBodyFontBackground" align="left" >{ typename } </td>
+          <td class="BabVacationBodyFontBackground" align="left" >{ datebegin }</td>
+          <td class="BabVacationBodyFontBackground" align="left" >{ dateend }</td>
+        </tr><!--#endin getnextvac -->
 <!--#endin getnextuser -->
 <!--#endin getnextgroup -->
-</TBODY>
+      </table>
+    </td>
+  </tr>
 </table>
-</td></tr>
-</table>
-</center>
 <!--#end vacationslist -->
 <br><br><br><br>
 <!--#begin updatevacation -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+<BR>
 
 <form method="post" action="index.php" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="vacapp">
@@ -102,55 +89,55 @@
 <input type="hidden" name="ordering" value="{ ordering }">
 <input type="hidden" name="groupid" value="{ groupid }">
 <input type="hidden" name="updatevac" value="update">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ user }:</td><td>&nbsp;</td>
-<td nowrap><b>{ username }</b></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ from }:</td><td>&nbsp;</td>
-<td nowrap>{ datefrom } { halfdayfrom }</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ to }:</td><td>&nbsp;</td>
-<td nowrap>{ dateto }&nbsp;{ halfdayto }</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ type }:</td><td>&nbsp;</td>
-<td>{ typename }</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ remarkstext }:</td><td>&nbsp;</td>
-<td nowrap>{ remarks }</td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td><td>&nbsp;</td>
-<td>
-<select name="status">
-<option value="0">{ refused }</option>
-<option value="1">{ accepted }</option>
-</select>
-</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ commentrefused }</td><td>&nbsp;</td>
-<td ><textarea cols="50" rows="10" name="comref"></textarea></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td><td>&nbsp;</td>
-<td><input type="submit" name="submit" value="{ confirm }"></td>
-</tr>
-</table>
-</center>
+  <table class="BabVacationCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabVacationTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr align="right" valign="middle"> 
+            <td  width="30%" align="center">{ user }</td>
+            <td  width="70%" align="left">{ username }</td>
+          </tr>
+          <tr align="right" valign="middle"> 
+            <td  width="30%" align="center">{ from }</td>
+            <td  width="70%" align="left">{ datefrom } { halfdayfrom }</td>
+          </tr>
+          <tr align="right" valign="middle"> 
+            <td  width="30%" align="center">{ to }:</td>
+            <td  width="70%" align="left">{ dateto }&nbsp;{ halfdayto }</td>
+          </tr>
+          <tr align="right" valign="middle"> 
+            <td  width="30%" align="center">{ type }</td>
+            <td  width="70%" align="left">{ typename }</td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td  width="30%" height="29">{ remarkstext }</td>
+            <td align="left" width="70%" height="29">{ remarks }</td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td  width="30%">&nbsp;</td>
+            <td width="70%" align="left"> 
+              <select name="status">
+                <option value="0">{ refused }</option>
+                <option value="1">{ accepted }</option>
+              </select>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td  width="30%" align="center" valign="top">{ commentrefused }</td>
+            <td width="70%" align="left"> 
+              <textarea cols="50" rows="10" name="comref"></textarea>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td  align="center"> 
+              <input type="submit" name="submit" value="{ confirm }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end updatevacation -->
-</BODY>
-</HTML>
+

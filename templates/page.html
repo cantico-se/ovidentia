@@ -3,7 +3,7 @@
 <HEAD>
 <TITLE>{ sitename }</TITLE>
 <META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
+<META NAME="Author" CONTENT="Cantico">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
 <LINK rel="stylesheet" title="Default" href="styles/{ style }" type="text/css">
@@ -13,118 +13,107 @@
 //-->
 </script>
 </HEAD>
-<BODY class="BabBodyBgnd">
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr> 
-<td valign="middle"><center>
-<!--#if logoLT "!= 0" --><img src="images/{ babLogoLT }" alt=""><!--#endif logoLT -->
-</center></td>
-<td width="100%" height="115"><center>
-<!--#if banner "!= 0" --><img src="images/{ babBanner }" alt=""><!--#endif banner -->
-<br><br></center></td>
-<td valign="middle">
-<center>
-<!--#if logoRT "!= 0" --><img src="images/{ babLogoRT }" alt=""><!--#endif logoRT -->
-</center>
-</td>
-</tr>
+<BODY class="BabBackground" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" link="#000000" vlink="#000000" alink="yellow">
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr class="BabHeaderBackground"> 
+    <td align="center" valign="middle" width="170" height="120"> 
+      <!--#if logoLT "!= 0" -->
+      <img src="images/Logos/{ babLogoLT }" alt="" > 
+      <!--#endif logoLT -->
+    </td>
+    <td align="center" valign="middle" height="120"> 
+      <!--#if banner "!= 0" -->
+       <img src="images/Logos/{ babBanner }" alt="" > 
+      <!--#endif banner -->
+    </td>
+    <td align="center" valign="middle" width="170" height="120"> 
+      <!--#if logoRT "!= 0" -->
+      <img src="images/Logos/{ babLogoRT }" alt="" > 
+      <!--#endif logoRT -->
+    </td>
+  </tr>
+  <tr class="BabCnxMenuBackground"> 
+    <td width="170">&nbsp;</td>
+    <td class="BabSloganFont" align="left" valign="middle">{ slogan }</td>
+    <td align="right" valign="bottom" width="170"><a class="BabCnxLink" href="{ homeurl }">{ home }</a>&nbsp;&nbsp;<a class="BabCnxLink" href="{ logurl }">{ login }</a></td>
+  </tr>
+  <tr class="BabMenuBackground"> 
+    <td colspan="3" height="5"><img src="images/Puces/Space1PxTrans.gif" alt="" width="1" height="1"></td>
+  </tr>
+  <tr class="BabMenuBackground"> 
+    <td width="170">&nbsp;</td>
+    <td> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tr> 
+          <td width="100%" align="center" valign="middle"> 
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <!--#in getNextMenu -->
+                <!--#if enabled "== 0" -->
+                <td align="center" valign="middle" nowrap width="20%" class="BabMenuActiveBackground"> 
+                 &nbsp; &nbsp;{ menutext }&nbsp; &nbsp;</td>
+                <!--#else enabled -->
+                <td width="20%" align="center" valign="middle" nowrap > &nbsp;&nbsp;<a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
+                  menutext }</a>&nbsp;&nbsp;</td>
+                <!--#endif enabled -->
+                <!--#endin getNextMenu -->
+                <td width="80%" >&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="170">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td class="BabSectionsColBackground" align="center" valign="top" width="170">
+      <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr>
+          <td>
+            <!--#in getNextSectionLeft -->
+            { sectionleft } 
+            <!--#endin getNextSectionLeft -->
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+    <td valign="top" width="100%"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" height="100%">
+        <tr>
+          <td valign="top">{ message } { content } </td>
+        </tr>
+      </table>
+    </td>
+    <td class="BabSectionsColBackground"  align="center" valign="top" width="170">
+      <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr>
+          <td>
+            <!--#in getNextSectionRight -->
+            { sectionright } 
+            <!--#endin getNextSectionRight -->
+          </td>
+        </tr>
+      </table>
+     
+    </td>
+  </tr>
+  <tr> 
+    <td class="BabFooterBackground" align="center" valign="middle" width="170"> 
+      <!--#if logoLB "== 1" -->
+      <img src="images/Logos/{ babLogoLB }" alt=""> 
+      <!--#endif logoLB -->
+    </td>
+    <td class="BabFooterBackground" align="center" valign="bottom">&copy; 2001, 
+      <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.<br>Ovidentia - Version { version }</td>
+    <td class="BabFooterBackground" align="center" valign="middle" width="170"> 
+      <!--#if logoRB "== 1" -->
+      <img src="images/Logos/{ babLogoRB }" alt=""> 
+      <!--#endif logoRB -->
+    </td>
+  </tr>
 </table>
-
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr> 
-<td width="80%" class="BabSloganArea">&nbsp;{ slogan }</td>
-<td width="20%" align="right" class="BabSloganArea">&nbsp;<a class="BabMenuLink" href="{ homeurl }">{ home }</a>&nbsp;<a class="BabMenuLink" href="{ logurl }">{ login }</a></td>
-</tr>
-<tr> 
-<td width="80%" class="BabSloganArea">&nbsp;</td>
-<td width="20%" align="right" class="BabSloganArea">&nbsp;</td>
-</tr>
-</table>
-
-<!-- menu -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr>
-<td width="170" class="BabMenuBgnd">&nbsp;</td>
-<td>
-<table border="0" class="BabMenuBgnd" width="100%" cellpadding="0" cellspacing="0">
-<TBODY><tr valign="bottom">
-<!--#in getNextMenu -->
-<!--#if enabled "== 0" -->
-<td class="{ menuclass }" nowrap>&nbsp;{ menutext }&nbsp;</td>
-<!--#else enabled -->
-<td class="{ menuclass }" nowrap>&nbsp;<a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ menutext }</a>&nbsp;</td>
-<!--#endif enabled -->
-<!--#endin getNextMenu -->
-<td valign="top" width="100%">&nbsp;</td>
-</tr></TBODY></table>
-</td>
-<td width="170" class="BabMenuBgnd">&nbsp;</td>
-</tr>
-</table>
-<!-- end menu -->
-
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<tr>
-
-<!-- left -->
-<td valign="top">
-<table border="0" class="BabLeftAreaBgnd" width="170" cellpadding="0" cellspacing="0">
-<TBODY>
-<tr><td valign="top" width="100%" class="BabLeftArea">&nbsp;</td></tr>
-<tr>
-<td valign="top" align="center" width="100%">
-<!--#in getNextSectionLeft -->
-{ sectionleft }
-<!--#endin getNextSectionLeft -->
-</td>
-</tr>
-</TBODY>
-</table>
-</td>
-
-<td width="100%" height="100%" valign="top">
-<table border="0" width="100%" cellpadding="0" cellspacing="0">
-<TBODY>
-<tr><td><br></td></tr>
-<tr><td>
-<!-- end left -->
-{ message }
-{ content }
-<!-- right -->
-</td></tr>
-</TBODY>
-</table>
-</td>
-
-<td valign="top">
-<table border="0" class="BabRightAreaBgnd" width="170" cellpadding="0" cellspacing="0">
-<TBODY><tr>
-<td valign="top" width="100%" class="BabRightArea">&nbsp;</td></tr>
-<tr>
-<td valign="top" align="center" width="100%">
-<!--#in getNextSectionRight -->
-{ sectionright }
-<!--#endin getNextSectionRight -->
-</td>
-</tr>
-</TBODY></table>
-</td>
-
-<!-- end right -->
-</tr></table>
-
-<!-- footer -->
-<table border="0" width="100%" cellpadding="0" cellspacing="0">
-<tr><td width="150" valign="middle"><center>&nbsp;<!--#if logoLB "== 1" --><img src="images/{ babLogoLB }" alt=""><!--#endif logoLB -->
-<br><br></center></td>
-<td width="100%" height="115">
-<center><P class="copyright">&copy; 2001, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</P></center>
-<center><P>Ovidentia - Version { version }</P></center><br></td>
-<td width="80" valign="middle">
-<center>
-<!--#if logoRB "== 1" --><img src="images/{ babLogoRB }" alt=""><!--#endif logoRB -->
-<br><br></center></td>
-</tr>
-</table>
-<!-- end footer -->
 </BODY></HTML>

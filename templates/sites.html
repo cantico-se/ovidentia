@@ -1,67 +1,87 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/vtd8.css" rel=stylesheet>
-</HEAD>
-<BODY BGCOLOR="#FFFFFF">
+
 <!--#begin sitecreate -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="sites">
 <input type="hidden" name="idx" value="0">
 <input type="hidden" name="create" value="create">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right">{ name }</td>
-<td><input type="text" name="name" size="30" maxlength="30" value="{ nameval }"></td>
-</tr>
-<tr>
-<td align="right">{ description }</td>
-<td><input type="text" name="description" size="60" maxlength="100" value="{ descriptionval }"></td>
-</tr>
-<tr>
-<td align="right">{ lang }</td>
-<td><input type="text" name="lang" size="10" maxlength="10" value="{ langval }"></td>
-</tr>
-<tr>
-<td align="right">{ siteemail }</td>
-<td><input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }"></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="Submit" value="{ create }"></td>
-</tr>
-</table>
-</center>
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              name }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              description }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="description" size="60" maxlength="100" value="{ descriptionval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              lang }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="lang" size="10" maxlength="10" value="{ langval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              siteemail }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="submit" name="Submit" value="{ create }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end sitecreate -->
 <br><br><br><br><br>
-<!--#begin siteslist -->
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr><td class="BabListTitleBgnd" align="center"  nowrap><b>{ name }</b></td><td class="BabListTitleBgnd" align="center" nowrap><b>{ lang }</b><td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b><td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td></tr>
+<!--#begin siteslist --> 
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr> 
+          <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" valign="middle" nowrap ><b>{ 
+            name }</b> </td>
+          <td class="BabSiteAdminTitleFontBackground" width="20%" align="left" valign="middle"><b>{ 
+            lang }</b></td>
+          <td class="BabSiteAdminTitleFontBackground" width="20%" align="left" valign="middle"><b>{ 
+            email }</b></td>
+          <td class="BabSiteAdminTitleFontBackground" width="50%" align="left" valign="middle"><b>{ 
+            description }</b></td>
+        </tr>
 <!--#in getnext -->
-<tr><td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td><td nowrap>&nbsp;{ arr[lang] }</td><td nowrap>&nbsp;{ arr[adminemail] }</td><td nowrap>&nbsp;{ arr[description] }</td>
-</tr>
+        <tr> 
+          <td class="BabLoginMenuBackground" width="10%" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ 
+            urlname }</a> </td>
+          <td class="BabSiteAdminLanguageFontBackground" width="20%" align="left" valign="middle">&nbsp;{ 
+            arr[lang] }</td>
+          <td class="BabSiteAdminEmailFontBackground" width="20%" align="left" valign="middle">&nbsp;{ 
+            arr[adminemail] }</td>
+          <td class="BabSiteAdminDescriptionFontBackground" width="50%" align="left" valign="middle">&nbsp;{ 
+            arr[description] }</td>
+        </tr>
 <!--#endin getnext -->
-</TBODY>
+      </table>
+    </td>
+  </tr>
 </table>
-</td></tr>
-</table>
-</center>
 <!--#end siteslist -->
 
 <br><br><br><br><br>
@@ -141,134 +161,180 @@ function selectAll(list)
 //-->
 </script>
 
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="site">
 <input type="hidden" name="idx" value="modify">
 <input type="hidden" name="item" value="{ id }">
 <input type="hidden" name="modify" value="modify">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right">{ name }</td>
-<td><input type="text" name="name" size="30" maxlength="30" value="{ nameval }"></td>
-</tr>
-<tr>
-<td align="right">{ description }</td>
-<td><input type="text" name="description" size="60" maxlength="100" value="{ descriptionval }"></td>
-</tr>
-<tr>
-<td align="right">{ lang }</td>
-<td><input type="text" name="lang" size="10" maxlength="10" value="{ langval }"></td>
-</tr>
-<tr>
-<td align="right">{ siteemail }</td>
-<td><input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }"></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="Submit" value="{ create }"></td>
-</tr>
-</table>
-</center>
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              description }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="description" size="60" maxlength="100" value="{ descriptionval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              lang }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="lang" size="10" maxlength="10" value="{ langval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              siteemail }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+            </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center">&nbsp;</td>
+            <td class="BabLoginMenuBackground" align="left"> <input type="submit" name="Submit" value="{ create }"></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
+
 <!--#end sitemodify -->
 <!--#begin sitehomepage0 -->
 <br><br>
-<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ title }</center></td></tr></table></center><br><center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+	<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+  <tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
+
 <form method="post" name="homeform" action="index.php">
 <input type="hidden" name="tg" value="site">
 <input type="hidden" name="idx" value="modify">
 <input type="hidden" name="item" value="{ id }">
 <input type="hidden" name="update" value="homepage0">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td>
-<select name="listhome0"  size=12 multiple>
-<option value="0">{ listhometxt }</option>
-<!--#in getnexthome0 -->
-<option value="{ home0id }">{ home0val }</option>
-<!--#endin getnexthome0 -->
-</select>
-</td>
-<td align="center" valign="center"><input type="button" name="moveleft" value="<<" OnClick="Javascript:moveOptions(document.homeform.elements[7],document.homeform.listhome0)"><br><br><input type="button" name="moveright" value=">>" OnClick="Javascript:moveOptions(document.homeform.listhome0,document.homeform.elements[7])"></td>
-<td>
-<select name="listpage0[]"  size=12 multiple>
-<option value="0">{ listpagetxt }</option>
-<!--#in getnextpage0 -->
-<option value="{ page0id }">{ page0val }</option>
-<!--#endin getnextpage0 -->
-</select>
-</td>
-</td>
-<td align="center" valign="center"><input type="button" name="moveup" value="{ moveup }" onclick="move(true, document.homeform.elements[7])"><br><br><input type="button" name="movedown" value="{ movedown }"  onclick="move(false, document.homeform.elements[7])"></td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td align="center"><input type="submit" name="Submit" value="{ create }" onclick="Javascript:selectAll(document.homeform.elements[7]); document.homeform.submit()"></td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-</table>
-</center>
-</form>
-</td></tr>
-</table>
-</center>
+
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="6"> 
+              <select name="listhome0"  size=12 multiple>
+                <option value="0">{ listhometxt }</option>
+                <!--#in getnexthome0 --> 
+                <option value="{ home0id }">{ home0val }</option>
+                <!--#endin getnexthome0 --> 
+              </select>
+              <a href="Javascript:moveOptions(document.homeform.elements[5],document.homeform.listhome0)" >	
+              </a> <br>
+              <br>
+              <a href="Javascript:moveOptions(document.homeform.listhome0,document.homeform.elements[5])"> 
+              </a> <a href="Javascript:move(true, document.homeform.elements[5])"> 
+              </a> </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:moveOptions(document.homeform.listhome0,document.homeform.elements[5])"><img src="images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.homeform.elements[5],document.homeform.listhome0)" ><img src="images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
+            <td class="BabLoginMenuBackground" align="center" colspan="5">&nbsp;</td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center"> 
+              <select name="listpage0[]"  size=12 multiple>
+                <option value="0">{ listpagetxt }</option>
+                <!--#in getnextpage0 --> 
+                <option value="{ page0id }">{ page0val }</option>
+                <!--#endin getnextpage0 --> 
+              </select>
+            </td>
+            <td class="BabLoginMenuBackground" align="center" colspan="5"><a href="Javascript:move(true, document.homeform.elements[5])"><img src="images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+              <br>
+              <br>
+              <a href="Javascript:move(false, document.homeform.elements[5])"> 
+              <img src="images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+            </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center"> 
+              <input type="submit" name="Submit" value="{ create }" onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.submit()">
+            </td>
+            <td class="BabLoginMenuBackground" align="center" colspan="5">&nbsp; 
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  </form>
+
 <!--#end sitehomepage0 -->
+
 <!--#begin sitehomepage1 -->
 <br><br>
-<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ title }</center></td></tr></table></center><br><center>
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+	<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+  <tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
+
 <form method="post" name="homeform1" action="index.php">
 <input type="hidden" name="tg" value="site">
 <input type="hidden" name="idx" value="modify">
 <input type="hidden" name="item" value="{ id }">
 <input type="hidden" name="update" value="homepage1">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td>
-<select name="listhome1"  size=12 multiple>
-<option value="0">{ listhometxt }</option>
-<!--#in getnexthome1 -->
-<option value="{ home1id }">{ home1val }</option>
-<!--#endin getnexthome1 -->
-</select>
-</td>
-<td align="center" valign="center"><input type="button" name="moveleft" value="<<" OnClick="Javascript:moveOptions(document.homeform1.elements[7],document.homeform1.listhome1)"><br><br><input type="button" name="moveright" value=">>" OnClick="Javascript:moveOptions(document.homeform1.listhome1,document.homeform1.elements[7])"></td>
-<td>
-<select name="listpage1[]"  size=12 multiple>
-<option value="0">{ listpagetxt }</option>
-<!--#in getnextpage1 -->
-<option value="{ page1id }">{ page1val }</option>
-<!--#endin getnextpage1 -->
-</select>
-</td>
-</td>
-<td align="center" valign="center"><input type="button" name="moveup" value="{ moveup }" onclick="move(true, document.homeform1.elements[7])"><br><br><input type="button" name="movedown" value="{ movedown }"  onclick="move(false, document.homeform1.elements[7])"></td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td align="center"><input type="submit" name="Submit" value="{ create }" onclick="Javascript:selectAll(document.homeform1.elements[7]); document.homeform1.submit()"></td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-</table>
-</center>
-</form>
-</td></tr>
-</table>
-</center>
+
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="6"> 
+              <select name="listhome1"  size=12 multiple>
+                <option value="0">{ listhometxt }</option>
+                <!--#in getnexthome1 --> 
+                <option value="{ home1id }">{ home1val }</option>
+                <!--#endin getnexthome1 --> 
+              </select>
+              <a href="Javascript:moveOptions(document.homeform1.elements[5],document.homeform1.listhome1)" >	
+              </a> <br>
+              <br>
+              <a href="Javascript:moveOptions(document.homeform1.listhome1,document.homeform1.elements[5])"> 
+              </a> <a href="Javascript:move(true, document.homeform1.elements[5])"> 
+              </a> </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:moveOptions(document.homeform1.listhome1,document.homeform1.elements[5])"><img src="images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.homeform1.elements[5],document.homeform1.listhome1)" ><img src="images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
+            <td class="BabLoginMenuBackground" align="center" colspan="5">&nbsp;</td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center"> 
+              <select name="listpage1[]"  size=12 multiple>
+                <option value="0">{ listpagetxt }</option>
+                <!--#in getnextpage1 --> 
+                <option value="{ page1id }">{ page1val }</option>
+                <!--#endin getnextpage1 --> 
+              </select>
+            </td>
+            <td class="BabLoginMenuBackground" align="center" colspan="5"><a href="Javascript:move(true, document.homeform1.elements[5])"><img src="images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+              <br>
+              <br>
+              <a href="Javascript:move(false, document.homeform1.elements[5])"> 
+              <img src="images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+            </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center"> 
+              <input type="submit" name="Submit" value="{ create }" onClick="Javascript:selectAll(document.homeform1.elements[5]); document.homeform1.submit()">
+            </td>
+            <td class="BabLoginMenuBackground" align="center" colspan="5">&nbsp; 
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  </form>
+
 <!--#end sitehomepage1 -->
-</BODY>
-</HTML>

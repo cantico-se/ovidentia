@@ -8,7 +8,7 @@
 <META NAME="Author" CONTENT="">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
-<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<LINK rel="stylesheet" title="Default" href="{babUrl }styles/{ style }" type="text/css">
 <script type="text/javascript">
 <!--
 function onCheckAll(ctrlPrefix, state)
@@ -59,57 +59,77 @@ self.opener.window.document.composef.elements[target].value = editval+pad+addres
 //-->
 </script>
 </HEAD>
-<BODY class="BabBodyBgnd">
+<BODY class="BabBackground">
 <br><br>
-<center>
+
 <form method="post" name="listcontact" action="index.php">
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr>
-<td class="BabListTitleBgnd" ><a href="javascript:onCheckAll('tocheck', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a>&nbsp;</td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ fullname }</b></td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
-</tr>
-<!--#in getnextcontact -->
-<tr><td nowrap><input type="checkbox" name="tocheck[]" value="{ checkval }">&nbsp;</td>
-<td nowrap>{ nameval }</td>
-<td nowrap>{ emailval }</td>
-</tr>
-<!--#endin getnextcontact -->
-<!--#in getnextgroupmember -->
-<tr><td nowrap><input type="checkbox" name="tocheck[]" value="{ checkval }">&nbsp;G</td>
-<td nowrap>{ nameval }</td>
-<td nowrap>{ emailval }</td>
-</tr>
-<!--#endin getnextgroupmember -->
-<!--#in getnextgroup -->
-<tr><td nowrap><input type="checkbox" name="tocheck[]" value="{ checkval }">&nbsp;G</td>
-<td nowrap>{ nameval }</td>
-<td nowrap>{ emailval }</td>
-</tr>
-<!--#endin getnextgroup -->
-<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('tocheck', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
-<td class="BabListTitleBgnd" colspan="2">
-<!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp;
-<!--#else allselected -->
-<a class="BabMenuLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
-<!--#endif allselected -->
-<!--#in getnextselect -->
-<!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp;
-<!--#else selected -->
-<a class="BabMenuLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
-<!--#endif selected -->
-<!--#endin getnextselect -->
-</td>
-</TBODY>
-</table>
-</td></tr>
-</table>
-</center>
-<br><center><a class="BabDialogLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabDialogLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabDialogLink"  href="{ tobccurl }">{ tobccname }</a><br><br><a class="BabDialogLink"  href="{ closeurl }">{ closename }</a>
+<center><a class="BabMailCardClose"  href="{ closeurl }">{ closename }</a><br><br><a class="BabMailCardToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabMailCardToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabMailCardToLink"  href="{ tobccurl }">{ tobccname }</a>
+</center><br>
+<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+    <tr> 
+      <td> 
+        <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+          <tr> 
+            <td class="BabTopicsAdminChoiceFontBackground" colspan="7"> 
+              <!--#if allselected "== 1" -->
+              { allname }&nbsp;&nbsp; 
+              <!--#else allselected -->
+              <a class="" href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
+              <!--#endif allselected -->
+              <!--#in getnextselect -->
+              <!--#if selected "== 1" -->
+              { selectname }&nbsp;&nbsp; 
+              <!--#else selected -->
+              <a class="" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
+              <!--#endif selected -->
+              <!--#endin getnextselect -->
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabContactsTitleFontBackground" width="1%" height="19" colspan="2"><a href="javascript:onCheckAll('tocheck', true)"><img src="images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('tocheck', false)"><img src="images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+            <td class="BabContactsTitleFontBackground" align="left" valign="middle" height="19" >{ 
+              fullname }</td>
+            <td class="BabContactsTitleFontBackground" align="left" valign="middle" height="19" >{ 
+              email }</td>
+          </tr>
+        <!--#in getnextcontact -->
+          <tr> 
+            <td align="left" valign="middle" width="0%"> 
+              <input type="checkbox" name="tocheck[]" value="{ checkval }">
+            </td>
+            <td align="left" valign="middle" width="1%"><IMG SRC="images/Puces/PuceCardPerso.gif" WIDTH="21" HEIGHT="21" BORDER=0 ALT="Perso"></td>
+            <td class="BabTopicsContactsBodyFontBackground" align="left" valign="middle" nowrap>{ nameval }</td>
+            <!--#if accid "!= 0" -->
+            <!--#else accid -->
+            &nbsp;<a href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a> 
+            <!--#endif accid -->
+            <td class="BabTopicsContactsBodyFontBackground" align="left" valign="middle">{ 
+              emailval }&nbsp;</td>
+          </tr><!--#endin getnextcontact --><!--#in getnextgroupmember -->
+          <tr> 
+            <td align="left" valign="middle" width="0%"> 
+              <input type="checkbox" name="tocheck[]" value="{ checkval }">
+              </td>
+            <td align="left" valign="middle" width="1%"><IMG SRC="images/Puces/PuceCardGroup.gif" WIDTH="21" HEIGHT="18" BORDER=0 ALT="Group"></td>
+            <td align="left" valign="middle" nowrap>{ nameval }</td>
+            <td class="BabTopicsContactsBodyFontBackground" align="left" valign="middle">{ 
+              emailval }&nbsp;</td>
+          </tr><!--#endin getnextgroupmember --><!--#in getnextgroup -->
+          <tr> 
+            <td align="left" valign="middle" width="0%"> 
+              <input type="checkbox" name="tocheck[]" value="{ checkval }">
+             </td>
+            <td align="left" valign="middle" width="1%"><IMG SRC="images/Puces/PuceCardMailing.gif" WIDTH="20" HEIGHT="23" BORDER=0 ALT="Mailing"></td>
+            <td align="left" valign="middle" nowrap>{ nameval }</td>
+            <td class="BabTopicsContactsBodyFontBackground" align="left" valign="middle">{ 
+              emailval }&nbsp;</td>
+          </tr>
+          <!--#endin getnextgroup -->
+        </table>
+      </td>
+    </tr>
+  </table>
+  <br><center><a class="BabMailCardToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabMailCardToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabMailCardToLink"  href="{ tobccurl }">{ tobccname }</a><br><br><a class="BabMailCardClose"  href="{ closeurl }">{ closename }</a>
 </center>
 </form>
 </BODY>

@@ -1,101 +1,149 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../../babone/styles/babstyle2.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
 
 <!--#begin calmonth -->
-<center>
-<table class="BabMenuBgnd" border="0" width="95%" cellpadding="0" cellspacing="0">
-<tr>
-<td align="left" width="30%"><a class=BabMenuLink href="{ previousyear }"><<</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ previousmonth }"><</a></td>
-<td align="center"><b>{ monthurlname }</b></td>
-<td align="center"><a class=BabMenuLink href="{ weekurl }">{ weekurlname }</a></td>
-<td align="center"><a class=BabMenuLink href="{ dayurl }">{ dayurlname }</a></td>
-<td align="center"><a class=BabMenuLink href="{ gotodayurl }">{ gotodayname }</a></td>
-<td align="right" width="30%"><a class=BabMenuLink href="{ nextmonth }">></a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ nextyear }">>></a></td>
-</tr>
-</table>
-<br>
-<table class="BabSectionBgndContent" border="0" width="50%" cellpadding="0" cellspacing="0">
-<tr>
-<td align="center"><b>{ monthname }</b></td>
-</tr>
-</table>
-<br>
-<table border="0" width="95%" cellpadding="0" cellspacing="0">
-<tr>
-<!--#in getdayname -->
-<td width="15%">
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class=""><tr><td>
-<table border="0" class="BabSectionBgndContent" width="100%" cellpadding="0" cellspacing="3">
-<tr>
-<td class="BabSectionBgndTitle" align="center"><b>{ dayname }</b></td>
-</tr>
-</table>
-</td></tr></table>
-</td>
-<!--#endin getdayname -->
-</tr>
 
-<!--#in getweek -->
-<tr>
-<!--#in getday -->
-<td>
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class=""><tr><td>
-<!--#if currentmonth "== 1" -->
-<!--#if currentday "== 1" -->
-<table border="0" class="BabCurrentMonthDayBgnd" width="100%" cellpadding="0" cellspacing="3">
-<!--#else currentday -->
-<table border="0" class="BabActifMonthDayBgnd" width="100%" cellpadding="0" cellspacing="3">
-<!--#endif currentday -->
-<!--#else currentmonth -->
-<table border="0" class="BabMonthDayBgnd" width="100%" cellpadding="0" cellspacing="3">
-<!--#endif currentmonth -->
-<tr>
 
-<!--#if bowner "== 1" -->
-<td align="left"><a class=BabMenuLink href="{ neweventurl }">{ new }</a></td>
-<!--#else bowner -->
-<td align="left">&nbsp;</td>
-<!--#endif bowner -->
-<td>{ plus }</td>
-<td align="right"><a class=BabMenuLink href="{ daynumberurl }">{ daynumbername }</a></td>
-</tr>
-<!--#in getevent -->
-<tr	>
-<!--#if notempty "== 1" -->
-<td colspan="3" nowrap bgcolor="{ bgcolor }" title="{ title }"><a class="BabMenuLink" href="{ titletenurl }">{ hourten }&nbsp;{ titleten }</a></td>
-<!--#else notempty -->
-<td colspan="3" nowrap bgcolor="{ bgcolor }" title="{ title }">{ hourten }&nbsp;{ titleten }</td>
-<!--#endif notempty -->
-</tr>
-<!--#endin getevent -->
-<!--#in getgroupevent -->
-<tr>
-<!--#if notempty "== 1" -->
-<td colspan="3" nowrap bgcolor="{ bgcolor }" title="{ title }"><a class="BabMenuLink" href="{ titletenurl }">{ hourten }&nbsp;{ titleten }</a></td>
-<!--#else notempty -->
-<td colspan="3" nowrap bgcolor="{ bgcolor }" title="{ title }">{ hourten }&nbsp;{ titleten }</td>
-<!--#endif notempty -->
-</tr>
-<!--#endin getgroupevent -->
+
+<table width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+	<tr class="BabMenuBackground" > 
+		<td width="20%" align="left" valign="middle" > &nbsp;
+		<a class="BabCalendarNavLinkColor" href="{ previousyear }">&lt;&lt;</a>
+		&nbsp;&nbsp;&nbsp; 
+		<a class="BabCalendarNavLinkColor" href="{ previousmonth }">&lt; </a>
+		</td>		
+		<td width="10%" align="center" valign="middle" class="BabCalendarMenuActiveBackground" >
+        &nbsp;{ monthurlname }&nbsp;
+		</td>
+		<td>
+		&nbsp;<a class="BabCalendarNavLinkColor" href="{ weekurl }">{ weekurlname }</a>&nbsp;
+		</td>
+		<td width="10%" align="center" valign="middle">
+        &nbsp;<a class="BabCalendarNavLinkColor" href="{ dayurl }">{ dayurlname }</a>&nbsp;
+		</td>
+		<td width="10%" align="center" valign="middle">
+		&nbsp;<a class="BabCalendarNavLinkColor" href="{ gotodayurl }">{ gotodayname }</a>&nbsp;
+		</td>
+		<td width="50%" align="right" valign="middle">
+		<a class="BabCalendarNavLinkColor" href="{ nextmonth }">&gt;</a>&nbsp;&nbsp;&nbsp;
+		<a class="BabCalendarNavLinkColor" href="{ nextyear }">&gt;&gt;</a>&nbsp;
+		</td>
+	</tr>
 </table>
-</td></tr></table>
-</td>
-<!--#endin getday -->
-</tr>
-<!--#endin getweek -->
+
+<table class="BabCalendarCadreBackground" width="100%" cellpadding="5" cellspacing="0" height="0" align="center">
+	<tr>
+		<td>
+			<table class="BabCalendarCurentMonthFont" width="20%" cellpadding="2" cellspacing="0" height="0" align="center">
+				<tr class="BabCalendarCurentMonthFont">
+					<td class="BabCalendarCurentMonthFont" align="center" valign="middle">
+					{ monthname }
+					</td>
+				</tr>
+			</table>
+
+			<BR><BR>
+
+			<table width="100%" cellpadding="0" cellspacing="1" height="0" align="center">
+				<tr>
+					<!--#in getdayname -->
+					<td>			
+						<table width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+							<tr>
+								<td>
+									<table width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+										<tr>
+											<td class="BabCalendarDayFont" align="center">
+											{ dayname }<br> <img src="images/Puces/Space1PxTrans.gif" width="80" height="1"> 
+											</td>
+										</tr>	
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+					<!--#endin getdayname -->	
+				</tr>
+             	<!--#in getweek -->
+				<tr>
+				<!--#in getday -->
+					<td>
+						
+									<!--#if currentmonth "== 1" -->
+									<!--#if currentday "== 1" -->
+									
+                                    <table  class="BabMonthCalendarCurentDayBackground" width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+									<!--#else currentday -->
+                                    
+									<table  class="BabCalendarBodyBackground" width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+									<!--#endif currentday -->
+									<!--#else currentmonth -->
+                                    
+									<table  class="BabCalendarBodyBadMonthBackground" width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+									<!--#endif currentmonth -->
+										<tr>
+											<!--#if bowner "== 1" -->
+											<td width="100%" align="left" valign="top">
+											<a class="BabMonthCalendarNewLinkColor" href="{ neweventurl }">{ new }</a>
+											</td>
+											<!--#else bowner -->
+											<td class="BabCalendarBodyFont" width="100%" align="center" valign="top">&nbsp;
+																		
+											</td>
+											<!--#endif bowner -->
+											<td class="BabCalendarBodyFont" width="100%" align="center" valign="top">
+											{ plus }&nbsp;
+											</td>
+											<td class="BabCalendarBodyFont" width="100%" align="right" valign="top">
+											<a class="BabMonthCalendarDayNumberLinkColor" href="{ daynumberurl }">{ daynumbername }</a>
+											</td>
+										</tr>
+                                        </table>
+										
+										<table  class="BabCalendarBodyBackground" width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+                                        <!--#in getevent -->
+                                        <tr	class="BabCalendarBodyBackground" >
+											<!--#if notempty "== 1" -->
+											<td class="BabMonthCalendarEventHourfont" width="20%" nowrap>&nbsp;{ hourten }&nbsp;
+                                            </td>
+                                            <td class="BabCalendarBodyFont" colspan="3" bgcolor="{ bgcolor }" title="{ title }" width="80%" nowrap>
+											&nbsp;<a class="BabMonthCalendarEventLinkColor" href="{ titletenurl }">{ titleten }</a>
+											</td>
+											<!--#else notempty -->
+                                            <td class="BabMonthCalendarEventHourfont" width="20%" nowrap>&nbsp;{ hourten }&nbsp;
+                                            </td>
+											<td class="BabCalendarBodyFont" colspan="3"  bgcolor="{ bgcolor }" title="{ title }" width="80%" nowrap>&nbsp;{ titleten }</td>	
+											<!--#endif notempty -->
+										</tr>
+										<!--#endin getevent -->
+									<!--#in getgroupevent -->
+										<tr>
+										<!--#if notempty "== 1" -->
+                                        <td class="BabMonthCalendarEventHourfont" width="20%" nowrap>&nbsp;{ hourten }&nbsp;
+                                            </td>
+											<td class="BabCalendarBodyFont" colspan="3"  bgcolor="{ bgcolor }" title="{ title }" width="80%" nowrap>
+											&nbsp;<a class="BabMonthCalendarEventLinkColor" href="{ titletenurl }" >{ titleten }</a>
+											</td>
+										<!--#else notempty -->
+                                        <td class="BabMonthCalendarEventHourfont" width="20%" nowrap>&nbsp;{ hourten }&nbsp;
+                                            </td>
+											<td class="BabCalendarBodyFont" colspan="3"  bgcolor="{ bgcolor }" title="{ title }" align="right" valign="top" width="80%" nowrap >&nbsp;{ titleten }
+											</td>
+										<!--#endif notempty -->
+										</tr>
+										<!--#endin getgroupevent -->
+									</table>
+								
+					</TD>
+				<!--#endin getday -->
+				</tr>
+				<!--#endin getweek -->
+			</table>
+		</td>
+	</tr>
 </table>
+
 <br>
+
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="calendar">
 <input type="hidden" name="idx" value="{ view }">
@@ -104,205 +152,338 @@
 <input type="hidden" name="year" value="{ year }">
 <input type="hidden" name="start" value="{ start }">
 <input type="hidden" name="viewcal" value="view">
-<table border="0" width="95%" cellpadding="0" cellspacing="0">
-<tr>
-<td align="center">
-<select name="calendar">
-<!--#in getnextcal -->
-<option value="{ vcalid }" { selected }>{ vcalname }</option>
-<!--#endin getnextcal -->
-</select>
-</td>
-</tr>
-<tr>
-<td align="center">&nbsp;</td>
-</tr>
-<tr>
-<td align="center">
-<input type="submit" name="Submit" value="{ viewthis }"></td>
-</tr>
-</table>
+  <table  width="50px" align="center" cellpadding="2" cellspacing="0" >
+    <tr valign="middle"> 
+      <td align="center"> 
+        <select name="calendar">
+          <!--#in getnextcal -->
+          <option value="{ vcalid }" { selected }>{ vcalname }</option>
+          <!--#endin getnextcal -->
+        </select>
+      </td>
+      <td align="center"> 
+        <input type="submit" name="Submit" value="{ viewthis }">
+      </td>
+    </tr>
+  </table>
+
 </form>
-</center>
+
+
+
 <!--#end calmonth -->
+
 <br><br><br><br><br>
+
 <!--#begin calweek -->
-<center>
-<table class="BabMenuBgnd" border="0" width="95%" cellpadding="0" cellspacing="0">
-<tr>
-<td align="left" width="30%"><a class=BabMenuLink href="{ previousyear }"><<<</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ previousmonth }"><<</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ previousweek }"><</a></td>
-<td align="center"><a class=BabMenuLink href="{ monthurl }">{ monthurlname }</a></td>
-<td align="center"><b>{ weekurlname }</b></td>
-<td align="center"><a class=BabMenuLink href="{ dayurl }">{ dayurlname }</a></td>
-<td align="center"><a class=BabMenuLink href="{ gotodayurl }">{ gotodayname }</a></td>
-<td align="right" width="30%"><a class=BabMenuLink href="{ nextweek }">></a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ nextmonth }">>></a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ nextyear }">>>></a></td>
-</tr>
+
+
+
+
+
+<table width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+	<tr class="BabMenuBackground" > 
+		<td width="20%" align="left" valign="middle" > &nbsp;
+		<a class="BabCalendarNavLinkColor" href="{ previousyear }">&lt;&lt;</a>
+		&nbsp;&nbsp;&nbsp; 
+		<a class="BabCalendarNavLinkColor" href="{ previousmonth }">&lt; </a>
+		</td>		
+		<td width="10%" align="center" valign="middle">
+        &nbsp;<a class="BabCalendarNavLinkColor" href="{ monthurl }">{ monthurlname }<a>&nbsp;
+		</a></a></td>
+		<td width="10%" align="center" valign="middle" class="BabCalendarMenuActiveBackground" >
+		&nbsp;{ weekurlname }&nbsp;
+		</td>
+		<td width="10%" align="center" valign="middle">
+        &nbsp;<a class="BabCalendarNavLinkColor" href="{ dayurl }">{ dayurlname }</a>&nbsp;
+		</td>
+		<td width="10%" align="center" valign="middle">
+
+		&nbsp;<a class="BabCalendarNavLinkColor" href="{ gotodayurl }">{ gotodayname }</a>&nbsp;
+		</td>
+		<td width="50%" align="right" valign="middle">
+		<a class="BabCalendarNavLinkColor" href="{ nextmonth }">&gt;</a>&nbsp;&nbsp;&nbsp;
+		<a class="BabCalendarNavLinkColor" href="{ nextyear }">&gt;&gt;</a>&nbsp;
+		</td>
+	</tr>
 </table>
+
+<table class="BabCalendarCadreBackground" width="100%" cellpadding="5" cellspacing="0" height="0" align="center">
+	<tr>
+		<td>
+			<table  class="" cellpadding="0"cellspacing="0" height="0" width="100%" align="center" >
+			<!--#in getday -->
+					<tr>
+						<td>
+							<table class="" cellpadding="0"cellspacing="1" height="0" width="100%" align="center"" >
+								   <tr>
+								   	   <td>
+									   	   <table class="BabCalendarCurentMonthFont" width="100%"  >
+										   		<tr>
+												  	  <td class="BabCalendarDayFont" align="right">{ dayname }</td>
+												</tr>
+												<!--#in getevent -->
+												<tr>
+													 <td bgcolor="{ bgcolor }" title="{ title }"><a class="BabMonthCalendarEventLinkColor" href="{ titletenurl }">{ titleten }</a></td>
+												</tr>
+												<!--#endin getevent -->
+												<!--#in getgroupevent -->
+												<tr>
+													<td nowrap bgcolor="{ bgcolor }" title="{ title }"><a class="BabMonthCalendarEventLinkColor" href="{ titletenurl }">{ titleten }</a></td>
+												</tr>
+												<!--#endin getgroupevent -->
+												<tr>
+												<!--#if bowner "== 1" -->
+													<td nowrap><a class="BabMonthCalendarNewLinkColor" href="{ neweventurl }">{ new }</a></td>
+													<!--#else bowner -->
+													<td nowrap>&nbsp;</td>
+													<!--#endif bowner -->
+												</tr>
+											</table>
+										</td>
+									</tr>					
+							</table>
+						</td>
+					</tr>
+		<!--#endin getday -->
+		</table>
+	 </td>
+	 </tr>
+	 </table>
+
+
+
 <br>
-<table border="0" width="95%" cellpadding="0" cellspacing="0">
-<!--#in getday -->
-<tr>
-<td>
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class=""><tr><td>
-<table border="0" class="BabSectionBgndContent" width="100%" cellpadding="0" cellspacing="3">
-<tr>
-<td class="BabSectionBgndTitle" align="right"><b>{ dayname }</b></td>
-</tr>
-<!--#in getevent -->
-<tr	>
-<td nowrap bgcolor="{ bgcolor }" title="{ title }"><a class="BabMenuLink" href="{ titletenurl }">{ titleten }</a></td>
-</tr>
-<!--#endin getevent -->
-<!--#in getgroupevent -->
-<tr>
-<td nowrap bgcolor="{ bgcolor }" title="{ title }"><a class="BabMenuLink" href="{ titletenurl }">{ titleten }</a></td>
-</tr>
-<!--#endin getgroupevent -->
-<tr>
-<!--#if bowner "== 1" -->
-<td nowrap><a class=BabMenuLink href="{ neweventurl }">{ new }</a></td>
-<!--#else bowner -->
-<td nowrap>&nbsp;</td>
-<!--#endif bowner -->
-</tr>
-</table>
-</td></tr></table>
-</td>
-</tr>
-<!--#endin getday -->
-</table>
-</center>
-<br>
+
 <form method="post" action="index.php">
+
 <input type="hidden" name="tg" value="calendar">
+
 <input type="hidden" name="idx" value="{ view }">
+
 <input type="hidden" name="day" value="{ day }">
+
 <input type="hidden" name="month" value="{ month }">
+
 <input type="hidden" name="year" value="{ year }">
+
 <input type="hidden" name="start" value="{ start }">
+
 <input type="hidden" name="viewcal" value="view">
-<table border="0" width="95%" cellpadding="0" cellspacing="0">
+
+<table  width="95%"  >
+
 <tr>
+
 <td align="center">
+
 <select name="calendar">
+
 <!--#in getnextcal -->
+
 <option value="{ vcalid }" { selected }>{ vcalname }</option>
+
 <!--#endin getnextcal -->
+
 </select>
+
 </td>
+
 </tr>
+
 <tr>
+
 <td align="center">&nbsp;</td>
+
 </tr>
+
 <tr>
+
 <td align="center">
+
 <input type="submit" name="Submit" value="{ viewthis }"></td>
+
 </tr>
+
 </table>
+
 </form>
+
 <!--#end calweek -->
+
 <br><br><br><br><br>
+
 <!--#begin calday -->
-<center>
-<table class="BabMenuBgnd" border="0" width="95%" cellpadding="0" cellspacing="0">
-<tr>
-<td align="left" width="30%"><a class=BabMenuLink href="{ previousyear }"><<<</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ previousmonth }"><<</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ previousday }"><</a></td>
-<td align="center"><a class=BabMenuLink href="{ monthurl }">{ monthurlname }</a></td>
-<td align="center"><a class=BabMenuLink href="{ weekurl }">{ weekurlname }</a></td>
-<td align="center"><b>{ dayurlname }</b></td>
-<td align="center"><a class=BabMenuLink href="{ gotodayurl }">{ gotodayname }</a></td>
-<td align="right" width="30%"><a class=BabMenuLink href="{ nextday }">></a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ nextmonth }">>></a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ nextyear }">>>></a></td>
-</tr>
+
+<table width="100%" cellpadding="0" cellspacing="0" height="0" align="center">
+	<tr class="BabMenuBackground" > 
+		<td width="20%" align="left" valign="middle" > &nbsp;
+		<a class="BabCalendarNavLinkColor" href="{ previousyear }">&lt;&lt;</a>
+		&nbsp;&nbsp;&nbsp; 
+		<a class="BabCalendarNavLinkColor" href="{ previousmonth }">&lt; </a>
+		</td>		
+		<td width="10%" align="center" valign="middle" >
+        <a class="BabCalendarNavLinkColor" href="{ monthurl }">&nbsp;{ monthurlname }&nbsp;<a>
+		</a></a></td>
+		<td width="10%" align="center" valign="middle"  >
+		&nbsp;<a class="BabCalendarNavLinkColor" href="{ weekurl }">{ weekurlname }</a>&nbsp;
+		</td>
+		<td width="10%" align="center" valign="middle" class="BabCalendarMenuActiveBackground" >
+        &nbsp;{ dayurlname }&nbsp;
+		</td>
+		<td width="10%" align="center" valign="middle">
+		&nbsp;<a class="BabCalendarNavLinkColor" href="{ gotodayurl }">{ gotodayname }</a>&nbsp;
+		</td>
+		<td width="50%" align="right" valign="middle">
+		<a class="BabCalendarNavLinkColor" href="{ nextmonth }">&gt;</a>&nbsp;&nbsp;&nbsp;
+		<a class="BabCalendarNavLinkColor" href="{ nextyear }">&gt;&gt;</a>&nbsp;
+		</td>
+	</tr>
+</table>
+
+<table class="BabCalendarCadreBackground" width="100%" cellpadding="5" cellspacing="0" height="0" align="center">
+  <tr> 
+    <td> 
+      <table  class="" cellpadding="0"cellspacing="0" height="0" width="100%" align="center" >
+        
+        <tr> 
+          <td> 
+            <table class="" cellpadding="0"cellspacing="1" height="0" width="100%" align="center"" >
+              <tr> 
+                <td>
+                  <table  class="" width="100%" cellpadding="3" cellspacing="0" height="0" align="center" >
+                    <tr> 
+                      <td class="BabDayCalendarTitleFont" width="1%" ><a class="BabDayCalendarNavigLink" href="{ prevtimeurl }"><<</a></td>
+                      <td width="98%" class="BabDayCalendarTitleFont" align="center" colspan="{ colspan }"><b>{ 
+                        dayname }</b></td>
+                      <td class="BabDayCalendarTitleFont" width="1%" ><a class="BabDayCalendarNavigLink" href="{ nexttimeurl }">>></a></td>
+                    </tr></table>
+					<table  class="" width="100%" cellpadding="2" cellspacing="1" height="0" align="center" >
+                                        <!--#in getnexthour -->
+                    <tr> 
+                      <!--#if bowner "== 1" -->
+                      <td width="1%" ><a class="BabDayCalendarHourLink" href="{ hoururl }">{ 
+                        hour }</a></td>
+                      <!--#else bowner -->
+                      <td width="1%" >{ hour }</td>
+                      <!--#endif bowner -->
+                      <!--#in getnextevent -->
+                      <!--#if notempty "== 1" -->
+                      <td bgcolor="{ bgcolor }"><a class="BabDayCalendarEventLink" href="{ titletenurl }">{ 
+                        titleten }</a></td>
+                      <!--#else notempty -->
+                      <td bgcolor="{ bgcolor }">{ titleten }</td>
+                      <!--#endif notempty -->
+                      <!--#endin getnextevent -->
+                      <!--#in getnextgrpevent -->
+                      <!--#if notempty "== 1" -->
+                      <td bgcolor="{ bgcolor }"><a class="BabDayCalendarEventLink" href="{ titletenurl }">{ 
+                        titleten }</a></td>
+                      <!--#else notempty -->
+                      <td bgcolor="{ bgcolor }">{ titleten }</td>
+                      <!--#endif notempty -->
+                      <!--#endin getnextgrpevent -->
+                      <td width="1%">&nbsp;</td>
+                    </tr>
+                    <!--#endin getnexthour -->
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+       
+      </table>
+    </td>
+  </tr>
 </table>
 <br>
-<center>
-<table border="0" width="95%" cellpadding="0" cellspacing="0">
-<tr>
-<td>
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class=""><tr><td>
-<table border="0" class="BabSectionBgndContent" width="100%" cellpadding="0" cellspacing="0">
-<tr>
-<td width="1%" bgcolor="white"><a class=BabMenuLink href="{ prevtimeurl }"><<</a></td>
-<td width="98%" class="BabSectionBgndTitle" align="center" colspan="{ colspan }"><b>{ dayname }</b></td>
-<td width="1%" bgcolor="white"><a class=BabMenuLink href="{ nexttimeurl }">>></a></td>
-</tr>
-<!--#in getnexthour -->
-<tr>
-<!--#if bowner "== 1" -->
-<td width="1%" bgcolor="white"><a class=BabMenuLink href="{ hoururl }">{ hour }</a></td>
-<!--#else bowner -->
-<td width="1%" bgcolor="white">{ hour }</td>
-<!--#endif bowner -->
-<!--#in getnextevent -->
-<!--#if notempty "== 1" -->
-<td bgcolor="{ bgcolor }"><a class="BabMenuLink" href="{ titletenurl }">{ titleten }</a></td>
-<!--#else notempty -->
-<td bgcolor="{ bgcolor }">{ titleten }</td>
-<!--#endif notempty -->
-<!--#endin getnextevent -->
-<!--#in getnextgrpevent -->
-<!--#if notempty "== 1" -->
-<td bgcolor="{ bgcolor }"><a class="BabMenuLink" href="{ titletenurl }">{ titleten }</a></td>
-<!--#else notempty -->
-<td bgcolor="{ bgcolor }">{ titleten }</td>
-<!--#endif notempty -->
-<!--#endin getnextgrpevent -->
-<td width="1%">&nbsp;</td>
-</tr>
-<!--#endin getnexthour -->
-</table>
-</td></tr></table>
-</td>
-</tr>
-</table>
-</center>
-<br>
+
 <form method="post" action="index.php">
+
 <input type="hidden" name="tg" value="calendar">
+
 <input type="hidden" name="idx" value="{ view }">
+
 <input type="hidden" name="day" value="{ day }">
+
 <input type="hidden" name="month" value="{ month }">
+
 <input type="hidden" name="year" value="{ year }">
+
 <input type="hidden" name="start" value="">
+
 <input type="hidden" name="viewcal" value="view">
-<table border="0" width="95%" cellpadding="0" cellspacing="0">
+
+<table  width="95%"  >
+
 <tr>
+
 <td align="center">
+
 <select name="calendar">
+
 <!--#in getnextcal -->
+
 <option value="{ vcalid }" { selected }>{ vcalname }</option>
+
 <!--#endin getnextcal -->
+
 </select>
+
 </td>
+
 </tr>
+
 <tr>
+
 <td align="center">&nbsp;</td>
+
 </tr>
+
 <tr>
+
 <td align="center">
+
 <input type="submit" name="Submit" value="{ viewthis }"></td>
+
 </tr>
+
 </table>
+
 </form>
+
 <!--#end calday -->
+
 <br><br><br><br><br>
+
 <!--#begin categorieslist -->
+
 <br>
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td>
-<!--#in getnextcat -->
-<tr><td bgcolor="#{ arr[bgcolor] }" nowrap>&nbsp;{ arr[description] }</td>
-</tr>
-<!--#endin getnextcat -->
-</TBODY>
-</table>
+
+
+
+
+
+<table  width="10%" cellpadding="3" align="left" >
+  <tr>
+      
+    <td class="BabMonthCalendarEventLegendTitleFont" height="1"> { description 
+      } 
+      <table   width="100%" cellpadding="2" cellspacing="2">        
+         <!--#in getnextcat -->
+         <tr> 
+          <td bgcolor="#{ arr[bgcolor] }" nowrap  height="10" width="20">&nbsp;</td>
+          <td class="BabMonthCalendarEventLegendFont" height="10" nowrap>&nbsp;{ arr[description] }</td>
+        </tr>
+        <!--#endin getnextcat -->
+      </table>
+
 </td></tr>
+
 </table>
-</center>
+
+
+
+
 <!--#end categorieslist -->
-</BODY>
-</HTML>

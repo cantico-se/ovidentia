@@ -1,67 +1,98 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle1.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
-<br><br><br><br><br>
 <!--#begin threadlist -->
-<center>
-<table class="BabListPostContentBgnd" border="0" width="95%" cellpadding="0" cellspacing="0">
-<tr>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ topurl }">{ topname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ prevurl }">{ prevname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ nexturl }">{ nextname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ bottomurl }">{ bottomname }</a></td>
-</tr>
-</table>
-<br>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabListThreadContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr>
-<td class="BabListThreadTitleBgnd" align="center"></td>
-<td class="BabListThreadTitleBgnd" align="center"><b>{ thread }</b></td>
-<td class="BabListThreadTitleBgnd" align="center"><b>{ starter }</b></td>
-<td class="BabListThreadTitleBgnd" align="center"><b>{ repliesname }</b></td>
-<td class="BabListThreadTitleBgnd" align="center"><b>{ views }</b></td>
-<td class="BabListThreadTitleBgnd" align="center"><b>{ lastpost }</b></td>
-</tr>
-<!--#in getnext -->
-<tr>
-<!--#if status "== *" --><td><img src="images/waiting.gif" alt=""></td><!--#else status -->
-<!--#if arrthread[active] "== Y" --><td><img src="images/forumo.gif" alt=""></td><!--#else arrthread[active] -->
-<td><img src="images/forumc.gif" alt=""></td><!--#endif arrthread[active] --><!--#endif status -->
-<td><a class=BabMenuLink href="{ subjecturl }">{ subjectname }</a></td>
-<td nowrap>{ arrpost[author] }</td>
-<td align="center">{ replies }</td>
-<td align="center">{ arrthread[views] }</td>
-<td nowrap>{ lastpostdate }</td>
-</tr>
-<!--#endin getnext -->
-<tr><td colspan="6">
-<table class=BabListThreadContentBgnd border="0" width="100%" cellpadding="0" cellspacing="0">
-<tr>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ topurl }">{ topname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ prevurl }">{ prevname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ nexturl }">{ nextname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ bottomurl }">{ bottomname }</a></td>
-</tr>
-</table>
-</td>
-</tr>
-</TBODY>
-</table>
-</td></tr>
-</table>
-</center>
+
+  <br>
+  
+<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+      <td>
+        
+      <table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+        <tr align="left" valign="middle"> 
+          <td  width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ topurl }">{ 
+            topname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ prevurl }">{ 
+            prevname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ nexturl }">{ 
+            nextname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ bottomurl }">{ 
+            bottomname }</a>&nbsp </td>
+          <td width="96%" height="20">&nbsp;</td>
+        </tr>
+      </table>
+        
+        
+            
+      <table border="0" width="100%" cellpadding="2" cellspacing="0">
+        <tr> 
+                	<td class="BabForumTitleBackground" width="10%">&nbsp;</td>
+                    
+          <td class="BabForumTitleBackground" width="60%">{ thread }</td>
+                    
+          <td class="BabForumTitleBackground" width="20%" align="center">{ 
+            starter }</td>
+                    
+          <td class="BabForumTitleBackground" width="5%" align="center"><img src="images/Puces/PuceForumContrib.gif" alt="{ repliesname }"></td>                  
+               		
+          <td class="BabForumTitleBackground" width="5%" align="center"><img src="images/Puces/PuceForumConsult.gif" alt="{ views }"></td>                  
+                    
+          <td class="BabForumTitleBackground" width="10%" align="center">{ 
+            lastpost }</td>
+                </tr>
+                <!--#in getnext -->
+                
+              	<tr valign="middle"> 
+                <!--#if status "== *" -->
+                	
+          <td class="BabForumBackground" width="1%" align="center"><img src="images/Puces/PuceForumWaiting.gif" alt=""></td>
+                  	<!--#else status -->
+                  	<!--#if arrthread[active] "== Y" -->
+                    
+          <td class="BabForumBackground" width="1%" align="center"><img src="images/Puces/PuceForumOpen.gif" alt=""></td>
+                 	<!--#else arrthread[active] -->
+                  	
+          <td class="BabForumBackground" width="1%" align="center"><img src="images/Puces/PuceForumClose.gif" alt=""></td>
+                  	<!--#endif arrthread[active] -->
+              	<!--#endif status -->
+                  
+                	
+          <td class="BabForumBackground" width="60%" align="left"><a class="BabForumTopicsLinkColor" href="{ subjecturl }">{ 
+            subjectname }</a></td>
+                  	
+          <td class="BabForumBackground" nowrap width="20%" align="center">{ 
+            arrpost[author] }</td>
+                    
+          <td class="BabForumBackground" width="5%" nowrap align="center">{ 
+            replies }</td>                  
+                	
+          <td class="BabForumBackground" width="5%" nowrap align="center">{ 
+            arrthread[views] }</td>
+                  	<td class="BabForumBackground" width="10%" nowrap align="left">{ lastpostdate }</td>
+                </tr>
+                <!--#endin getnext -->
+                <tr> 
+                  <td colspan="6"> </td>
+                </tr>
+              </table>
+    
+        
+      <table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+        <tr valign="middle" align="left"> 
+          <td  width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ topurl }">{ 
+            topname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ prevurl }">{ 
+            prevname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ nexturl }">{ 
+            nextname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ bottomurl }">{ 
+            bottomname }</a>&nbsp </td>
+          <td width="96%" height="20">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+    </tr>
+  </table>
+
 <!--#end threadlist -->
 <br><br><br><br><br>
 <!--#begin threadcreate -->
@@ -74,7 +105,7 @@
 <input type="hidden" name="forum" value="{ forum }">
 <input type="hidden" name="add" value="addthread">
 <center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<table class="" width="50%" border="0" cellspacing="5" cellpadding="0">
 <tr>
 <td align="right" nowrap>{ name }:</td>
 <td nowrap>
@@ -142,5 +173,3 @@
 </table>
 </center>
 <!--#end threadcreate -->
-</BODY>
-</HTML>

@@ -1,189 +1,191 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle1.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
 <!--#begin categorycreate -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
 <form method="post" action="index.php">
-<input type="hidden" name="tg" value="topics">
-<input type="hidden" name="idx" value="Categories">
-<input type="hidden" name="add" value="add">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td width="107" align="right">{ category }</td>
-<td width="103"><input type="text" name="category" size="60" maxlength="60"></td>
-</tr>
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="description"></textarea></td>
-</tr>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td>
-<SCRIPT LANGUAGE="JavaScript"> 
+  <input type="hidden" name="tg" value="topics">
+  <input type="hidden" name="idx" value="Categories">
+  <input type="hidden" name="add" value="add">
+  <table class="BabSectionsAdminCadreFontBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr>
+      <td> 
+        <table class="BabSectionsAdminBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr align="left" valign="middle"> 
+            <td class="BabSectionsAdminTitleFontBackground" width="91%">{ category }</td>
+          </tr>
+          <tr align="left" valign="middle"> 
+            <td width="91%"> 
+              <input type="text" name="category" size="30" maxlength="40">
+            </td>
+          </tr>
+              <tr class="BabSectionsAdminTitleFontBackground" align="left"><td>{ description }</td></tr>
+          <!-- Instanciation de la barre d'outils -->
+		  <!--#if msie "== 1" --> 
+          <script src="templates/SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description"></textarea>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
 	editor.ToolBar();
-</SCRIPT>
-</td>
-</tr>
-<!--#endif msie -->
-<tr>
-<td align="right">{ description }</td>
-<td>
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "description", "0", "100%", "160");
-</SCRIPT>
-<!--#else msie -->
-<textarea cols="50" rows="10" name="description"></textarea>
-<!--#endif msie -->
-</td>
-</tr>
-<tr>
-<td width="107" align="right">{ approver }</td>
-<td width="103"><input type="text" name="approver" size="60"></td>
-</tr>
-<!--#if msie "== 1" -->
-<tr>
-<td align="right">&nbsp;</td>
-<td><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
-</tr>
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+            </td>
+          </tr>
+          <!--#endif msie --> 
+		
+        <tr>
+            <td width="91%">
+			<!--#if msie "== 1" --> 
+              <script language="JavaScript">
+	editor.InFrame(0, "description", "0", "90%", "160");
+</script>
+              <!--#else msie --> 
+              <textarea cols="50" rows="20" name="description"></textarea>
+              <!--#endif msie --> </td>
+          </tr>
+		   <tr align="left" valign="middle"> 
+            <td class="BabSectionsAdminTitleFontBackground" width="91%">{ approver }</td>
+			</tr>
+			<tr align="left" valign="middle"> <td width="91%"><input type="text" name="approver" size="60" maxlength="80"></td>
+          </tr>
+          <!--#if msie "== 1" --> 
+          <tr>
+			            <td width="91%"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
-</SCRIPT>
-<!--#else msie -->
-<tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ add }"></td>
-</tr>
-<!--#endif msie -->
-</table>
-</center>
+</script>
+          <!--#else msie --> 
+          <tr> 
+            <td width="91%"> 
+              <input type="submit" name="Submit" value="{ add }">
+            </td>
+          </tr>
+          <!--#endif msie --> 
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
 <!--#end categorycreate -->
 <br><br><br><br><br>
 <!--#begin categorylist -->
-<center>
+
 <!--#in getnext -->
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="0">
-<TBODY>
-<tr><td class="BabFaqTitleBgnd" nowrap><b>
-<!--#if adminid "> 0" -->
-<a class=BabMenuLink href="{ urlcategory }">{ namecategory }</a>   ( { approver } )</b>
-<!--#else adminid -->
-{ namecategory }</b>
-<!--#endif adminid -->
-</td>
-<td class="BabFaqTitleBgnd"  align="right">
-<!--#if nbarticles "== 0" -->
-{ nbarticles }&nbsp;{ articles }
-<!--#else nbarticles -->
-<a class=BabMenuLink href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>
-<!--#endif nbarticles -->
-</td>
-</tr>
-<tr colspan="2"><td>{ arr[description] }</td>
-</tr>
-</TBODY>
-</table>
-</td></tr>
+
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+	<tr>
+		<td class="BabTopicsAdminListTitleFontBackground" nowrap>
+			<!--#if adminid "> 0" -->
+			<a class="BabTopicsAdminTitleLink" href="{ urlcategory }">{ namecategory }</a> ( { approver } ) 
+			<!--#else adminid -->
+			{ namecategory } 
+			 <!--#endif adminid -->
+		</td>
+		<td class="BabTopicsAdminListTitleFontBackground" nowrap align="right">
+			<!--#if nbarticles "== 0" -->
+			{ nbarticles }&nbsp;{ articles }
+			<!--#else nbarticles -->
+			<a class="BabTopicsAdminNumberLink" href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>
+			<!--#endif nbarticles -->
+		</td>
+	</tr>
+	<tr colspan="2">
+		<td>
+		{ arr[description] }
+		</td>
+		<td>&nbsp;
+		</td>
+	</tr>
 </table>
 <br>
 <!--#endin getnext -->
-</center>
 <!--#end categorylist -->
-
-<br><br><br><br><br>
+<br>
+<br><br><br><br>
 <!--#begin categorymodify -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 <form method="post" action="index.php">
-<input type="hidden" name="tg" value="topic">
-<input type="hidden" name="idx" value="Modify">
-<input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="update" value="update">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td width="107" align="right" nowrap>{ category }</td>
-<td width="103"><input type="text" name="category" size="60" maxlength="60" value="{ arr[category] }"></td>
-</tr>
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="description">{ arr[description] }</textarea></td>
-</tr>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td>
-<SCRIPT LANGUAGE="JavaScript"> 
+  <input type="hidden" name="tg" value="topic">
+  <input type="hidden" name="idx" value="Modify">
+  <input type="hidden" name="item" value="{ arr[id] }">
+  <input type="hidden" name="update" value="update">
+  <table class="BabSectionsAdminCadreFontBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr>
+      <td> 
+        <table class="BabSectionsAdminBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr align="left" valign="middle"> 
+            <td class="BabSectionsAdminTitleFontBackground" width="91%">{ category }</td>
+          </tr>
+          <tr align="left" valign="middle"> 
+            <td width="91%"> 
+              <input type="text" name="category" size="30" maxlength="40" value="{ arr[category] }">
+            </td>
+          </tr>
+              <tr class="BabSectionsAdminTitleFontBackground" align="left"><td>{ description }</td></tr>
+          <!-- Instanciation de la barre d'outils -->
+		  <!--#if msie "== 1" --> 
+          <script src="templates/SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description">{ arr[description] }</textarea>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
 	editor.ToolBar();
-</SCRIPT>
-</td>
-</tr>
-<!--#endif msie -->
-<tr>
-<td align="right" nowrap>{ description }</td>
-<td>
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "description", "0", "100%", "160");
-</SCRIPT>
-<!--#else msie -->
-<textarea cols="50" rows="10" name="description">{ arr[description] }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
-<tr>
-<td align="right" nowrap>{ approver }</td>
-<td><input type="text" name="approver" size="60" value="{ approvername }"></td>
-</tr>
-<!--#if msie "== 1" -->
-<tr>
-<td align="right">&nbsp;</td>
-<td><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
-</tr>
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+            </td>
+          </tr>
+          <!--#endif msie --> 
+		
+        <tr>
+            <td width="91%">
+			<!--#if msie "== 1" --> 
+              <script language="JavaScript">
+	editor.InFrame(0, "description", "0", "90%", "160");
+</script>
+              <!--#else msie --> 
+              <textarea cols="50" rows="20" name="description" >{ arr[description] }</textarea>
+              <!--#endif msie --> </td>
+          </tr>
+		   <tr align="left" valign="middle"> 
+            <td class="BabSectionsAdminTitleFontBackground" width="91%">{ approver }</td>
+			</tr>
+			<tr align="left" valign="middle"> <td width="91%"><input type="text" name="approver" size="60" maxlength="80" value="{ approvername }"></td>
+          </tr>
+          <!--#if msie "== 1" --> 
+          <tr>
+			            <td width="91%"> 
+              <input onClick=SetVals() type="submit" name="Submit" value="{ add }">
+            </td>
+          </tr>
+          <script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
-</SCRIPT>
-<!--#else msie -->
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="{ add }"></td>
-</tr>
-<!--#endif msie -->
-</table>
-</center>
+</script>
+          <!--#else msie --> 
+          <tr> 
+            <td width="91%"> 
+              <input type="submit" name="Submit" value="{ add }">
+            </td>
+          </tr>
+          <!--#endif msie --> 
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end categorymodify -->
 <br><br><br><br><br>
 <!--#begin articleslist -->
@@ -218,47 +220,41 @@ function Start(page)
 <input type="hidden" name="tg" value="topic">
 <input type="hidden" name="idx" value="delete">
 <input type="hidden" name="item" value="{ item }">
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<tr>
-<td width="2%" class="BabListTitleBgnd"><a href="javascript:onCheckAll('art', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a></td>
-<td width="2%" class="BabListTitleBgnd">&nbsp;</td>
-<td width="2%" class="BabListTitleBgnd">&nbsp;</td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ titlename }</b></td>
+<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+  <tr>
+    <td> 
+      <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+        <tr> 
+          <td class="BabTopicsAdminChoiceTitleFontBackground" width="1%"><a href="javascript:onCheckAll('art', true)"><img src="images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+		  <td class="BabTopicsAdminChoiceTitleFontBackground">&nbsp;</td><td class="BabTopicsAdminChoiceTitleFontBackground">&nbsp;</td>
+          <td class="BabTopicsAdminChoiceTitleFontBackground" align="left" valign="middle" ><b>{ 
+            titlename }</b></td>
+        </tr>
+        <!--#in getnext -->
+        <tr> 
+          <td align="left" valign="middle" width="1%">
+            <input width="2%" type="checkbox" name="art[]" value="{ articleid }">
+          </td>
+          <td align="left" valign="middle" width="5%">&nbsp;<!--#if  bhomepage0 "== X" --><img src="images/Puces/PuceNotEnregistered.gif" alt="{ bhomepage0 }"  width="18" height="15" border="0"><!--#endif  bhomepage0 --></td>
+          <td align="left" valign="middle" width="5%">&nbsp;<!--#if  bhomepage1 "== X" --><img src="images/Puces/PuceEnregistered.gif" alt="{ bhomepage1 }" width="18" height="15" border="0"><!--#endif  bhomepage1 --></td>
+          <td align="left" valign="middle" width="90%"><a class="BabTopicsAdminChoiceLink" href="{ urltitle }">{ 
+            title }</a></td>
+          <!--#endin getnext -->
+        </tr>
+		<tr class="BabTopicsAdminChoiceFontBackground">
+<td class="BabTopicsAdminChoiceFontBackground" colspan="4"><input type="checkbox" name="homepage0" value="2" checked>&nbsp;&nbsp;{ homepage0 }</td>
 </tr>
-<!--#in getnext -->
 <tr>
-<td><input width="2%" type="checkbox" name="art[]" value="{ articleid }">
-<td>&nbsp;{ bhomepage0 }</td>
-<td>&nbsp;{ bhomepage1 }</td>
-<td nowrap><a class=BabMenuLink href="{ urltitle }">{ title }</a></td>
+<td class="BabTopicsAdminChoiceFontBackground" colspan="4"><input type="checkbox" name="homepage1" value="1">&nbsp;&nbsp;{ homepage1 }</td>
 </tr>
-<!--#endin getnext -->
-<tr>
-<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('art', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
-<td class="BabListTitleBgnd">&nbsp;</td>
-<td class="BabListTitleBgnd">&nbsp;</td>
-<td class="BabListTitleBgnd">&nbsp;</td>
-</tr>
+      </table>
+    </td>
+  </tr>
 </table>
-</td></tr>
-</table>
-<br>
-<table border="0" width="50%" cellpadding="1" cellspacing="0"><tr><td>
-<table border="0" width="100%" cellpadding="2" cellspacing="2">
-<tr>
-<td><input type="checkbox" name="homepage0" value="2" checked>&nbsp;&nbsp;{ homepage0 }</td>
-</tr>
-<tr>
-<td><input type="checkbox" name="homepage1" value="1">&nbsp;&nbsp;{ homepage1 }</td>
-</tr>
-</table>
-</td></tr>
-</table>
-</center>
 </form>
+<br>
 <!--#end articleslist -->
+
 <!--#begin articleview -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -275,25 +271,20 @@ function Start(page)
 //-->
 </script>
 </HEAD>
-<BODY class="BabBodyBgnd">
+<BODY class="BabTopicsAdminArticleViewFontBackground">
 <br>
-<center>
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr><td class="BabArticleTitleBgnd" align="center" nowrap><b>{ arr[title] }</b></td></tr>
+
+<table class="" border="0" width="100%" cellpadding="5" cellspacing="5">
+
+<tr><td class="BabTopicsAdminArticleViewTitleFontBackground" align="center" nowrap><b>{ arr[title] }</b></td></tr>
 <tr><td>{ content }</td></tr>
-<tr><td colspan="2" class="BabArticleTitleBgnd" align="right" nowrap></td></tr>
-</TBODY>
+<tr><td colspan="2"  align="right" nowrap></td></tr>
+
 </table>
-</td></tr>
-</table>
+
 <br>
 <a href="javascript:this.close()">{ close }</a><br><br>
-</center>
+
 </BODY>
 </HTML>
 <!--#end articleview -->
-<br><br><br><br><br>
-</BODY>
-</HTML>

@@ -1,43 +1,53 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle1.css" rel=stylesheet>
-</HEAD>
-
-<BODY BGCOLOR="#FFFFFF">
-<table>
-<tr><td valign="top" align="center" width="100%">
+<!-- Définition de la section Utilisateur -->
 <!--#begin template -->
-<table width="150" cellpadding="1" cellspacing="0" align="center" class=BabSectionBgndSides><tr><td>
-<table class="BabSectionBgndContent" width="150" cellpadding="0" cellspacing="3">
-<TBODY>
-<tr>
-<td class="BabSectionBgndTitle"><img src="images/box.gif" width="30" height="7" alt=""><b>&nbsp;&nbsp;{ title }</b></td>
-</tr>
-<tr >
-<td>{ head }</td>
-</tr>
-<tr >
-<td  class="BabSectionBgndContent">
-<!--#in addUrl -->
-<strong><big>.</big></strong> <a href="{ url }">{ text }</a><br>
-<!--#endin addUrl -->
-</td>
-</tr>
-<tr >
-<td><br>{ foot }</td>
-</tr>
-</TBODY>
+<table class="BabSectionBackground" width="150" cellpadding="3" cellspacing="0" border="0">
+  <tr> 
+    <td> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tr> 
+          <td align="center" valign="middle"> 
+            <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td width="20" align="center" valign="middle"><img src="images/Puces/PuceUsers.gif" width="15" height="15"></td>
+                <td class="BabTitleSectionFont" width="130" align="center" valign="middle"><b>{ 
+                  title }</b> </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr> 
+          <td  valign="middle" align="center" width="100%"> 
+            <table  width="100%" cellpadding="0" cellspacing="0">
+              <tr> 
+                <td class="BabHeaderBodySection" align="center"><br>
+                  { head }</td>
+              </tr>
+              <tr> 
+                <td > 
+				                  <table   width="100%" cellpadding="0" cellspacing="0" height="1">
+                    <!--#in addUrl -->
+                    <tr> 
+                      <td width="15"></td>
+                      <td align="left" valign="middle" width="1"><img src="images/Puces/Puce3PxWhite.png" width="3" height="3" align="absmiddle"></td>
+                      <td width="5" align="left"></td>
+                      <td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{ 
+                        text }</a></td>
+                    </tr>
+                    <!--#endin addUrl -->
+                  </table>
+                </td>
+              </tr>
+              <tr> 
+                <td class="BabFooterBodySection" align="center"><br>
+                  { foot }</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 </table>
-</td></tr></table><br>
+<br>
 <!--#end template -->
-</td>
-</tr>
-</table>
-</BODY>
-</HTML>
+

@@ -1,43 +1,54 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle1.css" rel=stylesheet>
-</HEAD>
-
-<BODY BGCOLOR="#FFFFFF">
-<table>
-<tr><td valign="top" align="center" width="100%">
+<!-- Présentation de la section article -->
 <!--#begin template -->
-<table border="0" width="150" cellpadding="1" cellspacing="0" align="center" class="BabSectionBgndSides"><tr><td>
-<table border="0" class="BabSectionBgndContent" width="150" cellpadding="0" cellspacing="3">
-<TBODY>
-<tr>
-<td class="BabSectionBgndTitle"><img src="images/box.gif" width="30" height="7" alt=""><b>&nbsp;&nbsp;{ title }</b></td>
-</tr>
-<tr >
-<td>{ head }</td>
-</tr>
-<tr >
-<td class="BabSectionBgndContent">
-<!--#in topicsGetNext -->
-<strong><big>.</big></strong> <a href="{ url }">{ text }</a>{ new }<br>
-<!--#endin topicsGetNext -->
-</td>
-</tr>
-<tr >
-<td><br>{ foot }</td>
-</tr>
-</TBODY>
+<table class="BabSectionBackground" width="150" cellpadding="3" cellspacing="0" border="0">
+  <tr> 
+    <td> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tr> 
+          <td align="center" valign="middle">
+            <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td width="20" align="center" valign="middle"><img src="images/Puces/PuceArticles.gif" width="18" height="16"></td>
+                <td class="BabTitleSectionFont" width="130" align="center" valign="middle"><b>{ 
+                  title }</b> </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr> 
+          <td  valign="middle" align="center" width="100%"> 
+            <table  width="100%" cellpadding="0" cellspacing="0">
+              <tr> 
+                <td class="BabHeaderBodySection" align="center"><br>
+                  { head }</td>
+              </tr>
+              <tr> 
+                <td > <br>
+                  <table   width="100%" cellpadding="0" cellspacing="0" height="1">
+                    <!--#in topicsGetNext -->
+                    <tr> 
+                      <td width="15"></td>
+                      <td align="left" valign="middle" width="1"><img src="images/Puces/Puce3PxWhite.png" width="3" height="3" align="absmiddle"></td>
+                      <td width="5" align="left"></td>
+                      <td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{ 
+                        text }</a><!--#if new "== *" -->&nbsp;&nbsp;&nbsp;<IMG SRC="images/Puces/PuceSectionContrib.gif"
+						WIDTH="7" HEIGHT="11" BORDER=0 align="center" valign="middle" ALT="{ new }"><!--#endif new --></td>
+                    </tr>
+                    <!--#endin topicsGetNext -->
+                  </table>
+                </td>
+              </tr>
+              <tr> 
+                <td class="BabFooterBodySection" align="center"><br>
+                  { foot }</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 </table>
-</td></tr></table><br>
+<br>
 <!--#end template -->
-</td>
-</tr>
-</table>
-</BODY>
-</HTML>
+

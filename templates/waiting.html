@@ -1,247 +1,267 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle1.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
 <!--#begin introlist -->
 <form method="post" action="index.php">
-<input type="hidden" name="tg" value="articles">
-<input type="hidden" name="idx" value="Articles">
-<center>
-<!--#in getnext -->
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr><td class="BabArticleTitleBgnd" nowrap><b>{ arr[title] }</b></td>
-</tr>
-<tr><td>{ content }</td>
-</tr>
-<tr><td class="BabArticleTitleBgnd" align="right" nowrap><a class=BabMenuLink href="{ moreurl }">{ morename }</a></td></tr>
-</TBODY>
-</table>
-</td></tr>
-</table>
-<br>
-<!--#endin getnext -->
-</center>
+  <input type="hidden" name="tg" value="articles">
+  <input type="hidden" name="idx" value="Articles">
+  <!--#in getnext -->
+  <table   border="0" width="95%%" cellpadding="3" cellspacing="0" align="center">
+    <tr> 
+      <td class="BabTopicsTitleBackground">{ arr[title] }</td>
+    </tr>
+    <tr> 
+      <td class="BabTopicsBackground">{ content }</td>
+    </tr>
+    <tr> 
+      <td class="BabTopicsAuthorBackground" nowrap valign="middle" align="right"><a class="BabTopicsFooterLinkColor" href="{ moreurl }">{ 
+        morename }</a></td>
+    </tr>
+  </table>
+  <br>
+  <!--#endin getnext -->
 </form>
 <!--#end introlist -->
-<br><br><br><br><br>
+<br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin readmore -->
-<center>
 <!--#in getnext -->
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr><td class="BabArticleTitleBgnd" nowrap><b>{ arr[title] }</b></td>
-</tr>
-<tr><td>{ content }</td>
-</tr>
-<tr><td colspan="2" class="BabArticleTitleBgnd" align="right" nowrap></td></tr>
-</TBODY>
-</table>
-</td></tr>
+<table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabTopicsTitleBackground" align="left" valign="middle">{ arr[title] 
+      }</td>
+  </tr>
+  <tr>
+    <td class="BabTopicsBackground" >{ content }</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="" align="right" nowrap></td>
+  </tr>
 </table>
 <br>
 <!--#endin getnext -->
-</center>
 <!--#end readmore -->
-<br><br><br><br><br>
+<br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin modifyarticle -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
-<form method="post" action="index.php">
-<input type="hidden" name="tg" value="waiting">
-<input type="hidden" name="idx" value="More">
-<input type="hidden" name="topics" value="{ topics }">
-<input type="hidden" name="article" value="{ article }">
-<input type="hidden" name="modify" value="modify">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
-<tr>
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="headtext">{ headval }</textarea>
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="bodytext">{ bodyval }</textarea>
-</tr>
-<tr>
-<td align="right" nowrap>&nbsp;</td>
-<td>
-<SCRIPT LANGUAGE="JavaScript"> 
-	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
-	editor.ToolBar();
-</SCRIPT>
-</td>
-</tr>
-<!--#endif msie -->
-<tr>
-<td align="right" nowrap>{ title }</td>
-<td >
-<input type="text" name="title" size="60" value="{ titleval }">
-</td>
-</tr>
-<tr>
-<td align="right">{ head }</td>
-<td>
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
+	<form method="post" action="index.php">
+  <input type="hidden" name="tg" value="waiting">
+  <input type="hidden" name="idx" value="More">
+  <input type="hidden" name="topics" value="{ topics }">
+  <input type="hidden" name="article" value="{ article }">
+  <input type="hidden" name="modify" value="modify">
+  <table class="BabTopicsAdminCadreEditorFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabTopicsAdminBodyEditorFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <tr class="BabSectionsAdminTitleFontBackground" align="left"> 
+            <td  class="BabTopicsAdminBodyEditorFontBackground" align="center" valign="middle"> 
+              <script src="templates/SaisieFormatee.js"></script>
+            
+          
+          <textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext">{ headval }</textarea>
+          <textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext">{ bodyval }</textarea>
+          <script language="JavaScript"> 
+			var idGenerator = new IDGenerator(0);
+			var editor = new Editor(idGenerator);
+			editor.ToolBar();
+			</script></td></tr>
+          <!--#endif msie -->
+          <tr align="right" valign="middle"> 
+            <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center">{ 
+              title } </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <input type="text" name="title" size="60" value="{ titleval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center" valign="middle">{ 
+              head } </td>
+          </tr>
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
 	editor.InFrame(0, "headtext", "0", "100%", "160");
-</SCRIPT>
-<!--#else msie -->
-<textarea cols="70" rows="10" name="headtext">{ headval }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
-<tr>
-<td align="right">{ body }</td>
-<td>
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+              <!--#else msie -->
+              <textarea cols="70" rows="5" name="headtext">{ headval }</textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center" valign="middle">{ 
+              body }</td>
+          </tr>
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
 	editor.InFrame(1, "bodytext", "0", "100%", "200");
-</SCRIPT>
-<!--#else msie -->
-<textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea>
-<!--#endif msie -->
-</td>
-<!--#if msie "== 1" -->
-<tr>
-<td align="right">&nbsp;</td>
-<td><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
-
-</tr>
-
-<SCRIPT LANGUAGE="JavaScript">
+</script>
+              <!--#else msie -->
+              <textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ modify }">
+            
+          <script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.FinalInstantiate(1);
 	editor.CloseInitSection();
-</SCRIPT>
-<!--#else msie -->
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="{ modify }"></td>
-</tr>
-<!--#endif msie -->
-</table>
-</center>
+</script></td>
+          </tr>
+          <!--#else msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input type="submit" name="submit" value="{ modify }">
+            </td>  
+          </tr><!--#endif msie -->
+        
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
+
 <!--#end modifyarticle -->
-<br><br><br><br><br>
+<br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin confirmarticle -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
-
 <form method="post" action="index.php">
-<input type="hidden" name="tg" value="waiting">
-<input type="hidden" name="idx" value="{ idxval }">
-<input type="hidden" name="topics" value="{ topics }">
-<input type="hidden" name="article" value="{ article }">
-<input type="hidden" name="comment" value="{ com }">
-<input type="hidden" name="new" value="{ new }">
-<input type="hidden" name="author" value="{ author }">
-<input type="hidden" name="confirm" value="{ confval }">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right">{ name }:</td>
-<td nowrap><b>{ fullname }</b></td>
-</tr>
-<tr>
-<td align="right">{ action }:</td>
-<td>
-<select name="action">
-<option value="1" selected>{ confirm }</option>
-<option value="0" >{ refuse }</option>
-</select>
-</td>
-<tr>
-<td align="right"></td>
-<td nowrap><input type="checkbox" name="send" value="1">&nbsp;{ what }</td>
-</tr>
-<tr>
-<td align="right"></td>
-<td nowrap><input type="checkbox" name="homepage0" value="2">&nbsp;{ homepage0 }</td>
-</tr>
-<tr>
-<td align="right"></td>
-<td nowrap><input type="checkbox" name="homepage1" value="1">&nbsp;{ homepage1 }</td>
-</tr>
-<tr>
-<td align="right">{ message }:</td>
-<td ><textarea cols="50" rows="10" name="message"></textarea></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="{ modify }"></td>
-</tr>
-</table>
-</center>
+  <input type="hidden" name="tg" value="waiting">
+  <input type="hidden" name="idx" value="{ idxval }">
+  <input type="hidden" name="topics" value="{ topics }">
+  <input type="hidden" name="article" value="{ article }">
+  <input type="hidden" name="comment" value="{ com }">
+  <input type="hidden" name="new" value="{ new }">
+  <input type="hidden" name="author" value="{ author }">
+  <input type="hidden" name="confirm" value="{ confval }">
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              name }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"><b>{ 
+              fullname }</b> </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              action }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <select name="action">
+                <option value="1" selected>{ confirm }</option>
+                <option value="0" >{ refuse }</option>
+              </select>
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="checkbox" name="send" value="1">
+              &nbsp;{ what } </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="checkbox" name="homepage0" value="2">
+              &nbsp;{ homepage0 } </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="checkbox" name="homepage1" value="1">
+              &nbsp;{ homepage1 } </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="top">{ 
+              message }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <textarea cols="50" rows="10" name="message"></textarea>
+            </td>
+          </tr>
+          <tr valign="top"> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap>&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left"> 
+              <input type="submit" name="submit" value="{ modify }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
 <!--#end confirmarticle -->
-<!--#begin confirmcomment -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
 
+<!--#begin confirmcomment -->
 <form method="post" action="index.php">
-<input type="hidden" name="tg" value="waiting">
-<input type="hidden" name="idx" value="{ idxval }">
-<input type="hidden" name="topics" value="{ topics }">
-<input type="hidden" name="article" value="{ article }">
-<input type="hidden" name="comment" value="{ com }">
-<input type="hidden" name="new" value="{ new }">
-<input type="hidden" name="author" value="{ author }">
-<input type="hidden" name="confirm" value="{ confval }">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right">{ name }:</td>
-<td nowrap><b>{ fullname }</b></td>
-</tr>
-<tr>
-<td align="right">{ action }:</td>
-<td>
-<select name="action">
-<option value="1" selected>{ confirm }</option>
-<option value="0" >{ refuse }</option>
-</select>
-</td>
-<tr>
-<td align="right"></td>
-<td nowrap><input type="checkbox" name="send" value="1">&nbsp;{ what }</td>
-</tr>
-<tr>
-<td align="right">{ message }:</td>
-<td ><textarea cols="50" rows="10" name="message"></textarea></td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="{ modify }"></td>
-</tr>
-</table>
-</center>
+  <input type="hidden" name="tg" value="waiting">
+  <input type="hidden" name="idx" value="{ idxval }">
+  <input type="hidden" name="topics" value="{ topics }">
+  <input type="hidden" name="article" value="{ article }">
+  <input type="hidden" name="comment" value="{ com }">
+  <input type="hidden" name="new" value="{ new }">
+  <input type="hidden" name="author" value="{ author }">
+  <input type="hidden" name="confirm" value="{ confval }">
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              name }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"><b>{ 
+              fullname }</b> </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              action }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <select name="action">
+                <option value="1" selected>{ confirm }</option>
+                <option value="0" >{ refuse }</option>
+              </select>
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="checkbox" name="send" value="1">
+              &nbsp;{ what } </td>
+          </tr>
+           <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="top">{ 
+              message }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <textarea cols="50" rows="10" name="message"></textarea>
+            </td>
+          </tr>
+          <tr valign="top"> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap>&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left"> 
+              <input type="submit" name="submit" value="{ modify }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </form>
-</td></tr>
-</table>
-</center>
 <!--#end confirmcomment -->
-</BODY>
-</HTML>

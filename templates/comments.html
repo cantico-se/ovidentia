@@ -1,20 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK href="../styles/babstyle1.css" rel=stylesheet>
-</HEAD>
 
-<BODY BGCOLOR="#FFFFFF">
-<br><br><br><br><br>
 <!--#begin commentcreate -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
+
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="comments">
 <input type="hidden" name="idx" value="List">
@@ -22,8 +8,9 @@
 <input type="hidden" name="article" value="{ article }">
 <input type="hidden" name="com" value="{ com }">
 <input type="hidden" name="addcomment" value="add">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+  <table class="BabCommentCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr><td>
+<table class="BabCommentBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
 <tr>
 <td width="107" align="right" nowrap>{ name }:</td>
 <td width="103" nowrap>
@@ -36,12 +23,12 @@
 <!--#if msie "== 1" -->
 <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
 <tr>
-<input type="text" name="subject" style="VISIBILITY: hidden" size="0" value="{ subjectval }">
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="message"></textarea>
+
+
 </tr>
 <tr>
-<td width="107" align="right" nowrap>&nbsp;</td>
-<td width="103">
+<td width="107" align="right" nowrap>&nbsp;<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message"></textarea></td>
+<td width="103"><input type="text" name="subject" style="VISIBILITY: hidden" size="0" value="{ subjectval }">
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
@@ -94,47 +81,74 @@
 <!--#endif msie -->
 
 </table>
-</center>
-</form>
-</td></tr>
+</td>
+</tr>
 </table>
-</center>
+</form>
+
 <!--#end commentcreate -->
 <br><br><br><br><br>
 <!--#begin commentslist -->
-<center>
-<table border="0" width="95%" cellpadding="0" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="3" cellspacing="0">
-<TBODY>
-<!--#in getnext -->
-<!--#if alternate "== 1" --><tr><td class="BabListTitleBgnd" nowrap><a class=BabMenuLink href="{ subjecturl }">{ subjectname }</a></td><td class="BabListTitleBgnd" nowrap>{ arr[name] }</td><td class="BabListTitleBgnd" nowrap>{ arr[date] }</td></tr>
-<!--#else alternate --><tr><td nowrap><a class=BabMenuLink href="{ subjecturl }">{ subjectname }</a></td><td nowrap>{ arr[name] }</td><td nowrap>{ arr[date] }</td></tr>
-<!--#endif alternate -->
-<!--#endin getnext -->
-</TBODY>
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <!--#in getnext -->
+<!--#if alternate "== 1" --><tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentLink" href="{ subjecturl }">{ 
+            subjectname }</a></td>
+          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+            arr[name] } </td>
+          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+            arr[date] }</td>
+        </tr><!--#else alternate -->
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentLink" href="{ subjecturl }">{ 
+            subjectname }</a></td>
+          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+            arr[name] } </td>
+          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+            arr[date] }</td>
+        </tr>
+     <!--#endif alternate -->
+<!--#endin getnext --> </table>
+    </td>
+  </tr>
 </table>
-</td></tr>
-</table>
-</center>
 <!--#end commentslist -->
 <br><br><br><br><br>
 <!--#begin commentread -->
-<center>
-<table border="0" width="95%" cellpadding="0" cellspacing="0"><tr><td>
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
-<TBODY>
-<tr><td class="BabListTitleBgnd"><font face="courier">
-{ arr[date] }
-<br>{ by }: { arr[name] }
-<br>{ subject }: { arr[subject] }
-<br><br>{ arr[message] }
-</font></td></tr>
-</TBODY>
+<table  width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+      
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><font face="courier">{ 
+            arr[date] }</font></td>
+          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><font face="courier">{ 
+            by }:</font></td>
+          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle"><font face="courier">{ 
+            arr[name] } </font></td>
+        </tr>
+        <tr> 
+          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><font face="courier">{ 
+            subject }:</font></td>
+          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle"><font face="courier">{ 
+            arr[subject] } </font></td>
+        </tr>
+    
+        <tr> 
+          <td class="BabCommentFontBackground" align="left" nowrap valign="middle"><font face="courier">{ 
+            arr[message] } </font></td>
+         
+        </tr>
+       
+      </table>
+    </td>
+  </tr>
 </table>
-</td></tr>
-</table>
-</center>
 <!--#end commentread -->
-<br><br><br><br><br>
-</BODY>
-</HTML>
