@@ -1568,6 +1568,17 @@ function drop_table_check(obj)
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
 
 	<tr> 
+		<td align="right" valign="top">{ t_tables }</td>
+		<td>
+			<select name="tables[]" multiple="multiple" size="14">
+			<!--#in getnexttable -->
+			<option value="{ table }" selected="selected">{ table }</option>
+			<!--#endin getnexttable -->
+			</select>
+		</td>
+	</tr>
+
+	<tr> 
 		<td align="right" width="50%" nowrap>{ t_structure }</td>
 		<td>
 			<!--#if val[structure] -->

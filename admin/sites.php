@@ -561,11 +561,13 @@ function database()
 
 		function temp()
 			{
+			$this->db = &$GLOBALS['babDB'];
 			$this->t_submit = bab_translate("Export database");
 			
 			$this->t_structure = bab_translate("Export table structure");
 			$this->t_data = bab_translate("Export table data");
 			$this->t_drop_table = bab_translate("Add 'DROP TABLE' instructions");
+			$this->t_tables = bab_translate("Tables");
 			
 			if (isset($_POST) && count($_POST) > 0)
 				$this->val = $_POST;
@@ -577,8 +579,20 @@ function database()
 					$this->val[$el] = true;
 					}
 				}
+
+			$this->restable = $this->db->db_query("SHOW TABLES");
 			}
-			
+
+
+		function getnexttable()
+			{
+			if (list($this->table) = $this->db->db_fetch_array($this->restable))
+				{
+				return true;
+				}
+			else
+				return false;
+			}
 		}
 
 	$temp = new temp();
@@ -690,7 +704,7 @@ class bab_sqlExport
 	{
 	function bab_sqlExport()
 		{
-		ini_set('max_execution_time','120');
+		ini_set('max_execution_time','240');
 		
 		$this->opt_structure = !empty($_POST['structure']) ? 1 : 0;
 		$this->opt_drop_table = !empty($_POST['drop_table']) ? 1 : 0;
@@ -705,7 +719,6 @@ class bab_sqlExport
 		$this->key_index = array();
 		$this->dump = '';
 		$this->db = &$GLOBALS['babDB'];
-		$describe = $this->db->db_query("SHOW TABLES");
 		
 		$this->commentPush(bab_translate("Ovidentia database dump"));
 		
@@ -728,8 +741,8 @@ class bab_sqlExport
 		$this->commentPush(bab_translate('Database server version')." : ".$arr['Value'],true);
 		$this->commentPush(bab_translate('Php version')." : ".phpversion(),true);
 		$this->commentPush(bab_translate('Date')." : ".bab_longDate(time()),true);
-		
-		while( list($tablename) = $this->db->db_fetch_array($describe) )
+
+		foreach($_POST['tables'] as $tablename)
 			{
 			$this->handleTable($tablename);
 			}
@@ -994,8 +1007,12 @@ if (isset($_POST['action']))
 	switch($_POST['action'])
 		{
 		case 'export_database':
-			$bab_sqlExport = & new bab_sqlExport();
-			$bab_sqlExport->exportFile();
+
+			if (count($_POST['tables']) > 0)
+				{
+				$bab_sqlExport = & new bab_sqlExport();
+				$bab_sqlExport->exportFile();
+				}
 			break;
 		}
 
