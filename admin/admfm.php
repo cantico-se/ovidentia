@@ -384,7 +384,7 @@ function confirmDeleteFolder($fid)
 {
 	global $babDB;
 	// delete files owned by this group
-	$res = $babDB->db_query("select id from ".BAB_FM_FILES_TBL." where id_owner='".$fid."' and bgroup='Y'");
+	$res = $babDB->db_query("select id from ".BAB_FILES_TBL." where id_owner='".$fid."' and bgroup='Y'");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
 	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$arr['id']."'");
