@@ -6,21 +6,19 @@
           <td align="center" valign="middle">
             <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr> 
-			  <!--#if BAB_SESS_LOGGED --> 
+			    <!--#if BAB_SESS_LOGGED -->                 
                 <!--#if bbox "== 1" -->
                 <!--#if close "== 0" -->
-                <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.png" border="0"></a></td>
+                <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.png" border="0" align="absmiddle" ></a></td>
                 <!--#else close -->
-                <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.png" border="0"></a></td>
+                <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.png" border="0" align="absmiddle"></a></td>
                 <!--#endif close -->
-                <!--#endif bbox -->
-				
+                <!--#endif bbox -->				
 				<!--#else BAB_SESS_LOGGED --> 
-				  <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceSectionClose.png" border="0"></td>
-				<!--#endif BAB_SESS_LOGGED --> 
-                <td class="BabTitleSectionFont" align="left" valign="middle" width="121">{ 
-                  title }</td>
-              </tr>
+               <td class="BabTitleSectionFont" align="left" width="20" valign="middle" >{ babsectionpuce }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="4" height="1" border="0"></td>
+                <!--#endif BAB_SESS_LOGGED -->                 
+                <td class="BabTitleSectionFont" align="left" valign="middle" width="121">{ title }</td>
+				 </tr>
             </table> </td>
 </tr>
         <!--#if close "== 0" --> 
