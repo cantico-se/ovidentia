@@ -8,15 +8,37 @@ search.html             viewfil             Added { pathtxt } and { path }
 articles.html           modifyarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
                                             Added editor.ListFilesUrl('{ urlfiles }') javascript
+                                            Added javascript functions onInsertFile() and savef()
+                                            Added onFocus() in headtext and bodytext textarea
 
                         createarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
                                             Added editor.ListFilesUrl('{ urlfiles }') javascript
+                                            Added javascript functions onInsertFile() and savef()
+                                            Added onFocus() in headtext and bodytext textarea
 
 waiting.html            modifyarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
                                             Added editor.ListFilesUrl('{ urlfiles }') javascript
-fileman.html                                Added template 'browsefiles'                                           
+                                            Added javascript function onInsertFile() and savef()
+                                            Added onFocus attribute to headtext textarea
+                                            Added onFocus attribute to bodytext textarea
+fileman.html                                Added template 'browsefiles'
+                        viewfile            Permute <!--#if bupdate --> <!--#if bmanager -->
+
+faq.html                admquestioncreate   Added { images } and { files }
+                                            Added editor.ListImagesUrl('{ urlimages }') javascript
+                                            Added editor.ListFilesUrl('{ urlfiles }') javascript
+                                            Added javascript functions onInsertFile() and savef()
+                                            Added onFocus() in headtext and bodytext textarea
+                                            <input type="text" name="question" size="80"> : removed maxlength
+
+                        admquestionmodify   Added { images } and { files }
+                                            Added editor.ListImagesUrl('{ urlimages }') javascript
+                                            Added editor.ListFilesUrl('{ urlfiles }') javascript
+                                            Added javascript functions onInsertFile() and savef()
+                                            Added onFocus() in headtext and bodytext textarea
+
 
 
 /****************************/
