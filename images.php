@@ -7,6 +7,7 @@
 include $babInstallPath."utilit/tempfile.php";
 
 define("BAB_FILE_TIMEOUT", 600);
+define("BAB_IMAGE_MAXSIZE", 30000);
 define("BAB_IMAGES_UPLOADDIR", "images/");
 define("BAB_IMAGES_UPLOADDIR_TMP", "images/tmp/");
 define("BAB_IMAGES_UPLOADDIR_COMMON", "images/common/");
@@ -108,7 +109,7 @@ function listImages()
 
 		function temp()
 			{
-			$this->maximagessize = "25000";
+			$this->maximagessize = BAB_IMAGE_MAXSIZE;
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
 			$this->yes = bab_translate("Yes");
@@ -125,8 +126,7 @@ function listImages()
 					{
 					if (is_file(BAB_IMAGES_UPLOADDIR_COMMON.$f))
 						{
-						$this->arrufile[] = BAB_IMAGES_UPLOADDIR_COMMON.$f;
-						$this->comnum++;
+						$this->arrcfile[] = BAB_IMAGES_UPLOADDIR_COMMON.$f;
 						}
 					}
 				}
@@ -146,24 +146,83 @@ function listImages()
 					}
 				}
 
-			$this->ifiles = 0;
+			$this->uifiles = 0;
+			$this->cifiles = 0;
 			$this->gd = extension_loaded('gd');
 			$this->refurl = $GLOBALS['babUrlScript']."?tg=images";
 			}
 
+		function geturls($filename, $com)
+			{
+			$this->name = basename($filename);
+			$imgsize = getimagesize($filename);
+			$this->imgalt = $imgsize[0]." X ".$imgsize[1];
+			if( $imgsize[0] > 50 || $imgsize[1] > 50)
+				{
+				if( $this->gd && ($imgsize[2] == 1 || $imgsize[2] == 2 || $imgsize[2] == 3))
+					{
+					$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->name."&w=50&h=50&com=".$com;
+					$this->imgurl = $filename;
+					}
+				else
+					{
+					$this->srcurl = $filename;
+					$ratio = $imgsize[0] / $imgsize[1];
+					if( $ratio >= 1 )
+						{
+						$this->imgwidth = "50";
+						$this->imgheight = ceil((50 * $imgsize[1])/$imgsize[0]);
+						}
+					else if( $ratio < 1 )
+						{
+						$this->imgheight = "50";
+						$this->imgwidth = ceil((50 * $imgsize[0])/$imgsize[1]);
+						}
+					else
+						{
+						$this->imgwidth = "50";
+						$this->imgheight = "50";
+						}
+					}
+				}
+			else
+				{
+				$this->srcurl = $filename;
+				$this->imgurl = $filename;
+				$this->imgwidth = $imgsize[0];
+				$this->imgheight = $imgsize[1];
+				}
+			}
 		function getnextcomfiles()
 			{
-			if( $this->ifiles < count($this->arrufile) && $this->ifiles < $this->comnum)
+			if( $this->cifiles < count($this->arrcfile))
 				{
 				return true;
 				}
 			else
 				return false;
+			}
+
+		function getnextcfile()
+			{
+			static $i = 0;
+			if( $i < 5 && $this->cifiles < count($this->arrcfile))
+				{
+				$this->geturls($this->arrcfile[$this->cifiles], 1);
+				$this->cifiles++;
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
 			}
 
 		function getnextfiles()
 			{
-			if( $this->ifiles < count($this->arrufile))
+			if( $this->uifiles < count($this->arrufile))
 				{
 				return true;
 				}
@@ -171,54 +230,13 @@ function listImages()
 				return false;
 			}
 
-		function getnextfile()
+		function getnextufile()
 			{
 			static $i = 0;
-			if( $i < 5 && $this->ifiles < count($this->arrufile))
+			if( $i < 5 && $this->uifiles < count($this->arrufile))
 				{
-				$this->name = basename($this->arrufile[$this->ifiles]);
-				$imgsize = getimagesize($this->arrufile[$this->ifiles]);
-				$this->imgalt = $imgsize[0]." X ".$imgsize[1];
-				if( $imgsize[0] > 50 || $imgsize[1] > 50)
-					{
-					if( $this->gd && ($imgsize[2] == 1 || $imgsize[2] == 2 || $imgsize[2] == 3))
-						{
-						$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->name."&w=50&h=50";
-						if( $this->ifiles < $this->comnum )
-							$this->srcurl .= "&com=1";
-						else
-							$this->srcurl .= "&com=0";
-						$this->imgurl = $this->arrufile[$this->ifiles];
-						}
-					else
-						{
-						$this->srcurl = $this->arrufile[$this->ifiles];
-						$ratio = $imgsize[0] / $imgsize[1];
-						if( $ratio >= 1 )
-							{
-							$this->imgwidth = "50";
-							$this->imgheight = ceil((50 * $imgsize[1])/$imgsize[0]);
-							}
-						else if( $ratio < 1 )
-							{
-							$this->imgheight = "50";
-							$this->imgwidth = ceil((50 * $imgsize[0])/$imgsize[1]);
-							}
-						else
-							{
-							$this->imgwidth = "50";
-							$this->imgheight = "50";
-							}
-						}
-					}
-				else
-					{
-					$this->srcurl = $this->arrufile[$this->ifiles];
-					$this->imgurl = $this->arrufile[$this->ifiles];
-					$this->imgwidth = $imgsize[0];
-					$this->imgheight = $imgsize[1];
-					}
-				$this->ifiles++;
+				$this->geturls($this->arrufile[$this->uifiles], 0);
+				$this->uifiles++;
 				$i++;
 				return true;
 				}
