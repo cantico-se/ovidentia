@@ -88,9 +88,9 @@ function listDrafts()
 				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id'];
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
 				$this->name = $arr['title'];
-				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
-				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_publication']), true);
-				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_archiving']), true);
+				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_submission']));
+				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_publication']));
+				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_archiving']));
 				if( $arr['total'] > 0 )
 					{
 					$this->attachment = true;
@@ -186,7 +186,7 @@ function listSubmitedArticles()
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
 				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=rests&idart=".$arr['id'];
 				$this->name = $arr['title'];
-				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
+				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_submission']));
 				if( $arr['result'] == BAB_ART_STATUS_WAIT )
 					{
 					$this->bdelete = false;
@@ -284,8 +284,8 @@ function listDraftsInTrash()
 				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=restore&idart=".$arr['id'];
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
 				$this->name = $arr['title'];
-				$this->datecreate = bab_shortDate(bab_mktime($arr['date_creation']), true);
-				$this->datemodify = bab_shortDate(bab_mktime($arr['date_modification']), true);
+				$this->datecreate = bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_creation']));
+				$this->datemodify = bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_modification']));
 				$i++;
 				return true;
 				}
@@ -334,8 +334,8 @@ function propertiesArticle($idart)
 				$this->arttitle = $arr['title'];
 				$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->author = bab_getUserName($arr['id_author']);
-				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_publication']), true);
-				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_archiving']), true);
+				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_publication']));
+				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_archiving']));
 				if( $arr['hpage_public'] == 'Y')
 					{
 					$this->hpages0 = $this->yes;
@@ -1155,9 +1155,15 @@ function showSetArticleProperties($idart)
 						else if( strchr($arr['restriction'], ","))
 							{
 							$this->arrrest = explode(',', $arr['restriction']);
+							$this->operatororysel = 'selected';
+							$this->operatorornsel = '';
 							}
 						else
+							{
 							$this->arrrest = array($arr['restriction']);
+							$this->operatororysel = '';
+							$this->operatorornsel = '';
+							}
 
 						if( empty($arr['restriction']))
 							{
@@ -1871,7 +1877,7 @@ function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$mes
 
 function updatePropertiesArticleDraft()
 {
-	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $topicid, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $hpage0, $hpage1, $notifm, $approbid;
+	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $topicid, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $grpids, $operator, $hpage0, $hpage1, $notifm, $approbid;
 
 	$date_sub = "0000-00-00 00:00";
 	$date_pub = "0000-00-00 00:00";
