@@ -306,6 +306,7 @@ function submitArticleByFile($topics)
 		var $add;
 		var $topics;
 		var $maxupload;
+		var $notearticle;
 
 		function temp($topics)
 			{
@@ -317,6 +318,7 @@ function submitArticleByFile($topics)
 			$this->add = bab_translate("Add article");
 			$this->topics = $topics;
 			$this->maxupload = $babMaxUpload;
+			$this->notearticle = bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
 			}
 		}
 
@@ -422,6 +424,7 @@ function submitArticle($topics)
 		var $topics;
 		var $title;
 		var $msie;
+		var $notearticle;
 
 		function temp($topics)
 			{
@@ -430,6 +433,7 @@ function submitArticle($topics)
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Add Article");
+			$this->notearticle = bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else

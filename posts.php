@@ -293,6 +293,7 @@ function newReply($forum, $thread, $post)
 		var $notifyme;
 		var $postid;
 		var $msie;
+		var $noteforum;
 		
 
 		function temp($forum, $thread, $post)
@@ -330,6 +331,10 @@ function newReply($forum, $thread, $post)
 			$this->postauthor = $arr['author'];
 			$this->postsubject = $arr['subject'];
 			$this->postmessage = bab_replace($arr['message']);
+			if( bab_isForumModerated($forum))
+				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
+			else
+				$this->noteforum = "";
 			}
 		}
 

@@ -33,6 +33,8 @@ articles.html					        changed action="index.php" to action="{ babPhpSelf }"
                         introlist       Added <!--#if barch --> ... <!--#endif barch -->
                                         Added <!--#if blen "> 0" --> ... <!--#endif blen -->
                                         Added <a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>
+                        articlecreatebyfile     Added { notearticle }
+                        createarticle   Added { notearticle }
 calendar.html					        changed action="index.php" to action="{ babPhpSelf }"
 calopt.html					            changed action="index.php" to action="{ babPhpSelf }"
 calview.html                            Added template fileslist
@@ -112,6 +114,7 @@ posts.html					            changed action="index.php" to action="{ babPhpSelf }"
                                         to let user email contributors
                         postcreate      <table ... </table><br> before <form> to let user view post on
                                         the reply is made
+                        postcreate      Added { noteforum }
 readme.txt
 
 search.html					            changed action="index.php" to action="{ babPhpSelf }"
@@ -140,6 +143,8 @@ sites.html					            changed action="index.php" to action="{ babPhpSelf }"
 threads.html					        changed action="index.php" to action="{ babPhpSelf }"
                         threadlist      added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
                                         Added <!--#if ipost "== 1" --> ... <!--#endif ipost -->
+                        threadcreate    Added { noteforum }
+                        
 topcats.html					        changed action="index.php" to action="{ babPhpSelf }"
                         topcatslist     Removed Javascript
                         topcatmodify    Added button "delete"

@@ -191,6 +191,7 @@ function newThread($forum)
 		var $anonyme;
 		var $notifyme;
 		var $msie;
+		var $noteforum;
 
 		function temp($forum)
 			{
@@ -212,6 +213,10 @@ function newThread($forum)
 			else
 				$this->msie = 0;	
 				}
+			if( bab_isForumModerated($forum))
+				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
+			else
+				$this->noteforum = "";
 			}
 		}
 

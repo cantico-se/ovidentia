@@ -126,7 +126,7 @@ function addComment($topics, $article, $subject, $com="")
 			list($this->nbarch) = $db->db_fetch_row($res);
 			$arr = $db->db_fetch_array($db->db_query("select mod_com from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 			if( $arr['mod_com'] == "Y" )
-				$this->notcom = bab_translate("Note: for this topic, comments are moderated");
+				$this->notcom = bab_translate("Note: for this topic, comments are moderate");
 			else
 				$this->notcom = "";
 			}
