@@ -65,6 +65,7 @@ class cal_weekCls extends cal_wmdbaseCls
 		$time2 = $time1 + 7*24*3600;
 
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
+		$this->urldate = sprintf("%d,%d,%d", date("Y", $time1), date("n", $time1), date("j", $time1));
 
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 
@@ -97,7 +98,8 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->week = bab_translate("Week").' '.date('W',$mktime);
 			$this->daynumbername = $dday;
 
-			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
+			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), $dday);
+
 			
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 				{
@@ -147,7 +149,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
 					}
 				
-				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewq&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->mday,$this->year);
+				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->urldate."&calid=".implode(',',$this->idcals)."&view=viewq&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->mday,$this->year);
 				if( $i % 2)
 					{
 					$this->altbgcolor = true;
@@ -182,7 +184,9 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->dayname = $babDays[$this->workdays[$d]];
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
-			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
+			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), $dday);
+			$this->urldate = sprintf("%d,%d,%d", date("Y", $mktime), date("n", $mktime), $dday);
+			
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 				{
 				$this->currentday = 1;
