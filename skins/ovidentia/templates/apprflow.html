@@ -39,10 +39,16 @@ if( op == null || op.closed )
 else
 	op.focus();
 }
+
+function closepop()
+	{
+	if( op != null )
+		op.close();
+	}
 //-->
 </script>
 
-<form name="sccreate" method="post" action="{ babPhpSelf }" onsubmit="v_all();op.close()">
+<form name="sccreate" method="post" action="{ babPhpSelf }" onsubmit="v_all();closepop()">
 <input type="hidden" name="tg" value="apprflow">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="rows" value="{ rows }">
