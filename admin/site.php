@@ -138,7 +138,7 @@ function siteModify($id)
 			$this->sendmailselected = "";
 			$this->disabledselected = "";
 			$this->id = $id;
-			$this->langfiltertxt = bab_translate("Language Filter");
+			$this->langfiltertxt = bab_translate("Language filter");
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
