@@ -199,7 +199,7 @@ class bab_IfEqual extends bab_Operator
 {
 	function bab_IfEqual( &$ctx)
 	{
-		$this->bab_Operator(&$ctx, BAB_OPE_EQUAL);
+		$this->bab_Operator($ctx, BAB_OPE_EQUAL);
 	}
 }
 
@@ -207,7 +207,7 @@ class bab_IfNotEqual extends bab_Operator
 {
 	function bab_IfNotEqual( &$ctx)
 	{
-		$this->bab_Operator(&$ctx, BAB_OPE_NOTEQUAL);
+		$this->bab_Operator($ctx, BAB_OPE_NOTEQUAL);
 	}
 }
 
@@ -215,7 +215,7 @@ class bab_IfLessThan extends bab_Operator
 {
 	function bab_IfLessThan( &$ctx)
 	{
-		$this->bab_Operator(&$ctx, BAB_OPE_LESSTHAN);
+		$this->bab_Operator($ctx, BAB_OPE_LESSTHAN);
 	}
 }
 
@@ -223,7 +223,7 @@ class bab_IfLessThanOrEqual extends bab_Operator
 {
 	function bab_IfLessThanOrEqual( &$ctx)
 	{
-		$this->bab_Operator(&$ctx, BAB_OPE_LESSTHANOREQUAL);
+		$this->bab_Operator($ctx, BAB_OPE_LESSTHANOREQUAL);
 	}
 }
 
@@ -231,7 +231,7 @@ class bab_IfGreaterThan extends bab_Operator
 {
 	function bab_IfGreaterThan( &$ctx)
 	{
-		$this->bab_Operator(&$ctx, BAB_OPE_GREATERTHAN);
+		$this->bab_Operator($ctx, BAB_OPE_GREATERTHAN);
 	}
 }
 
@@ -239,7 +239,7 @@ class bab_IfGreaterThanOrEqual extends bab_Operator
 {
 	function bab_IfGreaterThanOrEqual( &$ctx)
 	{
-		$this->bab_Operator(&$ctx, BAB_OPE_GREATERTHANOREQUAL);
+		$this->bab_Operator($ctx, BAB_OPE_GREATERTHANOREQUAL);
 	}
 }
 
@@ -718,7 +718,19 @@ class bab_Articles extends bab_handler
 
 		if( count($topicid) > 0)
 		{
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' and id_topic IN (".implode(',', $topicid).") order by date desc";
+			$archive = $ctx->get_value('archive');
+			if( $archive === false || $archive === '')
+				$archive = "no";
+
+			switch(strtoupper($archive))
+			{
+				case 'NO': $archive = " and archive='N' "; break;
+				case 'YES': $archive = " and archive='Y' "; break;
+				default: $archive = ""; break;
+
+			}
+
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' ".$archive." and id_topic IN (".implode(',', $topicid).") order by date desc";
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
 			if( $rows === false || $rows === '')
@@ -768,6 +780,48 @@ class bab_Articles extends bab_handler
 		}
 	}
 }
+
+class bab_ArticlePrevious extends bab_Article
+{
+	var $handler;
+
+	function bab_ArticlePrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Articles');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('articleid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_Article($ctx);
+	}
+
+}
+
+class bab_ArticleNext extends bab_Article
+{
+	var $handler;
+
+	function bab_ArticleNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Articles');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('articleid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_Article($ctx);
+	}
+
+}
+
 
 class bab_Article extends bab_handler
 {
@@ -1356,9 +1410,12 @@ class bab_Files extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FileDescription', $arr['description']);
-			$this->ctx->curctx->push('FileKeywords', $arr['keyword']);
+			$this->ctx->curctx->push('FileKeywords', $arr['keywords']);
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
+			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
+			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
+			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1405,9 +1462,12 @@ class bab_File extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileName', $this->arr['name']);
 			$this->ctx->curctx->push('FileDescription', $this->arr['description']);
-			$this->ctx->curctx->push('FileKeywords', $this->arr['keyword']);
+			$this->ctx->curctx->push('FileKeywords', $this->arr['keywords']);
 			$this->ctx->curctx->push('FileId', $this->arr['id']);
 			$this->ctx->curctx->push('FileFolderId', $this->arr['id_owner']);
+			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path']));
+			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$this->arr['id']."&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']));
+			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']));
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
