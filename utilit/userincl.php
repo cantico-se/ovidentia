@@ -386,4 +386,44 @@ function getUserId( $name )
 	else
 		return 0;
 	}
+
+function babReplace( $txt )
+{
+	$db = new db_mysql();
+	$reg = "/\\\$ARTICLE\((.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$req = "select * from articles where title like '%".addslashes(trim($m[1][$k]))."%'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				if(isAccessValid("topicsview_groups", $arr['id_topic'])) 
+					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']."\">".$arr['title']."</a>", $txt);
+				else
+					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr['title'], $txt);
+				}
+			}
+		}
+
+	$reg = "/\\\$CONTACT\((.*?),(.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$req = "select * from contacts where  owner='".$GLOBALS['BAB_SESS_USERID']."' and firstname like '%".addslashes(trim($m[1][$k]))."%' and lastname like '%".addslashes(trim($m[2][$k]))."%'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('http://dev.ovidentia.org/index.php?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
+				}
+			else
+				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", $m[1][$k]." ".$m[2][$k], $txt);
+			}
+		}
+	return $txt;
+}
 ?>
