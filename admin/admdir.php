@@ -404,7 +404,7 @@ function modifyDb($id)
 					$this->mlchecked = "checked";
 				else
 					$this->mlchecked = "";
-				if ((!$this->bdel && in_array( $this->fieldid, array(1, 2, 4, 6) )) || ($this->bdel && in_array( $this->fieldid, array(2, 4) )) )
+				if ((!$this->bdel && in_array( $this->fieldid, array( 2, 4, 6) )) || ($this->bdel && in_array( $this->fieldid, array(2, 4) )) )
 					$this->disabled = true;
 				else 
 					$this->disabled = false;
