@@ -60,7 +60,11 @@ function calendarGroups()
 				if($this->arrgroups[actif] == "Y")
 					{
 					$this->arrgroups[select] = "selected";
-					}			
+					}
+				else
+					{
+					$this->arrgroups[select] = "";
+					}
 				$i++;
 				return true;
 				}
