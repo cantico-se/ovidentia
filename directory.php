@@ -1403,6 +1403,11 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			}
 		if( !empty($file) && $file != "none")
 			{
+			if ($babBody->babsite['imgsize']*1000 < filesize($tmp_file))
+				{
+				$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
+				return false;
+				}
 			$fp=fopen($tmp_file,"rb");
 			if( $fp )
 				{

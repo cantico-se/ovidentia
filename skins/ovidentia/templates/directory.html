@@ -411,7 +411,7 @@ xxxhier <br>
 <tr align="center"> 
 <td colspan="2" class="BabSiteAdminFontBackground">
 <!--#if showph -->
-<img src="{ urlimg }" border="0" alt="{ name }">
+<img name="photo" src="{ urlimg }" border="0" alt="{ name }">
 <!--#endif showph --></td>
 </tr>
 <!--#in getnextfield -->
@@ -471,6 +471,21 @@ this.close();
 </table>
 </form>
 <!--#endif orgcount -->
+<script type="text/javascript">
+<!--
+function redimimg(name,w)
+{
+photo = document.images[name];
+if (photo.width > w)
+	{
+	photo.height = (w*photo.height)/photo.width;
+	photo.width = w;
+	}
+}
+
+redimimg('photo',200);
+//-->
+</script>
 </BODY>
 </HTML>
 <!--#end summarydbcontact -->
@@ -573,7 +588,7 @@ window.focus();
 		<td align="center" class="BabSiteAdminFontBackground" colspan="2">
 		<br>
 		<!--#if showph -->
-		<img src="{ urlimg }" border="0" alt="{ name }"><br>
+		<img name="photo" src="{ urlimg }" border="0" alt="{ name }"><br>
 		<b>{ delete }&nbsp;:</b>&nbsp;&nbsp;<input type="checkbox" name="photod" value="delete">
 		<!--#endif showph -->
 		<!--#if modify -->
@@ -637,6 +652,21 @@ window.focus();
 </table>
 <br>
 </form>
+<script type="text/javascript">
+<!--
+function redimimg(name,w)
+{
+photo = document.images[name];
+if (photo.width > w)
+	{
+	photo.height = (w*photo.height)/photo.width;
+	photo.width = w;
+	}
+}
+
+redimimg('photo',200);
+//-->
+</script>
 </BODY>
 </HTML>
 <!--#end modifycontact -->

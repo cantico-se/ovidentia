@@ -1262,4 +1262,5 @@
 <string id="Locked">Vérouillé</string>
 <string id="Nominative schema">Schéma nominatif</string>
 <string id="Staff schema">Schéma fonctionnel</string>
+<string id="The image file is too big, maximum is :">La taille du fichier est image est trop importante, le maximum est :</string>
 </fr>
