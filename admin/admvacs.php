@@ -28,7 +28,7 @@ function listVacationManagers()
 		function temp()
 			{
 			global $babDB;
-			$this->fullnametxt = bab_translate("Full Name");
+			$this->fullnametxt = bab_translate("Manager");
 			$this->delete = bab_translate("Delete");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
