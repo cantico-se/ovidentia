@@ -70,7 +70,7 @@
 <!-- Toolbar -->
 <!--#if msie "!= 1" -->
 <tr> 
-<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a></center>
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">files</a></center>
 </td>
 </tr>
 <!--#endif msie -->
@@ -85,6 +85,7 @@
 var idGenerator = new IDGenerator(0);
 var editor = new Editor(idGenerator, '{ babEditorImages }');
 editor.ListImagesUrl('{ urlimages }')
+editor.ListFilesUrl('{ urlfiles }')
 editor.ToolBar();
 </script>
 </td></tr>

@@ -276,11 +276,7 @@ value="{ restore }">
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META http-equiv="Pragma" content="no-cache">
-<META name="Generator" content="Ovidentia">
-<META name="Author" content="">
-<META name="Keywords" content="">
-<META name="Description" content="">
+{ babMeta }
 { babCss }
 <script type="text/javascript">
 <!--
@@ -526,3 +522,90 @@ close }</a> </td>
 </BODY>
 </HTML>
 <!--#end fileunload -->
+
+<!--#begin browsefiles -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+function dd(id, idf, txt)
+{
+self.opener.EditorOnInsertFile(id, idf, txt);
+window.close();
+}
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<table width="98%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabMailBackground">
+<tr>
+<td class="BabSiteAdminFontBackground" align="center"> 
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center" ><a class="BabSiteAdminListLink" 
+href="{ rooturl }">{ root }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" 
+href="{ refreshurl }">{ refresh }</a></td>
+</tr>
+</table>
+<br>
+{ rootpath }/{ path } 
+<br>
+<br>
+<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr>
+<td class="BabSiteAdminTitleFontBackground" colspan="2" align="center">&nbsp;{ nametxt }&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="left">&nbsp;{ desctxt }</td>
+</tr>
+<!--#in getnextdir -->
+<tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
+<!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name -->
+</td>          
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
+href="{ url }">{ name }</a></td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
+</tr>
+<!--#endin getnextdir -->
+<!--#in getnextgrpdir --> <tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
+{ grpfolderimg } 
+</td>          
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
+href="{ url }">{ name }</a></td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
+</tr>
+<!--#endin getnextgrpdir -->
+<!--#in getnextmgrpdir --> <tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
+{ manfolderimg } 
+</td>          
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
+href="{ url }">{ name }</a></td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
+</tr>
+<!--#endin getnextmgrpdir -->
+<!--#in getnextfile --> <tr valign="middle"> 
+<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
+{ fileimage }
+</td>          
+<td class="BabSiteAdminFontBackground">&nbsp;<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ idf }', '{ name }')">{ name }</a>&nbsp;</td>
+<td align="left" nowrap class="BabSiteAdminFontBackground">&nbsp;{ description }</td>
+</tr><!--#endin getnextfile -->
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+<!--#end browsefiles -->

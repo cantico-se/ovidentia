@@ -31,6 +31,7 @@
 	var BUTTON_PAD1_PREFIX = "buttonPad1";
 	var BUTTON_PAD2_PREFIX = "buttonPad2";
 	var LIST_IMAGES_URL = "";
+	var LIST_FILES_URL = "";
 	var buttonMap = new Object();
 
 	function Button
@@ -324,6 +325,7 @@
 		this.FinalInstantiate = EditorFinalInstantiate;
 		this.CloseInitSection = EditorCloseInitSection;
 		this.ListImagesUrl = EditorListImagesUrl;
+		this.ListFilesUrl = EditorListFilesUrl;
 	}
 
 	function EditorToolBarInstantiate()
@@ -604,6 +606,17 @@
 								html += "createHyperlinkButton.Instantiate();";
 								html += UtilEndScript();
 							html += "</td>";
+							html += "<td>";
+								html += UtilBeginScript();
+								html += "var createTableButton = new Button(";
+								html += "editorIDGenerator,";
+								html += "\""+STR_INSERT_TABLE+"\",";
+								html += "\"EditorOnPropertiesTable(" + this.id + ")\",";
+								html += "\""+BUTTON_IMAGE_PATH+"/table.gif\"";
+								html += ");";
+								html += "createTableButton.Instantiate();";
+								html += UtilEndScript();
+							html += "</td>";
 							if( LIST_IMAGES_URL != "" )
 							{
 							html += "<td>";
@@ -615,6 +628,20 @@
 								html += "\""+BUTTON_IMAGE_PATH+"/img.gif\"";
 								html += ");";
 								html += "createImagesButton.Instantiate();";
+								html += UtilEndScript();
+							html += "</td>";
+							}
+							if( LIST_FILES_URL != "" )
+							{
+							html += "<td>";
+								html += UtilBeginScript();
+								html += "var createFilesButton = new Button(";
+								html += "editorIDGenerator,";
+								html += "\""+STR_INSERT_FILE+"\",";
+								html += "\"EditorOnListFiles(" + this.id + ")\",";
+								html += "\""+BUTTON_IMAGE_PATH+"/folder.gif\"";
+								html += ");";
+								html += "createFilesButton.Instantiate();";
 								html += UtilEndScript();
 							html += "</td>";
 							}
@@ -902,6 +929,11 @@
 	LIST_IMAGES_URL = url;
 	}
 
+	function EditorListFilesUrl(url)
+	{
+	LIST_FILES_URL = url;
+	}
+
 	function  EditorGetText()
 	{
 		return eval(EDITOR_COMPOSITION_PREFIX + this.id).document.body.innerText;
@@ -1058,6 +1090,138 @@
 		window.open(LIST_IMAGES_URL+"&editor="+id, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 	}
 
+	function EditorOnListFiles(id)
+	{
+		eval(EDITOR_COMPOSITION_PREFIX + id).focus();
+		window.open(LIST_FILES_URL+"&editor="+id, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+	}
+
+	function EditorOnPropertiesTable(id)
+	{
+		var win = window.open('', 'table', 'width=350,height=250,status=no,resizable=yes,top=200,left=200,scrollbars=no');
+		html = '';
+		html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">";
+		html += "<HTML>";
+	html += "<HEAD>";
+	html += "<TITLE>Table</TITLE>";
+	html += "<script type=\"text/javascript\">\n";
+	html += "<!--\n";
+	html += "function dd(id)\n";
+	html += "{";
+	html += "self.opener.EditorOnCreateTable(id, document.forms.fmtable.rows.value, document.forms.fmtable.cols.value, document.forms.fmtable.width.value,document.forms.fmtable.percent.value,document.forms.fmtable.spacing.value,document.forms.fmtable.padding.value,document.forms.fmtable.border.value);";
+	html += "window.close();";
+	html += "}\n";
+	html += "//-->";
+	html += "</script>";
+	html += "</HEAD>";
+	html += "<BODY>";
+	html += "<table  width=100% border=0 cellspacing=0 cellpadding=3 align=center valign=top>";
+	html += "<form name=\"fmtable\">";
+	html += "<tr>";
+	html += "<td align=right nowrap valign=middle>"+ STR_TABLE_ROWS +"</td>";
+	html += "<td valign=middle>";
+	html += "<input type=text name=rows size=3 maxlength=3 value=2>";
+	html += "</td>";
+	html += "<td align=left nowrap valign=middle>&nbsp;</td>";
+	html += "<td valign=middle>";
+	html += "&nbsp;";
+	html += "</td>";
+	html += "</tr>";
+
+	html += "<tr>";
+	html += "<td align=right nowrap valign=middle>"+ STR_TABLE_COLS +"</td>";
+	html += "<td valign=middle>";
+	html += "<input type=text name=cols size=3 maxlength=3 value=2>";
+	html += "</td>";
+	html += "<td align=left nowrap valign=middle>&nbsp;</td>";
+	html += "<td align=left nowrap valign=middle>&nbsp;</td>";
+	html += "</tr>";
+
+	html += "<tr>";
+	html += "<td align=right nowrap valign=middle>"+ STR_TABLE_WIDTH +"</td>";
+	html += "<td valign=middle>"; 
+	html += "<input type=text name=width size=3 maxlength=3 value=75>";
+	html += "</td>";
+	html += "<td valign=middle>";
+	html += "<select name=percent>";
+	html += "<option value=%>"+ STR_TABLE_PERCENT +"</option>";
+	html += "<option value=\"\">"+ STR_TABLE_PIXELS +"</option>";
+	html += "</select>";
+	html += "</td>";
+	html += "<td align=right nowrap valign=middle>&nbsp;</td>";
+	html += "</tr>";
+
+	html += "<tr>";
+	html += "<td align=right nowrap valign=middle>"+ STR_TABLE_SPACING +"</td>";
+	html += "<td valign=middle>"; 
+	html += "<input type=text name=spacing size=3 maxlength=3 value=2>";
+	html += "</td>";
+	html += "<td align=left nowrap valign=middle>&nbsp;</td>";
+	html += "<td align=left nowrap valign=middle>&nbsp;</td>";
+	html += "</tr>";
+
+	html += "<tr>";
+	html += "<td align=right nowrap valign=middle>"+ STR_TABLE_PADDING +"</td>";
+	html += "<td valign=middle>"; 
+	html += "<input type=text name=padding size=3 maxlength=3 value=2>";
+	html += "</td>";
+	html += "<td align=left nowrap valign=middle>&nbsp;</td>";
+	html += "<td align=left nowrap valign=middle>&nbsp;</td>";
+	html += "</tr>";
+
+	html += "<tr>";
+	html += "<td align=right nowrap valign=middle>"+ STR_TABLE_BORDER +"</td>";
+	html += "<td valign=middle>";
+	html += "<input type=text name=border size=3 maxlength=3 value=2>";
+	html += "</td>";
+	html += "<td align=right nowrap valign=middle>&nbsp;</td>";
+	html += "<td valign=middle>&nbsp;</td>";
+	html += "</tr>";
+	html += "</form>";
+	html += "</table>";
+	html += "<br>";
+	html += "<center><a href=\"#\" onclick=\"dd('"+id+"')\">"+ STR_TABLE_CREATE +"</a></center>";
+	html += "</BODY>";
+	html += "</HTML>";
+	win.document.write(html);
+	win.document.close();
+	}
+
+	function EditorOnCreateTable(id, rows, cols, w, perc, spac, padd, border)
+	{
+		if (!EditorValidateMode(id)) {
+			return;
+		}
+		var tbl = "<table";
+		if( border != "" )
+			tbl += " border="+border;
+
+		if( w != "" )
+			tbl += " width="+w+perc;
+
+		if( spac != "" )
+			tbl += " cellspacing="+spac;
+
+		if( padd != "" )
+			tbl += " cellpadding="+padd;
+
+		tbl += ">";
+		for( i = 0; i < rows; i++)
+			{
+			tbl += "<tr>";
+			for( j= 0; j < cols; j++)
+				{
+				tbl += "<td>&nbsp;</td>";
+				}
+			tbl += "</tr>";
+			}
+		tbl += "</table>";
+		eval(EDITOR_COMPOSITION_PREFIX + id).focus();
+		var range = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
+		range.pasteHTML(tbl);
+		range.select();
+	}
+
 	function EditorOnCreateImage(id, text, palign)
 	{
 		if (!EditorValidateMode(id)) {
@@ -1069,6 +1233,18 @@
 			url = url + ' align=' + palign;
 		url = url + '>';
 
+		range.pasteHTML(url);
+		range.select();
+		//EditorFormat(id, "InsertImage", text);
+	}
+
+	function EditorOnInsertFile(id, idf, txt)
+	{
+		if (!EditorValidateMode(id)) {
+			return;
+		}
+		var range = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
+		var url = '$FILE('+idf+',' + txt + ')';
 		range.pasteHTML(url);
 		range.select();
 		//EditorFormat(id, "InsertImage", text);
