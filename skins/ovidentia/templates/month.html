@@ -1,76 +1,3 @@
-<!--#begin old -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY>
-<br><br><br>
-<table width="150" cellpadding="1" cellspacing="0" border="0" align="center">
-<tr> 
-<td class="BabSectionBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr> 
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-<tr> 
-<td class="BabLoginMenuBackground" width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceAgenda.gif" width="15" height="15" border="0" alt=""></td>
-<td class="BabTitleSectionFont" width="130" align="center" valign="middle">{ curmonth } { curyear }</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td> 
-<table class="BabCalendarDayNumberSection" width="150" cellpadding="0">
-<tr> 
-<!--#in getnextday3 -->
-<td class="BabCalendarDaySection" align="center" valign="middle">{ day3 }</td>
-<!--#endin getnextday3 -->
-</tr>
-<!--#in getnextweek -->
-	<tr> 
-		<!--#in getnextday -->
-		<!--#if currentday -->
-		<td class="BabCalendarCurrentDayNumberSection" align="center" valign="middle">
-		<a href={ dayurl } class="BabSectionsDayLink">{ day }</a>
-		<!--#else currentday -->
-		<td class="BabCalendarDayNumberSection" align="center" valign="middle">
-		<a href={ dayurl } class="BabSectionsLinkColor">{ day }</a>
-		<!--#endif currentday -->
-		</td>
-		<!--#endin getnextday -->
-	</tr>
-<!--#endin getnextweek -->
-</table>
-	</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-
-<table align="center" valign="middle" cellpadding="3">
-<tr>
-<td class="BabSiteAdminFont"><b>{ prevyear }</b></td>
-<td class="BabSiteAdminFont"><b>{ prevmonth }</b></td>
-<td class="BabSiteAdminFont"><b>{ today }</b></td>
-<td class="BabSiteAdminFont"><b>{ nextmonth }</b></td>
-<td class="BabSiteAdminFont"><b>{ nextyear }</b></td>
-</tr>
-</table>
-</body>
-</html>
-<!--#end old -->
-
-<!--#begin new -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
 <head>
@@ -171,8 +98,10 @@ function bab_calendar(year,month)
    <!--#endin getnextwday -->
    
    out += '</tr><tr align="center">';
-   column = 0;
-   for (i=0; i<startDay; i++)
+   column = { startday };
+if (startDay < { startday })
+	startDay+=7;
+   for (i={ startday }; i<startDay; i++)
       {
       out += '<td>&nbsp;</td>';
       column++;
@@ -191,10 +120,10 @@ function bab_calendar(year,month)
 			}
 
       column++;
-      if (column == 7)
+      if (column == { startday } + 7)
          {
          out += '</tr><tr align="center">';
-         column = 0;
+         column = { startday };
          }
       }
    out += '</tr></table>';
@@ -238,5 +167,3 @@ select_date();
 
 </body>
 </html>
-
-<!--#end new -->
