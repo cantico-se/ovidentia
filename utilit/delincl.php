@@ -278,7 +278,7 @@ function bab_deleteLdapDirectory($id)
 function bab_deleteDbDirectory($id)
 {
 	global $babDB;
-	$arr = $babDB->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 	if( $arr['id_group'] != 0)
 		return;
 	$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id."'");
