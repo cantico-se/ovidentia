@@ -266,7 +266,7 @@ function modifyGroup($name, $description, $managerid, $bemail, $grpid)
 		if( empty($managerid))
 			$managerid = 0;
 
-		$query = "update ".BAB_GROUPS_TBL." set name='".$name."', description='".$description."', mail='".$bemail."', manager='".$managerid."' where id='".$grpid."'";
+		$query = "update ".BAB_GROUPS_TBL." set name='".$name."', description='".$description."', manager='".$managerid."' where id='".$grpid."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");

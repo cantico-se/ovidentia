@@ -291,7 +291,7 @@ function addGroup($name, $description, $managerid, $bemail)
 			}
 		if( empty($managerid))
 			$managerid = 0;
-		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager) VALUES ('" .$name. "', '" . $description. "', '". $bemail. "', '" . $managerid. "')";
+		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 
