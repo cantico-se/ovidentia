@@ -84,7 +84,7 @@ class bab_WebStatEvent
 
 	function addArrayInfo($var, $value)
 	{
-		if( !isset($this->variables[$var]) || count($this->variables[$var]) == 0 || !in_array($id, $this->variables[$var]))
+		if( !isset($this->variables[$var]) || count($this->variables[$var]) == 0 || !in_array($value, $this->variables[$var]))
 			{
 			$this->info[$var][] = $value;
 			}

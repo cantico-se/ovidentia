@@ -2327,7 +2327,7 @@ switch($idx)
 		if( $bmanager)
 			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
 		listFiles($id, $gr, $path, $bmanager);
-		if( !empty($id))
+		if( !empty($id) && $gr == "Y")
 			{
 			$GLOBALS['babWebStat']->addFolder($id);
 			}

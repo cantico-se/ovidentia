@@ -66,7 +66,7 @@ class bab_stats_pages extends bab_stats_base
 	function bab_stats_pages()
 	{
 		global $babDB;
-		$res = $babDB->db_query("select * from bab_stats_ipages");
+		$res = $babDB->db_query("select * from ".BAB_STATS_IPAGES_TBL."");
 		while( $arr = $babDB->db_fetch_array($res))
 		{
 			$this->pages[$arr['id']] = $arr['page_url'];
@@ -100,7 +100,7 @@ class bab_stats_pages extends bab_stats_base
 		{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$id]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_pages where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_page_id='".$id."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_PAGES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_page_id='".$id."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -108,7 +108,7 @@ class bab_stats_pages extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_pages (st_date, st_hour, st_hits, st_page_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$id."')");
+					$babDB->db_query("insert into ".BAB_STATS_PAGES_TBL." (st_date, st_hour, st_hits, st_page_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$id."')");
 					$this->results[$datas['date']][$datas['hour']][$id] = 0;
 					}				
 				}
@@ -130,7 +130,7 @@ class bab_stats_pages extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_pages set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_page_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_PAGES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_page_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -210,7 +210,7 @@ class bab_stats_modules extends bab_stats_base
 
 		if(!isset($this->results[$datas['date']][$datas['hour']][$id]))
 			{
-			$res = $babDB->db_query("select * from bab_stats_modules where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_module_id='".$id."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_MODULES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_module_id='".$id."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -218,7 +218,7 @@ class bab_stats_modules extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into bab_stats_modules (st_date, st_hour, st_hits, st_module_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$id."')");
+				$babDB->db_query("insert into ".BAB_STATS_MODULES_TBL." (st_date, st_hour, st_hits, st_module_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$id."')");
 				$this->results[$datas['date']][$datas['hour']][$id] = 0;
 				}				
 			}
@@ -240,7 +240,7 @@ class bab_stats_modules extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 					{
-					$babDB->db_query("update bab_stats_modules set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_module_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_MODULES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_module_id= '".$r3[0]."'");
 					}
 				}
 			}
@@ -273,7 +273,7 @@ class bab_stats_articles extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_articles'][$i]]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_articles where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_article_id='".$datas['info']['bab_articles'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_ARTICLES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_article_id='".$datas['info']['bab_articles'][$i]."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -281,7 +281,7 @@ class bab_stats_articles extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_articles (st_date, st_hour, st_hits, st_article_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_articles'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_ARTICLES_TBL." (st_date, st_hour, st_hits, st_article_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_articles'][$i]."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_articles'][$i]] = 0;
 					}				
 				}
@@ -291,7 +291,7 @@ class bab_stats_articles extends bab_stats_base
 				{
 				if( !isset($this->referents[$datas['info']['bab_articles'][$i]][$babStatRefs[$datas['session_id']]]))
 					{
-					$res = $babDB->db_query("select * from bab_stats_articles_ref where st_article_id='".$datas['info']['bab_articles'][$i]."' and st_module_id='".$babStatRefs[$datas['session_id']]."'");
+					$res = $babDB->db_query("select * from ".BAB_STATS_ARTICLES_REF_TBL." where st_article_id='".$datas['info']['bab_articles'][$i]."' and st_module_id='".$babStatRefs[$datas['session_id']]."'");
 					if( $res && $babDB->db_num_rows($res) > 0 )
 						{
 						$arr = $babDB->db_fetch_array($res);
@@ -299,7 +299,7 @@ class bab_stats_articles extends bab_stats_base
 						}
 					else
 						{
-						$babDB->db_query("insert into bab_stats_articles_ref (st_article_id, st_module_id, st_hits) values ('".$datas['info']['bab_articles'][$i]."','".$babStatRefs[$datas['session_id']]."', '0')");
+						$babDB->db_query("insert into ".BAB_STATS_ARTICLES_REF_TBL." (st_article_id, st_module_id, st_hits) values ('".$datas['info']['bab_articles'][$i]."','".$babStatRefs[$datas['session_id']]."', '0')");
 						$this->referents[$datas['info']['bab_articles'][$i]][$babStatRefs[$datas['session_id']]] = 0;
 						}				
 					}
@@ -324,7 +324,7 @@ class bab_stats_articles extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_articles set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_article_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_ARTICLES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_article_id= '".$r3[0]."'");
 				}
 			}	
 		}
@@ -335,7 +335,7 @@ class bab_stats_articles extends bab_stats_base
 			reset($r1[1]);
 			while( $r2 = each($r1[1]) ) 
 			{
-				$babDB->db_query("update bab_stats_articles_ref set st_hits='".$r2[1]."' where st_article_id='".$r1[0]."' and st_module_id= '".$r2[0]."'");
+				$babDB->db_query("update ".BAB_STATS_ARTICLES_REF_TBL." set st_hits='".$r2[1]."' where st_article_id='".$r1[0]."' and st_module_id= '".$r2[0]."'");
 			}
 		}
 	
@@ -363,7 +363,7 @@ class bab_stats_forums extends bab_stats_base
 		global $babDB;
 		if(!isset($this->forums[$date][$hour][$idforum]))
 			{
-			$res = $babDB->db_query("select * from bab_stats_forums where st_date='".$date."' and st_hour='".$hour."' and st_forum_id='".$idforum."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_FORUMS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_forum_id='".$idforum."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -371,7 +371,7 @@ class bab_stats_forums extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into bab_stats_forums (st_date, st_hour, st_hits, st_forum_id) values ('".$date."','".$hour."', '0', '".$idforum."')");
+				$babDB->db_query("insert into ".BAB_STATS_FORUMS_TBL." (st_date, st_hour, st_hits, st_forum_id) values ('".$date."','".$hour."', '0', '".$idforum."')");
 				$this->forums[$date][$hour][$idforum] = 0;
 				}				
 			}
@@ -383,7 +383,7 @@ class bab_stats_forums extends bab_stats_base
 		global $babDB;
 		if(!isset($this->threads[$date][$hour][$idthread]))
 			{
-			$res = $babDB->db_query("select * from bab_stats_threads where st_date='".$date."' and st_hour='".$hour."' and st_thread_id='".$idthread."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_THREADS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_thread_id='".$idthread."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -391,7 +391,7 @@ class bab_stats_forums extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into bab_stats_threads (st_date, st_hour, st_hits, st_thread_id) values ('".$date."','".$hour."', '0', '".$idthread."')");
+				$babDB->db_query("insert into ".BAB_STATS_THREADS_TBL." (st_date, st_hour, st_hits, st_thread_id) values ('".$date."','".$hour."', '0', '".$idthread."')");
 				$this->threads[$date][$hour][$idthread] = 0;
 				}				
 			}
@@ -403,7 +403,7 @@ class bab_stats_forums extends bab_stats_base
 		global $babDB;
 		if(!isset($this->posts[$date][$hour][$idpost]))
 			{
-			$res = $babDB->db_query("select * from bab_stats_posts where st_date='".$date."' and st_hour='".$hour."' and st_post_id='".$idpost."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_POSTS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_post_id='".$idpost."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -411,7 +411,7 @@ class bab_stats_forums extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into bab_stats_posts (st_date, st_hour, st_hits, st_post_id) values ('".$date."','".$hour."', '0', '".$idpost."')");
+				$babDB->db_query("insert into ".BAB_STATS_POSTS_TBL." (st_date, st_hour, st_hits, st_post_id) values ('".$date."','".$hour."', '0', '".$idpost."')");
 				$this->posts[$date][$hour][$idpost] = 0;
 				}				
 			}
@@ -484,7 +484,7 @@ class bab_stats_forums extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_forums set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_forum_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FORUMS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_forum_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -497,7 +497,7 @@ class bab_stats_forums extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_threads set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_thread_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_THREADS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_thread_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -511,7 +511,7 @@ class bab_stats_forums extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_posts set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_post_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_POSTS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_post_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -544,7 +544,7 @@ class bab_stats_xlinks extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_xlinks'][$i]]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_xlinks where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_xlink_url='".$datas['info']['bab_xlinks'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_XLINKS_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_xlink_url='".$datas['info']['bab_xlinks'][$i]."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -552,7 +552,7 @@ class bab_stats_xlinks extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_xlinks (st_date, st_hour, st_hits, st_xlink_url) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_xlinks'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_XLINKS_TBL." (st_date, st_hour, st_hits, st_xlink_url) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_xlinks'][$i]."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_xlinks'][$i]] = 0;
 					}				
 				}
@@ -576,7 +576,7 @@ class bab_stats_xlinks extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_xlinks set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_xlink_url= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_XLINKS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_xlink_url= '".$r3[0]."'");
 				}
 			}
 		}
@@ -609,7 +609,7 @@ class bab_stats_search extends bab_stats_base
 			$word = strtolower($datas['info']['bab_searchword'][$i]);
 			if(!isset($this->results[$datas['date']][$datas['hour']][$word]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_search where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_word='".addslashes($word)."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_SEARCH_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_word='".addslashes($word)."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -617,7 +617,7 @@ class bab_stats_search extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_search (st_date, st_hour, st_hits, st_word) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($word)."')");
+					$babDB->db_query("insert into ".BAB_STATS_SEARCH_TBL." (st_date, st_hour, st_hits, st_word) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($word)."')");
 					$this->results[$datas['date']][$datas['hour']][$word] = 0;
 					}				
 				}
@@ -641,7 +641,7 @@ class bab_stats_search extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_search set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_word= '".addslashes($r3[0])."'");
+					$babDB->db_query("update ".BAB_STATS_SEARCH_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_word= '".addslashes($r3[0])."'");
 				}
 			}
 		}
@@ -670,7 +670,7 @@ class bab_stats_faqs extends bab_stats_base
 		global $babDB;
 		if(!isset($this->faqs[$date][$hour][$idfaq]))
 			{
-			$res = $babDB->db_query("select * from bab_stats_faqs where st_date='".$date."' and st_hour='".$hour."' and st_faq_id='".$idfaq."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_FAQS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_faq_id='".$idfaq."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -678,7 +678,7 @@ class bab_stats_faqs extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into bab_stats_faqs (st_date, st_hour, st_hits, st_faq_id) values ('".$date."','".$hour."', '0', '".$idfaq."')");
+				$babDB->db_query("insert into ".BAB_STATS_FAQS_TBL." (st_date, st_hour, st_hits, st_faq_id) values ('".$date."','".$hour."', '0', '".$idfaq."')");
 				$this->faqs[$date][$hour][$idfaq] = 0;
 				}				
 			}
@@ -690,7 +690,7 @@ class bab_stats_faqs extends bab_stats_base
 		global $babDB;
 		if(!isset($this->faqqrs[$date][$hour][$idfaqqr]))
 			{
-			$res = $babDB->db_query("select * from bab_stats_faqqrs where st_date='".$date."' and st_hour='".$hour."' and st_faqqr_id='".$idfaqqr."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_FAQQRS_TBL." where st_date='".$date."' and st_hour='".$hour."' and st_faqqr_id='".$idfaqqr."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -698,7 +698,7 @@ class bab_stats_faqs extends bab_stats_base
 				}
 			else
 				{
-				$babDB->db_query("insert into bab_stats_faqqrs (st_date, st_hour, st_hits, st_faqqr_id) values ('".$date."','".$hour."', '0', '".$idfaqqr."')");
+				$babDB->db_query("insert into ".BAB_STATS_FAQQRS_TBL." (st_date, st_hour, st_hits, st_faqqr_id) values ('".$date."','".$hour."', '0', '".$idfaqqr."')");
 				$this->faqqrs[$date][$hour][$idfaqqr] = 0;
 				}				
 			}
@@ -751,7 +751,7 @@ class bab_stats_faqs extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_faqs set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_faq_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FAQS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_faq_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -764,7 +764,7 @@ class bab_stats_faqs extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_faqqrs set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_faqqr_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FAQQRS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_faqqr_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -797,7 +797,7 @@ class bab_stats_fmfolders extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfolders'][$i]]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_fmfolders where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_folder_id='".$datas['info']['bab_fmfolders'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_FMFOLDERS_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_folder_id='".$datas['info']['bab_fmfolders'][$i]."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -805,7 +805,7 @@ class bab_stats_fmfolders extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_fmfolders (st_date, st_hour, st_hits, st_folder_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_fmfolders'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_FMFOLDERS_TBL." (st_date, st_hour, st_hits, st_folder_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_fmfolders'][$i]."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfolders'][$i]] = 0;
 					}				
 				}
@@ -829,7 +829,7 @@ class bab_stats_fmfolders extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_fmfolders set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_folder_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FMFOLDERS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_folder_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -861,7 +861,7 @@ class bab_stats_fmfiles extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfiles'][$i]]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_fmfiles where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_fmfile_id='".$datas['info']['bab_fmfiles'][$i]."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_FMFILES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_fmfile_id='".$datas['info']['bab_fmfiles'][$i]."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -869,7 +869,7 @@ class bab_stats_fmfiles extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_fmfiles (st_date, st_hour, st_hits, st_fmfile_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_fmfiles'][$i]."')");
+					$babDB->db_query("insert into ".BAB_STATS_FMFILES_TBL." (st_date, st_hour, st_hits, st_fmfile_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$datas['info']['bab_fmfiles'][$i]."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_fmfiles'][$i]] = 0;
 					}				
 				}
@@ -893,7 +893,7 @@ class bab_stats_fmfiles extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_fmfiles set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_fmfile_id= '".$r3[0]."'");
+					$babDB->db_query("update ".BAB_STATS_FMFILES_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_fmfile_id= '".$r3[0]."'");
 				}
 			}
 		}
@@ -925,7 +925,7 @@ class bab_stats_ovmlfiles extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_ovml'][$i]]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_ovml where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_ovml_file='".addslashes($datas['info']['bab_ovml'][$i])."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_OVML_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_ovml_file='".addslashes($datas['info']['bab_ovml'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -933,7 +933,7 @@ class bab_stats_ovmlfiles extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_ovml (st_date, st_hour, st_hits, st_ovml_file) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($datas['info']['bab_ovml'][$i])."')");
+					$babDB->db_query("insert into ".BAB_STATS_OVML_TBL." (st_date, st_hour, st_hits, st_ovml_file) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($datas['info']['bab_ovml'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_ovml'][$i]] = 0;
 					}				
 				}
@@ -957,7 +957,7 @@ class bab_stats_ovmlfiles extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_ovml set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_ovml_file= '".addslashes($r3[0])."'");
+					$babDB->db_query("update ".BAB_STATS_OVML_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_ovml_file= '".addslashes($r3[0])."'");
 				}
 			}
 		}
@@ -989,7 +989,7 @@ class bab_stats_addons extends bab_stats_base
 			{
 			if(!isset($this->results[$datas['date']][$datas['hour']][$datas['info']['bab_addon'][$i]]))
 				{
-				$res = $babDB->db_query("select * from bab_stats_addons where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_addon='".addslashes($datas['info']['bab_addon'][$i])."'");
+				$res = $babDB->db_query("select * from ".BAB_STATS_ADDONS_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_addon='".addslashes($datas['info']['bab_addon'][$i])."'");
 				if( $res && $babDB->db_num_rows($res) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($res);
@@ -997,7 +997,7 @@ class bab_stats_addons extends bab_stats_base
 					}
 				else
 					{
-					$babDB->db_query("insert into bab_stats_addons (st_date, st_hour, st_hits, st_addon) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($datas['info']['bab_addon'][$i])."')");
+					$babDB->db_query("insert into ".BAB_STATS_ADDONS_TBL." (st_date, st_hour, st_hits, st_addon) values ('".$datas['date']."','".$datas['hour']."', '0', '".addslashes($datas['info']['bab_addon'][$i])."')");
 					$this->results[$datas['date']][$datas['hour']][$datas['info']['bab_addon'][$i]] = 0;
 					}				
 				}
@@ -1021,7 +1021,7 @@ class bab_stats_addons extends bab_stats_base
 				reset($r2[1]);
 				while( $r3 = each($r2[1]) ) 
 				{
-					$babDB->db_query("update bab_stats_addons set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_addon= '".addslashes($r3[0])."'");
+					$babDB->db_query("update ".BAB_STATS_ADDONS_TBL." set st_hits='".$r3[1]."' where st_date='".$r1[0]."' and  st_hour = '".$r2[0]."' and st_addon= '".addslashes($r3[0])."'");
 				}
 			}
 		}
@@ -1130,7 +1130,7 @@ class bab_stats_handler
 
 		if( $babDB->db_num_rows($res) == 0 )
 			{
-			$babDB->db_query("TRUNCATE TABLE bab_stats_events");
+			$babDB->db_query("TRUNCATE TABLE ".BAB_STATS_EVENTS_TBL."");
 			}
 
 		$babDB->db_query("update ".BAB_SITES_TBL." set stat_update_time=now()");

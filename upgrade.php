@@ -3729,7 +3729,7 @@ while( $arr = $db->db_fetch_array($res))
 			if( $countevt > 0 )
 			{
 			list($grpname) = $db->db_fetch_row($db->db_query("select name from ".BAB_GROUPS_TBL." where id='".$arr['owner']."'"));
-			$db->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description) values ('".$grpname."','')");
+			$db->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description) values ('".addslashes($grpname)."','')");
 			$idcal = $db->db_insert_id();
 			$db->db_query("update ".BAB_CALENDAR_TBL." set owner='".$idcal."' where id='".$arr['id']."'");
 			$db->db_query("insert into ".BAB_CAL_PUB_VIEW_GROUPS_TBL." ( id_object, id_group ) values ('".$idcal."','".$arr['owner']."')");
@@ -3823,6 +3823,316 @@ function upgrade530to531()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
+
+return $ret;
+}
+
+function upgrade531to540()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "CREATE TABLE ".BAB_STATS_ADDONS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_addon char(255) NOT NULL default '',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_addon (st_addon)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_ADDONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_ARTICLES_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_article_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_article_id (st_article_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "CREATE TABLE ".BAB_STATS_ARTICLES_REF_TBL." (";
+$req .= "st_article_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_module_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_article_id (st_article_id),";
+$req .= "KEY st_module_id (st_module_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_ARTICLES_REF_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "CREATE TABLE ".BAB_STATS_FAQQRS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_faqqr_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_faqqr_id (st_faqqr_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_FAQQRS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_FAQS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_faq_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_faq_id (st_faq_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_FAQS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_FMFILES_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_fmfile_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_fmfile_id (st_fmfile_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_FMFILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_FMFOLDERS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_folder_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_folder_id (st_folder_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_FMFOLDERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_FORUMS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_forum_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_forum_id (st_forum_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_FORUMS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_IMODULES_TBL." (";
+$req .= "id tinyint(3) unsigned NOT NULL auto_increment,";
+$req .= "module_name varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_IMODULES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (1, 'Others')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (2, 'Articles')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (3, 'Forums')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (4, 'Files')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (5, 'Faqs')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (6, 'Private home page')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (7, 'Public home page')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (8, 'Agenda')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (9, 'Summary page')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (10, 'Directories')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (11, 'Search')");
+
+
+$req = "CREATE TABLE ".BAB_STATS_IPAGES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "page_url text NOT NULL,";
+$req .= "page_name varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_IPAGES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_MODULES_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_module_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_module_id (st_module_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_MODULES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_OVML_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_ovml_file char(255) NOT NULL default '',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_ovml_file (st_ovml_file),";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_OVML_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_PAGES_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_page_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_page_id (st_page_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_PAGES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_POSTS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_post_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_post_id (st_post_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_POSTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_SEARCH_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_word char(255) NOT NULL default '',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_word (st_word),";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_SEARCH_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_THREADS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_thread_id int(11) unsigned NOT NULL default '0',";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour),";
+$req .= "KEY st_thread_id (st_thread_id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_THREADS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_XLINKS_TBL." (";
+$req .= "st_date date NOT NULL default '0000-00-00',";
+$req .= "st_hour tinyint(3) unsigned NOT NULL default '0',";
+$req .= "st_xlink_url text NOT NULL,";
+$req .= "st_hits int(11) unsigned NOT NULL default '0',";
+$req .= "KEY st_date (st_date),";
+$req .= "KEY st_hour (st_hour)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_XLINKS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `stat_update_time` DATETIME NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 
 return $ret;
 }

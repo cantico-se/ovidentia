@@ -148,6 +148,26 @@ $babMonths = array(1=>bab_translate("January"), bab_translate("February"), bab_t
                         bab_translate("May"), bab_translate("June"), bab_translate("July"), bab_translate("August"),
                         bab_translate("September"), bab_translate("October"), bab_translate("November"), bab_translate("December"));
 
+$babShortMonths = array();
+foreach($babMonths as $key => $val )
+	{
+	$sm = substr($val, 0 , 3);
+	if( count($babShortMonths) == 0 || !in_array($sm, $babShortMonths))
+		{
+		$babShortMonths[$key] = $sm;
+		}
+	else
+		{
+		$m=4;
+		while( in_array($sm, $babShortMonths) && $m < strlen($val))
+			{
+			$sm = substr($val, 0 , $m++);
+			}
+
+		$babShortMonths[$key] = $sm;			
+		}
+	}
+
 $babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
 				bab_translate("Tuesday"), bab_translate("Wednesday"), bab_translate("Thursday"),
 				bab_translate("Friday"), bab_translate("Saturday"));
@@ -728,9 +748,13 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "lusers";
 		break;
-	case "statboard":
+	case "stat":
 		$babLevelOne = bab_translate("Statistics");
-		$incl = "statboard";
+		$incl = "stat";
+		break;
+	case "statconf":
+		$babLevelOne = bab_translate("Statistics");
+		$incl = "statconf";
 		break;
 	case "threads":
 		$babLevelOne = bab_translate("Forums");
@@ -859,6 +883,9 @@ switch($tg)
 	case "version":
 		include $babInstallPath."version.php";
 		exit;
+		break;
+	case "statproc":
+		include $babInstallPath."utilit/statproc.php";
 		break;
 	case "htmlarea":
 		include $babInstallPath."htmlarea.php";

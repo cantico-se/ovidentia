@@ -799,6 +799,7 @@ CREATE TABLE `bab_sites` (
   `date_longformat` varchar(255) NOT NULL default '',
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',
+  `stat_update_time` NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -2151,4 +2152,244 @@ CREATE TABLE bab_cal_user_options (
   user_calendarids varchar(255) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_user (id_user)
+);
+
+#
+# Table structure for table `bab_stats_addons`
+#
+
+CREATE TABLE bab_stats_addons (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_addon char(255) NOT NULL default '',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_addon (st_addon)
+);
+
+#
+# Table structure for table `bab_stats_articles`
+#
+
+CREATE TABLE bab_stats_articles (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_article_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_article_id (st_article_id)
+);
+
+#
+# Table structure for table `bab_stats_faqqrs`
+#
+
+CREATE TABLE `bab_stats_faqqrs` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_faqqr_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_faqqr_id (st_faqqr_id)
+);
+
+#
+# Table structure for table `bab_stats_faqs`
+#
+
+CREATE TABLE `bab_stats_faqs` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_faq_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_faq_id (st_faq_id)
+);
+
+#
+# Table structure for table `bab_stats_fmfiles`
+#
+
+CREATE TABLE `bab_stats_fmfiles` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_fmfile_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_fmfile_id (st_fmfile_id)
+);
+
+#
+# Table structure for table `bab_stats_fmfolders`
+#
+
+CREATE TABLE `bab_stats_fmfolders` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_folder_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_folder_id (st_folder_id)
+);
+
+#
+# Table structure for table `bab_stats_forums`
+#
+
+CREATE TABLE `bab_stats_forums` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_forum_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_forum_id (st_forum_id)
+);
+
+#
+# Table structure for table `bab_stats_imodules`
+#
+
+CREATE TABLE bab_stats_imodules (
+  id tinyint(3) unsigned NOT NULL auto_increment,
+  module_name varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id)
+);
+
+INSERT INTO bab_stats_imodules VALUES (1, 'Others');
+INSERT INTO bab_stats_imodules VALUES (2, 'Articles');
+INSERT INTO bab_stats_imodules VALUES (3, 'Forums');
+INSERT INTO bab_stats_imodules VALUES (4, 'Files');
+INSERT INTO bab_stats_imodules VALUES (5, 'Faqs');
+INSERT INTO bab_stats_imodules VALUES (6, 'Private home page');
+INSERT INTO bab_stats_imodules VALUES (7, 'Public home page');
+INSERT INTO bab_stats_imodules VALUES (8, 'Agenda');
+INSERT INTO bab_stats_imodules VALUES (9, 'Summary page');
+INSERT INTO bab_stats_imodules VALUES (10, 'Directories');
+INSERT INTO bab_stats_imodules VALUES (11, 'Search');
+
+#
+# Table structure for table `bab_stats_ipages`
+#
+
+CREATE TABLE bab_stats_ipages (
+  id int(11) unsigned NOT NULL auto_increment,
+  page_url text NOT NULL,
+  page_name varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id)
+);
+
+#
+# Table structure for table `bab_stats_modules`
+#
+
+CREATE TABLE `bab_stats_modules` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_module_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_module_id (st_module_id)
+);
+
+#
+# Table structure for table `bab_stats_ovml`
+#
+
+CREATE TABLE bab_stats_ovml (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_ovml_file char(255) NOT NULL default '',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_ovml_file (st_ovml_file),
+  KEY st_date (st_date),
+  KEY st_hour (st_hour)
+);
+
+#
+# Table structure for table `bab_stats_pages`
+#
+
+CREATE TABLE `bab_stats_pages` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_page_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_page_id (st_page_id)
+);
+
+#
+# Table structure for table `bab_stats_posts`
+#
+
+CREATE TABLE `bab_stats_posts` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_post_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_post_id (st_post_id)
+);
+
+#
+# Table structure for table `bab_stats_search`
+#
+
+CREATE TABLE bab_stats_search (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_word char(255) NOT NULL default '',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_word (st_word),
+  KEY st_date (st_date),
+  KEY st_hour (st_hour)
+);
+
+#
+# Table structure for table `bab_stats_threads`
+#
+
+CREATE TABLE `bab_stats_threads` (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_thread_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour),
+  KEY st_thread_id (st_thread_id)
+);
+
+#
+# Table structure for table `bab_stats_xlinks`
+#
+
+CREATE TABLE bab_stats_xlinks (
+  st_date date NOT NULL default '0000-00-00',
+  st_hour tinyint(3) unsigned NOT NULL default '0',
+  st_xlink_url text NOT NULL,
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_date (st_date),
+  KEY st_hour (st_hour)
+);
+
+#
+# Table structure for table `bab_stats_articles_ref`
+#
+
+CREATE TABLE bab_stats_articles_ref (
+  st_article_id int(11) unsigned NOT NULL default '0',
+  st_module_id int(11) unsigned NOT NULL default '0',
+  st_hits int(11) unsigned NOT NULL default '0',
+  KEY st_article_id (st_article_id),
+  KEY st_module_id (st_module_id)
 );

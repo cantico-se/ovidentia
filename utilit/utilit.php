@@ -45,7 +45,7 @@ function bab_mkdir($path, $mode='')
 
 function bab_formatDate($format, $time)
 {
-	global $babDays, $babMonths;
+	global $babDays, $babMonths, $babShortMonths;
 	$txt = $format;
 	if(preg_match_all("/%(.)/", $format, $m))
 		{
@@ -63,7 +63,7 @@ function bab_formatDate($format, $time)
 					$val = date("d", $time);
 					break;
 				case 'm': /* A short textual representation of a month, three letters */
-					$val = substr($babMonths[date("n", $time)], 0 , 3);
+					$val = $babShortMonths[date("n", $time)];
 					break;
 				case 'M': /* Month */
 					$val = $babMonths[date("n", $time)];
@@ -1062,7 +1062,7 @@ function babUserSection($close)
 
 	if( bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1))
 		{
-		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=statboard";
+		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=stat";
 		}
 
 	reset($babBody->babaddons);
