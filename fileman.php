@@ -8,6 +8,8 @@ include $babInstallPath."utilit/fileincl.php";
 
 function getDirSize( $dir )
 	{
+	if( !is_dir($dir))
+		return 0;
 	$h = opendir($dir);
 	$size = 0;
 	while (($f = readdir($h)) != false)
@@ -310,7 +312,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->modifiedtxt = babTranslate("Modified");
 			$this->postedtxt = babTranslate("Posted by");
 			$this->diskspace = babTranslate("Show disk space usage");
-			$this->hitstxt = babTranslate("Downloads");
+			$this->hitstxt = babTranslate("Hits");
 
 			if( !empty($BAB_SESS_USERID))
 				$this->rooturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$BAB_SESS_USERID."&gr=N&path=";
