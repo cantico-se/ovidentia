@@ -18,10 +18,14 @@
 <!--
 function lock()
 	{
-	var obj = document.getElementById('what');
-	var groups = document.getElementById('groups');
-	if (obj.tagName.toLowerCase() != 'select' || groups.tagName.toLowerCase() != 'select')
-		return false;
+	var sel = document.getElementsByTagName("SELECT");
+	for (var i = 0; i < sel.length; i++ )
+		{
+		if ( sel[i].name == 'what' )
+			{var obj = sel[i];}
+		if ( sel[i].name == 'groups[]' )
+			{var groups = sel[i];}
+		}
 	if (obj.value != "") 
 		{groups.disabled = true;}
 	else {groups.disabled = false;}
