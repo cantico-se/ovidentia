@@ -472,37 +472,37 @@ function babAdminSection($close)
 			}
 		}
 
-	if( $babBody->isSuperAdmin )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 		{
 		$this->array_urls[bab_translate("Delegation")] = $GLOBALS['babUrlScript']."?tg=delegat";
 		$this->array_urls[bab_translate("Sites")] = $GLOBALS['babUrlScript']."?tg=sites";
 		$this->array_urls[bab_translate("Users")] = $GLOBALS['babUrlScript']."?tg=users";
 		}
 
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['groups'] == 'Y')
 		$this->array_urls[bab_translate("Groups")] = $GLOBALS['babUrlScript']."?tg=groups";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['sections'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['sections'] == 'Y')
 		$this->array_urls[bab_translate("Sections")] = $GLOBALS['babUrlScript']."?tg=sections";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['faqs'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['faqs'] == 'Y')
 		$this->array_urls[bab_translate("Faq")] = $GLOBALS['babUrlScript']."?tg=admfaqs";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['articles'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['articles'] == 'Y')
 		$this->array_urls[bab_translate("Topics categories")] = $GLOBALS['babUrlScript']."?tg=topcats";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['forums'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['forums'] == 'Y')
 		$this->array_urls[bab_translate("Forums")] = $GLOBALS['babUrlScript']."?tg=forums";
-	if( $babBody->isSuperAdmin )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=admvacs";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['calendars'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['calendars'] == 'Y')
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=admcals";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['mails'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['mails'] == 'Y')
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['filemanager'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['filemanager'] == 'Y')
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfms";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['approbations'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['approbations'] == 'Y')
 		$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
-	if( $babBody->isSuperAdmin || $babBody->currentDGGroup['directories'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['directories'] == 'Y')
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
 	
-	if( $babBody->isSuperAdmin )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
 	
 	$this->head = bab_translate("Currently you administer ");
@@ -512,7 +512,7 @@ function babAdminSection($close)
 		$this->head .= bab_getGroupName($babBody->currentAdmGroup);
 	$this->foot = "";
 
-	if( $babBody->isSuperAdmin )
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		{
 		$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
 		while( $row = $babDB->db_fetch_array($res))
