@@ -46,9 +46,13 @@ function listGroups()
 			if( $i < $this->count)
 				{
 				$this->burl = true;
+				$this->bview = true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				if( $this->arr['id'] == 1 || $this->arr['id'] == 2)
 					$this->burl = false;
+
+				if( $this->arr['id'] == 2)
+					$this->bview = false;
 
 				if( $this->arr['gstorage'] == "Y")
 					$this->gstorage = "checked";

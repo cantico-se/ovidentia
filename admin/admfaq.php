@@ -47,9 +47,9 @@ function modifyCategory($id)
 
 		function temp($id)
 			{
-			$this->category = bab_translate("Category");
+			$this->category = bab_translate("FAQ Name");
 			$this->description = bab_translate("Description");
-			$this->add = bab_translate("Update Category");
+			$this->add = bab_translate("Update FAQ");
 			$this->delete = bab_translate("Delete");
 			$this->manager = bab_translate("Manager");
 			$this->db = $GLOBALS['babDB'];
@@ -91,7 +91,7 @@ function deleteCategory($id)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this faq");
 			$this->title = getFaqName($id);
-			$this->warning = bab_translate("WARNING: This operation will delete category with all questions and responses"). "!";
+			$this->warning = bab_translate("WARNING: This operation will delete the FAQ with all questions and responses"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Delete&item=".$id."&action=Yes";
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$id;
@@ -108,7 +108,7 @@ function updateCategory($id, $category, $description, $manager)
 	global $babBody;
 	if( empty($category))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a FAQ name !!");
 		return;
 		}
 	if( empty($manager))
@@ -192,7 +192,7 @@ switch($idx)
 		break;
 
 	case "Delete":
-		$babBody->title = bab_translate("Delete FAQ category");
+		$babBody->title = bab_translate("Delete FAQ");
 		deleteCategory($item);
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
@@ -202,7 +202,7 @@ switch($idx)
 
 	default:
 	case "Modify":
-		$babBody->title = bab_translate("Modify FAQ category").": ". getFaqName($item);
+		$babBody->title = bab_translate("Modify FAQ").": ". getFaqName($item);
 		modifyCategory($item);
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);

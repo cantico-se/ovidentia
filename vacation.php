@@ -344,8 +344,8 @@ function confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			$yearbegin = date("Y") + $yearbegin - 1;
 			$yearend = date("Y") + $yearend - 1;
 
-			$this->from = bab_translate("from");
-			$this->to = bab_translate("until");
+			$this->from = bab_translate("Begin date");
+			$this->to = bab_translate("End date");
 			$this->type = bab_translate("Vacation type");
 			$this->confirm = bab_translate("Confirm");
 			$this->begindate = sprintf("%04d-%02d-%02d 00:00:00", $yearbegin, $monthbegin, $daybegin);
@@ -434,7 +434,7 @@ switch($idx)
 		break;
 
 	case "newvac";
-		$babBody->title = bab_translate("Add new vacation");
+		$babBody->title = bab_translate("Request vacation");
 		if( bab_isUserUseVacation($GLOBALS['BAB_SESS_USERID']))
 			{
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacation&idx=listvac");

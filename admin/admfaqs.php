@@ -35,7 +35,7 @@ function addCategory()
 
 		function temp()
 			{
-			$this->category = bab_translate("Category");
+			$this->category = bab_translate("FAQ Name");
 			$this->description = bab_translate("Description");
 			$this->manager = bab_translate("Manager");
 			$this->add = bab_translate("Add");
@@ -108,7 +108,7 @@ function saveCategory($category, $description, $manager)
 	global $babBody;
 	if( empty($category))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a FAQ !!");
 		return;
 		}
 
@@ -129,7 +129,7 @@ function saveCategory($category, $description, $manager)
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$babBody->msgerror = bab_translate("ERROR: This category already exists");
+		$babBody->msgerror = bab_translate("ERROR: This FAQ already exists");
 		return;
 		}
 
