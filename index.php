@@ -14,8 +14,8 @@ session_register("BAB_SESS_HASHID");
 include $babInstallPath."utilit/utilit.php";
 
 userIsloggedin();
-updateUserSettings();
 updateSiteSettings();
+updateUserSettings();
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";

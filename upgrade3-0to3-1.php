@@ -249,6 +249,14 @@ $db->db_query("INSERT INTO mime_types VALUES ('xls', 'application/vnd.ms-excel')
 $db->db_query("INSERT INTO mime_types VALUES ('xml', 'text/xml')";
 $db->db_query("INSERT INTO mime_types VALUES ('zip', 'application/zip')";
 
+$req = "ALTER TABLE users ADD skin TEXT NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>users</b> table failed !<br>";
+	return $ret;
+	}
+
 updateConfig();
 return $ret;
 }

@@ -164,6 +164,84 @@ function changeLanguage()
 
     }
 
+function changeSkin()
+	{
+	global $body;
+
+	class tempc
+		{
+		var $title;
+        var $count;
+        var $userskin;
+        var $skinval;
+        var $skinselected;
+        var $skinname;
+		var $update;
+
+        var $arrfiles = array();
+
+		function tempc()
+			{
+        	global $BAB_SESS_USERID;
+			$this->title = babTranslate("Prefered skin");
+			$this->update = babTranslate("Update Skin");
+            $this->count = 0;
+
+            $db = new db_mysql();
+            $req = "select * from users where id='$BAB_SESS_USERID'";
+            $res = $db->db_query($req);
+            if( $res && $db->db_num_rows($res) > 0 )
+                {
+    			$arr = $db->db_fetch_array($res);
+                $this->userskin = $arr['skin'];
+                }
+            else
+                $this->userskin = "";
+           
+            if( $this->userskin == "")
+                $this->userskin = $GLOBALS['babSkin'];
+
+            $this->title .= " : ".$this->userskin;
+
+            $h = opendir($GLOBALS['babInstallPath']."skins/"); 
+            while ( $file = readdir($h))
+                { 
+                if ($file != "." && $file != "..")
+                    {
+					if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
+                        {
+                            $this->arrfiles[] = $file; 
+                        }
+                    } 
+                }
+            closedir($h);
+            $this->count = count($this->arrfiles);
+			}
+
+		function getnextskin()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+                $this->skinname = $this->arrfiles[$i];
+                $this->skinval = $this->arrfiles[$i];
+                if( $this->userskin == $this->skinname )
+                    $this->skinselected = "selected";
+                else
+                    $this->skinselected = "";
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		}
+
+
+    $tempc = new tempc();
+    $body->babecho(	babPrintTemplate($tempc,"options.html", "changeskin"));
+    }
 
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
@@ -197,6 +275,18 @@ function updateLanguage($lang)
 		{
         $db = new db_mysql();
         $req = "update users set lang='".$lang."' where id='".$BAB_SESS_USERID."'";
+        $res = $db->db_query($req);
+		}
+	Header("Location: index.php?tg=options&idx=global");
+	}
+
+function updateSkin($skin)
+	{
+    global $BAB_SESS_USERID;
+	if( !empty($skin))
+		{
+        $db = new db_mysql();
+        $req = "update users set skin='".$skin."' where id='".$BAB_SESS_USERID."'";
         $res = $db->db_query($req);
 		}
 	Header("Location: index.php?tg=options&idx=global");
@@ -280,6 +370,9 @@ if( isset($update))
         case "lang":
         	updateLanguage($lang);
             break;
+        case "skin":
+        	updateSkin($skin);
+            break;
         case "userinfo":
         	if(updateUserInfo($password, $firstname, $lastname, $nickname, $email))
 				{
@@ -343,6 +436,7 @@ switch($idx)
 		$idcal = getCalendarid($BAB_SESS_USERID, 1);
 		changeUserInfo($firstname, $lastname, $nickname, $email);
 		changePassword();
+		changeSkin();
 		changeLanguage();
 		$body->addItemMenu("global", babTranslate("Options"), $GLOBALS['babUrl']."index.php?tg=options&idx=global");
 		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )

@@ -1063,6 +1063,10 @@ function updateUserSettings()
                 {
                 $GLOBALS['babLanguage'] = $arr['lang'];
                 }
+            if( $arr['skin'] != "")
+                {
+                $GLOBALS['babSkin'] = $arr['skin'];
+                }
             /*
             $req="select * from users_log where id_user='$BAB_SESS_USERID'";
             $res=$db->db_query($req);
