@@ -147,6 +147,7 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			$this->totaltxt = bab_translate("Total");
 			$this->balancetxt = bab_translate("Balance");
 			$this->calendar = bab_translate("Planning");
+			$this->totalval = 0;
 			$this->db = $GLOBALS['babDB'];
 			if( $daybegin ==  "" )
 				$this->daybegin = date("j");
@@ -235,7 +236,6 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 				{
 				$arr = $this->db->db_fetch_array($this->rest);
 				$this->typename = $arr['description'];
-				//$this->maxdays = $arr['maxdays'];
 				$this->nbdaysname = "nbdays".$arr['id'];
 
 				$row = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_VAC_ENTRIES_TBL.".status!='N' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$arr['id']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
@@ -945,6 +945,10 @@ if( isset($add))
 	}
 }
 
+
+$res = $babDB->db_query("select ".BAB_VAC_RIGHTS_TBL.".* from ".BAB_VAC_RIGHTS_TBL." join ".BAB_VAC_USERS_RIGHTS_TBL." where ".BAB_VAC_RIGHTS_TBL.".active='Y' and ".BAB_VAC_USERS_RIGHTS_TBL.".id_user='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_VAC_USERS_RIGHTS_TBL.".id_right=".BAB_VAC_RIGHTS_TBL.".id");
+$countt = $babDB->db_num_rows($res);
+
 switch($idx)
 	{
 	case "unload":
@@ -966,7 +970,8 @@ switch($idx)
 		$babBody->title = bab_translate("Request vacations waiting to be validate");
 		if( $acclevel['user'] == true )
 			{
-			$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
+			if( $countt > 0 )
+				$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
 			$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
 			}
 		if( $acclevel['approver'] == true )
@@ -994,7 +999,8 @@ switch($idx)
 			if( !isset($halfdayend)) $halfdayend = "";
 			if( !isset($remarks)) $remarks = "";
 			requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $nbdays, $remarks);
-			$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
+			if( $countt > 0 )
+				$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
 			$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
 			}
 		else
@@ -1009,12 +1015,13 @@ switch($idx)
 
 	case "lvreq":
 	default:
-		$babBody->title = bab_translate("Request vacation");
+		$babBody->title = bab_translate("Vacation requests list");
 		if( $acclevel['user'] == true )
 			{
 			if( !isset($pos)) $pos = 0;
 			listVacationRequests($pos);
-			$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
+			if( $countt > 0 )
+				$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
 			$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
 			}
 		else
