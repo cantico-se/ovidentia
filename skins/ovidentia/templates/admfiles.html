@@ -1,0 +1,63 @@
+<!--#begin admfileslist -->
+<script language="javascript">
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		objCtrl = document.forms.listform.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="admfiles">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="update" value="update">
+  <table border="0" width="50%" cellpadding="1" cellspacing="0" align="center">
+    <tr> 
+      <td> 
+        <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+          <tr> 
+            <td class="BabContactsTitleFontBackground" align="left" valign="middle" height="19" >{ 
+              fullname } </td>
+            <td class="BabContactsTitleFontBackground" align="left" valign="middle" height="19" >{ 
+              public } </td>
+            <td class="BabContactsTitleFontBackground" align="left" valign="middle" height="19" >{ 
+              private } </td>
+		  </tr>
+          <!--#in getnext -->
+          <tr> 
+            <td class="BabTopicsContactsBodyFontBackground" align="left" valign="middle">
+			<!--#if burl -->
+			<a class="BabGroupsAdminMenbersListLink" href="{ url }">{ urlname }</a>
+			<!--#else burl -->{ urlname }<!--#endif burl -->
+			</td>
+            <td align="left" valign="middle" width="0%">
+              <input type="checkbox" name="groups[]" { gstorage } value="{ arr[id] }">
+            </td>
+            <td align="left" valign="middle" width="0%">
+              <input type="checkbox" name="ugroups[]" { ustorage } value="{ arr[id] }">
+            </td>
+          </tr>        
+          <!--#endin getnext -->
+          <tr> 
+            <td class="BabContactsTitleFontBackground" align="left" valign="middle" height="19" >&nbsp;</td>
+            <td class="BabContactsTitleFontBackground" width="1%" height="19"><a href="javascript:onCheckAll('groups', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('groups', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+            <td class="BabContactsTitleFontBackground" width="1%" height="19"><a href="javascript:onCheckAll('ugroups', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('ugroups', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
+        </table>
+      </td>
+    </tr>
+  </table><br>
+<center><input type="submit" name="submit" value="{ modify }"></center>
+</form>
+<!--#end admfileslist -->
