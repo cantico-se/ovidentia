@@ -871,15 +871,9 @@ function bab_replace( $txt )
 	$reg = "/\\\$OVML\((.*?)\)/";
 	if( preg_match_all($reg, $txt, $m))
 		{
-		include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$filepath = $GLOBALS['babOvmlPath']. $m[1][$k];
-			if( is_readable($filepath))
-				{
-				$tmp = new babOvTemplate();
-				$txt = preg_replace("/\\\$OVML\(".preg_quote($m[1][$k], "/")."\)/", $tmp->printout(implode("", file($filepath))), $txt);
-				}
+			$txt = preg_replace("/\\\$OVML\(".preg_quote($m[1][$k], "/")."\)/", bab_printOvmlTemplate($m[1][$k]), $txt);
 			}
 		}
 

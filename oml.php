@@ -22,25 +22,13 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."utilit/omlincl.php";
 
-if( strstr($file, "..") || strtolower(substr($file, 0, 4)) == 'http' )
-	return;
-$filepath = $babOvmlPath.$file;
-if( !is_readable($filepath))
+parse_str($QUERY_STRING, $arr);
+if( isset($echo) && $echo == 1)
 	{
-	return '';
+	echo bab_printOvmlTemplate($file, $arr);
+	exit;
 	}
 else
-	{
-	parse_str($QUERY_STRING, $arr);
-	$tmp = new babOvTemplate($arr);
-	if( isset($echo) && $echo == 1)
-		{
-		echo $tmp->printout(implode("", file($filepath)));
-		exit;
-		}
-	else
-		$babBody->babecho ($tmp->printout(implode("", file($filepath))));
-	}
+	$babBody->babecho ( bab_printOvmlTemplate($file, $arr));
 ?>
