@@ -134,16 +134,20 @@ function searchKeyword($item , $option = "OR")
 		var $sfor;
 		var $sfil;
 		var $what;
+		var $what2;
+		var $dirarr = array();
+		var $search;
 
 		function tempb($item ,$option )
 			{
 			$this->db = $GLOBALS['babDB'];
 			global  $babBody,$babSearchItems;
 			$this->fields = $GLOBALS['HTTP_POST_VARS'];
-			
 			$this->search = bab_translate("Search");
 			$this->all = bab_translate("All");
 			$this->in = bab_translate("in");
+			if (!isset($this->fields['what'])) $this->fields['what'] = '';
+			if (!isset($this->fields['what2'])) $this->fields['what2'] = '';
 			$this->what = stripslashes($this->fields['what']);
 			$this->fields['what'] = stripslashes($this->fields['what']);
 			$this->fields['what2'] = stripslashes($this->fields['what2']);
@@ -158,8 +162,8 @@ function searchKeyword($item , $option = "OR")
 
 			$this->before = bab_translate("before date");
 			$this->after = bab_translate("after date");
-			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date(m)."&year=".date(Y);;
-			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date(m)."&year=".date(Y);;
+			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');;
+			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');;
 
 			$this->or_selected = "";
 			$this->and_selected = "";
@@ -181,7 +185,8 @@ function searchKeyword($item , $option = "OR")
 			for ($i =0 ;$i < FIELDS_TO_SEARCH ; $i++)
 				$this->el_to_init[] = "dirfield_".$i;
 
-			if (($this->fields['idx'] != "find")||((!isset($this->fields['a_mm']))&&(!isset($this->fields['g_mm'])))) 
+			
+			if ((isset($this->fields['idx']) && $this->fields['idx'] != "find")||((!isset($this->fields['a_mm']))&&(!isset($this->fields['g_mm'])))) 
 				{
 				foreach($this->el_to_init as  $value)
 					if (! isset($this->fields[$value])) $this->fields[$value] = "";
@@ -196,7 +201,8 @@ function searchKeyword($item , $option = "OR")
 			$i = 0;
 			while ($arr = $this->db->db_fetch_array($this->resdirs) )
 				{
-				if ($arr['name'] != $this->dirarr[$i-1]['name'] && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']))
+				$prevname = $i >= 1 && is_array($this->dirarr[$i-1]) ? $this->dirarr[$i-1]['name'] : '';
+				if ($arr['name'] != $prevname && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']))
 					{
 					$this->dirarr[$i] = $arr;
 					$i++;
@@ -489,6 +495,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 		var $countcon;
 		var $countdir;
 		var $counttot;
+		var $nbresult = 0;
 
 		function temp( $item, $what, $order, $option ,$navitem ,$navpos )
 			{
@@ -559,25 +566,27 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->db->db_query($req);
 				$req = "alter table comresults add unique (id)";
 				$this->db->db_query($req); 
-
-				if (trim($this->fields['a_author']) != "")
+				
+				$crit_art = "";
+				$crit_com = "";
+				if (isset($this->fields['a_author']) && trim($this->fields['a_author']) != "")
 					{
 					$crit_art = " and (".finder($this->fields['a_author'],"concat(U.lastname,U.firstname)",$option).")";
 					$crit_com = " and (".finder($this->fields['a_author'],"name",$option).")";
 					}
 
-				if (trim($this->fields['a_topic']) != "")
+				if (isset($this->fields['a_topic']) && trim($this->fields['a_topic']) != "")
 					{
 					$crit_art .= " and id_topic = ".$this->fields['a_topic'];
 					$crit_com .= " and C.id_topic = ".$this->fields['a_topic'];
 					}
 
-				if (trim($this->fields['after']) != "")
+				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
 					$crit_art .= " and a.date >= '".$this->fields['after']."'";
 					$crit_com .= " and C.date >= '".$this->fields['after']."'";
 					}
-				if (trim($this->fields['before']) != "")
+				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
 					$crit_art .= " and a.date <= '".$this->fields['before']."'";
 					$crit_com .= " and C.date <= '".$this->fields['before']."'";
@@ -869,13 +878,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( empty($item) || $item == "g")
 				{
 
-				$id_directory = $this->fields['g_directory'];
+				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
 				$crit_fields = "";
 				
 				for($i = 0 ; $i < FIELDS_TO_SEARCH ; $i++)
 					{
-					eval("\$dirselect = \$this->fields[dirselect_$i];");
-					eval("\$dirfield = \$this->fields[dirfield_$i];");
+					$dirselect = isset($this->fields['dirselect_'.$i]) ? $this->fields['dirselect_'.$i] : '';
+					$dirfield = isset($this->fields['dirfield_'.$i]) ? $this->fields['dirfield_'.$i] : '';
 					if ($dirfield !="") 
 						$crit_fields .= " and ".finder($dirfield,$dirselect);
 					}
@@ -912,11 +921,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->db->db_query($req);
 				$req = "alter table dirresults add unique (id)";
 				$this->db->db_query($req);
-				$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL;
-				if (trim($id_directory) != "") $req .= " where id='".$id_directory."'";
-				$res = $this->db->db_query($req);
-				while( $row = $this->db->db_fetch_array($res))
+				
+				if (trim($id_directory) != "") 
 					{
+					$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id='".$id_directory."'";
+					$res = $this->db->db_query($req);
+					$row = $this->db->db_fetch_array($res);
+
 					$diradd = false;
 					if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 						{
@@ -946,9 +957,46 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							$req = "insert into dirresults ".$req;
 							$this->db->db_query($req);
 							}
-
 						}
+					}
+				else
+					{
+					// all directories
+					$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id_group<'2'";
+					$res = $this->db->db_query($req);
+					while ($row = $this->db->db_fetch_array($res))
+						{
+						$diradd = false;
+						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+							{
+							if( $row['id_group'] > 0 )
+								{
+								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
+								if( $bdir == 'Y' )
+									$diradd = true;		
+								}
+							else
+								$diradd= true;
 
+							if( $diradd )
+								{
+								if( $row['id_group'] > 1 )
+									{
+									$req = "select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." UG.id_group='".$row['id_group']."' and UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
+									}
+								else
+									{
+									$req = "select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
+									}
+								}
+
+							if( $diradd && !empty($req))
+								{
+								$req = "insert into dirresults ".$req;
+								$this->db->db_query($req);
+								}
+							}
+						}
 					}
 
 				$req = "select count(*) from dirresults";
@@ -972,15 +1020,17 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		if( empty($item) || $item == "h")
 				{
-				if (trim($this->fields['after']) != "")
+				$crit_date = '';
+				$select_idcal = '';
+				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
 					$crit_date = " and h.start_date >= '".$this->fields['after']."'";
 					}
-				if (trim($this->fields['before']) != "")
+				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
 					$crit_date .= " and h.end_date <= '".$this->fields['before']."'";
 					}
-				if (trim($this->fields['h_calendar']) != "")
+				if (isset($this->fields['h_calendar']) && trim($this->fields['h_calendar']) != "")
 					{
 					$select_idcal = " and h.id_cal = '".$this->fields['h_calendar']."'";
 					}
@@ -991,6 +1041,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->db->db_query($req);
 
 				$av_cal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
+				$list_id_cal = '';
 				foreach($av_cal as $value)
 					$list_id_cal .= $value['idcal'].",";
 
@@ -1175,6 +1226,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countcon)
 				{
 				$arr = $this->db->db_fetch_array($this->rescon);
+				$arr['firstname'] = isset($arr['firstname']) ? $arr['firstname']: '';
+				$arr['lastname'] = isset($arr['lastname']) ? $arr['lastname']: '';
 				$this->fullname = bab_composeUserName( $arr['firstname'], $arr['lastname']);
 				$this->confirstname = $arr['firstname'];
 				$this->conlastname = put_text($arr['title']);
@@ -1720,6 +1773,12 @@ if( !isset($what))
 
 if( !isset($idx))
 	$idx = "";
+
+if( !isset($item))
+	$item = '';
+
+if( !isset($option))
+	$option = '';
 
 if ((!isset($navpos)) || ($navpos == ""))
 	$navpos = 0;
