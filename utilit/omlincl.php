@@ -700,12 +700,21 @@ class bab_Articles extends bab_handler
 			if( $order === false || $order === '' )
 				$order = "asc";
 
+			$forder = $ctx->get_value('topicorder');
+			switch(strtoupper($forder))
+			{
+				case 'YES': $forder = "ordering"; break;
+				case 'NO': $forder = "date"; break;
+				default: $forder = "date"; break;
+
+			}
+
 			switch(strtoupper($order))
 			{
-				case "ASC": $order = "at.ordering ASC"; break;
+				case "ASC": $order = "at.".$forder." ASC"; break;
 				case "RAND": $order = "rand()"; break;
 				case "DESC":
-				default: $order = "at.ordering DESC"; break;
+				default: $order = "at.".$forder." DESC"; break;
 			}
 
 			$req .= " order by ".$order;
