@@ -771,6 +771,7 @@ function exportVacationRequests()
 		var $comma;
 		var $tab;
 		var $export;
+		var $sepdectxt;
 
 		function temp()
 			{
@@ -784,6 +785,7 @@ function exportVacationRequests()
 			$this->comma = bab_translate("Comma");
 			$this->tab = bab_translate("Tab");
 			$this->export = bab_translate("Export");
+			$this->sepdectxt = bab_translate("Decimal separator");
 
 			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3";
 			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3";
@@ -808,6 +810,108 @@ function exportVacationRequests()
 	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp,"vacadmb.html", "reqexport"));
 	return $count;
+	}
+
+function deleteVacationRequests($dateb, $userid)
+	{
+	global $babBody, $babDB;
+	class tempa
+		{
+		var $datetxt;
+		var $dateformattxt;
+		var $delete;
+		var $usertext;
+		var $usersbrowurl;
+		var $dateburl;
+
+		function tempa($dateb, $userid)
+			{
+			global $babDB;
+			$this->datetxt = bab_translate("End date");
+			$this->dateformattxt = "( ".bab_translate("dd-mm-yyyy")." )";
+			$this->delete = bab_translate("Delete");
+			$this->usertext = bab_translate("User");
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt&idtype=&cb=";
+			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=10&ymax=0";
+			if( $dateb != "" )
+				$this->datebval = $dateb;
+			else
+				$this->datebval = "";
+			if( $userid != "" )
+				{
+				$this->userval = bab_getUserName($userid);
+				$this->userid =$userid;
+				}
+			else
+				{
+				$this->userval ="";
+				$this->userid ="";
+				}
+			}
+		}
+
+	$temp = new tempa($dateb, $userid);
+	$babBody->babecho(bab_printTemplate($temp,"vacadmb.html", "reqdelete"));
+	return $count;
+	}
+
+function deleteInfoVacationRequests($dateb, $userid)
+	{
+	global $babBody;
+	
+	class temp
+		{
+		var $warning;
+		var $message;
+		var $title;
+		var $urlyes;
+		var $urlno;
+		var $yes;
+		var $no;
+		var $topics;
+		var $article;
+
+		function temp($dateb, $userid)
+			{
+			$this->message = bab_translate("Are you sure you want to remove the requests which finish before the following date ").$dateb;
+			if( $userid == "" )
+				$this->title = bab_getUserName("All users");
+			else
+				$this->title = bab_getUserName($userid);
+			$this->warning = bab_translate("WARNING: This operation will delete vacations requests"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq&date=".$dateb."&userid=".$userid."&action=Yes";
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq";
+			$this->no = bab_translate("No");
+			}
+		}
+
+	$ret = true;
+	if( $dateb == "" )
+		{
+		$ret = false;
+		}
+
+	$ar = explode("-", $dateb);
+	if( count($ar) != 3 || !is_numeric($ar[0]) || !is_numeric($ar[1]) || !is_numeric($ar[2]))
+		{
+		$ret = false;
+		}
+
+	if( $ar[0] <= 0 || $ar[1] <= 0 || $ar[2] <= 0)
+		{
+		$ret = false;
+		}
+
+	if( !$ret )
+		{
+		$babBody->msgerror = bab_translate("You must provide a correct date");
+		return false;
+		}
+
+	$temp = new temp($dateb, $userid);
+	$babBody->babecho( bab_printTemplate($temp,"warning.html", "warningyesno"));
+	return true;
 	}
 
 
@@ -875,7 +979,7 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 	return true;
 }
 
-function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ)
+function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $sepdec)
 {
 	global $babDB;
 	$statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
@@ -969,7 +1073,7 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ)
 			$output .= $date.$separ;
 			list($type) = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id='".$arr['id_entry']."'"));
 			$output .= $type.$separ;
-			$output .= $arr['quantity'].$separ;
+			$output .= number_format($arr['quantity'], 1, $sepdec, '').$separ;
 			switch($row['status'])
 				{
 				case 'Y':
@@ -994,6 +1098,25 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ)
 	exit;
 }
 
+function doDeleteVacationRequests($date, $userid)
+{
+	global $babDB;
+
+	$ar = explode("-", $date);
+	$dateb = sprintf("%04d-%02d-%02d", $ar[2], $ar[1], $ar[0]);
+
+	$req = "select id from ".BAB_VAC_ENTRIES_TBL." where date_end <='".$dateb."'";
+	if( $userid != "" )
+		$req .= " and id_user='".$userid."'";
+
+	$res = 	$babDB->db_query($req);
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$arr['id']."'");
+		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$arr['id']."'");
+	}
+}
+
 /* main */
 $acclevel = bab_vacationsAccess();
 if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
@@ -1015,8 +1138,12 @@ if( isset($add))
 }
 else if( isset($bexport))
 {
-	doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ);
+	doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $sepdec);
 }
+else if( isset($action) && $action == "Yes")
+	{
+	doDeleteVacationRequests($date, $userid);
+	}
 
 switch($idx)
 	{
@@ -1052,17 +1179,39 @@ switch($idx)
 
 	case "reqx":
 		$babBody->title = bab_translate("Export requests vacations");
-		if( !isset($datee)) $datee ="";
-		if( !isset($dateb)) $dateb ="";
-		if( !isset($idstatus)) $idstatus ="";
-		if( !isset($userid)) $userid ="";
-		if( !isset($vpos)) $vpos =0;
 		exportVacationRequests();
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		$babBody->addItemMenu("reqx", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=reqx");
+		break;
+
+	case "dreq":
+		$babBody->title = bab_translate("Delete requests vacations");
+		if( !isset($dateb)) $dateb ="";
+		if( !isset($userid)) $userid ="";
+		deleteVacationRequests($dateb, $userid);
+		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
+		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
+		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
+		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		$babBody->addItemMenu("dreq", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=dreq");
+		$babBody->addItemMenu("reqx", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=reqx");
+		break;
+
+	case "ddreq":
+		$babBody->title = bab_translate("Delete requests vacations");
+		if( !deleteInfoVacationRequests($dateb, $userid))
+			deleteVacationRequests($dateb, $userid);
+		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
+		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
+		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
+		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		$babBody->addItemMenu("ddreq", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=ddreq");
 		$babBody->addItemMenu("reqx", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=reqx");
 		break;
 
@@ -1080,6 +1229,7 @@ switch($idx)
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		$babBody->addItemMenu("dreq", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=dreq");
 		$babBody->addItemMenu("reqx", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=reqx");
 		break;
 	}

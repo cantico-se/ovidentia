@@ -121,14 +121,19 @@ function dateEnd(day, month, year)
 <input type="hidden" name="tg" value="vacadma">
 <input type="hidden" name="idx" value="lrig">
 <input type="hidden" name="add" value="addvr">
-<input type="hidden" name="idtype" value="{ idtype }">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ typetxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle">{ typename }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="idtype">
+<!--#in getnexttype -->
+<option value="{ typeid }" { selected }>{ typename }</option>
+<!--#endin getnexttype -->
+</select>
+</td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ desctxt }:</td>
@@ -238,10 +243,14 @@ op.close();
 var op = null;
 function openPopup(url)
 {
+var nurl = url+'&idtype='+document.forms.gcreate.idtype.options[document.forms.gcreate.idtype.selectedIndex].value+'&cb=onUser'
 if( op == null || op.closed )
-	op = this.open(url+'onUser', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+	op = this.open(nurl, 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 else
+	{
+	op.location = nurl;
 	op.focus();
+	}
 }
 
 function onCollection()

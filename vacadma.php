@@ -75,18 +75,23 @@ function browsePersonnelByType($pos, $cb, $idtype)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-	
 				$this->bview = false;
 				$res = $this->db->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->arr['id']."'");
-				while( $arr = $this->db->db_fetch_array($res))
+				if( $this->idtype != "" )
 					{
-					$res2 = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->idtype."' and id_coll ='".$arr['id_coll']."'");
-					if( $res2 && $this->db->db_num_rows($res2) > 0 )
+					while( $arr = $this->db->db_fetch_array($res))
 						{
-						$this->bview = true;
-						break;
+						$res2 = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$this->idtype."' and id_coll ='".$arr['id_coll']."'");
+						if( $res2 && $this->db->db_num_rows($res2) > 0 )
+							{
+							$this->bview = true;
+							break;
+							}
 						}
 					}
+				else if( $res && $this->db->db_num_rows($res) > 0 )
+					$this->bview = true;
+
 				if( $this->bview )
 					{
 					$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
@@ -121,9 +126,9 @@ function browsePersonnelByType($pos, $cb, $idtype)
 				else 
 					{
 					if( $this->ord == "-" )
-						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where lastname like '".$this->selectname."%' and ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user";
 					else
-						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
+						$req = "select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where firstname like '".$this->selectname."%' and ".BAB_USERS_TBL.".id = ".BAB_VAC_PERSONNEL_TBL.".id_user";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
@@ -201,7 +206,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->typetxt = bab_translate("Type");
 			$this->nametxt = bab_translate("Name");
 			$this->quantitytxt = bab_translate("Quantity");
-			$this->creditortxt = bab_translate("Creditor");
+			$this->creditortxt = bab_translate("Author");
 			$this->datetxt = bab_translate("Entry date");
 			$this->date2txt = bab_translate("Entry date ( dd-mm-yyyy )");
 			$this->addtxt = bab_translate("Allocate vacation rights");
@@ -452,6 +457,8 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 		var $opentxt;
 		var $yes;
 		var $no;
+		var $counttype;
+		var $restype;
 
 		var $invalidentry1;
 
@@ -474,7 +481,7 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted or . !");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt&idtype=".$idtype."&cb=";
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
 
 			$this->db = $GLOBALS['babDB'];
 			$this->add = bab_translate("Add");
@@ -521,6 +528,9 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 
 			$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$idtype."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
 			$this->countcol = $this->db->db_num_rows($this->colres);
+
+			$this->restype = $this->db->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
+			$this->counttype = $this->db->db_num_rows($this->restype);
 			}
 		
 		function getnextcol()
@@ -537,6 +547,29 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 			else
 				return false;
 			}
+
+		function getnexttype()
+			{
+			static $i = 0;
+			if( $i < $this->counttype)
+				{
+				$arr = $this->db->db_fetch_array($this->restype);
+				$this->typename = $arr['name'];
+				$this->typeid = $arr['id'];
+				if( $this->idtype == $this->typeid )
+					$this->selected = "selected";
+				else
+					$this->selected ="";
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+
+			}
+
 		}
 
 	$temp = new temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose);
@@ -597,6 +630,10 @@ function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vcl
 			$this->db = $GLOBALS['babDB'];
 			$this->add = bab_translate("Modify");
 			$this->bdel = false;
+
+			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$idvr."'"));
+			if( $total == 0 )
+				$this->bdel = true;
 
 			$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'"));
 
@@ -810,7 +847,7 @@ function viewVacationRightPersonnel($idvr)
 			$this->dateentrytxt = bab_translate("Entry date");
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->typetxt = bab_translate("Vacation type");
-			$this->creditortxt = bab_translate("Creditor");
+			$this->creditortxt = bab_translate("Author");
 			$this->statustxt = bab_translate("Status");
 			$this->db = $GLOBALS['babDB'];
 
@@ -989,6 +1026,19 @@ function deleteVacationRightPersonnel($idvr, $userids)
 		}
 	}
 
+function deleteVacationRight($idvr)
+	{
+	global $babBody, $babDB;
+	list($total) = $babDB->db_fetch_row($this->db->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$idvr."'"));
+	if( $total > 0 )
+		{
+		$babBody->msgerror = bab_translate("Can't delete this vacation right. It's used elsewhere");
+		return;
+		}
+	else
+		$babDB->db_query("delete from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'");
+	}
+
 /* main */
 $acclevel = bab_vacationsAccess();
 if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
@@ -1017,15 +1067,22 @@ if( isset($add) )
 		}
 	else if( $add == "modvr" )
 		{
-		if(!updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose))
-			$idx ='modvr';
-		else
+		if( isset($submit ))
 			{
-			unset($description);
-			unset($idtype);
-			unset($datee);
-			unset($dateb);
-			unset($nbdays);
+			if(!updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose))
+				$idx ='modvr';
+			else
+				{
+				unset($description);
+				unset($idtype);
+				unset($datee);
+				unset($dateb);
+				unset($nbdays);
+				}
+			}
+		else if( isset($deleteg))
+			{
+			deleteVacationRight($idvr);
 			}
 		}
 	}
@@ -1083,6 +1140,7 @@ switch($idx)
 		if( !isset($dateb)) $dateb ="";
 		if( !isset($nbdays)) $nbdays ="";
 		if( !isset($vclose)) $vclose ="";
+		if( !isset($idtype)) $idtype ="";
 		addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $dateb, $datee, $vclose);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
@@ -1106,6 +1164,7 @@ switch($idx)
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
+		$babBody->addItemMenu("addvr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr");
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
 		break;
 	}

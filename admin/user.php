@@ -416,6 +416,17 @@ function confirmDeleteUser($id)
 	$req = "delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'";
 	$res = $db->db_query($req);	
 
+	// delete user from VACATION
+	$db->db_query("delete from ".BAB_VAC_MANAGERS_TBL." where id_user='".$id."'");
+	$db->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$id."'");
+	$db->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id."'");
+	$res = 	$db->db_query("select id from ".BAB_VAC_ENTRIES_TBL." where id_user='".$id."'");
+	while( $arr = $db->db_fetch_array($res))
+	{
+		$db->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$arr['id']."'");
+		$db->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$arr['id']."'");
+	}
+
 	// delete user
 	$req = "delete from ".BAB_USERS_TBL." where id='$id'";
 	$res = $db->db_query($req);

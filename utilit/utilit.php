@@ -518,12 +518,14 @@ var $newtext;
 var $newurl;
 var $blogged;
 var $aidetxt;
+var $vacwaiting;
 
 function babUserSection($close)
 	{
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	$this->babSectionTemplate("usersection.html", "template");
 	$this->title = bab_translate("User's section");
+	$this->vacwaiting = false;
 
 	if( $close )
 		return;
@@ -562,8 +564,12 @@ function babUserSection($close)
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
 		$this->blogged = true;
-		if( count(bab_vacationsAccess()) > 0)
+		$vacacc = bab_vacationsAccess();
+		if( count($vacacc) > 0)
+			{
+			$this->vacwaiting = $vacacc['approver'];
 			$vac = true;
+			}
 
 		$req = "select id from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'";
 		$res = $babDB->db_query($req);

@@ -40,12 +40,12 @@ function notifyVacationAuthor($id, $subject)
 				$this->until = bab_translate("until");
 				$this->begindate = bab_strftime(bab_mktime($row['date_begin']), false). " ". bab_translate($babDayType[$row['day_begin']]);
 				$this->enddate = bab_strftime(bab_mktime($row['date_end']), false). " ". bab_translate($babDayType[$row['day_end']]);
+				$this->reasontxt = bab_translate("Additional information");
+				$this->reason = nl2br($row['comment2']);
 				if( $row['status'] == 'N')
 					{
 					$this->by = bab_translate("By");
 					$this->username = bab_getUserName($row['id_approver']);
-					$this->reasontxt = bab_translate("Reason");
-					$this->reason = nl2br($row['comment2']);
 					$this->bview = true;
 					}
 				else
@@ -119,6 +119,9 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 		var $totaltxt;
 		var $totalval;
 
+		var $calurl;
+		var $calendar;
+
 		function temp($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $nbdays, $remarks)
 			{
 			global $babBody;
@@ -143,6 +146,7 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
 			$this->totaltxt = bab_translate("Total");
 			$this->balancetxt = bab_translate("Balance");
+			$this->calendar = bab_translate("Planning");
 			$this->db = $GLOBALS['babDB'];
 			if( $daybegin ==  "" )
 				$this->daybegin = date("j");
@@ -196,6 +200,8 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 
 			$this->res = $this->db->db_query("select ".BAB_VAC_TYPES_TBL.".* from ".BAB_VAC_TYPES_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_TYPES_TBL.".id = ".BAB_VAC_COLL_TYPES_TBL.".id_type and ".BAB_VAC_COLL_TYPES_TBL.".id_coll='".$arr['id_coll']."'");
 			$this->count = $this->db->db_num_rows($this->res);
+
+			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=cal&idu=".$GLOBALS['BAB_SESS_USERID'];
 			}
 
 
@@ -469,7 +475,7 @@ function viewWaitingVacReqDetail($id)
 			$this->dateendtxt = bab_translate("End date");
 			$this->nbdaystxt = bab_translate("Quantities");
 			$this->totaltxt = bab_translate("Total");
-			$this->commenttxt = bab_translate("Reason if refused");
+			$this->commenttxt = bab_translate("Additional information");
 			$this->confirm = bab_translate("Confirm");
 			$this->refuse = bab_translate("Refuse");
 			$this->remarktxt = bab_translate("Description");
