@@ -83,10 +83,19 @@ function listCategories($cat, $adminid)
 		var $urlarticles;
 		var $nbarticles;
 		var $idcat;
+		var $groups;
+		var $comments;
+		var $submit;
+		var $urlgroups;
+		var $urlcomments;
+		var $urlsubmit;
 
 		function temp($cat, $adminid)
 			{
 			global $body, $BAB_SESS_USERID;
+			$this->groups = babTranslate("Groups");
+			$this->comments = babTranslate("Comments");
+			$this->submit = babTranslate("Submit");
 			$this->articles = babTranslate("Article") ."(s)";
 			$this->db = new db_mysql();
 			if( $adminid > 0)
@@ -111,6 +120,9 @@ function listCategories($cat, $adminid)
 					$this->select = "";
 					
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->urlgroups = $GLOBALS['babUrl']."index.php?tg=topic&idx=Groups&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlcomments = $GLOBALS['babUrl']."index.php?tg=topic&idx=Comments&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlsubmi = $GLOBALS['babUrl']."index.php?tg=topic&idx=Submit&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->arr['description'] = $this->arr['description'];//nl2br($this->arr['description']);
 				$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->namecategory = $this->arr['category'];
