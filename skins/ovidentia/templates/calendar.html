@@ -258,19 +258,19 @@ href="{ titletenurl }">{ title }</a>
 <tr> 
 <td colspan="2" align="left" valign="middle">
 <!--#if busrcal -->
-<input type="checkbox" name="usrcals[]" value="{ usrcalid }" { usrsel }>{ usrcalname }
+<input type="checkbox" name="usrcals[]" value="{ usrcalid }" { usrsel }>&nbsp;{ usrcalname }
 <!--#else busrcal -->&nbsp;
 <!--#endif busrcal -->
 </td>
 <td colspan="2" align="left" valign="middle">
 <!--#if bgrpcal -->
-<input type="checkbox" name="grpcals[]" value="{ grpcalid }" { grpsel }>{ grpcalname }
+<input type="checkbox" name="grpcals[]" value="{ grpcalid }" { grpsel }>&nbsp;{ grpcalname }
 <!--#else bgrpcal -->&nbsp;
 <!--#endif bgrpcal -->
 </td>
 <td colspan="2" align="left" valign="middle">
 <!--#if brescal -->
-<input type="checkbox" name="rescals[]" value="{ rescalid }" { ressel }>{ rescalname }
+<input type="checkbox" name="rescals[]" value="{ rescalid }" { ressel }>&nbsp;{ rescalname }
 <!--#else brescal -->&nbsp;
 <!--#endif brescal -->
 </td>
@@ -289,8 +289,7 @@ href="{ titletenurl }">{ title }</a>
 
 
 <!--#begin categorieslist -->
-<BR><br>
-
+<BR><BR>
 <table  width="0" cellpadding="5" cellspacing="0" align="left">
 <tr>
 <td class="BabMonthCalendarEventLegendTitleFont"> { description } 
@@ -305,6 +304,5 @@ href="{ titletenurl }">{ title }</a>
 </td>
 </tr>
 </table>
-
 <!--#end categorieslist -->
 
