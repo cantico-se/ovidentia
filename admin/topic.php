@@ -323,16 +323,15 @@ function updateCategory($id, $category, $description, $approver, $cat, $modcom)
 		}
 
 	if( empty($approver))
+		$approverid = 0;
+	else
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide an approver !!");
-		return;
-		}
-
-	$approverid  = bab_getUserId($approver);	
-	if( $approverid < 1)
-		{
-		$babBody->msgerror = bab_translate("ERROR: The approver doesn't exist !!");
-		return;
+		$approverid  = bab_getUserId($approver);	
+		if( $approverid < 1)
+			{
+			$babBody->msgerror = bab_translate("ERROR: The approver doesn't exist !!");
+			return;
+			}
 		}
 
 	if( !bab_isMagicQuotesGpcOn())

@@ -105,9 +105,9 @@ function listCategories($cat, $adminid)
 			$this->articles = bab_translate("Article") ."(s)";
 			$this->db = $GLOBALS['babDB'];
 			if( $adminid > 0)
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."'";
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
 			else
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' and id_approver='".$BAB_SESS_USERID."'";
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' and id_approver='".$BAB_SESS_USERID."' order by ordering asc";
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -153,18 +153,58 @@ function listCategories($cat, $adminid)
 	return $temp->count;
 	}
 
+function orderCategories($cat, $adminid, $catname)
+	{
+	global $babBody;
+	class temp
+		{		
+
+		function temp($cat, $adminid, $catname)
+			{
+			global $babBody, $BAB_SESS_USERID;
+			$this->catname = "---- ".$catname." ----";
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->create = bab_translate("Modify");
+			$this->db = $GLOBALS['babDB'];
+			if( $adminid > 0)
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
+			else
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' and id_approver='".$BAB_SESS_USERID."' order by ordering asc";
+
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->adminid = $adminid;
+			$this->idcat = $cat;
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->topicval = $arr['category'];
+				$this->topicid = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	$temp = new temp($cat, $adminid, $catname);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
+	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categoryorder"));
+	return $temp->count;
+	}
+
 function saveCategory($category, $description, $approver, $cat, $modcom)
 	{
 	global $babBody;
 	if( empty($category))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
-		return;
-		}
-
-	if( empty($approver))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide an approver !!");
 		return;
 		}
 
@@ -177,11 +217,16 @@ function saveCategory($category, $description, $approver, $cat, $modcom)
 		return;
 		}
 
-	$approverid = bab_getUserId($approver);	
-	if( $approverid < 1)
+	if( empty($approver))
+		$approverid = 0;
+	else
 		{
-		$babBody->msgerror = bab_translate("ERROR: The approver doesn't exist !!");
-		return;
+		$approverid = bab_getUserId($approver);	
+		if( $approverid < 1)
+			{
+			$babBody->msgerror = bab_translate("ERROR: The approver doesn't exist !!");
+			return;
+			}
 		}
 
 	if( !bab_isMagicQuotesGpcOn())
@@ -189,12 +234,22 @@ function saveCategory($category, $description, $approver, $cat, $modcom)
 		$category = addslashes($category);
 		$description = addslashes($description);
 		}
+	$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_TOPICS_TBL." where id_cat='".$cat."'"));
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, mod_com) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $modcom. "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, mod_com, ordering) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $modcom. "', '" . ($arr[0]+1). "')";
 	$db->db_query($query);
 	}
 
-
+function saveOrderTopics($cat, $listtopics)
+	{
+	global $babBody;
+	$db = $GLOBALS['babDB'];
+	
+	for($i=0; $i < count($listtopics); $i++)
+		{
+		$db->db_query("update ".BAB_TOPICS_TBL." set ordering='".$i."' where id='".$listtopics[$i]."'");
+		}
+	}
 /* main */
 $adminid = bab_isUserAdministrator();
 if( $adminid < 1 )
@@ -213,6 +268,11 @@ if( isset($add) && $adminid > 0)
 	saveCategory($category, $description, $approver, $cat, $modcom);
 	}
 
+if( isset($update) && $update == "order" && $adminid > 0)
+	{
+	saveOrderTopics($cat, $listtopics);
+	}
+
 switch($idx)
 	{
 	case "addtopic":
@@ -226,6 +286,22 @@ switch($idx)
 		}
 		break;
 
+	case "ord":
+		$catname = bab_getTopicCategoryTitle($cat);
+		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		if( orderCategories($cat, $adminid, $catname) > 0 )
+			{
+			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+			$babBody->addItemMenu("ord", bab_translate("Ordre"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
+			}
+		else
+			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
+
+		if( $adminid > 0)
+			$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
+		break;
+
 	default:
 	case "list":
 		$catname = bab_getTopicCategoryTitle($cat);
@@ -234,6 +310,7 @@ switch($idx)
 		if( listCategories($cat, $adminid) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+			$babBody->addItemMenu("ord", bab_translate("Ordre"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
 			}
 		else
 			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
