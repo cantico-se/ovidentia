@@ -92,6 +92,35 @@ class listArticles extends categoriesHierarchy
 		if( $arrtop['display_tmpl'] != '' )
 			{
 			$this->template = $arrtop['display_tmpl'];
+			$file = "topicsdisplay.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+
+			$tplfound = false;
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$arr = $tpl->getTemplates($filepath);
+				for( $i=0; $i < count($arr); $i++)
+					{
+					if( substr($arr[$i], 5) == $this->template )
+						{
+						$tplfound = true;
+						break;
+						}
+					}
+				}
+			if( !$tplfound )
+				{
+				$this->template = "default";
+				}
 			}
 		}
 }
@@ -663,6 +692,35 @@ function readMore($topics, $article)
 	if( $arrtop['display_tmpl'] != '' )
 		{
 		$template = $arrtop['display_tmpl'];
+		$file = "topicsdisplay.html";
+		$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+		if( !file_exists( $filepath ) )
+			{
+			$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+				}
+			}
+
+		$tplfound = false;
+		if( file_exists( $filepath ) )
+			{
+			$tpl = new babTemplate();
+			$arr = $tpl->getTemplates($filepath);
+			for( $i=0; $i < count($arr); $i++)
+				{
+				if( substr($arr[$i], 5) == $template )
+					{
+					$tplfound = true;
+					break;
+					}
+				}
+			}
+		if( !$tplfound )
+			{
+			$template = "default";
+			}
 		}
 	else
 		{
