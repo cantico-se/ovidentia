@@ -395,13 +395,31 @@ function bab_replace( $txt )
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$req = "select * from articles where title like '%".addslashes(trim($m[1][$k]))."%'";
+			$searcharr = explode(",", $m[1][$k]);
+			if( sizeof($searcharr) > 1)
+				{
+				$req = "select * from topics where category='".addslashes(trim($searcharr[0]))."'";
+				$res = $db->db_query($req);
+				if( $res && $db->db_num_rows($res) > 0)
+					{
+					$arr = $db->db_fetch_array($res);
+					$idtopic = $arr['id'];
+					}
+				}
+
+			if( isset($idtopic))
+				$req = "select * from articles where id_topic='".$idtopic."' and title= '".addslashes(trim($searcharr[1]))."'";
+			else if( sizeof($searcharr) > 1)
+				$req = "select * from articles where title='".addslashes(trim($searcharr[1]))."'";
+			else
+				$req = "select * from articles where title like '%".addslashes(trim($searcharr[0]))."%'";
+
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
 				if(bab_isAccessValid("topicsview_groups", $arr['id_topic'])) 
-					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']."\">".$arr['title']."</a>", $txt);
+					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=topic&idx=viewa&item=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$arr['title']."</a>", $txt);
 				else
 					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr['title'], $txt);
 				}
@@ -418,12 +436,41 @@ function bab_replace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrl']."/".$GLOBALS['babPhpSelf']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
+				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
 				}
 			else
 				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", $m[1][$k]." ".$m[2][$k], $txt);
 			}
 		}
+
+	$reg = "/\\\$FAQ\((.*?),(.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$req = "select * from faqcat where category='".addslashes(trim($m[1][$k]))."'";
+			$res = $db->db_query($req);
+			$repl = false;
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				if(bab_isAccessValid("faqcat_groups", $arr['id']))
+					{
+					$req = "select * from faqqr where question='".addslashes(trim($m[2][$k]))."'";
+					$res = $db->db_query($req);
+					if( $res && $db->db_num_rows($res) > 0)
+						{
+						$arr = $db->db_fetch_array($res);
+						$txt = preg_replace("/\\\$FAQ\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[2][$k]."</a>", $txt);
+						$repl = true;
+						}
+					}
+				}
+			if( $repl == false )
+				$txt = preg_replace("/\\\$FAQ\(".$m[1][$k].",".$m[2][$k]."\)/", $m[2][$k], $txt);
+			}
+		}
+
 	return $txt;
 }
 ?>
