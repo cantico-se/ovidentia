@@ -1191,6 +1191,33 @@ if( !$res)
 $req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." select * from ad_directories_fields";
 $res = $db->db_query($req);
 
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 1, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 2, '', 'Y', 'Y', 'N', 1)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 3, '', 'Y', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 4, '', 'Y', 'Y', 'N', 2)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 5, '', 'Y', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 6, '', 'Y', 'Y', 'N', 3)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 7, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 8, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 9, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 10, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 11, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 12, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 13, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 14, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 15, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 16, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 17, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 18, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 19, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 20, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 21, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 22, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 23, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 24, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 25, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilgnes, ordering) VALUES (0, 26, '', 'N', 'N', 'N', 0)");
+
 $req = "CREATE TABLE ".BAB_DBDIR_ENTRIES_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
 $req .= "cn varchar(255) NOT NULL default '',";
