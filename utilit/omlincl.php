@@ -1692,7 +1692,7 @@ function babOvTemplate($args = array())
 	$this->gctx->push("babNewFilesCount", $babBody->newfiles);
 	foreach($args as $variable => $contents)
 		{
-		$this->gctx->push($variable, $contents);
+		$this->gctx->push($variable, stripslashes($contents));
 		}
 	$this->push_ctx($this->gctx);
 	}
@@ -2047,7 +2047,8 @@ function bab_ArithmeticOperator($args, $ope)
 
 		if( $saveas )
 			$this->gctx->push($varname, $val);
-		return $val;
+		else
+			return $val;
 		}
 	}
 
