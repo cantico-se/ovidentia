@@ -3,8 +3,8 @@ and any resources used by your site ( like files, images, ... )!!!
 
 To upgrade from previous Ovidentia versions:
 
-Copy the files located in 'ovidentia' folder to your
-old distribution.
+Rename your 'ovidentia' folder to ovidentia_old in your ovidentia root directory
+Copy the the new folder 'ovidentia' in your ovidentia root directory
 
 Make sure to chmod 666 config.php to let ovidentia update the
 version after upgrade.
@@ -16,11 +16,13 @@ Otherwise you must do this by hand in config.php:
 $babVersion="4.0"
 
 Also you need to move base.php located in install folder to your web root
-folder where there are config.php and index.php files
+folder where there are config.php and index.php files if your Ovidentia version is former to 3.4.1
 
 point your browser to:
 
 http://url-to-access-your-site/index.php?tg=version&idx=upgrade
+if you have some add-ons :
+http://url-to-access-your-site/index.php?tg=version&idx=addons&from=ovidentia_old
 
 Now, you can use the new version.
 Don't forget to put the correct version in config.php if
