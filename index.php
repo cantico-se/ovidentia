@@ -596,8 +596,7 @@ switch($tg)
 	case "directory":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Directories");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "directory";
+   		$incl = "directory";
 		break;
 	case "vacadm":
 		$babLevelOne = bab_translate("User's section");
