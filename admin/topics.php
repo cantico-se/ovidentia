@@ -344,7 +344,7 @@ if( isset($update) && $update == "order" && $adminid > 0)
 switch($idx)
 	{
 	case "addtopic":
-		$babBody->title = bab_translate("Add a new topic");
+		$babBody->title = bab_translate("Create new topic");
 		if( $adminid > 0)
 		{
 		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom);
