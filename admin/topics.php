@@ -487,6 +487,16 @@ switch($idx)
 	{
 	case "addtopic":
 		$babBody->title = bab_translate("Create new topic");
+		if( !isset($ncat)) { $ncat='';}
+		if( !isset($category)) { $category='';}
+		if( !isset($topdesc)) { $topdesc='';}
+		if( !isset($managerid)) { $managerid='';}
+		if( !isset($saart)) { $saart='';}
+		if( !isset($sacom)) { $sacom='';}
+		if( !isset($bnotif)) { $bnotif='';}
+		if( !isset($atid)) { $atid='';}
+		if( !isset($disptid)) { $disptid='';}
+		if( !isset($restrict)) { $restrict='';}
 		addCategory($cat, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
