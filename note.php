@@ -71,6 +71,7 @@ switch($idx)
 	case "Modify":
 		$body->title = babTranslate("Modify a note");
 		notesModify($item);
+		$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=notes&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=note&idx=Modify&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=note&idx=Delete&item=".$item);
 		break;
