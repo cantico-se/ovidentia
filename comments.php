@@ -266,7 +266,6 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 
 	$res = $db->db_query($req);
 
-	//##: mail to approver
 	$req = "select * from topics where id='$topics'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
