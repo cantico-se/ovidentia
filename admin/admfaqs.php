@@ -118,6 +118,12 @@ function saveCategory($category, $description, $manager)
 		return;
 		}
 
+	if(!get_cfg_var("magic_quotes_gpc"))
+		{
+		$description = addslashes($description);
+		$category = addslashes($category);
+		}
+
 	$db = $GLOBALS['babDB'];
 	$query = "select * from faqcat where category='$category'";	
 	$res = $db->db_query($query);
