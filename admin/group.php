@@ -480,9 +480,6 @@ function confirmDeleteGroup($id)
 	$db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='$id'");	
 	$db->db_query("delete from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='$id'");
 	$db->db_query("delete from ".BAB_CATEGORIESCAL_TBL." where id_group='$id'");
-	$db->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_group='$id'");	
-	$db->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_group='$id'");	
-	$db->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_group='$id'");	
 
 	$res = $db->db_query("select * from ".BAB_RESOURCESCAL_TBL." where id_group='$id'");
 	if( $res && $db->db_num_rows($res) > 0)
