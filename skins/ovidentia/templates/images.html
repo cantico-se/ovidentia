@@ -1,0 +1,63 @@
+<!--#begin imageslist -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+</HEAD>
+<BODY>
+<br>
+<form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ maximagessize }">
+<input type="hidden" name="tg" value="images">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="addf" value="add">
+<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="file" name="uploadf" size="40" maxlength="255" value="">
+</td>
+</tr>
+<tr>
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="Submit" value="{ add }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<center><a class="BabSiteAdminListLink" href="{ refurl }">{ refresh }</a></center>
+<br>
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  border="2" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextfiles -->
+<tr>
+<!--#in getnextfile -->
+<td align="middle" valign="middle" width="50">
+<!--#if gd -->
+<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank"><img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
+<!--#else gd -->
+<a class="BabSiteAdminListLink" href="{ srcurl }" target="_blank"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
+<!--#endif gd -->
+</td>
+<!--#endin getnextfile -->
+</tr>
+<!--#endin getnextfiles -->
+</table>
+</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+<!--#end imageslist -->
