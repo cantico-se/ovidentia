@@ -611,10 +611,10 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 function confirmDeleteSite($id)
 	{
 	$db = $GLOBALS['babDB'];
-
+	// delete homepages
+	$db->db_query("delete from ".BAB_HOMEPAGES_TBL." where id_site='".$id."'");
 	// delete site
-	$req = "delete from ".BAB_SITES_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	$db->db_query("delete from ".BAB_SITES_TBL." where id='".$id."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
