@@ -117,7 +117,7 @@ if( !isset($tg))
 if( $tg != "version" || $idx != "upgrade")
 	{
 	bab_updateSiteSettings();
-	if (isset($babNTauth) && $babNTauth ) include $babInstallPath."utilit/ntident.php";
+	if ( isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth ) include $babInstallPath."utilit/ntident.php";
 	if ($GLOBALS['babCookieIdent'] === true) include $babInstallPath."utilit/cookieident.php";
 	bab_isUserLogged();
 	bab_updateUserSettings();
