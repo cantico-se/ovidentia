@@ -234,6 +234,7 @@ function listOldArticles($topics, $pos, $approver)
 				$this->articledate = bab_getArticleDate($this->arr['id']);
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
+				$this->title = stripslashes($this->arr['title']);
 				$this->blen = $this->arr['blen'];
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 
