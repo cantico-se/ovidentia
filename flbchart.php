@@ -1251,7 +1251,7 @@ switch($idx)
 	case "updu":
 		$babLittleBody->title = '';
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
-		$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
+		$babLittleBody->addItemMenu("more", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 		$babLittleBody->addItemMenu("updu", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=updu&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 		$babLittleBody->setCurrentItemMenu($idx);
 		viewOrgChartRoleUpdate($ocid, $oeid, $iduser);

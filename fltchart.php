@@ -269,7 +269,7 @@ function viewOrgChartRoleMore($ocid, $oeid, $iduser, $update)
 	}
 
 
-function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
+function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 	{
 	global $babLittleBody;
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
@@ -277,9 +277,11 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 	class temp extends bab_viewDirectoryUser
 		{
 
-		function temp($ocid, $oeid, $iduser)
+		function temp($ocid, $oeid, $iduser, $access)
 			{
 			global $babDB;
+			$this->access = $access;
+
 			if( empty($iduser))
 				{
 				$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.type='1' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
@@ -315,6 +317,7 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 				{
 				$this->bab_viewDirectoryUser($iduser);
 				}
+			$this->iduser = $iduser;
 			$this->altbg = false;
 			if( !$this->access )
 				{
@@ -344,9 +347,9 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 			}
 		}
 
-	$temp = new temp($ocid, $oeid, $iduser);
+	$temp = new temp($ocid, $oeid, $iduser, $access);
 	$babLittleBody->babecho( bab_printTemplate($temp,"fltchart.html", "userdetail"));
-	return $temp->access;
+	return $temp->iduser;
 	}
 
 
@@ -421,19 +424,18 @@ switch($idx)
 		}
 		$babLittleBody->title = '';
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
-		$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
+		$babLittleBody->addItemMenu("more", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 		$babLittleBody->addItemMenu("updu", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=updu&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 		$babLittleBody->setCurrentItemMenu($idx);
 		viewOrgChartRoleUpdate($ocid, $oeid, $iduser);
 		break;
 	case "detr":
 		$babLittleBody->title = '';
-		$access = false;
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
-		$access = viewOrgChartRoleDetail($ocid, $oeid, $iduser);
+		$iduser = viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access);
 		if( $access && $oeid)
 			{
-			$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
+			$babLittleBody->addItemMenu("more", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 			}
 		$babLittleBody->setCurrentItemMenu($idx);
 		break;
@@ -443,7 +445,7 @@ switch($idx)
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 		if( $oeid )
 		{
-			$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid);
+			$babLittleBody->addItemMenu("more", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid);
 		}
 		if( $update )
 		{
