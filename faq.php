@@ -327,6 +327,10 @@ function addQuestion($idcat)
 			$this->response = bab_translate("Response");
 			$this->add = bab_translate("Add");
 			$this->idcat = $id;
+			$this->images = bab_translate("Images");
+			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->files = bab_translate("Files");
+			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -370,6 +374,10 @@ function modifyQuestion($item, $idq)
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->arr['question'] = htmlentities($this->arr['question']);
 			$this->arr['response'] = htmlentities($this->arr['response']);
+			$this->images = bab_translate("Images");
+			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->files = bab_translate("Files");
+			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -492,7 +500,7 @@ switch($idx)
 			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
 			$babBody->addItemMenu("questions", bab_translate("Questions"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			if( isUserManager($item))
-				$babBody->addItemMenu("Add Question", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=Add Question&item=$item");
+				$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=$item");
 			//	$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
@@ -530,18 +538,18 @@ switch($idx)
 		if(isUserManager($item) && listAdmQuestions($item))
 			{
 			$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=$item");
-			$babBody->addItemMenu("Add Question", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=Add Question&item=$item");
+			$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=$item");
 			}		
 		break;
 	*/
 
-	case "Add Question":
+	case "addq":
 		$babBody->title = bab_translate("Add question");
 		if( isUserManager($item))
 			{
 			addQuestion($item);
 			$babBody->addItemMenu("questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=$item");
-			$babBody->addItemMenu("Add Question", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=Add Question&item=$item");
+			$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=$item");
 			}
 		break;
 
