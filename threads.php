@@ -38,7 +38,6 @@ function listThreads($forum, $active, $pos)
 		var $views;
 		var $lastpost;
 		var $lastpostdate;
-		var $replies;
 		var $subjecturl;
 		var $subjecturlflat;
 		var $altnoflattxt;
