@@ -117,6 +117,12 @@ function listImages($editor)
 			$this->badmin = bab_isUserAdministrator();
 			$this->comnum = 0;
 			$this->editor = $editor;
+			if( !is_dir(BAB_IUD_TMP))
+				mkdir(BAB_IUD_TMP, 0700);
+			if( !is_dir(BAB_IUD_COMMON))
+				mkdir(BAB_IUD_COMMON, 0700);
+			if( !is_dir(BAB_IUD_ARTICLES))
+				mkdir(BAB_IUD_ARTICLES, 0700);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON);
 			while (($f = readdir($h)) != false)
@@ -134,8 +140,6 @@ function listImages($editor)
 			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
-				if( !is_dir(BAB_IUD_TMP))
-					mkdir(BAB_IUD_TMP, 0700);
 				while( $arr = $db->db_fetch_array($res))
 					{
 					if( is_file(BAB_IUD_TMP.$arr['name']))
@@ -156,12 +160,12 @@ function listImages($editor)
 			$this->name = basename($filename);
 			$imgsize = getimagesize($filename);
 			$this->imgalt = $imgsize[0]." X ".$imgsize[1];
+			$this->imgurl = $GLOBALS['babUrl'].$filename;
 			if( $imgsize[0] > 50 || $imgsize[1] > 50)
 				{
 				if( $this->gd && ($imgsize[2] == 1 || $imgsize[2] == 2 || $imgsize[2] == 3))
 					{
 					$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->name."&w=50&h=50&com=".$com;
-					$this->imgurl = $GLOBALS['babUrl'].$filename;
 					}
 				else
 					{
@@ -187,7 +191,6 @@ function listImages($editor)
 			else
 				{
 				$this->srcurl = $filename;
-				$this->imgurl = $GLOBALS['babUrl'].$filename;
 				$this->imgwidth = $imgsize[0];
 				$this->imgheight = $imgsize[1];
 				}
@@ -260,13 +263,9 @@ function saveImage($file, $size, $tmpfile, $share)
 	$nf = "";
 	if( !strstr($file, "..") && is_uploaded_file($tmpfile))
 		{
-		if( !is_dir(BAB_IUD_TMP))
-			mkdir(BAB_IUD_TMP, 0700);
 		$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 		if( !empty($share) && $share == "Y" && bab_isUserAdministrator())
 			{
-			if( !is_dir(BBAB_IUD_COMMON))
-				mkdir(BAB_IUD_COMMON, 0700);
 			if( is_file(BAB_IUD_COMMON.$file))
 				{
 				$GLOBALS['msgerror'] = bab_translate("A file with the same name already exists");
