@@ -323,8 +323,8 @@ class bab_ArticlesHomePages extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
-			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head'],'OVML'));
+			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body'],'OVML'));
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -822,8 +822,8 @@ class bab_Articles extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
-			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head'],'OVML'));
+			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body'],'OVML'));
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -890,8 +890,8 @@ class bab_Article extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
-			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head'],'OVML'));
+			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body'],'OVML'));
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -1166,7 +1166,7 @@ class bab_Post extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);	
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
+			$this->ctx->curctx->push('PostText', bab_replace($arr['message'],'OVML'));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
@@ -1798,8 +1798,8 @@ class bab_RecentArticles extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
-			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head'],'OVML'));
+			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body'],'OVML'));
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -1995,7 +1995,7 @@ class bab_RecentPosts extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
+			$this->ctx->curctx->push('PostText', bab_replace($arr['message'],'OVML'));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
@@ -2095,7 +2095,7 @@ class bab_RecentThreads extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
+			$this->ctx->curctx->push('PostText', bab_replace($arr['message'],'OVML'));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
@@ -2287,8 +2287,8 @@ class bab_WaitingArticles extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
-			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head'],'OVML'));
+			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body'],'OVML'));
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -2506,7 +2506,7 @@ class bab_WaitingPosts extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
+			$this->ctx->curctx->push('PostText', bab_replace($arr['message'],'OVML'));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $arr['forum']);
@@ -2715,7 +2715,7 @@ class bab_FaqQuestions extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
+			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response'],'OVML'));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
@@ -2758,7 +2758,7 @@ class bab_FaqQuestion extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
+			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response'],'OVML'));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);

@@ -840,15 +840,19 @@ function bab_getGroupEmails($id)
 		}
 }
 
-function bab_replace( $txt )
+function bab_replace( $txt, $remove = '' )
 {
 	global $babBody;
 	$db = $GLOBALS['babDB'];
+
+	$exclude = array();
+	$exclude = explode(',',$remove);
+
 	$artarray = array("ARTICLEPOPUP", "ARTICLE");
 	for( $i = 0; $i < count($artarray); $i++)
 	{
 	$reg = "/\\\$".$artarray[$i]."\((.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if( !in_array($artarray[$i],$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -921,7 +925,7 @@ function bab_replace( $txt )
 	}
 
 	$reg = "/\\\$ARTICLEID\((.*?),(.*?),(.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('ARTICLEID',$exclude) &&  preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -964,7 +968,7 @@ function bab_replace( $txt )
 		}
 
 	$reg = "/\\\$CONTACT\((.*?),(.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('CONTACT',$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -981,7 +985,7 @@ function bab_replace( $txt )
 		}
 
 	$reg = "/\\\$CONTACTID\((.*?),(.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('CONTACTID',$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -1001,7 +1005,7 @@ function bab_replace( $txt )
 		}
 
 	$reg = "/\\\$DIRECTORYID\((.*?),(.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('DIRECTORYID',$exclude) &&  preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -1026,7 +1030,7 @@ function bab_replace( $txt )
 		}
 
 	$reg = "/\\\$FAQ\((.*?),(.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('FAQ',$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -1054,7 +1058,7 @@ function bab_replace( $txt )
 		}
 	
 	$reg = "/\\\$FAQID\((.*?),(.*?),(.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('FAQID',$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -1087,7 +1091,7 @@ function bab_replace( $txt )
 		}
 
 	$reg = "/\\\$FILE\((.*?),(.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('FILE',$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 		for ($k = 0; $k < count($m[1]); $k++ )
@@ -1115,7 +1119,7 @@ function bab_replace( $txt )
 		}
 
 	$reg = "/\\\$VAR\((.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('VAR',$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
@@ -1134,12 +1138,16 @@ function bab_replace( $txt )
 		}
 
 	$reg = "/\\\$OVML\((.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
+	if(!in_array('OVML',$exclude) && preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$txt = preg_replace("/\\\$OVML\(".preg_quote($m[1][$k], "/")."\)/", bab_printOvmlTemplate($m[1][$k]), $txt);
+			$tmp = bab_printOvmlTemplate($m[1][$k]);
+			$tmp = preg_replace("/\\\$OVML\(.*\)/","",$tmp);
+			$txt = preg_replace("/\\\$OVML\(".preg_quote($m[1][$k], "/")."\)/",$tmp , $txt);
+			
 			}
+		
 		}
 
 	return $txt;
