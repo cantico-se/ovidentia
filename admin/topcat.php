@@ -263,11 +263,11 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id!='".$id."'";
+	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id!='".$id."' and id_parent='".$topcatid."'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$babBody->msgerror = bab_translate("ERROR: This topic category doesn't exist");
+		$babBody->msgerror = bab_translate("This topic category already exists");
 		return false;
 		}
 	else
