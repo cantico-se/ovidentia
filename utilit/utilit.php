@@ -57,6 +57,28 @@ function composeName( $firstname, $lastname)
 	return trim($firstname . " " . $lastname);
 	}
 
+function browserAgent()
+	{
+	global $HTTP_USER_AGENT;
+	$tab = explode(";", $HTTP_USER_AGENT);
+	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
+		{
+		return $res[1];
+		}
+	return "";
+	}
+
+function browserVersion()
+	{
+	global $HTTP_USER_AGENT;
+	$tab = explode(";", $HTTP_USER_AGENT);
+	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
+		{
+		return $res[2];
+		}
+	return 0;
+	}
+
 function babTranslate($str)
 {
 	if( empty($GLOBALS[babLanguage]) || empty($str))

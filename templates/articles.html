@@ -143,15 +143,33 @@
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
 <tr>
 <td width="107" align="right" nowrap>{ title }</td>
-<td width="103"><input type="text" name="title" size="60"></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<input type="text" name="title" size="60">
+<!--#else msie -->
+<input type="text" name="title" size="60">
+<!--#endif msie -->
+</td>
 </tr>
 <tr>
 <td width="107" align="right">{ head }</td>
-<td width="103"><textarea cols="70" rows="10" name="headtext"></textarea></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<textarea cols="70" rows="10" name="headtext"></textarea>
+<!--#else msie -->
+<textarea cols="70" rows="10" name="headtext"></textarea>
+<!--#endif msie -->
+</td>
 </tr>
 <tr>
 <td width="107" align="right">{ body }</td>
-<td width="103"><textarea cols="70" rows="20" name="bodytext"></textarea></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<textarea cols="70" rows="20" name="bodytext"></textarea>
+<!--#else msie -->
+<textarea cols="70" rows="20" name="bodytext"></textarea>
+<!--#endif msie -->
+</td>
 </tr>
 <tr>
 <td width="107" align="right">&nbsp;</td>

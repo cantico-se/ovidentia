@@ -263,6 +263,7 @@ function submitArticle($topics)
 		var $modify;
 		var $topics;
 		var $title;
+		var $msie;
 
 		function temp($topics)
 			{
@@ -271,6 +272,10 @@ function submitArticle($topics)
 			$this->body = babTranslate("Body");
 			$this->title = babTranslate("Title");
 			$this->modify = babTranslate("Add Article");
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 	
