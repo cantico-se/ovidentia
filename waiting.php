@@ -157,6 +157,8 @@ function modifyArticle($topics, $article)
 				}
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->files = bab_translate("Files");
+			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -385,9 +387,8 @@ function confirmComment($article, $topics, $com, $newc)
 function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
 
-	class tempa
+	class tempc
 		{
 		var $message;
         var $from;
@@ -401,7 +402,7 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
         var $dateval;
 
 
-		function tempa($subject, $msg, $title, $from, $to)
+		function tempc($subject, $msg, $title, $from, $to)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->about = bab_translate("About your article");
@@ -423,11 +424,11 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
     $mail->mailFrom($from, "Ovidentia Administrator");
     $mail->mailSubject($subject);
 
-	$tempa = new tempa($subject, $msg, $title, $from, $to);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmarticle");
+	$tempc = new tempc($subject, $msg, $title, $from, $to);
+	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmarticle");
     $mail->mailBody($message, "html");
 
-	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmarticletxt");
+	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmarticletxt");
     $mail->mailAltBody($message);
 	$mail->send();
 	}
@@ -537,7 +538,6 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 function notifyCommentAuthor($subject, $msg, $from, $to)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
 
 	class tempa
 		{

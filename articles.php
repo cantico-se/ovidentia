@@ -471,6 +471,8 @@ function modifyArticle($topics, $article)
 				}
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->files = bab_translate("Files");
+			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -519,6 +521,8 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->notearticle = bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->files = bab_translate("Files");
+			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
