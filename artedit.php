@@ -1870,7 +1870,7 @@ function updatePropertiesArticleDraft()
 function submitArticleDraft( $idart, $message)
 {
 	global $babBody, $babDB;
-	$res = $babDB->db_query("select id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+	$res = $babDB->db_query("select id_article,id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
