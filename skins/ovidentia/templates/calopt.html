@@ -10,113 +10,81 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
-valign="middle">{ startday }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<select name="startday">
-<!--#in getnextday -->
-<option value="{ dayid }" { selected }>{ dayname }</option>
-<!--#endin getnextday -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ allday }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="allday">
-	<option value="Y"
-	<!--#if arr[allday] "== Y" -->
-	selected
-	<!--#endif arr[allday] -->
-	>{ yes }</option>
-
-    <option value="N" 
-	<!--#if arr[allday] "== N" -->
-	selected
-	<!--#endif arr[allday] -->
-	>{ no }</option>
-	</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ usebgcolor }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="usebgcolor">
-	<option value="Y"     
-	<!--#if arr[usebgcolor] "== Y" -->
-	selected 
-	<!--#endif arr[usebgcolor] -->
-	>{ yes }</option>
-	<option value="N"          
-	<!--#if arr[usebgcolor] "== N" -->
-	selected 
-	<!--#endif arr[usebgcolor] -->
-	>{ no }</option>
-	</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ ampm }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="ampm">
-	<option value="Y"
-	<!--#if arr[ampm] "== Y" -->
-	selected 
-	<!--#endif arr[ampm] -->
-	>{ yes }</option>
-	<option value="N" 
-	<!--#if arr[ampm] "== N" -->
-	selected 
-	<!--#endif arr[ampm] -->
-	>{ no }</option>
-	</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ elapstime }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="elapstime">
-<!--#in getnextet -->
-<option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
-<!--#endin getnextet -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ defaultview }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="defaultview">
-<!--#in getnextdv -->
-<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
-<!--#endin getnextdv -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ defaultviewweek }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="defaultviewweek">
-<!--#in getnextdvw -->
-<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
-<!--#endin getnextdvw -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp; </td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ modify }">
-</td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+	<tr> 
+		<td width="30%" align="right">{ startday }</td>
+		<td width="70%"> 
+			<select name="startday">
+			<!--#in getnextday -->
+			<option value="{ dayid }" { selected }>{ dayname }</option>
+			<!--#endin getnextday -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ allday }</td>
+		<td> 
+			<select name="allday">
+				<option value="Y" <!--#if arr[allday] "== Y" -->selected<!--#endif arr[allday] -->>{ yes }</option>
+				<option value="N" <!--#if arr[allday] "== N" -->selected<!--#endif arr[allday] -->>{ no }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ usebgcolor }</td>
+		<td> 
+			<select name="usebgcolor">
+				<option value="Y" <!--#if arr[usebgcolor] "== Y" -->selected<!--#endif arr[usebgcolor] -->>{ yes }</option>
+				<option value="N" <!--#if arr[usebgcolor] "== N" -->selected<!--#endif arr[usebgcolor] -->>{ no }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+	<td align="right">{ ampm }</td>
+		<td> 
+			<select name="ampm">
+				<option value="Y" <!--#if arr[ampm] "== Y" -->selected <!--#endif arr[ampm] -->>{ yes }</option>
+				<option value="N" <!--#if arr[ampm] "== N" -->selected <!--#endif arr[ampm] -->>{ no }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ elapstime }</td>
+		<td> 
+			<select name="elapstime">
+			<!--#in getnextet -->
+			<option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
+			<!--#endin getnextet -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" valign="middle">{ defaultview }</td>
+		<td> 
+			<select name="defaultview">
+			<!--#in getnextdv -->
+			<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+			<!--#endin getnextdv -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ defaultviewweek }</td>
+		<td> 
+			<select name="defaultviewweek">
+			<!--#in getnextdvw -->
+			<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+			<!--#endin getnextdvw -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td>&nbsp; </td>
+		<td> 
+		<input type="submit" name="submit" value="{ modify }">
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
