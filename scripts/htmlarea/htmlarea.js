@@ -1587,7 +1587,8 @@ HTMLArea.prototype._createLink = function(link) {
 			compare = range.compareBoundaryPoints(range.START_TO_END, range);
 		}
 		if (compare == 0) {
-			alert("You need to select some text before creating a link");
+			var msg = HTMLArea.I18N.msg["Link"] ? HTMLArea.I18N.msg["Link"] : "You need to select some text before creating a link";
+			alert(msg);
 			return;
 		}
 		outparam = {
