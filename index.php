@@ -487,10 +487,6 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/site";
 		break;
-	case "admfiles":
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
-			$incl = "admin/admfiles";
-		break;
 	case "addons":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Add-ons");
