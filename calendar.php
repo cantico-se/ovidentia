@@ -1080,6 +1080,9 @@ if( empty($year))
 if( empty($day))
 	$day = Date("j");
 
+if( !isset($calid) )
+	$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+
 switch($idx)
 	{
 
