@@ -265,7 +265,7 @@ function calwin(callback)
 			</tr>
 			<tbody id="vac_use_rules">
 				<tr> 
-					<td align="right">{ t_period }:</td>
+					<td align="right">{ t_period_rule }:</td>
 					<td> 
 						<a href="javascript:calwin('period_start')">{ t_period_start }</a>
 						<input type="text" name="period_start" size="10" maxlength="10" value="{ arr[period_start] }" />
@@ -291,7 +291,7 @@ function calwin(callback)
 					<td align="right">{ t_trigger_inperiod }:</td>
 					<td > 
 						<select name="trigger_inperiod">
-							<option value="0">{ t_always }</option>
+							<option value="0">{ t_all_period }</option>
 							<option value="1">{ t_inperiod }</option>
 							<option value="2">{ t_outperiod }</option>
 						</select>

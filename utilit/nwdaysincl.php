@@ -29,7 +29,7 @@ function bab_getNonWorkingDayTypes($with_date = false)
 	$arr[102] = $with_date ? bab_translate("Repeat yearly") : bab_translate("Non-working day");
 
 	$arr[1] = bab_translate("Easter");
-	$arr[2] = bab_translate("Rise");
+	$arr[2] = bab_translate("Ascencion");
 	$arr[3] = bab_translate("Pentecost");
 
 	return $arr;

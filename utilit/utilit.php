@@ -175,8 +175,15 @@ function bab_mktime($time)
 	{
 	$arr = explode(" ", $time);
 	$arr0 = explode("-", $arr[0]);
-	$arr1 = explode(":", $arr[1]);
-	return mktime( $arr1[0],$arr1[1],$arr1[2],$arr0[1],$arr0[2],$arr0[0]);
+	if (isset($arr[1]))
+		{
+		$arr1 = explode(":", $arr[1]);
+		return mktime( $arr1[0],$arr1[1],$arr1[2],$arr0[1],$arr0[2],$arr0[0]);
+		}
+	else
+		{
+		return mktime( 0,0,0,$arr0[1],$arr0[2],$arr0[0]);
+		}
 	}
 
 function bab_getDateFormat($format)

@@ -133,11 +133,10 @@ return true;
 }
 //-->
 </SCRIPT>
-<center>
-<a class="BabSiteAdminListLink" href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=710,height=400,status=no,resizable=yes,top=200,left=200');">{ 
-calendar }</a>
-</center>
-<br>
+<div align="center">
+	<a  href="{ calurl }" onclick="bab_popup(this.href,5);return false;">{ calendar }</a>
+</div>
+<br />
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
 <input type="hidden" name="tg" value="vacuser">
 <input type="hidden" name="idx" value="vunew">
@@ -279,46 +278,51 @@ calendar }</a>
 </form>
 <br>
 <!--#end vwaitinglist -->
+
 <!--#begin vrequestslist -->
+<div align="center">
+	<a  href="{ calurl }" onclick="bab_popup(this.href,5);return false;">{ calendar }</a>
+</div>
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ begindatetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ enddatetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ statustxt }</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ begindate }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ enddate }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ status }</td>
-</tr>
-<!--#endin getnext -->
-<tr>
-<td colspan="8" nowrap class="BabSiteAdminTitleFontBackground"> 
-<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
-<tr> 
-<td width="1%" nowrap>&nbsp;</td>
-<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
-<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
-<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
-<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
-</tr>
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ nametxt }</td>
+			<td>{ begindatetxt }</td>
+			<td>{ enddatetxt }</td>
+			<td>{ quantitytxt }</td>
+			<td>{ statustxt }</td>
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td><a href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
+			<td>{ begindate }</td>
+			<td>{ enddate }</td>
+			<td>{ quantity }</td>
+			<td>{ status }</td>
+		</tr>
+		<!--#endin getnext -->
+		<tr>
+			<td colspan="8" class="BabSiteAdminTitleFontBackground"> 
+				<table border="0" cellpadding="0" cellspacing="0" align="right">
+				<tr> 
+					<td width="1%" nowrap>&nbsp;</td>
+					<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
+					<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
+					<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
+					<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </td>
 </tr>
-</table>
-</td>
-</tr>
-
 </table>
 <!--#end vrequestslist -->
+
 <!--#begin vwdetail -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>

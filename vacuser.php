@@ -203,7 +203,7 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 					}
 
 				$this->maxallowed += $this->quantitydays;
-
+				
 				if( isset($GLOBALS[$this->nbdaysname]))
 					{
 					$this->nbdays = $GLOBALS[$this->nbdaysname];
@@ -608,6 +608,8 @@ function listVacationRequests($pos)
 			$this->enddatetxt = bab_translate("End date");
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->statustxt = bab_translate("Status");
+			$this->calendar = bab_translate("Planning");
+			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$GLOBALS['BAB_SESS_USERID'];
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";

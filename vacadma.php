@@ -475,10 +475,12 @@ function addModifyVacationRigths($id = false)
 			$this->t_active = bab_translate("Opened right");
 			$this->t_cbalance = bab_translate("Accept negative balance");
 			$this->t_use_rules = bab_translate("Use rules");
-			$this->t_trigger_nbdays_min = bab_translate("Rule minimum number of days");
-			$this->t_trigger_nbdays_max = bab_translate("Rule maximum number of days");
+			$this->t_trigger_nbdays_min = bab_translate("Minimum number of days");
+			$this->t_trigger_nbdays_max = bab_translate("Maximum number of days");
+			$this->t_period_rule = bab_translate("Rule period"). " (".bab_translate("dd-mm-yyyy").")";
 			$this->t_trigger_inperiod = bab_translate("Allow rule");
 			$this->t_always = bab_translate("Always");
+			$this->t_all_period = bab_translate("On all period");
 			$this->t_inperiod = bab_translate("In period");
 			$this->t_outperiod = bab_translate("Out of period");
 			$this->t_right_inperiod = bab_translate("Apply right");
@@ -818,104 +820,7 @@ function viewVacationRightPersonnel($idvr)
 	echo bab_printTemplate($temp, "vacadma.html", "viewvacright");
 	}
 
-/*
-function saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance)
-	{
-	global $babBody, $babDB;
 
-	if( $description == "")
-		{
-		$babBody->msgerror = bab_translate("You must specify a vacation description") ." !";
-		return false;
-		}
-
-	if( $userid == "" && $collid == "" )
-		{
-		$babBody->msgerror = bab_translate("You must specify a user or collection") ." !";
-		return false;
-		}
-
-	if( $userid != "" )
-		{
-		list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'"));
-		if( $total == 0 )
-			{
-			$babBody->msgerror = bab_translate("User does'nt exist") ." !";
-			return false;
-			}
-		}
-	else 
-		{
-		if( $collid != -1 )
-			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$collid."'"));
-		else
-			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL));
-
-		if( $total == 0 )
-			{
-			$babBody->msgerror = bab_translate("Users does'nt exist") ." !";
-			return false;
-			}
-		}
-	
-	if( !is_numeric($nbdays))
-		{
-		$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
-		return false;
-		}
-
-	$adb = explode("-", $dateb);
-	if( $adb[0] == "" || $adb[1] == "" || $adb[2] == "" || !checkdate($adb[1],$adb[0],$adb[2]))
-		{
-		$babBody->msgerror = bab_translate("Invalid begin date") ." !";
-		return false;
-		}
-	
-	$ade = explode("-", $datee);
-	if( $ade[0] == "" || $ade[1] == "" || $ade[2] == "" || !checkdate($ade[1],$ade[0],$ade[2]))
-		{
-		$babBody->msgerror = bab_translate("Invalid end date") ." !";
-		return false;
-		}
-
-	if( $dateb > $datee)
-		{
-		$babBody->msgerror = bab_translate("Begin date must be less than end date") ." !";
-		return false;
-		}
-
-	$dateb = sprintf("%04d-%02d-%02d", $adb[2], $adb[1], $adb[0]);
-	$datee = sprintf("%04d-%02d-%02d", $ade[2], $ade[1], $ade[0]);
-
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		}
-
-
-	$babDB->db_query("insert into ".BAB_VAC_RIGHTS_TBL." (description, id_creditor, id_type, quantity, date_entry, date_begin, date_end, active, cbalance) values ('".$description."', '".$GLOBALS['BAB_SESS_USERID']."', '".$idtype."', '".$nbdays."', curdate(), '".$dateb."', '".$datee."', '".$vclose."', '".$cbalance."')");
-	$id = $babDB->db_insert_id();
-
-	if( $userid != "" )
-		{
-		$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$userid."', '".$id."')");
-		}
-	else if( $collid != "" )
-		{
-		if( $collid != -1)
-			$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$collid."'");
-		else
-			$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL."");
-
-		while( $arr = $babDB->db_fetch_array($res))
-			{
-			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$arr['id_user']."', '".$id."')");
-			}
-		}
-
-	return true;
-	}
-*/
 
 function updateVacationRight()
 	{
@@ -935,11 +840,7 @@ function updateVacationRight()
 		return false;
 		}
 
-	if( $post['date_begin'] > $post['date_end'] || $post['period_start'] > $post['period_end'])
-		{
-		$babBody->msgerror = bab_translate("Begin date must be less than end date") ." !";
-		return false;
-		}
+	
 
 	if( empty($post['idvr']) && empty($post['id_creditor']) && empty($post['collid']) )
 		{
@@ -963,6 +864,12 @@ function updateVacationRight()
 			$post[$date] = '';
 		}
 
+	if( $post['date_begin'] > $post['date_end'] || $post['period_start'] > $post['period_end'])
+		{
+		$babBody->msgerror = bab_translate("Begin date must be less than end date") ." !";
+		return false;
+		}
+
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -978,9 +885,9 @@ function updateVacationRight()
 		}
 	else
 		{
-		if( $userid != "" )
+		if( $post['id_creditor'] != "" )
 			{
-			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'"));
+			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$post['id_creditor']."'"));
 			if( $total == 0 )
 				{
 				$babBody->msgerror = bab_translate("User does'nt exist") ." !";
@@ -989,8 +896,8 @@ function updateVacationRight()
 			}
 		else 
 			{
-			if( $collid != -1 )
-				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$collid."'"));
+			if( $post['collid'] != -1 )
+				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$post['collid']."'"));
 			else
 				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL));
 
@@ -1006,14 +913,14 @@ function updateVacationRight()
 
 		$id = $babDB->db_insert_id();
 
-		if( $userid != "" )
+		if( $post['id_creditor'] != "" )
 			{
-			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$userid."', '".$id."')");
+			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$post['id_creditor']."', '".$id."')");
 			}
-		else if( $collid != "" )
+		else if( $post['collid'] != "" )
 			{
-			if( $collid != -1)
-				$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$collid."'");
+			if( $post['collid'] != -1)
+				$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$post['collid']."'");
 			else
 				$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL."");
 

@@ -1600,4 +1600,21 @@
 <string id="Add field">Ajouter un champ</string>
 <string id="Remove field">Enlever un champ</string>
 <string id="Accept negative balance">Accepter les soldes négatifs</string>
+<string id="Working days">Jours travaillés</string>
+<string id="Non-working days">Jours Fériés</string>
+<string id="Easter">Pâques</string>
+<string id="Ascencion">Ascencion</string>
+<string id="Pentecost">Pentecôte</string>
+<string id="Repeat yearly">Répéter annuelement</string>
+<string id="Load date">Charger une date</string>
+<string id="Use rules">Utiliser les règles</string>
+<string id="Minimum number of days">Nombre de jours minimum</string>
+<string id="Maximum number of days">Nombre de jours maximum</string>
+<string id="Allow rule">Autoriser la condition de la règle</string>
+<string id="Apply right">Appliquer la règle</string>
+<string id="Rule period">Période de la règle</string>
+<string id="Out of period">En dehors de la période de la règle</string>
+<string id="In period">Dans la période de la règle</string>
+<string id="On all period">Sur toute la période</string>
+<string id="Always">Toujours</string>
 </fr>
