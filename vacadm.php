@@ -677,6 +677,8 @@ function listRightsByUser($id)
 		var $res;
 
 		var $iduser;
+		var $idcoll;
+		var $bview;
 
 		function temp($id)
 			{
@@ -692,6 +694,7 @@ function listRightsByUser($id)
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query("select * from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$id."' order by id desc");
 			$this->count = $this->db->db_num_rows($this->res);
+			list($this->idcoll) = $this->db->db_fetch_row($this->db->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id."'"));
 			}
 
 		function getnextright()
@@ -701,13 +704,19 @@ function listRightsByUser($id)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$arr['id_right']."'"));
-				$this->description = $row['description'];
-				$this->quantity = $row['quantity'];
-				$this->date = bab_printDate($row['date_entry']);
-				$this->dateb = bab_printDate($row['date_begin']);
-				$this->datee = bab_printDate($row['date_end']);
-				$arr = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$this->iduser."' and ".BAB_VAC_ENTRIES_TBL.".status='Y' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$row['id']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
-				$this->consumed = isset($arr['total'])? $arr['total'] : 0;
+				$res = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$this->idcoll."' and id_type='".$row['id_type']."'");
+				$this->bview = false;
+				if( $res && $this->db->db_num_rows($res) > 0 )
+					{
+					$this->description = $row['description'];
+					$this->quantity = $row['quantity'];
+					$this->date = bab_printDate($row['date_entry']);
+					$this->dateb = bab_printDate($row['date_begin']);
+					$this->datee = bab_printDate($row['date_end']);
+					$arr = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$this->iduser."' and ".BAB_VAC_ENTRIES_TBL.".status='Y' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$row['id']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
+					$this->consumed = isset($arr['total'])? $arr['total'] : 0;
+					$this->bview = true;
+					}
 				$i++;
 				return true;
 				}

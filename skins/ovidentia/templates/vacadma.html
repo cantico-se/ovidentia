@@ -377,6 +377,7 @@ window.focus();
 </HEAD>
 <BODY class="BabBackground">
 <br>
+<center><a href="javascript:submitForm('delvru','listform')">{ modify }</a></center><br>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="vacadma">
 <input type="hidden" name="idx" value="lvrp">
@@ -410,21 +411,26 @@ window.focus();
 <td class="BabSiteAdminSmall" valign="middle" nowrap>&nbsp;</td>
 </tr>
 <!--#in getnext -->
+<!--#if bview -->
 <tr> 
 <td valign="middle" width="1%"> 
-<input type="checkbox" name="userids[]" value="{ userid }">
+<input type="checkbox" name="userids[]" value="{ userid }" { selected }>
+<input type="hidden" name="nuserids[]" value="{ nuserid }">
 </td>
 <td class="BabSiteAdminFontBackground" valign="middle" width="20%" nowrap>{ urlname }</td>
 <td valign="middle" nowrap>&nbsp;</td>
 </tr> 
+<!--#endif bview -->
 <!--#endin getnext -->
 <tr> 
-<td class="BabSiteAdminSmall" width="1%" align="center"><a href="javascript:submitForm('delvru','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
+<td class="BabSiteAdminSmall" width="1%" align="center">&nbsp;</td>
 <td colspan="4" class="BabSiteAdminSmall"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 </tr></table>
 </td>
 </tr>
 </table>
+</form>
+<center><a href="javascript:submitForm('delvru','listform')">{ modify }</a></center><br>
 </BODY>
 </HTML>
 <!--#end vrpersonnellist -->
