@@ -285,7 +285,10 @@ function changeSkin($skin)
 							{
 							if( is_file("skins/".$this->skinname."/styles/".$file))
 								{
-									$this->arrstyles[] = $file; 
+									if( strtolower(substr(strrchr($file, "."), 1)) == "css" )
+										{
+										$this->arrstyles[] = $file;
+										}
 								}
 							} 
 						}
