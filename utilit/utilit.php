@@ -86,6 +86,10 @@ function bab_printTemplate( &$class, $file, $section="")
 	if( !file_exists( $filepath ) )
 		{
 		$filepath = $babSkinPath."templates/". $file;
+		if( !file_exists( $filepath ) )
+			{
+			$filepath = $babInstallPath."skins/ovidentia/templates/". $file;
+			}
 		}
 	$tpl = new babTemplate();
 	return $tpl->printTemplate($class,$filepath, $section);
@@ -1462,7 +1466,7 @@ function bab_updateUserSettings()
 				{
 				$GLOBALS['babLanguage'] = $arr['lang'];
 				}
-			if( $arr['skin'] != "" && is_dir($GLOBALS['babInstallPath']."skins/".$arr['skin']))
+			if( $arr['skin'] != "" && (is_dir($GLOBALS['babInstallPath']."skins/".$arr['skin']) || is_dir("skins/".$arr['skin'])))
 				{
 				$GLOBALS['babSkin'] = $arr['skin'];
 				}

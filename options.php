@@ -264,7 +264,26 @@ function changeSkin($skin)
 				closedir($h);
 				$this->cntskins = count($this->arrskins);
 				}
-            $this->skselectedindex = 0;
+			
+			if( is_dir("skins/"))
+				{
+				$h = opendir("skins/"); 
+				while ( $file = readdir($h))
+					{ 
+					if ($file != "." && $file != "..")
+						{
+						if( is_dir("skins/".$file))
+							{
+							if( count($this->arrskins) == 0 || !in_array($file, $this->arrskins) )
+								$this->arrskins[] = $file; 
+							}
+						} 
+					}
+				closedir($h);
+				$this->cntskins = count($this->arrskins);
+				}
+
+			$this->skselectedindex = 0;
             $this->stselectedindex = 0;
 			}
 
