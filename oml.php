@@ -1163,7 +1163,9 @@ function bab_rel2abs($relative, $url)
     return sprintf('%s://%s%s/%s', $url['scheme'], $url['host'], $dir, $relative);
 }
 
-$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+if( strstr($file, ".."))
+	return;
+$filepath = "skins/".$GLOBALS['babSkin']."/ovml/". $file;
 if( !is_readable($filepath))
 	{
 	return;
