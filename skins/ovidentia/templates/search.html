@@ -168,6 +168,24 @@
 <a class="BabFaqLink" href="{ notnext }">{ next }</a> 
 <!--#endif notnext -->
 <!--#endif countnot -->
+<!--#if countdir "!= 0" -->
+<br>
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ dirtitle }</td></tr></table>
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+<!--#in getnextdir -->
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ dirurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ dir }</a></td>
+  </tr>
+<!--#endin getnextdir -->
+</table>
+<br>
+{ dirpage } 
+<!--#if dirnext "!= 0" -->
+<a class="BabFaqLink" href="{ dirnext }">{ next }</a> 
+<!--#endif dirnext -->
+<!--#endif countdir -->
 <br>
 <br>
 </td>
@@ -518,3 +536,52 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end viewcon -->
+
+<!--#begin viewdircontact -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center" >{ name }</td>
+</tr></table></center>
+<br>
+<!--#if showph -->
+<center><img src="{ urlimg }" border="0" alt="{ name }"></center>
+<!--#endif showph -->
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextfield -->
+<!--#if bfieldv -->
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ fieldn }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ fieldv }</td>
+</tr>
+<!--#endif bfieldv -->
+<!--#endin getnextfield -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;
+</td>
+</tr></table></center>
+<br>
+</BODY>
+</HTML>
+<!--#end viewdircontact -->

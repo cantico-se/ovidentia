@@ -89,6 +89,15 @@ function startSearch($pat, $item, $what, $pos)
 		var $nottitle;
 		var $filtitle;
 		var $contitle;
+		var $dirtitle;
+		var $countart;
+		var $countfor;
+		var $countnot;
+		var $countfaq;
+		var $countcom;
+		var $countfil;
+		var $countcon;
+		var $countdir;
 
 		function temp($pat, $item, $what, $pos)
 			{
@@ -103,6 +112,7 @@ function startSearch($pat, $item, $what, $pos)
 			$this->nottitle = bab_translate("Notes");
 			$this->filtitle = bab_translate("Files");
 			$this->contitle = bab_translate("Contacts");
+			$this->dirtitle = bab_translate("Directories");
 			$this->next = bab_translate( "Next" );
 
 			//$this->like = "not regexp '<.*".$what."[^>]*'";
@@ -118,6 +128,7 @@ function startSearch($pat, $item, $what, $pos)
 			$this->countcom = 0;
 			$this->countfil = 0;
 			$this->countcon = 0;
+			$this->countdir = 0;
 			if( empty($item) || $item == "a")
 				{
 				$req = "create temporary table artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where 0";
@@ -349,6 +360,89 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from conresults limit ".$pos.", ".$babLimit;
 				$this->rescon = $this->db->db_query($req);
 				$this->countcon = $this->db->db_num_rows($this->rescon);
+				}
+
+			if( empty($item) || $item == "g")
+				{
+				$likedir = "( sn ".$this->like." or givenname ".$this->like." or mn ".$this->like.")";
+				$req = "create temporary table dirresults select * from ".BAB_DBDIR_ENTRIES_TBL." where 0";
+				$this->db->db_query($req);
+				$req = "alter table dirresults add unique (id)";
+				$this->db->db_query($req);
+				$req = "";
+				$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL."");
+				while( $row = $this->db->db_fetch_array($res))
+					{
+					$diradd = false;
+					if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+						{	
+						if( $row['id_group'] > 0 )
+							{
+							list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
+							if( $bdir == 'Y' )
+								$diradd = true;		
+							}
+						else
+							$diradd= true;
+
+						if( $diradd )
+							{
+							if( $row['id_group'] > 1 )
+								{
+								$req = "select ".BAB_DBDIR_ENTRIES_TBL.".* from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS." where ".BAB_USERS_GROUPS.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='0' and ".$likedir." order by sn asc";
+								}
+							else
+								{
+								$req = "select * from ".BAB_DBDIR_ENTRIES_TBL." where ".$likedir." and  ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($row['id_group'] != 0? 0: $row['id'])."' order by sn asc";
+								}
+							}
+
+						if( $diradd && !empty($req))
+							{
+							$req = "insert into dirresults ".$req;
+							$this->db->db_query($req);
+							}
+						}
+
+					}
+
+				$req = "select count(*) from dirresults";
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
+
+				if( $pos + $babLimit < $nbrows )
+					{
+					$this->dirpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
+					$this->dirnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
+					}
+				else
+					{
+					$this->dirpage = ($pos + 1) . "-". $nbrows. " / " . $nbrows . " ";
+					$this->dirnext = 0;
+					}
+
+				$req = "select * from dirresults limit ".$pos.", ".$babLimit;
+				$this->resdir = $this->db->db_query($req);
+				$this->countdir = $this->db->db_num_rows($this->resdir);
+				}
+			}
+
+		function getnextdir()
+			{
+			static $i = 0;
+			if( $i < $this->countdir)
+				{
+				$arr = $this->db->db_fetch_array($this->resdir);
+				$this->dir = $arr['sn'];
+				$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$arr['id']."&w=".$this->what;
+				$i++;
+				return true;
+				}
+			else
+				{
+				$req = "drop table if exists dirresults";
+				$this->db->db_query($req);
+				return false;
 				}
 			}
 
@@ -796,6 +890,96 @@ function viewContact($id, $what)
 	echo bab_printTemplate($temp,"search.html", "viewcon");
 	}
 
+function viewDirectoryUser($id, $what)
+{
+	global $babBody;
+
+	class temp
+		{
+
+		function temp($id, $what)
+			{
+			$this->db = $GLOBALS['babDB'];
+			
+			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'");
+			$this->showph = false;
+			$this->count = 0;
+			$access = false;
+			if( $res && $this->db->db_num_rows($res) > 0)
+				{
+				$this->arr = $this->db->db_fetch_array($res);
+				if( $this->arr['id_directory'] == 0 )
+					{
+					$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id_group != '0'");
+					while( $row = $this->db->db_fetch_array($res))
+						{
+						list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
+						if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+							{
+							if( $row['id_group'] == 1 && $GLOBALS['BAB_SESS_USERID'] != "" )
+								{
+								$access = true;
+								break;
+								}
+							$res2 = $this->db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->arr['id_user']."' and id_group='".$row['id_group']."'");
+							if( $res2 && $this->db_num_rows($res2) > 0 )
+								{
+								$access = true;
+								break;
+								}
+							}
+
+						}
+					}
+				else if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->arr['id_directory']))
+					$access = true;
+
+				if( $access )
+					{
+					$this->name = $this->arr['givenname']. " ". $this->arr['sn'];
+					if( $this->arr['plen'] > 0 )
+						$this->showph = true;
+
+					$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->arr['id_directory']."&idu=".$id;
+					$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
+
+					if( $this->res && $this->db->db_num_rows($this->res) > 0)
+						$this->count = $this->db->db_num_rows($this->res);
+					}
+				}
+			else
+				{
+				$this->name = "";
+				$this->urlimg = "";
+				}
+			}
+		
+		function getnextfield()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldv = $this->arr[$arr['name']];
+				if( strlen($this->arr[$arr['name']]) > 0 )
+					$this->bfieldv = true;
+				else
+					$this->bfieldv = false;
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		}
+
+	$temp = new temp($id, $what);
+	echo bab_printTemplate($temp, "search.html", "viewdircontact");
+}
+
+
 if( !isset($pos))
 	$pos = 0;
 
@@ -834,6 +1018,11 @@ switch($idx)
 
 	case "f":
 		viewContact($id, $w);
+		exit;
+		break;
+
+	case "g":
+		viewDirectoryUser($id, $w);
 		exit;
 		break;
 

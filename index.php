@@ -93,8 +93,8 @@ $babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
 				bab_translate("Tuesday"), bab_translate("Wednesday"), bab_translate("Thursday"),
 				bab_translate("Friday"), bab_translate("Saturday"));
 
-$babSearchUrl = "abcdef";
-$babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts");  
+$babSearchUrl = "abcdefg";
+$babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts", 'g' => "Directories");  
 
 $babJs = $GLOBALS['babScriptPath']."ovidentia.js";
 $babCssPath = bab_getCssUrl();
