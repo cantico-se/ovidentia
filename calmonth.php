@@ -27,7 +27,7 @@ include_once $babInstallPath."utilit/mcalincl.php";
 
 class cal_monthCls  extends cal_wmdbaseCls
 	{
-
+ 
 	function cal_monthCls($idx, $calids, $date)
 		{
 		global $babBody, $babMonths;

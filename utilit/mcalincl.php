@@ -502,6 +502,7 @@ class cal_wmdbaseCls
 		$this->t_creator = bab_translate('Author');
 		$this->t_print_friendly = bab_translate('Print Friendly');
 		$this->t_print = bab_translate('Print');
+		$this->t_view_event = bab_translate('View event');
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
