@@ -1419,4 +1419,14 @@
 <string id="DF-">DF-</string>
 <string id="Edit draft">Editer le brouillon</string>
 <string id="You must be logged as administrator">Vous devez être connecté en tant qu'administrateur</string>
+<string id="Zlib php module missing">Le module php Zlib n'est pas installé</string>
+<string id="New core name">Nom du nouveau noyau</string>
+<string id="Name of the archive without extention">Nom de l'archive sans l'extension</string>
+<string id="Copy addons">Copier les modules</string>
+<string id="Directory allready exists">Le répertoire existe déja</string>
+<string id="Zipfile reading error">Erreur de lecture du fichier zip</string>
+<string id="Upload error">Erreur d'upload</string>
+<string id="Config change failed on">Le changement de configuration à échoué sur</string>
+<string id="Failed to read config file">Impossible de lire le fichier de configuration</string>
+<string id="Failed to write into config file">Impossible d'écrire dans le fichier de configuration</string>
 </fr>

@@ -535,6 +535,126 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		}
 	return true;
 	}
+	
+function zipupgrade()
+	{
+	global $babBody;
+	class temp
+		{
+
+		function temp()
+			{
+			$this->t_file = bab_translate("File");
+			$this->t_new_core_name = bab_translate("New core name");
+			$this->t_submit = bab_translate("Submit");
+			$this->t_file_name = bab_translate("Name of the archive without extention");
+			$this->t_upgrade = bab_translate("Upgrade");
+			$this->t_copy_addons = bab_translate("Copy addons");
+			
+			if (isset($_POST)) $this->val = $_POST;
+			
+			$el_to_init = array('dir_name');
+			foreach($el_to_init as $value)
+				$this->val[$value] = isset($this->val[$value]) ? $this->val[$value] : '';
+			}
+		}
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "zipupgrade"));
+	}
+	
+	
+function unzipcore() 
+	{
+	global $babBody;
+	
+	$core = 'ovidentia/';
+	$files_to_extract = array();
+	ini_set('max_execution_time',120);
+	
+	if (!is_dir($GLOBALS['babUploadPath'].'tmp/'))
+		bab_mkdir($GLOBALS['babUploadPath'].'tmp/',$GLOBALS['babMkdirMode']);
+
+	$ul = $_FILES['zipfile']['name'];
+	move_uploaded_file($_FILES['zipfile']['tmp_name'],$GLOBALS['babUploadPath'].'tmp/'.$ul);
+	
+	if (isset($_POST['core_name_switch']) && $_POST['core_name_switch'] == 'specify' && !empty($_POST['dir_name']))
+		{
+		$new_dir = $_POST['dir_name'];
+		}
+	else
+		{
+		$new_dir = substr($ul,0,-4);
+		}
+	
+	if (is_file($GLOBALS['babUploadPath'].'tmp/'.$ul))
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
+		$zip = new Zip;
+		$zipcontents = $zip->get_List($GLOBALS['babUploadPath'].'tmp/'.$ul);
+		if (count($zipcontents) > 0)
+			{
+			if (is_dir($new_dir))
+				{
+				unlink($GLOBALS['babUploadPath'].'tmp/'.$ul);
+				$babBody->msgerror = bab_translate("Directory allready exists");
+				return false;
+				}
+
+			bab_mkdir($new_dir,$GLOBALS['babMkdirMode']);
+			foreach ($zipcontents as $key => $value)
+				{
+				if (substr($value['filename'],0,strlen($core)) == $core)
+					{
+					$subdir = substr($value['filename'],strlen($core));
+					$where = isset($subdir) && $subdir != '.' ? $new_dir.'/'.$subdir : $new_dir;
+					if ($value['size'] == 0) // directory
+						{
+						if (!is_dir($where))
+							bab_mkdir($where,$GLOBALS['babMkdirMode']);
+						}
+					else // file
+						{
+						$files_to_extract[$value['index']] = dirname($where);
+						}
+					}
+				}
+			
+			foreach ($files_to_extract as $key => $value)
+				{
+				$zip->Extract($GLOBALS['babUploadPath'].'tmp/'.$ul,$value,$key,false);
+				}
+			
+			unlink($GLOBALS['babUploadPath'].'tmp/'.$ul);
+			
+			include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+			if (isset($_POST['copy_addons']))
+				{
+				bab_cpaddons($GLOBALS['babInstallPath'],$new_dir);
+				}
+				
+			if (isset($_POST['upgrade']))
+				{
+				if (bab_writeConfig(array('babInstallPath' => $new_dir.'/')))
+					{
+					header('location:'.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
+					}
+				}
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("Zipfile reading error");
+			return false;
+			}
+		}
+	else
+		{
+		$babBody->msgerror = bab_translate("Upload error");
+		return false;
+		}
+	return true;
+	}
+
 
 
 /* main */
@@ -549,6 +669,10 @@ if( isset($create))
 	if(!siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname))
 		$idx = "create";
 	}
+	
+if (isset($_FILES['zipfile']))
+	if (unzipcore())
+		$idx = "list";
 
 if( !isset($idx))
 	$idx = "list";
@@ -566,6 +690,15 @@ switch($idx)
 		viewVersion();
 		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
+		break;
+		
+	case 'zipupgrade':
+		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
+		$babBody->title = bab_translate("Upgrade");
+		if (!function_exists('gzopen'))
+			$babBody->msgerror = bab_translate("Zlib php module missing");
+		zipupgrade();
 		break;
 
 	case "create":
@@ -595,6 +728,7 @@ switch($idx)
 
 		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sites&idx=create");
 		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
+		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
 		break;
 	}
 

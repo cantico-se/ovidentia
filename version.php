@@ -177,55 +177,7 @@ function echoLang($path)
 }
 
 
-function cpaddons($from,$to)
-	{
-	function ls_a($wh){
-         if ($handle = opendir($wh)) {
-             while (false !== ($file = readdir($handle))) {
-				if ($file != "." && $file != ".." ) {
-						if(!$files) $files="$file";
-						else $files="$file\n$files";
-				   }
-              }
-               closedir($handle);
-         }
-        $arr=explode("\n",$files);
-         return $arr;
-     }
-	function cp($wf, $wto){ 
-		  if (!is_dir($wto)) { bab_mkdir($wto,$GLOBALS['babMkdirMode']); }
-		  $arr=ls_a($wf);
-		  foreach ($arr as $fn){
-				  if($fn){
-					  $fl="$wf/$fn";
-					 $flto="$wto/$fn";
-				  if(is_dir($fl)) cp($fl,$flto);
-						   else copy($fl,$flto);
-				   }
-		   }
-      }
-	function create($path)
-	{
-	$el = explode("/",$path);
-	foreach ($el as $rep)
-		{
-		if (!is_dir($memo.$rep)) { bab_mkdir($memo.$rep,$GLOBALS['babMkdirMode']); }
-		$memo = $memo.$rep."/";
-		}
-	}
-	if (substr($from,-1) != "/") $from.="/";
-	if (substr($to,-1) != "/") $to.="/";
-	$loc = array("addons",
-				"lang/addons",
-				"skins/ovidentia/templates/addons",
-				"skins/ovidentia/ovml/addons",
-				"skins/ovidentia/images/addons");
-	foreach ($loc as $path)
-		{
-		create($to.$path);
-		cp($from.$path,$to.$path);
-		}
-	}
+
 
 /* main */
 if( !isset($idx))
@@ -243,7 +195,10 @@ switch($idx)
 			die(bab_translate("You must be logged as administrator"));
 		if (!isset($to)) $to = $GLOBALS['babInstallPath'];
 		if (isset($from))
-			cpaddons($from,$to);
+			{
+			include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+			bab_cpaddons($from,$to);
+			}
 		break;
 
 	case "lang":

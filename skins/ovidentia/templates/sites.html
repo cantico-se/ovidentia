@@ -1247,3 +1247,66 @@ savef(document.discmod.content);
 </BODY>
 </HTML>
 <!--#end disclaimeredit -->
+
+<!--#begin zipupgrade -->
+<script type="text/javascript">
+<!--
+
+//-->
+</script>
+
+<form name="formsiteauth" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="tg" value="sites" />
+<input type="hidden" name="idx" value="zipupgrade" />
+<input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
+
+<table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr> 
+		<td align="right" nowrap>{ t_file }</td>
+		<td><input type="file" name="zipfile" /></td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ t_new_core_name }</td>
+		<td nowrap>
+			<!--#if val[core_name_switch] "== specify" -->
+			<input type="radio" name="core_name_switch" value="file_name" />{ t_file_name }<br />
+			<input type="radio" name="core_name_switch" value="specify" checked /><input type="text" name="dir_name" value="{ val[dir_name] }" />
+			<!--#else val[core_name_switch] -->
+			<input type="radio" name="core_name_switch" value="file_name" checked />{ t_file_name }<br />
+			<input type="radio" name="core_name_switch" value="specify" /><input type="text" name="dir_name" value="{ val[dir_name] }" />
+			<!--#endif val[core_name_switch] -->
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ t_upgrade }</td>
+		<td>
+			<!--#if val[upgrade] -->
+			<input type="checkbox" name="upgrade" checked />
+			<!--#else val[upgrade] -->
+			<input type="checkbox" name="upgrade" />
+			<!--#endif val[upgrade] -->
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ t_copy_addons }</td>
+		<td>
+			<!--#if val[copy_addons] -->
+			<input type="checkbox" name="copy_addons" checked />
+			<!--#else val[copy_addons] -->
+			<input type="checkbox" name="copy_addons" />
+			<!--#endif val[copy_addons] -->
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2" align="center"><br /><input type="submit" value="{ t_submit }" /></td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end zipupgrade -->
