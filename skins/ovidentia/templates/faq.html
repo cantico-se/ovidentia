@@ -441,57 +441,37 @@ window.focus();
 <!--#end popupquestion -->
 
 <!--#begin tableofcontents -->
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr class="BabForumBackground1"> 
-<td valign="top"><b>{ contentsname }:</b></td>
+<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td colspan="2"><span style="font-size:200%;font-weight:bold">{ faqname }</span></td>
 </tr>
-</table>
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <!--#in getnextchild -->
 <tr>
-<td>
-<table cellspacing="0" cellpadding="0" border="0">
+<td width="1"><!--#if update --><!--#if burl --><a class="BabTopicsFooterLink" href="{ modifycurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else burl --><!--#endif burl --><!--#else update --><!--#endif update --></td>
+<td width="99%">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
 <!--#in getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
 <!--#endin getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
-<td>
-<!--#if update -->
-<!--#if burl -->
-<a class="BabTopicsFooterLink" href="{ modifycurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>
-<!--#else burl -->
-&nbsp
-<!--#endif burl -->
-<!--#else update -->
-<!--#endif update -->
-<!--#if countq -->
-- <a href="{ subcaturl }"><b>{ subcatname }</b></a>
-<!--#else countq -->
-- <b>{ subcatname }</b>
-<!--#endif countq -->
-</td>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
+<td><span style="font-size:130%;font-weight:bold"><!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq --></span></td>
 </tr>
 </table>
 </td>
 </tr>
 <!--#in getnextquestion -->
 <tr>
-<td>
-<table cellspacing="0" cellpadding="0" border="0">
+<td width="1"><!--#if update --><a class="BabTopicsFooterLink" href="{ modifyqurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else update --><!--#endif update --></td>
+<td width="99%">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
 <!--#in getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
 <!--#endin getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
-<td>
-<!--#if update -->
-<a class="BabTopicsFooterLink" href="{ modifyqurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>
-<!--#else update -->
-<!--#endif update -->
-<a href="{ questionurl }#{ idq }">{ questionname }</a>&nbsp
-</td>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
+<td><a href="{ questionurl }#{ idq }">{ questionname }</a></td>
 </tr>
 </table>
 </td>
@@ -501,27 +481,35 @@ window.focus();
 </table>
 <!--#end tableofcontents -->
 
-
 <!--#begin subcatquestions -->
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <tr>
 <td>
 <A name="top"></A>
-<H5>{ subcatname }</H4>
-<UL>
-<!--#in getnext -->
-<LI><A href="#{ idq }">{ question }</A></LI> 
-<!--#endin getnext -->
-</UL>
-<hr>
-<br>
+<span style="font-size:200%;font-weight:bold">{ subcatname }</span><BR><BR>
+
+      <TABLE width="100%" cellpadding="2">
+       <!--#in getnext --> <TR>
+	      <TD><span style="font-size:110%;font-weight:bold"><A href="#{ idq }">{ question }</A></span></TD>
+        </TR><!--#endin getnext -->
+      </TABLE>
+
+      <br>
 <!--#in getnextbis -->
-<DL><A name="{ idq }"></A></DL>
-<DT><strong><font size="3">{ question }</font></strong></DT>
-<DD><BR>{ response }</DD>
-<BR>
-<P align="right"><A href="#top">{ return }</A></P>
+
+      <TABLE width="100%">
+        <TR>
+	      <TD><span style="font-size:120%;font-weight:bold">{ question }</span><a name="{ idq }"></a></TD>
+        </TR>
+        <TR>
+	      <TD>{ response }</TD>
+        </TR>
+        <TR>
+	      <TD align="right" valign="middle"><A href="#top">{ return }</A></TD>
+        </TR>
+      </TABLE>
 <!--#endin getnextbis -->
 </tr>
 </table>
 <!--#end subcatquestions -->
+

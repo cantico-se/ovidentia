@@ -12,33 +12,38 @@ window.focus();
 </script>
 <BODY>
 <br>
-<br>
-<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
-  <tr>
-    <td>
-<H2>{ faqname }</H2>
-<HR>
+<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td>
 <A name="top"></A>
-<H2>{ subcatname }</H2>
-      <UL>
-<!--#in getnext -->
-<LI><A href="#{ idq }">{ question }</A></LI> 
-<!--#endin getnext -->
-</UL>
-      <hr>
+<span style="font-size:200%;font-weight:bold">{ subcatname }</span><BR><BR>
+
+      <TABLE width="100%" cellpadding="2">
+       <!--#in getnext --> <TR>
+	      <TD><span style="font-size:110%;font-weight:bold"><A href="#{ idq }">{ question }</A></span></TD>
+        </TR><!--#endin getnext -->
+      </TABLE>
+
       <br>
 <!--#in getnextbis -->
-<DL><A name="{ idq }"></A></DL>
-      <DT><strong><font size="3">{ question }</font></strong></DT>
-<DD><BR>{ response }</DD>
-<BR>
-<P align="right"><A href="#top">{ return }</A></P>
+
+      <TABLE width="100%">
+        <TR>
+	      <TD><span style="font-size:120%;font-weight:bold">{ question }</span><a name="{ idq }"></a></TD>
+        </TR>
+        <TR>
+	      <TD>{ response }</TD>
+        </TR>
+        <TR>
+	      <TD align="right" valign="middle"><A href="#top">{ return }</A></TD>
+        </TR>
+      </TABLE>
 <!--#endin getnextbis -->
-<a href="{ urlsite }">{ babSiteName }</a>&nbsp;&nbsp;{ babUrl }</td>
-  </tr>
+</tr>
 </table>
 </BODY>
 <!--#end subcategory -->
+
 
 <!--#begin contents -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -55,67 +60,67 @@ window.focus();
 <BODY>
 <br>
 <A name="top"></A>
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr class="BabForumBackground1"> 
-<td valign="top"><b>{ contentsname }:</b></td>
+<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td colspan="2"><span style="font-size:200%;font-weight:bold">{ faqname }</span></td>
 </tr>
-</table>
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <!--#in getnextchild -->
 <tr>
-<td>
-<table cellspacing="0" cellpadding="0" border="0">
+<td width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1" border="0" alt=""></td>
+<td width="99%">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
 <!--#in getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
 <!--#endin getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
-<td>
-- <b>{ subcatname }</b>
-</td>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
+<td><span style="font-size:130%;font-weight:bold">{ subcatname }</span></td>
 </tr>
 </table>
 </td>
 </tr>
 <!--#in getnextquestion -->
 <tr>
-<td>
-<table cellspacing="0" cellpadding="0" border="0">
+<td width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1" border="0" alt=""></td>
+<td width="99%">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
 <!--#in getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></TD>
 <!--#endin getnextpad -->
-<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
-<td>
-<a href="#{ idq }">{ questionname }</a>&nbsp
-</td>
+<TD width="1"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="5" height="1" border="0" alt=""></TD>
+<td><a href="#{ idq }">{ questionname }</a></td>
 </tr>
 </table>
 </td>
 </tr>
 <!--#endin getnextquestion -->
 <!--#endin getnextchild -->
-</table>
-<br><br>
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+</table><br>
+
+
+<table class="BabFaqBodyFontBg" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <!--#in getnextchild -->
 <tr>
 <td>
-<DT><strong><font size="4">{ subcatname }</font></strong></DT>
-</td>
-</tr>
+<A name="top"></A>
+<span style="font-size:200%;font-weight:bold">{ subcatname }</span>
 <!--#in getnextquestion -->
-<tr>
-<td>
-<DL><A name="{ idq }"></A></DL>
- <DT><strong><font size="3">{ questionname }</font></strong></DT>
-<DD><BR>{ response }</DD>
-<BR>
-<P align="right"><A href="#top">{ return }</A></P>
+<TABLE width="100%">
+<TR>
+<TD><span style="font-size:120%;font-weight:bold">{ questionname }</span><a name="{ idq }"></a></TD>
+</TR>
+<TR>
+<TD>{ response }</TD>
+</TR>
+<TR>
+<TD align="right" valign="middle"><A href="#top">{ return }</A></TD>
+</TR>
+</TABLE>
+<!--#endin getnextquestion -->
 </td>
 </tr>
-<!--#endin getnextquestion -->
 <!--#endin getnextchild -->
 </table>
 
