@@ -127,12 +127,6 @@ function listThreads($forum, $active, $pos)
 					$this->subjecturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->arrthread['id']."&views=1";
 					$this->subjectname = $this->arrpost['subject'];
 				
-					$tmp = explode(" ", $this->arrpost['date']);
-					$arr0 = explode("-", $tmp[0]);
-					$arr1 = explode(":", $tmp[1]);
-					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
-					//$this->lastpostdate = bab_strftime(bab_mktime($arr['date']));
-
 					$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".bab_getUserId( $this->arrpost['author'])."'");
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
@@ -154,6 +148,13 @@ function listThreads($forum, $active, $pos)
 						$this->disabled = 1;
 					else
 						$this->disabled = 0;
+
+					$res = $this->db->db_query("select date from ".BAB_POSTS_TBL." where id='".$this->arrthread['lastpost']."'");
+					$ar = $this->db->db_fetch_array($res);
+					$tmp = explode(" ", $ar['date']);
+					$arr0 = explode("-", $tmp[0]);
+					$arr1 = explode(":", $tmp[1]);
+					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
 					}
 				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);

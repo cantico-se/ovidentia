@@ -5,5 +5,5 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 $CurrentVersion = "3.3";
-$CurrentRelease = "0 beta";
+$CurrentRelease = "0";
 ?>
