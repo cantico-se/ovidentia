@@ -113,6 +113,7 @@ class bab_dumpToDb
 		
 	function getFileContent()
 		{
+		$this->fileContent = '';
 		$f = fopen(BABINSTALL,'r');
 		if ($f === false)
 			{
