@@ -27,26 +27,19 @@ include_once $babInstallPath."utilit/forumincl.php";
 include_once $babInstallPath."utilit/fileincl.php";
 include_once $babInstallPath."utilit/calincl.php";
 include_once $babInstallPath."utilit/dirincl.php";
+include_once $babInstallPath."utilit/searchincl.php";
 
 $babLimit = 5;
 $navbaritems = 10;
 define ("FIELDS_TO_SEARCH", 3);
 
 function highlightWord( $w, $text)
-{
-	$arr = explode(" ",urldecode($w));
-	foreach($arr as $mot)
-		{
-		$mot_he = htmlentities($mot);
-		$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
-		if ($mot != $mot_he)
-			$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot_he.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
-		}
-	return $text;
-}
+	{
+	return bab_highlightWord( $w, $text);
+	}
 
-function put_text($txt,$limit=60,$limitmot=30)
-{
+function put_text($txt, $limit = 60, $limitmot = 30 )
+	{
 	if (strlen($txt) > $limit)
 		$out = substr(strip_tags($txt),0,$limit)."...";
 	else
@@ -54,58 +47,15 @@ function put_text($txt,$limit=60,$limitmot=30)
 	$arr = explode(" ",$out);
 	foreach($arr as $key => $mot)
 		$arr[$key] = substr($mot,0,$limitmot);
-return bab_replace(implode(" ",$arr));
-}
-
-function he($tbl,$str,$not="")
-	{
-	if ($not == "NOT") $op = "AND";
-	else $op =  "OR";
-	$tmp = htmlentities($str);
-	if ($tmp != $str)
-		return " ".$op." ".$tbl.$not." like '%".$tmp."%'";
+	$txt = implode(" ",$arr);
+	bab_replace_ref($txt);
+	return $txt;
 	}
 
 function finder($req2,$tablename,$option = "OR",$req1="")
-{
-if (trim($req1) != "") 
-	$like = $tablename." like '%".$req1."%'".he($tablename,$req1);
-
-if( !bab_isMagicQuotesGpcOn())
-	$req2 = addslashes($req2);
-
-if (trim($req2) != "") 
 	{
-	$tb = explode(" ",trim($req2));
-	switch ($option)
-		{
-		case "NOT":
-			foreach($tb as $key => $mot)
-				{
-				if (trim($req1) == "" && $key==0)
-					$like = $tablename." like '%".$mot."%'";
-				else
-					$like .= " AND ".$tablename." NOT like '%".$mot."%'".he($tablename,$mot," NOT");
-				}
-		break;
-		case "OR":
-		case "AND":
-		default:
-			foreach($tb as $key => $mot)
-				{
-				$he = he($tablename,$mot);
-				if (trim($req1) == "" && $key==0)
-					$like = $tablename." like '%".$mot."%'".$he;
-				else if ($he != "" && $option == "AND")
-					$like .= " AND (".$tablename." like '%".$mot."%'".$he.")";
-				else
-					$like .= " ".$option." ".$tablename." like '%".$mot."%'".$he;
-				}
-		break;
-		}
+	return bab_sql_finder($req2,$tablename,$option,$req1);
 	}
-	return $like;
-}
 
 
 function returnCategoriesHierarchy($topics)
@@ -113,6 +63,109 @@ function returnCategoriesHierarchy($topics)
 	$article_path = new categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 	$out = bab_printTemplate($article_path,"search.html", "article_path");
 	return $out;
+	}
+
+class bab_addonsSearch
+	{
+	var $tabSearchAddons = array();
+	var $tabLinkAddons = array();
+	var $titleAddons = array();
+
+	function bab_addonsSearch()
+		{
+		$db = &$GLOBALS['babDB'];
+		$res = $db->db_query("select id,title from ".BAB_ADDONS_TBL." where enabled='Y'");
+		while (list($id,$title) = $db->db_fetch_array($res))
+			{
+			
+			if (bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id) && is_file($GLOBALS['babAddonsPath'].$title."/init.php"))
+				{
+				$func_infos = $title."_searchinfos";
+				$func_results = $title."_searchresults";
+
+				$this->titleAddons[$id] = $title;
+				$this->defineAddonGlobals($id);
+
+				require_once($GLOBALS['babAddonsPath'].$title."/init.php");
+				if (function_exists($func_infos))
+					{
+					
+					$data = $func_infos();
+					if (is_array($data))
+						list($text,$link) = $data;
+					else
+						$text = $data;
+
+					if (is_string($text))
+						{
+						$text = htmlentities($text);
+						if (function_exists($func_results) && !isset($link))
+							{
+							$this->func_results[$id] = $func_results;
+							$this->tabSearchAddons[$id] = $text;
+							}
+						if (isset($link))
+							{
+							$this->tabLinkAddons[$id] = $text;
+							$this->querystring[$id] = $link;
+							}
+						}
+					}
+				}
+			}
+		}
+
+	function defineAddonGlobals($id)
+		{
+		$title = $this->titleAddons[$id];
+		$GLOBALS['babAddonFolder'] = $title;
+		$GLOBALS['babAddonTarget'] = "addon/".$id;
+		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$id."/";
+		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$title."/";
+		$GLOBALS['babAddonHtmlPath'] = "addons/".$title."/";
+		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$title."/";
+		}
+
+	function getmenuarray()
+		{
+
+		foreach ($this->tabSearchAddons as $key => $value)
+			$out['as-'.$key] = $value;
+		foreach ($this->tabLinkAddons as $key => $value)
+			$out['al-'.$key] = $value;
+		return isset($out) ? $out : array();
+		}
+
+	function getsearcharray($item)
+		{
+		if (empty($item))
+			{
+			return $this->tabSearchAddons;
+			}
+		elseif (substr($item,0,3) == 'as-')
+			{
+			$id = substr($item,3);
+			if (!empty($id) && is_numeric($id) && isset($this->tabSearchAddons[$id]))
+				return array($id => $this->tabSearchAddons[$id]);	
+			}
+		}
+
+	function setSearchParam($q1, $q2, $option, $pos, $nb_result)
+		{
+		$this->q1 = $q1;
+		$this->q2 = $q2;
+		$this->option = $option;
+		$this->pos = $pos;
+		$this->nb_result = $nb_result;
+		}
+
+
+	function callSearchFunction($id)
+		{
+		$this->defineAddonGlobals($id);
+		$func = $this->func_results[$id];
+		return $func($this->q1, $this->q2, $this->option, $this->pos, $this->nb_result);
+		}
 	}
 
 
@@ -267,22 +320,22 @@ function searchKeyword($item , $option = "OR")
 				{
 				$this->acces['e'] = true;
 				}
+
+			foreach ($babSearchItems as $key => $value)
+				{
+				if ($this->acces[$key])
+					$this->searchItems[$key] = $value;
+				}
+
+			$menuarray = $this->addons->getmenuarray();
+			$this->searchItems = array_merge($this->searchItems,$menuarray);
 			}
 
 		function getnextitem()
 			{
-			global $babSearchItems;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->itemvalue = $this->arr[$i];
-				$this->itemname = $babSearchItems[$this->arr[$i]];
-				$this->perm = $this->acces[$this->arr[$i]];
-				$i++;
-				return true;
-				}
-			else
-				return false;
+			$flag = list($this->itemvalue,$this->itemname) = each($this->searchItems);
+			$this->selected = $this->itemvalue == $this->item ? 'selected' : '';
+			return $flag;
 			}
 		
 		function getnexttopic() 
@@ -1069,7 +1122,38 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 				}
 				
-				if( !$this->counttot)
+				// --------------------------------------------- ADDONS
+
+			$this->addons = new bab_addonsSearch;
+			$this->addonSearchArray = $this->addons->getsearcharray($item);
+			$this->countaddons = count($this->addonSearchArray);
+			$this->addons->setSearchParam($this->like2, $this->like, $option, $navpos, $babLimit);
+
+			$this->addonsdata = array();
+			
+			if (is_array($this->addonSearchArray))
+				while (list($addon_id,$addon_title) = each($this->addonSearchArray))
+					{
+					if (isset($addon_id) && is_numeric($addon_id))
+						{
+						$this->first_addon_searchresults = $this->addons->callSearchFunction($addon_id);
+						$nbrows = $this->first_addon_searchresults[1];
+						$navpos = $this->navitem == 'as-'.$addon_id ? $this->navpos : 0;
+						$this->addons->pos = $navpos;
+						$navbar_i = navbar($GLOBALS['babLimit'],$nbrows,'as-'.$addon_id,$navpos);
+						if ($nbrows > 0)
+							$this->addonsdata[] = array($addon_id, $addon_title, $navbar_i);
+						}
+					}
+
+			$this->nbresult += $nbrows;
+			if( !$this->counttot && count($this->addonsdata) > 0 )
+					$this->counttot = true;
+
+
+			// end
+
+			if( !$this->counttot)
 				{
 				$babBody->msgerror = bab_translate("Search result empty");
 				}
@@ -1378,7 +1462,28 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				}
 			}
 
+		function getnextaddon()
+			{
+			return list($key,list($this->addon_id, $this->addon_title, $this->navbar_i)) = each($this->addonsdata);
+			}
 
+		function getnextaddonrow()
+			{
+			if (isset($this->addon_id) && is_numeric($this->addon_id))
+				{
+				if (isset($this->first_addon_searchresults))
+					{
+					$addon_searchresults = $this->first_addon_searchresults;
+					unset($this->first_addon_searchresults);
+					}
+				else
+					$addon_searchresults = $this->addons->callSearchFunction($this->addon_id);
+				$this->text = isset($addon_searchresults[0]) ? $addon_searchresults[0]  : '';
+				list( $this->url, $this->urltxt ) = isset($addon_searchresults[2]) && is_array($addon_searchresults[2]) && !empty($addon_searchresults[2][0]) && !empty($addon_searchresults[2][1]) ? $addon_searchresults[2] : array(false,false);
+				list( $this->urlpopup, $this->urlpopuptxt ) = isset($addon_searchresults[3]) && is_array($addon_searchresults[3]) && !empty($addon_searchresults[3][0]) && !empty($addon_searchresults[3][1]) ? $addon_searchresults[3] : array(false,false);
+				} 
+			return isset($addon_searchresults) && is_array($addon_searchresults) ? true : false;
+			}
 
 		}
 
@@ -1840,6 +1945,14 @@ function viewDirectoryUser($id, $what)
 	}
 }
 
+function goto_addon()
+	{
+	$addons = new bab_addonsSearch;
+	$id = substr($_POST['item'],3);
+	if (!empty($id) && is_numeric($id) && isset($addons->tabLinkAddons[$id]))
+		header('location:'.$GLOBALS['babUrlScript']."?tg=addon/".$id."/".$addons->querystring[$id]);
+	}
+
 if( !isset($what))
 	$what = "";
 
@@ -1864,6 +1977,10 @@ if((!isset($order)) || ($order == ""))
 if((!isset($pat)) || ($pat == ""))
 	$pat = $GLOBALS['babSearchUrl'];
 
+if (isset($_POST['item']) && substr($_POST['item'],0,3) == 'al-')
+	{
+	goto_addon();
+	}
 
 
 switch($idx)
