@@ -523,7 +523,7 @@ function bab_mailAccessLevel()
 	reset($babBody->ovgroups);
 	while( $arr=each($babBody->ovgroups) ) 
 	{ 
-		if( $arr[1]['mail'] == 'Y')
+		if( isset($arr[1]['mail']) && $arr[1]['mail'] == 'Y')
 		{
 			if( $arr[1]['member'] == 'Y' || $arr[1]['id'] == 1)
 				$user = 1;

@@ -43,6 +43,7 @@ function listContacts($pos)
 		var $allurl;
 		var $allname;
 		var $urlmail;
+		var $altbg = true;
 
 		function temp($pos)
 			{
@@ -59,7 +60,7 @@ function listContacts($pos)
 				$this->namesearch2 = "lastname";
 			break;}
 
-			if( $pos[0] == "-" )
+			if( isset($pos[0]) && $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
@@ -122,7 +123,7 @@ function listContacts($pos)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
+				$this->altbg = !$this->altbg;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url =$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1";
 				$this->urlmail =$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email'];

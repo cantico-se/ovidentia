@@ -41,7 +41,7 @@ function updateSchemaInstance($idschi)
 		$rr = explode($op, $tab[$i]);
 		for($k=0; $k < count($rr); $k++)
 			{
-			if( count($tabusers) == 0 || (is_array($tabusers) && count($tabusers) > 0 && !in_array( $rr[$k], $tabusers )))
+			if(isset($tabusers) && count($tabusers) == 0 || (is_array($tabusers) && count($tabusers) > 0 && !in_array( $rr[$k], $tabusers )))
 				$tabusers[] = $rr[$k];
 			}
 		}

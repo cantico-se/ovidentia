@@ -267,7 +267,7 @@ function browseLdapDirectory($id, $pos)
 function browseDbDirectory($id, $pos, $xf, $badd)
 {
 	global $babBody;
-
+	var $altbg = true;
 	class temp
 		{
 		var $count;
@@ -389,7 +389,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
+				$this->altbg = !$this->altbg;
 				$this->arrf = $this->db->db_fetch_array($this->res);
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arrf['email'];
 				$this->email = $this->arrf['email'];
@@ -482,7 +482,7 @@ function summaryLdapContact($id, $cn)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldn = bab_translate($arr['description']);
-				$this->fieldv = quoted_printable_decode($this->entries[0][$arr['x_name']][0]);
+				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? quoted_printable_decode($this->entries[0][$arr['x_name']][0]) : '';
 				$i++;
 				return true;
 				}
@@ -1671,6 +1671,8 @@ switch($idx)
 		break;
 
 	case "dbmod":
+		if (!isset($fields)) $fields = '';
+		if (!isset($refresh)) $refresh = '';
 		modifyDbContact($id, $idu, $fields, $refresh);
 		exit;
 		break;
@@ -1693,6 +1695,7 @@ switch($idx)
 		$babBody->title = bab_translate("Add entry to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		if($badd)
 			{
+			if (!isset($fields)) $fields = '';
 			addDbContact($id, $fields);
 			exit;
 			}
@@ -1702,12 +1705,16 @@ switch($idx)
 		break;
 
 	case "usdb":
+		if( !isset($xf ))
+			$xf = '';
 		UBrowseDbDirectory($id, $pos, $xf, $cb);
 		exit;
 		break;
 
 	case "sdb":
 		$babBody->title = bab_translate("Database Directory").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
+		if( !isset($xf ))
+			$xf = '';
 		browseDbDirectory($id, $pos, $xf, $badd);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdb", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);

@@ -1014,7 +1014,7 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->res = $this->db->db_query("select lang, article_tmpl, idsaart from ".BAB_TOPICS_TBL." where id='".$topics."'");
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->notearticle = ($this->arr['idsaart'] == 0) ? "" : bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
-			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
+			if(isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
 				if($this->arr['lang'] != '*')
 				{
@@ -1390,6 +1390,9 @@ switch($idx)
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
+			if (!isset($title)) $title = '';
+			if (!isset($headtext)) $headtext = '';
+			if (!isset($bodytext)) $bodytext = '';
 			submitArticle($title, $headtext, $bodytext, $topics);
 			$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
 			$babBody->addItemMenu("subfile", bab_translate("File"), $GLOBALS['babUrlScript']."?tg=articles&idx=subfile&topics=".$topics);

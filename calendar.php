@@ -460,7 +460,7 @@ function calendarMonth($calid, $day, $month, $year)
 	$temp = new temp($calid, $day, $month, $year);
 	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", "calmonth"));
 	calendarForm($calid, $day, $month, $year, "viewm");
-	return $temp->count;
+	return isset($temp->count) ? $temp->count : 0;
 
 }
 

@@ -218,7 +218,7 @@ function listTopicCategory($cat)
 
 	$temp = new temp($cat);
 	$babBody->babecho( bab_printTemplate($temp,"topcatdisplay.html", $template));
-	return $temp->topicscount;
+	return isset($temp->topicscount) ? $temp->topicscount : '';
 	}
 
 /* main */

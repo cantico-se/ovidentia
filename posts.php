@@ -173,6 +173,7 @@ function listPosts($forum, $thread, $post)
 				{
 				$tab = $this->arrresult["schema"][$iparent];
 				$p = $this->arrresult["iparent"][$iparent];
+				if (!isset($this->arrresult["delta"][$p])) $this->arrresult["delta"][$p] = 0;
 				if( $this->arrresult["leaf"][$iparent] == 1)
 					$tab[$this->arrresult["delta"][$p]] = 0;
 				else
@@ -767,7 +768,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		{
 	    notifyModerator(stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
 		}
-
+	if (!isset($flat)) $flat = '';
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
 	exit;
 	}
@@ -905,6 +906,9 @@ else
 
 if( isset($add) && $add == "addreply" && bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum))
 	{
+	if (!isset($author)) $author = '';
+	if (!isset($subject)) $subject = '';
+	if (!isset($message)) $message = '';
 	saveReply($forum, $thread, $postid, $author, $subject, $message);
 	$post = $postid;
 	}

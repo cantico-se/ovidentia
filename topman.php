@@ -112,7 +112,7 @@ function listCategories()
 
 				$this->newac = $this->newa + $this->newc;
 
-				$this->urlwaitinga = $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$this->arr['id']."&new=".$this->new."&newc=".$this->newc;
+				$this->urlwaitinga = $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
 				$this->urlwaitingc = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id'];
 				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
 				$i++;

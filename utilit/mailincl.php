@@ -84,6 +84,7 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 					{ 
 					$prefix = $part_number . '.';
 					}
+				else $prefix = '';
 				$data = bab_getMimePart($mbox, $msg_number, $mime_type, $sub_structure, $prefix . ($index + 1)); 
 				if($data) 
 					{
@@ -186,7 +187,7 @@ class babMail
 	function mailBody($babBody, $format="plain")
 	{
 		$this->mail->Body = $babBody;
-		$this->mail->AltBody = $babAltBody;
+		//$this->mail->AltBody = $babAltBody;
 		if( $format == "plain" )
 			$this->mail->IsHTML(false);
 		else

@@ -461,6 +461,11 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 }
             }
         }
+	if (!isset($toval)) $toval = '';
+	if (!isset($ccval)) $ccval = '';
+	if (!isset($subjectval)) $subjectval = '';
+	if (!isset($format)) $format = '';
+	if (!isset($messageval)) $messageval = '';
     composeMail($accid, $criteria, $reverse, trim($toval), trim($ccval), "", $subjectval, array(), $format, $messageval, 0, "");
 	}
 

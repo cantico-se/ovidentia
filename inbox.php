@@ -382,6 +382,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 						$msg = imap_msgno($this->mbox, $msg); 
 						$headinfo = imap_header($this->mbox, $msg); 
 						$arr = $headinfo->from;
+						$this->fromval = '';
 						for($i=0; $i < count($arr); $i++)
 							{
 							$mhc = imap_mime_header_decode($arr[$i]->personal);
@@ -389,7 +390,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 							$this->arrfrom[] = array( $mhc[0]->text, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 							}
 
-						$arr = $headinfo->to;
+						$arr = isset($headinfo->to) ? $headinfo->to : array();
 						for($i=0; $i < count($arr); $i++)
 							{
 							$mhc = imap_mime_header_decode($arr[$i]->personal);
@@ -397,7 +398,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 							$this->arrto[] = array( $mhc[0]->text, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 							}
 
-						$arr = $headinfo->cc;
+						$arr = isset($headinfo->cc) ? $headinfo->cc : array();
 						for($i=0; $i < count($arr); $i++)
 							{
 							$mhc = imap_mime_header_decode($arr[$i]->personal);
@@ -543,7 +544,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 				{ 
 				if($structure->type != 1)
 					{
-					$disp = strtoupper ($structure->disposition);
+					$disp = isset($structure->disposition) ? strtoupper($structure->disposition) : '';
 					if ( $disp == "ATTACHMENT")
 						{
 						if ($structure->ifdparameters)
@@ -590,6 +591,8 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 							{ 
 							$prefix = $part_number . '.';
 							}
+						else
+							$prefix = '';
 						$this->get_attachment($msg_number, $sub_structure, $prefix . ($index + 1));
 						} 
 					} 

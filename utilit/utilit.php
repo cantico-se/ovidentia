@@ -1934,13 +1934,13 @@ function bab_updateUserSettings()
 			
 			}
 		}
-
+	
+	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
+	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
 	$res = $babDB->db_query("select id, id_dggroup from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $babDB->db_fetch_array($res);
-		if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
-		if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
+		$arr = $babDB->db_fetch_array($res);	
 		if( $arr['id_dggroup'] != 0 && count($babBody->dgAdmGroups) > 0 && in_array($arr['id_dggroup'], $babBody->dgAdmGroups ))
 			{
 			$babBody->currentAdmGroup = $arr['id_dggroup'];
