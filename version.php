@@ -121,8 +121,6 @@ function putVersion($version)
 function echoLang($path)
 {
 	$arr = array();
-	if( empty($GLOBALS['babLanguage']))
-		return $arr;
 	$handle = opendir($path); 
 	while (false != ($filename = readdir($handle)))
 		{ 
