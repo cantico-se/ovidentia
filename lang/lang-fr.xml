@@ -709,7 +709,7 @@
 <string id="New files">Nouveaux fichiers</string>
 <string id="Delete Contacts">Supprimer les contacts</string>
 <string id="Cannot upload file">Le fichier ne peut être chargé</string>
-<string id="You are not yet logged in">Vous n'êtes pas loggué</string>
+<string id="You are not yet logged in">Vous n'êtes pas connecté</string>
 <string id="A new article is proposed for home page(s)">Un nouveau article est proposé pour les pages d'accueil</string>
 <string id="New article for home page">Nouveau article pour la page d'accueil</string>
 <string id="A new post has been registered on forum">Une nouvelle contribution a été enregistré dans le forum</string>
