@@ -350,18 +350,16 @@ if( $res && $db->db_num_rows($res) > 0 )
 if( isset($login) && $login == "login")
 	{
 	if(!signOn($nickname, $password))
-		return;
-	Header("Location: ". $GLOBALS['babUrlScript']);
+		$idx = 'signon';
+	else
+		Header("Location: ". $GLOBALS['babUrlScript']);
 	}
-
-
-if( isset($adduser) && $adduser == "register" && $r['registration'] == 'Y')
+else if( isset($adduser) && $adduser == "register" && $r['registration'] == 'Y')
 	{
 	if( !addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2))
 		$cmd = "register";
 	}
-
-if( isset($sendpassword) && $sendpassword == "send")
+else if( isset($sendpassword) && $sendpassword == "send")
 	{
 	sendPassword($nickname);
 	}
