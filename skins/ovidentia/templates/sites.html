@@ -627,26 +627,26 @@ function validateNum(field)
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabSiteAdminTitleFontBackground">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="right" width="50%" nowrap valign="middle">{ srcversiontxt }&nbsp;:</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" width="50%" nowrap valign="middle">{ srcversion }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="right" width="50%" nowrap valign="middle">{ phpversiontxt }&nbsp;:</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" width="50%" nowrap valign="middle">{ phpversion }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="right" width="50%" nowrap valign="middle">{ baseversiontxt }&nbsp;:</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" width="50%" nowrap valign="middle">{ baseversion }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle" colspan="2"><a class="copy" href="javascript: Start('{ urlphpinfo }', 'OviSitesA', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ phpinfo }</a></td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle" colspan="2"><P class="copyright">&copy; 2001-{ currentyear }, <a class="copy"href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</P></td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+	<tr> 
+		<td align="right" nowrap>{ srcversiontxt }&nbsp;:</td>
+		<td nowrap>{ srcversion }</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ phpversiontxt }&nbsp;:</td>
+		<td nowrap>{ phpversion }</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ baseversiontxt }&nbsp;:</td>
+		<td nowrap>{ baseversion }</td>
+	</tr>
+	<tr> 
+		<td align="center" nowrap colspan="2"><a href="javascript: Start('{ urlphpinfo }', 'OviSitesA', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ phpinfo }</a></td>
+	</tr>
+	<tr> 
+		<td align="center" colspan="2">&copy; 2001-{ currentyear }, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -853,97 +853,97 @@ function hideShowCnx()
 <table class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authentificationtxt }</td>
-<td valign="middle">
-<select name="authtype" onchange="javascript:hideShowCnx();">
-<!--#in getnextauth -->
-<option value="{ authval }" { authselected }>{ authname }</option>
-<!--#endin getnextauth -->
-</select>
-&nbsp;&nbsp;
-<input type="checkbox" id="ldpapchkcnxid" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span class="BabLoginMenuBackground" id="ldpaptxtcnxid" nowrap>{ ldpachkcnxtxt }</span>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"><font color="red">*</font>&nbsp;{ fieldrequiredtxt }</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ hosttxt }&nbsp;<font color="red">*</font></td>
-<td valign="middle">
-<input type="text" name="host" size="50" value="{ ldaphost }" />
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ basedntxt }</td>
-<td valign="middle">
-<input type="text" name="basedn" size="70" value="{ ldapbasednsite }" />
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ userdntxt }</td>
-<td valign="middle">
-<input type="text" name="userdn" size="70" value="{ ldapuserdnsite }" />
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpasstxt }</td>
-<td valign="middle">
-<input type="password" name="ldappass1" size="30" value="{ ldappasssite }" />
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpassconftxt }</td>
-<td valign="middle">
-<input type="password" name="ldappass2" size="30" value="{ ldappasssite }" />
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ searchbasetxt }</td>
-<td valign="middle">
-<input type="text" name="searchdn" size="70" value="{ ldapsearchdnsite }" />
-</td>
-</tr>
-<!--#if 0 -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attributetxt }</td>
-<td valign="middle">
-<input type="text" name="ldapattr" size="50" value="{ ldapattributesite }" />
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpasstypetxt }</td>
-<td valign="middle">
-<select name="passtype">
-<!--#in getnextpasstype -->
-<option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
-<!--#endin getnextpasstype -->
-</select>
-</td>
-</tr>
-<!--#endif 0 -->
-<!--#in getnextfield -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ ofieldname }&nbsp;<!--#if required "== Y" --><font color="red">*</font><!--#endif required -->&nbsp;&nbsp;</td>
-<td>
-<select name="{ ofieldv }">
-<option value=""></option>
-<!--#in getnextval -->
-<option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
-<!--#endin getnextval -->
-</select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="30" value="{ ofieldval }" />
-</td>
-</tr>
-<!--#endin getnextfield -->
-<tr> 
-<td nowrap>&nbsp;</td>
-<td valign="middle">
-<input type="Submit" name="Submit" value="{ modify }" />
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td align="right" nowrap>{ authentificationtxt }</td>
+		<td>
+		<select name="authtype" onchange="javascript:hideShowCnx();">
+		<!--#in getnextauth -->
+		<option value="{ authval }" { authselected }>{ authname }</option>
+		<!--#endin getnextauth -->
+		</select>
+		&nbsp;&nbsp;
+		<input type="checkbox" id="ldpapchkcnxid" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span id="ldpaptxtcnxid" nowrap>{ ldpachkcnxtxt }</span>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">&nbsp;</td>
+		<td><span class="Babhighlight">*</span>&nbsp;{ fieldrequiredtxt }</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ hosttxt }&nbsp;<span class="Babhighlight">*</span></td>
+		<td>
+		<input type="text" name="host" size="50" value="{ ldaphost }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ basedntxt }</td>
+		<td>
+		<input type="text" name="basedn" size="50" value="{ ldapbasednsite }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ userdntxt }</td>
+		<td>
+		<input type="text" name="userdn" size="50" value="{ ldapuserdnsite }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ authpasstxt }</td>
+		<td>
+		<input type="password" name="ldappass1" size="30" value="{ ldappasssite }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ authpassconftxt }</td>
+		<td>
+		<input type="password" name="ldappass2" size="30" value="{ ldappasssite }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ searchbasetxt }</td>
+		<td>
+		<input type="text" name="searchdn" size="50" value="{ ldapsearchdnsite }" />
+		</td>
+	</tr>
+	<!--#if 0 -->
+	<tr> 
+		<td align="right">{ attributetxt }</td>
+		<td>
+		<input type="text" name="ldapattr" size="50" value="{ ldapattributesite }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ authpasstypetxt }</td>
+		<td>
+		<select name="passtype">
+		<!--#in getnextpasstype -->
+		<option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
+		<!--#endin getnextpasstype -->
+		</select>
+		</td>
+	</tr>
+	<!--#endif 0 -->
+	<!--#in getnextfield -->
+	<tr> 
+		<td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span class="Babhighlight">*</span><!--#endif required -->&nbsp;&nbsp;</td>
+		<td>
+		<select name="{ ofieldv }">
+		<option value=""></option>
+		<!--#in getnextval -->
+		<option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
+		<!--#endin getnextval -->
+		</select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="20" value="{ ofieldval }" />
+		</td>
+	</tr>
+	<!--#endin getnextfield -->
+	<tr> 
+		<td>&nbsp;</td>
+		<td align="right">
+		<input type="Submit" name="Submit" value="{ modify }" />
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
