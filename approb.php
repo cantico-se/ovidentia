@@ -901,9 +901,11 @@ function confirmVacationRequest($veid, $remarks, $action)
 				{
 				$tbegin = $arr['day_begin'] == 3? '12:00:00': '00:00:00';
 				$tend = $arr['day_end'] == 2? '12:00:00': '23:59:59';
-				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, start_date, start_time, end_date, end_time, id_creator, hash) values ";
-				$req .= "('".$idcal."', '".bab_translate("Vacation")."', '".$arr['date_begin']."', '".$tbegin."', '".$arr['date_end']."', '".$tend."', '0', 'V_".$veid."')";
+				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, start_date, end_date, id_creator, hash) values ";
+				$req .= "('".bab_translate("Vacation")."', '".$arr['date_begin']." ".$tbegin."', '".$arr['date_end']." ".$tend."', '0', 'V_".$veid."')";
 				$babDB->db_query($req);
+				$id_event = $babDB->db_insert_id();
+				$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$idcal."', '".BAB_CAL_STATUS_ACCEPTED."')");
 				}
 			$subject = bab_translate("Your vacation request has been accepted");
 			notifyVacationAuthor($veid, $subject);

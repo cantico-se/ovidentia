@@ -1976,7 +1976,7 @@ function printout()
 								if( !empty($idcals))
 									{
 										$this->event = 1;
-										$this->dayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$idcals;
+										$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$idcals."&date=".$this->currentYear.",".$this->currentMonth.",".$total;
 										$this->day = "<b>".$total."</b>";
 									}
 							}

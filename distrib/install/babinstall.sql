@@ -546,33 +546,32 @@ CREATE TABLE bab_users_log (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'bab_categoriescal'
+# Structure de la table 'bab_cal_categories'
 #
 
-CREATE TABLE bab_categoriescal (
+CREATE TABLE bab_cal_categories (
 	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
 	name VARCHAR (60) not null,
 	description VARCHAR (255) not null,
 	bgcolor VARCHAR (6) not null,
-	id_group INT (11) UNSIGNED not null,
-	PRIMARY KEY (id),
-    KEY id_group (id_group)
+	PRIMARY KEY (id)
 );
 
 
 # --------------------------------------------------------
 #
-# Structure de la table 'bab_resourcescal'
+# Table structure for table `bab_cal_resources`
 #
 
-CREATE TABLE bab_resourcescal (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	name VARCHAR (60) not null,
-	description VARCHAR (255) not null,
-	id_group INT (11) UNSIGNED not null,
-	PRIMARY KEY (id),
-    KEY id_group (id_group)
+CREATE TABLE bab_cal_resources (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(60) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  id_dgowner int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_dgowner (id_dgowner)
 );
+
 
 # --------------------------------------------------------
 #
@@ -580,24 +579,35 @@ CREATE TABLE bab_resourcescal (
 #
 
 CREATE TABLE bab_cal_events (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	id_cal INT (11) UNSIGNED not null,
-	title VARCHAR (255) not null,
-	description TEXT not null,
-	start_date DATE not null,
-	start_time TIME not null,
-	end_date DATE not null,
-	end_time TIME not null,
-	id_cat INT (11) UNSIGNED not null,
-	id_creator INT (11) UNSIGNED not null,
-    hash varchar(34) NOT NULL default '',
-	PRIMARY KEY (id),
-    KEY id_cal (id_cal),
-    KEY start_date (start_date),
-    KEY end_date (end_date)
+  id int(11) unsigned NOT NULL auto_increment,
+  title varchar(255) NOT NULL default '',
+  description text NOT NULL,
+  start_date datetime NOT NULL default '0000-00-00 00:00:00',
+  end_date datetime NOT NULL default '0000-00-00 00:00:00',
+  id_cat int(11) unsigned NOT NULL default '0',
+  id_creator int(11) unsigned NOT NULL default '0',
+  hash varchar(34) NOT NULL default '',
+  color varchar(8) NOT NULL default '',
+  bprivate enum('Y','N') NOT NULL default 'N',
+  block enum('Y','N') NOT NULL default 'N',
+  bfree enum('Y','N') NOT NULL default 'N',
+  PRIMARY KEY  (id),
+  KEY start_date (start_date),
+  KEY end_date (end_date)
 );
 
 
+# --------------------------------------------------------
+#
+# Table structure for table `bab_cal_events_owners`
+#
+
+CREATE TABLE bab_cal_events_owners (
+  id_event int(10) unsigned NOT NULL default '0',
+  id_cal int(10) unsigned NOT NULL default '0',
+  status tinyint(3) unsigned NOT NULL default '0',
+  KEY id_event (id_event,id_cal,status)
+);
 
 # --------------------------------------------------------
 #
@@ -2001,6 +2011,7 @@ CREATE TABLE bab_statsman_groups (
    KEY id_group (id_group)
 );
 
+# --------------------------------------------------------
 #
 # Table structure for table `bab_stats_events`
 #
@@ -2020,4 +2031,124 @@ CREATE TABLE bab_stats_events (
   evt_info text NOT NULL,
   PRIMARY KEY  (id)
 );
-    
+
+
+# --------------------------------------------------------
+#
+# Table structure for table `bab_cal_public`
+#
+
+CREATE TABLE bab_cal_public (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(60) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  id_dgowner int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_dgowner (id_dgowner)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_cal_pub_view_groups'
+#
+
+CREATE TABLE bab_cal_pub_view_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_cal_pub_man_groups'
+#
+
+CREATE TABLE bab_cal_pub_man_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_cal_pub_grp_groups'
+#
+
+CREATE TABLE bab_cal_pub_grp_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_cal_res_view_groups'
+#
+
+CREATE TABLE bab_cal_res_view_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_cal_res_man_groups'
+#
+
+CREATE TABLE bab_cal_res_man_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_cal_res_grp_groups'
+#
+
+CREATE TABLE bab_cal_res_grp_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+# --------------------------------------------------------
+#
+# Table structure for table `bab_cal_user_options`
+#
+
+CREATE TABLE bab_cal_user_options (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_user int(11) unsigned NOT NULL default '0',
+  startday tinyint(4) NOT NULL default '0',
+  allday enum('Y','N') NOT NULL default 'Y',
+  week_numbers enum('N','Y') NOT NULL default 'N',
+  usebgcolor enum('Y','N') NOT NULL default 'Y',
+  elapstime tinyint(2) unsigned NOT NULL default '30',
+  defaultview tinyint(3) NOT NULL default '0',
+  work_days varchar(20) NOT NULL default '',
+  start_time time default NULL,
+  end_time time default NULL,
+  user_calendarids varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id),
+  KEY id_user (id_user)
+);

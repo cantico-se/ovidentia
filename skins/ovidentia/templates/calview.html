@@ -18,38 +18,36 @@
 <!--#in getevent -->
 <!--#if alternate "== 1" -->
 <tr>
-<td  class="BabSummaryContentBackground">{ date }</td>
-<td  class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+<td  class="BabSummaryContentBackground">{ startdate }</td>
+<td  class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ 
 title }</a></td>
-<td  class="BabSummaryContentBackground" align="center" width="20%">{ time }</td>
+<td  class="BabSummaryContentBackground" align="center" width="20%">{ enddate }</td>
 </tr>
 <!--#else alternate -->
 <tr>
-<td class="BabSummaryContentBackground">{ date }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ title }</a>
+<td class="BabSummaryContentBackground">{ startdate }</td>
+<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ title }</a>
 </td>
-<td class="BabSummaryContentBackground" align="center">{ time }</td>
+<td class="BabSummaryContentBackground" align="center">{ enddate }</td>
 </tr>
 <!--#endif alternate -->
 <!--#endin getevent -->
-<!--#in getgroup -->
 <!--#in getgrpevent -->
 <!--#if alternate "== 1" -->
 <tr>
-<td class="BabSummaryContentBackground">{ date }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+<td class="BabSummaryContentBackground">{ startdate }</td>
+<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ 
 title }</a></td>
-<td class="BabSummaryContentBackground" align="center">{ time }</td>
+<td class="BabSummaryContentBackground" align="center">{ enddate }</td>
 </tr>
 <!--#else alternate -->
 <tr>
-<td class="BabSummaryContentBackground">{ date }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ title }</a></td>
-<td class="BabSummaryContentBackground" align="center">{ time }</td>
+<td class="BabSummaryContentBackground">{ startdate }</td>
+<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="javascript:bab_popup('{ titleurl }',2)">{ title }</a></td>
+<td class="BabSummaryContentBackground" align="center">{ enddate }</td>
 </tr>
 <!--#endif alternate -->
 <!--#endin getgrpevent -->
-<!--#endin getgroup -->
 </table>
 </td>
 </tr>

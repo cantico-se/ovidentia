@@ -165,6 +165,7 @@ function displayEventDetail($evtid, $idcal)
 					{
 					$this->access = true;
 					$arr = $babDB->db_fetch_array($res);
+					$iarr = $babBody->icalendars->getCalendarInfo($idcal);
 					$this->begindatetxt = bab_translate("Begin date");
 					$this->enddatetxt = bab_translate("End date");
 					$this->titletxt = bab_translate("Title");
@@ -172,8 +173,16 @@ function displayEventDetail($evtid, $idcal)
 					$this->cattxt = bab_translate("Category");
 					$this->begindate = bab_longDate(bab_mktime($arr['start_date']));
 					$this->enddate = bab_longDate(bab_mktime($arr['end_date']));
-					$this->title= $arr['title'];
-					$this->description = $arr['description'];
+					if( $arr['bprivate'] ==  'Y' && $GLOBALS['BAB_SESS_USERID']  != $iarr['idowner'])
+						{
+						$this->title= '';
+						$this->description = '';
+						}
+					else
+						{
+						$this->title= $arr['title'];
+						$this->description = $arr['description'];
+						}
 					if( $arr['id_cat'] != 0 )
 						{
 						list($this->category) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_CAL_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));

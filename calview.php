@@ -60,22 +60,42 @@ function upComingEvents($idcal)
 
 		function temp($idcal)
 			{
-			global $BAB_SESS_USERID;
+			global $babBody, $BAB_SESS_USERID;
 			$this->calid = $idcal;
 			$this->db = $GLOBALS['babDB'];
 			$mktime = mktime();
 			$this->newevents = bab_translate("Upcoming Events ( in the seven next days )");
-			$this->daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
+			$this->daymin = sprintf("%04d-%02d-%02d 00:00:00", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 			$mktime = $mktime + 518400;
-			$this->daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$idcal."' and ('".$this->daymin."' between start_date and end_date or '".$this->daymax."' between start_date and end_date";
-			$req .= " or start_date between '".$this->daymin."' and '".$this->daymax."' or end_date between '".$this->daymin."' and '".$this->daymax."') order by start_date, start_time asc";		
-			$this->resevent = $this->db->db_query($req);
-			$this->countevent = $this->db->db_num_rows($this->resevent);
-			$this->arrgrp = bab_getUserGroups();
-			$this->arrgrp['id'][] = '1';
-			$this->arrgrp['name'][] = bab_translate("Registered users");
-			$this->countgrp = count($this->arrgrp['id']);
+			$this->daymax = sprintf("%04d-%02d-%02d 23:59:59", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
+
+			$babBody->icalendars->initializeCalendars();
+			if (!empty($babBody->icalendars->id_percal))
+				{
+				$this->resevent = $this->db->db_query("select ce.* from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal='".$idcal."' and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
+				$this->countevent = $this->db->db_num_rows($this->resevent);
+				}
+			else
+				{
+				$this->countevent = 0;
+				}
+
+			$idpubcals = array();
+			reset($babBody->icalendars->pubcal);
+			while( $row=each($babBody->icalendars->pubcal) ) 
+				{
+				$idpubcals[] = $row[1]['idowner'];
+				}
+			
+			if (!count($idpubcals))
+				{
+				$this->resevent = $this->db->db_query("select ce.* from ".BAB_CAL_EVENTS_TBL." ce left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event where ceo.id_cal='".implode(',', $idpubcals)."' and ce.start_date < '".$this->daymax."' and ce.end_date > '".$this->daymin."'order by ce.start_date");
+				$this->countgrpevent = $this->db->db_num_rows($this->resevent);
+				}
+			else
+				{
+				$this->countgrpevent = 0;
+				}
 			}
 
 		function getevent()
@@ -84,11 +104,11 @@ function upComingEvents($idcal)
 			if( $k < $this->countevent)
 				{
 				$arr = $this->db->db_fetch_array($this->resevent);
-				$this->time = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5);
-				$this->date = bab_strftime(bab_mktime($arr['start_date']." ". $arr['start_time']), false);
+				$this->enddate = bab_shortDate(bab_mktime($arr['end_date']));
+				$this->startdate = bab_shortDate(bab_mktime($arr['start_date']));
 				$this->title = $arr['title'];
 				$rr = explode("-", $arr['start_date']);
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$rr[2]."&month=".$rr[1]."&year=".$rr[0]. "&calid=".$this->calid. "&evtid=".$arr['id'];
+				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$this->calid. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -103,42 +123,17 @@ function upComingEvents($idcal)
 				}
 			}
 
-		function getgroup()
-			{
-			static $k=0;
-			if( $k < $this->countgrp)
-				{
-				$this->grpname = bab_getGroupName($this->arrgrp['id'][$k]);
-				$idcal = bab_getCalendarId($this->arrgrp['id'][$k], 2);
-				if( $idcal != 0 )
-					{
-					$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".bab_getCalendarId($this->arrgrp['id'][$k], 2)."' and ('".$this->daymin."' between start_date and end_date or '".$this->daymax."' between start_date and end_date";
-					$req .= " or start_date between '".$this->daymin."' and '".$this->daymax."' or end_date between '".$this->daymin."' and '".$this->daymax."') order by start_date, start_time asc";
-					$this->resgrpevent = $this->db->db_query($req);
-					$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
-					}
-				else
-					{
-					$this->countgrpevent = 0;
-					}
-				$k++;
-				return true;
-				}
-			else
-				return false;
-			}
-		
 		function getgrpevent()
 			{
 			static $k=0;
 			if( $k < $this->countgrpevent)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrpevent);
-				$this->time = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5);
-				$this->date = bab_strftime(bab_mktime($arr['start_date']." ". $arr['start_time']), false);
-				$this->title = $arr['title'] . " ( ". $this->grpname ." )";
+				$this->enddate = bab_shortDate(bab_mktime($arr['end_date']));
+				$this->startdate = bab_shortDate(bab_mktime($arr['start_date']));
+				$this->title = $arr['title'];
 				$rr = explode("-", $arr['start_date']);
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$rr[2]."&month=".$rr[1]."&year=".$rr[0]. "&calid=".$arr['id_cal']. "&evtid=".$arr['id'];
+				$this->titleurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&idcal=".$this->calid. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -152,6 +147,7 @@ function upComingEvents($idcal)
 				return false;
 				}
 			}
+
 		}
 
 	$temp = new temp($idcal);

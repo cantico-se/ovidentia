@@ -212,13 +212,21 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->bfree = $arr['bfree'];
 			$this->description = $arr['description'];
 			$this->nbowners = $arr['nbowners'];
-			$this->title = $arr['title'];
-			$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+			if( $this->bprivate == "Y" && $iarr['type'] ==  BAB_CAL_USER_TYPE && $GLOBALS['BAB_SESS_USERID'] != $iarr['idowner'] )
+				{
+				$this->title = "xxxxxxxxxx";
+				$this->titleten = "xxxxxxxxxx";
+				}
+			else
+				{
+				$this->title = $arr['title'];
+				$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+				}
 			$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 			switch( $iarr['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
-					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $iarr['access'] == BAB_CAL_ACCESS_FULL )
+					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || ($iarr['access'] == BAB_CAL_ACCESS_FULL && !$this->block))
 						{
 						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
 						}

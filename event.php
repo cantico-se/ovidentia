@@ -186,6 +186,10 @@ function newEvent()
 			$this->monthsel = $this->monthbegin;
 			$this->yearsel = $this->yearbegin;
 			$this->timesel = isset($_GET['st']) ? $_GET['st'] : $this->timebegin;
+
+			$this->bprivate = true;
+			$this->block = true;
+			$this->bfree = true;
 			}
 
 		function getnextday()
@@ -710,6 +714,9 @@ function addEvent(&$message)
 	$monthend = $_POST['monthend'];
 	$dayend = $_POST['dayend'];
 	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : '23:59';
+	$bprivate = isset($_POST['bprivate']) ? $_POST['bprivate'] : 'N';
+	$block = isset($_POST['block']) ? $_POST['block'] : 'N';
+	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
 
 
 	$tb = explode(':',$timebegin);
@@ -759,7 +766,7 @@ function addEvent(&$message)
 					$time = $begin;
 					do
 						{
-						$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
+						$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 						$time += $rtime;
 						}
@@ -778,7 +785,7 @@ function addEvent(&$message)
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin+$delta, $yearbegin );
 						do
 							{
-							$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
+							$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 							$time += 24*3600*7;
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							}
@@ -800,7 +807,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -819,7 +826,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -842,7 +849,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 					$time += $rtime;
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -853,7 +860,7 @@ function addEvent(&$message)
 		}
 	else
 		{
-		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $begin, $end, $category, $color, '');
+		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $begin, $end, $category, $color, $bprivate, $block, $bfree, '');
 		}
 
 	if( count($arrnotify) > 0 )
