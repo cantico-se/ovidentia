@@ -377,7 +377,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=&idcol=".$this->idcol."&idsa=".$this->idsa;
 
-			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL."");
+			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->countsa = 0;
 			else
@@ -564,7 +564,7 @@ function addVacationPersonnel($idcol, $idsa, $iduser)
 			$this->groupval = "";
 			$this->groupid = "";
 
-			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL."");
+			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->countsa = 0;
 			else

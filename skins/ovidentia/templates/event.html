@@ -132,12 +132,13 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <!--#endif bcategory -->
 <!-- toolbar -->
 <!--#if msie "== 1" -->
+<!--#if babOldEditor -->
 <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
 <script src="{ babScriptPath }editor.js"></script>
 <tr> 
 <td align="right" nowrap>&nbsp;</td>
 <td colspan="4"> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description">{ descriptionval }</textarea>
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="evtdesc">{ descriptionval }</textarea>
 </td>
 </tr>
 <tr> 
@@ -149,6 +150,25 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 </script>
 </td>
 </tr>
+<!--#else babOldEditor -->
+<style type="text/css">
+@import url({ babUrl }{ babScriptPath }htmlarea/htmlarea.css);
+</style>
+
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
+<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
+
+
+<script type="text/javascript">
+var editor = null;
+function initEditor(ta) {
+	editor = new HTMLArea(ta,'{ babUrl }','{ babInstallPath }','{ babLanguage }');
+	editor.generate();
+}
+</script>
+<!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
 <td colspan="5" align="center">{ description }</td>
@@ -156,11 +176,17 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <tr> 
 <td align="center" colspan="5"> 
 <!--#if msie "== 1" -->
+<!--#if babOldEditor -->
 <script language="JavaScript">
-	editor.InFrame(0, "description", "vacform", "100%", "160");
+	editor.InFrame(0, "evtdesc", "vacform", "100%", "160");
 </script>
+<!--#else babOldEditor -->
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('evtdesc')">
+</iframe>
+<textarea id="evtdesc" name="evtdesc" onfocus="savef(document.vacform.evtdesc)" style="width:100%" rows="10">{ descriptionval }</textarea>
+<!--#endif babOldEditor -->
 <!--#else msie -->
-<textarea cols="40" rows="5" name="description">{ descriptionval }</textarea>
+<textarea style="width:100%" rows="10" id="evtdesc" name="evtdesc" onblur="this.focus()" onfocus="savef(document.vacform.evtdesc)">{ descriptionval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
@@ -193,12 +219,12 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 </td>
 </tr>
 <!--#endin getnextrow -->
- 
-<!--#if msie "== 1" -->
 <tr> 
 <td colspan="2">&nbsp;</td>
 <td colspan="3"> 
-<input onClick=SetVals() type="submit" name="Submit" value="{ addvac }">
+<!--#if msie "== 1" -->
+<!--#if babOldEditor -->
+<input onClick="SetVals()" type="submit" name="Submit" value="{ addvac }">
 <br>
 </td>
 </tr>
@@ -206,20 +232,45 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
  editor.FinalInstantiate(0);
  editor.CloseInitSection();
 </script>
-<!--#else msie -->
-<tr> 
-<td colspan="2">&nbsp;</td>
-<td colspan="3">  
+<!--#else babOldEditor -->
 <input type="submit" name="Submit" value="{ addvac }">
+<!--#endif babOldEditor -->
+<!--#else msie -->
+<input type="submit" name="Submit" value="{ addvac }">
+<!--#endif msie -->
 <br>
 </td>
 </tr>
-<!--#endif msie -->
 </table>
 </td>
 </tr>
 </table>
 </form>
+<!--#if msie "!= 1" -->
+<script type="text/javascript">
+<!--
+var ctrlf = null;
+function onInsertFile(idf,txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+}
+
+function onInsertImage(txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
+}
+
+function savef(t)
+{
+ctrlf = t;
+}
+
+savef(document.createart.headtext);
+//-->
+</script>
+<!--#endif msie -->
 <br>
 <!--#end newevent -->
 <br><br><br><br><br>
@@ -430,6 +481,7 @@ window.focus();
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
+<!--#if babOldEditor -->
 <tr align="center" valign="middle"> 
 <td> 
 <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
@@ -447,15 +499,40 @@ window.focus();
 	</script>
 </td>
 </tr>
+<!--#else babOldEditor -->
+<style type="text/css">
+@import url({ babUrl }{ babScriptPath }htmlarea/htmlarea.css);
+</style>
+
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
+<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
+
+
+<script type="text/javascript">
+var editor = null;
+function initEditor(ta) {
+  editor = new HTMLArea(ta,'{ babUrl }','{ babInstallPath }','{ babLanguage }');
+  editor.generate();
+}
+</script>
+<!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
 <td align="center" valign="middle"> 
 <!--#if msie "== 1" -->
+<!--#if babOldEditor -->
 	            <script language="JavaScript">
 	editor.InFrame(0, "content", "descmod", "90%", "160");
 				</script>
+<!--#else babOldEditor -->
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('content')">
+</iframe>
+<textarea id="content" name="content"  onfocus="savef(document.descmod.content)" style="width:100%" rows="20">{ arr[description] }</textarea>
+<!--#endif babOldEditor -->
 <!--#else msie -->
-<textarea cols="50" rows="20" name="content">{ arr[description] }</textarea>
+<textarea onblur="this.focus()" onfocus="savef(document.createart.headtext)" style="width:100%" rows="20" id="content" name="content">{ arr[description] }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
@@ -473,30 +550,54 @@ window.focus();
 </td>
 </tr>
 <!--#endif brecevt -->
-<!--#if msie "== 1" -->
 <tr> 
 <td align="center" valign="middle">
+<!--#if msie "== 1" -->
+<!--#if babOldEditor -->
 <input onClick=SetVals() type="submit" name="submit" value="{ modify }">
-<br>
-</td>
-</tr>
         <script language="JavaScript">
 		editor.FinalInstantiate(0);
 		editor.CloseInitSection();
 		</script>
-<!--#else msie -->
-<tr> 
-<td align="center" valign="middle">
+<!--#else babOldEditor -->
 <input type="submit" name="submit" value="{ modify }">
+<!--#endif babOldEditor -->
+<!--#else msie -->
+<input type="submit" name="submit" value="{ modify }">
+<!--#endif msie -->
 <br>
 </td>
 </tr>
-<!--#endif msie -->
 </table>
 </td>
 </tr>
 </table>
 </form>
+<!--#if msie "!= 1" -->
+<script type="text/javascript">
+<!--
+var ctrlf = null;
+function onInsertFile(idf,txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+}
+
+function onInsertImage(txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
+}
+
+function savef(t)
+{
+ctrlf = t;
+}
+
+savef(document.createart.headtext);
+//-->
+</script>
+<!--#endif msie -->
 <br>
 </BODY>
 </HTML>

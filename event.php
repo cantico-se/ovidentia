@@ -1314,7 +1314,7 @@ else
 		{
 		if( isset($Submit))
 			{
-			updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category, $bupdrec);
+			updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $evtdesc, $category, $bupdrec);
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
 			}
 		else if( isset($evtdel))
@@ -1334,7 +1334,7 @@ else
 			$grpcals = array();
 		if( !isset($rescals))
 			$rescals = array();
-		if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category, $usrcals, $grpcals, $rescals))
+		if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $evtdesc, $category, $usrcals, $grpcals, $rescals))
 			{
 			$day = $daybegin;
 			$month = $monthbegin;
@@ -1391,7 +1391,7 @@ switch($idx)
 		break;
 
 	case "newevent":
-		newEvent($calid, $day, $month, $year, $view, $title, $description, $st);
+		newEvent($calid, $day, $month, $year, $view, $title, $evtdesc, $st);
 		if( bab_isUserGroupManager())
 			{
 			$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");

@@ -240,7 +240,7 @@ function listSchemas()
 			$this->schnametxt = bab_translate("Name");
 			$this->schdesctxt = bab_translate("Description");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( defined("BAB_DEBUG_FA"))

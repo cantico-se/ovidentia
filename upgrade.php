@@ -2156,6 +2156,38 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+$req = "ALTER TABLE ".BAB_GROUPS_TBL." CHANGE name name varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_GROUPS_TBL." CHANGE description description varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." CHANGE head head MEDIUMTEXT NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." CHANGE smtpuser smtpuser varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 return $ret;
 }
 ?>

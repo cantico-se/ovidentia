@@ -114,7 +114,7 @@ function modifyFolder($fid)
 
 			$this->safm = $arr['idsa'];
 
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL."");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else

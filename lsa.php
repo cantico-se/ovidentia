@@ -34,7 +34,7 @@ function browseSa($cb)
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 
-			$this->sares = $babDB->db_query("select id, name, description from ".BAB_FLOW_APPROVERS_TBL."");
+			$this->sares = $babDB->db_query("select id, name, description from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else

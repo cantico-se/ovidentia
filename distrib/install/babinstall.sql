@@ -16,7 +16,7 @@ CREATE TABLE bab_articles (
    date datetime,
    date_pub varchar(30),
    title tinytext NOT NULL,
-   head text NOT NULL,
+   head mediumtext NOT NULL,
    body longtext NOT NULL,
    archive enum('N','Y') NOT NULL default 'N',
    idfai int(11) unsigned NOT NULL default '0',
@@ -171,8 +171,8 @@ CREATE TABLE bab_forumsview_groups (
 
 CREATE TABLE bab_groups (
    id int(11) unsigned NOT NULL auto_increment,
-   name varchar(20) NOT NULL,
-   description varchar(200) NOT NULL,
+   name varchar(255) NOT NULL,
+   description varchar(255) NOT NULL,
    mail enum('N','Y') DEFAULT 'N' NOT NULL,
    manager int(11) unsigned  DEFAULT '0' NOT NULL,
    ustorage enum('N','Y') DEFAULT 'N' NOT NULL,
@@ -719,7 +719,7 @@ CREATE TABLE bab_sites (
    style char(255) NOT NULL,
    registration enum('Y','N') DEFAULT 'Y' NOT NULL,
    email_confirm enum('Y','N') DEFAULT 'Y' NOT NULL,
-   mailfunc char(20) NOT NULL DEFAULT 'mail',
+   mailfunc char(255) NOT NULL DEFAULT 'mail',
    smtpserver char(255) NOT NULL DEFAULT '',
    smtpport char(20) NOT NULL DEFAULT '25',
    imgsize int(11) unsigned NOT NULL default '25',
