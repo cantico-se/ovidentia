@@ -60,6 +60,7 @@ function listUsers($pos, $grp)
 
 		var $nickname;
 		var $bmodname;
+		var $altbg = true;
 
 		function temp($pos, $grp)
 			{
@@ -127,7 +128,7 @@ function listUsers($pos, $grp)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
+				$this->altbg = !$this->altbg;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				if( $this->ord == "-" )
