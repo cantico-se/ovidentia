@@ -185,6 +185,7 @@ function groupDelegatCreate($gname, $description)
 			$this->add = bab_translate("Add");
 			$this->grp_members = bab_translate("Managed groups");
 			$this->functions = bab_translate("Deputy functions");
+			$this->none = bab_translate("None");
 			$this->new = true;
 			$this->id = "";
 			if( bab_isMagicQuotesGpcOn())
@@ -288,6 +289,7 @@ function groupDelegatModify($gname, $description, $id)
 			$this->alert_msg = bab_translate("It is necessary to remove all associations with the users groups");
 			$this->grp_members = bab_translate("Managed groups");
 			$this->functions = bab_translate("Deputy functions");
+			$this->none = bab_translate("None");
 			$db = $GLOBALS['babDB'];
 			$this->db = $db;
 			$res = $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");

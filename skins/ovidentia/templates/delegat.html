@@ -46,6 +46,15 @@ document.forms.dgcreate.grpm.value=id;
 this.focus();
 op.close();
 }
+
+function selectnone()
+{
+var it = document.forms.dgcreate.groups;
+for(i=0;i<it.length;i++)
+	{
+	it[i].selected = false;
+	}
+}
 //-->
 </script>
 <form name="dgcreate" method="post" action="{ babPhpSelf }">
@@ -84,7 +93,7 @@ op.close();
 	<td class="BabLoginMenuBackground">&nbsp;</td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="top">{ grp_members }:</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="top">{ grp_members }:<br><a class="BabAlphabetLink" href="javascript:selectnone()">{ none }</a></td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 	<select multiple name="groups[]" id="groups" size="6">
 	<!--#in getnextgroup -->
