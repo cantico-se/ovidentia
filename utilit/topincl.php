@@ -518,7 +518,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 			var $dateval;
 
 
-			function tempcc($topicname, $title, $author, $msg)
+			function tempcc($topicname, $title, $author, $msg,$topics)
 				{
 				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$this->topic = bab_translate("Topic");
@@ -532,6 +532,8 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
 				$this->message = $msg;
+				$this->linkurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
+				$this->linkname = viewCategoriesHierarchy_txt($topics);
 				}
 			}
 		}	
@@ -548,7 +550,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject($msg);
 
-	$tempc = new tempcc($topicname, $title, $author, $msg);
+	$tempc = new tempcc($topicname, $title, $author, $msg,$topics);
 	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "notifyarticle"));
 
 	$messagetxt = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
