@@ -4,7 +4,8 @@
     <td class="BabForumBackground" align="center" valign="midlle">
 <img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ openthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ openthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
 <img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt="{ waitthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ waitthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
-<img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ closedthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ closedthreadsinfo }
+<img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ closedthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ closedthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+<img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ altrecentposts }
     </td>
     </tr>
     
@@ -103,7 +104,7 @@
 <!--#endif replymail -->
 </td>
 <td class="BabForumBackground" align="center" width="1%">{ arrthread[views] }</td>
-<td class="BabForumBackground" align="center" nowrap width="1%">{ lastpostdate }</td>
+          <td class="BabForumBackground" align="center" nowrap width="1%"><!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><!--#endif brecent -->{ lastpostdate }</td>
 </tr>
 
 <!--#endin getnext -->
