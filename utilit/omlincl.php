@@ -2006,7 +2006,11 @@ class bab_WaitingArticles extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 
-		if( $GLOBALS['BAB_SESS_USERID'] != '')
+		$userid = $ctx->get_value('userid');
+		if( $userid === false || $userid === '' )
+			$userid = $GLOBALS['BAB_SESS_USERID'];
+
+		if( $userid != '')
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 			$this->topicid = $ctx->get_value('topicid');
@@ -2014,7 +2018,7 @@ class bab_WaitingArticles extends bab_handler
 			if( $this->topicid !== false && $this->topicid !== '' )
 				$req .= " and a.id_topic IN (".$this->topicid.")";
 
-			$req .= " and fi.idschi=a.idfai and fi.iduser='".$GLOBALS['BAB_SESS_USERID']."' and fi.result='' and  fi.notified='Y'";
+			$req .= " and fi.idschi=a.idfai and fi.iduser='".$userid."' and fi.result='' and  fi.notified='Y'";
 			$req .=  "order by a.date desc";
 
 			$res = $babDB->db_query($req);
@@ -2073,7 +2077,11 @@ class bab_WaitingComments extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 
-		if( $GLOBALS['BAB_SESS_USERID'] != '')
+		$userid = $ctx->get_value('userid');
+		if( $userid === false || $userid === '' )
+			$userid = $GLOBALS['BAB_SESS_USERID'];
+
+		if( $userid != '')
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
@@ -2082,7 +2090,7 @@ class bab_WaitingComments extends bab_handler
 			if( $this->articleid !== false && $this->articleid !== '' )
 				$req .= " and c.id_article IN (".$this->articleid.")";
 
-			$req .= " and fi.idschi=c.idfai and fi.iduser='".$GLOBALS['BAB_SESS_USERID']."' and fi.result='' and  fi.notified='Y'";
+			$req .= " and fi.idschi=c.idfai and fi.iduser='".$userid."' and fi.result='' and  fi.notified='Y'";
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
@@ -2139,7 +2147,11 @@ class bab_WaitingFiles extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 
-		if( $GLOBALS['BAB_SESS_USERID'] != '')
+		$userid = $ctx->get_value('userid');
+		if( $userid === false || $userid === '' )
+			$userid = $GLOBALS['BAB_SESS_USERID'];
+
+		if( $userid != '')
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
@@ -2148,7 +2160,7 @@ class bab_WaitingFiles extends bab_handler
 			if( $this->folderid !== false && $this->folderid !== '' )
 				$req .= " and f.id_owner IN (".$this->folderid.")";
 
-			$req .= " and fi.idschi=f.idfai and fi.iduser='".$GLOBALS['BAB_SESS_USERID']."' and fi.result='' and  fi.notified='Y'";
+			$req .= " and fi.idschi=f.idfai and fi.iduser='".$userid."' and fi.result='' and  fi.notified='Y'";
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
@@ -2205,10 +2217,14 @@ class bab_WaitingPosts extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 
-		if( $GLOBALS['BAB_SESS_USERID'] != '')
+		$userid = $ctx->get_value('userid');
+		if( $userid === false || $userid === '' )
+			$userid = $GLOBALS['BAB_SESS_USERID'];
+
+		if( $userid != '')
 			{
 			$this->forumid = $ctx->get_value('forumid');
-			$req = "SELECT p.*, t.forum  FROM  ".BAB_POSTS_TBL." p, ".BAB_FORUMS_TBL." f, ".BAB_THREADS_TBL." t WHERE p.confirmed ='N' AND t.forum = f.id AND t.id = p.id_thread and f.moderator='".$GLOBALS['BAB_SESS_USERID']."'";
+			$req = "SELECT p.*, t.forum  FROM  ".BAB_POSTS_TBL." p, ".BAB_FORUMS_TBL." f, ".BAB_THREADS_TBL." t WHERE p.confirmed ='N' AND t.forum = f.id AND t.id = p.id_thread and f.moderator='".$userid."'";
 
 			if( $this->forumid !== false && $this->forumid !== '' )
 				$req .= " and f.id IN (".$this->forumid.")";
