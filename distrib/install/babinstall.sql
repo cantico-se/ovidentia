@@ -115,7 +115,7 @@ CREATE TABLE bab_faqqr (
 CREATE TABLE bab_forums (
    id smallint(6) unsigned NOT NULL auto_increment,
    name varchar(30) NOT NULL,
-   description varchar(100) NOT NULL,
+   description text NOT NULL,
    moderation enum('N','Y') DEFAULT 'N' NOT NULL,
    notification enum('N','Y') DEFAULT 'N' NOT NULL,
    display int(11) unsigned DEFAULT '0' NOT NULL,
