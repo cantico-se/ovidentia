@@ -1,4 +1,4 @@
-<?
+<?php
 
 // Created by bouchon
 // http://dev.maxg.info
