@@ -10,7 +10,7 @@ class db_mysql
 {
 var $babDBHost;
 var $babDBLogin;
-var $baDBPasswd;
+var $babDBPasswd;
 var $babDBName;
 var $idlink;
 var $db_die_on_fail;
