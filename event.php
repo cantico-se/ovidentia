@@ -1114,8 +1114,6 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	$begin_day = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
 
-	$this->freeevents = array();
-
 	$db = &$GLOBALS['babDB'];
 
 	$workdays = array();
