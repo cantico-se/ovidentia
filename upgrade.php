@@ -665,11 +665,12 @@ while($row = $db->db_fetch_array($res))
 return $ret;
 }
 
-function upgrade340to341()
+function upgrade340betas(&$beta)
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
 
+/* 340beta -> 340beta2 */
 $res = $db->db_query("SHOW COLUMNS from ".BAB_GROUPS_TBL." like 'filenotify'");
 if( !$res || $db->db_num_rows($res) == 0 )
 	{
@@ -680,7 +681,20 @@ if( !$res || $db->db_num_rows($res) == 0 )
 		$ret = "Alteration of <b>".BAB_COMMENTS_TBL."</b> table failed !<br>";
 		return $ret;
 		}
+	$beta = "beta2";
 	}
+return $ret;
+}
+
+function upgrade340to341()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+$beta = "";
+
+$ret = upgrade340betas($beta);
+if( !empty($ret))
+	return $ret;
 
 return $ret;
 }

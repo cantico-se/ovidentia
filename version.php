@@ -45,7 +45,19 @@ $ver_from = $dbver[0].$dbver[1].$dbver[2];
 $ver_to = $GLOBALS['bab_ver_major'].$GLOBALS['bab_ver_minor'].$GLOBALS['bab_ver_build'];
 if( $ver_from == $ver_to )
 	{
-	return bab_translate("You site is already up to date");
+	$func = "upgrade".$ver_from."betas";
+	if( function_exists($func))
+		{
+		$beta = "";
+		$ret = $func($beta);
+		if( !empty($ret))
+			return $ret;
+		}
+
+	if( !empty($beta))
+		return bab_translate("You site has been updated") .": ".$dbver[0].".".$dbver[1].".".$dbver[2].$beta;
+	else
+		return bab_translate("You site is already up to date");
 	}
 
 $i_from = bab_array_search($ver_from, $bab_versions);
