@@ -25,13 +25,13 @@ function upComingEvents($idcal)
 			$mktime = $mktime + 518400;
 			$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 			$req = "select * from cal_events where id_cal='".$idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date asc";		
+			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";		
 			$this->resevent = $this->db->db_query($req);
 			$this->countevent = $this->db->db_num_rows($this->resevent);
 			$idgrp = getPrimaryGroupId($BAB_SESS_USERID);
 			$this->grpname = getGroupName($idgrp);
 			$req = "select * from cal_events where id_cal='".getCalendarId($idgrp, 2)."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date asc";		
+			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";		
 			$this->resgrpevent = $this->db->db_query($req);
 			$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
 			}
