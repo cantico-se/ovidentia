@@ -303,7 +303,7 @@ function listPosts($forum, $thread, $post)
 	}
 
 
-function listPostsFlat($forum, $thread)
+function listPostsFlat($forum, $thread, $open)
 	{
 	global $babBody;
 
@@ -331,8 +331,10 @@ function listPostsFlat($forum, $thread)
 		var $noflaturl;
 		var $backtotoptxt;
 		var $replytxt;
+		var $breply;
 
-		function temp($forum, $thread)
+
+		function temp($forum, $thread, $open)
 			{
 			global $moderator, $views;
 			$this->subject = bab_translate("Subject");
@@ -367,6 +369,10 @@ function listPostsFlat($forum, $thread)
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->flaturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->thread."&flat=1";
+			if( $open && bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) )
+				$this->breply = true;
+			else
+				$this->breply = false;
 			}
 
 
@@ -441,7 +447,7 @@ function listPostsFlat($forum, $thread)
 
 		}
 	
-	$temp = new temp($forum, $thread, $post);
+	$temp = new temp($forum, $thread, $open);
 	$babBody->babecho(	bab_printTemplate($temp,"posts.html", "postslistflat"));
 	return $temp->count;
 	}
@@ -955,12 +961,12 @@ switch($idx)
 		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
 			if( $flat == "1")
-				$count = listPostsFlat($forum, $thread);
+				$count = listPostsFlat($forum, $thread, $open);
 			else
 				$count = listPosts($forum, $thread, $post);
 			$babBody->addItemMenu("Threads", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
-			if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) && $open && $flat != 1)
+			if( $flat != 1 && $open && bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) )
 				{
 				$babBody->addItemMenu("reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
 				}

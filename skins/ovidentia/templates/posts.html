@@ -337,7 +337,11 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
       <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
         <tr valign="middle"> 
           <td class="BabForumTopicsNavTitle">
+<!--#if breply -->
 <a class="BabForumTopicsNavContribution" href="{ replysubjecturl }">{ postsubject }</a>
+<!--#else breply -->
+{ postsubject }
+<!--#endif breply -->
 </td>
 <td align="right" class="BabForumTopicsNavTitle"><a class="BabForumTopicsConfirm" href="{ noflaturl }"><img src="{ babSkinPath }images/Puces/PuceForumHierar.gif" border=0 alt="{ altnoflattxt }" align="absmiddle"></a></td>
         </tr>
