@@ -108,25 +108,23 @@ function bab_getCalendarOwnerName($idcal, $type)
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		if( $type == 1)
+		$arr = $db->db_fetch_array($res);
+		if( $arr['type'] == 1)
 			{
-			$arr = $db->db_fetch_array($res);
 			$query = "select * from ".BAB_USERS_TBL." where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
 			$ret = bab_composeUserName( $arr['firstname'], $arr['lastname']);
 			}
-		else if( $type == 2)
+		else if( $arr['type'] == 2)
 			{
-			$arr = $db->db_fetch_array($res);
 			$query = "select * from ".BAB_GROUPS_TBL." where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
 			$ret = $arr['name'];
 			}
-		else if( $type == 3)
+		else if( $arr['type'] == 3)
 			{
-			$arr = $db->db_fetch_array($res);
 			$query = "select * from ".BAB_RESOURCESCAL_TBL." where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);

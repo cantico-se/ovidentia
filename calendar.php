@@ -909,7 +909,6 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 		function getnextevent()
 			{
 			static $k = 0;
-			//static $tab = array();
 			if( $k < $this->countevent)
 				{
 				$this->bgcolor = "white";
@@ -924,23 +923,10 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 					$this->bgcolor = "";
 					$this->titleten = "";
 					$this->notempty = 0;
-					//$this->titleten = "&nbsp;".$hourmin.":".$hourmax. "----". $a.":".$b;
 					}
 				else
 					{
-					//$this->titleten = "&nbsp;".$hourmin.":".$hourmax. "----". $a.":".$b;
 					$this->notempty = 1;
-					/*
-					if( empty($tab[$k]))
-						$tab[$k] = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title'];
-					else
-						{
-						$this->notempty = 0;
-						$tab[$k] = "";
-						}
-					
-					$this->titleten = htmlentities($tab[$k]);
-					*/
 					$this->titleten = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']);
 					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewd";
 
@@ -968,7 +954,6 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 		function getnextgrpevent()
 			{
 			static $k = 0;
-			//static $tab = array();
 			if( $k < $this->countgrpevent)
 				{
 				$this->bgcolor = "white";
@@ -987,16 +972,6 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 				else
 					{
 					$this->notempty = 1;
-					/*
-					if( empty($tab[$k]))
-						$tab[$k] = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']." (".$this->grpname.")";
-					else
-						{
-						$this->notempty = 0;
-						$tab[$k] = "";
-						}
-					$this->titleten = htmlentities($tab[$k]);
-					*/
 					$this->titleten = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']." (".$this->grpname.")");
 					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewd";
 					if( $this->babCalendarUsebgColor == "Y")
@@ -1147,7 +1122,7 @@ switch($idx)
 			$babBody->title = bab_translate("Acces denied");
 		else
 			{
-			$babBody->title = "";
+			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
 			calendarDay($calid, $day, $month, $year, $start, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
 			categoriesList($calid);
 			}
@@ -1157,7 +1132,7 @@ switch($idx)
 			$babBody->title = bab_translate("Acces denied");
 		else
 			{
-			$babBody->title = "";
+			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
 			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
 			categoriesList($calid);
 			}
@@ -1168,7 +1143,7 @@ switch($idx)
 			$babBody->title = bab_translate("Acces denied");
 		else
 			{
-			$babBody->title = "";
+			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
 			calendarMonth($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
 			categoriesList($calid);
 			}
