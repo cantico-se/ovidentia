@@ -61,7 +61,7 @@ function getEventsResult($calid, $day, $month, $year)
 	$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 	$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 	$req = "select * from cal_events where id_cal='".$calid."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-	$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date asc";
+	$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";
 	return $this->resevent = $db->db_query($req);
 }
 
@@ -94,6 +94,8 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		var $db;
 		var $nbevent;
 		var $new;
+		var $maxevent;
+		var $plus;
 	
 		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			{
@@ -110,6 +112,8 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->caltype = $caltype;
 			$this->viewthis = babTranslate("View this calendar");
 			$this->new = babTranslate("New");
+			$this->maxevent = 6;
+			$this->plus = "";
 
 			switch($caltype)
 				{
@@ -214,9 +218,12 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			static $total = 0;
 			if( $d < 7)
 				{
+				$this->plus = "";
 				$this->currentmonth = 1;
 				$this->currentday = 0;
 				$this->nbevent = 0;
+				$this->countevent = 0;
+				$this->countgrpevent = 0;
 				$day = (7 * ($this->w-1)) + $d - $this->firstday +1 ;
 				if( $day <= 0 || $day > $this->totaldays)
 					$this->currentmonth = 0;
@@ -231,7 +238,12 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->neweventurl = $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&day=".$dday."&month=".date("n", $mktime). "&year=".date("Y", $mktime)."&calid=".$this->calid."&view=viewm";
 				$this->resevent = getEventsResult($this->calid, $day, $this->month, $this->year);
 				$this->countevent = $this->db->db_num_rows($this->resevent);
-				$this->nbevent += $this->countevent;
+				if( $this->countevent > $this->maxevent)
+					{
+					$this->nbevent = $this->maxevent;
+					}
+				else
+					$this->nbevent = $this->countevent;
 				if( $this->caltype == 1)
 					{
 					$idcal = getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2);
@@ -239,6 +251,11 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 					$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
 					//$this->nbevent += $this->countgrpevent;
 					}
+				if( $this->countgrpevent + $this->countevent > $this->maxevent)
+					$this->plus = "+++";
+				else
+					$this->plus = "";
+
 				$d++;
 				return true;
 				}
@@ -274,7 +291,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			{
 			static $k=0;
 			$this->notempty = 0;
-			if( $k < $this->countevent)
+			if( $k < $this->nbevent)
 				{
 				$this->notempty = 1;
 				$this->bgcolor = "";
@@ -304,7 +321,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		function getgroupevent()
 			{
 			static $k=0;
-			if( $k < 4 - $this->nbevent)
+			if( $k < $this->maxevent - $this->nbevent)
 				{
 				$this->titleten = "";
 				$this->titletenurl = "";
