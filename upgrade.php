@@ -2781,6 +2781,11 @@ function upgrade410to411()
 $ret = "";
 $db = $GLOBALS['babDB'];
 
+$db->db_query("ALTER TABLE ".BAB_OC_ROLES_USERS_TBL." DROP INDEX id_role");
+$db->db_query("ALTER TABLE ".BAB_OC_ROLES_USERS_TBL." ADD INDEX ( id_role )");
+$db->db_query("ALTER TABLE ".BAB_OC_ROLES_USERS_TBL." ADD INDEX ( id_user )");
+$db->db_query("ALTER TABLE ".BAB_OC_ROLES_USERS_TBL." ADD INDEX ( isprimary )");
+
 $req = "CREATE TABLE ".BAB_ART_DRAFTS_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
 $req .= "id_author int(11) unsigned NOT NULL default '0',";
