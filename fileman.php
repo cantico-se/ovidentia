@@ -884,7 +884,7 @@ function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keyw
 function createDirectory($dirname, $id, $gr, $path)
 	{
 	global $body, $BAB_SESS_USERID, $aclfm;
-	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pu']) || $gr == "Y" && ((($id == 2 || $id ==1) && isUserAdministrator()) || isUserGroupManager($id)))
+	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pr']) || $gr == "Y" && ((($id == 2 || $id ==1) && isUserAdministrator()) || isUserGroupManager($id)))
 		;
 	else
 		{
@@ -917,7 +917,7 @@ function renameDirectory($dirname, $id, $gr, $path)
 	if( empty($path))
 		return false;
 
-	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pu']) || $gr == "Y" && ((($id == 2 || $id ==1) && isUserAdministrator()) || isUserGroupManager($id)))
+	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pr']) || $gr == "Y" && ((($id == 2 || $id ==1) && isUserAdministrator()) || isUserGroupManager($id)))
 		;
 	else
 		{
@@ -982,7 +982,7 @@ function removeDirectory($id, $gr, $path)
 	if( empty($path))
 		return false;
 
-	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pu']) || $gr == "Y" && ((($id == 2 || $id ==1) && isUserAdministrator()) || isUserGroupManager($id)))
+	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pr']) || $gr == "Y" && ((($id == 2 || $id ==1) && isUserAdministrator()) || isUserGroupManager($id)))
 		;
 	else
 		{
