@@ -12,51 +12,39 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
-
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="file" name="uploadf" size="40" maxlength="255" value="">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="45" maxlength="255" value="{ descval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }">
-</td>
-</tr>
-<!--#in getnextfield -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ fieldname }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="{ field }" size="45" maxlength="255" value="{ fieldval }">
-</td>
-</tr>
-<!--#endin getnextfield -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="readonly">
-<option value="N" selected>{ no }</option>
-<option value="Y" >{ yes }</option>
-</select>
-</td>
-</tr>
-<tr>
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="Submit" value="{ add }">
-<br>
-</td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabLoginMenuBackground"> 
+		<td width="30%" align="right" nowrap valign="middle">{ name }</td>
+		<td width="70%"><input type="file" name="uploadf" size="40" maxlength="255" value=""></td>
+	</tr>
+	<tr class="BabLoginMenuBackground"> 
+		<td align="right" nowrap valign="middle">{ description }</td>
+		<td><input type="text" name="description" size="45" maxlength="255" value="{ descval }"></td>
+	</tr>
+	<tr class="BabLoginMenuBackground"> 
+		<td align="right" nowrap valign="middle">{ keywords }</td>
+		<td><input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }"></td>
+	</tr>
+	<!--#in getnextfield -->
+	<tr class="BabLoginMenuBackground"> 
+		<td align="right" nowrap valign="middle">{ fieldname }</td>
+		<td><input type="text" name="{ field }" size="45" maxlength="255" value="{ fieldval }"></td>
+	</tr>
+	<!--#endin getnextfield -->
+	<tr class="BabLoginMenuBackground"> 
+		<td  align="right" nowrap>{ attribute }</td>
+		<td> 
+		<select name="readonly">
+			<option value="N" selected>{ no }</option>
+			<option value="Y" >{ yes }</option>
+		</select>
+		</td>
+	</tr>
+	<tr class="BabLoginMenuBackground">
+		<td>&nbsp;</td>
+		<td><input type="submit" name="Submit" value="{ add }"></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -403,7 +391,7 @@ window.focus();
 <td class="BabSiteAdminFontBackground" nowrap valign="middle">{ descval }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground">{ keywords }</td>
+<td class="BabSiteAdminFontBackground">{ t_keywords }</td>
 <td class="BabSiteAdminFontBackground" valign="top">{ keysval }</td>
 </tr>
 <!--#in getnextfield -->
@@ -595,9 +583,9 @@ close }</a> </td>
 
 <!--#begin browsefiles -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<html>
+<head>
+<title>{ babSiteName }</title>
 { babMeta }
 { babCss }
 <script type="text/javascript">
@@ -617,74 +605,69 @@ window.close();
 window.focus();
 //-->
 </script>
-</HEAD>
-<BODY class="BabBackground">
-<br>
-<table width="98%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabMailBackground">
+</head>
+<body>
+<br />
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabSiteAdminFontBackground" align="center"> 
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center" ><a class="BabSiteAdminListLink" 
-href="{ rooturl }">{ root }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" 
-href="{ refreshurl }">{ refresh }</a></td>
+	<td class="BabLoginCadreBackground" align="center"> 
+	<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" colspan="3" align="center" >
+			<a href="{ rooturl }">{ root }</a>&nbsp;|&nbsp;<a href="{ refreshurl }">{ refresh }</a>
+			</td>
+		</tr>
+		<tr class="BabSiteAdminFontBackground">
+			<td colspan="3" align="center">
+			<br />
+			{ rootpath }/{ path } 
+			<br /><br />
+			</td>
+		</tr>
+		<tr class="BabSiteAdminTitleFontBackground">
+			<td colspan="2" align="center">&nbsp;{ nametxt }&nbsp;</td>
+			<td>&nbsp;{ desctxt }</td>
+		</tr>
+		<!--#in getnextdir -->
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+			<td width="1%" valign="top" align="center"> 
+			<!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name --></td>          
+			<td>&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ name }</a></td>
+			<td>&nbsp;</td>
+		</tr>
+		<!--#endin getnextdir -->
+		<!--#in getnextgrpdir --> 
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<td width="1%"> 
+			<!--#if ma -->
+			{ manfolderimg }
+			<!--#else ma -->
+			{ grpfolderimg }
+			<!--#endif ma -->
+			</td>          
+			<td>&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ name }</a></td>
+			<td>&nbsp;</td>
+		</tr>
+		<!--#endin getnextgrpdir -->
+		<!--#in getnextfile --> 
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<td width="1%"> 
+			{ fileimage }
+			</td>          
+			<td>&nbsp;
+			<!--#if editor "== none" -->
+			<a class="BabSiteAdminListLink" href="#" onclick="dd2('{ editor }', '{ idf }', '{ jname }')">{ name }</a>
+			<!--#else editor -->
+			<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ idf }', '{ jname }')">{ name }</a>
+			<!--#endif editor -->
+			&nbsp;</td>
+			<td align="left">&nbsp;{ description }</td>
+		</tr>
+		<!--#endin getnextfile -->
+	</table>
+	</td>
 </tr>
 </table>
-<br>
-{ rootpath }/{ path } 
-<br>
-<br>
-<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr>
-<td class="BabSiteAdminTitleFontBackground" colspan="2" align="center">&nbsp;{ nametxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="left">&nbsp;{ desctxt }</td>
-</tr>
-<!--#in getnextdir -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-<!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name -->
-</td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
-href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
-</tr>
-<!--#endin getnextdir -->
-<!--#in getnextgrpdir --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-<!--#if ma -->
-{ manfolderimg }
-<!--#else ma -->
-{ grpfolderimg }
-<!--#endif ma -->
-</td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
-href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
-</tr>
-<!--#endin getnextgrpdir -->
-<!--#in getnextfile --> <tr valign="middle"> 
-<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
-{ fileimage }
-</td>          
-<td class="BabSiteAdminFontBackground">&nbsp;
-<!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd2('{ editor }', '{ idf }', '{ jname }')">{ name }</a>
-<!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ idf }', '{ jname }')">{ name }</a>
-<!--#endif editor -->
-&nbsp;</td>
-<td align="left" nowrap class="BabSiteAdminFontBackground">&nbsp;{ description }</td>
-</tr><!--#endin getnextfile -->
-</table>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</BODY>
-</HTML>
+</body>
+</html>
 <!--#end browsefiles -->

@@ -430,6 +430,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 		var $description;
 		var $idf;
 		var $close;
+		var $altbg = true;
 
 		function temp($id, $gr, $path, $bmanager, $editor)
 			{
@@ -451,6 +452,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 				$this->rootpath = "";
 			$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$BAB_SESS_USERID."&gr=N&path=&editor=".$this->editor;
 			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$id."&gr=".$gr."&path=".$path."&editor=".$this->editor;
+
 			}
 
 		function getnextdir()
@@ -458,6 +460,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			static $i = 0;
 			if( $i < count($this->arrdir))
 				{
+				$this->altbg = !$this->altbg;
 				$this->name = $this->arrdir[$i];
 				$this->url = $this->arrudir[$i]."&editor=".$this->editor;
 				$i++;
@@ -472,14 +475,19 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			static $m = 0;
 			if( $m < $this->countgrp)
 				{
+				$this->altbg = !$this->altbg;
 				$this->name = $this->arrgrp['folder'][$m];
+				$this->folderid = $this->arrgrp['id'][$m];
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$this->arrgrp['id'][$m]."&gr=Y&path=&editor=".$this->editor;
 				$this->ma = $this->arrgrp['ma'][$m];
 				$m++;
 				return true;
 				}
 			else
+				{
+				$this->folderid = false;
 				return false;
+				}
 			}
 
 		function getnextfile()
@@ -487,6 +495,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
 				$ext = strtolower(substr(strrchr($arr['name'], "."), 1));
 				if( !empty($ext) && empty($this->arrext[$ext]))
@@ -2088,7 +2097,7 @@ $upload = false;
 $bmanager = false;
 $access = false;
 bab_fileManagerAccessLevel();
-if( count($babBody->aclfm['id']) == 0 && !$babBody->ustorage )
+if((!isset($babBody->aclfm['id']) || count($babBody->aclfm['id']) == 0) && !$babBody->ustorage )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	if ($idx == "brow") die(bab_translate("Access denied"));
