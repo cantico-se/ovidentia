@@ -1499,7 +1499,7 @@ switch($idx)
 			{
 			siteHomePage1($ids);
 			$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-			$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpub", bab_translate("Public2"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
 			}
 		}
 		else
@@ -1518,7 +1518,7 @@ switch($idx)
 			{
 			siteHomePage0($ids);
 			$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-			$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpub", bab_translate("Public2"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
 			}
 		}
 		else
