@@ -228,7 +228,7 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang)
 		$title = addslashes($title);
 		$template = addslashes($template);
 		}
-	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".$content."', script='".$php."', template='".$template."', lang='".$lang."' where id='".$id."'";
+	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".bab_stripDomainName($content)."', script='".$php."', template='".$template."', lang='".$lang."' where id='".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	}

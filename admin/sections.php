@@ -407,7 +407,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang. "')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . bab_stripDomainName($content). "', '" . $php. "', '" . $js."', '". $template."', '" .$lang. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
 		$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
