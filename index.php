@@ -72,7 +72,7 @@ $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
 
-if( isset($tg) && $tg != "version" )
+if( !isset($tg) || isset($tg) && $tg != "version" )
 	{
 	bab_isUserLogged();
 	bab_updateSiteSettings();
