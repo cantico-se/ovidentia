@@ -103,6 +103,7 @@ a img {
 	visibility: hidden;
 	z-index: 100;
 	text-align:left;
+	white-space:normal;
 	}
 
 .bab_calendar .bab_tooltip h3 {
@@ -201,6 +202,10 @@ a img {
 	white-space:nowrap;
 	text-align:center;
 	height:20px;
+	}
+
+#bab_calweek .innertable td {
+	white-space:nowrap;
 	}
 	
 #bab_calweek tbody th {
