@@ -147,6 +147,13 @@ function sectionUpdate($id, $title, $desc, $content, $script)
 		}
 	*/
 	//$query = "update sections set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
+	if(!get_cfg_var("magic_quotes_gpc"))
+		{
+		$desc = addslashes($desc);
+		$content = addslashes($content);
+		$title = addslashes($title);
+		}
+			
 	$query = "update sections set title='$title', description='$desc', content='$content', script='$php' where id=$id";
 	$db->db_query($query);
 	Header("Location: index.php?tg=sections&idx=List");
@@ -161,11 +168,11 @@ function confirmDeleteSection($id)
 	$res = $db->db_query($req);	
 
 	// delete from sections_order
-	$req = "delete from sections_order where id_section='$id'";
+	$req = "delete from sections_order where id_section='$id' and type='2'";
 	$res = $db->db_query($req);	
 
 	// delete from sections_states
-	$req = "delete from sections_states where id_section='$id'";
+	$req = "delete from sections_states where id_section='$id' and private='2'";
 	$res = $db->db_query($req);	
 
 	// delete section

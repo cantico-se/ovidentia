@@ -392,12 +392,12 @@ function updateStateSection($c, $w, $closed)
 	if( !empty($BAB_SESS_USERID))
 		{
 		$db = new db_mysql();
-		$req = "select * from sections_states where private='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		$req = "select * from sections_states where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
-			$req = "update sections_states set closed='".$closed."' where private='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+			$req = "update sections_states set closed='".$closed."' where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
 		else
-			$req = "insert into sections_states (id_section, closed, private, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
+			$req = "insert into sections_states (id_section, closed, type, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
 
 		$db->db_query($req);
 		}

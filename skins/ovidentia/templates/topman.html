@@ -1,0 +1,131 @@
+
+<!--#begin categorylist -->
+
+<!--#in getnext -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabTopicsAdminListTitle" nowrap>{ namecategory }</td>
+<td class="BabTopicsAdminListTitle" align="right"> 
+<!--#if nbarticles "== 0" -->
+{ nbarticles }&nbsp;{ articles } 
+<!--#else nbarticles -->
+<a class="BabTopicsAdminNumberLink" 
+href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }&nbsp;{ newa }&nbsp;{ waiting }</a> 
+<!--#endif nbarticles -->
+</td>
+</tr>
+<tr colspan="2">
+<td>
+{ arr[description] }
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endin getnext -->
+<!--#end categorylist -->
+<br>
+<br><br><br><br>
+<!--#begin articleslist -->
+<script language="javascript">
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		objCtrl = document.forms.listform.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
+}
+
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="topman">
+<input type="hidden" name="idx" value="deletea">
+<input type="hidden" name="item" value="{ item }">
+<input type="hidden" name="upart" value="articles">
+<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr> 
+<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td class="BabTopicsAdminListTitle">&nbsp;</td>
+<td class="BabTopicsAdminListTitle">&nbsp;</td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ titlename }</b></td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td align="left" valign="middle" width="1%">
+<input width="2%" type="checkbox" name="art[]" value="{ articleid }">
+</td>
+<td valign="middle" width="5%">&nbsp;<!--#if  bhomepage0 "== X" --><img src="{ babSkinPath }images/Puces/PuceNotEnregistered.gif" alt="{ homepage0 }" width="18" height="15" border="0"><!--#endif  bhomepage0 --></td>
+<td valign="middle" width="5%">&nbsp;<!--#if  bhomepage1 "== X" --><img src="{ babSkinPath }images/Puces/PuceEnregistered.gif" alt="{ homepage1 }" width="18" height="15" border="0"><!--#endif  bhomepage1 --></td>
+<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="{ urltitle }">{ title }</a></td>
+<!--#endin getnext -->
+</tr>
+<tr> 
+<td colspan="4" class="BabSiteAdminFontBackground"> 
+<input type="submit" name="homepage0" value="{ homepage0 }">&nbsp;&nbsp;<input type="submit" name="homepage1" value="{ homepage1 }">&nbsp;&nbsp;<input type="submit" name="deletea" value="{ deletea }"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end articleslist -->
+
+<!--#begin articleview -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+<META NAME="Generator" CONTENT="Ovidentia">
+<META NAME="Author" CONTENT="Ovidentia Community">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY class="BabTopicsAdminArticleViewFontBackground">
+<br>
+<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0">
+<tr>
+<td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] 
+}</b></td>
+</tr>
+<tr><td>{ content }</td></tr>
+<tr>
+<td colspan="2" align="center">
+<br>
+<a href="javascript:this.close()">{ close }</a>
+<br>
+</td>
+</tr>
+</table>
+<br>
+<a href="javascript:this.close()">{ close }</a><br><br>
+
+</BODY>
+</HTML>
+<!--#end articleview -->

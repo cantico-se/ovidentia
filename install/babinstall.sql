@@ -220,14 +220,15 @@ CREATE TABLE private_sections (
    position enum('0','1') DEFAULT '0' NOT NULL,
    title varchar(60),
    description varchar(200),
+   enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
    PRIMARY KEY (id)
 );
 
-INSERT INTO private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration');
-INSERT INTO private_sections VALUES ('2', '1', 'Month', 'This section lists month days');
-INSERT INTO private_sections VALUES ('3', '0', 'Topics', 'This section lists topics');
-INSERT INTO private_sections VALUES ('4', '0', 'Forums', 'This section lists forums');
-INSERT INTO private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User');
+INSERT INTO private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration', 'Y');
+INSERT INTO private_sections VALUES ('2', '1', 'Month', 'This section shows calendar month', 'Y');
+INSERT INTO private_sections VALUES ('3', '0', 'Topics', 'This section lists topics', 'Y');
+INSERT INTO private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'Y');
+INSERT INTO private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'Y');
 
 # --------------------------------------------------------
 #
@@ -238,16 +239,17 @@ CREATE TABLE sections_order (
    id smallint(6) unsigned NOT NULL auto_increment,
    id_section smallint(6) unsigned NOT NULL,
    position enum('0','1') DEFAULT '0' NOT NULL,
-   private enum('N','Y') DEFAULT 'N' NOT NULL,
+   type smallint(2) unsigned NOT NULL,
    ordering smallint(6) unsigned NOT NULL,
    PRIMARY KEY (id)
 );
 
-INSERT INTO sections_order VALUES ('1', '1', '0', 'Y', '1');
-INSERT INTO sections_order VALUES ('2', '2', '1', 'Y', '2');
-INSERT INTO sections_order VALUES ('3', '3', '0', 'Y', '3');
-INSERT INTO sections_order VALUES ('4', '4', '0', 'Y', '4');
-INSERT INTO sections_order VALUES ('5', '5', '1', 'Y', '5');
+INSERT INTO sections_order VALUES ('1', '1', '0', '1', '1');
+INSERT INTO sections_order VALUES ('2', '2', '1', '1', '1');
+INSERT INTO sections_order VALUES ('3', '3', '0', '1', '2');
+INSERT INTO sections_order VALUES ('4', '4', '0', '1', '3');
+INSERT INTO sections_order VALUES ('5', '5', '1', '1', '2');
+INSERT INTO sections_order VALUES ('6', '1', '0', '3', '4');
 
 # --------------------------------------------------------
 #
@@ -258,7 +260,7 @@ CREATE TABLE sections_states (
    id int(11) unsigned NOT NULL auto_increment,
    id_section smallint(6) unsigned NOT NULL,
    closed enum('N','Y') DEFAULT 'N' NOT NULL,
-   private enum('N','Y') DEFAULT 'N' NOT NULL,
+   type smallint(2) unsigned NOT NULL,
    id_user int(11) unsigned NOT NULL,
    PRIMARY KEY (id)
 );
@@ -306,9 +308,24 @@ CREATE TABLE topics (
    id_approver int(11) unsigned DEFAULT '0' NOT NULL,
    category varchar(60) NOT NULL,
    description text NOT NULL,
+   id_cat int(11) unsigned DEFAULT '0' NOT NULL,
    PRIMARY KEY (id)
 );
 
+# --------------------------------------------------------
+#
+# Structure de la table 'topics_categories'
+#
+
+CREATE TABLE topics_categories (
+   id int(11) unsigned NOT NULL auto_increment,
+   title varchar(60),
+   description varchar(200),
+   enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
+   PRIMARY KEY (id)
+);
+
+INSERT INTO topics_categories VALUES ('1', 'Default category', 'Default category', 'Y');
 
 # --------------------------------------------------------
 #
@@ -321,7 +338,6 @@ CREATE TABLE topicscom_groups (
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
    PRIMARY KEY (id)
 );
-
 
 # --------------------------------------------------------
 #

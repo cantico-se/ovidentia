@@ -252,6 +252,18 @@ switch($tg)
 		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admfaq";
 		break;
+	case "topcat":
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+			$incl = "admin/topcat";
+		break;
+	case "topcats":
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+			$incl = "admin/topcats";
+		break;
+	case "topman":
+		if( isset($LOGGED_IN) && $LOGGED_IN)
+			$incl = "topman";
+		break;
 	case "topics":
 		if( isset($LOGGED_IN) && $LOGGED_IN)
 			$incl = "admin/topics";
@@ -259,6 +271,9 @@ switch($tg)
 	case "topic":
 		if( isset($LOGGED_IN) && $LOGGED_IN)
 			$incl = "admin/topic";
+		break;
+	case "topusr":
+		$incl = "topusr";
 		break;
 	case "forums":
 		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())

@@ -39,11 +39,14 @@ function sectionsList()
 		var $res;
 		var $counta;
 		var $resa;
+		var $countcat;
+		var $rescat;
 		var $secchecked;
 		var $disabled;
 		var $checkall;
 		var $uncheckall;
 		var $update;
+		var $idvalue;
 
 		function temp()
 			{
@@ -52,7 +55,7 @@ function sectionsList()
 			$this->disabled = babTranslate("Disabled");
 			$this->uncheckall = babTranslate("Uncheck all");
 			$this->checkall = babTranslate("Check all");
-			$this->update = babTranslate("Disable");
+			$this->update = babTranslate("Update");
 			$this->db = new db_mysql();
 			$req = "select * from sections";
 			$this->res = $this->db->db_query($req);
@@ -61,6 +64,9 @@ function sectionsList()
 			/* don't get Administrator section */
 			$this->resa = $this->db->db_query("select * from private_sections where id > '1'");
 			$this->counta = $this->db->db_num_rows($this->resa);
+
+			$this->rescat = $this->db->db_query("select * from topics_categories");
+			$this->countcat = $this->db->db_num_rows($this->resa);
 			}
 
 		function getnextp()
@@ -71,6 +77,28 @@ function sectionsList()
 				$this->arr = $this->db->db_fetch_array($this->resa);
 				$this->arr['title'] = babTranslate($this->arr['title']);
 				$this->arr['description'] = babTranslate($this->arr['description']);
+				$this->idvalue = $this->arr['id']."-1";
+				if( $this->arr['enabled'] == "N")
+					$this->secchecked = "checked";
+				else
+					$this->secchecked = "";
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+
+		function getnextcat()
+			{
+			static $i = 0;
+			if( $i < $this->countcat)
+				{
+				$this->arr = $this->db->db_fetch_array($this->rescat);
+				$this->arr['title'] = babTranslate($this->arr['title']);
+				$this->arr['description'] = babTranslate($this->arr['description']);
+				$this->idvalue = $this->arr['id']."-3";
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
 				else
@@ -90,6 +118,7 @@ function sectionsList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$this->arr['id'];
+				$this->idvalue = $this->arr['id']."-2";
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
 				else
@@ -143,13 +172,21 @@ function sectionsOrder()
 			if( $i < $this->countleft)
 				{
 				$arr = $this->db->db_fetch_array($this->resleft);
-				if( $arr['private'] == "Y" )
-					$req = "select * from private_sections where id ='".$arr['id_section']."'";
-				else
-					$req = "select * from sections where id ='".$arr['id_section']."'";
+				switch( $arr['type'] )
+					{
+					case "1":
+						$req = "select * from private_sections where id ='".$arr['id_section']."'";
+						break;
+					case "3":
+						$req = "select * from topics_categories where id ='".$arr['id_section']."'";
+						break;
+					default:
+						$req = "select * from sections where id ='".$arr['id_section']."'";
+						break;
+					}
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
-				if( $arr['private'] == "Y" )
+				if( $arr['type'] == "1" )
 					$this->listleftsecval = babTranslate($arr2['title']);
 				else
 					$this->listleftsecval = $arr2['title'];
@@ -167,13 +204,21 @@ function sectionsOrder()
 			if( $j < $this->countright)
 				{
 				$arr = $this->db->db_fetch_array($this->resright);
-				if( $arr['private'] == "Y" )
-					$req = "select * from private_sections where id ='".$arr['id_section']."'";
-				else
-					$req = "select * from sections where id ='".$arr['id_section']."'";
+				switch( $arr['type'] )
+					{
+					case "1":
+						$req = "select * from private_sections where id ='".$arr['id_section']."'";
+						break;
+					case "3":
+						$req = "select * from topics_categories where id ='".$arr['id_section']."'";
+						break;
+					default:
+						$req = "select * from sections where id ='".$arr['id_section']."'";
+						break;
+					}
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
-				if( $arr['private'] == "Y" )
+				if( $arr['type'] == "1" )
 					$this->listrightsecval = babTranslate($arr2['title']);
 				else
 					$this->listrightsecval = $arr2['title'];
@@ -250,6 +295,13 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		}
 	else
 		{
+		if(!get_cfg_var("magic_quotes_gpc"))
+			{
+			$desc = addslashes($desc);
+			$content = addslashes($content);
+			$title = addslashes($title);
+			}
+		
 		if( $script == "Y")
 			$php = "Y";
 		else
@@ -262,10 +314,10 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		$query = "insert into sections (title, position, description, content, script, jscript) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
-		$query = "select max(ordering) from sections_order where private='N' and position='".$pos."'";
+		$query = "select max(ordering) from sections_order where position='".$pos."'";
 		$res = $db->db_query($query);
 		$arr = $db->db_fetch_array($res);
-		$query = "insert into sections_order (id_section, position, private, ordering) VALUES ('" .$id. "', '" . $pos. "', 'N', '" . ($arr[0]+1). "')";
+		$query = "insert into sections_order (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')";
 		$db->db_query($query);		
 		}
 	}
@@ -276,17 +328,22 @@ function saveSectionsOrder($listleft, $listright)
 
 		for( $i = 0; $i < count($listleft); $i++)
 		{
-			$req = "update sections_order set position='0', ordering='".($i+1)."' where id='".$listleft[$i]."'";
-			$res = $db->db_query($req);
-			$req = "update sections set position='0' where id='".$listleft[$i]."'";
-			$res = $db->db_query($req);
+			$db->db_query("update sections_order set position='0', ordering='".($i+1)."' where id='".$listleft[$i]."'");
+			$arr = $db->db_fetch_array($db->db_query("select id, type from sections_order where id='".$listleft[$i]."'"));
+			if( $arr['type'] == "2")
+				{
+				$db->db_query("update sections set position='0' where id='".$listleft[$i]."'");
+				}
 		}
+
 		for( $i = 0; $i < count($listright); $i++)
 		{
-			$req = "update sections_order set position='1', ordering='".($i+1)."' where id='".$listright[$i]."'";
-			$res = $db->db_query($req);
-			$req = "update sections set position='1' where id='".$listleft[$i]."'";
-			$res = $db->db_query($req);
+			$db->db_query("update sections_order set position='1', ordering='".($i+1)."' where id='".$listright[$i]."'");
+			$arr = $db->db_fetch_array($db->db_query("select id, type from sections_order where id='".$listright[$i]."'"));
+			if( $arr['type'] == "2")
+				{
+				$db->db_query("update sections set position='1' where id='".$listright[$i]."'");
+				}
 		}
 	}
 
@@ -297,7 +354,7 @@ function disableSections($sections)
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if( count($sections) > 0 && in_array($row['id']."N", $sections))
+		if( count($sections) > 0 && in_array($row['id']."-2", $sections))
 			$enabled = "N";
 		else
 			$enabled = "Y";
@@ -310,12 +367,25 @@ function disableSections($sections)
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if( count($sections) > 0 && in_array($row['id']."Y", $sections))
+		if( count($sections) > 0 && in_array($row['id']."-1", $sections))
 			$enabled = "N";
 		else
 			$enabled = "Y";
 
 		$req = "update private_sections set enabled='".$enabled."' where id='".$row['id']."'";
+		$db->db_query($req);
+		}
+
+	$req = "select id from topics_categories";
+	$res = $db->db_query($req);
+	while( $row = $db->db_fetch_array($res))
+		{
+		if( count($sections) > 0 && in_array($row['id']."-3", $sections))
+			$enabled = "N";
+		else
+			$enabled = "Y";
+
+		$req = "update topics_categories set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}

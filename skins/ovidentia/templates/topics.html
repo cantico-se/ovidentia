@@ -51,6 +51,15 @@
 <input type="text" name="approver" size="40" maxlength="80">
 </td>
 </tr>
+<tr> 
+<td nowrap>{ topcat }:&nbsp; 
+<select name="cat">
+<!--#in getnextcat -->
+<option value="{ arr[id] }" { selected }>{ arr[title] }</option>
+ <!--#endin getnextcat -->
+</select>
+</td>
+</tr>
 <!--#if msie "== 1" --> 
 <tr>
 <td align="center"> 
@@ -87,12 +96,8 @@
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabTopicsAdminListTitle" nowrap>
-<!--#if adminid "> 0" -->
 <a class="BabTopicsAdminTitleLink" 
 href="{ urlcategory }">{ namecategory }</a> ( { approver } ) 
-<!--#else adminid -->
-{ namecategory } 
-<!--#endif adminid -->
 </td>
 <td class="BabTopicsAdminListTitle" align="right"> 
 <!--#if nbarticles "== 0" -->
@@ -174,6 +179,15 @@ editor.ToolBar();
 <input type="text" name="approver" size="40" maxlength="80" value="{ approvername }">
 </td>
 </tr>
+<tr> 
+<td nowrap>{ topcat }:&nbsp; 
+<select name="cat">
+<!--#in getnextcat -->
+<option value="{ arr2[id] }" { selected }>{ arr2[title] }</option>
+ <!--#endin getnextcat -->
+</select>
+</td>
+</tr>
 <!--#if msie "== 1" --> 
 <tr>
 <td align="center"> 
@@ -228,7 +242,6 @@ function Start(page)
 <input type="hidden" name="idx" value="deletea">
 <input type="hidden" name="item" value="{ item }">
 <input type="hidden" name="upart" value="articles">
-<input type="hidden" name="userid" value="{ userid }">
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 

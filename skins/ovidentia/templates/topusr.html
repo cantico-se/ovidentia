@@ -1,0 +1,31 @@
+<!--#begin categorylist -->
+<!--#in getnext -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabTopicsAdminListTitle" nowrap>{ namecategory }</td>
+<td class="BabTopicsAdminListTitle" align="right"> 
+<!--#if nbarticles "== 0" -->
+{ nbarticles }&nbsp;{ articles } 
+<!--#else nbarticles -->
+<a class="BabTopicsAdminNumberLink" 
+href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }&nbsp;{ newa }&nbsp;{ waiting }</a> 
+<!--#endif nbarticles -->
+</td>
+</tr>
+<tr colspan="2">
+<td>
+{ arr[description] }
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endin getnext -->
+<!--#end categorylist -->

@@ -21,6 +21,22 @@ function getCategoryTitle($id)
 		}
 	}
 
+function getTopicCategoryTitle($id)
+	{
+	$db = new db_mysql();
+	$query = "select * from topics_categories where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['title'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
 function getArticleTitle($article)
 	{
 	$db = new db_mysql();
