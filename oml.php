@@ -762,6 +762,7 @@ class bab_RecentFiles extends bab_handler
 	var $lastlog;
 	var $nbdays;
 	var $last;
+	var $folderid;
 
 
 	function bab_RecentFiles($ctx)
@@ -770,10 +771,15 @@ class bab_RecentFiles extends bab_handler
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
+		$this->folderid = $ctx->get_value('folderid');
 
-		$req = "select distinct f.* from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y' and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
+		$req = "select distinct f.* from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
+		if( $this->folderid !== false )
+			$req .= " and f.id_owner='".$this->folderid."'";
+
+		$req .= " and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
 		if( $BAB_SESS_USERID != "" )
-		$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
+			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
 		$req .= ")";
 		
 		if( $this->nbdays !== false)
