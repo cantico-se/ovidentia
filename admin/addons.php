@@ -150,6 +150,7 @@ function addonsList($upgradeall)
 				$this->title = $this->arr['title'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=addons&idx=mod&item=".$this->arr['id'];
 				$this->viewurl = $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$this->arr['id'];
+				$this->exporturl = $GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$this->arr['id'];
 				if( $this->arr['enabled'] == "N")
 					$this->catchecked = "checked";
 				else
