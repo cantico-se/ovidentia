@@ -106,7 +106,9 @@ switch($idx)
 			if( in_array($ar[$i], $tab) == false )
 				$tab[] = $ar[$i];
 			}
-		$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
+		if( !isset($cmd) || empty($cmd))
+			$cmd = $GLOBALS['babLanguage'];
+		$filename = $GLOBALS['babInstallPath']."lang/lang-".$cmd.".xml";
 		if( !file_exists($filename))
 			{
 			$txt = "";
@@ -137,7 +139,7 @@ switch($idx)
 		$file = @fopen($filename, "w");
 		if( $file )
 			{
-			fputs($file, "<".$GLOBALS['babLanguage'].">\r\n".$old.$new."</".$GLOBALS['babLanguage'].">");
+			fputs($file, "<".$cmd.">\r\n".$old.$new."</".$cmd.">");
 			fclose($file);
 			$str = bab_translate("You language file has been updated") ."( ".$filename." )";
 			}

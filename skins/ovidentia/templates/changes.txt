@@ -185,3 +185,15 @@ waiting.html					        changed action="index.php" to action="{ babPhpSelf }"
 warning.html
 
 
+/********************************************************************************/
+Style Sheet file:
+
+.BabTodayEvent {
+	BACKGROUND: #E6E6F7 ; 
+	font: 10px Verdana, Arial, sans-serif ;
+       border-left: 1px solid red;
+       border-right: 1px solid red;
+       border-bottom: 1px solid red;
+	   border-top: 1px solid red
+			}
+.HeaderDayCalendar { BACKGROUND: #FFFFFF }
