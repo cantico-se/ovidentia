@@ -1,90 +1,91 @@
 <!--#begin useradlist -->
 <!--#if countldap "> 0" -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center" >{ ldaptitle }</td>
-</tr></table>
-<br>
+	<tr>
+	<td class="BabBodyTitleBackground" align="center" >{ ldaptitle }</td>
+	</tr>
+</table>
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ directories }</b> </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="left"><b>&nbsp;{ desctxt }</b></td>
-</tr>
-<!--#in getnextldap -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ description }</td>
-</tr>
-<!--#endin getnextldap -->
+	<tr> 
+	<td class="BabLoginCadreBackground"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td nowrap>{ directories }</td>
+			<td>{ desctxt }&nbsp;</td>
+		</tr>
+		<!--#in getnextldap -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+			<td>{ description }&nbsp;</td>
+		</tr>
+		<!--#endin getnextldap -->
+		</table>
+	</td>
+	</tr>
 </table>
-</td>
-</tr>
-</table>
-<br>
+<br />
 <!--#endif countldap -->
 <!--#if countdb "> 0" -->
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center" >{ databasetitle }</td>
-</tr></table>
-<br>
+	<tr>
+	<td class="BabBodyTitleBackground" align="center" >{ databasetitle }</td>
+	</tr>
+</table>
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ directories }</b> </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="left" colspan="2"><b>&nbsp;{ desctxt }</b></td>
-</tr>
-<!--#in getnextdb -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ description }</td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;
-</td>
-</tr>
-<!--#endin getnextdb -->
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>{ directories }</td>
+		<td>{ desctxt }&nbsp;</td>
+	</tr>
+	<!--#in getnextdb -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
+		<td>{ description }&nbsp;</td>
+	</tr>
+	<!--#endin getnextdb -->
+	</table>
 </td>
 </tr>
 </table>
 <!--#endif countdb -->
 <!--#end useradlist -->
-<br>xxxx<br><br>
+
 <!--#begin adbrowse -->
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr valign="middle"> 
-<td colspan="3" class="BabLetterlists"> 
-<!--#if allselected "== 1" -->
-{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
-<!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
-<!--#endif allselected -->
-<!--#in getnextselect -->
-<!--#if selected "== 1" -->
-{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
-<!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
-<!--#endif selected -->
-<!--#endin getnextselect -->
-</td>
-<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
-<!--#if badd -->
-<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">{ addname }</a>
-<!--#endif badd -->
-</td>
-</tr>
-</table>
+	<td class="BabLoginCadreBackground"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+		<tr valign="middle"> 
+			<td colspan="3" class="BabLetterlists"> 
+			<!--#if allselected "== 1" -->
+			{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+			<!--#else allselected -->
+			<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+			<!--#endif allselected -->
+			<!--#in getnextselect -->
+			<!--#if selected "== 1" -->
+			{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+			<!--#else selected -->
+			<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+			<!--#endif selected -->
+			<!--#endin getnextselect -->
+			</td>
+			<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+			<!--#if badd -->
+			<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">{ addname }</a>
+			<!--#endif badd -->
+			</td>
+		</tr>
+		</table>
+	</td>
 <tr>
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
         <tr> 
           <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
           <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
@@ -102,13 +103,20 @@
             <img src="{ babSkinPath }images/Puces/mail.png" border="0"></a></td>
           <td valign="middle" width="1%" ><a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <!--#in getnextcolval -->
-          <td align="left" valign="middle">{ coltxt 
-            }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <td align="left" valign="middle">
+			<!--#if mailcol -->
+				<!--#if accid "!= 0" -->
+				<a href="javascript: Start('{ urlmail }', '', 'width=600,height=700,status=no,resizable=yes,top=20,left=200,scrollbars=yes');"><!--#else accid --><a  href="mailto:{ email }" target=_top><!--#endif accid -->
+				{ coltxt }</a>
+			<!--#else mailcol -->
+			{ coltxt }&nbsp;
+			<!--#endif mailcol -->
+			</td>
           <!--#endin getnextcolval -->
         </tr>
         <!--#endin getnext -->
       </table>
-</td>
+	</td>
 </tr>
 </table>
 <!--#end adbrowse -->
