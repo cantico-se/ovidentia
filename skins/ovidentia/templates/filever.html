@@ -8,8 +8,20 @@
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
 window.focus();
+
 //-->
 </script>
+<script type="text/javascript">
+<!--
+function checkMaxLength(obj)
+	{
+	if ( obj.value.length > 255 )
+		obj.value = obj.value.substring(0,255);
+	return true;
+	}
+//-->
+</script>
+
 </HEAD>
 <BODY class="BabBackground">
 <!--#if bunlocklock -->
@@ -59,7 +71,7 @@ close }</a> </td>
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ pathtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ pathname }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment"></textarea>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment" onkeyup="checkMaxLength(this);"></textarea>
 </td>
 </tr>
 <tr>
@@ -227,6 +239,17 @@ window.focus();
 window.focus();
 //-->
 </script>
+<script type="text/javascript">
+<!--
+function checkMaxLength(obj)
+	{
+	if ( obj.value.length > 255 )
+		obj.value = obj.value.substring(0,255);
+	return true;
+	}
+//-->
+</script>
+
 </HEAD>
 <BODY class="BabBackground">
 <!--#if bunlocklock -->
@@ -273,7 +296,7 @@ close }</a> </td>
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ filetxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><input type="file" name="uploadf" size="50" maxlength="255" value=""></td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment"></textarea>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment" onKeyup="limit()" id="comment"></textarea>
 </td>
 </tr>
 <tr>
@@ -309,6 +332,8 @@ close }</a> </td>
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
 window.focus();
+
+
 //-->
 </script>
 </HEAD>
