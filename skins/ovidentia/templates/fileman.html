@@ -90,6 +90,9 @@ href="{ refreshurl }">{ refresh }</a></td>
 <td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ postedtxt }&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
+<!--#if bmanager -->
+<td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
+<!--#endif bmanager -->
 </tr>
 <!--#in getnextdir --> <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
@@ -98,7 +101,11 @@ href="{ refreshurl }">{ refresh }</a></td>
 <td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
 href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
-</tr><!--#endin getnextdir -->
+<!--#if bmanager -->
+<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<!--#endif bmanager -->
+</tr>
+<!--#endin getnextdir -->
 <!--#in getnextgrpdir --> <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
 { grpfolderimg } 
@@ -106,7 +113,11 @@ href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
 href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
-</tr><!--#endin getnextgrpdir -->
+<!--#if bmanager -->
+<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<!--#endif bmanager -->
+</tr>
+<!--#endin getnextgrpdir -->
 <!--#in getnextmgrpdir --> <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
 { manfolderimg } 
@@ -114,7 +125,11 @@ href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
 href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
-</tr><!--#endin getnextmgrpdir -->
+<!--#if bmanager -->
+<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<!--#endif bmanager -->
+</tr>
+<!--#endin getnextmgrpdir -->
 <!--#in getnextfile --> <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
 { fileimage }</td>          
@@ -140,6 +155,9 @@ alt="{ cuttxt }"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><im
 src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a> 
 <!--#endif bmanager -->
 </td>
+<!--#if bmanager -->
+<td class="BabSiteAdminFontBackground" valign="middle" align="right">{ hits }</td>
+<!--#endif bmanager -->
 </tr><!--#endin getnextfile -->
 <!--#in getnextxfile --> <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
@@ -164,6 +182,9 @@ src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a>
 alt="{ paste }"></a> 
 <!--#endif bmanager -->
 </td>
+<!--#if bmanager -->
+<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<!--#endif bmanager -->
 </tr><!--#endin getnextxfile -->
 </table>
 </td>
