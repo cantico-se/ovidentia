@@ -177,7 +177,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 				$this->category = $this->mcals->getCategoryName($arr['id_cat']);
 				}
 
-			$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? (empty($arr['color']) ? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'fff';
+			$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? ( empty($arr['color']) ? ($arr['id_cat'] != 0 ? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'ffff';
 			$this->idevent = $arr['id'];
 			$time = bab_mktime($arr['start_date']);
 			$this->starttime = bab_time($time);

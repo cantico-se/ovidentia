@@ -171,7 +171,7 @@ function newEvent()
 			$this->timebegin = !isset($_POST['timebegin'])? substr($babBody->icalendars->starttime, 0, 5): $_POST['timebegin'];
 			$this->timeend = !isset($_POST['timeend'])? substr($babBody->icalendars->endtime, 0, 5): $_POST['timeend'];
 
-			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : 'FFFFFF' ;
+			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : '' ;
 
 			$descriptionval = isset($_POST['evtdesc'])? $_POST['evtdesc'] : "";
 			$this->editor = bab_editor($descriptionval, 'evtdesc', 'vacform',150);
@@ -373,6 +373,11 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 			$this->delete = bab_translate("Delete");
 			$this->t_color = bab_translate("Color");
+			$this->t_bprivate = bab_translate("Private");
+			$this->t_block = bab_translate("Lock");
+			$this->t_bfree = bab_translate("Free");
+			$this->t_yes = bab_translate("Yes");
+			$this->t_no = bab_translate("No");
 			$this->db = $GLOBALS['babDB'];
 			$this->calid = $idcal;
 			$this->evtid = $evtid;
@@ -651,31 +656,6 @@ function deleteEvent()
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-
-function insertEvent($tabcals, $title, $description, $startdate,  $enddate, $catid, $color, $md5)
-	{
-	$db = $GLOBALS['babDB'];
-
-	list($categorycolor) = $db->db_fetch_array($db->db_query("select bgcolor from ".BAB_CAL_CATEGORIES_TBL." where id='".$catid."'"));
-
-	if (!empty($categorycolor))
-		$color = $categorycolor;
-	elseif (strlen($color) != 6)
-		$color = 'FFFFFF';
-
-	$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, description, start_date, end_date, id_cat, id_creator, color, hash) values ('".$title."', '".$description."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$catid."', '".$GLOBALS['BAB_SESS_USERID']."', '".$color."', '".$md5."')";
-	
-	$db->db_query($req);
-
-	$id_event = $db->db_insert_id();
-
-	foreach($tabcals as $id_cal)
-		{
-		$db->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal) VALUES ('".$id_event."','".$id_cal."')");
-		}
-	}
-
-
 function post_string($key)
 {
 if( !bab_isMagicQuotesGpcOn())
@@ -939,7 +919,7 @@ function updateEvent(&$message)
 	{
 		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'");
 		$arr = $db->db_fetch_array($res);
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."', color='".$_POST['color']."' where hash='".$arr['hash']."'";
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."', color='".$_POST['color']."', bprivate='".$_POST['bprivate']."', block='".$_POST['block']."', bfree='".$_POST['free']."'  where hash='".$arr['hash']."'";
 		$db->db_query($req);
 	}
 	else
@@ -956,7 +936,7 @@ function updateEvent(&$message)
 		$startdate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearbegin'], $_POST['monthbegin'], $_POST['daybegin'], $_POST['timebegin']);
 		$enddate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearend'], $_POST['monthend'], $_POST['dayend'], $_POST['timeend']);
 
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', start_date='".$startdate."', end_date='".$enddate."', id_cat='".$catid."', color='".$_POST['color']."' where id='".$_POST['evtid']."'";
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', start_date='".$startdate."', end_date='".$enddate."', id_cat='".$catid."', color='".$_POST['color']."', bprivate='".$_POST['bprivate']."', block='".$_POST['block']."', bfree='".$_POST['bfree']."' where id='".$_POST['evtid']."'";
 		$db->db_query($req);
 	}
 

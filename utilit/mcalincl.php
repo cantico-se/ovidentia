@@ -495,6 +495,7 @@ class cal_wmdbaseCls
 		$this->t_print_friendly = bab_translate("Print Friendly");
 		$this->t_print = bab_translate("Print");
 		$this->t_view_event = bab_translate("View event");
+		$this->t_modify_event = bab_translate("Modify event");
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
@@ -504,6 +505,10 @@ class cal_wmdbaseCls
 	function updateAccess($evtarr, $calinfo)
 	{
 		$this->allow_view = true;
+		$this->allow_modify = false;
+		$this->allow_viewtitle = false;
+		$this->bstatuswc = false;
+		$this->bstatus = false;
 
 		switch( $calinfo['type'] )
 			{

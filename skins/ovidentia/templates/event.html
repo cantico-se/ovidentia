@@ -365,6 +365,49 @@
 		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
 		<td><div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ colorvalue }"></div><input type="hidden" name="color" value="{ colorvalue }" /></td>
 	</tr>
+
+	<tr> 
+		<td align="right">{ t_bprivate }:</td>
+		<td> 
+			<select name="bprivate">
+				<!--#if evtarr[bprivate] "== Y" -->
+				<option value="Y" selected>{ t_yes }</option>
+				<option value="N">{ t_no }</option>
+				<!--#else evtarr[bprivate] -->
+				<option value="Y">{ t_yes }</option>
+				<option value="N" selected>{ t_no }</option>
+				<!--#endif evtarr[bprivate] -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ t_block }:</td>
+		<td> 
+			<select name="block">
+				<!--#if evtarr[block] "== Y" -->
+				<option value="Y" selected>{ t_yes }</option>
+				<option value="N">{ t_no }</option>
+				<!--#else evtarr[block] -->
+				<option value="Y">{ t_yes }</option>
+				<option value="N" selected>{ t_no }</option>
+				<!--#endif evtarr[block] -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ t_bfree }:</td>
+		<td> 
+			<select name="bfree">
+				<!--#if evtarr[bfree] "== Y" -->
+				<option value="Y" selected>{ t_yes }</option>
+				<option value="N">{ t_no }</option>
+				<!--#else evtarr[bfree] -->
+				<option value="Y">{ t_yes }</option>
+				<option value="N" selected>{ t_no }</option>
+				<!--#endif evtarr[bfree] -->
+			</select>
+		</td>
+	</tr>
 	
 	<tr> 
 		<td>&nbsp;</td>

@@ -94,20 +94,22 @@ document.onmousemove = bab_tooltipPosition;
 					<div class="description">{ description }</div>
 				</div>
 				
-				<div class="event" style="background-color:#{ bgcolor }" onClick="bab_popup('{ titletenurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onMouseOut="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
+				<div class="event" style="background-color:#{ bgcolor }" onClick="bab_popup('{ vieweventurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onMouseOut="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
 					<!--#if allow_modify -->
-					<a href="javascript:bab_popup('{ vieweventurl }')" title="{ t_view_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_view_event }" /></a>
+					<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 					<!--#endif allow_modify -->
 					{ starttime }&nbsp; { titleten }
 					<!--#if nbowners -->
 					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ attendeestxt }" /></a>&nbsp;
 					<!--#endif nbowners -->
 					<!--#if bstatus -->
+					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
 					<!--#if bstatuswc -->
 					<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 					<!--#else bstatuswc -->
 					<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 					<!--#endif bstatuswc -->
+					</a>
 					<!--#endif bstatus -->
 				</div>
 				<!--#endin getnextevent -->

@@ -3818,4 +3818,12 @@ $db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." DROP `id_cal`");
 
 return $ret;
 }
+
+function upgrade530to531()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+return $ret;
+}
 ?>
