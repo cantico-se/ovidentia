@@ -43,6 +43,14 @@ function addCategory()
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+			$this->item = "";
+			$this->managerval = "";
+			$this->managerid = "";
+			$this->bdel = false;
+			$this->tgval = "admfaqs";
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
+			$this->faqname = "";
+			$this->faqdesc = "";
 			}
 		}
 
@@ -103,18 +111,12 @@ function listCategories()
 	}
 
 
-function saveCategory($category, $description, $manager)
+function saveCategory($category, $description, $managerid)
 	{
 	global $babBody;
 	if( empty($category))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a FAQ !!");
-		return;
-		}
-
-	if( empty($manager))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a manager !!");
 		return;
 		}
 
@@ -133,13 +135,6 @@ function saveCategory($category, $description, $manager)
 		return;
 		}
 
-	$managerid = bab_getUserId($manager);
-	if( $managerid < 1)
-		{
-		$babBody->msgerror = bab_translate("ERROR: The manager doesn't exist !!");
-		return;
-		}
-
 	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description) values ('" .$managerid. "', '" .$category. "', '" . $description. "')";
 	$db->db_query($query);
 
@@ -153,7 +148,7 @@ if(!isset($idx))
 
 if( isset($add))
 	{
-	saveCategory($category, $description, $manager);
+	saveCategory($category, $description, $managerid);
 	}
 
 switch($idx)

@@ -61,16 +61,23 @@ function modifyCategory($id)
 			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_manager']."'";
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
-			$this->managername = bab_composeUserName( $this->arr2['firstname'], $this->arr2['lastname']);
+			$this->managerval = bab_composeUserName( $this->arr2['firstname'], $this->arr2['lastname']);
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;
+			$this->item = $id;
+			$this->managerid = $this->arr['id_manager'];
+			$this->bdel = true;
+			$this->tgval = "admfaq";
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
+			$this->faqname = $this->arr['category'];
+			$this->faqdesc = $this->arr['description'];
 			}
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"admfaqs.html", "categorymodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"admfaqs.html", "categorycreate"));
 	}
 
 function deleteCategory($id)
@@ -103,25 +110,13 @@ function deleteCategory($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateCategory($id, $category, $description, $manager)
+function updateCategory($id, $category, $description, $managerid)
 	{
 	global $babBody;
 	if( empty($category))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a FAQ name !!");
-		return;
-		}
-	if( empty($manager))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a manager !!");
-		return;
-		}
-
-	$managerid = bab_getUserId($manager);
-	if( $managerid < 1)
-		{
-		$babBody->msgerror = bab_translate("ERROR: The manager doesn't exist !!");
-		return;
+		return false;
 		}
 
 	if( !bab_isMagicQuotesGpcOn())
@@ -131,7 +126,7 @@ function updateCategory($id, $category, $description, $manager)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "update ".BAB_FAQCAT_TBL." set id_manager='$managerid', category='$category', description='$description' where id = '$id'";
+	$query = "update ".BAB_FAQCAT_TBL." set id_manager='".$managerid."', category='".$category."', description='".$description."' where id = '".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 
@@ -161,10 +156,13 @@ if(!isset($idx))
 	$idx = "Modify";
 	}
 
-if( isset($update))
+if( isset($add))
 	{
 	if( isset($submit))
-		updateCategory($item, $category, $description, $manager);
+		{
+		if(!updateCategory($item, $category, $description, $managerid))
+			$idx = "Modify";
+		}
 	else if( isset($faqdel))
 		$idx = "Delete";
 	}
