@@ -207,6 +207,10 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 			if( $i < $this->count)
 				{
                 $this->langval = $this->arrfiles[$i];
+				if( $this->langval == $GLOBALS['babLanguage'])
+                    $this->langselected = "selected";
+				else
+                    $this->langselected = "";
 				$i++;
 				return true;
 				}
