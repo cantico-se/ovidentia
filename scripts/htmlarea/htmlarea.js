@@ -420,96 +420,7 @@ HTMLArea.prototype._createToolbar = function () {
 			
 		}
 	}
-
-HTMLArea.enabled = this.enabled;
-
-if (this.enabled == true)
-	{
-	this._htmlArea.appendChild(toolbar);
-	}
-else
-	{
-	function setButtonStatus(id, newval) {
-			var oldval = this[id];
-			var el = this.element;
-			if (oldval != newval) {
-				switch (id) {
-				    case "enabled":
-					if (newval) {
-						HTMLArea._removeClass(el, "buttonDisabled");
-						el.disabled = false;
-					} else {
-						HTMLArea._addClass(el, "buttonDisabled");
-						el.disabled = true;
-					}
-					break;
-				    case "active":
-					if (newval) {
-						HTMLArea._addClass(el, "buttonPressed");
-					} else {
-						HTMLArea._removeClass(el, "buttonPressed");
-					}
-					break;
-				}
-				this[id] = newval;
-			}
-		};
-
-	var lnk = document.createElement("div");
-	lnk.title = "popupeditor";
-	lnk.className = "button";
-	
-	var obj = {
-				name: "popupeditor",     // the button name (i.e. 'bold')
-				element: lnk,   // the UI element (DIV)
-				enabled: true, // is it enabled?
-				active: false, // is it pressed?
-				text: false,   // enabled in text mode?
-				cmd: "popupeditor", // the command ID
-				state: setButtonStatus // for changing state
-			};
-
-	HTMLArea._addEvent(lnk, "mouseover", function () {
-			if (obj.enabled) {
-				HTMLArea._addClass(lnk, "buttonHover");
-			}
-		});
-		HTMLArea._addEvent(lnk, "mouseout", function () {
-			
-				HTMLArea._removeClass(lnk, "buttonHover");
-				HTMLArea._removeClass(lnk, "buttonActive");
-		});
-		HTMLArea._addEvent(lnk, "mousedown", function (ev) {
-				HTMLArea._addClass(lnk, "buttonActive");
-				HTMLArea._stopEvent(HTMLArea.is_ie ? window.event : ev);
-
-		});
-		// when clicked, do the following:
-		HTMLArea._addEvent(lnk, "click", function (ev) {
-				HTMLArea._removeClass(lnk, "buttonActive");
-				HTMLArea._removeClass(lnk, "buttonHover");
-				editor._buttonClicked("popupeditor");
-				HTMLArea._stopEvent(HTMLArea.is_ie ? window.event : ev);
-		});
-
-	
-		var img = document.createElement("img");
-		img.src = editor.imgURL("ed_bab_clean.gif");
-		lnk.appendChild(img);
-		
-		var txt = document.createElement("span");
-		HTMLArea._addClass(txt, "BabBodyTitleBackground");
-		txt.innerHTML='<a href="#">Editeur</a>';
-		lnk.appendChild(txt);
-
-		
-	
-	this._htmlArea.appendChild(lnk);
-
-	}
-
-
-	
+	this._htmlArea.appendChild(toolbar);	
 };
 
 // Creates the HTMLArea object and replaces the textarea with it.
@@ -587,16 +498,13 @@ HTMLArea.prototype.generate = function () {
 	// insert it after the iframe
 	htmlarea.appendChild(textarea);
 
-	// remember it for later
-	//this._textArea2 = textarea;
-
 	// IMPORTANT: we have to allow Mozilla a short time to recognize the
 	// new frame.  Otherwise we get a stupid exception.
 	function initIframe() {
 		var doc = editor._iframe.contentWindow.document;
 		if (!doc) {
 			if (HTMLArea.is_gecko) {
-				setTimeout(function () { editor._initIframe(); }, 10);
+				setTimeout(initIframe, 50);
 				return false;
 			} else {
 				alert("ERROR: IFRAME can't be initialized.");
@@ -1188,7 +1096,7 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 				    "toolbar=no,location=no,directories=no,status=yes,menubar=no," +
 				    "scrollbars=no,resizable=yes,width=640,height=480");
 		} else {
-			window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf"+escape(this.babPhpSelf)+"&lang="+this.babLanguage.substr(0, (this.babLanguage.length-1))), "ha_fullscreen",
+			window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf="+escape(this.babPhpSelf)+"&lang="+this.babLanguage.substr(0, (this.babLanguage.length-1))), "ha_fullscreen",
 				    "toolbar=no,menubar=no,personalbar=no,width=640,height=480," +
 				    "scrollbars=no,resizable=yes");
 		}
@@ -1955,10 +1863,14 @@ function initEditor2(what,ta)
 
 	}
 
+var counterformoz = 0;
 function initEditor(what,ta)
 	{
-	if (document.readyState != 'complete')
+	if ((document.all && document.readyState != 'complete') || !document.all && counterformoz < 10)
+		{
 		setTimeout(function() { initEditor(what,ta) }, 25);
+		counterformoz++;
+		}
 	else
 		{
 		initEditor2(what,ta);
