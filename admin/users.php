@@ -370,6 +370,11 @@ switch($idx)
 		break;
 	case "Create":
 		$babBody->title = bab_translate("Create a user");
+		if (!isset($firstname)) $firstname = '';
+		if (!isset($middlename)) $middlename = '';
+		if (!isset($lastname)) $lastname = '';
+		if (!isset($nickname)) $nickname = '';
+		if (!isset($email)) $email = '';
 		userCreate($firstname, $middlename, $lastname, $nickname, $email);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
