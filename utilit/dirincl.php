@@ -106,7 +106,10 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
 				$this->coltxt = translateDirectoryField($arr['description']);
 				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$arr['name']."&cb=".$this->cb;
-				$tmp[] = $arr['name'];
+				if( isset($arr['name']) && !empty($arr['name']))
+					{
+					$tmp[] = $arr['name'];
+					}
 				$i++;
 				return true;
 				}
