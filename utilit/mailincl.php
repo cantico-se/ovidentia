@@ -99,9 +99,19 @@ class babMail
 		$this->mail->AddAddress($email, $name);
 	}
 
+	function clearTo()
+	{
+		$this->mail->ClearAddresses();
+	}
+
 	function mailCc($email, $name="")
 	{
 		$this->mail->AddCC($email, $name);
+	}
+	
+	function clearCc()
+	{
+		$this->mail->ClearCcs();
 	}
 	
 	function mailBcc($email, $name="")
@@ -109,9 +119,24 @@ class babMail
 		$this->mail->AddBCC($email, $name);
 	}
 
+	function clearBcc()
+	{
+		$this->mail->ClearBccs();
+	}
+
 	function mailReplyTo($email, $name="")
 	{
 		$this->mail->AddReplyTo($email, $name);
+	}
+
+	function clearReplyTo()
+	{
+		$this->mail->clearReplyTos();
+	}
+	
+	function clearAllRecipients()
+	{
+		$this->mail->clearAllRecipients();
 	}
 
 	function mailSubject($subject)
