@@ -1,0 +1,64 @@
+Ovidentia is free (GPL Project) initiated by CANTICO.
+A this time, the documentation is under development.
+ You can browse documentation development here : 
+	-Installation Guide : http://ovidentia.koblix.org/documentation/ig-en.html 
+	-Developper Guide : http://ovidentia.koblix.org/documentation/dg-en.html 
+	-User Guide : http://ovidentia.koblix.org/documentation/ug-en.html
+If you have any comment or remarks please send an email to community@ovidentia.org
+OVIDENTIA 3.1
+==============
+Base Requirements
+-----------------
+In order to setup Ovidentia the folowing prerequisits are necessary.
+A Linux Box (http://www.linux.org)  or
+Microsoft Windows NT/2000/XP (http://www.microsoft.com)
+Apache Web Server (http://www.apache.org) under Windows/Linux or
+Internet Information Server under Microsoft Windows (http://www.microsoft.com)
+PHP 4.0.3 (http://www.php.net)
+MySQL 3.23 database server (http://www.mysql.com)
+The above doesn't mean it work with other configurations, OS's, DB's etc,
+but we only provide INSTALL instructions for the above configuration.
+Set-up of these required packages is beyond the scope of this document
+and if you are unsure you should check with each of the appropriate web
+sites for further details.
+Installing the Package
+----------------------
+Uncompress the package into the directory you want to use on your web
+server, if you're unsure where that is, ask you system administrator.
+1) Create a database called, for example, ovidentia:
+
+    mysqladmin create ovidentia  
+
+2) Now fill the databases with the tables in babinstall.sql file located in "install" folder:
+    
+    mysql ovidentia < babinstall.sql
+
+3) Modify the config.php file with your site parameters
+	
+	$babDBHost = "localhost"; /* MySql database server */
+	$babDBLogin = "root"; /* MySql database login */
+	$babDBPasswd = ""; /* MySql database password */
+	$babDBName ="ovidentia"; /* MySql database name */
+	$babUrl = "http://yourdomain.com/"; /* url to access to your site */
+	$babUploadPath = "/uploads-directory"; /* where to upload files */
+
+    Be sure to chmod 777 "/uploads-directory" where users upload their files, if
+    upload functionnality is enabled ( ATTENTION!!: this can have some
+    security issues. Please consult your system Administrator )
+
+   Also be sure to chmod 666 all languages files located in "lang" folder.
+
+4) After that, point your browser to:
+    http://yourdomain.com/ and choose the menu "Login"
+    Login with the following data at the prompt:
+		    User    : admin@admin.bab
+		    Password: 012345678
+    You are logged as administrator
+    Before all, change administrator password by clicking 'Options' menu in 'User's Box'
+    section.
+    After this, you can manage your site by using menus in 'Administrator' section
+    ( see documentation )
+    and it's done ....
+
+    If you have any comment or remarks please send an email to community@ovidentia.org
+
