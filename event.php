@@ -68,8 +68,8 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 
 			$this->daytype = babTranslate("All day");
 			$this->addvac = babTranslate("Add Event");
-			$this->from = babTranslate("From");
-			$this->to = babTranslate("To");
+			$this->starttime = babTranslate("starttime");
+			$this->endtime = babTranslate("endtime");
 			$this->recurrence = babTranslate("Week recurrence");
 			$this->daystext = babTranslate("Days");
 			$this->or = babTranslate("Or");
@@ -422,8 +422,8 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 			$this->dateend = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend."');";
 			$this->dateendtxt = babTranslate("End date");
 			$this->modify = babTranslate("Update Event");
-			$this->from = babTranslate("From");
-			$this->to = babTranslate("To");
+			$this->starttime = babTranslate("starttime");
+			$this->endtime = babTranslate("endtime");
 			$this->title = babTranslate("Title");
 			$this->description = babTranslate("Description");
 			$this->category = babTranslate("Category");
