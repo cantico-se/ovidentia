@@ -1490,7 +1490,7 @@ function bab_updateSiteSettings()
 			$GLOBALS['babLanguage'] = "en";
 
 		$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang, skin, style ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "', '" . $GLOBALS['babSkin']. "', '" . $GLOBALS['babStyle']. "')";
-		$res = $this->db->db_query($req);
+		$res = $db->db_query($req);
 		}
 }
 
