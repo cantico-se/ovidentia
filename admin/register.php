@@ -43,7 +43,7 @@ function notifyUserRegistration($link, $name, $email)
     $mail->send();
 	}
 
-function notifyAdminRegistration($name, $useremail)
+function notifyAdminRegistration($name, $useremail, $warning)
 	{
 	global $babBody, $babAdminEmail, $babInstallPath;
 
@@ -53,19 +53,21 @@ function notifyAdminRegistration($name, $useremail)
 		var $username;
 		var $message;
 		var $email;
+		var $warning;
 
 
-		function tempb($name, $useremail)
+		function tempb($name, $useremail, $warning)
 			{
             global $babSiteName;
             $this->email = $useremail;
             $this->username = $name;
 			$this->sitename = $babSiteName;
+			$this->warning = $warning;
 			$this->message = bab_translate("Your site recorded a new registration on behalf of");
 			}
 		}
 	
-	$tempb = new tempb($name, $useremail);
+	$tempb = new tempb($name, $useremail, $warning);
 	$message = bab_printTemplate($tempb,"mailinfo.html", "adminregistration");
 
     $mail = new babMail();
@@ -76,7 +78,7 @@ function notifyAdminRegistration($name, $useremail)
 		{
 		while( $arr = $db->db_fetch_array($result))
 			{
-			$sql = "select * from users where id='".$arr['id_object']."'";
+			$sql = "select email from users where id='".$arr['id_object']."'";
 			$res=$db->db_query($sql);
 			$r = $db->db_fetch_array($res);
 			$mail->mailTo($r['email']);
@@ -167,13 +169,27 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 		$sql = "insert into calendar (owner, type) values ('$id', '1')";
 		$result=$db->db_query($sql);
 
+		$result=$db->db_query("select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'");
+		if( $result && $db->db_num_rows($result) > 0 )
+			{
+			$r = $db->db_fetch_array($result);
+			}
+
 		$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
 		$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
 		$link = $GLOBALS['babUrlScript']."?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
 		//mail ($email,bab_translate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
 		$fullname = bab_composeUserName($firstname , $lastname);
-		notifyUserRegistration($link, $fullname, $email);
-		notifyAdminRegistration($fullname, $email);
+		if( $r['email_confirm'] == 'Y')
+			{
+			notifyUserRegistration($link, $fullname, $email);
+			$warning = "";
+			}
+		else
+			{
+			$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
+			}
+		notifyAdminRegistration($fullname, $email, $warning);
 		//$babBody->msgerror = $msg;
 		bab_callAddonsFunction('bab_user_create', $id);
 		return true;

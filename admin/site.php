@@ -50,6 +50,12 @@ function siteModify($id)
         var $arrfiles = array();
         var $arrdir = array();
 
+		var $registration;
+		var $confirmation;
+		var $yes;
+		var $no;
+		var $yselected;
+		var $nselected;
 		function temp($id)
 			{
 			$this->name = bab_translate("Site name");
@@ -58,6 +64,11 @@ function siteModify($id)
 			$this->skin = bab_translate("Skin");
 			$this->siteemail = bab_translate("Email site");
 			$this->create = bab_translate("Modify");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->confirmation = bab_translate("Send email confirmation")."?";
+			$this->registration = bab_translate("Activate Registration")."?";
+			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
 			$this->id = $id;
 
 			$this->db = $GLOBALS['babDB'];
@@ -71,6 +82,27 @@ function siteModify($id)
 				$this->langsite = $arr['lang'];
 				$this->skinsite = $arr['skin'];
 				$this->siteemailval = $arr['adminemail'];
+				if( $arr['registration'] == "Y")
+					{
+					$this->nregister = "";
+					$this->yregister = "selected";
+					}
+				else
+					{
+					$this->yregister = "";
+					$this->nregister = "selected";
+					}
+
+				if( $arr['email_confirm'] == "Y")
+					{
+					$this->nconfirm = "";
+					$this->yconfirm = "selected";
+					}
+				else
+					{
+					$this->yconfirm = "";
+					$this->nconfirm = "selected";
+					}
 				}
 			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
@@ -331,7 +363,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $siteemail, $skin)
+function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $register, $confirm)
 	{
 	global $babBody;
 	if( empty($name))
@@ -356,7 +388,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin)
 		}
 	else
 		{
-		$query = "update sites set name='$name', description='$description', lang='$lang', adminemail='$siteemail', skin='$skin' where id='$id'";
+		$query = "update sites set name='$name', description='$description', lang='$lang', adminemail='$siteemail', skin='$skin', registration='$register', email_confirm='$confirm' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -403,7 +435,7 @@ function siteUpdateHomePage1($item, $listpage1)
 /* main */
 if( isset($modify))
 	{
-	if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin))
+	if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin, $register, $confirm))
 		$idx = "modify";
 	}
 

@@ -211,6 +211,40 @@ function deleteUser($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function notifyUserconfirmation($name, $email)
+	{
+	global $babBody, $babAdminEmail, $babInstallPath;
+
+	class tempa
+		{
+        var $sitename;
+        var $linkurl;
+		var $username;
+		var $message;
+
+
+		function tempa($name)
+			{
+            global $babSiteName;
+            $this->linkurl = $GLOBALS['babUrl'];
+            $this->username = $name;
+			$this->sitename = $babSiteName;
+			$this->message = bab_translate("Thank You For Registering at our site");
+			$this->message .= "<br>". bab_translate("Your registration has been confirmed.");
+			$this->message .= "<br>". bab_translate("To connect on our site").", ". bab_translate("simply follow this").": ";
+			}
+		}
+	
+	$tempa = new tempa($name);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userconfirmation");
+
+    $mail = new babMail();
+    $mail->mailTo($email);
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject(bab_translate("Registration Confirmation"));
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
 
 function updateGroups($id, $groups, $groupst)
 	{
@@ -239,18 +273,29 @@ function updateGroups($id, $groups, $groupst)
 
 	}
 
+
+
 function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 	{
 	global $babBody;
 
-	$req = "update users set changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'";
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query($req);
+	$res = $db->db_query("select firstname, lastname, email, is_confirmed from users where id='$id'");
+	if( $res )
+		{
+		$r = $db->db_fetch_array($res);
+		}
+	$res = $db->db_query("update users set changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'");
 	if( !empty($group))
 		{
-		$req = "update users_groups set isprimary='Y'where id_object='$id' and id_group='$group'";
 		$db = $GLOBALS['babDB'];
-		$res = $db->db_query($req);
+		$db->db_query("update users_groups set isprimary='N'where id_object='$id'");
+		$db->db_query("update users_groups set isprimary='Y'where id_object='$id' and id_group='$group'");
+		}
+
+	if( $is_confirmed == 1 && $r['is_confirmed'] == 0 )
+		{
+		notifyUserconfirmation( bab_composeUserName($r['firstname'] , $r['lastname']), $r['email']);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}

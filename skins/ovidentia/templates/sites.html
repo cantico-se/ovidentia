@@ -47,6 +47,24 @@
 </td>
 </tr>
 <tr> 
+            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ registration }</td>
+            <td class="BabLoginMenuBackground" align="left" valign="middle">
+                <select name="register">
+                  <option value="Y" selected>{ yes }</option>
+                  <option value="N">{ no }</option>
+                </select>
+            </td>
+</tr>
+<tr> 
+            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ confirmation }</td>
+            <td class="BabLoginMenuBackground" align="left" valign="middle">
+                <select name="confirm">
+                  <option value="Y" selected>{ yes }</option>
+                  <option value="N">{ no }</option>
+                </select>&nbsp;{ helpconfirmation }
+            </td>
+</tr>
+<tr> 
 <td nowrap>&nbsp;</td>
 <td valign="middle">
 <input type="submit" name="Submit" value="{ create }">
@@ -203,7 +221,25 @@ function selectAll(list)
                   <!--#endin getnextskin -->
                 </select>
             </td>
-          </tr>
+</tr>
+<tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ registration }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <select name="register">
+                  <option value="Y" { yregister }>{ yes }</option>
+                  <option value="N" { nregister }>{ no }</option>
+                </select>
+            </td>
+</tr>
+<tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ confirmation }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <select name="confirm">
+                  <option value="Y" { yconfirm }>{ yes }</option>
+                  <option value="N" { nconfirm }>{ no }</option>
+                </select>&nbsp;{ helpconfirmation }
+            </td>
+</tr>
 <tr> 
 <td align="right" nowrap valign="middle">{ siteemail }</td>
 <td valign="middle">

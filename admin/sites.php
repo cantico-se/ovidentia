@@ -99,6 +99,10 @@ function siteCreate($name, $description, $siteemail)
         var $scount;
         var $siteval;
 
+		var $registration;
+		var $confirmation;
+		var $yes;
+		var $no;
 		function temp($name, $description, $siteemail)
 			{
 
@@ -108,6 +112,11 @@ function siteCreate($name, $description, $siteemail)
 			$this->skin = bab_translate("Skin");
 			$this->siteemail = bab_translate("Email site");
 			$this->create = bab_translate("Create");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->confirmation = bab_translate("Send email confirmation")."?";
+			$this->registration = bab_translate("Activate Registration")."?";
+			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
 
 			$this->nameval = $name == ""? $GLOBALS['babSiteName']: $name;
 			$this->descriptionval = $description == ""? "": $description;
@@ -207,7 +216,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin)
+function siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm)
 	{
 	global $babBody;
 	if( empty($name))
@@ -232,7 +241,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin)
 		}
 	else
 		{
-		$query = "insert into sites (name, description, lang, adminemail, skin) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin."')";
+		$query = "insert into sites (name, description, lang, adminemail, skin, registration, email_confirm) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $register. "', '" . $confirm."')";
 		$db->db_query($query);
 		}
 	return true;
@@ -242,7 +251,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin)
 /* main */
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $skin))
+	if(!siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm))
 		$idx = "create";
 	}
 

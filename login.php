@@ -138,6 +138,14 @@ function userCreate($firstname, $lastname, $nickname, $email)
 	}
 
 /* main */
+
+$db = $GLOBALS['babDB'];
+$res=$db->db_query("select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'");
+if( $res && $db->db_num_rows($res) > 0 )
+{
+	$r = $db->db_fetch_array($res);
+}
+
 if( isset($login) && $login == "login")
 	{
 	if(!signOn($nickname, $password))
@@ -146,7 +154,7 @@ if( isset($login) && $login == "login")
 	}
 
 
-if( isset($adduser) && $adduser == "register")
+if( isset($adduser) && $adduser == "register" && $r['registration'] == 'Y')
 	{
 	if( !addUser( $firstname, $lastname, $nickname, $email, $password1, $password2))
 		$cmd = "register";
@@ -167,7 +175,8 @@ switch($cmd)
 		$babBody->title = bab_translate("Please provide a valid email.") . "<br>";
 		$babBody->title .= bab_translate("We will send you an email for confirmation before you can use our services") . "<br>";
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
+		if( $r['registration'] == 'Y')
+			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		userCreate($firstname, $lastname, $nickname, $email);
 		break;
@@ -175,7 +184,8 @@ switch($cmd)
 	case "emailpwd":
 		$babBody->title = bab_translate("Email a new password");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
+		if( $r['registration'] == 'Y')
+			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		emailPassword();
 		break;
@@ -184,7 +194,8 @@ switch($cmd)
 	default:
 		$babBody->title = bab_translate("Login");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
+		if( $r['registration'] == 'Y')
+			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		displayLogin();
 		break;
