@@ -173,8 +173,12 @@ function addonsList($upgradeall)
 						if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/init.php"))
 							{
 							$GLOBALS['babAddonFolder'] = $this->arr['title'];
-							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/". $this->arr['title']."/";
-							$GLOBALS['babAddonHtmlPath'] = "addons/". $this->arr['title']."/";
+							$GLOBALS['babAddonTarget'] = "addon/".$this->arr['id'];
+							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$this->arr['id']."/";
+							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$this->arr['title']."/";
+							$GLOBALS['babAddonHtmlPath'] = "addons/".$this->arr['title']."/";
+							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$this->arr['title']."/";
+
 							require_once( $GLOBALS['babAddonsPath'].$this->arr['title']."/init.php" );
 							}
 						if ( $this->upgradeall )
