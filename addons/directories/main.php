@@ -290,26 +290,28 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				}
 			else
 				{
-				$tmp[] = "id";
-				if( !in_array("email", $tmp))
+				if( count($tmp) > 0 )
 					{
-					$tmp[] = "email";
-					}
-				$this->select = implode($tmp, ",");
-				if( $this->xf == "" )
-					$this->xf = "email";
-				$req = "select ".$this->select." from ".ADDON_DBENTRIES_TBL." where ".$this->xf." like '".$this->pos."%' and id_directory='".$this->id."' order by ".$this->xf." ";
-				if( $this->ord == "-" )
-					{
-					$req .= "asc";
+					$tmp[] = "id";
+					$this->select = implode($tmp, ",");
+					if( $this->xf == "" )
+						$this->xf = $tmp[0];
+					$req = "select ".$this->select." from ".ADDON_DBENTRIES_TBL." where ".$this->xf." like '".$this->pos."%' and id_directory='".$this->id."' order by ".$this->xf." ";
+					if( $this->ord == "-" )
+						{
+						$req .= "asc";
+						}
+					else
+						{
+						$req .= "desc";
+						}
+
+					$this->res = $this->db->db_query($req);
+					$this->count = $this->db->db_num_rows($this->res);
 					}
 				else
-					{
-					$req .= "desc";
-					}
+					$this->count = 0;
 
-				$this->res = $this->db->db_query($req);
-				$this->count = $this->db->db_num_rows($this->res);
 				return false;
 				}
 			}
