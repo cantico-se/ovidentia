@@ -711,15 +711,38 @@ function org_mm()
 <input type="hidden" name="role" value="{ role }">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr valign="middle">
-<td class="BabLetterlists"><input type="submit" name="submit" value="{ searchtxt }">&nbsp;&nbsp;<input type="text" name="word" value="{ wordval }">&nbsp;&nbsp;
+<td class="BabLetterlists" align="right">{ searchtxt }:
+<td class="BabLetterlists"><input type="text" name="word" size="30" value="{ wordval }"></td>
+<td class="BabLetterlists" align="right">{ intxt }</td>
+<td class="BabLetterlists">
 <select name="swhat" onchange="org_mm()">
 <option value="0">{ alltxt }</option>
 <option value="1" { sentities }>{ entitytxt }</option>
 <option value="2" { sfunctions }>{ roletxt }</option>
 </select>
 </td>
+<td class="BabLetterlists">
+&nbsp;</td>
+</tr>
+<tr valign="middle">
+<td class="BabLetterlists" align="right">{ entitytxt }</td>
+<td class="BabLetterlists">
+<select name="sentity" onchange="org_mm()">
+<option value="0">{ all2txt }</option>
+<!--#in getnextentity -->
+<option value="{ entityid }" { selected }>{ entityname }</option>
+<!--#endin getnextentity -->
+</select>
+</td>
+<td class="BabLetterlists"  align="right">
 <!--#if update -->
-<td align="right" class="BabLetterlists">{ roletxt }&nbsp;&nbsp;
+{ restricttxt }
+<!--#else update -->
+&nbsp;
+<!--#endif update -->
+</td>
+<!--#if update -->
+<td class="BabLetterlists">
 <select name="srole" onchange="org_mm()">
 <option value="0"></option>
 <option value="1" { oneroles }>{ provided }</option>
@@ -727,22 +750,12 @@ function org_mm()
 </select>
 </td>
 <!--#else update -->
-<td align="right" class="BabLetterlists">&nbsp;
+<td class="BabLetterlists">
 <input type="hidden" name="srole" value="1">
 </td>
 <!--#endif update -->
-<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
-</td>
-<td align="right" class="BabLetterlists">{ entitytxt }&nbsp;&nbsp;
-<select name="sentity" onchange="org_mm()">
-<option value="0"></option>
-<!--#in getnextentity -->
-<option value="{ entityid }" { selected }>{ entityname }</option>
-<!--#endin getnextentity -->
-</select>
-</td>
-<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
-</td>
+<td class="BabLetterlists">
+<input type="submit" name="submit" value="{ searchtxt }"></td>
 </tr>
 </table>
 </form>
@@ -793,6 +806,18 @@ updateFlbFrame('{ entityid }&idx=detr&iduser={ userid }');updateFltFrame('{ enti
 
 </tr>
 <!--#endin getnextrow -->
+<!--#else count -->
+<tr> 
+<td class="BabLoginCadreBackground">
+<br />
+	  <table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
+	  <tr>
+	<td class="BabErrorMessage" align="center" >{ messageemptytxt }</td>
+	</tr>
+	</table>
+<br />
+</td>
+</tr>
 <!--#endif count -->
 </table>
 </td>

@@ -821,7 +821,11 @@ function browseRoles($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update)
 			$this->provided = bab_translate("Provided role");
 			$this->notprovided = bab_translate("Vacant role");
 			$this->searchtxt = bab_translate("Search");
-			$this->alltxt = bab_translate("All");
+			$this->alltxt = bab_translate("Roles and entities");
+			$this->all2txt = bab_translate("All");
+			$this->restricttxt = bab_translate("Restrict to");
+			$this->intxt = bab_translate("In");
+			$this->messageemptytxt = bab_translate("Search result empty");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
