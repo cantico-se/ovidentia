@@ -161,6 +161,8 @@ if( !isset($idx))
 
 if( isset($update))
 	{
+	if( !isset($addons))
+		$addons = array();
 	if( $update == "disable" )
 		disableAddons($addons);
 	}
