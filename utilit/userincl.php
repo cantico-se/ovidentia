@@ -25,15 +25,51 @@ function bab_toAmPm($str)
 		
 }
 
-function bab_isUserApprover($topics)
+function bab_isUserTopicManager($topics)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$query = "select id from ".BAB_TOPICS_TBL." where id='$topics' and id_approver='$BAB_SESS_USERID'";
+	$query = "select id from ".BAB_TOPICS_TBL." where id='".$topics."' and id_approver='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		return true;
+		}
+	else
+		{
+		return false;
+		}
+	}
+
+function bab_isUserArticleApprover($topics)
+	{
+	global $BAB_SESS_USERID;
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	$db = $GLOBALS['babDB'];
+	$query = "select idsaart from ".BAB_TOPICS_TBL." where id='".$topics."'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return isUserApproverFlow($arr['idsaart'], $BAB_SESS_USERID);
+		}
+	else
+		{
+		return false;
+		}
+	}
+
+function bab_isUserCommentApprover($topics)
+	{
+	global $BAB_SESS_USERID;
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	$db = $GLOBALS['babDB'];
+	$query = "select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return isUserApproverFlow($arr['idsacom'], $BAB_SESS_USERID);
 		}
 	else
 		{

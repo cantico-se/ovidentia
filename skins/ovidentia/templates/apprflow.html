@@ -67,8 +67,9 @@ else
 <!--#endin getnextrow --> 
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td colspan="2" class="BabLoginMenuBackground" align="left" nowrap valign="middle"><input class="BabLoginMenuBackground" type="checkbox" name="order" { ordchecked } value="Y">&nbsp;{ order }</td>
+<td class="BabLoginMenuBackground" align="left" nowrap valign="middle"><input class="BabLoginMenuBackground" type="checkbox" name="order" { ordchecked } value="Y">&nbsp;{ order }</td>
 <td  class="BabLoginMenuBackground" align="center" nowrap valign="middle"><input type="submit" name="addb" value="{ add }"></td>
+<td  class="BabLoginMenuBackground" align="center" nowrap valign="middle"><!--#if bdel --><input type="submit" name="delb" value="{ del }"><!--#else bdel -->&nbsp;<!--#endif bdel --></td>
 <td  colspan="2" class="BabLoginMenuBackground" align="left" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ userslisturl }');">{ userslisttxt }</a></td></tr>
 </table>
 </td>

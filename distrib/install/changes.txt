@@ -5,6 +5,7 @@ Septembre 2002: Version 3.4.0
 - Possibility to order forums and topics in sections 
 - Possibility to move article from topic to another topic 
 - Now topics can be not moderate
+- Enhanced Approval flow articles and comments
 
 /************************************************************************/
 Juillet 2002: Version 3.3.3

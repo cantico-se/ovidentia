@@ -7,7 +7,7 @@
 include $babInstallPath."utilit/topincl.php";
 
 
-function listComments($topics, $article, $newc)
+function listComments($topics, $article)
 	{
 	global $babBody;
 
@@ -25,16 +25,15 @@ function listComments($topics, $article, $newc)
 		var $alternate;
 		var $newc;
 
-		function temp($topics, $article, $newc)
+		function temp($topics, $article)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='$article' and confirmed='Y'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
 			$this->article = $article;
 			$this->alternate = 0;
-			$this->newc = $newc;
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
 			$res = $this->db->db_query("select archive from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and id='".$article."'");
@@ -52,7 +51,7 @@ function listComments($topics, $article, $newc)
 					$this->alternate = 0;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
-				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$this->topics."&article=".$this->article."&com=".$this->arr['id']."&newc=".$this->newc;
+				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$this->topics."&article=".$this->article."&com=".$this->arr['id'];
 				$this->subjectname = $this->arr['subject'];
 				$i++;
 				return true;
@@ -62,7 +61,7 @@ function listComments($topics, $article, $newc)
 			}
 		}
 	
-	$temp = new temp($topics, $article, $newc);
+	$temp = new temp($topics, $article);
 	$babBody->babecho(	bab_printTemplate($temp,"comments.html", "commentslist"));
 	return array('count' => $temp->count, 'nbarch' => $temp->nbarch,'barch' => $temp->barch);
 	}
@@ -114,7 +113,7 @@ function addComment($topics, $article, $subject, $message, $com="")
 				$this->username = $BAB_SESS_USER;
 				}
 			$db = $GLOBALS['babDB'];
-			$req = "select title from ".BAB_ARTICLES_TBL." where id='$article'";
+			$req = "select title from ".BAB_ARTICLES_TBL." where id='".$article."'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->titleval = $arr['title'];
@@ -125,8 +124,8 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$this->urlsee = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article;
 			$res = $db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $db->db_fetch_row($res);
-			$arr = $db->db_fetch_array($db->db_query("select mod_com from ".BAB_TOPICS_TBL." where id='".$topics."'"));
-			if( $arr['mod_com'] == "Y" )
+			$arr = $db->db_fetch_array($db->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			if( $arr['idsacom'] != 0 )
 				$this->notcom = bab_translate("Note: for this topic, comments are moderate");
 			else
 				$this->notcom = "";
@@ -159,7 +158,7 @@ function readComment($topics, $article, $subject, $message, $com)
 			$this->topics = $topics;
 			$this->article = $article;
 			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$com."'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
@@ -201,9 +200,9 @@ function deleteComment($topics, $article, $com, $newc)
 			$this->message = bab_translate("Are you sure you want to delete this comment");
 			$this->title = bab_getCommentTitle($com);
 			$this->warning = bab_translate("WARNING: This operation will delete the comment with all its replys"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&com=".$com."&action=Yes";
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc;
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article;
 			$this->no = bab_translate("No");
 			}
 		}
@@ -211,78 +210,6 @@ function deleteComment($topics, $article, $com, $newc)
 	$temp = new temp($topics, $article, $com, $newc);
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
-
-function notifyApprover($top, $article, $title, $approveremail, $modcom)
-	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
-
-	class tempa
-		{
-		var $article;
-		var $articlename;
-		var $message;
-        var $from;
-        var $author;
-        var $category;
-        var $categoryname;
-        var $subject;
-        var $subjectname;
-        var $title;
-        var $site;
-        var $sitename;
-        var $date;
-        var $dateval;
-
-
-		function tempa($top, $article, $title, $modcom)
-			{
-            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-            $this->subjectname = $title;
-			if( $modcom == "Y")
-				$this->message = bab_translate("A new comment is waiting for you");
-			else
-				$this->message = bab_translate("A new comment has been added");
-            $this->from = bab_translate("Author");
-            $this->subject = bab_translate("Subject");
-            $this->subjectname = $title;
-            $this->article = bab_translate("Article");
-            $this->articlename = $article;
-            $this->category = bab_translate("Topic");
-            $this->categoryname = $top;
-            $this->site = bab_translate("Web site");
-            $this->sitename = $babSiteName;
-            $this->date = bab_translate("Date");
-            $this->dateval = bab_strftime(mktime());
-            if( !empty($BAB_SESS_USER))
-                $this->author = $BAB_SESS_USER;
-            else
-                $this->author = bab_translate("Unknown user");
-
-            if( !empty($BAB_SESS_EMAIL))
-                $this->authoremail = $BAB_SESS_EMAIL;
-            else
-                $this->authoremail = "";
-			}
-		}
-	
-    $mail = bab_mail();
-	if( $mail == false )
-		return;
-
-    $mail->mailTo($approveremail);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
-    $mail->mailSubject(bab_translate("New waiting comment"));
-
-	$tempa = new tempa($top, $article, $title, $modcom);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "commentwait");
-    $mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempa,"mailinfo.html", "commentwaittxt");
-    $mail->mailAltBody($message);
-	$mail->send();
-	}
-
 
 function saveComment($topics, $article, $name, $subject, $message, $com)
 	{
@@ -313,28 +240,21 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 	$db->db_query($req);
 	$id = $db->db_insert_id();
 
-	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
+	$req = "select * from ".BAB_TOPICS_TBL." where id='".$topics."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $arr['mod_com'] == "N" )
+		if( $arr['idsacom'] == 0 )
 			{
 			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$id."'");
+			return true;
 			}
-        $top = $arr['category'];
-		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
-			{
-			$arr2 = $db->db_fetch_array($res);
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
-			$res = $db->db_query($req);
-			$arr3 = $db->db_fetch_array($res);
-			//$message = bab_translate("A new Comment is waiting for you on topic: \n  "). $arr['category'];
-			//mail ($arr2['email'],'New waiting article',$message,"From: ".$babAdminEmail);
-            notifyApprover($top, $arr3['title'], $subject, $arr2['email'], $arr['mod_com']);
-			}
+
+		$idfai = makeFlowInstance($arr['idsacom'], "com-".$id);
+		$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$id."'");
+		$nfusers = getWaitingApproversFlowInstance($idfai, true);
+		notifyCommentApprovers($id, $nfusers);
 		}
 	return true;
 	}
@@ -346,7 +266,13 @@ function confirmDeleteComment($topics, $article, $com)
 	}
 
 /* main */
-$approver = bab_isUserApprover($topics);
+$approver = bab_isUserTopicManager($topics);
+$uaapp = bab_isUserArticleApprover($topics);
+$ucapp = bab_isUserCommentApprover($topics);
+if( $approver || $uaapp || $ucapp )
+	$access = true;
+else
+	$access = false;
 
 if(!isset($idx))
 	{
@@ -371,6 +297,14 @@ if( isset($action) && $action == "Yes" && $approver)
 	confirmDeleteComment($topics, $article, $com);
 	}
 
+if( $ucapp )
+	{
+	$db = $GLOBALS['babDB'];
+	$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$article."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+	$res = $db->db_query($req);			
+	$new = $db->db_num_rows($res);
+	}
+
 switch($idx)
 	{
 
@@ -385,9 +319,9 @@ switch($idx)
 			if(!isset($com))
 				$com = "";
 			$nbarch = addComment($topics, $article, $subject, $message, $com);
-			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-			$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
-			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics."&newc=".$newc);
+			$babBody->addItemMenu("List", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
+			$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article);
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 			if( $nbarch > 0 )
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 			}
@@ -402,14 +336,14 @@ switch($idx)
 			if(!isset($message))
 				$message = "";
 			$barch = readComment($topics, $article, $subject, $message, $com);
-			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+			$babBody->addItemMenu("List", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
 			if( $barch == "N" )
-				$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
+				$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article);
 			if( $approver)
 				{
-				$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com."&newc=".$newc);
+				$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com);
 				}
-			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics."&newc=".$newc);
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 			if( $barch == "Y" )
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 			}
@@ -427,19 +361,19 @@ switch($idx)
 	default:
 	case "List":
 		$babBody->title = bab_translate("List of comments");
-		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
+		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $access)
 			{
-			$arr = listComments($topics, $article, $newc);
-			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+			$arr = listComments($topics, $article);
+			$babBody->addItemMenu("List", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
 			if( $arr['barch'] == "N")
-				$babBody->addItemMenu("AddComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
-			if( $approver && isset($newc) && $newc > 0)
-				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);				
+				$babBody->addItemMenu("AddComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article);
+			if( $ucapp && isset($new) && $new > 0)
+				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article);				
 			if( $arr['count'] < 1)
 				$babBody->title = bab_translate("Today, there is no comment on this article");
 			else
 				$babBody->title = bab_getArticleTitle($article);
-			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics."&newc=".$newc);
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 			if( $arr['nbarch'] > 0 )
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 			}

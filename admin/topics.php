@@ -7,12 +7,12 @@
 include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function addCategory($cat)
+function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom)
 	{
 	global $babBody;
 	class temp
 		{
-		var $category;
+		var $title;
 		var $description;
 		var $approver;
 		var $add;
@@ -27,46 +27,113 @@ function addCategory($cat)
 		var $yes;
 		var $no;
 
-		function temp($cat)
+		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom)
 			{
 			$this->topcat = bab_translate("Topic category");
-			$this->category = bab_translate("Topic");
-			$this->description = bab_translate("Description");
-			$this->approver = bab_translate("Approver");
-			$this->modcom = bab_translate("Moderate comments");
+			$this->title = bab_translate("Topic");
+			$this->desctitle = bab_translate("Description");
+			$this->approver = bab_translate("Topic manager");
+			$this->modcom = bab_translate("Approbation schema for comments");
+			$this->modart = bab_translate("Approbation schema for articles");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
+			$this->none = bab_translate("None");
+			$this->tgval = "topics";
+			$this->item = "";
+			$this->cat = $cat;
+			if(empty($description))
+				$this->description = "";
+			else
+				$this->description = $description;
+			if(empty($category))
+				$this->category = "";
+			else
+				$this->category = $category;
+			if(empty($managerid))
+				{
+				$this->managerid = "";
+				$this->managerval = "";
+				}
+			else
+				{
+				$this->managerid = $managerid;
+				$this->managerval = bab_getUserName($managerid);
+				}
+			if(empty($sacom))
+				$this->sacom = 0;
+			else
+				$this->sacom = $sacom;
+			if(empty($saart))
+				$this->saart = 0;
+			else
+				$this->saart = $saart;
+			if(empty($ncat))
+				$this->ncat = $cat;
+			else
+				$this->ncat = $ncat;
+			$this->bdel = false;
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
 			$this->idcat = $cat;
 			$this->db = $GLOBALS['babDB'];
+
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL."";
+			$this->sares = $this->db->db_query($req);
+			$this->sacount = $this->db->db_num_rows($this->sares);
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			}
+
 		function getnextcat()
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				if( $this->arr['id'] == $this->idcat )
-					$this->selected = "selected";
+				$this->toptitle = $this->arr['title'];
+				$this->topid = $this->arr['id'];
+				if( $this->arr['id'] == $this->ncat )
+					$this->topselected = "selected";
 				else
-					$this->selected = "";
+					$this->topselected = "";
 				$i++;
 				return true;
 				}
 			else
 				return false;
 			}
+
+		function getnextschapp()
+			{
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $this->db->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				if( $this->said == $this->saart )
+					$this->saartsel = "selected";
+				else
+					$this->saartsel = "";
+				$this->sacomsel = "";
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->db->db_data_seek($this->sares, 0);
+				$i = 0;
+				return false;
+				}
+			}
 		}
 
-
-	$temp = new temp($cat);
+	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -136,7 +203,7 @@ function listCategories($cat, $adminid)
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->approver = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
-				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."'";
+				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='Y' and archive='N'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
@@ -199,13 +266,19 @@ function orderCategories($cat, $adminid, $catname)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $approver, $cat, $modcom)
+function saveCategory($category, $description, $cat, $sacom, $saart, $managerid)
 	{
 	global $babBody;
 	if( empty($category))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
-		return;
+		return false;
+		}
+
+	if( empty($managerid))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide topic manager !!");
+		return false;
 		}
 
 	$db = $GLOBALS['babDB'];
@@ -214,20 +287,9 @@ function saveCategory($category, $description, $approver, $cat, $modcom)
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This topic already exists");
-		return;
+		return false;
 		}
 
-	if( empty($approver))
-		$approverid = 0;
-	else
-		{
-		$approverid = bab_getUserId($approver);	
-		if( $approverid < 1)
-			{
-			$babBody->msgerror = bab_translate("ERROR: The approver doesn't exist !!");
-			return;
-			}
-		}
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -236,8 +298,9 @@ function saveCategory($category, $description, $approver, $cat, $modcom)
 		}
 	$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_TOPICS_TBL." where id_cat='".$cat."'"));
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, mod_com, ordering) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $modcom. "', '" . ($arr[0]+1). "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "')";
 	$db->db_query($query);
+	return true;
 	}
 
 function saveOrderTopics($cat, $listtopics)
@@ -265,7 +328,12 @@ if(!isset($idx))
 
 if( isset($add) && $adminid > 0)
 	{
-	saveCategory($category, $description, $approver, $cat, $modcom);
+	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid))
+		$idx = "addtopic";
+	else
+		{
+		$cat = $ncat;
+		}
 	}
 
 if( isset($update) && $update == "order" && $adminid > 0)
@@ -279,7 +347,7 @@ switch($idx)
 		$babBody->title = bab_translate("Add a new topic");
 		if( $adminid > 0)
 		{
-		addCategory($cat);
+		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);

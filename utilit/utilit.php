@@ -409,6 +409,7 @@ function babAdminSection()
 	$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=admcals";
 	$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y";
 	$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfiles";
+	$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
 	$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
 	$this->title = bab_translate("Administration");
 	$this->head = bab_translate("This section is for Administration");
@@ -740,8 +741,6 @@ var $url;
 var $text;
 var $db;
 var $arrid = array();
-var $newartcount;
-var $newcomcount;
 var $count;
 var $newa;
 var $newc;
@@ -769,11 +768,7 @@ function babTopicsSection($cat)
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
-		if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
-			{
-			array_push($this->arrid, $row['id']);
-			}
-		else if( bab_isUserApprover($row['id']) )
+		if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) || bab_isUserTopicManager($row['id']))
 			{
 			array_push($this->arrid, $row['id']);
 			}
@@ -783,7 +778,8 @@ function babTopicsSection($cat)
 
 function topicsGetNext()
 	{
-	global $babBody, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID, $babInstallPath;
+	include_once $babInstallPath."utilit/afincl.php";
 	static $i = 0;
 	if( $i < $this->count)
 		{
@@ -794,18 +790,18 @@ function topicsGetNext()
 		if( $res && $this->db->db_num_rows($res) > 0)
 			{
 			$this->arr = $this->db->db_fetch_array($res);
-			if( $BAB_SESS_USERID == $this->arr['id_approver'])
+			if( isUserApproverFlow($this->arr['idsaart'], $BAB_SESS_USERID))
 				{
 				$this->bfooter = 1;
-				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
 				$res = $this->db->db_query($req);
-				$this->newartcount = $this->db->db_num_rows($res);
+				$newartcount = $this->db->db_num_rows($res);
 
-				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
 				$res = $this->db->db_query($req);
-				$this->newcomcount = $this->db->db_num_rows($res);
-				
-				if( $this->newartcount > 0 )
+				$newcomcount = $this->db->db_num_rows($res);
+	
+				if( $newartcount > 0 )
 					{
 					$this->newa = "a";
 					}
@@ -813,7 +809,7 @@ function topicsGetNext()
 					{
 					$this->newa = "";
 					}
-				if( $this->newcomcount > 0)
+				if( $newcomcount > 0)
 					{
 					$this->newc = "c";
 					}
@@ -825,7 +821,7 @@ function topicsGetNext()
 			else
 				$this->new = "";
 			$this->text = $this->arr['category'];
-			$this->url = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id']."&new=".$this->newartcount."&newc=".$this->newcomcount;
+			$this->url = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id'];
 			}
 		$i++;
 		return true;

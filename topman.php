@@ -62,8 +62,6 @@ function listCategories()
 				$this->newc = $this->db->db_num_rows($res);
 
 				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
-				$this->urlnewa = $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
-				$this->urlnewc = $GLOBALS['babUrlScript']."?tg=articles&idx=WaitingC&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
 				$i++;
 				return true;
 				}
