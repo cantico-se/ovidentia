@@ -528,6 +528,13 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		$workdays = implode(',', $workdays);
 		}
 
+	if( $starttime > $endtime )
+		{
+		$tmp = $starttime;
+		$starttime = $endtime;
+		$endtime = $tmp;
+		}
+
 	$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)

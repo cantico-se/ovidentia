@@ -447,6 +447,106 @@ class bab_icalendars
 			$this->initializeUserCalendars();
 		}
 	}
+
+	function getCalendarName($idcal)
+	{
+		if( $idcal == $this->id_percal )
+		{
+			return $GLOBALS['BAB_SESS_USER'];
+		}
+		else
+		{
+			$this->initializeCalendars();
+			if( count($this->pubcal) > 0 )
+			{
+				reset($this->pubcal);
+				while( $row=each($this->pubcal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1]['name'];
+						}
+					}
+			}
+			
+			if( count($this->rescal) > 0 )
+			{
+				reset($this->rescal);
+				while( $row=each($this->rescal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1]['name'];
+						}
+					}
+			}
+
+			if( count($this->usercal) > 0 )
+			{
+				reset($this->usercal);
+				while( $row=each($this->usercal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1]['name'];
+						}
+					}
+			}
+		}
+	return false;
+	}
+
+	function getCalendarType($idcal)
+	{
+		if( $idcal == $this->id_percal )
+		{
+			return BAB_CAL_USER_TYPE;
+		}
+		else
+		{
+			$this->initializeCalendars();
+			if( count($this->pubcal) > 0 )
+			{
+				reset($this->pubcal);
+				while( $row=each($this->pubcal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return BAB_CAL_PUB_TYPE;
+						}
+					}
+			}
+			
+			if( count($this->rescal) > 0 )
+			{
+				reset($this->rescal);
+				while( $row=each($this->rescal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return BAB_CAL_RES_TYPE;
+						}
+					}
+			}
+
+			if( count($this->usercal) > 0 )
+			{
+				reset($this->usercal);
+				while( $row=each($this->usercal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return BAB_CAL_USER_TYPE;
+						}
+					}
+			}
+		}
+
+	return false;
+	}
+
+
+
 }
 
 

@@ -984,16 +984,16 @@ function babUserSection($close)
 		$babBody->calaccess = true;
 		switch($babBody->icalendars->defaultview)
 			{
-			case BAB_CAL_VIEW_DAY: $view='viewd';	break;
-			case BAB_CAL_VIEW_WEEK: $view='viewq'; break;
-			default: $view='viewm'; break;
+			case BAB_CAL_VIEW_DAY: $view='calday';	break;
+			case BAB_CAL_VIEW_WEEK: $view='calweek'; break;
+			default: $view='calmonth'; break;
 			}
 		if( empty($babBody->icalendars->user_calendarids))
 			{
 			$babBody->icalendars->initializeCalendars();
 			}
 		$idcal = $babBody->icalendars->user_calendarids;
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$babBody->icalendars->id_percal;
+		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=".$view."&calid=".$babBody->icalendars->id_percal;
 		}
 
 	if( $bemail )

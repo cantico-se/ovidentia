@@ -655,6 +655,24 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "calendar";
 		break;
+	case "calmonth":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Calendar");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "calmonth";
+		break;
+	case "calweek":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Calendar");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "calweek";
+		break;
+	case "calday":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Calendar");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "calday";
+		break;
 	case "event":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Calendar");

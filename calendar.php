@@ -24,6 +24,87 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/calincl.php";
 
+class bab_icalendar
+{
+	var $idcalendar = 0;
+	var $access = -1;
+	var $cal_type;
+
+	function bab_icalendar($startdate, $enddate, $calid)
+		{
+		global $babBody, $babDB;
+
+		$babBody->icalendars->initializeCalendars();
+
+		$this->cal_type = $babBody->icalendars->getCalendarType($calid);
+		if( $this->cal_type !== false )
+			{
+			$this->cal_name = $babBody->icalendars->getCalendarName($calid);
+			$this->idcalendar = $calid;
+			if( $calid == $babBody->icalendars->id_percal ) /* user's calendar */
+				{
+				$this->access = BAB_CAL_ACCESS_FULL;
+				}
+			else
+				{
+				switch($this->cal_type)
+					{
+					case BAB_CAL_USER_TYPE:
+						$this->access = $babBody->icalendars->usercal[$calid]['access'];
+						break;
+					case BAB_CAL_PUB_TYPE:
+						if( $babBody->icalendars->pubcal[$calid]['manager'] )
+							{
+							$this->access = BAB_CAL_ACCESS_FULL;							
+							}
+						else
+							{
+							$this->access = BAB_CAL_ACCESS_VIEW;							
+							}
+						break;
+					case BAB_CAL_RES_TYPE:
+						if( $babBody->icalendars->rescal[$calid]['manager'] )
+							{
+							$this->access = BAB_CAL_ACCESS_FULL;							
+							}
+						else
+							{
+							$this->access = BAB_CAL_ACCESS_VIEW;							
+							}
+						break;
+					}
+				}
+			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."'");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$this->events[] = $arr;
+				}
+			}
+		}
+
+	function getCategory($idcat)
+		{
+		static $bload = false;
+		static $categories = array();
+		if( !$bload )
+			{
+			$res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." order by name");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$categories[$arr['id']] = array('name' => $arr['name'], 'description' => $arr['description'],'bgcolor' => $arr['bgcolor']);
+				}
+			}
+		if( isset($categories[$idcat]))
+			{
+			return $categories[$idcat];
+			}
+
+		return false;
+		}
+
+}
+
+
 function isCalUpdate($mcals)
 {
 global $babBody, $BAB_SESS_USERID;
