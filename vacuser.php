@@ -792,8 +792,8 @@ function confirmVacationRequest($veid, $remarks, $action)
 			$idcal = bab_getCalendarId($arr['id_user'], 1);
 			if( $idcal != 0 )
 				{
-				$tbegin = $arr['day_begin'] == 3? '12:00:00': '00:00:00' 
-				$tend = $arr['day_end'] == 2? '12:00:00': '23:59:59' 
+				$tbegin = $arr['day_begin'] == 3? '12:00:00': '00:00:00';
+				$tend = $arr['day_end'] == 2? '12:00:00': '23:59:59';
 				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, start_date, start_time, end_date, end_time, id_creator, hash) values ";
 				$req .= "('".$idcal."', '".bab_translate("Vacation")."', '".$arr['date_begin']."', '".$tbegin."', '".$arr['date_end']."', '".$tend."', '0', 'V_".$veid."')";
 				$babDB->db_query($req);
@@ -1196,9 +1196,9 @@ switch($idx)
 			{
 			$idx = "lvt";
 			}
-		if( $acclevel['approver'] == true)
+		if( isset($acclevel['approver']) && $acclevel['approver'] == true)
 			$babBody->addItemMenu("lval", bab_translate("Validation"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lval");
-		if( $acclevel['manager'] == true)
+		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
 			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		break;
 	}
