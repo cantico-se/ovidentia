@@ -177,8 +177,9 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel)
 				{
 				if( count($this->arrf) > $j )
 					{
-					$this->fieldval = bab_getUserName($this->arrf[$j]);
-					$this->fieldid = $this->arrf[$j];
+					$name = bab_getUserName($this->arrf[$j]);
+					$this->fieldval = $name ? $name : '???';
+					$this->fieldid = $name ? $this->arrf[$j] : '';
 					}
 				else
 					{
