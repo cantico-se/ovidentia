@@ -556,7 +556,7 @@ function viewArticle($article, $w)
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 	
-			$this->content = highlightWord( $w, locateArticle($arr['body']));
+			$this->content = highlightWord( $w, babReplace($arr['body']));
 			$this->title = highlightWord( $w, $arr['title']);
 			$this->topic =getCategoryTitle($arr['id_topic']);
 			}
