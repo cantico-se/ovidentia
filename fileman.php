@@ -474,6 +474,7 @@ function listFiles($id, $gr, $path, $bmanager)
 					$this->fileimage = $this->arrext[$ext];
 				$this->name = $arr['name'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
@@ -492,6 +493,10 @@ function listFiles($id, $gr, $path, $bmanager)
 				else
 					$this->bconfirmed = 0;
 				$this->hits = $arr['hits'];
+				if( $arr['readonly'] == "Y" )
+					$this->readonly = "R";
+				else
+					$this->readonly = "";
 				$i++;
 				return true;
 				}
@@ -687,6 +692,167 @@ function notifyApprover($grpname, $file, $path, $approveremail)
 
 	$mail->send();
 	}
+/*
+function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywords, $readonly)
+	{
+	global $babBody, $BAB_SESS_USERID, $aclfm;
+	$access = false;
+	$bmanager = false;
+	$access = false;
+	$confirmed = "N";
+
+	if( $gr == "N" && !empty($BAB_SESS_USERID))
+		{
+		if( in_array(1, $aclfm['pr']) )
+			{
+			$access = true;
+			$confirmed = "Y";
+			}
+		}
+
+	if( $gr == "Y" && !empty($BAB_SESS_USERID))
+		{
+		for( $i = 0; $i < count($aclfm['id']); $i++)
+			{
+			if( $aclfm['id'][$i] == $id && $aclfm['pu'][$i] == 1)
+				{
+				$access = true;
+				break;
+				}
+			}
+
+		if( !$access && ( $id == 1 || $id == 2) && bab_isUserAdministrator())
+			{
+			$confirmed = "Y";
+			$access = true;
+			}
+
+		if( !$access && !empty($BAB_SESS_USERID) && bab_isUserGroupManager($id))
+			{
+			$confirmed = "Y";
+			$access = true;
+			}
+		}
+
+	if( !$access )
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		return;
+		}
+
+	if( empty($filename) || $filename == "none")
+		{
+		$babBody->msgerror = bab_translate("Please select a file to upload");
+		return false;
+		}
+
+	if( $size > $GLOBALS['babMaxFileSize'])
+		{
+		$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+		return false;
+		}
+	$totalsize = getDirSize($GLOBALS['babUploadPath']);
+	if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
+		{
+		$babBody->msgerror = bab_translate("There is not enough free space");
+		return false;
+		}
+	$pathx = bab_getUploadFullPath($gr, $id);
+
+	$totalsize = getDirSize($pathx);
+	if( $size + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+		{
+		$babBody->msgerror = bab_translate("There is not enough free space");
+		return false;
+		}
+
+	if( substr($path, -1) == "/")
+		$pathx .= substr($path, 0 , -1);
+	else if( !empty($path))
+		$pathx .= $path."/";	
+
+	if( isset($GLOBALS['babFileNameTranslation']))
+
+	$filename = strtr($filename, $GLOBALS['babFileNameTranslation']);
+	$name = $filename;
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$name = addslashes($filename);
+		$description = addslashes($description);
+		$keywords = addslashes($keywords);
+		}
+
+	$update = false;
+	$db = $GLOBALS['babDB'];
+	if( file_exists($pathx.$filename))
+		{
+		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and name='".$name."' and path='".$path."'");
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$arr = $db->db_fetch_array($res);
+			if( $arr['readonly'] == "Y")
+				{
+				$babBody->msgerror = bab_translate("This file is read only");
+				return false;
+				}
+			else
+				$update = true;
+			}
+		}
+
+	if( !get_cfg_var('safe_mode'))
+		set_time_limit(0);
+	if( !move_uploaded_file($tmp, $pathx.$filename))
+		{
+		$babBody->msgerror = bab_translate("The file could not be uploaded");
+		return false;
+		}
+	
+	if( empty($BAB_SESS_USERID))
+		$idcreator = 0;
+	else
+		$idcreator = $BAB_SESS_USERID;
+
+
+	if( $confirmed == 'N' && $gr == "Y" )
+		{
+		$rr = $db->db_fetch_array($db->db_query("select moderate from ".BAB_GROUPS_TBL." where id='".$id."'"));
+		if( $rr['moderate'] == "N")
+			$confirmed = "Y";
+		}
+
+	if( $update )
+		{
+		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), modifiedby='".$idcreator."', state='' where id='".$arr['id']."'";
+		}
+	else
+		{
+		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
+		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" . $path. "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
+		}
+	$res = $db->db_query($req);
+
+	if( $confirmed == "N" )
+		{
+		$res = $db->db_query("select * from ".BAB_GROUPS_TBL." where id='".$id."'");
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$arr = $db->db_fetch_array($res);
+			if( $arr['manager'] != 0)
+				{
+				$res = $db->db_query("select * from ".BAB_USERS_TBL." where id='".$arr['manager']."'");
+				if( $res && $db->db_num_rows($res) > 0)
+					{
+					$arr2 = $db->db_fetch_array($res);
+					notifyApprover($arr['name'], $filename, $path, $arr2['email']);
+					}
+				}
+			}
+		}
+
+	return true;
+	}
+*/
 
 function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywords, $readonly)
 	{
@@ -770,10 +936,33 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$filename = strtr($filename, $GLOBALS['babFileNameTranslation']);
 
+	$name = $filename;
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$name = addslashes($filename);
+		$description = addslashes($description);
+		$keywords = addslashes($keywords);
+		}
+
+	$db = $GLOBALS['babDB'];
+	$bexist = false;
 	if( file_exists($pathx.$filename))
 		{
-		$babBody->msgerror = bab_translate("A file with the same name already exists");
-		return false;
+		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and name='".$name."' and path='".$path."'");
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$arr = $db->db_fetch_array($res);
+			if( $arr['state'] == "D")
+				{
+				$bexist = true;
+				}
+			}
+
+		if( $bexist == false)
+			{
+			$babBody->msgerror = bab_translate("A file with the same name already exists");
+			return false;
+			}
 		}
 
 	if( !get_cfg_var('safe_mode'))
@@ -789,10 +978,16 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else
 		$idcreator = $BAB_SESS_USERID;
 
+	if( $bexist)
+		{
+		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), hits='0', modifiedby='".$idcreator."', state='' where id='".$arr['id']."'";
+		}
+	else
+		{
+		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
+		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" . $path. "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
+		}
 
-	$db = $GLOBALS['babDB'];
-	$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
-	$req .= "('" .$filename. "', '" . $description. "', '" . $keywords. "', '" . $path. "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
 	$res = $db->db_query($req);
 
 	if( $confirmed == "N" )
@@ -816,83 +1011,96 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	return true;
 	}
 
-function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keywords, $readonly, $confirm)
+function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm)
 	{
-	global $babBody, $BAB_SESS_USERID, $aclfm;
+	global $babBody, $BAB_SESS_USERID;
+	$db = $GLOBALS['babDB'];
 
-	$access = false;
-	$bmanager = false;
-
-	if( $gr == "N" )
+	$res = $db->db_query("select * from ".BAB_FILES_TBL." where id='".$idf."'");
+	if( $res && $db->db_num_rows($res))
 		{
-		$confirm = "Y";
-		if( in_array(1, $aclfm['pr']) )
-			{
-			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0 )
-				{
-				$arr = $db->db_fetch_array($res);
-				$access = true;
-				}
-			}
-		}
+		$arr = $db->db_fetch_array($res);
+		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
+		if( substr($arr['path'], -1) == "/")
+			$pathx .= substr($arr['path'], 0 , -1);
+		else if( !empty($arr['path']))
+			$pathx .= $arr['path']."/";	
 
-	if( $gr == "Y" && !empty($BAB_SESS_USERID) )
-		{
-		if( (($id == 2 || $id ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($id))
-			{
-			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0 )
-				{
-				$arr = $db->db_fetch_array($res);
-				$bmanager = true;
-				$access = true;
-				}
-			}
-		}
-
-	if( !$access )
-		{
-		$babBody->msgerror = bab_translate("Access denied");
-		return;
-		}
-
-	if( empty($name))
-		{
-		$babBody->msgerror = bab_translate("Please give a valid file name");
-		return false;
-		}
-
-	$pathx = bab_getUploadFullPath($gr, $id);
-
-	if( !empty($path))
-		$pathx .= $path."/";	
-
-	if( isset($GLOBALS['babFileNameTranslation']))
-		$name = strtr($name, $GLOBALS['babFileNameTranslation']);
-
-	if( strcmp($file, $name))
-		{
-		if( !file_exists($pathx.$file))
+		if( !file_exists($pathx.$arr['name']))
 			{
 			$babBody->msgerror = bab_translate("File does'nt exist");
 			return false;
 			}
-		if( !rename($pathx.$file, $pathx.$name))
+
+		$bmodified = false;
+		if( !empty($uploadf_name) && $uploadf_name != "none")
 			{
-			$babBody->msgerror = bab_translate("The file could not be renamed");
-			return false;
+			if( $size > $GLOBALS['babMaxFileSize'])
+				{
+				$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+				return false;
+				}
+			$totalsize = getDirSize($GLOBALS['babUploadPath']);
+			if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
+				{
+				$babBody->msgerror = bab_translate("There is not enough free space");
+				return false;
+				}
+
+			$totalsize = getDirSize($pathx);
+			if( $size + $totalsize > ($arr['bgroup'] == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+				{
+				$babBody->msgerror = bab_translate("There is not enough free space");
+				return false;
+				}
+
+			if( isset($GLOBALS['babFileNameTranslation']))
+				$uploadf_name = strtr($uploadf_name, $GLOBALS['babFileNameTranslation']);
+
+			if( !get_cfg_var('safe_mode'))
+				set_time_limit(0);
+			if( !move_uploaded_file($uploadf, $pathx.$arr['name']))
+				{
+				$babBody->msgerror = bab_translate("The file could not be uploaded");
+				return false;
+				}
+			$bmodified = true;
 			}
+
+		$frename = false;
+		if( !empty($fname) && strcmp($arr['name'], $fname))
+			{
+			if( isset($GLOBALS['babFileNameTranslation']))
+				$fname = strtr($fname, $GLOBALS['babFileNameTranslation']);
+			if( rename($pathx.$arr['name'], $pathx.$fname))
+				$frename = true;
+			}
+
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$fname = addslashes($fname);
+			$description = addslashes($description);
+			$keywords = addslashes($keywords);
+			}
+
+		if( empty($BAB_SESS_USERID))
+			$idcreator = 0;
+		else
+			$idcreator = $BAB_SESS_USERID;
+
+		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."'";
+		if( $bmodified)
+			$req .= ", modified=now(), modifiedby='".$idcreator."'";
+		if( $frename)
+			$req .= ", name='".$fname."'";
+		if( !empty($readonly))
+			$req .= ", readonly='".$readonly."'";
+		if( !empty($confirm))
+			$req .= ", confirmed='".$confirm."'";
+		$req .= " where id='".$idf."'";
+		$res = $db->db_query($req);
+		return true;
 		}
-	
-	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_FILES_TBL." set name='".$name."', description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirm."' where id='".$idf."' and id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
-	$res = $db->db_query($req);
-	return true;
 	}
 
 function createDirectory($dirname, $id, $gr, $path)
@@ -1176,7 +1384,7 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 		}
 	}
 
-function updateFile( $file, $id, $gr, $path, $aclfm)
+function viewFile( $idf, $aclfm)
 	{
 	global $babBody, $BAB_SESS_USERID, $aclfm;
 	class temp
@@ -1197,94 +1405,145 @@ function updateFile( $file, $id, $gr, $path, $aclfm)
 		var $confirmno;
 		var $confirmyes;
 		var $idf;
-		var $sizef;
 
-		function temp($file, $id, $gr, $path, $arr, $bmanager)
+		var $fmodified;
+		var $fpostedby;
+		var $fmodifiedtxt;
+		var $fpostedbytxt;
+		var $fcreatedtxt;
+		var $fcreated;
+		var $fmodifiedbytxt;
+		var $fmodifiedby;
+		var $fsizetxt;
+		var $fsize;
+
+		function temp($idf, $arr, $bmanager, $access, $bconfirm)
 			{
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->keywords = bab_translate("Keywords");
-			$this->add = bab_translate("Update");
-			$this->attribute = bab_translate("Read only");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
-			$this->confirm = bab_translate("Confirm");
-			$this->id = $id;
-			$this->file = $file;
-			$this->path = $path;
-			$this->gr = $gr;
-			$this->bmanager = $bmanager;
-			$this->descval = $arr['description'];
-			$this->keysval = $arr['keywords'];
-			$this->nameval = $arr['name'];
-			$this->idf = $arr['id'];
-			$fstat = stat(bab_getUploadFullPath($gr, $id).$arr['path']."/".$arr['name']);
-			$this->sizef = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb")." ( ".bab_formatSizeFile($fstat[7], false) ." ".bab_translate("Bytes") ." )";
-			if( $arr['readonly'] == "Y")
+			$this->access = $access;
+			if( $access)
 				{
-				$this->yesselected = "selected";
-				$this->noselected = "";
+				$this->bmanager = $bmanager;
+				$this->bconfirm = $bconfirm;
+				$this->idf = $idf;
+
+				$this->description = bab_translate("Description");
+				$this->keywords = bab_translate("Keywords");
+
+				$this->id = $arr['id_owner'];
+				$this->gr = $arr['bgroup'];
+				$this->path = $arr['path'];
+				$this->file = $arr['name'];
+				$this->title = $arr['name'];
+				$this->descval = $arr['description'];
+				$this->keysval = $arr['keywords'];
+
+				$this->fsizetxt = bab_translate("Size");
+				$fstat = stat(bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']).$arr['path']."/".$arr['name']);
+				$this->fsize = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb")." ( ".bab_formatSizeFile($fstat[7], false) ." ".bab_translate("Bytes") ." )";
+				
+				$this->fmodifiedtxt = bab_translate("Modified");
+				$this->fmodified = date("d/m/Y H:i", bab_mktime($arr['modified']));
+				$this->fmodifiedbytxt = bab_translate("Modified by");
+				$this->fmodifiedby = bab_getUserName($arr['modifiedby']);
+				$this->fcreatedtxt = bab_translate("Created");
+				$this->fcreated = date("d/m/Y H:i", bab_mktime($arr['created']));
+				$this->fpostedbytxt = bab_translate("Posted by");
+				$this->fpostedby = bab_getUserName($arr['author']);
+
+				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".$arr['path']."&file=".$arr['name'];
+				$this->download = bab_translate("Download");
+
+				$this->file = bab_translate("File");
+				$this->name = bab_translate("Name");
+				$this->nameval = $arr['name'];
+				$this->attribute = bab_translate("Read only");
+				$this->bupdate = false;
+				if( $arr['readonly'] == "Y")
+					{
+					$this->yesselected = "selected";
+					$this->noselected = "";
+					}
+				else
+					{
+					$this->bupdate = true;
+					$this->noselected = "selected";
+					$this->yesselected = "";
+					}
+
+				$this->confirm = bab_translate("Confirm");
+				if( $arr['confirmed'] == "Y")
+					{
+					$this->confirmyes = "selected";
+					$this->confirmno = "";
+					}
+				else
+					{
+					$this->confirmno = "selected";
+					$this->confirmyes = "";
+					}
+
+				$this->update= bab_translate("Update");
+				$this->yes = bab_translate("Yes");
+				$this->no = bab_translate("No");
 				}
 			else
 				{
-				$this->noselected = "selected";
-				$this->yesselected = "";
-				}
-			if( $arr['confirmed'] == "Y")
-				{
-				$this->confirmyes = "selected";
-				$this->confirmno = "";
-				}
-			else
-				{
-				$this->confirmno = "selected";
-				$this->confirmyes = "";
+				$this->title = bab_translate("Access denied");
 				}
 			}
 		}
 
 	$access = false;
 	$bmanager = false;
-
-	if( $gr == "N" )
+	$bconfirm = false;
+	$db = $GLOBALS['babDB'];
+	$req = "select * from ".BAB_FILES_TBL." where id='".$idf."'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0 )
 		{
-		if( in_array(1, $aclfm['pr']) )
+		$arr = $db->db_fetch_array($res);
+		if( $arr['bgroup'] == "N" )
 			{
-			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0 )
+			if( in_array(1, $aclfm['pr']) && $BAB_SESS_USERID == $arr['id_owner'])
 				{
-				$arr = $db->db_fetch_array($res);
 				$access = true;
-				}
-			}
-		}
-
-	if( $gr == "Y" && !empty($BAB_SESS_USERID) )
-		{
-		if( (($id == 2 || $id ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($id))
-			{
-			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0 )
-				{
-				$arr = $db->db_fetch_array($res);
 				$bmanager = true;
-				$access = true;
 				}
+			}
+
+		if( $arr['bgroup'] == "Y" && !empty($BAB_SESS_USERID) )
+			{
+			if( (($arr['id_owner'] == 2 || $arr['id_owner'] ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($arr['id_owner']))
+				{
+				$bconfirm = true;
+				$bmanager = true;
+				}
+			$access = true;
 			}
 		}
 
-	if( !$access )
+
+	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm);
+	echo bab_printTemplate($temp,"fileman.html", "viewfile");
+	}
+
+function fileUnload($id, $gr, $path)
+	{
+	class temp
 		{
-		$babBody->msgerror = bab_translate("Access denied");
-		return;
+		var $message;
+		var $close;
+
+		function temp($id, $gr, $path)
+			{
+			$this->message = bab_translate("Your file list has been updated");
+			$this->close = bab_translate("Close");
+			$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
+			}
 		}
 
-	$temp = new temp($file, $id, $gr, $path, $arr, $bmanager);
-	$babBody->babecho(	bab_printTemplate($temp,"fileman.html", "updatefile"));
+	$temp = new temp($id, $gr, $path);
+	echo bab_printTemplate($temp,"fileman.html", "fileunload");
 	}
 
 function deleteFiles($items, $gr, $id)
@@ -1400,16 +1659,22 @@ if( !$access)
 		return;
 	}
 
-if( isset($addf) && $addf == "add")
+if( isset($addf))
 	{
-	if( !saveFile($id, $gr, $path, $uploadf_name, $uploadf_size,$uploadf , $description, $keywords, $readonly))
-		$idx = "add";	
+	if( $addf == "add" )
+		{
+		if( !saveFile($id, $gr, $path, $uploadf_name, $uploadf_size,$uploadf , $description, $keywords, $readonly))
+			$idx = "add";
+		}
 	}
 
 if( isset($updf) && $updf == "upd")
 	{
-	saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keywords, $readonly, $confirm);
-	$idx = "list";
+	//saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keywords, $readonly, $confirm);
+	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm))
+		$idx = "viewfile";
+	else
+		$idx = "unload";
 	}
 
 if( isset($mkdir) && $mkdir == "mkdir")
@@ -1445,6 +1710,16 @@ if( isset($cdel) && $cdel == "update")
 
 switch($idx)
 	{
+	case "unload":
+		fileUnload($id, $gr, $path);
+		exit;
+		break;
+
+	case "viewfile":
+		viewFile($idf, $aclfm);
+		exit;
+		break;
+
 	case "get":
 		getFile($file, $id, $gr, $path);
 		exit;
@@ -1460,14 +1735,6 @@ switch($idx)
 			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
 		break;
 
-	case "upd":
-		$babBody->title = bab_translate("Update file");
-		updateFile($file, $id, $gr, $path, $aclfm);
-		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
-		$babBody->addItemMenu("upd", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$id."&gr=".$gr."&path=".$path);
-		if( $bmanager)
-			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
-		break;
 	case "add":
 		$babBody->title = bab_translate("Upload file to")." /".$path. " ( ".bab_formatSizeFile($GLOBALS['babMaxFileSize'])." ".bab_translate("Kb") . " ".bab_translate("Max")." )";
 		addFile($id, $gr, $path, $description, $keywords);
