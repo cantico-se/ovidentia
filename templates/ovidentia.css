@@ -1,5 +1,10 @@
 /* >>>>>******************************************* DEBUT GENERAL ********************************************** */
 
+/* Coulleur des liens non definis */
+:link {color: red }
+:active {color: red }
+:visited {color: red }
+
 /* Couleur du fond de la page */
 .BabBackground { BACKGROUND: #FF8000 }
 
