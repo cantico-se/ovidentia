@@ -218,7 +218,13 @@ function groupDelegatModify($gname, $description, $id)
 			$res = $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
 			$this->arr = $db->db_fetch_array($res);
 			$this->id = $id;
-			$this->bdel = true;
+
+
+			list($total) = $db->db_fetch_row($db->db_query("select count(id) as total from ".BAB_GROUPS_TBL." where id_dggroup='".$id."'"));
+			if( $total > 0 )
+				$this->bdel = false;
+			else
+				$this->bdel = true;
 
 			if( bab_isMagicQuotesGpcOn())
 				{
@@ -423,6 +429,9 @@ function deleteDelegatMembers( $grp, $users)
 function confirmDeleteDelegatGroup( $id)
 {
 	global $babDB;
+	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_GROUPS_TBL." where id_dggroup='".$id."'"));
+	if( $total > 0 )
+		return;
 	$babDB->db_query("delete from ".BAB_DG_USERS_GROUPS_TBL." where id_group='".$id."'");
 	$babDB->db_query("delete from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
 	$babDB->db_query("update ".BAB_GROUPS_TBL." set id_dggroup='0' where id_dggroup='".$id."'");
