@@ -632,7 +632,12 @@ function unzipcore()
 				return false;
 				}
 
-			bab_mkdir($new_dir,$GLOBALS['babMkdirMode']);
+			if (!bab_mkdir($new_dir,$GLOBALS['babMkdirMode']))
+				{
+				$babBody->msgerror = bab_translate("Can't create directory: ").$new_dir;
+				return false;
+				}
+
 			foreach ($zipcontents as $key => $value)
 				{
 				if (substr($value['filename'],0,strlen($core)) == $core)
