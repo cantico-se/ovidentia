@@ -471,7 +471,7 @@ class cal_wmdbaseCls
 		$time = mktime( 0,0,0, $this->month, $this->day +1, $this->year);
 		$this->nextdayurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
 
-		$this->gotodayurl = $this->commonurl."&date=".date("Y").",".date("n").",".date("j"); 
+		$this->gotodateurl = $GLOBALS['babUrlScript']."?tg=month&year=".$this->year."&month=".$this->month."&callback=gotodate";
 
 		switch($tg)
 		{
@@ -495,7 +495,7 @@ class cal_wmdbaseCls
 		$this->monthurlname = bab_translate("Month");
 		$this->weekurlname = bab_translate("Week");
 		$this->dayurlname = bab_translate("Day");
-		$this->gotodayname = bab_translate("Go to Today");
+		$this->gotodatename = bab_translate("Go to date");
 		$this->attendeestxt = bab_translate("Attendees");
 		$this->statustxt = bab_translate("Waiting event");
 		$this->t_calendarchoice = bab_translate("Calendars");
