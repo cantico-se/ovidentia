@@ -32,13 +32,13 @@ function listAds()
 
 		function temp()
 			{
-			$this->directories = "Directories";
-			$this->desctxt = "Description";
-			$this->databasetitle = "Databases Directories list";
-			$this->add = "Add";
-			$this->gmodify = "Modify";
-			$this->gview = "View";
-			$this->gadd = "Add";
+			$this->directories = ad_translate("Directories");
+			$this->desctxt = ad_translate("Description");
+			$this->databasetitle = ad_translate("Databases Directories list");
+			$this->add = ad_translate("Add");
+			$this->gmodify = ad_translate("Modify");
+			$this->gview = ad_translate("View");
+			$this->gadd = ad_translate("Add");
 			$this->urladdldap = $GLOBALS['babAddonUrl']."admin&idx=ldap";
 			$this->urladddb = $GLOBALS['babAddonUrl']."admin&idx=db";
 			$this->db = $GLOBALS['babDB'];

@@ -925,23 +925,20 @@ function getLdapContactImage($id, $cn)
 		$arr = $db->db_fetch_array($res);
 		if( $arr['ldap'] == "Y")
 			{
-			$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
-			$this->ldap->connect();
-			$this->entries = $this->ldap->search("(|(cn=".$pos."*))", array("cn", "telephonenumber", "mail"));
-			if( is_array($this->entries))
+			$ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
+			$ldap->connect();
+		
+			$res = $ldap->read("cn=".$cn.",".$arr['basedn'], "objectClass=*", array("jpegphoto"));
+			if( $res)
 				{
-				$this->count = $this->entries['count'];
-				}
-
-			$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
-			$this->ldap->connect();
-			$this->entries = $this->ldap->search("(|(cn=".$cn."))", array("jpegphoto"));
-			$this->ldap->close();
-			if( is_array($this->entries) && !empty($this->entries[0]['jpegphoto'][0]) )
-				{
-				header("Content-type: image/jpeg");
-				echo $this->entries[0]['jpegphoto'][0];
-				return;
+				$ei = $ldap->first_entry($res);
+				if( $ei)
+					{
+					$info = $ldap->get_values_len($ei, "jpegphoto");
+			        header("Content-type: image/jpeg");
+					echo $info[0];
+					return;
+					}
 				}
 			}
 		}

@@ -82,6 +82,49 @@ class babLDAP
 			return $arr;
 			}
 	}
+
+	function read($basedn, $filter, $attributes = array(), $attronly = 0, $sizelimit = 0)
+	{
+		$res = ldap_read($this->idlink, $basedn, $filter, $attributes, $attronly, $sizelimit);
+		if( $res === false )
+			{
+			$this->print_error("Read failed : " . $basedn ." - ". $filter);
+			return false;
+			}
+		else
+			{
+			return $res;
+			}
+	}
+
+	function first_entry($ri)
+	{
+		$res = ldap_first_entry($this->idlink, $ri);
+		if( $res === false )
+			{
+			$this->print_error("First entry failed");
+			return false;
+			}
+		else
+			{
+			return $res;
+			}
+	}
+
+	function get_values_len($re, $attr)
+	{
+		$res = ldap_get_values_len($this->idlink, $re, $attr);
+		if( $res === false )
+			{
+			$this->print_error("get values len failed");
+			return false;
+			}
+		else
+			{
+			return $res;
+			}
+	}
+
 }
 
 ?>
