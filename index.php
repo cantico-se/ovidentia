@@ -24,6 +24,8 @@
 session_start();
 if (!session_is_registered('BAB_SESS_NICKNAME')) { session_register("BAB_SESS_NICKNAME"); $BAB_SESS_NICKNAME = ""; }
 if (!session_is_registered('BAB_SESS_USER')) { session_register("BAB_SESS_USER"); $BAB_SESS_USER = ""; }
+if (!session_is_registered('BAB_SESS_FIRSTNAME')) { session_register("BAB_SESS_FIRSTNAME"); $BAB_SESS_FIRSTNAME = ""; }
+if (!session_is_registered('BAB_SESS_LASTNAME')) { session_register("BAB_SESS_LASTNAME"); $BAB_SESS_LASTNAME = ""; }
 if (!session_is_registered('BAB_SESS_EMAIL')) { session_register("BAB_SESS_EMAIL"); $BAB_SESS_EMAIL = ""; }
 if (!session_is_registered('BAB_SESS_USERID')) { session_register("BAB_SESS_USERID"); $BAB_SESS_USERID = ""; }
 if (!session_is_registered('BAB_SESS_HASHID')) { session_register("BAB_SESS_HASHID"); $BAB_SESS_HASHID = ""; }
