@@ -795,7 +795,7 @@
 <string id="User Not Found">Utilisateur inconnu</string>
 <string id="User does'nt exist">L'utilisateur n'existe pas</string>
 <string id="User email">E-Mail de l'utilisateur</string>
-<string id="User is already in the list!">Cette utilisteur est déjà dans la liste!</string>
+<string id="User is already in the list!">Cette utilisateur est déjà dans la liste!</string>
 <string id="User not found or bad password">Utilisateur inconnu ou mot de passe erroné</string>
 <string id="User not found or password incorrect">Utilisateur inconnu ou mot de passe erroné</string>
 <string id="User">Utilisateur</string>
@@ -1158,7 +1158,7 @@
 <string id="Upload path">Répertoire d'upload</string>
 <string id="File manager max file size">Taille maximum d'un fichier du gestionnaire de fichiers</string>
 <string id="File manager max group directory size">Espace maximum occupé par un répertoire groupe</string>
-<string id="File manager max user directory size">Espace maximum occupé par un répertoire utilisteur</string>
+<string id="File manager max user directory size">Espace maximum occupé par un répertoire utilisateur</string>
 <string id="File manager max total size">Espace maximum occupé par le gestionnaire de fichiers</string>
 <string id="ERROR: You must provide all file manager size limits !!">ERREUR : vous devez fournir toutes les tailles limites pour le gestionnaire de fichiers !!</string>
 <string id="Access restriction">Restriction d'accès</string>
@@ -1184,7 +1184,7 @@
 <string id="This delegation group already exists">Ce groupe de délégation existe déja</string>
 <string id="Group of delegation with the same name already exists!">Un groupe de délégation avec le même nom existe déja</string>
 <string id="Managing administrators">Administrateurs délégués</string>
-<string id="It is necessary to remove all associations with the users groups">Il est nécessaire d\'enlever toutes les associations avec les groupes utilisteurs</string>
+<string id="It is necessary to remove all associations with the users groups">Il est nécessaire d\'enlever toutes les associations avec les groupes utilisateurs</string>
 <string id="Administrators of delegation">Les administrateurs de la délégation</string>
 <string id="Managed groups">Groupes administrés</string>
 <string id="Change administration">Changer d'administration</string>
