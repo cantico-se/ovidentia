@@ -169,7 +169,7 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 		}
 
 	$db = new db_mysql();
-	$req = "update contacts set owner='$BAB_SESS_USERID', firstname='$fullname', lastname='$lastname',email='$email', compagny='$compagny', hometel='$hometel', mobiletel='$mobiletel', businesstel='$businesstel', businessfax='$businessfax', jobtitle='$jobtitle', businessaddress='$baddress', homeaddress='$haddress' where id='$id'";
+	$req = "update contacts set owner='$BAB_SESS_USERID', firstname='$firstname', lastname='$lastname',email='$email', compagny='$compagny', hometel='$hometel', mobiletel='$mobiletel', businesstel='$businesstel', businessfax='$businessfax', jobtitle='$jobtitle', businessaddress='$baddress', homeaddress='$haddress' where id='$id'";
 	$res = $db->db_query($req);	
 	return true;
 }
