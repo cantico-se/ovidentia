@@ -20,7 +20,7 @@ function lock()
 	{
 	var obj = document.getElementById('what');
 	var groups = document.getElementById('groups');
-	if (obj.tagName != 'SELECT' || groups.tagName != 'SELECT')
+	if (obj.tagName.toLowerCase() != 'select' || groups.tagName.toLowerCase() != 'select')
 		return false;
 	if (obj.value != "") 
 		{groups.disabled = true;}
