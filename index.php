@@ -433,6 +433,11 @@ switch($tg)
 		include $babInstallPath."$incl.php";
 		exit;
 		break;
+	case "images":
+		$incl = "images";
+		include $babInstallPath."$incl.php";
+		exit;
+		break;
 	case "version":
 		$incl = "version";
 		include $babInstallPath."$incl.php";
