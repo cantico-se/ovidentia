@@ -1,7 +1,7 @@
 
 <!-- comments -->
 <!--#begin commentcreate -->
-<center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlsee }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center>
+<center><a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ urlsee }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center>
 <form name="comcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="comments">
 <input type="hidden" name="idx" value="List">
@@ -13,7 +13,7 @@
 <tr>
 <td>
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
-<tr>
+<tr> 
 <td width="30%" align="right" nowrap valign="middle">{ name }:</td>
 <td width="70%" nowrap valign="middle"> 
 <!--#if anonyme "== 0" -->
@@ -22,19 +22,21 @@
 <!--#if anonyme "== 1" -->
 <input type="text" name="name" size="45" maxlength="60">
 <!--#endif anonyme -->
-
+</td>
+</tr>
+<tr> 
+<td align="right" nowrap>{ subject }:</td>
+<td valign="middle" nowrap> 
+<input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }">
+</td>
+</tr>
 <!-- toolbar -->
-
 <!--#if msie "== 1" -->
 <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
 <script src="{ babScriptPath }editor.js"></script>
-<tr>
-</tr>
-<tr>
-<td align="right" nowrap>&nbsp; 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message"></textarea></td>
-<td valign="middle" nowrap> 
-<input type="text" name="subject" style="VISIBILITY: hidden" size="0" value="{ subjectval }">
+<tr align="center"> 
+<td colspan="2" nowrap>&nbsp; 
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message"></textarea>
 <SCRIPT language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator, '{ babEditorImages }');
@@ -43,58 +45,38 @@
 </td>
 </tr>
 <!--#endif msie -->
-<!-- -->
-
-<tr>
-<td align="right" nowrap>{ subject }:</td>
-<td valign="middle" nowrap> 
-<!--#if msie "== 1" -->
-<SCRIPT language="JavaScript">
-	editor.InFrame(0, "subject", "comcreate", "75%", "20");
-</SCRIPT>
-<!--#else msie -->
-<input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }">
-<!--#endif msie -->
-</td>
-</tr>
-<tr>
+<tr> 
 <td align="right" nowrap>{ message }:</td>
 <td valign="middle"> 
 <!--#if msie "== 1" -->
 <SCRIPT language="JavaScript">
-	editor.InFrame(1, "message", "comcreate", "90%", "160");</SCRIPT>
+	editor.InFrame(0, "message", "comcreate", "90%", "160");</SCRIPT>
 <!--#else msie -->
-	
 <textarea cols="40" rows="10" name="message"></textarea>
 </td>
 <!--#endif msie -->
 </tr>
-
 <!--#if msie "== 1" -->
-<tr>
+<tr> 
 <td align="right">&nbsp;</td>
 <td valign="middle"> 
 <input onClick=SetVals() type="submit" name="submit" value="{ add }">
 </td>
 </tr>
-
 <SCRIPT language="JavaScript">
 	editor.FinalInstantiate(0);
-	editor.FinalInstantiate(1);
 	editor.CloseInitSection();
 </SCRIPT>
 <!--#else msie -->
-<tr>
+<tr> 
 <td>&nbsp;</td>
 <td valign="middle"> 
 <input type="submit" name="submit" value="{ add }">
 </td>
 </tr>
 <!--#endif msie -->
-<tr>
-<td>&nbsp;</td>
-<td valign="middle">&nbsp;{ notcom }
-</td>
+<tr align="center"> 
+<td colspan="2">&nbsp;{ notcom } </td>
 </tr>
 </table>
 </td>

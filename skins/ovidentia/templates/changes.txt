@@ -207,6 +207,7 @@ file			        section		        change
 search.html                                 Replace 'var t=document.open' by 'Start'
 calview.html                                Replace 'var t=document.open' by 'Start'
 comments.html                               Replace 'var t=document.open' by 'Start'
+                    commentcreate           Moved out "subject" from wysiwyg editor
 contacts.html                               Replace 'var t=document.open' by 'Start'
 event.html                                  Replace 'var t=document.open' by 'Start'
 fileman.html                                Replace 'var t=document.open' by 'Start'
