@@ -33,19 +33,19 @@
 	float:right;
 	}
 
-.bab_calnavbar a.prev3 {background-image:url('../images/Puces/arrowPrev3a.gif');}
-.bab_calnavbar a.prev3:hover {background-image:url('../images/Puces/arrowPrev3b.gif');}
-.bab_calnavbar a.prev2 {background-image:url('../images/Puces/arrowPrev2a.gif');}
-.bab_calnavbar a.prev2:hover {background-image:url('../images/Puces/arrowPrev2b.gif');}
-.bab_calnavbar a.prev1 {background-image:url('../images/Puces/arrowPrev1a.gif');}
-.bab_calnavbar a.prev1:hover {background-image:url('../images/Puces/arrowPrev1b.gif');}
+.bab_calnavbar a.prev3 {background-image:url('../skins/ovidentia/images/Puces/arrowPrev3a.gif');}
+.bab_calnavbar a.prev3:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev3b.gif');}
+.bab_calnavbar a.prev2 {background-image:url('../skins/ovidentia/images/Puces/arrowPrev2a.gif');}
+.bab_calnavbar a.prev2:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev2b.gif');}
+.bab_calnavbar a.prev1 {background-image:url('../skins/ovidentia/images/Puces/arrowPrev1a.gif');}
+.bab_calnavbar a.prev1:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev1b.gif');}
 
-.bab_calnavbar a.next3 {background-image:url('../images/Puces/arrowNext3a.gif');}
-.bab_calnavbar a.next3:hover {background-image:url('../images/Puces/arrowNext3b.gif');}
-.bab_calnavbar a.next2 {background-image:url('../images/Puces/arrowNext2a.gif');}
-.bab_calnavbar a.next2:hover {background-image:url('../images/Puces/arrowNext2b.gif');}
-.bab_calnavbar a.next1 {background-image:url('../images/Puces/arrowNext1a.gif');}
-.bab_calnavbar a.next1:hover {background-image:url('../images/Puces/arrowNext1b.gif');}
+.bab_calnavbar a.next3 {background-image:url('../skins/ovidentia/images/Puces/arrowNext3a.gif');}
+.bab_calnavbar a.next3:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext3b.gif');}
+.bab_calnavbar a.next2 {background-image:url('../skins/ovidentia/images/Puces/arrowNext2a.gif');}
+.bab_calnavbar a.next2:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext2b.gif');}
+.bab_calnavbar a.next1 {background-image:url('../skins/ovidentia/images/Puces/arrowNext1a.gif');}
+.bab_calnavbar a.next1:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext1b.gif');}
 
 table.bab_calendar {
 	border:0;
@@ -226,11 +226,11 @@ a img {
 	}
 
 .bab_buttons a.print {
-	background-image:url('../images/Puces/Print.gif');
+	background-image:url('../skins/ovidentia/images/Puces/Print.gif');
 	}
 
 .bab_buttons a.calendars {
-	background-image:url('../images/Puces/popupselect.gif');
+	background-image:url('../skins/ovidentia/images/Puces/popupselect.gif');
 	}
 
 .BabTodayEvent .HeaderDayCalendar {
@@ -257,7 +257,7 @@ a img {
 
 .bab_calendar .used {
 	background-color:lightgrey;
-	background-image:url('../images/Puces/stripsbackground.gif');
+	background-image:url('../skins/ovidentia/images/Puces/stripsbackground.gif');
 	}
 
 .bab_calendar .used .bab_tooltip {

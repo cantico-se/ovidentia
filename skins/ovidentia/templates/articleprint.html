@@ -12,6 +12,7 @@
 	display: block;
 	width:90px;
 	text-align:center;
+	white-space:nowrap;
 	}
 
 #toolbar a {
@@ -19,6 +20,11 @@
 	font-weight:bold;
 	margin:3px;
 	text-decoration:none;
+	}
+
+body {
+	background-color:#fff;
+	font-size: 1em;
 	}
 
 body div {
@@ -61,7 +67,7 @@ function textsize(param)
 //-->
 </script>
 </HEAD>
-<BODY style="background:#FFFFFF;">
+<BODY>
 <div style="width:100%;border-bottom:#000000 1px solid;padding:0.5em;">{ url } - { babUrl }<!--#if content --> - <span class="printhide"><a href="javascript:hide_div('print_head')">{ print_head }</a> - <a href="javascript:hide_div('print_content')">{ print_body }</a></span><!--#endif content --></div>
 <div>
 	<h3 align="center">{ title }</h3>
