@@ -976,10 +976,8 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 	$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
 	$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
 	$db->db_query($req);
-	return true;
 	}
-
-	
+	return true;	
 }
 
 function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category)
