@@ -135,7 +135,7 @@ function searchKeyword($item , $option = "OR")
 			$this->option_or = bab_translate("or");
 			$this->option_and = bab_translate("and");
 			$this->option_not = bab_translate("exclude");
-			$this->switch = bab_translate("Advenced search"); 
+			$this->switch = bab_translate("Advanced search"); 
 
 			$this->before = bab_translate("before date");
 			$this->after = bab_translate("after date");
