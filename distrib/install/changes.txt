@@ -1,4 +1,12 @@
 /************************************************************************/
+Septembre 2002: Version 3.4.0
+/************************************************************************/
+- Improved calendar ( pm/am, scale time, multiple views...)
+- Possibility to order forums and topics in sections 
+- Possibility to move article from topic to another topic 
+- Now topics can be not moderate
+
+/************************************************************************/
 Juillet 2002: Version 3.3.3
 /************************************************************************/
 - Possibility to upload and link images to articles
