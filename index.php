@@ -15,6 +15,7 @@ include $babInstallPath."utilit/utilit.php";
 
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
+$babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
 
 bab_userIsloggedin();
