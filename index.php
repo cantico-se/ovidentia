@@ -3,6 +3,7 @@
 //include($lvc_include_dir.'new-visitor.inc.php3');
 unset($LOGGED_IN);
 session_start();
+session_register("BAB_SESS_NICKNAME");
 session_register("BAB_SESS_USER");
 session_register("BAB_SESS_EMAIL");
 session_register("BAB_SESS_USERID");
@@ -367,6 +368,14 @@ switch($tg)
 		if( $LOGGED_IN)
 			{
 			$incl = "contact";
+			include $babInstallPath."$incl.php";
+			exit;
+			}
+		break;
+	case "address":
+		if( $LOGGED_IN)
+			{
+			$incl = "address";
 			include $babInstallPath."$incl.php";
 			exit;
 			}

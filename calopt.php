@@ -7,7 +7,7 @@ function accessCalendar($calid)
 	
 	class temp
 		{
-		var $email;
+		var $userstxt;
 		var $textinfo;
 		var $calid;
 		var $addusers;
@@ -16,6 +16,7 @@ function accessCalendar($calid)
 		var $accessname;
 		var $yesno;
 		var $delusers;
+		var $fullnameval;
 
 		var $db;
 		var $res;
@@ -26,8 +27,8 @@ function accessCalendar($calid)
 			{
 			$this->db = new db_mysql();
 			$this->calid = $calid;
-			$this->email = babTranslate("Email");
-			$this->textinfo = babTranslate("Enter user email. ( You can enter multiple emails separated by space )");
+			$this->userstxt = babTranslate("Users");
+			$this->textinfo = babTranslate("Enter user name. ( You can enter multiple users separated by comma )");
 			$this->addusers = babTranslate("Update access");
 			$this->useraccess = babTranslate("User can update my calendar");
 			$this->fullname = babTranslate("Fullname");
@@ -47,6 +48,7 @@ function accessCalendar($calid)
 				$req = "select * from users where id='".$arr[id_user]."'";
 				$res = $this->db->db_query($req);
 				$this->arr = $this->db->db_fetch_array($res);
+				$this->fullnameval = composeName($this->arr[firstname], $this->arr[lastname]);
 				if( $arr[bwrite] == "Y")
 					$this->yesno = babTranslate("Yes");
 				else
@@ -66,10 +68,11 @@ function accessCalendar($calid)
 	$body->babecho(	babPrintTemplate($temp,"calopt.html", "access"));
 }
 
-function addAccessUsers( $emails, $calid, $baccess, $del )
+function addAccessUsers( $users, $calid, $baccess, $del )
 {
+
 	$db = new db_mysql();
-	$arr = explode(" ", $emails);
+	$arr = explode(",", $users);
 
 	if( $baccess == "y")
 		$acc = "Y";
@@ -78,12 +81,9 @@ function addAccessUsers( $emails, $calid, $baccess, $del )
 
 	for( $i = 0; $i < count($arr); $i++)
 		{
-		$req = "select * from users where email='".trim($arr[$i])."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
+		$iduser = getUserId($arr[$i]);
+		if( $iduser > 0)
 			{
-			$rr = $db->db_fetch_array($res);
-			$iduser = $rr[id];
 			$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$iduser."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
@@ -201,7 +201,7 @@ if( isset($accessuser) && $accessuser == "add")
 		$del = true;
 	else
 		$del = false;
-	addAccessUsers($emails, $idcal, $baccess, $del);
+	addAccessUsers($users, $idcal, $baccess, $del);
 	//Header("Location: index.php?tg=calendar&idx=".$idx."&calid=".$calendar."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
 }
 

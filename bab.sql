@@ -120,6 +120,7 @@ CREATE TABLE mail_signatures (
 
 CREATE TABLE contacts (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	category INT (11) UNSIGNED not null,
 	owner INT (11) UNSIGNED not null,
 	firstname TEXT not null,
 	lastname TEXT not null,
@@ -134,3 +135,8 @@ CREATE TABLE contacts (
 	homeaddress TEXT not null,
 	PRIMARY KEY (id)
 ); 
+
+#------- dev et babinstall.sql
+ALTER TABLE users CHANGE name nickname CHAR (30);
+ALTER TABLE users ADD firstname CHAR (60) not null AFTER nickname , ADD lastname CHAR (60) not null AFTER firstname;
+$req = "ALTER TABLE users DROP fullname";

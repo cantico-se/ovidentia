@@ -6,12 +6,12 @@ function displayLogin()
 	global $body;
 	class temp
 		{
-		var $email;
+		var $nickname;
 		var $password;
 
 		function temp()
 			{
-			$this->email = babTranslate("Email");
+			$this->nickname = babTranslate("Nickname");
 			$this->password = babTranslate("Password");
 			$this->login = babTranslate("Login");
 			}
@@ -27,12 +27,12 @@ function emailPassword()
 	global $body;
 	class temp
 		{
-		var $email;
+		var $nickname;
 		var $send;
 
 		function temp()
 			{
-			$this->email = babTranslate("Your email");
+			$this->nickname = babTranslate("Your nickname");
 			$this->send = babTranslate("Send");
 			}
 		}
@@ -41,21 +41,16 @@ function emailPassword()
 	$body->babecho(	babPrintTemplate($temp,"login.html", "emailpassword"));
 	}
 
-function signOn( $email, $password)
+function signOn( $nickname, $password)
 	{
 	global $body, $BAB_SESS_USER, $BAB_SESS_USERID;
-	if( empty($email) || empty($password))
+	if( empty($nickname) || empty($password))
 		{
 		$body->msgerror = babTranslate("You must complete all fields !!");
 		return false;
 		}
-	if ( !isEmailValid($email))
-		{
-		$body->msgerror = babTranslate("Your email is not valid !!");
-		return false;
-		}
 
-	if( !userLogin($email, $password))
+	if( !userLogin($nickname, $password))
 		return false;
 
 	$db = new db_mysql();
@@ -87,10 +82,12 @@ function signOff()
 		$res=$db->db_query($req);
 		}
 
+	$BAB_SESS_NICKNAME = "";
 	$BAB_SESS_USER = "";
 	$BAB_SESS_EMAIL = "";
 	$BAB_SESS_USERID ="";
 	$BAB_SESS_HASHID = "";
+	session_unregister("BAB_SESS_NICKNAME");
 	session_unregister("BAB_SESS_USER");
 	session_unregister("BAB_SESS_EMAIL");
 	session_unregister("BAB_SESS_USERID");
@@ -98,20 +95,32 @@ function signOff()
 	Header("Location: index.php");
 	}
 
-function userCreate()
+function userCreate($firstname, $lastname, $nickname, $email)
 	{
 	global $body;
 	class temp
 		{
-		var $fullname;
+		var $firstname;
+		var $lastname;
+		var $nickname;
 		var $email;
 		var $password;
 		var $repassword;
 		var $adduser;
+		var $firstnameval;
+		var $lastnameval;
+		var $nicknameval;
+		var $emailval;
 
-		function temp()
+		function temp($firstname, $lastname, $nickname, $email)
 			{
-			$this->fullname = babTranslate("Full Name");
+			$this->firstnameval = $firstname != ""? $firstname: "";
+			$this->lastnameval = $lastname != ""? $lastname: "";
+			$this->nicknameval = $nickname != ""? $nickname: "";
+			$this->emailval = $email != ""? $email: "";
+			$this->firstname = babTranslate("First Name");
+			$this->lastname = babTranslate("Last Name");
+			$this->nickname = babTranslate("Nickname");
 			$this->email = babTranslate("Email");
 			$this->password = babTranslate("Password");
 			$this->repassword = babTranslate("Retype Paasword");
@@ -119,50 +128,14 @@ function userCreate()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new temp($firstname, $lastname, $nickname, $email);
 	$body->babecho(	babPrintTemplate($temp,"login.html", "usercreate"));
 	}
-
-function addUser( $fullname, $email, $password1, $password2)
-	{
-	global $body;
-	if( empty($fullname) || empty($email) || empty($password1) || empty($password2))
-		{
-		$body->msgerror = babTranslate( "You must complete all fields !!");
-		return;
-		}
-	if( $password1 != $password2)
-		{
-		$body->msgerror = babTranslate("Passwords not match !!");
-		return;
-		}
-	if ( strlen($password1) < 6 )
-		{
-		$body->msgerror = babTranslate("Password must be at least 6 characters !!");
-		return;
-		}
-
-	if ( !isEmailValid($email))
-		{
-		$body->msgerror = babTranslate("Your email is not valid !!");
-		return;
-		}
-
-	$db = new db_mysql();
-	$query = "select * from users where email='$email'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$body->msgerror = babTranslate("This email address already exists !!");
-		return;
-		}
-	registerUser($fullname, $email, $password1, $password2);
-}
 
 /* main */
 if( isset($login) && $login == "login")
 	{
-	if(!signOn($email, $password))
+	if(!signOn($nickname, $password))
 		return;
 	Header("Location: index.php?tg=calview");
 	}
@@ -170,12 +143,13 @@ if( isset($login) && $login == "login")
 
 if( isset($adduser) && $adduser == "register")
 	{
-	addUser($fullname, $email, $password1, $password2);
+	if( !addUser( $firstname, $lastname, $nickname, $email, $password1, $password2))
+		$cmd = "register";
 	}
 
 if( isset($sendpassword) && $sendpassword == "send")
 	{
-	sendPassword($email);
+	sendPassword($nickname);
 	}
 
 switch($cmd)
@@ -190,8 +164,7 @@ switch($cmd)
 		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
 		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
 		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
-		$body->setCurrentItemMenu($cmd);
-		userCreate();
+		userCreate($firstname, $lastname, $nickname, $email);
 		break;
 
 	case "emailpwd":
@@ -199,7 +172,6 @@ switch($cmd)
 		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
 		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
 		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
-		$body->setCurrentItemMenu($cmd);
 		emailPassword();
 		break;
 
@@ -209,9 +181,9 @@ switch($cmd)
 		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
 		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
 		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
-		$body->setCurrentItemMenu($cmd);
 		displayLogin();
 		break;
 	}
+$body->setCurrentItemMenu($cmd);
 
 ?>

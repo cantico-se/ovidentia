@@ -190,7 +190,7 @@ function confirmArticle($article, $topics)
 				$req = "select * from users where id='".$arr[id_author]."'";
 				$this->res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($this->res);
-				$this->fullname = $arr2[fullname];
+				$this->fullname = composeName($arr2[firstname], $arr2[lastname]);
 				$this->author = $arr[id_author];
 				}
 			}
@@ -242,7 +242,10 @@ function listWaitingComments($topics, $article, $newc)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
 				$this->subjecturl = $GLOBALS[babUrl]."index.php?tg=waiting&idx=ReadC&topics=".$this->topics."&article=".$this->article."&com=".$this->arr[id]."&newc=".$this->newc;
-				$this->subjectname = $this->arr[subject];
+				if( empty($this->arr[subject]))
+					$this->subjectname = "-oOo-";
+				else
+					$this->subjectname = $this->arr[subject];
 				$i++;
 				return true;
 				}

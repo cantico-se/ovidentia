@@ -395,8 +395,8 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-        $top = $arr[category];
 		$arr = $db->db_fetch_array($res);
+        $top = $arr[category];
 		$req = "select * from users where id='$arr[id_approver]'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)

@@ -177,6 +177,69 @@ function deleteComment($topics, $article, $com, $newc)
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function notifyApprover($top, $article, $title, $approveremail)
+	{
+	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+    include $babInstallPath."utilit/mailincl.php";
+
+	class tempa
+		{
+		var $article;
+		var $articlename;
+		var $message;
+        var $from;
+        var $author;
+        var $category;
+        var $categoryname;
+        var $subject;
+        var $subjectname;
+        var $title;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($top, $article, $title)
+			{
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->subjectname = $title;
+            $this->message = babTranslate("A new comment is waiting for you");
+            $this->from = babTranslate("Author");
+            $this->subject = babTranslate("Subject");
+            $this->subjectname = $title;
+            $this->article = babTranslate("Article");
+            $this->articlename = $article;
+            $this->category = babTranslate("Topic");
+            $this->categoryname = $top;
+            $this->site = babTranslate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = babTranslate("Date");
+            $this->dateval = bab_strftime(mktime());
+            if( !empty($BAB_SESS_USER))
+                $this->author = $BAB_SESS_USER;
+            else
+                $this->author = babTranslate("Unknown user");
+
+            if( !empty($BAB_SESS_EMAIL))
+                $this->authoremail = $BAB_SESS_EMAIL;
+            else
+                $this->authoremail = "";
+			}
+		}
+	
+	$tempa = new tempa($top, $article, $title);
+	$message = babPrintTemplate($tempa,"mailinfo.html", "commentwait");
+
+    $mail = new babMail();
+    $mail->mailTo($approveremail);
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject(babTranslate("New waiting comment"));
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
+
+
 function saveComment($topics, $article, $name, $subject, $message, $com)
 	{
 	global $BAB_SESS_USER, $BAB_SESS_EMAIL;
@@ -199,13 +262,18 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
+        $top = $arr[category];
 		$req = "select * from users where id='$arr[id_approver]'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr2 = $db->db_fetch_array($res);
-			$message = babTranslate("A new Comment is waiting for you on topic: \n  "). $arr[category];
-			mail ($arr2[email],'New waiting article',$message,"From: ".$babAdminEmail);
+			$req = "select * from articles where id='$article'";
+			$res = $db->db_query($req);
+			$arr3 = $db->db_fetch_array($res);
+			//$message = babTranslate("A new Comment is waiting for you on topic: \n  "). $arr[category];
+			//mail ($arr2[email],'New waiting article',$message,"From: ".$babAdminEmail);
+            notifyApprover($top, $arr3[title], $subject, $arr2[email]);
 			}
 		}
 	}

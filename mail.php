@@ -39,6 +39,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $rescl;
 		var $none;
 		var $contactslist;
+		var $urlto;
 
 		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
 			{
@@ -91,6 +92,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
             $this->selectsig = "-- ".babTranslate("Select signature"). " --";
 			$this->none = "-- ".babTranslate("Select destinataire"). " --";
 			$this->contactslist = babTranslate("Contacts");
+			$this->urlto = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=address&idx=list')";
 			$this->db = new db_mysql();
 			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 			$res = $this->db->db_query($req);

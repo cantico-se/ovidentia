@@ -154,7 +154,7 @@ CREATE TABLE groups (
    PRIMARY KEY (id)
 );
 
-INSERT INTO groups VALUES ( '1', 'Users', 'All registered users', 'N', '0');
+INSERT INTO groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0');
 INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0');
 INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0');
 
@@ -591,6 +591,7 @@ CREATE TABLE mail_signatures (
 
 CREATE TABLE contacts (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	category INT (11) UNSIGNED not null,
 	owner INT (11) UNSIGNED not null,
 	firstname TEXT not null,
 	lastname TEXT not null,

@@ -136,7 +136,7 @@ function listPosts($forum, $thread, $pos, $what)
 					$req = "select * from users where id='".$arr[moderator]."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$this->more = babTranslate("Modified by")." ".$arr[fullname]." ".babTranslate("on")." ".bab_strftime($dateupdate);
+					$this->more = babTranslate("Modified by")." ".composeName($arr[firstname],$arr[lastname])." ".babTranslate("on")." ".bab_strftime($dateupdate);
 					$this->confirmurl = "";
 					$this->confirmname = "";
 					$this->moreurl = "";

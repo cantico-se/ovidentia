@@ -73,7 +73,7 @@ function listContacts($pos)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=contact&idx=modify&item=".$this->arr[id]."&bliste=1');";
 				$this->urlmail = $GLOBALS[babUrl]."index.php?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr[email];
-				$this->urlname = $this->arr[lastname]. " ". $this->arr[firstname];
+				$this->urlname = composeName( $this->arr[firstname], $this->arr[lastname]);
 				$i++;
 				return true;
 				}
@@ -144,7 +144,7 @@ function contactsDelete($item, $pos)
 				if( $db->db_num_rows($res) > 0)
 					{
 					$arr = $db->db_fetch_array($res);
-					$this->title .= "<br>". $arr[firstname]. " " .$arr[lastname];
+					$this->title .= "<br>". composeName($arr[firstname], $arr[lastname]);
 					$items .= $arr[id];
 					}
 				if( $i < count($item) -1)

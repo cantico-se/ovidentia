@@ -90,6 +90,7 @@ function resourceCreate($userid, $grpid)
 				$req = "select * from groups where id='".$this->idgrp[$i]."'";
 				$res = $this->db->db_query($req);
 				$this->arrgroups = $this->db->db_fetch_array($res);
+
 				if( $i == 0 )
 					$this->arrgroups[select] = "selected";
 				else
