@@ -152,15 +152,15 @@ function isUserAlreadyLogged($iduser)
 /* for current user */
 function userIsloggedin()
 	{
-	global $body, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$LOGGED_IN;
+	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$LOGGED_IN;
 
 	if (isset($LOGGED_IN))
 		{
 		return $LOGGED_IN;
 		}
-	if (!empty($BAB_SESS_EMAIL) && !empty($BAB_SESS_HASHID))
+	if (!empty($BAB_SESS_NICKNAME) && !empty($BAB_SESS_HASHID))
 		{
-		$hash=md5($BAB_SESS_EMAIL.$BAB_HASH_VAR);
+		$hash=md5($BAB_SESS_NICKNAME.$BAB_HASH_VAR);
 		if ($hash == $BAB_SESS_HASHID)
 			{
 			$LOGGED_IN=true;
@@ -185,7 +185,7 @@ function getUserName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[fullname];
+		return composeName($arr[firstname], $arr[lastname]);
 		}
 	else
 		{
@@ -293,4 +293,20 @@ function mailAccessLevel()
 	return $bemail;
 	}
 
+
+function getUserId( $name )
+	{
+	$replace = array( " " => "", "-" => "");
+	$db = new db_mysql();
+	$hash = md5(strtolower(strtr($name, $replace)));
+	$query = "select * from users where hashname='".$hash."'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr[id];
+		}
+	else
+		return 0;
+	}
 ?>

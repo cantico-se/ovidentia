@@ -105,26 +105,24 @@ function saveCategory($category, $description, $manager)
 		}
 
 	$db = new db_mysql();
-	$query = "select * from users where email='$manager'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
-		{
-		$body->msgerror = babTranslate("ERROR: The manager doesn't exist !!");
-		return;
-		}
-	$arr = $db->db_fetch_array($res);
-
 	$query = "select * from faqcat where category='$category'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
 		$body->msgerror = babTranslate("ERROR: This category already exists");
+		return;
 		}
-	else
+
+	$managerid = getUserId($manager);
+	if( $managerid < 1)
 		{
-		$query = "insert into faqcat (id_manager, category, description) values ('" .$arr[id]. "', '" .$category. "', '" . $description. "')";
-		$db->db_query($query);
+		$body->msgerror = babTranslate("ERROR: The manager doesn't exist !!");
+		return;
 		}
+
+	$query = "insert into faqcat (id_manager, category, description) values ('" .$managerid. "', '" .$category. "', '" . $description. "')";
+	$db->db_query($query);
+
 	}
 
 /* main */

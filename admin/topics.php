@@ -16,7 +16,7 @@ function addCategory()
 			{
 			$this->category = babTranslate("Category");
 			$this->description = babTranslate("Description");
-			$this->approver = babTranslate("Approver email");
+			$this->approver = babTranslate("Approver");
 			$this->add = babTranslate("Add");
 			}
 		}
@@ -66,7 +66,7 @@ function listCategories()
 				$req = "select * from users where id='".$this->arr[id_approver]."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				$this->approver = $arr2[fullname];
+				$this->approver = composeName($arr2[firstname], $arr2[lastname]);
 				$i++;
 				return true;
 				}
@@ -95,26 +95,22 @@ function saveCategory($category, $description, $approver)
 		}
 
 	$db = new db_mysql();
-	$query = "select * from users where email='$approver'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
-		{
-		$body->msgerror = babTranslate("ERROR: The approver doesn't exist !!");
-		return;
-		}
-	$arr = $db->db_fetch_array($res);
-
 	$query = "select * from topics where category='$category'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
 		$body->msgerror = babTranslate("ERROR: This category already exists");
 		}
-	else
+
+	$approverid = getUserId($approver);	
+	if( $approverid < 1)
 		{
-		$query = "insert into topics (id_approver, category, description) values ('" .$arr[id]. "', '" . $category. "', '" . $description. "')";
-		$db->db_query($query);
+		$body->msgerror = babTranslate("ERROR: The approver doesn't exist !!");
+		return;
 		}
+
+	$query = "insert into topics (id_approver, category, description) values ('" .$approverid. "', '" . $category. "', '" . $description. "')";
+	$db->db_query($query);
 	}
 
 

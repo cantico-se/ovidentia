@@ -164,6 +164,7 @@ switch($idx)
 	case "Delete":
 		$body->title = getSectionName($item);
 		sectionDelete($item);
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=section&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=section&idx=Delete&item=".$item);
@@ -171,6 +172,7 @@ switch($idx)
 	case "Groups":
 		$body->title = getSectionName($item) . babTranslate(" is visible by groups");
 		aclGroups("section", "Modify", "sections_groups", $item, "aclsec");
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=section&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=section&idx=Delete&item=".$item);
@@ -179,6 +181,7 @@ switch($idx)
 	case "Modify":
 		$body->title = getSectionName($item);
 		sectionModify($item);
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=section&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=section&idx=Delete&item=".$item);

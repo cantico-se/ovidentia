@@ -109,7 +109,7 @@ function getCalendarOwnerName($idcal, $type)
 			$query = "select * from users where id='".$arr[owner]."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
-			$ret = $arr[fullname];
+			$ret = composeName( $arr[firstname], $arr[lastname]);
 			}
 		else if( $type == 2)
 			{

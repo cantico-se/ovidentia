@@ -13,6 +13,11 @@
 <br><br><br><br><br>
 <!--#begin mailcompose -->
 <script language="JavaScript">
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200");
+}
 function addAddress()
 	{
 	var pad;
@@ -63,7 +68,7 @@ function addAddress()
 <td><b>{ fromval }</b></td>
 </tr>
 <tr>
-<td align="right">{ to }</td>
+<td align="right"><a class=BabMenuLink href="{ urlto }">{ to }</a></td>
 <td><input type="text" name="to" size="80" value="{ toval }"></td>
 </tr>
 <tr>

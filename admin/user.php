@@ -13,7 +13,6 @@ function modifyUser($id)
 		}
 	class temp
 		{
-		var $fullname;
 		var $changepassword;
 		var $isconfirmed;
 		var $primarygroup;
@@ -35,7 +34,6 @@ function modifyUser($id)
 
 		function temp($id)
 			{
-			$this->fullname = babTranslate("Full Name");
 			$this->changepassword = babTranslate("Can user change password ?");
 			$this->isconfirmed = babTranslate("Account confirmed ?");
 			$this->isdisabled = babTranslate("Account disabled ?");
@@ -227,16 +225,11 @@ function updateGroups($id, $groups)
 
 	}
 
-function updateUser($id, $fullname, $changepwd, $is_confirmed, $disabled, $group)
+function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 	{
 	global $body;
-	if( empty($fullname))
-		{
-		$body->msgerror = babTranslate("ERROR: You must provide a full name !!");
-		return;
-		}
 
-	$req = "update users set fullname='$fullname', changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'";
+	$req = "update users set changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'";
 	$db = new db_mysql();
 	$res = $db->db_query($req);
 	if( !empty($group))
@@ -311,7 +304,7 @@ if( isset($updategroups))
 	updateGroups($item, $groups);
 
 if( isset($modify))
-	updateUser($item, $fullname, $changepwd, $is_confirmed, $disabled, $group);
+	updateUser($item, $changepwd, $is_confirmed, $disabled, $group);
 
 if( isset($action) && $action == "Yes")
 	{
@@ -323,24 +316,27 @@ switch($idx)
 	case "Delete":
 		$body->title = babTranslate("Delete a user");
 		deleteUser($item);
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=user&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=user&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$pos);
+		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$item."&pos=".$pos);
+		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=user&idx=Groups&item=".$item."&pos=".$pos);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=user&idx=Delete&item=".$item."&pos=".$pos);
 		//$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create");
 		break;
 	case "Groups":
 		$body->title = getUserName($item) . babTranslate(" is member of");
 		listGroups($item);
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=user&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=user&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$pos);
+		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$item."&pos=".$pos);
+		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=user&idx=Groups&item=".$item."&pos=".$pos);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=user&idx=Delete&item=".$item."&pos=".$pos);
 		break;
 	case "Modify":
-		$body->title = babTranslate("Modify a user");
+		$body->title = /* babTranslate("Modify a user") . ": " . */getUserName($item);
 		modifyUser($item);
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=user&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=user&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$pos);
+		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$item."&pos=".$pos);
+		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=user&idx=Groups&item=".$item."&pos=".$pos);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=user&idx=Delete&item=".$item."&pos=".$pos);
 		//$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create");
 		break;
 	default:

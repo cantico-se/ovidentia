@@ -31,6 +31,7 @@ function modifyCategory($id)
 		var $category;
 		var $description;
 		var $manager;
+		var $managername;
 		var $add;
 
 		var $db;
@@ -51,6 +52,7 @@ function modifyCategory($id)
 			$req = "select * from users where id='".$this->arr[id_manager]."'";
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
+			$this->managername = composeName( $this->arr2[firstname], $this->arr2[lastname]);
 			}
 		}
 
@@ -102,17 +104,15 @@ function updateCategory($id, $category, $description, $manager)
 		return;
 		}
 
-	$db = new db_mysql();
-	$query = "select * from users where email='$manager'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
+	$managerid = getUserId($manager);
+	if( $managerid < 1)
 		{
 		$body->msgerror = babTranslate("ERROR: The manager doesn't exist !!");
 		return;
 		}
-	$arr = $db->db_fetch_array($res);
 
-	$query = "update faqcat set id_manager='$arr[id]', category='$category', description='$description' where id = '$id'";
+	$db = new db_mysql();
+	$query = "update faqcat set id_manager='$managerid', category='$category', description='$description' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: index.php?tg=admfaqs&idx=Categories");
 

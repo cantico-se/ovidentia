@@ -26,17 +26,20 @@
 <td nowrap><a href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a></td>
 </tr>
 <!--#endin getnext -->
-<tr><td colspan="3">
-<table class="BabListContentBgnd" border="0" width="100%" cellpadding="0" cellspacing="0">
-<tr>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ topurl }">{ topname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ prevurl }">{ prevname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ nexturl }">{ nextname }</a></td>
-<td width="25%" class="BabPostTitleBgnd" align="center"><a class=BabMenuLink href="{ bottomurl }">{ bottomname }</a></td>
-</tr>
-</table>
+<td class="BabListTitleBgnd" colspan="3">
+<!--#if allselected "== 1" -->
+{ allname }&nbsp;&nbsp;
+<!--#else allselected -->
+<a class=BabMenuLink href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }&nbsp;&nbsp;
+<!--#else selected -->
+<a class=BabMenuLink href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
+<!--#endif selected -->
+<!--#endin getnextselect -->
 </td>
-</tr>
 </TBODY>
 </table>
 </td></tr>
@@ -44,11 +47,10 @@
 </center>
 <!--#end userslist -->
 <br><br><br><br><br>
-<!--#begin userscreate -->
+<!--#begin usercreate -->
 <center>
 <table border="0" width="90%" cellpadding="0" cellspacing="0">
 <tr><td>
-
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="users">
 <input type="hidden" name="idx" value="List">
@@ -56,12 +58,20 @@
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
 <tr>
-<td align="right" nowrap>{ fullname }:</td>
-<td><input type="text" name="fullname" size="30" maxlength="60"></td>
+<td align="right" nowrap>{ firstname }:</td>
+<td ><input type="text" name="firstname" size="30" maxlength="60" value="{ firstnameval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ lastname }:</td>
+<td ><input type="text" name="lastname" size="30" maxlength="60" value="{ lastnameval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ nickname }:</td>
+<td ><input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }"></td>
 </tr>
 <tr>
 <td align="right" nowrap>{ email }:</td>
-<td><input type="text" name="email" size="30" maxlength="60"></td>
+<td><input type="text" name="email" size="30" maxlength="60" value="{ emailval }"></td>
 </tr>
 <tr>
 <td align="right" nowrap>{ password }:</td>
@@ -72,8 +82,8 @@
 <td><input type="password" name="password2" size="20" maxlength="15"></td>
 </tr>
 <tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="Submit" value="{ adduser }"></td>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input type="submit" name="Submit" value="{ adduser }"></td>
 </tr>
 </table>
 </center>
@@ -81,7 +91,7 @@
 </td></tr>
 </table>
 </center>
-<!--#end userscreate -->
+<!--#end usercreate -->
 <br><br><br><br><br>
 <!--#begin usersmodify -->
 <center>
@@ -95,10 +105,6 @@
 <input type="hidden" name="modify" value="modify">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ fullname }</td>
-<td><input type="text" name="fullname" value="{ arr[fullname] }"></td>
-</tr>
 <tr>
 <td align="right" nowrap>{ changepassword }</td>
 <td>

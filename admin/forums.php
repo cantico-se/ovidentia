@@ -1,7 +1,7 @@
 <?php
 include $babInstallPath."utilit/forumincl.php";
 
-function addForum()
+function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 	{
 	global $body;
 	class temp
@@ -9,14 +9,18 @@ function addForum()
 		var $name;
 		var $description;
 		var $moderator;
+		var $nameval;
+		var $descriptionval;
+		var $moderatorval;
 		var $nbmsgdisplay;
+		var $nbmsgdisplayval;
 		var $moderation;
 		var $active;
 		var $yes;
 		var $no;
 		var $add;
 
-		function temp()
+		function temp($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 			{
 			$this->name = babTranslate("Name");
 			$this->description = babTranslate("Description");
@@ -27,10 +31,14 @@ function addForum()
 			$this->no = babTranslate("No");
 			$this->add = babTranslate("Add");
 			$this->active = babTranslate("Active");
+			$this->nameval = $nameval == ""? "": $nameval;
+			$this->descriptionval = $descriptionval == ""? "": $descriptionval;
+			$this->moderatorval = $moderatorval == ""? "": $moderatorval;
+			$this->nbmsgdisplayval = $nbmsgdisplayval == ""? "": $nbmsgdisplayval;
 			}
 		}
 
-	$temp = new temp();
+	$temp = new temp($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval);
 	$body->babecho(	babPrintTemplate($temp,"forums.html", "forumcreate"));
 	}
 
@@ -92,43 +100,39 @@ function saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, 
 	if( empty($name))
 		{
 		$body->msgerror = babTranslate("ERROR: You must provide a name")." !";
-		return;
+		return false;
 		}
 
 	if( $moderation == "Y" && empty($moderator))
 		{
 		$body->msgerror = babTranslate("ERROR: You must provide a moderator")." !";
-		return;
+		return false;
 		}
 	
 	$db = new db_mysql();
-	if($moderation == "Y")
-		{
-		$query = "select * from users where email='$moderator'";	
-		$res = $db->db_query($query);
-		if( $db->db_num_rows($res) < 1)
-			{
-			$body->msgerror = babTranslate("ERROR: The moderator doesn't exist !!");
-			return;
-			}
-		$arr = $db->db_fetch_array($res);
-		$moderatorid = $arr[id];
-		}
-	else
-		$moderatorid = 0;	
 	$query = "select * from forums where name='$name'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
 		$body->msgerror = babTranslate("ERROR: This forum already exists");
-		}
-	else
-		{
-		$query = "insert into forums (name, description, display, moderator, moderation, active)";
-		$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $moderatorid. "', '" . $moderation. "', '" . $active. "')";
-		$db->db_query($query);
+		return false;
 		}
 
+	if($moderation == "Y")
+		{
+		$moderatorid = getUserId($moderator);
+		if( $moderatorid < 1)
+			{
+			$body->msgerror = babTranslate("ERROR: The moderator doesn't exist !!");
+			return false;
+			}
+		}
+	else
+		$moderatorid = 0;	
+	$query = "insert into forums (name, description, display, moderator, moderation, active)";
+	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $moderatorid. "', '" . $moderation. "', '" . $active. "')";
+	$db->db_query($query);
+	return true;
 
 	}
 
@@ -140,16 +144,17 @@ if(!isset($idx))
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
-	saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, $active);
+	if( !saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, $active))
+		$idx = "addforum";
 	}
 
 switch($idx)
 	{
 	case "addforum":
 		$body->title = babTranslate("Add a new forum");
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
+		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("addforum", babTranslate("Add"), $GLOBALS[babUrl]."index.php?tg=forums&idx=addforum");
-		addForum();
+		addForum($name, $description, $moderator, $nbmsgdisplay);
 		break;
 
 	default:
@@ -157,7 +162,7 @@ switch($idx)
 		$body->title = babTranslate("List of all forums");
 		if( listForums() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
+			$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 			}
 		else
 			$body->title = babTranslate("There is no forum");

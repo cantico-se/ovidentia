@@ -146,7 +146,7 @@ switch($idx)
 	case "Create":
 		$body->title = babTranslate("Create section");
 		sectionCreate();
-		$body->addItemMenu("List", babTranslate("List"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Create");
 		break;
 	case "List":
@@ -154,7 +154,7 @@ switch($idx)
 		$body->title = babTranslate("Sections list");
 		if( sectionsList() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("List"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
+			$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
 			}
 		else
 			$body->title = babTranslate("There is no section");

@@ -61,7 +61,7 @@ function getArticleAuthor($article)
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			return $arr[fullname];
+			return composeName($arr[firstname], $arr[lastname]);
 			}
 		else
 			return babTranslate("Anonymous");

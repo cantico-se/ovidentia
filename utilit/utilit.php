@@ -11,6 +11,10 @@ $babMonths = array(1=>"January", "February", "March", "April",
 
 $babDays = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
 
+function isEmailValid ($email)
+	{
+	return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
+	}
 
 function bab_mktime($time)
 	{
@@ -43,6 +47,10 @@ function babPrintTemplate( $class, $file, $section="")
 	return $tpl->printTemplate($class,$filepath, $section);
 	}
 
+function composeName( $firstname, $lastname)
+	{
+	return trim($firstname . " " . $lastname);
+	}
 
 function babTranslate($str)
 {

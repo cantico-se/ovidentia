@@ -16,6 +16,7 @@ function modifyCategory($id)
 		var $description;
 		var $add;
 		var $approver;
+		var $approvername;
 
 		var $db;
 		var $arr = array();
@@ -26,7 +27,7 @@ function modifyCategory($id)
 			{
 			$this->category = babTranslate("Category");
 			$this->description = babTranslate("Description");
-			$this->approver = babTranslate("Approver email");
+			$this->approver = babTranslate("Approver");
 			$this->add = babTranslate("Update Category");
 			$this->db = new db_mysql();
 			$req = "select * from topics where id='$id'";
@@ -36,6 +37,7 @@ function modifyCategory($id)
 			$req = "select * from users where id='".$this->arr[id_approver]."'";
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
+			$this->approvername = composeName($this->arr2[firstname], $this->arr2[lastname]);
 			}
 		}
 
@@ -90,17 +92,15 @@ function updateCategory($id, $category, $description, $approver)
 		return;
 		}
 
-	$db = new db_mysql();
-	$query = "select * from users where email='$approver'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
+	$approverid  = getUserId($approver);	
+	if( $approverid < 1)
 		{
 		$body->msgerror = babTranslate("ERROR: The approver doesn't exist !!");
 		return;
 		}
-	$arr = $db->db_fetch_array($res);
 
-	$query = "update topics set id_approver='$arr[id]', category='$category', description='$description' where id = '$id'";
+	$db = new db_mysql();
+	$query = "update topics set id_approver='$approverid', category='$category', description='$description' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: index.php?tg=topics&idx=Categories");
 
@@ -134,6 +134,7 @@ switch($idx)
 	case "Groups":
 		$body->title = babTranslate("Liste of groups");
 		aclGroups("topic", "Modify", "topicsview_groups", $item, "aclview");
+		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Groups&item=".$item);
 		$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Comments&item=".$item);
@@ -144,6 +145,7 @@ switch($idx)
 	case "Comments":
 		$body->title = babTranslate("Liste of groups");
 		aclGroups("topic", "Modify", "topicscom_groups", $item, "aclview");
+		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Groups&item=".$item);
 		$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Comments&item=".$item);
@@ -154,6 +156,7 @@ switch($idx)
 	case "Submit":
 		$body->title = babTranslate("Liste of groups");
 		aclGroups("topic", "Modify", "topicssub_groups", $item, "aclview");
+		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Groups&item=".$item);
 		$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Comments&item=".$item);
@@ -164,6 +167,7 @@ switch($idx)
 	case "Delete":
 		$body->title = babTranslate("Delete a category");
 		deleteCategory($item);
+		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Groups&item=".$item);
 		$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Comments&item=".$item);
@@ -175,6 +179,7 @@ switch($idx)
 	case "Modify":
 		$body->title = babTranslate("Modify a category");
 		modifyCategory($item);
+		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Groups&item=".$item);
 		$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Comments&item=".$item);

@@ -15,6 +15,7 @@ function modifyForum($id)
 		var $name;
 		var $description;
 		var $moderator;
+		var $moderatorname;
 		var $nbmsgdisplay;
 		var $active;
 		var $moderatorval;
@@ -28,7 +29,7 @@ function modifyForum($id)
 		function temp($id)
 			{
 			$this->name = babTranslate("Name");
-			$this->moderator = babTranslate("Moderator Email");
+			$this->moderator = babTranslate("Moderator");
 			$this->description = babTranslate("Description");
 			$this->update = babTranslate("Update Forum");
 			$this->nbmsgdisplay = babTranslate("Messages Per Page");
@@ -45,9 +46,14 @@ function modifyForum($id)
 			$req = "select * from users where id='".$this->arr[moderator]."'";
 			$this->res = $this->db->db_query($req);
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				{
 				$this->arr2 = $this->db->db_fetch_array($this->res);
+				$this->moderatorname = composeName($this->arr2[firstname],$this->arr2[lastname]);
+				}
 			else
-				$this->arr2[email] = "";
+				{
+				$this->moderatorname = "";
+				}
 			}
 		}
 
@@ -105,15 +111,12 @@ function updateForum($id, $name, $description, $moderator, $moderation, $nbmsgdi
 	$db = new db_mysql();
 	if( $moderation == "Y")
 		{
-		$query = "select * from users where email='$moderator'";	
-		$res = $db->db_query($query);
-		if( $db->db_num_rows($res) < 1)
+		$moderatorid = getUserId($moderator);
+		if( $moderatorid < 1)
 			{
 			$body->msgerror = babTranslate("ERROR: The moderator doesn't exist !!");
 			return;
 			}
-		$arr = $db->db_fetch_array($res);
-		$moderatorid = $arr[id];
 		}
 	else
 		$moderatorid = 0;
@@ -171,6 +174,7 @@ switch($idx)
 	case "Groups":
 		$body->title = babTranslate("Liste of groups");
 		aclGroups("forum", "Modify", "forumsview_groups", $item, "aclview");
+		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Post&item=".$item);
@@ -181,6 +185,7 @@ switch($idx)
 	case "Reply":
 		$body->title = babTranslate("Liste of groups");
 		aclGroups("forum", "Modify", "forumsreply_groups", $item, "aclview");
+		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Post&item=".$item);
@@ -191,6 +196,7 @@ switch($idx)
 	case "Post":
 		$body->title = babTranslate("Liste of groups");
 		aclGroups("forum", "Modify", "forumspost_groups", $item, "aclview");
+		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Post&item=".$item);
@@ -201,6 +207,7 @@ switch($idx)
 	case "Delete":
 		$body->title = babTranslate("Delete a category");
 		deleteForum($item);
+		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Post&item=".$item);
@@ -212,6 +219,7 @@ switch($idx)
 	case "Modify":
 		$body->title = babTranslate("Modify a category");
 		modifyForum($item);
+		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Post&item=".$item);

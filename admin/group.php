@@ -54,7 +54,7 @@ function groupModify($id)
 			if( $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
-				$this->managerval = $arr[email];
+				$this->managerval = composeName($arr[firstname], $arr[lastname]);
 				}
 			else
 				$this->managerval = "";
@@ -104,7 +104,7 @@ function groupMembers($id)
 				$result = $db->db_query($req);
 				$this->arr = $db->db_fetch_array($result);
 				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$this->arr[id];
-				$this->urlname = $this->arr[fullname];
+				$this->urlname = composeName($this->arr[firstname], $this->arr[lastname]);
 				$i++;
 				return true;
 				}
@@ -220,7 +220,7 @@ function groupVacation($id)
 					if( $this->db->db_num_rows($res) > 0)
 						{
 						$arr2 = $this->db->db_fetch_array($res);
-						$this->approvervalue = $arr2[email];
+						$this->approvervalue = composeName($arr2[firstname], $arr2[lastname]);
 						}
 					}
 				$i++;
@@ -256,16 +256,12 @@ function modifyGroup($oldname, $name, $description, $manager, $bemail, $id)
 		{
 		if( !empty($manager))
 			{
-			$req = "select * from users where email='".$manager."'";	
-			$res = $db->db_query($req);
-
-			if( $db->db_num_rows($res) < 1)
+			$idmanager = getUserId($manager);
+			if( $idmanager < 1)
 				{
 				$body->msgerror = babTranslate("The manager doesn't exist");
 				return;
 				}
-			$arr = $db->db_fetch_array($res);
-			$idmanager = $arr[id];
 			}
 		else
 			$idmanager = 0;
@@ -289,10 +285,8 @@ function vacationGroup($usevacation, $approver, $item)
 			$body->msgerror = babTranslate("You must provide at least the first approver")." !!";
 			return;
 			}
-		$req = "select * from users where email='".$approver[0]."'";	
-		$res = $db->db_query($req);
-
-		if( $db->db_num_rows($res) < 1)
+		
+		if( getUserId($approver[0]) < 1)
 			{
 			$body->msgerror = babTranslate("The first approver doesn't exist");
 			return;
@@ -302,15 +296,7 @@ function vacationGroup($usevacation, $approver, $item)
 			{
 			if( !empty($approver[$i]))
 				{
-				$req = "select * from users where email='".$approver[$i]."'";	
-				$res = $db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0)
-					{
-					$arr = $db->db_fetch_array($res);
-					$approverid = $arr[id];
-					}
-				else
-					$approverid = 0;
+				$approverid = getUserId($approver[$i]);
 				
 				if( $approverid != 0)
 					{

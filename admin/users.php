@@ -1,9 +1,7 @@
 <?php
 include $babInstallPath."admin/register.php";
 
-
-
-function listUsers($pos,$selectby, $like)
+function listUsers($pos)
 	{
 	global $body;
 	class temp
@@ -21,81 +19,34 @@ function listUsers($pos,$selectby, $like)
 		var $db;
 		var $count;
 		var $res;
-		var $topurl;
-		var $bottomurl;
-		var $nexturl;
-		var $prevurl;
-		var $topname;
-		var $bottomname;
-		var $nextname;
-		var $prevname;
 
-		function temp($pos,$selectby, $like)
+		var $pos;
+		var $selected;
+		var $allselected;
+		var $allurl;
+		var $allname;
+		var $urlmail;
+
+		function temp($pos)
 			{
 			global $babMaxRows;
 			$this->fullname = babTranslate("Full Name");
 			$this->email = babTranslate("Email");
+			$this->allname = babTranslate("All");
 			$this->db = new db_mysql();
-			$this->topurl = "";
-			$this->bottomurl = "";
-			$this->nexturl = "";
-			$this->prevurl = "";
-			$this->topname = "";
-			$this->bottomname = "";
-			$this->nextname = "";
-			$this->prevname = "";
-			//$req = "select count(*) as total from users";
-			$req = "select count(*) as total from users";
-			if( !empty($like))
-				$req .= " where ".$selectby." like '".$like."%'";
 
-			$this->res = $this->db->db_query($req);
-			$row = $this->db->db_fetch_array($this->res);
-			$total = $row["total"];
-
-			$req = "select * from users";
-			if( !empty($like))
-				$req .= " where ".$selectby." like '".$like."%'";
-			if( $total < $babMaxRows)
-				{
-				$req .= " order by ".$selectby." asc";
-				}
-			else
-				$req .= " order by ".$selectby." asc limit $pos,$babMaxRows";
+			$req = "select * from users where firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			if( $total > $babMaxRows)
-				{
-				if( $pos > 0)
-					{
-					$this->topurl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&selectby=".$selectby."&pos=0&like=".$like;
-					$this->topname = "&lt;&lt;";
-					}
 
-				$next = $pos - $babMaxRows;
-				if( $next >= 0)
-					{
-					$this->prevurl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&selectby=".$selectby."&pos=".$next."&like=".$like;
-					$this->prevname = "&lt;";
-					}
+			$this->pos = $pos;
 
-				$next = $pos + $babMaxRows;
-				if( $next < $total)
-					{
-					$this->nexturl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&selectby=".$selectby."&pos=".$next."&like=".$like;
-					$this->nextname = "&gt;";
-					if( $next + $babMaxRows < $total)
-						{
-						$bottom = $total - $babMaxRows;
-						}
-					else
-						$bottom = $next;
-					$this->bottomurl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&selectby=".$selectby."&pos=".$bottom."&like=".$like;
-					$this->bottomname = "&gt;&gt;";
-					}
+			if( empty($pos))
+				$this->allselected = 1;
+			else
+				$this->allselected = 0;
+			$this->allurl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=";
 
-
-				}
 			}
 
 		function getnext()
@@ -104,8 +55,8 @@ function listUsers($pos,$selectby, $like)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$this->arr[id];
-				$this->urlname = $this->arr[fullname];
+				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$this->arr[id]."&pos=".$this->pos;
+				$this->urlname = composeName($this->arr[firstname],$this->arr[lastname]);
 				$req = "select * from users_log where id_user='".$this->arr[id]."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
@@ -120,35 +71,39 @@ function listUsers($pos,$selectby, $like)
 				return false;
 
 			}
-		}
 
-	$temp = new temp($pos,$selectby, $like);
-	$body->babecho(	babPrintTemplate($temp, "users.html", "userslist"));
-	}
-
-function userCreate()
-	{
-	global $body;
-	class temp
-		{
-		var $fullname;
-		var $email;
-		var $password;
-		var $repassword;
-		var $adduser;
-
-		function temp()
+		function getnextselect()
 			{
-			$this->fullname = babTranslate("Full Name");
-			$this->email = babTranslate("Email");
-			$this->password = babTranslate("Password");
-			$this->repassword = babTranslate("Retype Password");
-			$this->adduser = babTranslate("Add User");
+			global $BAB_SESS_USERID;
+			static $k = 0;
+			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			if( $k < 26)
+				{
+				$this->selectname = substr($t, $k, 1);
+				$this->selecturl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$this->selectname;
+
+				if( $this->pos == $this->selectname)
+					$this->selected = 1;
+				else 
+					{
+					$req = "select * from users where firstname like '".$this->selectname."%'";
+					$res = $this->db->db_query($req);
+					if( $this->db->db_num_rows($res) > 0 )
+						$this->selected = 0;
+					else
+						$this->selected = 1;
+					}
+				$k++;
+				return true;
+				}
+			else
+				return false;
+
 			}
 		}
 
-	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"users.html", "userscreate"));
+	$temp = new temp($pos);
+	$body->babecho(	babPrintTemplate($temp, "users.html", "userslist"));
 	}
 
 function userFind()
@@ -177,41 +132,43 @@ function userFind()
 	$body->babecho(	babPrintTemplate($temp,"users.html", "usersfind"));
 	}
 
-function addUser( $fullname, $email, $password1, $password2)
+function userCreate($firstname, $lastname, $nickname, $email)
 	{
 	global $body;
-	if( empty($fullname) || empty($email) || empty($password1) || empty($password2))
+	class temp
 		{
-		$body->msgerror = babTranslate("ERROR: You must complete all fields !!");
-		return;
-		}
-	if( $password1 != $password2)
-		{
-		$body->msgerror = babTranslate("ERROR: Passwords not match !!");
-		return;
-		}
-	if ( strlen($password1) < 6 )
-		{
-		$body->msgerror = babTranslate("ERROR: Password must be at least 6 characters !!");
-		return;
+		var $firstname;
+		var $lastname;
+		var $nickname;
+		var $email;
+		var $password;
+		var $repassword;
+		var $adduser;
+		var $firstnameval;
+		var $lastnameval;
+		var $nicknameval;
+		var $emailval;
+
+		function temp($firstname, $lastname, $nickname, $email)
+			{
+			$this->firstnameval = $firstname != ""? $firstname: "";
+			$this->lastnameval = $lastname != ""? $lastname: "";
+			$this->nicknameval = $nickname != ""? $nickname: "";
+			$this->emailval = $email != ""? $email: "";
+			$this->firstname = babTranslate("First Name");
+			$this->lastname = babTranslate("Last Name");
+			$this->nickname = babTranslate("Nickname");
+			$this->email = babTranslate("Email");
+			$this->password = babTranslate("Password");
+			$this->repassword = babTranslate("Retype Paasword");
+			$this->adduser = babTranslate("Register");
+			}
 		}
 
-	if ( !isEmailValid($email))
-		{
-		$body->msgerror = babTranslate("ERROR: Your email is not valid !!");
-		return;
-		}
+	$temp = new temp($firstname, $lastname, $nickname, $email);
+	$body->babecho(	babPrintTemplate($temp,"users.html", "usercreate"));
+	}
 
-	$db = new db_mysql();
-	$query = "select * from users where email='$email'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$body->msgerror = babTranslate("ERROR: This email address already exists !!");
-		return;
-		}
-	registerUser($fullname, $email, $password1, $password2);
-}
 
 function findUser( $what, $by)
 {
@@ -219,11 +176,11 @@ function findUser( $what, $by)
 
 	if( empty($what))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a name or email !!");
+		$body->msgerror = babTranslate("You must provide a name or email !!");
 		return;
 		}
 
-	$pos = 0;
+	$pos = "";
 	$like = $what;
 	if( $by == "0")
 		$selectby = "email";
@@ -234,9 +191,9 @@ function findUser( $what, $by)
 
 /* main */
 if( !isset($pos))
-	$pos = 0;
+	$pos = "A";
 if( !isset($selectby))
-	$selectby = "fullname";
+	$selectby = "firstname";
 if( !isset($like))
 	$like = "";
 
@@ -244,13 +201,19 @@ if( !isset($idx))
 	$idx = "List";
 
 if( isset($adduser))
-	addUser($fullname, $email, $password1, $password2);
+{
+	if(!addUser($firstname, $lastname, $nickname, $email, $password1, $password2))
+		$idx = "Create";
+	else
+		$pos = substr($firstname,0,1);
+}
 
 if( isset($find))
 	findUser($what, $by);
 
 switch($idx)
 	{
+	/*
 	case "Find":
 		$body->title = babTranslate("Create a user");
 		userFind();
@@ -258,19 +221,20 @@ switch($idx)
 		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create");
 		$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
 		break;
+	*/
 	case "Create":
 		$body->title = babTranslate("Create a user");
-		userCreate();
-		$body->addItemMenu("List", babTranslate("List"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create");
-		$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
+		userCreate($firstname, $lastname, $nickname, $email);
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create&pos=".$pos);
+		//$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
 		break;
 	case "List":
 		$body->title = babTranslate("Users list");
-		listUsers($pos,$selectby, $like);
-		$body->addItemMenu("List", babTranslate("List"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create");
-		$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
+		listUsers($pos);
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create&pos=".$pos);
+		//$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
 		break;
 	default:
 		break;

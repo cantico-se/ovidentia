@@ -1,5 +1,6 @@
 <?php
 include $babInstallPath."utilit/mailincl.php";
+
 function notifyUserRegistration($link, $name, $email)
 	{
 	global $body, $babAdminEmail, $babInstallPath;
@@ -83,6 +84,55 @@ function notifyAdminRegistration($name, $useremail)
     $mail->send();
 	}
 
+function addUser( $firstname, $lastname, $nickname, $email, $password1, $password2)
+	{
+	global $body;
+	if( empty($firstname) || empty($lastname) || empty($email) || empty($password1) || empty($password2))
+		{
+		$body->msgerror = babTranslate( "You must complete all fields !!");
+		return false;
+		}
+	if( $password1 != $password2)
+		{
+		$body->msgerror = babTranslate("Passwords not match !!");
+		return;
+		}
+	if ( strlen($password1) < 6 )
+		{
+		$body->msgerror = babTranslate("Password must be at least 6 characters !!");
+		return false;
+		}
+
+	if ( !isEmailValid($email))
+		{
+		$body->msgerror = babTranslate("Your email is not valid !!");
+		return false;
+		}
+	$db = new db_mysql();
+	$query = "select * from users where nickname='".$nickname."'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$body->msgerror = babTranslate("This nickname already exists !!");
+		return false;
+		}
+
+	$replace = array( " " => "", "-" => "");
+
+	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
+	$query = "select * from users where hashname='".$hash."'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$body->msgerror = babTranslate("Firstname and Lastname already exists !!");
+		return false;
+		}
+	if(!registerUser($nickname, $firstname, $lastname, $email, $password1, $password2, $hash))
+		return false;
+
+	return true;
+	}
+
 /* generate a random password given a len */
 function random_password($length)
 	{
@@ -96,18 +146,14 @@ function random_password($length)
 	return $str;
 	}
 
-function isEmailValid ($email)
-	{
-	return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
-	}
 
-function registerUser( $fullname, $email, $password1, $password2)
+function registerUser( $nickname, $firstname, $lastname, $email, $password1, $password2, $hashname)
 	{
 	global $BAB_HASH_VAR, $body, $babUrl, $babAdminEmail, $babSiteName;
 	$password1=strtolower($password1);
-	$hash=md5($email.$BAB_HASH_VAR);
-	$sql="insert into users (fullname,password,email,date,confirm_hash,is_confirmed,changepwd) ".
-		"values ('$fullname','". md5($password1) ."','$email', now(),'$hash','0','1')";
+	$hash=md5($nickname.$BAB_HASH_VAR);
+	$sql="insert into users (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd) ".
+		"values ('$nickname','$firstname','$lastname','$hashname','". md5($password1) ."','$email', now(),'$hash','0','1')";
 	$db = new db_mysql();
 	$result=$db->db_query($sql);
 	if ($result)
@@ -118,8 +164,9 @@ function registerUser( $fullname, $email, $password1, $password2)
 
 		$body->msgerror = babTranslate("Thank You For Registering at our site") ."<br>";
 		$body->msgerror .= babTranslate("You will receive an email which let you confirm your registration.");
-		$link = $babUrl."index.php?tg=register&cmd=confirm&hash=$hash&email=". urlencode($email);
+		$link = $babUrl."index.php?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
 		//mail ($email,babTranslate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+		$fullname = composeName($firstname , $lastname);
 		notifyUserRegistration($link, $fullname, $email);
 		notifyAdminRegistration($fullname, $email);
 		//$body->msgerror = $msg;
@@ -129,11 +176,11 @@ function registerUser( $fullname, $email, $password1, $password2)
 		return false;
 	}
 
-function userLogin($email,$password)
+function userLogin($nickname,$password)
 	{
-	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID;
+	global $body, $BAB_SESS_NICKNAME, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 	$password=strtolower($password);
-	$sql="select * from users where email='$email' and password='". md5($password) ."'";
+	$sql="select * from users where nickname='$nickname' and password='". md5($password) ."'";
 	$db = new db_mysql();
 	$result=$db->db_query($sql);
 	if ($db->db_num_rows($result) < 1)
@@ -158,7 +205,8 @@ function userLogin($email,$password)
 			}
 		if ($arr[is_confirmed] == '1')
 			{
-			$BAB_SESS_USER = $arr[fullname];
+			$BAB_SESS_NICKNAME = $arr[nickname];
+			$BAB_SESS_USER = composeName($arr[firstname], $arr[lastname]);
 			$BAB_SESS_EMAIL = $arr[email];
 			$BAB_SESS_USERID = $arr[id];
 			$BAB_SESS_HASHID = $arr[confirm_hash];
@@ -174,14 +222,12 @@ function userLogin($email,$password)
 	}
 	
 
-function confirmUser($hash, $email)
+function confirmUser($hash, $nickname)
 	{
 	global $BAB_HASH_VAR, $body;
-	//verify that they didn't tamper with the email address
-	$new_hash=md5($email.$BAB_HASH_VAR);
+	$new_hash=md5($nickname.$BAB_HASH_VAR);
 	if ($new_hash && ($new_hash==$hash))
 		{
-		//find this record in the db
 		$sql="select * from users where confirm_hash='$hash'";
 		$db = new db_mysql();
 		$result=$db->db_query($sql);
@@ -192,10 +238,8 @@ function confirmUser($hash, $email)
 			}
 		else
 			{
-			//confirm the email and set account to active
 			$body->msgerror = babTranslate("User Account Updated - You can now log to our site");
-			//xx user_set_tokens(db_result($result,0,'user_name'));
-			$sql="update users SET email='$email',is_confirmed='1' WHERE confirm_hash='$hash'";
+			$sql="update users set is_confirmed='1' WHERE confirm_hash='$hash'";
 			$result=$db->db_query($sql);
 			return true;
 			}
@@ -249,45 +293,44 @@ function userChangePassword($oldpwd, $newpwd)
 		}
 	}
 
-function sendPassword ($email)
+function sendPassword ($nickname)
 	{
 	global $body, $BAB_HASH_VAR, $babAdminEmail;
 
-	if (!empty($email))
+	if (!empty($nickname))
 		{
-		$req="select * from users where email='$email'";
+		$req="select * from users where nickname='$nickname'";
 		$db = new db_mysql();
 		$res = $db->db_query($req);
 		if (!$res || $db->db_num_rows($res) < 1)
 			{
-			//no matching user found
-			$body->msgerror = babTranslate("Incorrect Email Address");
+			$body->msgerror = babTranslate("Incorrect nickname");
 			return false;
 			}
 		else
 			{
-			//create a secure, new password
+			$arr = $db->db_fetch_array($res);
 			$new_pass=strtolower(random_password(8));
 
 			//update the database to include the new password
-			$req="update users set password='". md5($new_pass) ."' where email='$email'";
+			$req="update users set password='". md5($new_pass) ."' where nickname='$nickname'";
 			$res=$db->db_query($req);
 
 			//send a simple email with the new password
 			echo "pwd = ".$new_pass;
 			$message = babTranslate("Your password has been reset to")." : ". $new_pass;
-			mail ($email, babTranslate("Password Reset"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
-			$body->msgerror = babTranslate("Your new password has been emailed to you.");
+			mail ($arr[email], babTranslate("Password Reset"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+			$body->msgerror = babTranslate("Your new password has been emailed to you.") ." &lt;".$arr[email]."&gt;";
 			return true;
 			}
 		}
 	else
 		{
-		$body->msgerror = babTranslate("ERROR - User Name and Email Address Are Required");
+		$body->msgerror = babTranslate("ERROR - Nickname is required");
 		return false;
 		}
 }
 
 if(isset($cmd) && $cmd == "confirm")
-	confirmUser( $hash, $email);
+	confirmUser( $hash, $name);
 ?>
