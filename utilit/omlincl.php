@@ -186,7 +186,7 @@ class bab_ArticlesHomePages extends bab_handler
 			case "DESC": $order = "ordering DESC"; break;
 			case "RAND": $order = "rand()"; break;
 			case "ASC":
-			default: $order = "ordering ASC"; break;
+			default: $order = "ht.ordering"; break;
 		}
 
 		switch(strtolower($idgroup))
@@ -210,7 +210,7 @@ class bab_ArticlesHomePages extends bab_handler
 		else
 			$filter = true;
 
-		$res = $babDB->db_query("select at.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$idgroup."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' order by ".$order);
+		$res = $babDB->db_query("select at.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$idgroup."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' group by at.id order by ".$order);
 		while($arr = $babDB->db_fetch_array($res))
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
@@ -225,7 +225,7 @@ class bab_ArticlesHomePages extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select at.* from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where at.id IN (".implode(',', $this->IdEntries).")  and at.confirmed='Y'  order by ".$order);
+			$this->res = $babDB->db_query("select at.* from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where at.id IN (".implode(',', $this->IdEntries).")  and at.confirmed='Y' group by at.id order by ".$order);
 			}
 
 		$this->count = isset($this->res) ? $babDB->db_num_rows($this->res) : 0;
