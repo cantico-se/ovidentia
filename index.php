@@ -81,6 +81,11 @@ function printBody()
 		function tpl()
 			{
 			global $body, $LOGGED_IN, $babLogoLB, $babLogoRB, $babLogoLT, $babLogoRT, $babSiteName,$babBanner,$babSlogan,$babStyle;
+			$this->logoLT = 0;
+			$this->logoRT = 0;
+			$this->banner = 0;
+			$this->logoLB = 0;
+			$this->logoRB = 0;
 			if( isset($babLogoLT) && !empty($babLogoLT))
 				$this->logoLT = 1;
 			if( isset($babLogoRT) && !empty($babLogoRT))
