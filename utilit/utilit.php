@@ -207,6 +207,11 @@ function bab_getTimeFormat($format)
 	{
 		$babBody->ampm = true;
 	}
+	else
+	{
+		$babBody->ampm = false;
+	}
+
 	$format = preg_replace("/(?<!h)h(?!h)/", "$1g$2", $format);
 	$format = preg_replace("/(?<!h)h{2,}(?!h)/", "$1h$2", $format);
 
