@@ -124,7 +124,7 @@ switch($idx)
 	{
 	case "chgdg":
 	default:
-		$babBody->title = bab_translate("Change administration group");
+		$babBody->title = bab_translate("Change administration");
 		changeAdmGroup();
 		break;
 		break;
