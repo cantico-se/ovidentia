@@ -294,7 +294,6 @@ a.BabSummaryLinkColor:Hover,
 	}
 
 
-
 .BabTitleSectionFont {
 	color: #000000; 
 	font-weight: bold;
@@ -328,38 +327,46 @@ a.BabSectionsLinkColor:Hover {
 
 /******SECTION CALENDER**************************/
 /* font and background days calender  */
-.BabCalendarDaySection { 
-	background-color: #FFFFFF; 
-	color: #000000;  
-	font-weight: bolder;
-	font-size: .7em;
-	padding: 1px; 
-	}
-/*font day numbers calender */
-.BabCalendarDayNumberSection { 
-	color: #FFFFFF;
-	padding-top: 1px;
-	padding-left: 2px;
-	padding-right: 2px;
-	}
-/*font current day */
-.BabCalendarCurrentDayNumberSection {
-	background-color: #D1D1D9;
-	color: #000000;
-	padding-top: 1px;
-	padding-left: 2px;
-	padding-right: 2px;
+
+#bab_montha .bab_content table {
+	border-collapse:collapse;
+	text-align:center;
+	width:100%;
 	}
 
-a.BabSectionsDayLink,
-a.BabSectionsDayLink:Link,
-a.BabSectionsDayLink:Visited { 
-	color: #000000;  
+
+#bab_montha .bab_content table thead { 
+	background-color: #fff; 
+	color: #000;  
+	font-weight: bolder;
+	}
+
+#bab_montha .bab_content table tbody td { 
+	color: #fff;
+	padding:2px;
+	}
+
+/*font current day */
+#bab_montha .bab_content .BabCalendarCurrentDayNumberSection {
+	background-color: #D1D1D9;
+	color: #000;
+	}
+
+#bab_montha .bab_content a,
+#bab_montha .bab_content a:Visited { 
+	color: #fff;  
 	text-decoration: none;
 	}
-a.BabSectionsDayLink:Hover { 
-	color: #FF0000; 
+#bab_montha .bab_content a:Hover { 
+	color: #f00; 
 	}
+
+#bab_montha .bab_content .BabCalendarCurrentDayNumberSection a,
+#bab_montha .bab_content .BabCalendarCurrentDayNumberSection a:visited {
+	color: #000;
+	}
+
+
 
 /**************** CATEGORIES ****************************/
 .BabCategTitleNavigation,

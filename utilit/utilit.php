@@ -1996,7 +1996,7 @@ function printout()
 									{
 										$this->event = 1;
 										$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$idcals."&date=".$this->currentYear.",".$this->currentMonth.",".$total;
-										$this->day = "<b>".$total."</b>";
+										$this->day = $total;
 									}
 							}
 					}

@@ -76,30 +76,30 @@
 <!--#end forumssection -->
 
 <!--#begin montha -->
-<table  width="100%" cellpadding="0" cellspacing="0" border="0">
-	  <tr> 
-		<!--#in getnextday3 -->
-		<td class="BabCalendarDaySection" align="center" valign="middle">{ day3 }</td>
-		<!--#endin getnextday3 -->
-	  </tr>
-	  <!--#in getnextweek -->
-	  <tr> 
-		<!--#in getnextday -->
-		<!--#if event "== 1" -->
-		<!--#if bgcolor "== 1" -->
-		<td class="BabCalendarCurrentDayNumberSection" align="center" valign="middle"><a class="BabSectionsDayLink" href="{ dayurl }">{ day }</a></td>
-		<!--#else bgcolor -->
-		<td class="BabCalendarDayNumberSection" align="center" valign="middle"><a class="BabSectionsLinkColor" href="{ dayurl }">{ day }</a></td>
-		<!--#endif bgcolor -->
-		<!--#else event -->
-		<!--#if bgcolor "== 1" -->
-		<td class="BabCalendarCurrentDayNumberSection" align="center" valign="middle">{ day }</td>
-		<!--#else bgcolor -->
-		<td class="BabCalendarDayNumberSection" align="center" valign="middle">{ day }</td>
-		<!--#endif bgcolor -->
-		<!--#endif event -->
-		<!--#endin getnextday -->
-	  </tr>
-	  <!--#endin getnextweek -->
+<table>
+	<thead>
+		  <tr> 
+				<!--#in getnextday3 -->
+				<td>{ day3 }</td>
+				<!--#endin getnextday3 -->
+		  </tr>
+	</thead>
+	<tbody>
+		  <!--#in getnextweek -->
+		  <tr> 
+				<!--#in getnextday -->
+				<!--#if event "== 1" --><!--#if bgcolor "== 1" -->
+				<td class="BabCalendarCurrentDayNumberSection"><a href="{ dayurl }">{ day }</a></td>
+				<!--#else bgcolor -->
+				<td><a href="{ dayurl }">{ day }</a></td>
+				<!--#endif bgcolor -->
+				<!--#else event --><!--#if bgcolor "== 1" -->
+				<td class="BabCalendarCurrentDayNumberSection">{ day }</td>
+				<!--#else bgcolor -->
+				<td>{ day }</td><!--#endif bgcolor --><!--#endif event -->
+				<!--#endin getnextday -->
+		  </tr>
+		  <!--#endin getnextweek -->
+	  </tbody>
 	</table>
 <!--#end montha -->
