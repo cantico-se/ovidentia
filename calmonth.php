@@ -143,7 +143,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
-			$this->fullnameten = htmlentities(substr($calname, 0, BAB_CAL_NAME_LENGTH))."...";
+			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->evtarr = array();
 			$this->mcals->getEvents($this->idcals[$this->cindex], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
 			$this->countevent = count($this->evtarr);
@@ -204,7 +204,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			else
 				{
 				$this->title = $arr['title'];
-				$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH))."...";
+				$this->titleten = $this->calstr($arr['title']);
 				}
 			if( $this->allow_modify )
 				{
@@ -271,7 +271,7 @@ function cal_month($calids, $date)
 	global $babBody;
 
 	$temp = new cal_monthCls("viewm", $calids, $date);
-	$babBody->babecho(bab_printTemplate($temp,"calmonth.html", "calmonth"));
+	$temp->printout("calmonth.html", "calmonth");
 }
 
 
@@ -280,7 +280,7 @@ function cal_month_free($calids, $date)
 	global $babBody;
 
 	$temp = new cal_monthCls("free", $calids, $date);
-	$babBody->babecho(bab_printTemplate($temp,"calmonth.html", "calfreemonth"));
+	$temp->printout("calmonth.html", "calfreemonth");
 }
 
 /* main */

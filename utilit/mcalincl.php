@@ -477,6 +477,7 @@ class cal_wmdbaseCls
 				break;
 		}
 
+		$this->print = isset($_GET['print']) && $_GET['print'] == 1;
 
 		$this->monthurlname = bab_translate("Month");
 		$this->weekurlname = bab_translate("Week");
@@ -497,6 +498,8 @@ class cal_wmdbaseCls
 		$this->t_new_event = bab_translate('New event');
 		$this->t_day_view = bab_translate('Day view');
 		$this->t_creator = bab_translate('Author');
+		$this->t_print_friendly = bab_translate('Print Friendly');
+		$this->t_print = bab_translate('Print');
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
@@ -564,6 +567,36 @@ class cal_wmdbaseCls
 			}
 	
 	}
+
+	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
+		{
+		if (strlen($str) > $n && !$this->print)
+			return htmlentities(substr($str, 0, $n))."...";
+		else
+			return htmlentities($str);
+		}
+
+	function printout($file,$template)
+		{
+		global $babBody;
+
+		$html = & bab_printTemplate($this,$file,$template);
+
+		if ($this->print)
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+			$GLOBALS['babBodyPopup'] = new babBodyPopup();
+			$GLOBALS['babBodyPopup']->title = $babBody->title;
+			$GLOBALS['babBodyPopup']->msgerror = $babBody->msgerror;
+			$GLOBALS['babBodyPopup']->babecho($html);
+			printBabBodyPopup();
+			die();
+			}
+		else
+			{
+			$babBody->babecho($html);
+			}
+		}
 }
 
 

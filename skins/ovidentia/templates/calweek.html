@@ -141,6 +141,11 @@ document.onmousemove = bab_tooltipPosition;
 
 <br />
 <div class="bab_buttons" align="center">
-	<a href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
 </div>
 <!--#end calweek -->

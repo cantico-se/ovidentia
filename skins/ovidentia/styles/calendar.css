@@ -206,3 +206,23 @@ a img {
 #bab_calweek tbody th {
 	padding-top:20px;
 	}
+
+.bab_buttons a {
+	margin:5px;
+	text-decoration:none;
+	background-position:0 50%;
+	background-repeat: no-repeat;
+	padding-left:15px;
+	}
+
+.bab_buttons a:hover {
+	text-decoration:underline;
+	}
+
+.bab_buttons a.print {
+	background-image:url('../images/Puces/Print.gif');
+	}
+
+.bab_buttons a.calendars {
+	background-image:url('../images/Puces/popupselect.gif');
+	}

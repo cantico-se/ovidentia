@@ -116,7 +116,7 @@ class cal_dayCls extends cal_wmdbaseCls
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
-			$this->fullnameten = htmlentities(substr($calname, 0, BAB_CAL_NAME_LENGTH));
+			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->cols = count($this->harray[$this->cindex]);
 			$this->cindex++;
 			
@@ -193,7 +193,7 @@ class cal_dayCls extends cal_wmdbaseCls
 						else
 							{
 							$this->title = $arr['title'];
-							$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH))."...";
+							$this->titleten = $this->calstr($arr['title']);
 							$this->description = $arr['description'];
 							}
 
@@ -267,7 +267,7 @@ function cal_day($calids, $date, $starttime)
 	global $babBody;
 
 	$temp = new cal_dayCls("viewq", $calids, $date, $starttime);
-	$babBody->babecho(bab_printTemplate($temp,"calday.html", "calday"));
+	$temp->printout("calday.html", "calday");
 }
 
 
@@ -276,7 +276,7 @@ function cal_day_free($calids, $date, $starttime)
 	global $babBody;
 
 	$temp = new cal_dayCls("free", $calids, $date, $starttime);
-	$babBody->babecho(bab_printTemplate($temp,"calday.html", "calfreeday"));
+	$temp->printout("calday.html", "calfreeday");
 }
 
 /* main */

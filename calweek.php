@@ -218,7 +218,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
-			$this->abbrev = htmlentities(substr($calname, 0, BAB_CAL_NAME_LENGTH));
+			$this->abbrev = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->cols = count($this->harray[$this->cindex]);
 			$this->nbCalEvents = isset($this->harray[$this->cindex][0]) ? count($this->harray[$this->cindex][0]) : 0;
 			$this->cindex++;
@@ -295,7 +295,7 @@ class cal_weekCls extends cal_wmdbaseCls
 						else
 							{
 							$this->title = $arr['title'];
-							$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH))."...";
+							$this->titleten = $this->calstr($arr['title']);
 							$this->description = $arr['description'];
 							}
 						$this->nbowners = $arr['nbowners'];
@@ -464,7 +464,7 @@ function cal_week($calids, $date)
 	global $babBody;
 
 	$temp = new cal_weekCls("viewq", $calids, $date);
-	$babBody->babecho(bab_printTemplate($temp,"calweek.html", "calweek"));
+	$temp->printout("calweek.html", "calweek");
 }
 
 
@@ -473,7 +473,7 @@ function cal_week_free($calids, $date)
 	global $babBody;
 
 	$temp = new cal_weekCls("free", $calids, $date);
-	$babBody->babecho(bab_printTemplate($temp,"calweek.html", "calfreeweek"));
+	$temp->printout("calweek.html", "calfreeweek");
 }
 
 /* main */
