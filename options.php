@@ -485,7 +485,7 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 		$req = "update ".BAB_USERS_TBL." set firstname='".$firstname."', lastname='".$lastname."', nickname='".$nickname."', email='".$email."', confirm_hash='".$hash."', hashname='".$hashname."' where id='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 
-		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set sn='".$firstname."', mn='".$middlename."', givenname='".$lastname."', email='".$email."' where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set givenname='".$firstname."', mn='".$middlename."', sn='".$lastname."', email='".$email."' where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 
 		$BAB_SESS_NICKNAME = $nickname;
@@ -564,8 +564,8 @@ if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$firstname = $arr['sn'];
-		$lastname = $arr['givenname'];
+		$firstname = $arr['givenname'];
+		$lastname = $arr['sn'];
 		$middlename = $arr['mn'];
 		$email = $arr['email'];
 		$nickname = bab_getUserNickname($BAB_SESS_USERID);

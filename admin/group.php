@@ -242,7 +242,7 @@ function groupVacation($id)
 				{
 				$this->approvervalue = "";
 				$this->approvertext = bab_translate("Approver")." ".($i+1);
-				$this->approvername = "approver-".($i+1);
+				$this->approvername = "approver".($i+1);
 
 				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$this->groupid."' and ordering='".($i+1)."'";
 				$res = $this->db->db_query($req);
@@ -532,7 +532,7 @@ if( isset($vacation) && $vacation == "update")
 	$arrapprover = array();
 	for( $i = 0; $i < $count; $i++)
 		{
-		$var = "approver-".($i+1);
+		$var = "approver".($i+1);
 		array_push($arrapprover, $$var);
 		}
 	vacationGroup($usevacation, $arrapprover, $item);
