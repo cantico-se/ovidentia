@@ -2147,7 +2147,7 @@ function autoFile($id_dir,$path)
 	$res = $db->db_query("SELECT CONCAT(path,'/',name) FROM ".BAB_FILES_TBL." WHERE id_owner='".$id_dir."'");
 	while (list($name) = $db->db_fetch_array($res))
 		{
-		$filelist[$name] = 1;
+		$filelist[trim($name,'/')] = 1;
 		}
 
 	header("content-type:text/plain");
@@ -2162,7 +2162,12 @@ function autoFile($id_dir,$path)
 
 			if (!isset($filelist[$filepath]))
 				{
-				$db->db_query("INSERT INTO ".BAB_FILES_TBL." (name, path, id_owner, bgroup, created, author, modified, modifiedby, confirmed) VALUES ('".basename($value)."','".dirname($filepath)."','".$id_dir."','Y',NOW(),'".$GLOBALS['BAB_SESS_USERID']."', NOW(),'".$GLOBALS['BAB_SESS_USERID']."','Y' )");
+
+				$path = dirname($filepath);
+				if ($path == '.')
+					$path = '';
+				
+				$db->db_query("INSERT INTO ".BAB_FILES_TBL." (name, path, id_owner, bgroup, created, author, modified, modifiedby, confirmed) VALUES ('".basename($value)."','".$path."','".$id_dir."','Y',NOW(),'".$GLOBALS['BAB_SESS_USERID']."', NOW(),'".$GLOBALS['BAB_SESS_USERID']."','Y' )");
 
 				echo $db->db_insert_id().', '.basename($value)."\n";
 
