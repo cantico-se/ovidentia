@@ -153,8 +153,10 @@ if(!isset($cb))
 	$cb = "EditorOnInsertOvml";
 	}
 
-if (isset($_GET['idx']))
-switch($_GET['idx'])
+if (!isset($idx))
+	$idx = "browse";
+
+switch($idx)
 	{
 	default:
 	case "browse":
