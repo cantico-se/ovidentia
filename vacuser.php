@@ -903,7 +903,7 @@ switch($idx)
 	case "lvreq":
 	default:
 		$babBody->title = bab_translate("Vacation requests list");
-		if( $acclevel['user'] == true )
+		if( isset($acclevel['user']) && $acclevel['user'] == true )
 			{
 			if( !isset($pos)) $pos = 0;
 			listVacationRequests($pos);
