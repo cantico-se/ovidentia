@@ -42,6 +42,7 @@ function displayAttendees($evtid, $idcal)
 			{
 			global $babBodyPopup, $babBody, $babDB;
 			$this->access = false;
+			$this->evtid = $evtid;
 			if( bab_isCalendarAccessValid($idcal))
 				{
 				$this->access = true;
@@ -59,6 +60,7 @@ function displayAttendees($evtid, $idcal)
 						$this->arrinfo[] = array('idcal' => $arr['id_cal'], 'status' => $arr['status']);
 						if( $babBody->icalendars->id_percal == $arr['id_cal'] )
 							{
+							$this->idcal = $arr['id_cal'];
 							switch($arr['status'] )
 								{
 								case BAB_CAL_STATUS_NONE:
@@ -262,65 +264,6 @@ function categoriesList()
 	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "categorieslist"));
 }
 
-function confirmWaitingEvent($evtid, $idcal)
-{
-	global $babBodyPopup;
-	class confirmWaitingEventCls
-		{
-		var $arttxt;
-
-		function confirmWaitingEventCls($evtid, $idcal)
-			{
-			global $babBodyPopup, $babBody, $babDB;
-			$this->access = false;
-			if( bab_isCalendarAccessValid($idcal))
-				{
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
-				if( $res && $babDB->db_num_rows($res) == 1)
-					{
-					$this->access = true;
-					$arr = $babDB->db_fetch_array($res);
-					$this->updatetxt = bab_translate("Update");
-					$this->confirmtxt = bab_translate("Confirm");
-					$this->commenttxt = bab_translate("Raison");
-					$this->begindatetxt = bab_translate("Begin date");
-					$this->enddatetxt = bab_translate("End date");
-					$this->titletxt = bab_translate("Title");
-					$this->desctxt = bab_translate("Description");
-					$this->cattxt = bab_translate("Category");
-					$this->yes = bab_translate("Yes");
-					$this->no = bab_translate("No");
-					$this->begindate = bab_longDate(bab_mktime($arr['start_date']));
-					$this->enddate = bab_longDate(bab_mktime($arr['end_date']));
-					$this->title= $arr['title'];
-					$this->description = bab_replace($arr['description']);
-					$this->evtid = $evtid;
-					$this->idcal = $idcal;
-					if( $arr['id_cat'] != 0 )
-						{
-						list($this->category) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_CAL_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
-						}
-					else
-						{
-						$this->category = "";
-						}
-					}
-				else
-					{
-					$babBodyPopup->msgerror = bab_translate("Access denied");
-					}
-				}
-			else
-				{
-				$babBodyPopup->msgerror = bab_translate("Access denied");
-				}
-			}
-		}
-
-	$temp = new confirmWaitingEventCls($evtid, $idcal);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "confirmevent"));
-}
-
 
 function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 {
@@ -331,33 +274,30 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 		list($creator, $hash) = $babDB->db_fetch_row($babDB->db_query("select id_creator, hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
 
 		list($status) = $babDB->db_fetch_row($babDB->db_query("select status from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$evtid."' and id_cal='".$idcal."'"));
-		if( $status == BAB_CAL_STATUS_NONE )
+		if( $bconfirm == "Y" )
 			{
-			if( $bconfirm == "Y" )
-				{
-				$bconfirm = BAB_CAL_STATUS_ACCEPTED;
-				}
-			else
-				{
-				$bconfirm = BAB_CAL_STATUS_DECLINED;
-				}
-
-			if( !empty($hash) &&  $hash[0] == 'R' && $bupdrec == 1)
-				{
-				$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
-				while($arr = $babDB->db_fetch_array($res))
-					{
-					$arrevtids[] = $arr['id']; 	
-					}
-				}
-			else
-				{
-				$arrevtids[] = $evtid; 	
-				}
-
-			$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$bconfirm."' where id_event IN (".implode(',', $arrevtids).") and id_cal='".$idcal."'");
-			notifyEventApprobation($evtid, $bconfirm, $comment);
+			$bconfirm = BAB_CAL_STATUS_ACCEPTED;
 			}
+		else
+			{
+			$bconfirm = BAB_CAL_STATUS_DECLINED;
+			}
+
+		if( !empty($hash) &&  $hash[0] == 'R' && $bupdrec == 1)
+			{
+			$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
+			while($arr = $babDB->db_fetch_array($res))
+				{
+				$arrevtids[] = $arr['id']; 	
+				}
+			}
+		else
+			{
+			$arrevtids[] = $evtid; 	
+			}
+
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$bconfirm."' where id_event IN (".implode(',', $arrevtids).") and id_cal='".$idcal."'");
+		notifyEventApprobation($evtid, $bconfirm, $comment);
 		}
 }
 
@@ -366,6 +306,7 @@ if( isset($conf) && $conf == "event")
 {
 	if( !isset($bupdrec)) { $bupdrec = 2; }
 	confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec);
+	$reload = true;
 }
 
 switch($idx)
@@ -373,7 +314,8 @@ switch($idx)
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
 		$popupmessage = bab_translate("Your event has been updated");
-		popupUnload($popupmessage, '');
+		if( !isset($reload)) { $reload = false; }
+		popupUnload($popupmessage, '', $reload);
 		exit;
 		break;
 	case "viewc":
@@ -381,14 +323,6 @@ switch($idx)
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Categories");
 		categoriesList();
-		printBabBodyPopup();
-		exit;
-		break;
-	case "confvent":
-		include_once $babInstallPath."utilit/uiutil.php";
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Event approbation");
-		confirmWaitingEvent($evtid, $idcal);
 		printBabBodyPopup();
 		exit;
 		break;

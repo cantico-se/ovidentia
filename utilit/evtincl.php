@@ -79,7 +79,7 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 			}
 		else
 			{
-			$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
 
 		$tempc = new clsNotifyAttendees($title, $description, $startdate, $enddate);
@@ -143,7 +143,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 			}
 		else
 			{
-			$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
 		$tempc = new clsNotifyPublicEvent($title, $description, $startdate, $enddate);
 
@@ -257,7 +257,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			}
 		else
 			{
-			$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+			$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 			}
 		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate);
 		
@@ -369,7 +369,7 @@ function notifyEventApprobation($evtid, $bconfirm, $raison)
 	$arr = $babDB->db_fetch_array($res);
 
 	$mail->mailTo($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
-	$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+	$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 
 	$tempc = new clsNotifyEventApprobation($arr['title'], $arr['description'], bab_longDate(bab_mktime($arr['start_date'])), bab_longDate(bab_mktime($arr['end_date'])), $raison);
 	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
