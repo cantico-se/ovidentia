@@ -1,4 +1,20 @@
 /************************************************************************/
+Juillet 2003: Version 4.0.6
+/************************************************************************/
+- Enhanced OvML ( See documentation )
+- Now it's possible for an article's author to restrict access to his article
+- Added some configurations at site level:
+        * fisrtname/lastname order
+        * User can change his nickname, password ( Yes / No )
+        * Upload Path
+        * Site slogan
+        * etc ...
+- Bug: Administrator can register user with firstname and lastname blank
+- Bug: Some posts are marked modified and this is not true
+- Bug: Users imported in Ovidentia directory are always seen as Anonymous
+- Fixed some minors bugs
+
+/************************************************************************/
 Juin 2003: Version 4.0.5
 /************************************************************************/
 - Enhanced OvML ( See documentation )
