@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../../babone/styles/babstyle2.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin changepassword -->
+<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ title }</center></td></tr></table></center><br><center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="options">
+<input type="hidden" name="update" value="password">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right" nowrap>{ oldpwd }:</td>
+<td><input type="password" name="oldpwd" size="20" maxlength="15"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ newpwd }:</td>
+<td><input type="password" name="newpwd1" size="20" maxlength="15"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ renewpwd }:</td>
+<td><input type="password" name="newpwd2" size="20" maxlength="15"></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ update }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end changepassword -->
+<br><br><br><br><br>
+<!--#begin changelang -->
+<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ title }</center></td></tr></table></center><br><center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="options">
+<input type="hidden" name="update" value="lang">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="center">
+<select name="lang">
+<!--#in getnextlang -->
+<option value="{ langval }" { langselected }>{ langname }</option>
+<!--#endin getnextlang -->
+</select>
+</td>
+</tr>
+<tr>
+<td align="center"><input type="submit" name="submit" value="{ update }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end changelang -->
+<br><br><br><br><br>
+
+</BODY>
+</HTML>
