@@ -412,18 +412,20 @@ function submitCtrl(form)
 	{
 	if (typeof calendarChoice_selectAll == 'function')
 		{
-		calendarChoice_selectAll(form.name);
+		return calendarChoice_selectAll(form.name);
 		}
 	}
 
 function calview()
 	{
+	document.forms['calendarchoice'].database_record.value = 0;
 	if (typeof calendarChoice_selectAll == 'function')
 		{
-		calendarChoice_selectAll('calendarchoice');
+		if (calendarChoice_selectAll('calendarchoice'))
+			document.forms['calendarchoice'].submit();
 		}
-	document.forms['calendarchoice'].database_record.value = 0;
-	document.forms['calendarchoice'].submit();
+	
+	
 	}
 
 //-->

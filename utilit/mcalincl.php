@@ -677,7 +677,14 @@ class calendarchoice
 		$this->db = $GLOBALS['babDB'];
 		$icalendars = &$GLOBALS['babBody']->icalendars;
 		$icalendars->initializeCalendars();
-		$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
+		if (isset($_POST['selected_calendars']))
+			{
+			$this->selectedCalendars = $_POST['selected_calendars'];
+			}
+		else
+			{
+			$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
+			}
 
 		$this->usrcalendarstxt = bab_translate("Users");
 		$this->grpcalendarstxt = bab_translate("Publics");
@@ -686,6 +693,7 @@ class calendarchoice
 		$this->t_goleft = bab_translate("Push left");
 		$this->t_calendars1 = bab_translate("Available calendars");
 		$this->t_calendars2 = bab_translate("Selected calendars");
+		$this->js_calnum = bab_translate("You must select one calendar");
 
 		$this->resuser = $icalendars->usercal;
 		$this->respub = $icalendars->pubcal;

@@ -102,6 +102,8 @@ class bab_event
 		$this->t_bfree = bab_translate("Free");
 		$this->t_yes = bab_translate("Yes");
 		$this->t_no = bab_translate("No");
+		$this->t_modify = bab_translate("Modify the event");
+		$this->t_test_conflicts = bab_translate("Test conflicts");
 
 		$this->repeat_dateendtxt = bab_translate("Periodicity end date");
 
@@ -124,8 +126,12 @@ class bab_event
 
 	function getnextcat()
 		{
-		return $this->cat = $this->db->db_fetch_array($this->rescat);
+		$this->cat = $this->db->db_fetch_array($this->rescat);
+		$this->selected = isset($_POST['category']) && $_POST['category'] == $this->cat['id'] ? 'selected' : '';
+		return $this->cat;
 		}
+
+	
 	}
 
 
@@ -192,6 +198,31 @@ function newEvent()
 			$this->bprivate = true;
 			$this->block = true;
 			$this->bfree = true;
+
+			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
+
+			if (isset($_POST) && count($_POST) > 0)
+				{
+				$this->arr = $_POST;
+				$this->daytypechecked = isset($this->arr['daytype']) ? 'checked' : '';
+				$this->daysel = $this->arr['daybegin'];
+				$this->monthsel = $this->arr['monthbegin'];
+				$this->yearsel = $this->arr['yearbegin'];
+				$this->timesel = isset($this->arr['timebegin']) ? $this->arr['timebegin'] : $this->timesel;
+				$this->colorvalue = $this->arr['color'];
+
+				for ($i = 0 ; $i < 7 ; $i++)
+					{
+					$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
+					}
+				}
+			else
+				{
+				$this->arr['repeat_n_1'] = '';
+				$this->arr['repeat_n_2'] = '';
+				$this->arr['repeat_n_3'] = '';
+				$this->arr['repeat_n_4'] = '';
+				}
 			}
 
 		function getnextday()
@@ -215,6 +246,7 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
+					$this->daysel = isset($this->arr['dayend']) ? $this->arr['dayend'] : $this->daysel;
 					$k++;
 					}
 				else
@@ -249,6 +281,7 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
+					$this->monthsel = isset($this->arr['monthend']) ? $this->arr['monthend'] : $this->monthsel;
 					$k++;
 					}
 				else
@@ -280,6 +313,7 @@ function newEvent()
 				$i = 0;
 				if( $k == 0 )
 					{
+					$this->yearsel = isset($this->arr['yearend']) ? $this->arr['yearend'] : $this->yearsel;
 					$k++;
 					}
 				else
@@ -317,9 +351,16 @@ function newEvent()
 			else
 				{
 				$i = 0;
-				$this->timesel = $this->timeend;
+				$this->timesel = isset($this->arr['timeend']) ? $this->arr['timeend'] : $this->timeend;
 				return false;
 				}
+			}
+
+		function getnextavariability()
+			{
+			if (!isset($GLOBALS['avariability']) || !is_array($GLOBALS['avariability']))
+				return false;
+			return list(,$this->conflict) = each($GLOBALS['avariability']);
 			}
 		}
 
@@ -377,6 +418,8 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->t_bfree = bab_translate("Free");
 			$this->t_yes = bab_translate("Yes");
 			$this->t_no = bab_translate("No");
+			$this->t_modify = bab_translate("Modify the event");
+			$this->t_test_conflicts = bab_translate("Test conflicts");
 			$this->db = $GLOBALS['babDB'];
 			$this->calid = $idcal;
 			$this->evtid = $evtid;
@@ -402,10 +445,13 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 					break;
 				}
 			$babBodyPopup->title = bab_translate("Calendar"). ":  ". bab_getCalendarOwnerName($this->calid, $iarr['type']);
+			
+			
+				$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
+				$this->evtarr = $this->db->db_fetch_array($res);
+			
 
-			$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
-			$this->evtarr = $this->db->db_fetch_array($res);
-			if( $this->evtarr['hash'] != "" && $this->evtarr['hash'][0] == 'R')
+			if( !empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R')
 				{
 				$this->brecevt = true;
 				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
@@ -419,17 +465,39 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->evtarr['description'] = bab_replace($this->evtarr['description']);
 			$this->ymin = 2;
 			$this->ymax = 5;
-			$this->yearbegin = substr($this->evtarr['start_date'], 0,4 );
+			if (isset($_POST) && count($_POST) > 0)
+				{
+				$this->evtarr = $_POST;
+				$this->evtarr['id_cat'] = $_POST['category'];
+				$this->evtarr['description'] = $_POST['evtdesc'];
+
+				$this->yearbegin = $this->evtarr['yearbegin'];
+				$this->daybegin =$this->evtarr['daybegin'];
+				$this->monthbegin = $this->evtarr['monthbegin'];
+				$this->yearend = $this->evtarr['yearend'];
+				$this->dayend = $this->evtarr['dayend'];
+				$this->monthend = $this->evtarr['monthend'];
+				$this->timebegin = $this->evtarr['timebegin'];
+				$this->timeend = $this->evtarr['timeend'];
+
+				}
+			else
+				{
+				$this->yearbegin = substr($this->evtarr['start_date'], 0,4 );
+				$this->daybegin = substr($this->evtarr['start_date'], 8, 2);
+				$this->monthbegin = substr($this->evtarr['start_date'], 5, 2);
+				$this->yearend = substr($this->evtarr['end_date'], 0,4 );
+				$this->dayend = substr($this->evtarr['end_date'], 8, 2);
+				$this->monthend = substr($this->evtarr['end_date'], 5, 2);
+				$this->timebegin = substr($this->evtarr['start_date'], 11, 5);
+				$this->timeend = substr($this->evtarr['end_date'], 11, 5);
+				}
+
 			$this->yearmin = $this->yearbegin - $this->ymin;
-			$this->daybegin = substr($this->evtarr['start_date'], 8, 2);
-			$this->monthbegin = substr($this->evtarr['start_date'], 5, 2);
+
 			$this->nbdaysbegin = date("t", mktime(0,0,0, $this->monthbegin, $this->daybegin,$this->yearbegin));
-			$this->yearend = substr($this->evtarr['end_date'], 0,4 );
-			$this->dayend = substr($this->evtarr['end_date'], 8, 2);
-			$this->monthend = substr($this->evtarr['end_date'], 5, 2);
 			$this->nbdaysend = date("t", mktime(0,0,0, $this->monthend, $this->dayend,$this->yearend));
-			$this->timebegin = substr($this->evtarr['start_date'], 11, 5);
-			$this->timeend = substr($this->evtarr['end_date'], 11, 5);
+
 			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin;
 			$this->datebegintxt = bab_translate("Begin date");
 			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend;
@@ -442,10 +510,15 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->category = bab_translate("Category");
 			$this->descurl = $GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid;
 
+			
+
 			$this->editor = bab_editor($this->evtarr['description'], 'evtdesc', 'vacform',150);
 			$this->elapstime = $babBody->icalendars->elapstime;
 			$this->ampm = $babBody->ampm;
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
+			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
+
+			
 
 			$this->rescat = $this->db->db_query("select * from ".BAB_CAL_CATEGORIES_TBL."");
 			$this->rescount = $this->db->db_num_rows($this->rescat);
@@ -603,6 +676,13 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				return false;
 				}
 
+			}
+
+		function getnextavariability()
+			{
+			if (!isset($GLOBALS['avariability']) || !is_array($GLOBALS['avariability']))
+				return false;
+			return list(,$this->conflict) = each($GLOBALS['avariability']);
 			}
 
 		}
@@ -1008,9 +1088,128 @@ function calendarquerystring()
 	return $qs;
 	}
 
+
+function eventAvariabilityCheck(&$avariability_message)
+	{
+	if (isset($_POST['test_conflicts']))
+		$_POST['avariability'] = 0;
+
+	if (!isset($_POST['avariability']) || $_POST['avariability'] == 1 || (isset($_POST['bfree']) && $_POST['bfree'] == 'Y' ))
+		{
+		$GLOBALS['avariability'] = 0;
+		return true;
+		}
+	$calid = explode(',',$GLOBALS['calid']);
+
+	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
+
+	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : '00:00';
+	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : '23:59';
+
+	$tb = explode(':',$timebegin);
+	$te = explode(':',$timeend);
+
+	$begin = mktime( $tb[0],$tb[1],0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
+	$end = mktime( $te[0],$te[1],0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
+
+	$begin_day = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
+
+	$this->freeevents = array();
+
+	$db = &$GLOBALS['babDB'];
+
+	$workdays = array();
+	$workdays_user = array();
+
+	function time_to_sec($time)
+		{
+		list($h,$m,$s) = explode(':',$time);
+		return $h*3600 + $m*60 + $s;
+		}
+
+	function sec_to_time($sec)
+		{
+		$min = $sec%3600;
+		return sprintf("%02s:%02s:%02s", ($sec/3600), ($min/60), ($min%60));
+		}
+
+	$starttime_sec = 0;
+	$endtime_sec = 3600*24;
+
+	$res = $db->db_query("SELECT c.id,o.work_days, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$calid).") AND o.id_user = c.owner AND c.type='1'");
+
+	while ($arr = $db->db_fetch_array($res))
+		{
+		$calopt[$arr['id']] = explode( ',', $arr['work_days'] );
+		$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
+		
+		$s = time_to_sec($arr['start_time']);
+		$starttime_sec = $s > $starttime_sec ? $s : $starttime_sec;
+		$s = time_to_sec($arr['end_time']);
+		$endtime_sec = $s < $endtime_sec ? $s : $endtime_sec;
+		}
+
+	$workdays = array_unique($workdays);
+
+	foreach ($calopt as $user)
+		{
+		foreach ($workdays as $k => $day)
+			{
+			if (!in_array($day,$user))
+				{
+				unset($workdays[$k]);
+				}
+			}
+		}
+
+	$starttime = sec_to_time($starttime_sec);
+	$endtime = sec_to_time($endtime_sec);
+
+	$nbdays = ($end - $begin)/(24*3600);
+
+	$GLOBALS['avariability'] = array();
+
+	for($i = 0; $i < $nbdays; $i++)
+		{
+		$begin_day = $begin + $i*(24*3600);
+		if (!in_array(date('w',$begin_day),$workdays))
+			{
+			$GLOBALS['avariability'][] = bab_longDate($begin_day,false);
+			$message1 = bab_translate("The event is on a non-working day");
+			}
+		}
+	$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin),date('H',$begin),date('H',$begin),date('i',$begin), date('s',$begin));
+	$edate = sprintf("%04s-%02s-%02s %02s:%02s:%02s",  date('Y',$end), date('m',$end), date('d',$end),date('H',$end),date('H',$end),date('i',$end), date('s',$end));
+
+	$mcals = & new bab_mcalendars($sdate, $edate, $calid);
+	while ($cal = current($mcals->objcals)) 
+		{
+		foreach ($cal->events as $event)
+			{
+			if ($event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
+				{
+				$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '.$event['title'].' ('.bab_shortDate(bab_mktime($event['start_date']),false).')';
+				$message2 = bab_translate("The event is in conflict with a calendar");
+				}
+			}
+		next($mcals->objcals);
+		}
+
+	if ( count($GLOBALS['avariability']) > 0 )
+		{
+		$avariability_message = isset($message1) ? $message1 : '';
+		$avariability_message .= isset($message2) ? '<br />'.$message2 : '';
+		return false;
+		}
+	else
+		{
+		$GLOBALS['avariability'] = 0;
+		return true;
+		}
+	}
+
 /* main */
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "newevent";
-//record_calendarchoice();
 $calid = isset($_POST['selected_calendars'])? implode(',', $_POST['selected_calendars']): $calid;
 
 $calid = bab_isCalendarAccessValid($calid);
@@ -1020,9 +1219,11 @@ if( !$calid )
 	exit;
 	}
 
-if (isset($action))
+$avariability_message = '';
+
+if (isset($_REQUEST['action']))
 	{
-	switch($action)
+	switch($_REQUEST['action'])
 		{
 		case 'yes':
 			confirmDeleteEvent();
@@ -1031,7 +1232,7 @@ if (isset($action))
 
 		case 'addevent':
 			$message = '';
-			if (addEvent($message))
+			if (eventAvariabilityCheck($avariability_message) && addEvent($message))
 				{
 				$idx = "unload";
 				}
@@ -1042,10 +1243,10 @@ if (isset($action))
 			break;
 
 		case 'modifyevent':
-			if( isset($_POST['Submit']))
+			if( isset($_POST['Submit']) || isset($_POST['test_conflicts']))
 				{
 				$message = '';
-				if (updateEvent($message))
+				if (eventAvariabilityCheck($avariability_message) && updateEvent($message))
 					{
 					$idx = "unload";
 					}
@@ -1055,7 +1256,7 @@ if (isset($action))
 					$cci = $_POST['curcalids'];
 					}
 				}
-			elseif( isset($_POST['evtdel']))
+			elseif(isset($_POST['evtdel']))
 				{
 				$message = '';
 				$babBodyPopup = new babBodyPopup();

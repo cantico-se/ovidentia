@@ -256,11 +256,19 @@ function movecalendar(action)
 function calendarChoice_selectAll(formname)
 	{
 	var list = document.forms[formname].elements['selected_calendars[]'];
+	if (list.options.length == 0)
+		{
+		//}
+		alert('{ js_calnum }');
+		return false;
+		}
 	for(i=0; i < list.options.length; i++)
-	{
+		{
 		list.options[i].selected = true;
+		}
+	return true;
 	}
-	}
+
 //-->
 </script>
 <table align="center" width="100%">

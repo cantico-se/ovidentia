@@ -1589,4 +1589,10 @@
 <string id="Use calendar options">Utiliser les options de l'agenda</string>
 <string id="The user has not received his confirmation email">L'utilisateur n'a pas recu son email de confirmation</string>
 <string id="Export file from">Exporter un fichier depuis</string>
+<string id="You must select one calendar">Vous devez selectionner un agenda</string>
+<string id="The event is on a non-working day">L'évenement va être enregistré sur des jour non travaillés</string>
+<string id="Modify the event">Modifier l'évenement</string>
+<string id="The event is in conflict with a calendar">L'évenement est en conflit avec la disponibilitée des agendas</string>
+<string id="on the event">sur l'évenement</string>
+<string id="Test conflicts">Tester les conflits</string>
 </fr>

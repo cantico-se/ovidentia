@@ -8,10 +8,12 @@
 <input type="hidden" name="view" value="{ curview }" />
 <input type="hidden" name="curcalids" value="{ calid }" />
 <input type="hidden" name="action" value="addevent" />
+<input type="hidden" name="avariability" value="{ avariability }" />
 <table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tbody id="main_form">
 	<tr> 
 		<td align="right">
 			<a class="BabEventFaqLink" href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:
@@ -102,7 +104,7 @@
 	<tr id="repeat_tr"> 
 		<td align="right" valign="top" nowrap>
 			<label for="repeat_radio_1">{ t_daily }</label>
-			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" checked /><br />
+			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_2">{ t_weekly }</label>
 			<input type="radio" id="repeat_radio_2" name="repeat" value="2" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_3">{ t_monthly }</label>
@@ -116,18 +118,18 @@
 		</td>
 		<td valign="top">
 			<div id="event_repeat_0"></div>
-			<div id="event_repeat_1">{ t_all_the }<input type="text" name="repeat_n_1" size="4" maxlength="4" />{ t_days }</div>
-			<div id="event_repeat_2">{ t_all_the }<input type="text" name="repeat_n_2" size="4" maxlength="4" />{ t_weeks }<br />
-				<label for="repeat_wd_0">{ t_sun }</label><input id="repeat_wd_0" type="checkbox" name="repeat_wd[]" value="0" />
-				<label for="repeat_wd_1">{ t_mon }</label><input id="repeat_wd_1" type="checkbox" name="repeat_wd[]" value="1" />
-				<label for="repeat_wd_2">{ t_tue }</label><input id="repeat_wd_2" type="checkbox" name="repeat_wd[]" value="2" />
-				<label for="repeat_wd_3">{ t_wen }</label><input id="repeat_wd_3" type="checkbox" name="repeat_wd[]" value="3" /><br />
-				<label for="repeat_wd_4">{ t_thu }</label><input id="repeat_wd_4" type="checkbox" name="repeat_wd[]" value="4" />
-				<label for="repeat_wd_5">{ t_fri }</label><input id="repeat_wd_5" type="checkbox" name="repeat_wd[]" value="5" />
-				<label for="repeat_wd_6">{ t_sat }</label><input id="repeat_wd_6" type="checkbox" name="repeat_wd[]" value="6" />
+			<div id="event_repeat_1">{ t_all_the }<input type="text" name="repeat_n_1" value="{ arr[repeat_n_1] }" size="4" maxlength="4" />{ t_days }</div>
+			<div id="event_repeat_2">{ t_all_the }<input type="text" name="repeat_n_2" value="{ arr[repeat_n_2] }" size="4" maxlength="4" />{ t_weeks }<br />
+				<label for="repeat_wd_0">{ t_sun }</label><input id="repeat_wd_0" type="checkbox" name="repeat_wd[]" value="0" { repeat_wd_checked[0] } />
+				<label for="repeat_wd_1">{ t_mon }</label><input id="repeat_wd_1" type="checkbox" name="repeat_wd[]" value="1" { repeat_wd_checked[1] } />
+				<label for="repeat_wd_2">{ t_tue }</label><input id="repeat_wd_2" type="checkbox" name="repeat_wd[]" value="2" { repeat_wd_checked[2] } />
+				<label for="repeat_wd_3">{ t_wen }</label><input id="repeat_wd_3" type="checkbox" name="repeat_wd[]" value="3" { repeat_wd_checked[3] } /><br />
+				<label for="repeat_wd_4">{ t_thu }</label><input id="repeat_wd_4" type="checkbox" name="repeat_wd[]" value="4" { repeat_wd_checked[4] } />
+				<label for="repeat_wd_5">{ t_fri }</label><input id="repeat_wd_5" type="checkbox" name="repeat_wd[]" value="5" { repeat_wd_checked[5] } />
+				<label for="repeat_wd_6">{ t_sat }</label><input id="repeat_wd_6" type="checkbox" name="repeat_wd[]" value="6" { repeat_wd_checked[6] } />
 			</div>
-			<div id="event_repeat_3">{ t_all_the }<input type="text" name="repeat_n_3" size="4" maxlength="4" />{ t_months }</div>
-			<div id="event_repeat_4">{ t_all_the }<input type="text" name="repeat_n_4" size="4" maxlength="4" />{ t_years }</div>
+			<div id="event_repeat_3">{ t_all_the }<input type="text" name="repeat_n_3" value="{ arr[repeat_n_3] }" size="4" maxlength="4" />{ t_months }</div>
+			<div id="event_repeat_4">{ t_all_the }<input type="text" name="repeat_n_4" value="{ arr[repeat_n_4] }" size="4" maxlength="4" />{ t_years }</div>
 			&nbsp;
 		</td>
 	</tr>
@@ -178,7 +180,7 @@
 			<select name="category" onchange="category_switch(this)">
 			<option value="" selected ></option>
 			<!--#in getnextcat -->
-			<option value="{ cat[id] }">{ cat[name] }</option>
+			<option value="{ cat[id] }" { selected }>{ cat[name] }</option>
 			<!--#endin getnextcat -->
 			</select>
 		</td>
@@ -187,7 +189,7 @@
 	<tr id="color_tr"> 
 		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
 		<td nowrap> 
-			<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#fff;float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
+			<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#<!--#if colorvalue -->{ colorvalue }<!--#else colorvalue -->fff<!--#endif colorvalue -->;float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
 			&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 		</td>
 	</tr>
@@ -244,15 +246,30 @@
 	<tr> 
 		<td colspan="2">{ calendars }</td>
 	</tr>
-
+	</tbody>
+	<tr id="avariability_check">
+		<td colspan="2">{ avariability_message }<br />
+		<ol>
+			<!--#in getnextavariability -->
+			<li>{ conflict }</li>
+			<!--#endin getnextavariability -->
+		</ol>
+		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br /><br />
+		</td>
+	</tr>
 	<tr>
-		<td colspan="2" align="center"><input type="submit" name="Submit" value="{ addvac }"></td>
+		<td colspan="2" align="center"><input type="submit" name="Submit" value="{ addvac }" /></td>
 	</tr>
 	</table>
 </td>
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+<!--
+check_avariability();
+-->
+</script>
 <!--#end newevent -->
 
 
@@ -266,11 +283,12 @@
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="evtid" value="{ evtid }" />
 <input type="hidden" name="action" value="modifyevent" />
+<input type="hidden" name="avariability" value="{ avariability }" />
 <table class="BabLoginCadreBackground" width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
-	
+	<tbody id="main_form">
 	<!--#if brecevt -->
 	<tr> 
 		<td colspan="2" align="center">{ updaterec }</td>
@@ -311,7 +329,7 @@
 		</td>
 	</tr>
 	<!--#endif brecevt -->
-	<tbody id="event_date_time">
+	
 	<tr> 
 		<td align="right" nowrap width="25%" valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:</td>
 		<td> 
@@ -370,7 +388,6 @@
 		</td>
 	</tr>
 	
-	</tbody>
 	<tr> 
 		<td align="right">{ title }:</td>
 		<td><input type="text" name="title" size="50" maxlength="255" value="{ evtarr[title] }" /></td>
@@ -448,7 +465,17 @@
 			</select>
 		</td>
 	</tr>
-	
+	</tbody>
+	<tr id="avariability_check">
+		<td colspan="2">{ avariability_message }<br />
+		<ol>
+			<!--#in getnextavariability -->
+			<li>{ conflict }</li>
+			<!--#endin getnextavariability -->
+		</ol>
+		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br /><br />
+		</td>
+	</tr>
 	<tr> 
 		<td>&nbsp;</td>
 		<td> 
@@ -464,6 +491,11 @@
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+<!--
+check_avariability();
+-->
+</script>
 <br />
 <!--#end modifyevent -->
 
@@ -514,7 +546,7 @@ window.focus();
 <!--
 function repeat_switch(grp)
 	{
-	var v = grp ? grp.value : 1 ;
+	var v = grp ? grp.value : document.forms['vacform'].repeat.value ;
 	var i=0;
 	while(div = document.getElementById('event_repeat_'+i))
 		{
@@ -603,9 +635,34 @@ function submitCtrl(form)
 	{
 	if (typeof calendarChoice_selectAll == 'function')
 		{
-		calendarChoice_selectAll(form.name);
+		return calendarChoice_selectAll(form.name);
 		}
 	}
+
+function check_avariability()
+	{
+	var f = document.forms['vacform'];
+	var main_form = document.getElementById('main_form').style;
+	var avariability_check = document.getElementById('avariability_check').style;
+
+	if (f.avariability.value == 1)
+		{
+		//main_form.display='none';
+		avariability_check.display='';
+		}
+	else
+		{
+		//main_form.display='';
+		avariability_check.display='none';
+		}
+	}
+
+function view_main_form()
+	{
+	document.forms['vacform'].avariability.value == 0;
+	document.getElementById('main_form').style.display = '';
+	}
+
 
 //-->
 </SCRIPT>
