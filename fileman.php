@@ -1398,6 +1398,8 @@ function createDirectory($dirname, $id, $gr, $path)
 		return false;
 		}
 
+	$dirname = trim($dirname);
+
 	if( bab_isMagicQuotesGpcOn())
 		{
 		$dirname = stripslashes($dirname);
