@@ -15,7 +15,7 @@ $babVersion="3.2"
 
 point your browser to:
 
-http://yourdomain/index.php.tg=version&idx=upgrade
+http://yourdomain/index.php?tg=version&idx=upgrade
 
 Now, you can use the new version.
 Don't forget to put the correct version in config.php if
