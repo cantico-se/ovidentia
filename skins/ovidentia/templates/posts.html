@@ -14,7 +14,7 @@
 						<dl class="files">
 							<dt>{ t_files }:</dt>
 							<!--#in getnextfile -->
-							<dd><a href="{ file[url] }">{ file[name] }</a></dd>
+							<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] } )</span></dd>
 							<!--#endin getnextfile -->
 						</dl>
 						<!--#endif files -->
@@ -72,43 +72,40 @@
 		<!--
 		function add_field()
 			{
-			var f = document.forms['postcr'];
+			var f = document.forms['threadcr'];
 			var d = document.getElementById('post_addfiles');
 			var n = parseInt(f.files_fields.value);
 
 			f.files_fields.value = n  + 1;
-			var html = '';
 
-			for (var i = 0 ; i < n+1 ; i++ )
-				{
-				html += '<input type="file" name="file'+i+'" /><br />';
-				}
+			var p = document.createElement("p");
+			d.appendChild(p);
 
-			d.innerHTML = html;
+			var input = document.createElement("input");
+			input.type = 'file';
+			input.name = 'file'+(n+1);
+
+			p.appendChild(input);
 			}
 
 		function remove_field()
 			{
-			var f = document.forms['postcr'];
+			var f = document.forms['threadcr'];
 			var d = document.getElementById('post_addfiles');
 			var n = parseInt(f.files_fields.value);
-			var html = '';
-
+			var inputs = d.getElementsByTagName('p');
 			if (n > 0)
-				f.files_fields.value = n - 1;
-
-			for (var i = 0 ; i < n-1 ; i++ )
 				{
-				html += '<input type="file" name="file'+i+'" /><br />';
+				f.files_fields.value = n - 1;
+				
+				d.removeChild(inputs[(inputs.length-1)]);
 				}
-
-			d.innerHTML = html;
 			}
 		</script>
 
 		<h4>{ t_files }:</h4>
 		<div id="post_addfiles">
-			<input type="file" name="file0" />
+			<p><input type="file" name="file0" /></p>
 		</div>
 		<p>
 			<a href="javascript:add_field()">{ t_add_field }</a> - 
@@ -353,7 +350,7 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 			<dl class="BabForumFiles">
 				<dt>{ t_files }:</dt>
 				<!--#in getnextfile -->
-				<dd><a href="{ file[url] }">{ file[name] }</a></dd>
+				<dd><a href="{ file[url] }">{ file[name] }</a> <span>( { file[size] } )</span></dd>
 				<!--#endin getnextfile -->
 			</dl>
 			<!--#endif files -->

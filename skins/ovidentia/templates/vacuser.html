@@ -1,5 +1,5 @@
 <!--#begin newvacation -->
-<SCRIPT language="JavaScript">
+<script language="JavaScript">
 <!--
 function validateNum(field) {
 var valid = ".0123456789"
@@ -49,16 +49,28 @@ function validateForm(fr)
 {
 return true;
 }
+
+function delete_request()
+{
+//}
+if (confirm('{ t_delete_confirm } ?'))
+	{
+	 var f = document.forms['vacform'];
+	 f.action.value = 'delete_request';
+	 f.submit();
+	 }
+}
+
 //-->
-</SCRIPT>
+</script>
 <div align="center">
 	<a  href="{ calurl }" onclick="bab_popup(this.href,5,1);return false;">{ calendar }</a>
 </div>
 <br />
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
-<input type="hidden" name="tg" value="vacuser">
-<input type="hidden" name="idx" value="vunew">
-<input type="hidden" name="action" value="vacation_request">
+<input type="hidden" name="tg" value="vacuser" />
+<input type="hidden" name="idx" value="vunew" />
+<input type="hidden" name="action" value="vacation_request" />
 <input type="hidden" name="begin" value="{ begin }" />
 <input type="hidden" name="halfdaybegin" value="{ halfdaybegin }" />
 <input type="hidden" name="end" value="{ end }" />
@@ -129,6 +141,9 @@ return true;
 			<td>&nbsp;</td>
 			<td> 
 				<input type="submit" name="Submit" value="{ addvac }" />
+				<!--#if id -->
+				<input type="button" value="{ t_delete }" onclick="delete_request()" />
+				<!--#endif id -->
 			</td>
 		</tr>
 		</table>

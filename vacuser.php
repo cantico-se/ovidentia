@@ -88,6 +88,8 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$this->totaltxt = bab_translate("Total");
 			$this->balancetxt = bab_translate("Balance");
 			$this->calendar = bab_translate("Planning");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_delete_confirm = bab_translate("Are you sure you want to remove this request");
 			$this->totalval = 0;
 			$this->maxallowed = 0;
 			$this->id = $id;
@@ -427,8 +429,13 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 		return false;
 		}
 
+	$arr = explode('-',$begin);
+	$ts_begin = mktime(0, 0, 0, $arr[1], $arr[2] , $arr[0]);
 
-	if( $begin > $end || ( $begin == $end && $halfdaybegin != $halfdayend ))
+	$arr = explode('-',$end);
+	$ts_end = mktime(0, 0, 0, $arr[1], $arr[2] , $arr[0]);
+
+	if( $ts_begin > $ts_end || ( $begin == $end && $halfdaybegin != $halfdayend ))
 		{
 		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
 		return false;
@@ -642,6 +649,20 @@ if (!isset($_POST['daybegin']) ||
 return true;
 }
 
+
+function delete_request($id_request)
+{
+	$db = &$GLOBALS['babDB'];
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$id_request."'");
+
+	list($idfai) = $db->db_fetch_array($db->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'"));
+	
+	if ($idfai > 0)
+		deleteFlowInstance($idfai);
+
+	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'");
+}
+
 /* main */
 $acclevel = bab_vacationsAccess();
 $userentities = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
@@ -679,6 +700,13 @@ switch ($_POST['action'])
 			{
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 			}
+		}
+		break;
+
+	case 'delete_request':
+		if (bab_isRequestEditable($_POST['id']))
+		{
+			delete_request($_POST['id']);
 		}
 		break;
 	}
