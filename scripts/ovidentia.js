@@ -39,10 +39,10 @@ function bab_selectFirstInputField(filterclass)
 		return false;
 		}
 
+	var filter = false;
 	if (typeof filterclass != 'undefined')
-		var filter = filterclass.split(',');
-	else
-		var filter = false;
+		filter = filterclass.split(',');
+		
 
 	var el = document.getElementsByTagName('input');
 	for (var i =0 ; i < el.length ; i++)
@@ -74,11 +74,11 @@ function bab_popup(url,divisor,menubar)
 	{
 	if (!menubar)
 		{
-		var menubar = 'no';
+		menubar = 'no';
 		}
 	else
 		{
-		var menubar = 'yes';
+		menubar = 'yes';
 		}
 	if (bab_popup_obj == null || bab_popup_obj.closed)
 		{
@@ -127,7 +127,7 @@ function bab_showOnMouse(id,on)
 function bab_tooltipPosition(e)
 	{
 	if (!bab_tooltip_obj)
-		return;
+		return false;
 	var obj = bab_tooltip_obj;
 	var offsetxpoint=-60;
 	var offsetypoint=20;
