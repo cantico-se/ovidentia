@@ -505,7 +505,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->bytes = bab_translate("bytes");
 			$this->mkdir = bab_translate("Create");
 			$this->rename = bab_translate("Rename");
-			$this->delete = bab_translate("Delete directory");
+			$this->delete = bab_translate("Delete");
 			$this->directory = bab_translate("Directory");
 			$this->download = bab_translate("Download");
 			$this->cuttxt = bab_translate("Cut");
