@@ -1,6 +1,14 @@
 
 <!-- comments -->
 <!--#begin commentcreate -->
+<script language="javascript">
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
+}
+</script>
+<center><a class="BabSiteAdminListLink" href="{ urlsee }">{ see }</a></center>
 <form name="comcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="comments">
 <input type="hidden" name="idx" value="List">
@@ -21,8 +29,6 @@
 <!--#if anonyme "== 1" -->
 <input type="text" name="name" size="45" maxlength="60">
 <!--#endif anonyme -->
-</td>
-</tr>
 
 <!-- toolbar -->
 
@@ -55,8 +61,8 @@
 </SCRIPT>
 <!--#else msie -->
 <input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }">
-</td>
 <!--#endif msie -->
+</td>
 </tr>
 <tr>
 <td align="right" nowrap>{ message }:</td>

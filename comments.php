@@ -84,6 +84,8 @@ function addComment($topics, $article, $subject, $com="")
 		var $titleval;
 		var $com;
 		var $msie;
+		var $urlsee;
+		var $see;
 
 		function temp($topics, $article, $subject, $com)
 			{
@@ -94,6 +96,7 @@ function addComment($topics, $article, $subject, $com="")
 			$this->message = bab_translate("Message");
 			$this->add = bab_translate("Add comment");
 			$this->title = bab_translate("Article");
+			$this->see = bab_translate("Read article");
 			$this->topics = $topics;
 			$this->article = $article;
 			$this->subjectval = $subject;
@@ -113,7 +116,8 @@ function addComment($topics, $article, $subject, $com="")
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
-				$this->msie = 0;	
+				$this->msie = 0;
+			$this->urlsee = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article."');";
 			}
 		}
 
