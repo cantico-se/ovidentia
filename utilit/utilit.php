@@ -60,10 +60,22 @@ function composeName( $firstname, $lastname)
 function browserAgent()
 	{
 	global $HTTP_USER_AGENT;
-	$tab = explode(";", $HTTP_USER_AGENT);
-	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
+	//$tab = explode(";", $HTTP_USER_AGENT);
+	//if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
+	if( stristr($HTTP_USER_AGENT, "opera"))
 		{
-		return trim($res[1]);
+		return "opera";
+		}
+	if( stristr($HTTP_USER_AGENT, "msie"))
+		{
+		return "msie";
+		}
+	if( stristr($HTTP_USER_AGENT, "mozilla"))
+		{
+		if(stristr($HTTP_USER_AGENT, "gecko"))
+			return "nn6";
+		else
+			return "nn4";
 		}
 	return "";
 	}
