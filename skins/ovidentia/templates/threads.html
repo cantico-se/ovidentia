@@ -96,8 +96,8 @@
 
 
 <td class="BabForumBackground" align="center" nowrap width="1%">
-<!--#if replymail "!= 0" -->
-<a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ arrpost[author] }</a>
+<!--#if replymail "!= 0" --><!--#if BAB_SESS_LOGGED -->
+<a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ arrpost[author] }</a><!--#else BAB_SESS_LOGGED -->{ arrpost[author] }<!--#endif BAB_SESS_LOGGED -->
 <!--#else replymail -->
 { arrpost[author] }
 <!--#endif replymail -->
