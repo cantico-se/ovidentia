@@ -119,7 +119,12 @@ function listThreads($forum, $active, $pos)
 					$req = "select * from posts where id_thread='".$this->arrthread[id]."' and id='".$this->arrthread[lastpost]."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$this->lastpostdate = bab_strftime(bab_mktime($arr[date]));
+				
+					$tmp = explode(" ", $arr[date]);
+					$arr0 = explode("-", $tmp[0]);
+					$arr1 = explode(":", $tmp[1]);
+					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
+					//$this->lastpostdate = bab_strftime(bab_mktime($arr[date]));
 
 					$req = "select count(*) as total from posts where id_thread='".$this->arrthread[id]."' and confirmed='Y'";
 					$res = $this->db->db_query($req);
