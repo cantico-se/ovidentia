@@ -70,13 +70,13 @@ function isMemberOf($groupname, $userid="")
 
 function isUserAdministrator()
 {
+	global $BAB_SESS_USERID;
 	$db = new db_mysql();
-	$req = "select * from groups where id='3'";
+	$req = "select * from users_groups where id_object='".$BAB_SESS_USERID."' and id_group='3'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		return isMemberOf($arr[name]);
+		return 3;
 		}
 	else
 		return 0;
