@@ -315,6 +315,10 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			if( empty($arr['body']))
+				$this->ctx->curctx->push('ArticleReadMore', 0);
+			else
+				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
@@ -777,6 +781,10 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			if( empty($arr['body']))
+				$this->ctx->curctx->push('ArticleReadMore', 0);
+			else
+				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
@@ -877,6 +885,10 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			if( empty($arr['body']))
+				$this->ctx->curctx->push('ArticleReadMore', 0);
+			else
+				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
@@ -1705,6 +1717,10 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			if( empty($arr['body']))
+				$this->ctx->curctx->push('ArticleReadMore', 0);
+			else
+				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
@@ -2165,6 +2181,10 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			if( empty($arr['body']))
+				$this->ctx->curctx->push('ArticleReadMore', 0);
+			else
+				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
