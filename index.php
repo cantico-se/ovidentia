@@ -768,6 +768,10 @@ switch($tg)
 		include $babInstallPath."editorfaq.php";
 		exit;
 		break;
+	case "editorovml":
+		include $babInstallPath."editorovml.php";
+		exit;
+		break;
 	case "imgget":
 		include $babInstallPath."imgget.php";
 		exit;
