@@ -216,3 +216,4 @@ sites.html                                  Replace 'var t=document.open' by 'St
 topics.html                                 Replace 'var t=document.open' by 'Start'
 topman.html                                 Replace 'var t=document.open' by 'Start'
 vacation.html                               Replace 'var t=document.open' by 'Start'
+sections.html           sectionsmodify      Replace name="Submit" by name="submit"

@@ -186,7 +186,7 @@ function confirmDeleteSection($id)
 /* main */
 if( isset($modify))
 	{
-	if( isset($Submit))
+	if( isset($submit))
 		sectionUpdate($item, $title, $description, $content, $script);
 	else if(isset($secdel))
 		$idx = "Delete";
