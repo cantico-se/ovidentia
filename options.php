@@ -229,7 +229,6 @@ function changeRegionalSettings()
 			$this->arrsfdate[] = "M/d/yyyy";
 			$this->arrsfdate[] = "M/d/yy";
 			$this->arrsfdate[] = "MM/dd/yy";
-			$this->arrsfdate[] = "MM/dd/yyyy";
 			$this->arrsfdate[] = "yy/MM/dd";
 			$this->arrsfdate[] = "yyyy-MM-dd";
 			$this->arrsfdate[] = "dd-MMM-yy";
@@ -239,11 +238,9 @@ function changeRegionalSettings()
 			$this->arrtime[] = "HH:mm tt";
 			$this->arrtime[] = "HH:mm TT";
 			$this->arrtime[] = "HH:mm:ss tt";
-			$this->arrtime[] = "HH:mm:ss tt";
 			$this->arrtime[] = "h:mm:ss tt";
 			$this->arrtime[] = "hh:mm:ss tt";
 			$this->arrtime[] = "HH:mm:ss";
-			$this->arrtime[] = "H:m:s";
 			}
 
 		function getnextlongdate()
