@@ -388,21 +388,18 @@ window.focus();
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<title>{ babSiteName }</title>
 { babMeta }
 { babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
+<script type="text/javascript" src="{ babOvidentiaJs }"></script>
 <script type="text/javascript">
 <!--
 window.focus();
 //-->
 </script>
 </HEAD>
-<BODY class="BabBackground">
-<br>
+<body class="BabBackground">
+<br />
 <!--#if bmanager -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="filever">
@@ -414,55 +411,55 @@ window.focus();
 <tr>
 <td class="BabSiteAdminFontBackground" align="right" >{ titletxt }:&nbsp;</td>
 <td class="BabErrorMessage" align="left" >{ filename }</td>
-</tr></table></center>
+</tr></table>
 <br>
+
+
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">
-&nbsp;
-</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ versiontxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ datetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ hourtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ authortxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ commenttxt }</td>
-</tr> 
-<!--#in getnextvers -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle">
-<!--#if bmanager -->
-<input type="checkbox" name="versions[]" value="{ version }">
-<!--#endif bmanager -->
-&nbsp;</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ geturl }">{ version }</a></td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ date }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ hour }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ author }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ comment }</td>
-</tr>
-<!--#endin getnextvers -->
-<tr > 
-<td colspan="6" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
-<!--#if bmanager -->
-<a href="javascript:submitForm('lvers','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
-&nbsp;<!--#endif bmanager -->
-</td>
-<td colspan="5" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
-<table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td width="1%"><a class="BabForumNavigation" href="{ topurl }">{ topname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="1%"><a class="BabForumNavigation" href="{ prevurl }">{ prevname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="1%"><a class="BabForumNavigation" href="{ nexturl }">{ nextname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="1%"><a class="BabForumNavigation" href="{ bottomurl }">{ bottomname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-</tr>
-</table>
-</td>
-</tr> 
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>&nbsp;</td>
+		<td nowrap>{ versiontxt }</td>
+		<td nowrap>{ datetxt }</td>
+		<td nowrap>{ hourtxt }</td>
+		<td nowrap>{ authortxt }</td>
+		<td>{ commenttxt }&nbsp;</td>
+	</tr> 
+	<!--#in getnextvers -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>
+		<!--#if bmanager -->
+		<input type="checkbox" name="versions[]" value="{ version }">
+		<!--#endif bmanager -->
+		&nbsp;</td>
+		<td nowrap><a class="BabSiteAdminListLink" href="{ geturl }">{ version }</a></td>
+		<td nowrap>{ date }</td>
+		<td nowrap>{ hour }</td>
+		<td>{ author }</td>
+		<td>{ comment }</td>
+	</tr>
+	<!--#endin getnextvers -->
+	<tr> 
+		<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
+		<!--#if bmanager -->
+		<a href="javascript:submitForm('lvers','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
+		<!--#endif bmanager -->&nbsp;
+		</td>
+		<td colspan="5" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
+			<table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+			<tr> 
+				<td width="1%"><a class="BabForumNavigation" href="{ topurl }">{ topname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+				<td width="1%"><a class="BabForumNavigation" href="{ prevurl }">{ prevname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+				<td width="1%"><a class="BabForumNavigation" href="{ nexturl }">{ nextname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+				<td width="1%"><a class="BabForumNavigation" href="{ bottomurl }">{ bottomname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+				<td width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+			</tr>
+			</table>
+		</td>
+	</tr> 
+	</table>
 </td>
 </tr>
 </table>
@@ -470,6 +467,6 @@ window.focus();
 </form>
 <!--#endif bmanager -->
 <br>
-</BODY>
+</body>
 </HTML>
 <!--#end filevershistoric -->
