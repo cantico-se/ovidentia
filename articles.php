@@ -103,7 +103,7 @@ function listArticles($topics, $approver)
 			$this->morename = bab_translate("Read More");
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
-			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' and confirmed='N'");
 			list($this->nbws) = $this->db->db_fetch_row($res);
 			$this->approver = $approver;
 			}
