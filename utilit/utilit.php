@@ -1468,6 +1468,10 @@ function bab_updateSiteSettings()
 			{
 			$GLOBALS['babStyle'] = $arr['style'];
 			}
+		if( $arr['lang'] != "")
+			{
+			$GLOBALS['babLanguage'] = $arr['lang'];
+			}
 		}
 }
 
