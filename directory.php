@@ -53,6 +53,7 @@ function listUserAds()
 		var $desctxt;
 		var $ldapid = array();
 		var $dbid = array();
+		var $altbg = true;
 
 		function temp()
 			{
@@ -94,6 +95,7 @@ function listUserAds()
 			static $i = 0;
 			if( $i < $this->countldap)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$this->ldapid[$i]."'"));
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->ldapid[$i];
@@ -110,6 +112,7 @@ function listUserAds()
 			static $i = 0;
 			if( $i < $this->countdb)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->dbid[$i]."'"));
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i];
