@@ -23,6 +23,11 @@ var $endPatternV = "}";
 
 function printTemplate(&$class, $file, $section="")
 	{
+	if( !is_readable($file))
+		{
+		echo "Cannot read file ( Permission denied ): ". $file;
+		die();
+		}
 	$str = implode("", @file($file));
 
 	if( !empty($section))
