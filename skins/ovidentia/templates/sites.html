@@ -201,9 +201,17 @@ function validateNum(field)
 				<!--#if dbvalue[remember_login] "== Y" -->
 				<option value="Y" selected>{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[remember_login] -->
+				<option value="L">{ login_only }</option>
+				<!--#endif dbvalue[remember_login] -->
+				<!--#if dbvalue[remember_login] "== N" -->
 				<option value="Y">{ yes }</option>
 				<option value="N" selected>{ no }</option>
+				<option value="L">{ login_only }</option>
+				<!--#endif dbvalue[remember_login] -->
+				<!--#if dbvalue[remember_login] "== L" -->
+				<option value="Y">{ yes }</option>
+				<option value="N">{ no }</option>
+				<option value="L" selected>{ login_only }</option>
 				<!--#endif dbvalue[remember_login] -->
 				</select>
 			</td>
@@ -259,8 +267,8 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td>
-			&nbsp;
+			<td>&nbsp;
+			
 			</td>
 			<td><br />
 			<input type="submit" name="Submit" value="{ create }" />
@@ -532,9 +540,17 @@ function validateNum(field)
 				<!--#if dbvalue[remember_login] "== Y" -->
 				<option value="Y" selected>{ yes }</option>
 				<option value="N">{ no }</option>
-				<!--#else dbvalue[remember_login] -->
+				<option value="L">{ login_only }</option>
+				<!--#endif dbvalue[remember_login] -->
+				<!--#if dbvalue[remember_login] "== N" -->
 				<option value="Y">{ yes }</option>
 				<option value="N" selected>{ no }</option>
+				<option value="L">{ login_only }</option>
+				<!--#endif dbvalue[remember_login] -->
+				<!--#if dbvalue[remember_login] "== L" -->
+				<option value="Y">{ yes }</option>
+				<option value="N">{ no }</option>
+				<option value="L" selected>{ login_only }</option>
 				<!--#endif dbvalue[remember_login] -->
 				</select>
 			</td>
@@ -590,8 +606,8 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td>
-			&nbsp;
+			<td>&nbsp;
+			
 			</td>
 			<td><br />
 			<input type="submit" name="Submit" value="{ create }" />

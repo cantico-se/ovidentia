@@ -145,6 +145,7 @@ function siteModify($id)
 			$this->change_nickname_title = bab_translate("User can modifiy his nickname");
 			$this->change_password_title = bab_translate("User can modifiy his password");
 			$this->remember_login_title = bab_translate("Automatic connection");
+			$this->login_only = bab_translate("Login only");
 			$this->email_password_title = bab_translate("Display option 'Lost Password'");
 			$this->babslogan_title = bab_translate("Site slogan");
 			$this->uploadpath_title = bab_translate("Upload path");

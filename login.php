@@ -396,7 +396,7 @@ function signOn( $nickname, $password,$lifetime)
 	if ( $lifetime > 0 )
 		{
 		setcookie('c_nickname',$nickname,time()+$lifetime);
-		setcookie('c_password',md5($password),time()+$lifetime);
+		if ($GLOBALS['babCookieIdent'] != 'login') setcookie('c_password',md5($password),time()+$lifetime);
 		}
 	return true;
 	}

@@ -2256,6 +2256,11 @@ function bab_updateSiteSettings()
 		{
 		$GLOBALS['babCookieIdent'] = true;
 		}
+	elseif ($arr['remember_login'] == "L")
+		{
+		$GLOBALS['babCookieIdent'] = 'login' ;
+		$GLOBALS['c_nickname'] = trim($_COOKIE['c_nickname']);
+		}
 	else {
 		$GLOBALS['babCookieIdent'] = false ; }
 	if( $arr['email_password'] == "Y") {
