@@ -717,12 +717,11 @@ function viewFile($id, $w)
 						}
 					}
 				}
-			else if( !empty($BAB_SESS_USERID) && $this->arr['id_owner'] == $BAB_SESS_USERID)
+			else if( !empty($GLOBALS['BAB_SESS_USERID']) && $this->arr['id_owner'] == $GLOBALS['BAB_SESS_USERID'])
 				{
 				if( in_array(1, $aclfm['pr']))
 					{
 					$access = true;
-					break;
 					}
 				}
 
