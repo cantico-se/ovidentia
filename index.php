@@ -426,7 +426,6 @@ switch($tg)
 		break;
 	case "month":
 		$incl = "month";
-		include $babInstallPath."utilit/month.php";
 		include $babInstallPath."$incl.php";
 		exit;
 		break;
