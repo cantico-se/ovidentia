@@ -566,11 +566,13 @@ function forumsSection()
 		if(isAccessValid("forumsview_groups", $row['id']))
 			{
 			array_push($this->arrid, $row['id']);
-			$req = "select count(posts.id) as total from posts, threads where posts.date >= '".$body->lastlog."' and posts.id_thread=threads.id and threads.forum='".$row['id']."'";
+			$req = "select count(posts.id) as total from posts, threads where posts.date >= '".$body->lastlog."' and posts.confirmed='Y' and posts.id_thread=threads.id and threads.forum='".$row['id']."'";
 			$res2 = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res2);
 			if( $arr['total'] > 0)
+				{
 				$body->newposts += $arr['total'];
+				}
 			}
 		}
 	$this->count = count($this->arrid);
@@ -1084,7 +1086,7 @@ function updateUserSettings()
 			$req="select * from users_log where id_user='$BAB_SESS_USERID'";
 			$res=$db->db_query($req);
 			$arr = $db->db_fetch_array($res);
-			$body->lastlog = $arr['datelog'];
+			$body->lastlog = $arr['lastlog'];
             }
 		}
 }
