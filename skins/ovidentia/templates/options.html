@@ -395,6 +395,7 @@ mm(sksel);
 <td valign="middle" width="1%">&nbsp;</td>
 <td valign="middle">{ pdesc } </td>
 </tr>
+<!--#if bmultiplicity -->
 <!--#in getnextgrp -->
 <!--#if altbg -->
 <tr class="BabSiteAdminFontBackground">
@@ -407,6 +408,19 @@ mm(sksel);
 <td valign="middle">{ grpdesc }</td>
 </tr>        
 <!--#endin getnextgrp -->
+<!--#else bmultiplicity -->
+<tr class="BabSiteAdminFontBackground">
+<td valign="middle" width="1%">&nbsp;</td>
+<td valign="middle">
+<select name="grpids[]">
+<option value=""></option>
+<!--#in getnextgrp -->
+<option value="{ grpid }">{ grpdesc }</option>
+<!--#endin getnextgrp -->
+</select>
+</td>
+</tr>        
+<!--#endif bmultiplicity -->
 </table>
 </td>
 </tr>

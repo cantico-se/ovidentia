@@ -476,6 +476,14 @@ function changeProfiles()
 					$this->pdesc = $arr['description'];
 					$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$arr['id']."'");
 					$this->countgrp = $babDB->db_num_rows($this->resgrp);
+					if( $arr['multiplicity'] == 'Y' )
+						{
+						$this->bmultiplicity = true;
+						}
+					else
+						{
+						$this->bmultiplicity = false;
+						}
 					}
 				else
 					{
