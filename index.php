@@ -105,7 +105,6 @@ function printBody()
 	{
 	class tpl
 	{
-		var $babCss;
 		var $babLogoLT;
 		var $babLogoRT;
 		var $babBanner;
@@ -117,7 +116,6 @@ function printBody()
 		var $logurl;
 		var $babLogoLB;
 		var $babLogoRB;
-		var $babMeta;
 		var $enabled;
 		var $menuclass;
 		var $menuattribute;
@@ -145,7 +143,6 @@ function printBody()
 			$this->babLogoLB = "";
 			$this->babLogoRB = "";
 			$this->babBanner = "";
-			$this->babMeta = "";
 
 			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = bab_printTemplate($this, "config.html", "babLogoRT");
