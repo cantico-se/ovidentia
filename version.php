@@ -46,7 +46,7 @@ function echoLang($path)
 		{ 
 		if ($filename != "." && $filename != "..")
 			{
-			if (is_dir($path.$filename))
+			if (($filename == "utilit" || $filename == "admin") && is_dir($path.$filename))
 				{
 					$arr = array_merge($arr, echoLang($path.$filename."/"));
 				}

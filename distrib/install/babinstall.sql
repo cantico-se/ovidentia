@@ -309,6 +309,7 @@ CREATE TABLE bab_topics (
    category varchar(60) NOT NULL,
    description text NOT NULL,
    id_cat int(11) unsigned DEFAULT '0' NOT NULL,
+   mod_com enum('Y','N') NOT NULL default 'Y',
    PRIMARY KEY (id)
 );
 
@@ -392,7 +393,7 @@ CREATE TABLE bab_users (
    PRIMARY KEY (id)
 );
 
-INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '');
+INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '', '');
 
 # --------------------------------------------------------
 #
