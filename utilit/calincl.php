@@ -59,38 +59,28 @@ function bab_getCalendarOwnerName($idcal, $type)
 {
 	$ret = "";
 	$db = $GLOBALS['babDB'];
-	$query = "select type, owner from ".BAB_CALENDAR_TBL." where id='$idcal'";
-	$res = $db->db_query($query);
+
+	$res = $db->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id='$idcal'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $arr['type'] == 1)
+		if( $arr['type'] == BAB_CAL_USER_TYPE)
 			{
-			$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['owner']."'";
-			$res = $db->db_query($query);
-			$arr = $db->db_fetch_array($res);
-			$ret = bab_composeUserName( $arr['firstname'], $arr['lastname']);
+			return bab_getUserName( $arr['owner']);
 			}
-		else if( $arr['type'] == 2)
+		else if( $arr['type'] == BAB_CAL_PUB_TYPE)
 			{
-			$query = "select name from ".BAB_GROUPS_TBL." where id='".$arr['owner']."'";
-			$res = $db->db_query($query);
-			$arr = $db->db_fetch_array($res);
-			$ret = $arr['name'];
+			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_PUBLIC_TBL." where id='".$arr['owner']."'"));
+			return $arr['name'];
 			}
-		else if( $arr['type'] == 3)
+		else if( $arr['type'] == BAB_CAL_RES_TYPE)
 			{
-			$query = "select name from ".BAB_RESOURCESCAL_TBL." where id='".$arr['owner']."'";
-			$res = $db->db_query($query);
-			$arr = $db->db_fetch_array($res);
-			$ret = $arr['name'];
+			$arr = $db->db_fetch_array($db->db_query("select name from ".BAB_CAL_RESOURCES_TBL." where id='".$arr['owner']."'"));
+			return $arr['name'];
 			}
-		return $ret;
 		}
-	else
-		{
-		return $ret;
-		}
+
+	return $ret;
 }
 
 function bab_isCalendarAccessValid($calid)
@@ -98,17 +88,51 @@ function bab_isCalendarAccessValid($calid)
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 	$ret = array();
-	$res = $db->db_query("select id, type from ".BAB_CALENDAR_TBL." where id IN (".$calid.") and actif='Y'");
-	while($arr = $db->db_fetch_array($res))
+	$babBody->icalendars->initializeCalendars();
+
+	$calid = explode(',', $calid);
+
+	if( $babBody->icalendars->id_percal != 0 && in_array($babBody->icalendars->id_percal, $calid))
 		{
-		for( $i = 0; $i < count($babBody->calendarids); $i++ )
+		$ret[] = $babBody->icalendars->id_percal;
+		}
+
+	if( count($babBody->icalendars->usercal) > 0 )
+		{
+		reset($babBody->icalendars->usercal);
+		while( $row=each($babBody->icalendars->usercal) ) 
 			{
-			if( $babBody->calendarids[$i]['id'] == $arr['id'] && $babBody->calendarids[$i]['type'] == $arr['type'])
+			if( in_array($row[0], $calid))
 				{
-				$ret[] = $arr['id'];
+				$ret[] = $row[0];
 				}
 			}
 		}
+
+	if( count($babBody->icalendars->pubcal) > 0 )
+		{
+		reset($babBody->icalendars->pubcal);
+		while( $row=each($babBody->icalendars->pubcal) ) 
+			{
+			if( in_array($row[0], $calid))
+				{
+				$ret[] = $row[0];
+				}
+			}
+		}
+		
+	if( count($babBody->icalendars->rescal) > 0 )
+		{
+		reset($babBody->icalendars->rescal);
+		while( $row=each($babBody->icalendars->rescal) ) 
+			{
+			if( in_array($row[0], $calid))
+				{
+				$ret[] = $row[0];
+				}
+			}
+		}
+
 	if( count($ret) > 0 )
 		{
 		$result = implode(',', $ret);
@@ -124,76 +148,62 @@ function bab_isCalendarAccessValid($calid)
 function getAvailableUsersCalendars($bwrite = false)
 {
 	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
-	$tab = array();
-	$rr = array();
+	$babBody->icalendars->initializeCalendars();
 
-	for( $i = 0; $i < count($babBody->calendarids); $i++ )
-	{
-		$add = false;
-		if( $babBody->calendarids[$i]['type'] == 1 )
+	$tab = array();
+
+	if( $babBody->icalendars->id_percal != 0 )
 		{
-			if( $bwrite )
+		$tab[] = array('idcal' => $babBody->icalendars->id_percal, 'name' => $GLOBALS['BAB_SESS_USER']);
+		}
+
+	if( count($babBody->icalendars->usercal) > 0 )
+		{
+		reset($babBody->icalendars->usercal);
+		while( $row=each($babBody->icalendars->usercal) ) 
 			{
-				if( $babBody->calendarids[$i]['access'] == 1 || $babBody->calendarids[$i]['access'] == 2 )
+			if( $bwrite )
 				{
-					$add = true;
+				if( $row[1]['access'] == BAB_CAL_ACCESS_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_FULL )
+					{
+					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
+					}
+				}
+			else
+				{
+				$tab[] =  array('idcal' => $row[0], 'name' => $row[1]['name']);
 				}
 			}
-			else
-			{
-				$add = true;
-			}
-
-		if( $add )
-			{
-			$rr['name'] = bab_getCalendarOwnerName($babBody->calendarids[$i]['id'], 1);
-			$rr['idcal'] = $babBody->calendarids[$i]['id'];
-			array_push($tab, $rr);
-			}
 		}
-	}
+
 	return $tab;
 }	
 
 
 function getAvailableGroupsCalendars($bwrite = false)
 {
-	global $babBody,$BAB_SESS_USERID,$BAB_SESS_USER;
+	global $babBody;
+	$babBody->icalendars->initializeCalendars();
 	$tab = array();
-	$rr = array();
 
-	for( $i = 0; $i < count($babBody->calendarids); $i++ )
-	{
-		$add = false;
-		if( $babBody->calendarids[$i]['type'] == 2 )
+	if( count($babBody->icalendars->pubcal) > 0 )
 		{
-			if( $babBody->calendarids[$i]['owner'] == 1)
+		reset($babBody->icalendars->pubcal);
+		while( $row=each($babBody->icalendars->pubcal) ) 
 			{
-				if( $bwrite && $babBody->isSuperAdmin )
+			if( $bwrite )
 				{
-					$add = true;
+				if( $row[1]['manager'])
+					{
+					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
+					}
 				}
-				elseif( !$bwrite )
-				{
-					$add = true;
-				}
-			}
 			else
-			{
-				if( count($babBody->usergroups) > 0 && in_array($babBody->calendarids[$i]['owner'], $babBody->usergroups))
 				{
-					$add = true;
+				$tab[] =  array('idcal' => $row[0], 'name' => $row[1]['name']);
 				}
-			}
-
-		if( $add )
-			{
-			$rr['name'] = bab_getGroupName($babBody->calendarids[$i]['owner']);
-			$rr['idcal'] = $babBody->calendarids[$i]['id'];
-			array_push($tab, $rr);
 			}
 		}
-	}
 
 	return $tab;
 }
@@ -202,23 +212,302 @@ function getAvailableGroupsCalendars($bwrite = false)
 function getAvailableResourcesCalendars($bwrite = false)
 {
 	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
+	$babBody->icalendars->initializeCalendars();
 	$tab = array();
-	$rr = array();
-	if ($GLOBALS['BAB_SESS_LOGGED'])
-	{
-		$db = $GLOBALS['babDB'];
-		for( $i = 0; $i < count($babBody->calendarids); $i++ )
+
+	if( count($babBody->icalendars->rescal) > 0 )
 		{
-			if( $babBody->calendarids[$i]['type'] == 3 )
+		reset($babBody->icalendars->rescal);
+		while( $row=each($babBody->icalendars->rescal) ) 
 			{
-				list($name) = $db->db_fetch_row($db->db_query("select name from ".BAB_RESOURCESCAL_TBL." where id='".$babBody->calendarids[$i]['owner']."'"));
-				$rr['name'] = $name;
-				$rr['idcal'] = $babBody->calendarids[$i]['id'];
-				array_push($tab, $rr);
+			if( $bwrite )
+				{
+				if( $row[1]['manager'])
+					{
+					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
+					}
+				}
+			elseif( $row[1]['view'] || $row[1]['manager'])
+				{
+				$tab[] =  array('idcal' => $row[0], 'name' => $row[1]['name']);
+				}
 			}
 		}
-	}
+
 	return $tab;
 }
 
+class bab_icalendars
+{
+	var $id_percal = 0; // personal calendar
+	var $usercal = array(); // other users personal calendars
+	var $pubcal = array(); // public calendars
+	var $rescal = array(); // resources calendars
+	var $busercal = false; // personnal calendar
+	var $bpubcal = false; // public calendar
+	var $brescal = false; // resource calendar
+
+	function bab_icalendars()
+	{
+		global $babBody, $babDB;
+
+		$pcalendar = false;
+
+		if( !empty($GLOBALS['BAB_SESS_USERID']))
+		{
+		reset($babBody->ovgroups);
+		while( $row=each($babBody->ovgroups) ) 
+			{ 
+			if( $row[1]['member'] == 'Y' && $row[1]['pcalendar'] == 'Y')
+				{
+				$pcalendar = true;
+				}
+			}
+
+		if( $pcalendar )
+			{
+			$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and actif='Y' and type='1'");
+			if( $res && $babDB->db_num_rows($res) >  0)
+				{
+				$arr = $babDB->db_fetch_array($res);
+				$this->id_percal = $arr['id'];
+				}		
+			}
+
+		$res = $babDB->db_query("select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		if( $res && $babDB->db_num_rows($res) >  0)
+			{
+			$arr = $babDB->db_fetch_array($res);
+			$this->startday = $arr['startday'];
+			$this->allday = $arr['allday'];
+			$this->usebgcolor = $arr['usebgcolor'];
+			$this->elapstime = $arr['elapstime'];
+			$this->defaultview = $arr['defaultview'];
+			$this->starttime = $arr['start_time'];
+			$this->endtime = $arr['end_time'];
+			$this->workdays = $arr['work_days'];
+			$this->user_calendarids = $arr['user_calendarids'];
+			}
+		else
+			{
+			$this->startday = 1;
+			$this->allday = 'Y';
+			$this->usebgcolor = 'Y';
+			$this->elapstime = 60;
+			$this->defaultview = BAB_CAL_VIEW_MONTH;
+			$this->starttime = "08:00:00";
+			$this->endtime = "18:00:00";
+			$this->workdays = "1,2,3,4,5";
+			$this->user_calendarids = '';
+			}
+		if( empty($this->user_calendarids) && $this->id_percal != 0)
+			{
+			$this->user_calendarids = $this->id_percal;
+			}
+		}
+	}
+
+	function initializePublicCalendars()
+	{
+		global $babDB;
+		$this->bpubcal = true;
+
+		$res = $babDB->db_query("select cpt.*, ct.id as idcal, ct.owner from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and ct.actif='Y'");
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$this->pubcal[$arr['idcal']]['name'] = $arr['name'];
+			$this->pubcal[$arr['idcal']]['description'] = $arr['description'];
+			$this->pubcal[$arr['idcal']]['type'] = BAB_CAL_PUB_TYPE;
+			$this->pubcal[$arr['idcal']]['idowner'] = $arr['owner'];
+
+			if( bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $arr['idcal']))
+			{
+				$this->pubcal[$arr['idcal']]['group'] = true;
+			}
+			else
+			{
+				$this->pubcal[$arr['idcal']]['group'] = false;
+			}
+
+			if( bab_isAccessValid(BAB_CAL_PUB_VIEW_GROUPS_TBL, $arr['idcal']))
+			{
+				$this->pubcal[$arr['idcal']]['view'] = true;
+			}
+			else
+			{
+				$this->pubcal[$arr['idcal']]['view'] = false;
+			}
+			if( bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $arr['idcal']))
+			{
+				$this->pubcal[$arr['idcal']]['manager'] = true;
+			}
+			else
+			{
+				$this->pubcal[$arr['idcal']]['manager'] = false;
+			}
+		}
+		if( empty($this->user_calendarids) && count($this->pubcal) > 0)
+			{
+			$keys = array_keys($this->pubcal);
+			$this->user_calendarids = $keys[0];
+			}
+	}
+
+	function initializeResourceCalendars()
+	{
+		global $babDB;
+		$this->brescal = true;
+
+		$res = $babDB->db_query("select crt.*, ct.id as idcal, ct.owner from ".BAB_CAL_RESOURCES_TBL." crt left join ".BAB_CALENDAR_TBL." ct on ct.owner=crt.id where ct.type='".BAB_CAL_RES_TYPE."' and ct.actif='Y'");
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$this->rescal[$arr['idcal']]['name'] = $arr['name'];
+			$this->rescal[$arr['idcal']]['description'] = $arr['description'];
+			$this->rescal[$arr['idcal']]['type'] = BAB_CAL_RES_TYPE;
+			$this->rescal[$arr['idcal']]['idowner'] = $arr['owner'];
+
+			if( bab_isAccessValid(BAB_CAL_RES_GRP_GROUPS_TBL, $arr['idcal']))
+			{
+				$this->rescal[$arr['idcal']]['group'] = true;
+			}
+			else
+			{
+				$this->rescal[$arr['idcal']]['group'] = false;
+			}
+
+			if( bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']))
+			{
+				$this->rescal[$arr['idcal']]['view'] = true;
+			}
+			else
+			{
+				$this->rescal[$arr['idcal']]['view'] = false;
+			}
+			if( bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']))
+			{
+				$this->rescal[$arr['idcal']]['manager'] = true;
+			}
+			else
+			{
+				$this->rescal[$arr['idcal']]['manager'] = false;
+			}
+		}
+		if( empty($this->user_calendarids) && count($this->rescal) > 0)
+			{
+			$keys = array_keys($this->rescal);
+			$this->user_calendarids = $keys[0];
+			}
+	}
+
+	function initializeUserCalendars()
+	{
+		global $babDB;
+		$this->busercal = true;
+
+		$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal where id_user='".$GLOBALS['BAB_SESS_USERID']."' and ct.actif='Y'");
+
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$this->usercal[$arr['id_cal']]['name'] = bab_getUserName($arr['owner']);
+			$this->usercal[$arr['id_cal']]['description'] = '';
+			$this->usercal[$arr['id_cal']]['type'] = BAB_CAL_USER_TYPE;
+			$this->usercal[$arr['id_cal']]['idowner'] = $arr['owner'];
+			$this->usercal[$arr['id_cal']]['access'] = $arr['bwrite'];
+		}
+		if( empty($this->user_calendarids) && count($this->usercal) > 0)
+			{
+			$keys = array_keys($this->usercal);
+			$this->user_calendarids = $keys[0];
+			}
+	}
+
+	function calendarAccess()
+	{
+		if( $this->id_percal != 0 )
+		{
+			return true;
+		}
+
+		if( !$this->bpubcal )
+		{
+			$this->initializePublicCalendars();
+		}
+
+		if( count($this->pubcal) > 0 )
+		{
+			return true;
+		}
+
+		if( !$this->brescal )
+		{
+			$this->initializeResourceCalendars();
+		}
+
+		if( count($this->rescal) > 0 )
+		{
+			return true;
+		}
+
+		if( !$this->busercal )
+		{
+			$this->initializeUserCalendars();
+		}
+
+		if( count($this->usrcal) > 0 )
+		{
+			return true;
+		}
+
+	}
+
+	function initializeCalendars()
+	{
+		if( !$this->bpubcal )
+		{
+			$this->initializePublicCalendars();
+		}
+
+		if( !$this->brescal )
+		{
+			$this->initializeResourceCalendars();
+		}
+
+		if( !$this->busercal )
+		{
+			$this->initializeUserCalendars();
+		}
+	}
+}
+
+
+function bab_deleteCalendar($idcal)
+{
+	global $babDB;
+
+	list($type, $owner) = $babDB->db_fetch_row($babDB->db_query("select type, owner from ".BAB_CALENDAR_TBL." where id='".$idcal."'"));
+
+	switch( $type )
+		{
+		case BAB_CAL_PUB_TYPE:
+			$babDB->db_query("delete from ".BAB_CAL_PUBLIC_TBL." where id='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_PUB_MAN_GROUPS_TBL." where id_object='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_object='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_PUB_VIEW_GROUPS_TBL." where id_object='".$owner."'");
+			break;
+		case BAB_CAL_RES_TYPE:
+			$babDB->db_query("delete from ".BAB_CAL_RESOURCES_TBL." where id='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_RES_MAN_GROUPS_TBL." where id_object='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_RES_GRP_GROUPS_TBL." where id_object='".$owner."'");
+			$babDB->db_query("delete from ".BAB_CAL_RES_VIEW_GROUPS_TBL." where id_object='".$owner."'");
+			break;
+		case BAB_CAL_USER_TYPE:
+			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$idcal."'");	
+			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$arr['owner']."'");	
+			$babDB->db_query("delete from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$arr['owner']."'");	
+			break;
+		}
+
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$idcal."'");	
+	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$idcal."'");	
+}
 ?>

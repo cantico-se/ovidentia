@@ -24,6 +24,18 @@
 include_once "base.php";
 define("BAB_DBDIR_MAX_COMMON_FIELDS", 100);
 
+/* calndars */
+define("BAB_CAL_USER_TYPE", 1);
+define("BAB_CAL_PUB_TYPE", 2);
+define("BAB_CAL_RES_TYPE", 3);
+
+define("BAB_CAL_ACCESS_VIEW",	0); /* only for viewing */
+define("BAB_CAL_ACCESS_UPDATE", 1); /* can modify/delete event if user is creator */
+define("BAB_CAL_ACCESS_FULL",	2); /* full access */
+
+define("BAB_CAL_VIEW_MONTH",	0); /* month view */
+define("BAB_CAL_VIEW_WEEK",		1); /* week view */
+define("BAB_CAL_VIEW_DAY",		2); /* day view */
 
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
@@ -33,7 +45,17 @@ define("BAB_ART_DRAFTS_NOTES_TBL", "bab_art_drafts_notes");
 define("BAB_ART_DRAFTS_TBL", "bab_art_drafts");
 define("BAB_ART_DRAFTS_FILES_TBL", "bab_art_drafts_files");
 define("BAB_ART_LOG_TBL", "bab_art_log");
+define("BAB_CAL_CATEGORIES_TBL", "bab_cal_categories");
+define("BAB_CAL_USER_OPTIONS_TBL", "bab_cal_user_options");
 define("BAB_CAL_EVENTS_TBL", "bab_cal_events");
+define("BAB_CAL_PUBLIC_TBL", "bab_cal_public");
+define("BAB_CAL_PUB_VIEW_GROUPS_TBL", "bab_cal_pub_view_groups");
+define("BAB_CAL_PUB_MAN_GROUPS_TBL", "bab_cal_pub_man_groups");
+define("BAB_CAL_PUB_GRP_GROUPS_TBL", "bab_cal_pub_grp_groups");
+define("BAB_CAL_RES_VIEW_GROUPS_TBL", "bab_cal_res_view_groups");
+define("BAB_CAL_RES_MAN_GROUPS_TBL", "bab_cal_res_man_groups");
+define("BAB_CAL_RES_GRP_GROUPS_TBL", "bab_cal_res_grp_groups");
+define("BAB_CAL_RESOURCES_TBL", "bab_cal_resources");
 define("BAB_CALACCESS_USERS_TBL", "bab_calaccess_users");
 define("BAB_CALENDAR_TBL", "bab_calendar");
 define("BAB_CALOPTIONS_TBL", "bab_caloptions");

@@ -1,6 +1,4 @@
 <!--#begin calendargroups -->
-
-
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="admcals">
 <input type="hidden" name="idx" value="groups">
@@ -41,3 +39,194 @@
 </table>
 </form>
 <!--#end calendargroups -->
+
+<!--#begin calendarslist -->
+<form method="post" action="{ babPhpSelf }" name="listcals">
+<input type="hidden" name="tg" value="admcals" />
+<input type="hidden" name="idx" value="{ idx }" />
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>{ nametxt } </td>
+<td>{ desctxt }</td>
+<td colspan="2">&nbsp;</td>
+<td width="1%">{ disabledtxt }</td>
+</tr>
+<!--#in getnext --> 
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td><a class="BabSiteAdminListLink" href="{ nameurl }">{ name }</a></td>
+<td>{ description }</td>
+<td align="center"><a class="BabSiteAdminListLink" href="{ rightsurl }">{ rightstxt }</a></td>
+<td align="center"><a href="{ delurl }" title="{ t_delete }"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a></td>
+<td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="calids[]" { calchecked } value="{ idcal }">
+</td>
+</tr>
+<!--#endin getnext -->
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td colspan="4">&nbsp;</td>
+<td width="1%" align="center"><a href="javascript:onCheckAll('addons', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('addons', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br />
+<div align="center">
+<input type="submit" name="sublist" value="{ update }" /></div>
+<br />
+</form>
+<!--#end calendarslist -->
+
+
+<!--#begin calendaradd -->
+<form name="calcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ tgval }">
+<input type="hidden" name="idcal" value="{ idcal }">
+<input type="hidden" name="addc" value="{ add }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ nametxt }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="calname" size="40" maxlength="255" value="{ calname }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ desctxt }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="caldesc" size="50" maxlength="255" value="{ caldesc }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"><input type="submit" name="submit" value="{ addtxt }"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end calendaradd -->
+
+<!--#begin categorieslist -->
+
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="44%" valign="middle"><b>{ nametxt }</b></td>
+<td class="BabSiteAdminTitleFontBackground" width="44%" valign="middle"><b>{ desctxt }</b></td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"><b>{ bgcolortxt }</b></td>
+<td class="BabSiteAdminTitleFontBackground" width="2%" valign="middle">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+<td valign="middle" nowrap> 
+<a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+</td>
+<td valign="middle">{ desc }</td>
+<td valign="middle" bgcolor="#{ bgcolor }"><span class="BabSiteAdminFont">{ bgcolor }</span></td>
+<td align="center"><a href="{ delurl }" title="{ t_delete }"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a></td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end categorieslist -->
+
+<!--#begin categorycreate -->
+<script language="JavaScript">
+<!--
+function setColor(color)
+	{
+	document.forms.catcolor.bgcolor.value=color;
+	}
+//-->
+</script>
+<form name="catcolor" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ tgval }">
+<input type="hidden" name="idx" value="cats">
+<input type="hidden" name="idcat" value="{ idcat }">
+<input type="hidden" name="add" value="{ add }">
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" valign="middle">{ nametxt }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="catname" size="40" maxlength="60" value="{ name }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" valign="middle" nowrap>{ desctxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="catdesc" size="50" maxlength="255" value="{ desc }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" valign="middle" nowrap><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ selctorurl }',4);">{ bgcolortxt }</a>:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="bgcolor" size="6" maxlength="6"  value="{ bgcolor }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ addtxt }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</form>
+<!--#end categorycreate -->
+
+
+<!--#begin personalcalendars -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="admcals">
+<input type="hidden" name="idx" value="user">
+<table border="0" width="70%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabSiteAdminTitleFontBackground">
+<td valign="middle">{ fullname } </td>
+<td valign="middle" align="center">{ pcalendar } </td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+<td valign="middle"> 
+{ urlname } 
+</td>
+<td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="calperids[]" { pcalcheck } value="{ grpid }">
+</td>
+</tr>        
+<!--#endin getnext -->
+<tr> 
+<td valign="middle">&nbsp;</td>
+<td width="1%" align="center"><a href="javascript:onCheckAll('calperids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calperids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<div align="center">
+<input type="submit" name="sublist" value="{ modify }"></div>
+<br>
+</form>
+<!--#end personalcalendars -->

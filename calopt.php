@@ -326,49 +326,108 @@ function calendarOptions($calid)
 
 	class temp
 		{
-		var $startday;
-		var $dayid;
-		var $dayname;
-		var $allday;
-		var $ampm;
-		var $usebgcolor;
-		var $elapstime;
-		var $etval;
-		var $etselected;
-		var $minutes;
-		var $defaultview;
-		var $defaultviewweek;
-		var $dvval;
-		var $dvselected;
-		var $arrdv;
-		var $arrdvw;
-
-
-		var $modify;
-		var $yes;
-		var $no;
-
 		function temp($calid)
 			{
 			global $BAB_SESS_USERID;
 			$this->calid = $calid;
-			$this->startday = bab_translate("First day of week");
+			$this->calweekworktxt = bab_translate("Calendar work week");
+			$this->caloptionstxt = bab_translate("Calendar options");
+			$this->startdaytxt = bab_translate("First day of week");
+			$this->starttimetxt = bab_translate("Start time");
+			$this->endtimetxt = bab_translate("End time");
 			$this->allday = bab_translate("On create new event, check")." ". bab_translate("All day");
-			$this->ampm = bab_translate("Use AM PM");
-			$this->usebgcolor = bab_translate("Use bacground color for events");
+			$this->usebgcolor = bab_translate("Use background color for events");
+			$this->weeknumberstxt = bab_translate("Show week numbers");
 			$this->modify = bab_translate("Modify");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->elapstime = bab_translate("Time scale");
 			$this->minutes = bab_translate("Minutes");
 			$this->defaultview = bab_translate("Calendar default view");
-			$this->defaultviewweek = bab_translate("Week default view");
 			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
+			if( empty($this->arr['start_time']))
+				{
+				$this->arr['start_time'] = "08:00:00";
+				}
+			if( empty($this->arr['end_time']))
+				{
+				$this->arr['end_time'] = "18:00:00";
+				}
+			if( empty($this->arr['startday']))
+				{
+				$this->arr['startday'] = 3;
+				}
+			if( empty($this->arr['defaultview']))
+				{
+				$this->arr['defaultview'] = BAB_CAL_VIEW_MONTH;
+				}
+			if( empty($this->arr['elapstime']))
+				{
+				$this->arr['elapstime'] = 60;
+				}
+
+			if( empty($this->arr['work_days']))
+				{
+				$this->arr['work_days'] = "1,2,3,4,5";
+				}
+			$this->workdays = explode(',', $this->arr['work_days']);
+			$this->sttime = $this->arr['start_time'];
+			}
+
+		function getnextshortday()
+			{
+			global $babDays;
+
+			static $i = 0;
+			if( $i < 7 )
+				{
+				if( in_array($i, $this->workdays))
+					$this->selected = "checked";
+				else
+					$this->selected = "";
+				$this->dayid = $i;
+				$this->shortday = substr($babDays[$i], 0, 3);
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+
+		function getnexttime()
+			{
+			static $i = 0;
+			if( $i < 24 )
+				{
+				$this->timeid = sprintf("%02s:00:00", $i);
+				$this->timeval = substr($this->timeid, 0, 2);
+				if( $this->timeid == $this->sttime)
+					{
+					$this->selected = "selected";
+					}
+				else
+					{
+					$this->selected = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->sttime = $this->arr['end_time'];
+				$i = 0;
+				return false;
+				}
+
 			}
 
 		function getnextday()
@@ -483,23 +542,32 @@ function calendarOptions($calid)
 	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
 	}
 
-function updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime, $defaultview, $defaultviewweek)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays, $useweeknb)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+
+	if( count($workdays) == 0 )
 		{
-		$req = "update ".BAB_CALOPTIONS_TBL." set startday='".$startday."', allday='".$allday."', ampm='".$ampm."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', defaultviewweek='".$defaultviewweek."' where id_user='".$BAB_SESS_USERID."'";
+		$workdays = "1,2,3,4,5";
 		}
 	else
 		{
-		$req = "insert into ".BAB_CALOPTIONS_TBL." ( id_user, startday, allday, ampm, usebgcolor, elapstime, defaultview, defaultviewweek) values ";
-		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$ampm."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$defaultviewweek."')";
+		$workdays = implode(',', $workdays);
+		}
+
+	$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$req = "update ".BAB_CAL_USER_OPTIONS_TBL." set startday='".$startday."', allday='".$allday."', start_time='".$starttime."', end_time='".$endtime."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', work_days='".$workdays."', week_numbers='".$useweeknb."' where id_user='".$BAB_SESS_USERID."'";
+		}
+	else
+		{
+		$req = "insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers) values ";
+		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$starttime."', '".$endtime."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$workdays."', '".$useweeknb."')";
 		}
 	$res = $db->db_query($req);
-
 	}
 
 /* main */
@@ -521,7 +589,8 @@ if( isset($accessdel) && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 }
 if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
-	updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime, $defaultview, $defaultviewweek);
+	if( !isset($workdays)) { $workdays = array();}
+	updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays, $useweeknb);
 	}
 
 switch($idx)
@@ -549,11 +618,6 @@ switch($idx)
 			accessCalendar($idcal);
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 			$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
-			if( bab_isUserGroupManager())
-				{
-				$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
-				}
 		}
 		else
 			$babBody->title = bab_translate("Access denied");
@@ -568,11 +632,6 @@ switch($idx)
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 			if( $idcal != 0 )
 				$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal);
-			if( bab_isUserGroupManager())
-				{
-				$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
-				}
 		}
 		break;
 	}

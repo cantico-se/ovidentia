@@ -3571,4 +3571,210 @@ if( !$res)
 
 return $ret;
 }
+
+function upgrade520to530()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "CREATE TABLE ".BAB_CAL_PUBLIC_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(60) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "id_dgowner int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_dgowner (id_dgowner)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_PUBLIC_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_CAL_PUB_VIEW_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_PUB_VIEW_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "CREATE TABLE ".BAB_CAL_PUB_MAN_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_PUB_MAN_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_CAL_PUB_GRP_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_PUB_GRP_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_CAL_RES_VIEW_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_RES_VIEW_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_CAL_RES_MAN_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_RES_MAN_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "CREATE TABLE ".BAB_CAL_RES_GRP_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_RES_GRP_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "CREATE TABLE ".BAB_CAL_USER_OPTIONS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "startday tinyint(4) NOT NULL default '0',";
+$req .= "allday enum('Y','N') NOT NULL default 'Y',";
+$req .= "week_numbers enum('N','Y') NOT NULL default 'N',";
+$req .= "usebgcolor enum('Y','N') NOT NULL default 'Y',";
+$req .= "elapstime tinyint(2) unsigned NOT NULL default '30',";
+$req .= "defaultview tinyint(3) NOT NULL default '0',";
+$req .= "work_days varchar(20) NOT NULL default '',";
+$req .= "start_time time,";
+$req .= "end_time time,";
+$req .= "user_calendarids varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_user (id_user)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_USER_OPTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$res = $db->db_query("select * from ".BAB_CALENDAR_TBL."");
+while( $arr = $db->db_fetch_array($res))
+	{
+	switch($arr['type'])
+		{
+		case '1': // user
+			break;
+		case '2': // group
+			list($grpname) = $db->db_fetch_row($db->db_query("select name from ".BAB_GROUPS_TBL." where id='".$arr['owner']."'"));
+			$db->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description) values ('".$grpname."','')");
+			$idcal = $db->db_insert_id();
+			$db->db_query("update ".BAB_CALENDAR_TBL." set owner='".$idcal."' where id='".$arr['id']."'");
+			$db->db_query("insert into ".BAB_CAL_PUB_VIEW_GROUPS_TBL." ( id_object, id_group ) values ('".$idcal."','".$arr['owner']."')");
+			if( $arr['owner'] == 1 || $arr['owner'] == 2 )
+				{
+				$db->db_query("insert into ".BAB_CAL_PUB_MAN_GROUPS_TBL." ( id_object, id_group ) values ('".$arr['id']."','3')");
+				}
+			else
+				{
+				$db->db_query("insert into ".BAB_CAL_PUB_MAN_GROUPS_TBL." ( id_object, id_group ) values ('".$arr['id']."','".$arr['owner']."')");
+				}
+
+			if( $arr['owner'] != 2 )
+				{
+				$db->db_query("insert into ".BAB_CAL_PUB_GRP_GROUPS_TBL." ( id_object, id_group ) values ('".$idcal."','".$arr['owner']."')");
+				}
+			break;
+		case '3': // resource
+			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_RESOURCESCAL_TBL." where id='".$arr['owner']."'"));
+			$db->db_query("insert into ".BAB_CAL_RES_VIEW_GROUPS_TBL." ( id_object, id_group ) values ('".$arr['id']."','".$arr['owner']."')");
+			if( $arr['owner'] == 1 || $arr['owner'] == 2 )
+				{
+				$db->db_query("insert into ".BAB_CAL_RES_MAN_GROUPS_TBL." ( id_object, id_group ) values ('".$arr['id']."','3')");
+				}
+			else
+				{
+				$db->db_query("insert into ".BAB_CAL_PUB_MAN_GROUPS_TBL." ( id_object, id_group ) values ('".$arr['id']."','".$arr['owner']."')");
+				}
+			break;
+		}
+	}
+
+$db->db_query("ALTER TABLE ".BAB_RESOURCESCAL_TBL." RENAME ".BAB_CAL_RESOURCES_TBL."");
+$db->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." DROP id_group");
+$db->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD id_dgowner INT( 11 ) UNSIGNED NOT NULL");
+$db->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD INDEX ( `id_dgowner` ));
+
+$db->db_query("ALTER TABLE ".BAB_CATEGORIESCAL_TBL." RENAME ".BAB_CAL_CATEGORIES_TBL."");
+$db->db_query("ALTER TABLE ".BAB_CAL_CATEGORIES_TBL." DROP id_group");
+
+$res = $db->db_query("select * from ".BAB_CALOPTIONS_TBL."");
+while( $arr = $db->db_fetch_array($res))
+	{
+	$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers) values " "('".$arr['id_user']."', '".$arr['startday']."', '".$arr['allday']."', '08:00:00', '18:00:00', '".$arr['usebgcolor']."', '".$arr['elapstime']."', '".$arr['defaultview']."', '1,2,3,4,5', 'N')");
+	}
+
+$db->db_query("DROP table ".BAB_CALOPTIONS_TBL."");
+
+return $ret;
+}
 ?>

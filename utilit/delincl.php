@@ -397,34 +397,13 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_group='".$id."'");	
 
-	$res = $db->db_query("select * from ".BAB_RESOURCESCAL_TBL." where id_group='".$id."'");
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		
-		while( $arr = $db->db_fetch_array($res))
-			{
-			$res2 = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'");
-			$r = $db->db_fetch_array($res2);
+	$db->db_query("delete from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_CAL_PUB_MAN_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_CAL_PUB_VIEW_GROUPS_TBL." where id_group='".$id."'");	
 
-			// delete resource's events
-			$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$r['id']."'");	
-
-			// delete resource from calendar
-			$db->db_query("delete from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'");	
-
-			// delete resource
-			$db->db_query("delete from ".BAB_RESOURCESCAL_TBL." where id_group='".$id."'");
-			}
-		}
-
-	$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='".$id."' and type='2'");
-	$arr = $db->db_fetch_array($res);
-
-	// delete group's events
-	$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$arr['id']."'");	
-
-	// delete user from calendar
-	$db->db_query("delete from ".BAB_CALENDAR_TBL." where owner='".$id."' and type='2'");	
+	$db->db_query("delete from ".BAB_CAL_RES_GRP_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_CAL_RES_MAN_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_CAL_RES_VIEW_GROUPS_TBL." where id_group='".$id."'");	
 
 	// delete user from BAB_MAIL_DOMAINS_TBL
 	$db->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='".$id."' and bgroup='Y'");	
@@ -463,18 +442,8 @@ function bab_deleteUser($id)
 	$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='$id' and type='1'");
 	$arr = $db->db_fetch_array($res);
 
-	// delete user's events
-	$res = $db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$arr['id']."'");	
-
-	// delete user's access
-	$res = $db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$id."'");	
-	$res = $db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$arr['id']."'");	
-
-	// delete user's calendar options
-	$res = $db->db_query("delete from ".BAB_CALOPTIONS_TBL." where id_user='".$id."'");	
-
-	// delete user from calendar
-	$res = $db->db_query("delete from ".BAB_CALENDAR_TBL." where owner='$id' and type='1'");	
+	include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+	bab_deleteCalendar($arr['id']);
 
 	// delete user from BAB_USERS_LOG_TBL
 	$res = $db->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='$id'");	

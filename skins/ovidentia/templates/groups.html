@@ -197,12 +197,6 @@ href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puc
 <!--#if bdgmail -->
 <td valign="middle" align="center">{ mail } </td>
 <!--#endif bdgmail -->
-<!--#if bdgcalendar -->
-<td valign="middle" align="center">{ calendar } </td>
-<!--#endif bdgcalendar -->
-<!--#if bpcalendar -->
-<td valign="middle" align="center">{ pcalendar } </td>
-<!--#endif bpcalendar -->
 <!--#if bdgnotes -->
 <td valign="middle" align="center">{ notes } </td>
 <!--#endif bdgnotes -->
@@ -226,16 +220,6 @@ href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puc
 <input type="checkbox" name="mailgrpids[]" { mailcheck } value="{ grpid }">
 </td>
 <!--#endif bdgmail -->
-<!--#if bdgcalendar -->
-<td valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="calgrpids[]" { calcheck } value="{ grpid }">
-</td>
-<!--#endif bdgcalendar -->
-<!--#if bpcalendar -->
-<td valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="calperids[]" { pcalcheck } value="{ grpid }">
-</td>
-<!--#endif bpcalendar -->
 <!--#if bdgnotes -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="notgrpids[]" { notescheck } value="{ grpid }">
@@ -263,12 +247,6 @@ href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puc
 <!--#if bdgmail -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('mailgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('mailgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <!--#endif bdgmail -->
-<!--#if bdgcalendar -->
-<td width="1%" align="center"><a href="javascript:onCheckAll('calgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<!--#endif bdgcalendar -->
-<!--#if bpcalendar -->
-<td width="1%" align="center"><a href="javascript:onCheckAll('calperids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calperids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<!--#endif bpcalendar -->
 <!--#if bdgnotes -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('notgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <!--#endif bdgnotes -->

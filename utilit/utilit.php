@@ -25,6 +25,7 @@ include_once "base.php";
 include_once $babInstallPath."utilit/template.php";
 include_once $babInstallPath."utilit/userincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
+include_once $babInstallPath."utilit/calincl.php";
 
 function bab_mkdir($path, $mode='')
 {
@@ -200,6 +201,12 @@ function bab_getDateFormat($format)
 
 function bab_getTimeFormat($format)
 {
+	global $babBody;
+	$pos = strpos(strtolower($format), "t");
+	if( $pos !== false)
+	{
+		$babBody->ampm = true;
+	}
 	$format = preg_replace("/(?<!h)h(?!h)/", "$1g$2", $format);
 	$format = preg_replace("/(?<!h)h{2,}(?!h)/", "$1h$2", $format);
 
@@ -971,23 +978,24 @@ function babUserSection($close)
 		{
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacuser";
 		}
-	if( bab_calendarAccess() )
+
+	if( $babBody->icalendars->calendarAccess())
 		{
 		$babBody->calaccess = true;
-		list($view, $wv) = $babDB->db_fetch_row($babDB->db_query("select defaultview, defaultviewweek from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'"));
-		switch($view)
+		switch($babBody->icalendars->defaultview)
 			{
-			case '1':
-				if( $wv )
-					$view='viewq';
-				else
-					$view='viewqc';
-				break;
-			case '2': $view='viewd'; break;
+			case BAB_CAL_VIEW_DAY: $view='viewd';	break;
+			case BAB_CAL_VIEW_WEEK: $view='viewq'; break;
 			default: $view='viewm'; break;
 			}
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$babBody->calendarids[0]['id'];
+		if( empty($babBody->icalendars->user_calendarids))
+			{
+			$babBody->icalendars->initializeCalendars();
+			}
+		$idcal = $babBody->icalendars->user_calendarids;
+		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$babBody->icalendars->id_percal;
 		}
+
 	if( $bemail )
 		{
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";
@@ -1463,7 +1471,7 @@ var $dgAdmGroups; /* all groups administrated by current user */
 var $ovgroups; /* all ovidentia groups */
 var $babsite;
 var $ocids; /* orgnization chart ids */
-var $calendarids = array(); /* calendar ids */
+var $ampm; /* true: use am/pm */
 
 //var $aclfm;
 //var $babsite;
@@ -1835,7 +1843,7 @@ var $babCalendarStartDay;
 
 function babMonthA($month = "", $year = "")
 	{
-	global $babDB,$BAB_SESS_USERID;
+	global $babDB,$babBody, $BAB_SESS_USERID;
 
 	$this->babSection("","");
 
@@ -1855,20 +1863,7 @@ function babMonthA($month = "", $year = "")
 		$this->currentYear = $year;
 		}
 
-	if( !empty($BAB_SESS_USERID))
-		{
-		$res = $babDB->db_query("select startday from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'");
-		$this->babCalendarStartDay = 0;
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			$this->babCalendarStartDay = $arr['startday'];
-			}
-		}
-	else
-		{
-		$this->babCalendarStartDay = 0;
-		}
+	$this->babCalendarStartDay = $babBody->icalendars->startday;
 	}
 
 function printout()
@@ -2034,7 +2029,8 @@ function bab_updateUserSettings()
 			}
 		}
 
-	bab_getCalendarIds();
+	//bab_getCalendarIds();
+	$babBody->icalendars =& new bab_icalendars();
 
 	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $arr = $babDB->db_fetch_array($res))
@@ -2381,6 +2377,7 @@ function bab_updateSiteSettings()
 		$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ; }
 
 	if( $arr['time_format'] == "") {
+		$babBody->ampm = false;
 		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm") ; }
 	else {
 		$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ; }

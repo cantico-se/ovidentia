@@ -1052,19 +1052,8 @@ function showSetArticleProperties($idart)
 				$this->allowhpages = false;
 				$this->allowattachments  = false;
 
-				$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
-				$res = $babDB->db_query($req);
 				$this->elapstime = 5;
-				$this->ampm = false;
-				if( $res && $babDB->db_num_rows($res))
-					{
-					$rr = $babDB->db_fetch_array($res);
-					if( $rr['ampm'] == "Y")
-						{
-						$this->ampm = true;
-						}
-					}
-
+				$this->ampm = $babBody->ampm;
 
 				$this->datesubtitle = bab_translate("Date of submission");
 				$this->datesuburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateSub&ymin=0&ymax=2";

@@ -587,19 +587,8 @@ function viewArticleProperties($item, $idart)
 					$this->bshowtopics = false;
 					}
 
-				$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
-				$res = $babDB->db_query($req);
 				$this->elapstime = 5;
-				$this->ampm = false;
-				if( $res && $babDB->db_num_rows($res))
-					{
-					$rr = $babDB->db_fetch_array($res);
-					if( $rr['ampm'] == "Y")
-						{
-						$this->ampm = true;
-						}
-					}
-
+				$this->ampm = $babBody->ampm;
 
 				$this->datepubtitle = bab_translate("Date of publication");
 				$this->datepuburl = $GLOBALS['babUrlScript']."?tg=month&callback=datePub&ymin=0&ymax=2";
