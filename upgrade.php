@@ -2536,7 +2536,9 @@ $req .= "id_role int(11) unsigned NOT NULL default '0',";
 $req .= "id_user int(11) unsigned NOT NULL default '0',";
 $req .= "isprimary enum('N','Y') NOT NULL default 'N',";
 $req .= "PRIMARY KEY  (id),";
-$req .= "KEY id_role (id_role,id_user)";
+$req .= "KEY id_role (id_role),";
+$req .= "KEY id_user (id_user),";
+$req .= "KEY isprimary (isprimary)";
 $req .= ")";
 
 $res = $db->db_query($req);

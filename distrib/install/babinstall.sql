@@ -1584,7 +1584,9 @@ CREATE TABLE bab_oc_roles_users (
   id_user int(11) unsigned NOT NULL default '0',
   isprimary enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
-  KEY id_role (id_role,id_user)
+  KEY id_role (id_role),
+  KEY id_user (id_user),
+  KEY isprimary (isprimary)
 );
 
 #
