@@ -548,7 +548,7 @@ function viewArticleProperties($item, $idart)
 
 		function temp($item, $idart)
 			{
-			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid;
+			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID;
 			$this->access = false;
 
 			$req = "select at.id, at.title, at.id_topic, at.date_publication, at.date_archiving, at.restriction, count(aft.id) as totalf from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id='".$idart."' group by aft.id_article";
@@ -655,7 +655,8 @@ function viewArticleProperties($item, $idart)
 				$this->yearsel = $this->yearpub - date("Y") + 1;
 				$this->timesel = $this->timepub;
 
-				if( $arrart['restriction'] == '' )
+				$rr = $babDB->db_fetch_array($babDB->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$arrart['id_topic']."'"));
+				if( $arrart['restriction'] == '' && isset($rr['restrict_access']) && $rr['restrict_access'] == 'Y')
 					{
 					$this->restrictaccess = true;
 					$this->restrictiontitletxt = bab_translate("Access restriction");
