@@ -1609,7 +1609,7 @@ HTMLArea.isBlockElement = function(el) {
 };
 
 HTMLArea.needsClosingTag = function(el) {
-	var closingTags = " script style div span ";
+	var closingTags = " script style div span tr td tbody table em strong font a iframe ";
 	return (closingTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
 };
 
