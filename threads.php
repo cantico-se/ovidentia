@@ -356,7 +356,7 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 
 	if( $arr['notification'] == "Y" )
 		{
-	    notifyModerator($forum, stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
+	    notifyModerator($forum, stripslashes($subject), stripslashes($name), $arr['name']);
 		}
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);

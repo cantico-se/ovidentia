@@ -96,7 +96,7 @@ function bab_getForumThreadTitle($id)
 		}
 	}
 
-function notifyModerator($forum, $threadTitle, $email, $author, $forumname)
+function notifyModerator($forum, $threadTitle, $author, $forumname)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
  
