@@ -503,7 +503,6 @@ function signatureAdd($signature, $name, $html)
 		var $yes;
 		var $no;
 		var $add;
-		var $msie;
 		var $signatureval;
 		var $nameval;
 		var $htmlselected;
@@ -526,12 +525,10 @@ function signatureAdd($signature, $name, $html)
 				if( empty($html))
 					$html = "Y";
 				$this->bhtml = 1;
-				$this->msie = 1;
 				}
 			else
 				{
 				$this->bhtml = 0;
-				$this->msie = 0;
 				}
 			if( $html == "Y")
 				{
@@ -545,6 +542,8 @@ function signatureAdd($signature, $name, $html)
 				$this->htmlselected = "";
 				$this->textselected = "selected";
 				}
+
+			$this->editor = bab_editor($this->signatureval, 'signature', 'sigform');
 			}
 		}
 
@@ -565,7 +564,6 @@ function signatureModify($sigid, $signature, $name, $html)
 		var $add;
         var $noselected;
         var $yesselected;
-		var $msie;
 		var $bhtml;
 		var $signatureval;
 		var $nameval;
@@ -599,13 +597,14 @@ function signatureModify($sigid, $signature, $name, $html)
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				{
 				$this->bhtml = 1;
-				$this->msie = 1;
 				}
 			else
 				{
 				$this->bhtml = 0;
-				$this->msie = 0;
 				}
+
+			$this->editor = bab_editor($this->signatureval, 'signature', 'sigform');
+
             if( $html == "Y")
                 {
                 $this->noselected = "";
@@ -861,6 +860,8 @@ switch($idx)
     case "addsig":
 		$babBody->title = bab_translate("Add Signature");
 		$bemail = bab_mailAccessLevel();
+		if (!isset($html))
+			$html = '';
 		signatureAdd($signature, $signame, $html);
 		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");

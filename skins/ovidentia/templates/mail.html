@@ -104,56 +104,13 @@ window.focus();
 </td>
 </tr>
 
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabMailBackground" valign="middle"> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message">{ messageval }</textarea>
-</td>
-</tr>
 <tr> 
 <td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-<script language="JavaScript"> 
-	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator, '{ babEditorImages }');
-	editor.ToolBar();
-	</script>
-</td>
-</tr>
-<!--#else babOldEditor -->
-<style type="text/css">
-@import url('{ babUrl }{ babScriptPath }htmlarea/htmlarea.css');
-</style>
-
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
-<script language="JavaScript">
-initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
-</script>
-<!--#endif babOldEditor -->
-<!--#endif msie -->
-<tr> 
-<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script language="JavaScript">
-	editor.InFrame(0, "message", "composef", "100%", "160");
-    </script>
-<!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','message')">
-</iframe>
-<textarea id="message" name="message"  onfocus="savef(document.composef.message)" style="width:100%" rows="20">{ messageval }</textarea>
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<textarea style="width:100%" rows="20" id="message" name="message" onfocus="savef(document.composef.message)">{ messageval }</textarea>
-<!--#endif msie -->
+<!--#if plainselect -->
+	<textarea name="message" style="width:100%;" rows="20">{ messageval }</textarea>
+<!--#else plainselect -->
+	{ editor }
+<!--#endif plainselect -->
 </td>
 </tr>
 <tr> 
@@ -167,58 +124,17 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 </td>
 </tr>
 <tr> 
-<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<input onClick="SetVals();" type="submit" name="submit" value="{ send }">
-&nbsp;&nbsp;&nbsp;
-<input type="button" name="cancel" value="{ cancel }" onClick="window.close()">
-<SCRIPT language="JavaScript">
-	editor.FinalInstantiate(0);
-	editor.CloseInitSection();
-	</SCRIPT>
-<!--#else babOldEditor -->
-<input type="submit" name="submit" value="{ send }">
-&nbsp;&nbsp;&nbsp;
-<input type="button" name="cancel" value="{ cancel }" onClick="window.close()">
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<input type="submit" name="submit" value="{ send }">
-&nbsp;&nbsp;&nbsp;
-<input type="button" name="cancel" value="{ cancel }" onClick="window.close()">
-<!--#endif msie -->
-</td>
+	<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
+		<input type="submit" name="submit" value="{ send }" />
+		&nbsp;&nbsp;&nbsp;
+		<input type="button" name="cancel" value="{ cancel }" onClick="window.close()" />
+	</td>
 </tr>
 </table>
 </td>
 </tr>
 </table>
 </form>
-<!--#if msie "!= 1" -->
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
-
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-
-savef(document.composef.message);
-//-->
-</script>
-<!--#endif msie -->
 <br>
 </BODY></HTML>
 

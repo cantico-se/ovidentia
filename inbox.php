@@ -62,6 +62,7 @@ function listMails($accid, $criteria, $reverse, $start)
 		var $mailboxname;
 		var $bunseen;
 		var $access;
+		var $nbparts = 0;
 
 		function temp($accid, $criteria, $reverse, $start)
 			{

@@ -1349,20 +1349,6 @@ hideShowCnx();
 <!--#end siteregistration -->
 
 <!--#begin disclaimeredit -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-	{ babMeta }
-	{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY>
-<br>
 <form name="discmod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site">
 <input type="hidden" name="idx" value="unload">
@@ -1371,112 +1357,27 @@ window.focus();
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td align="center" valign="middle">{ disclaimertxt }</td>
-</tr>
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<tr align="center" valign="middle"> 
-<td> 
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-<td> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ disclaimerval }</textarea>
-</td>
-</tr>
-<tr align="center" valign="middle"> 
-<td> 
-     <script language="JavaScript"> 
-	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator, '{ babEditorImages }');
-	editor.ToolBar();
-	</script>
-</td>
-</tr>
-<!--#else babOldEditor -->
-<style type="text/css">
-@import url({ babUrl }{ babScriptPath }htmlarea/htmlarea.css);
-</style>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+			<td align="center" valign="middle">{ disclaimertxt }</td>
+		</tr>
+		<tr align="center" valign="middle"> 
+			<td> 
+			{ editor }
+			</td>
+		</tr>
 
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
-<script language="JavaScript">
-initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
-</script>
-<!--#endif babOldEditor -->
-<!--#endif msie -->
-<tr> 
-<td align="center" valign="middle"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script language="JavaScript">
-editor.InFrame(0, "content", "discmod", "90%", "260");
-</script>
-<!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content')">
-</iframe>
-<textarea id="content" name="content"  onfocus="savef(document.discmod.content)" style="width:100%" rows="40">{ disclaimerval }</textarea>
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<textarea onblur="this.focus()" onfocus="savef(document.discmod.content)" style="width:100%" rows="40" id="content" name="content">{ disclaimerval }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
-<tr> 
-<td align="center" valign="middle">
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<input onClick=SetVals() type="submit" name="submit" value="{ modify }">
-        <script language="JavaScript">
-		editor.FinalInstantiate(0);
-		editor.CloseInitSection();
-		</script>
-<!--#else babOldEditor -->
-<input type="submit" name="submit" value="{ modify }">
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<input type="submit" name="submit" value="{ modify }">
-<!--#endif msie -->
-<br>
-</td>
-</tr>
-</table>
+		<tr> 
+			<td align="center" valign="middle">
+				<input type="submit" name="submit" value="{ modify }">
+			</td>
+		</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<!--#if msie "!= 1" -->
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
 
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-
-savef(document.discmod.content);
-//-->
-</script>
-<!--#endif msie -->
-<br>
-</BODY>
-</HTML>
 <!--#end disclaimeredit -->
 
 <!--#begin zipupgrade -->

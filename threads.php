@@ -253,7 +253,6 @@ function newThread($forum)
 		var $username;
 		var $anonyme;
 		var $notifyme;
-		var $msie;
 		var $noteforum;
 
 		function temp($forum)

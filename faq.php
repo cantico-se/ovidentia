@@ -665,7 +665,6 @@ function addQuestion($idcat, $idscat)
 		var $response;
 		var $add;
 		var $idcat;
-		var $msie;
 
 		function temp($idcat, $idscat)
 			{
@@ -727,7 +726,6 @@ function addSubCategory($idcat, $idscat)
 		var $response;
 		var $add;
 		var $idcat;
-		var $msie;
 
 		function temp($idcat, $idscat)
 			{
@@ -793,7 +791,6 @@ function modifyQuestion($item, $idscat, $idq)
 		var $db;
 		var $arr = array();
 		var $res;
-		var $msie;
 
 		function temp($idcat, $idscat, $idq)
 			{
@@ -893,7 +890,6 @@ function modifySubCategory($idcat, $idscat, $ids)
 		var $response;
 		var $add;
 		var $idcat;
-		var $msie;
 		var $del;
 
 		function temp($idcat, $idscat, $ids)

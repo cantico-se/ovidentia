@@ -142,7 +142,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $rescl;
 		var $none;
 		var $urlto;
-		var $msie;
 		var $bhtml;
 		var $msgerror;
 
@@ -209,13 +208,14 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				{
 				$this->bhtml = 1;
-				$this->msie = 1;
 				}
 			else
 				{
 				$this->bhtml = 0;
-				$this->msie = 0;
 				}
+
+			$this->editor = bab_editor($this->messageval, 'message', 'composef');
+
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 			$res = $this->db->db_query($req);
@@ -235,7 +235,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 				}
 			if( $pformat == "plain")
 				{
-				$this->msie = 0;
 				$this->plainselect = "selected";
 				$this->htmlselect = "";
 				}

@@ -526,7 +526,6 @@ function newReply($forum, $thread, $post)
 		var $anonyme;
 		var $notifyme;
 		var $postid;
-		var $msie;
 		var $noteforum;
 		
 
@@ -606,7 +605,6 @@ function editPost($forum, $thread, $post)
 		var $post;
 		var $newpost;
 		var $arr = array();
-		var $msie;
 
 		function temp($forum, $thread, $post)
 			{

@@ -127,14 +127,8 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->titleval = $arr['title'];
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				{
-				$this->msie = 1;
-				}
-			else
-				{
-				$this->msie = 0;
-				}
+			$this->editor = bab_editor($this->messageval, 'message', 'comcreate');
+
 			$arr = $db->db_fetch_array($db->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 			if( $arr['idsacom'] != 0 )
 				$this->notcom = bab_translate("Note: for this topic, comments are moderate");
