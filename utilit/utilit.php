@@ -122,7 +122,7 @@ function bab_printOvmlTemplate( $file, $args=array())
 	$tpl = new babOvTemplate($args);
 	return $tpl->printout(implode("", file($filepath)));
 	}
-
+/*
 function bab_composeUserName( $F, $L)
 	{
 	global $babBody;
@@ -132,7 +132,12 @@ function bab_composeUserName( $F, $L)
 	else $var0 = $L;
 	return trim(sprintf("%s %s", $var0 ,$var1));
 	}
-
+*/
+function bab_composeUserName( $F, $L)
+{
+global $babBody;
+return trim(sprintf("%s %s", ${$babBody->nameorder[0]}, ${$babBody->nameorder[1]}));
+}
 
 function bab_browserOS()
 	{
@@ -301,10 +306,14 @@ function bab_translate_old($str, $folder = "")
 function bab_callAddonsFunction($func)
 {
 	global $babDB;
-	$res = $babDB->db_query("select id, title from ".BAB_ADDONS_TBL." where enabled='Y'");
+	$res = $babDB->db_query("select id, title,version from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']))
+		$acces =false;
+		if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+		else $acces =true;
+		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']) && (($arr_ini['version'] == $row['version']) || $acces))
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 			if( is_file($addonpath."/init.php" ))
@@ -548,7 +557,11 @@ function babAdminSection($close)
 		$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']))
+			$acces =false;
+			if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+			else $acces =true;
+			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']) && (($arr_ini['version'] == $row['version']) || $acces))
 				{
 				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 				if( is_dir($addonpath))
@@ -738,7 +751,11 @@ function babUserSection($close)
 	$res = $babDB->db_query("select id, title from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']))
+		$acces =false;
+		if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+		else $acces =true;
+		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']) && (($arr_ini['version'] == $row['version']) || $acces))
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 			if( is_dir($addonpath))
@@ -1285,7 +1302,12 @@ function loadSections()
 				if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id_section']))
 					{
 					$r = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ADDONS_TBL." where id='".$arr['id_section']."'"));
-					if( $r['enabled'] == "Y" && is_file($GLOBALS['babAddonsPath'].$r['title']."/init.php"))
+					$acces =false;
+					if (is_file($GLOBALS['babAddonsPath'].$r['title']."/addonini.php"))
+						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$r['title']."/addonini.php");
+					else $acces =true;
+
+					if( $r['enabled'] == "Y" && is_file($GLOBALS['babAddonsPath'].$r['title']."/init.php") && (($arr_ini['version'] == $r['version']) || $acces))
 						{
 						$GLOBALS['babAddonFolder'] = $r['title'];
 						$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
