@@ -3413,8 +3413,6 @@ class bab_CalendarUserEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		//$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
-		
 		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
@@ -3578,14 +3576,12 @@ class bab_CalendarGroupEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		//$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
-
 		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
 			}
-		$req .= " order by start_date, start_time asc";
+		$req .= " order by start_date asc";
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);
 		}
@@ -3745,7 +3741,6 @@ class bab_CalendarResourceEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		//$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
@@ -3773,8 +3768,8 @@ class bab_CalendarResourceEvents extends bab_handler
 			$this->ctx->curctx->push('EventTitle', $arr['title']);
 			bab_replace_ref($arr['description'],'OVML');
 			$this->ctx->curctx->push('EventDescription', $arr['description']);
-			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']." ".$arr['start_time']));
-			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']." ".$arr['end_time']));
+			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']));
+			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']));
 			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
 			if( !empty($arr['color']))
 				{
