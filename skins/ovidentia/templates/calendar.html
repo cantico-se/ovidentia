@@ -241,9 +241,6 @@ function calendarChoice_selectAll(formname)
 		<td width="45%">
 		<select name="calendars" multiple="multiple" size="10" style="width:100%">
 			<optgroup class="usr" label="{ usrcalendarstxt }">
-			<!--#if personal -->
-				<option value="{ personal }" { selected }>{ BAB_SESS_USER }</option>
-			<!--#endif personal -->
 			<!--#in getnextusrcal -->
 				<option value="{ id }" { selected }>{ name }</option>
 			<!--#endin getnextusrcal -->

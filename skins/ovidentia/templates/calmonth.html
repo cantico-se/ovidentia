@@ -129,65 +129,97 @@ document.onmousemove = bab_tooltipPosition;
 <!--#end calmonth -->
 
 <!--#begin calfreemonth -->
-<table width="100%" cellpadding="5" cellspacing="0" align="center" border="0">
-<tr valign="middle"> 
-<td class="BabCalendarMenuBackground" width="25%"> &nbsp; <a class="BabCalendarNavLinkColor" 
-href="{ previousyearurl }">&lt;&lt;</a>&nbsp;&nbsp;&nbsp; <a class="BabCalendarNavLinkColor" 
-href="{ previousmonthurl }">&lt; </a> </td>		
-<td class="BabCalendarMenuActiveBackground" width="10%" align="center"> &nbsp;{ 
-monthurlname }&nbsp; </td>
-<td class="BabCalendarMenuBackground" width="10%" align="center"> &nbsp;<a class="BabCalendarNavLinkColor" href="{ weekurl }">{ 
-weekurlname }</a>&nbsp; </td>	
-<td class="BabCalendarMenuBackground" width="10%" align="center"> &nbsp;<a class="BabCalendarNavLinkColor" href="{ dayurl }">{ 
-dayurlname }</a>&nbsp; </td>
-<td class="BabCalendarMenuBackground" width="20%" align="center"> &nbsp;<a class="BabCalendarNavLinkColor" href="{ gotodayurl }">{ 
-gotodayname }</a>&nbsp; </td>
-<td class="BabCalendarMenuBackground" width="25%" align="right"> <a class="BabCalendarNavLinkColor" href="{ nextmonthurl }">&gt;</a>&nbsp;&nbsp;&nbsp; 
-<a class="BabCalendarNavLinkColor" href="{ nextyearurl }">&gt;&gt;</a>&nbsp; 
-</td>
-</tr>
+<script type="text/javascript">
+<!--
+document.onmousemove = bab_tooltipPosition;
+-->
+</script>
+<style type="text/css">
+@import url('{ babInstallPath }skins/ovidentia/styles/calendar.css');
+</style>
+
+
+<table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0">
+	<tr class="BabCalendarMenuBackground"> 
+		<td class="prev" width="25%">
+			<a onmouseover="bab_showOnMouse('cal_btn_prev_month',1)" onmouseout="bab_showOnMouse('cal_btn_prev_month',0)" href="{ previousmonthurl }" class="prev2"><strong>&lt;&lt;</strong></a>
+			<span id="cal_btn_prev_month">{ t_prev_month }</span>
+			<a onmouseover="bab_showOnMouse('cal_btn_prev_year',1)" onmouseout="bab_showOnMouse('cal_btn_prev_year',0)" href="{ previousyearurl }" class="prev1"><strong>&lt;&lt;&lt;</strong></a>
+			<span id="cal_btn_prev_year">{ t_prev_year }</span>
+		</td>		
+		<td width="10%" class="BabCalendarMenuActiveBackground" align="center">
+			{ monthurlname }
+		</td>
+		<td width="10%" align="center">
+			<a class="BabCalendarNavLinkColor" href="{ weekurl }">{ weekurlname }</a>
+		</td>
+		<td  width="10%" align="center">
+			<a class="BabCalendarNavLinkColor" href="{ dayurl }">{ dayurlname }</a>
+		</td>
+		<td  width="20%" align="center"> 
+			<a class="BabCalendarNavLinkColor" href="{ gotodayurl }">{ gotodayname }</a> 
+		</td>
+		<td class="next" width="25%" align="right">
+			<a onmouseover="bab_showOnMouse('cal_btn_next_month',1)" onmouseout="bab_showOnMouse('cal_btn_next_month',0)" href="{ nextmonthurl }" class="next2"><strong>&gt;&gt;</strong></a>
+			<span id="cal_btn_next_month">{ t_next_month }</span>
+			<a onmouseover="bab_showOnMouse('cal_btn_next_year',1)" onmouseout="bab_showOnMouse('cal_btn_next_year',0)" href="{ nextyearurl }" class="next1"><strong>&gt;&gt;&gt;</strong></a>
+			<span id="cal_btn_next_year">{ t_next_year }</span>
+		</td>
+	</tr>
 </table>
 
 
 <table width="20%" cellpadding="2" cellspacing="0" align="center" border="0">
-<tr>
-<td class="BabCalendarMenuActiveBackground" align="center" valign="middle">{ monthname }</td>
-</tr>
-</table>&nbsp;
-
-<br>
-
-<table class="BabCalendarBodyBackground" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
-<tr bgcolor="#a0a0a0">
-<!--#in getnextdayname -->
-<th width="14%" class="BabCalendarDays">{ dayname }</th>
-<!--#endin getnextdayname -->	
-</tr>
-<!--#in getnextweek -->
-<tr>
-<!--#in getnextday -->
-
-<!--#if currentmonth "== 1" -->
-<td valign="top" <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> class="BabMonthCalendarCurentDayBackground" <!--#endif currentday --> width="0" height="0">
-<!--#else currentmonth -->
-<td valign="top" class="BabCalendarBodyBadMonthBackground"width="0" height="0">
-<!--#endif currentmonth -->
-<div class="HeaderDayCalendar">
-<table width="100%" border="0" align="center">
-<tr><td align="left" valign="middle"><a class="BabMonthCalendarDayNumber" href="{ daynumberurl }">{ daynumbername }</a></td>
-<!--#if bowner "== 1" -->		
-<td align="right" valign="middle"><a class="BabDayCalendarEventLink" href="{ neweventurl }"><IMG SRC="{ babSkinPath }images/Puces/PuceNewEvent.png" WIDTH="12" HEIGHT="11" BORDER=0 ALT="{ new }" align="absmiddle"></a></td>
-<!--#endif bowner -->
-</tr>
+	<tr>
+		<td class="BabCalendarMenuActiveBackground" align="center" valign="middle">{ monthname }</td>
+	</tr>
 </table>
+
+<br />
+
+<table id="bab_calmonth" class="bab_calendar" width="98%" cellpadding="2" align="center">
+	<thead>
+	<tr>
+		<!--#in getnextdayname -->
+		<td width="14%" class="BabCalendarDays">{ dayname }</td>
+		<!--#endin getnextdayname -->	
+	</tr>
+	<!--#in getnextweek -->
+	</thead>
+	<tbody>
+	<tr valign="top" class="BabCalendarBodyBadMonthBackground">
+		<!--#in getnextday -->
+		<!--#if currentmonth "== 1" -->
+		<td  <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> class="BabMonthCalendarCurentDayBackground" <!--#endif currentday --> >
+		<!--#else currentmonth -->
+		<td>
+		<!--#endif currentmonth -->
+			<div class="HeaderDayCalendar">
+				<a class="day" title="{ week }" href="{ daynumberurl }">{ daynumbername }</a>
+				<a class="dayview" title="{ t_day_view }" href="{ dayfreeviewurl }"><img src="{ babSkinPath }images/Puces/PuceMoreEvent.png" alt="{ t_day_view }" /></a>
+			</div>
+			<!--#in getfreeevent -->
+			<!--#if free -->
+			<div class="freeevent" <!--#if allow_create -->style="cursor:pointer" onClick="bab_popup('{ titletenurl }',5)"<!--#endif allow_create -->>
+			<!--#else free -->
+			<div class="used">
+			<!--#endif free -->
+				{ startdate } { starttime }<br />{ enddate } { endtime }
+			</div>
+			<!--#endin getfreeevent -->
+		</td> 
+		<!--#endin getnextday -->
+	</tr>
+	<!--#endin getnextweek -->
+	</tbody>
+</table>
+<br />
+<div class="bab_buttons" align="center">
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
 </div>
-<!--#in getfreeevent -->
-<div class="BabCalendarBodyFont" style="background-color : { bgcolor }; width :100%;padding:2px" title="{ title }" nowrap>
-{ title }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
-</div>
-<!--#endin getfreeevent -->
-</td> 
-<!--#endin getnextday -->
-<!--#endin getnextweek -->
-</tr></table>
 <!--#end calfreemonth -->

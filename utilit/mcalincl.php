@@ -486,8 +486,8 @@ class cal_wmdbaseCls
 		$this->attendeestxt = bab_translate("Attendees");
 		$this->statustxt = bab_translate("Waiting event");
 		$this->t_calendarchoice = bab_translate('Calendars');
-		$this->t_date_from = bab_translate('From');
-		$this->t_date_to = bab_translate('To');
+		$this->t_date_from = bab_translate('date_from');
+		$this->t_date_to = bab_translate('date_to');
 		$this->t_category = bab_translate('Category');
 		$this->t_prev_day = bab_translate('Previous day');
 		$this->t_prev_month = bab_translate('Previous month');
@@ -624,8 +624,7 @@ class calendarchoice
 
 		if (!empty($icalendars->id_percal))
 			{
-			$this->personal = $icalendars->id_percal;
-			$this->selected = in_array($icalendars->id_percal, $this->selectedCalendars) ? 'selected' : '';
+			$this->resuser[$icalendars->id_percal] = array('name'=>$GLOBALS['BAB_SESS_USER']);
 			}
 		}
 

@@ -520,6 +520,8 @@
 <string id="New waiting file">Nouveau fichier en attente</string>
 <string id="New">Nouveau</string>
 <string id="Next day">Jour suivant</string>
+<string id="Next month">Mois suivant</string>
+<string id="Next Year">Année suivante</string>
 <string id="Next time">Suivant</string>
 <string id="Next">Suivant</string>
 <string id="Nickname">Identifiant</string>
@@ -593,6 +595,8 @@
 <string id="Prefered skin">Skin préféré</string>
 <string id="Prefered style">Style préféré</string>
 <string id="Previous day">Jour précédent</string>
+<string id="Previous month">Mois précédent</string>
+<string id="Previous year">Année précédente</string>
 <string id="Previous time">Précédent</string>
 <string id="Previous">Précédent</string>
 <string id="Primary group">Groupe primaire</string>
@@ -1435,4 +1439,6 @@
 <string id="Export table structure">Exporter la structure des tables</string>
 <string id="Database management">Gestion de la base de donnés</string>
 <string id="Database">Base de donnés</string>
+<string id="date_from">Du</string>
+<string id="date_to">Au</string>
 </fr>

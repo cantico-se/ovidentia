@@ -1406,4 +1406,6 @@
 <string id="Online">Online</string>
 <string id="DF-">DF-</string>
 <string id="Edit draft">Edit draft</string>
+<string id="date_from">From</string>
+<string id="date_to">To</string>
 </en>

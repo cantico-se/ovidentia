@@ -126,6 +126,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->daynumbername = $dday;
 			$this->daynumberurl = $this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
 			$this->dayviewurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".implode(',',$this->idcals)."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
+			$this->dayfreeviewurl = $this->dayviewurl."&idx=free";
 			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm";
 			$d++;
 			return true;
@@ -238,23 +239,13 @@ class cal_monthCls  extends cal_wmdbaseCls
 		$arr = array();
 		if( $this->mcals->getNextFreeEvent($this->cdate, 0, $arr))
 			{
-			if( $arr[2] == 0 )
-				{
-				$this->bgcolor = "00FF00";
-				}
-			else
-				{
-				$this->bgcolor = "0000FF";
-				}
-			//$this->bgcolor = $this->icals[$this->cindex]->getCategoryColor($arr['id_cat']);
+			$this->free = $arr[2] == 0;
 			$time = bab_mktime($arr[0]);
 			$this->starttime = bab_time($time);
 			$this->startdate = bab_shortDate($time, false);
 			$time = bab_mktime($arr[1]);
 			$this->endtime = bab_time($time);
 			$this->enddate = bab_shortDate($time, false);
-			$this->title = $this->startdate." ".$this->starttime. "<br>".$this->enddate." ".$this->endtime;
-			$this->titleten = "";
 			return true;
 			}
 		else

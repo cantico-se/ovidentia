@@ -230,3 +230,21 @@ a img {
 .bab_buttons a.calendars {
 	background-image:url('../images/Puces/popupselect.gif');
 	}
+
+.BabTodayEvent .HeaderDayCalendar {
+   border-bottom:#f00 2px solid;
+	}
+
+.bab_calendar .freeevent, .bab_calendar .used {
+	padding:2px;
+	}
+
+.bab_calendar .freeevent {
+	background-color:#ff0;
+
+	}
+
+.bab_calendar .used {
+	color:grey;
+	background-color:lightgrey;
+	}
