@@ -716,7 +716,7 @@
 <string id="This file is read only">Ce fichier est en lecture seul</string>
 <string id="Created">Crée</string>
 <string id="Your file list has been updated">Votre fichier a été mis à jour</string>
-<string id="go to this url">dirigez votre brwoser à cette url</string>
+<string id="go to this url">dirigez votre browser à cette url</string>
 <string id="Notify moderator">Notifier le modérateur</string>
 <string id="Mail function">Fonction mail</string>
 <string id="Smtp server">Serveur SMTP</string>
@@ -756,7 +756,7 @@
 <string id="This section lists forums">Section de la liste des forums</string>
 <string id="This section is for User">Section utilisateur</string>
 <string id="Image size must not exceed">La taille de l'image ne doit pas excéder</string>
-<string id="Invalid image extension">L'extension du fichier est invalide</string>
+<string id="Invalid image extension">Extension du fichier invalide</string>
 <string id="ERROR: You must provide a head for your article">ERREUR: L'introduction de l'article ne doit pas être vide</string>
 <string id="News">Nouvelles</string>
 <string id="Today, there are no article">Aujourd'hui, il n'y a pas d'articles</string>
