@@ -1,0 +1,248 @@
+
+<!--#begin foldercreate -->
+<script type="text/javascript">
+<!--
+function babOnApprover(id, fn)
+{
+document.forms.fmcreate.manager.value=fn;
+document.forms.fmcreate.managerid.value=id;
+this.focus();
+babOpUL.close();
+}
+
+function onSa(id, fn)
+{
+document.forms.fmcreate.saname.value=fn;
+document.forms.fmcreate.said.value=id;
+this.focus();
+babOpSA.close();
+}
+
+var babOpUL = null;
+function openPopupUL(url)
+{
+if( babOpUL == null || babOpUL.closed )
+	babOpUL = this.open(url+'babOnApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+else
+	babOpUL.focus();
+}
+
+var babOpSA = null;
+function openPopupSA(url)
+{
+if( babOpSA == null || babOpSA.closed )
+	babOpSA = this.open(url+'onSa', 'babsalist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+else
+	babOpSA.focus();
+}
+//-->
+</script>
+
+<form name="fmcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admfms">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="add" value="addfolder">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
+valign="middle">{  name }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="fname" size="30" maxlength="30" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopupUL('{ usersbrowurl }');">{ moderator }</a>:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="manager" size="45" maxlength="255" value="" disabled>
+<input type="hidden" name="managerid" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ active }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="active">
+<option value="Y" selected >{ yes }</option>
+<option value="N" >{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopupSA('{ sabrowurl }');">{ moderation }</a>:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="saname" size="45" maxlength="255" value="" disabled>
+<input type="hidden" name="said" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ notification }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="notification">
+<option value="Y">{ yes }</option>
+<option value="N" selected>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="submit" name="Submit" value="{ add }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end foldercreate -->
+
+<!--#begin folderlist -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="admfms">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="update" value="folders">
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle">{ fullname } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle">{ manager } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center" colspan="3">{ access }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notify } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ active } </td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ managername }</td>
+<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ urldown }">{ urldownname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ urluplo }">{ urluploname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ urlupda }">{ urlupdaname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }"></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }"></td>
+</tr>        
+<!--#endin getnext -->
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" colspan="3">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('notifies', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notifies', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('actives', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('actives', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<div align="center">
+<input type="submit" name="submit" value="{ modify }"></div>
+<br>
+</form>
+<!--#end folderlist -->
+
+<!--#begin foldermodify -->
+<script type="text/javascript">
+<!--
+function babOnApprover(id, fn)
+{
+document.forms.fmcreate.manager.value=fn;
+document.forms.fmcreate.managerid.value=id;
+this.focus();
+babOpUL.close();
+}
+
+function onSa(id, fn)
+{
+document.forms.fmcreate.saname.value=fn;
+document.forms.fmcreate.said.value=id;
+this.focus();
+babOpSA.close();
+}
+
+var babOpUL = null;
+function openPopupUL(url)
+{
+if( babOpUL == null || babOpUL.closed )
+	babOpUL = this.open(url+'babOnApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+else
+	babOpUL.focus();
+}
+
+var babOpSA = null;
+function openPopupSA(url)
+{
+if( babOpSA == null || babOpSA.closed )
+	babOpSA = this.open(url+'onSa', 'babsalist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+else
+	babOpSA.focus();
+}
+//-->
+</script>
+
+<form name="fmcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admfm">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="fid" value="{ fid }">
+<input type="hidden" name="mod" value="modfolder">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
+valign="middle">{  name }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="fname" size="30" maxlength="30" value="{ folderval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopupUL('{ usersbrowurl }');">{ moderator }</a>:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="manager" size="45" maxlength="255" value="{ manager }" disabled>
+<input type="hidden" name="managerid" value="{ managerid }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ active }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="active">
+<option value="Y" { yactsel }>{ yes }</option>
+<option value="N" { nactsel }>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopupSA('{ sabrowurl }');">{ moderation }</a>:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="saname" size="45" maxlength="255" value="{ saname }" disabled>
+<input type="hidden" name="said" value="{ said }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ notification }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="notification">
+<option value="Y" { ynfsel }>{ yes }</option>
+<option value="N" { nnfsel }>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="submit" name="bupdate" value="{ add }">&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end foldermodify -->
