@@ -10,56 +10,53 @@
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
-<tr > 
-<td align="center" nowrap><b>{ calweekworktxt }</b></td>
-</tr>
-<tr > 
-<td align="center" nowrap>
-<table>
-<tr valign="middle">
-<!--#in getnextshortday -->
-<td><input type="checkbox" name="workdays[]" value="{ dayid }"  { selected }>&nbsp;{ shortday }</td>
-<!--#endin getnextshortday -->
-</tr>
-</table>
-</td>
-</tr>
-<tr align="center"> 
-<td>
-<table border="1" cellspacing="0" cellpadding="5" >
-<tr align="center">
-<td nowrap>{ startdaytxt }</td>
-<td nowrap>{ starttimetxt }</td>
-<td nowrap>{ endtimetxt }</td>
-</tr>
-<tr align="center">
-<td>
-<select name="startday">
-<!--#in getnextday -->
-<option value="{ dayid }" { selected }>{ dayname }</option>
-<!--#endin getnextday -->
-</select>
-</td>
-<td>
-<select name="starttime">
-<!--#in getnexttime -->
-<option value="{ timeid }" { selected }>{ timeval }</option>
-<!--#endin getnexttime -->
-</select>
-</td>
-<td>
-<select name="endtime">
-<!--#in getnexttime -->
-<option value="{ timeid }" { selected }>{ timeval }</option>
-<!--#endin getnexttime -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+	<tr > 
+		<td align="center">
+		<dl style="text-align:left;width:50%">
+			<dt><h5>{ calweekworktxt }</h5><dt>
+			<!--#in getnextshortday -->
+			<dd ><input  type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { selected } /><label for="{ dayid }">{ shortday }</label></dd>
+			<!--#endin getnextshortday -->
+		</dl>
+		</td>
+	</tr>
+
+	<tr align="center"> 
+		<td>
+			<table border="1" cellspacing="0" cellpadding="5" >
+				<tr align="center">
+				<td nowrap>{ startdaytxt }</td>
+				<td nowrap>{ starttimetxt }</td>
+				<td nowrap>{ endtimetxt }</td>
+				</tr>
+				<tr align="center">
+				<td>
+				<select name="startday">
+				<!--#in getnextday -->
+				<option value="{ dayid }" { selected }>{ dayname }</option>
+				<!--#endin getnextday -->
+				</select>
+				</td>
+				<td>
+				<select name="starttime">
+				<!--#in getnexttime -->
+				<option value="{ timeid }" { selected }>{ timeval }</option>
+				<!--#endin getnexttime -->
+				</select>
+				</td>
+				<td>
+				<select name="endtime">
+				<!--#in getnexttime -->
+				<option value="{ timeid }" { selected }>{ timeval }</option>
+				<!--#endin getnexttime -->
+				</select>
+				</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -70,10 +67,10 @@
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
 	<tr align="center" > 
-	<td  colspan="2" nowrap><b>{ caloptionstxt }</b></td>
+	<td  colspan="2" nowrap><h5>{ caloptionstxt }</h5></td>
 	</tr>
 	<tr> 
-		<td align="right" nowrap>{ allday }</td>
+		<td align="right">{ allday }</td>
 		<td> 
 			<select name="allday">
 				<option value="Y" <!--#if arr[allday] "== Y" -->selected<!--#endif arr[allday] -->>{ yes }</option>
@@ -82,7 +79,7 @@
 		</td>
 	</tr>
 	<tr> 
-		<td align="right" nowrap>{ usebgcolor }</td>
+		<td align="right">{ usebgcolor }</td>
 		<td> 
 			<select name="usebgcolor">
 				<option value="Y" <!--#if arr[usebgcolor] "== Y" -->selected<!--#endif arr[usebgcolor] -->>{ yes }</option>

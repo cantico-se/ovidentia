@@ -364,7 +364,7 @@ function calendarOptions($calid)
 				else
 					$this->selected = "";
 				$this->dayid = $i;
-				$this->shortday = substr($babDays[$i], 0, 3);
+				$this->shortday = $babDays[$i];
 				$i++;
 				return true;
 				}
