@@ -55,6 +55,10 @@
 </table>
 </form>
 <!--#end addfile -->
+
+
+
+
 <!--#begin fileslist -->
 <br>
 <table width="98%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabMailBackground">
@@ -124,11 +128,11 @@ href="{ url }">{ name }</a></td>
 <!--#endif bmanager -->
 </tr>
 <!--#endin getnextmgrpdir -->
-<!--#in getnextfile --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
+<!--#in getnextfile --> <tr valign="middle"> 
+<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }
 </td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp; 
+<td class="BabSiteAdminFontBackground">&nbsp; 
 <a 
 class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ name }</a>&nbsp; 
 <!--#if bmanager -->
@@ -137,28 +141,29 @@ class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', '', 'width=6
 <!--#endif bconfirmed -->
 <!--#endif bmanager -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="top" align="right">&nbsp;{ readonly }</td>
-<td class="BabSiteAdminFontBackground" valign="top" align="right">&nbsp;{ sizef }</td>
-<td class="BabSiteAdminFontBackground" valign="top" align="center">{ modified }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="top" align="right"><a 
-class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
-<td class="BabSiteAdminFontBackground" nowrap valign="top">&nbsp; 
+<td align="right" nowrap class="BabSiteAdminFontBackground">&nbsp;{ readonly }</td>
+                <td align="left" nowrap class="BabSiteAdminFontBackground">{ sizef 
+                  } &nbsp;</td>
+<td align="right" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
+<td align="right" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
+<td class="BabSiteAdminFontBackground" align="right"><a 
+class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a></td>
+<td class="BabSiteAdminFontBackground" nowrap>&nbsp; 
 
 <!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" border="0" 
-alt="{ cuttxt }"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><img 
-src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a> 
+<a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" 
+alt="{ cuttxt }" border="0" align="middle"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><img 
+src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle"></a> 
 <!--#endif bmanager -->
 </td>
 <!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" valign="top" align="center">{ hits }</td>
+<td class="BabSiteAdminFontBackground" align="center">{ hits }</td>
 <!--#endif bmanager -->
 </tr><!--#endin getnextfile -->
-<!--#in getnextxfile --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
+<!--#in getnextxfile --> <tr valign="middle"> 
+<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }</td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp; 
+<td class="BabSiteAdminFontBackground">&nbsp; 
 <!--#if bmanager -->
 <a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
 <!--#if bconfirmed "== 1" -->
@@ -168,18 +173,18 @@ src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a>
 { name } 
 <!--#endif bmanager -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="top" align="right">&nbsp;{ sizef }</td>
-<td class="BabSiteAdminFontBackground" valign="top" align="center">{ modified }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="top" align="right"><a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp; 
+<td align="left" nowrap class="BabSiteAdminFontBackground">&nbsp;{ sizef }&nbsp;</td>
+                <td align="right" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
+<td align="right" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
+<td class="BabSiteAdminFontBackground" align="right"><a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a></td>
+<td class="BabSiteAdminFontBackground">&nbsp; 
 <!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" border="0" 
-alt="{ paste }"></a> 
+<a class="BabSiteAdminListLink" href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" 
+alt="{ paste }" border="0" align="top"></a> 
 <!--#endif bmanager -->
 </td>
 <!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
+<td class="BabSiteAdminFontBackground">&nbsp;</td>
 <!--#endif bmanager -->
 </tr><!--#endin getnextxfile -->
 </table>
