@@ -43,6 +43,10 @@ function listThreads($forum, $active, $pos)
 		var $moderator;
 		var $disabled;
 
+		var $openthreadsinfo;
+		var $waitthreadsinfo;
+		var $closedthreadsinfo;
+
 		function temp($forum, $active, $pos)
 			{
 			$this->topurl = "";
@@ -58,6 +62,10 @@ function listThreads($forum, $active, $pos)
 			$this->repliesname = bab_translate("Replies");
 			$this->views = bab_translate("Views");
 			$this->lastpost = bab_translate("Last Post");
+			$this->openthreadsinfo = bab_translate("Opened threads");
+			$this->waitthreadsinfo = bab_translate("Waiting posts");
+			$this->closedthreadsinfo = bab_translate("Closed threads");
+
 			$this->moderator = bab_isUserForumModerator($forum, $GLOBALS['BAB_SESS_USERID']);
 
 			$this->db = $GLOBALS['babDB'];

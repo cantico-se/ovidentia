@@ -837,4 +837,6 @@
 <string id="Notify group members by mail">Notifier les membres du groupe par email</string>
 <string id="Events categories">Catégories d'évènements</string>
 <string id="Inbox">Boîte de réception</string>
+<string id="Opened threads">Sujets ouverts</string>
+<string id="Closed threads">Sujets fermés</string>
 </fr>
