@@ -280,13 +280,13 @@ location.href = '#ENT{ coeid }';
 	</td>
 	<!--#endif first -->
 	<td valign="bottom">
-	<table cellspacing="0" height="65" width="240" cellpadding="0" border="0" style="border:#000000 1px solid;">
-		<tr id="ENT{ oeid }" class="BabForumNavigationBackground">
-			<td>
-			{ nodecell }
-			</td>
-		</tr>
-	</table>
+		<table cellspacing="0" height="65" width="240" cellpadding="0" border="0" style="border:#000000 1px solid;">
+			<tr id="ENT{ oeid }" class="BabForumNavigationBackground">
+				<td>
+				{ nodecell }
+				</td>
+			</tr>
+		</table>
 	</td>
 	</tr>
 </table>
@@ -485,7 +485,26 @@ document.images[idx].src = '{ babSkinPath }images/Puces/chart_'+idx+'_on.gif';
 </TABLE>
 <script type="text/javascript">
 <!--
-document.images['disp1'].src = '{ babSkinPath }images/Puces/chart_disp1_on.gif';
+
+function getUrlValue(url,param)
+	{
+	var tmp = url.split("?");
+	if (typeof tmp[1] == 'undefined') return false;
+	var qs = tmp[1].split("&");
+	for (var v in qs)
+		{
+		if (qs[v].indexOf(param) != -1)
+			{
+			var vv = qs[v].split("=");
+			return vv[1];
+			}
+		}
+	return false;
+	}
+var disp = getUrlValue(document.location.href,'disp');
+if (disp)
+	document.images[disp].src = '{ babSkinPath }images/Puces/chart_'+disp+'_on.gif';
+	
 //-->
 </script>
 </BODY>
@@ -567,7 +586,7 @@ document.images['disp1'].src = '{ babSkinPath }images/Puces/chart_disp1_on.gif';
 <input type="hidden" name="disp" value="disp5">
 <input type="hidden" name="ocid" value="{ ocid }">
 <input type="hidden" name="oeid" value="{ oeid }">
-<input type="hidden" name="pos" value="">
+<input type="hidden" name="pos" value="{ pos }">
 <input type="hidden" name="xf" value="{ xf }">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr valign="middle"> 
