@@ -37,6 +37,8 @@ function setselects(obj)
 			select[{ fieldcounter }] = "{ name }";
 			<!--#endif selected -->
 		<!--#endin selectname -->
+	<!--#endin getnextfieldtosearch -->
+
 	<!--#in getnextdir -->
 	fields[{ topicid }]=new Array();
 		<!--#in getnextfield -->
@@ -48,7 +50,7 @@ function setselects(obj)
 		<!--#endif selected -->
 		<!--#endin getnextfield -->
 	<!--#endin getnextdir -->
-	<!--#endin getnextfieldtosearch -->
+	
 
 	<!--#in getnextfieldtosearch -->
 	var j,k,h = 0;
@@ -58,10 +60,11 @@ function setselects(obj)
 
 	for (k=0;k<fields[-1].length;k++)
 		sf.dirselect_{ fieldcounter }.options[k] = new Option( full[fields[-1][k]],fields[-1][k]);
-
+if (id > 0)
+	{
 	for (h=0;h<fields[id].length;h++, k++)
 		sf.dirselect_{ fieldcounter }.options[k] = new Option( full[fields[id][h]],fields[id][h]);
-
+	}
 	for (j=sf.dirselect_{ fieldcounter }.options.length-1;j>=0;j--)
 		{
 		if (sf.dirselect_{ fieldcounter }.options[j].value == select[{ fieldcounter }])

@@ -361,8 +361,11 @@ function searchKeyword($item , $option = "OR")
 			static $l = 0;
 			if( $l < $this->countdirs)
 				{
+				
                 $arr = $this->dirarr[$l];
+				
 				$this->topicid = $arr['id'];
+
 				$this->topictitle = put_text($arr['name'],30);
 
 				$req = "select df.id, dfd.name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." dfd left join ".BAB_DBDIR_FIELDSEXTRA_TBL." df ON df.id_directory=dfd.id_directory and df.id_field = ( ".BAB_DBDIR_MAX_COMMON_FIELDS." + dfd.id ) where df.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)."'";
@@ -380,6 +383,7 @@ function searchKeyword($item , $option = "OR")
 				$this->countfieldsfromdir = 0;
 				if( $lk > 0 )
 					{
+					
 					$fliped = array_flip($tblxd);
 					ksort($fliped);
 					$lk= 0;
