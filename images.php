@@ -49,10 +49,7 @@ return bab_replace(implode(" ",$arr));
 function getResizedImage($img, $w, $h, $com)
 	{
 	$type = "";
-	if($com)
-		$imgf = BAB_IUD_COMMON.$img;
-	else
-		$imgf = BAB_IUD_TMP.$img;
+	$imgf = $img;
 	if( file_exists($imgf))
 		{
 		$imgsize = @getimagesize($imgf);
@@ -62,12 +59,15 @@ function getResizedImage($img, $w, $h, $com)
 				{
 				case '2':
 					$type = "jpeg";
+					$tmp = imagecreatefromjpeg($imgf);
 					break;
 				case '1':
 					$type = "gif";
+					$tmp = imagecreatefromgif($imgf);
 					break;
 				case '3':
 					$type = "png";
+					$tmp = imagecreatefrompng($imgf);
 					break;
 				default:
 					break;
@@ -75,35 +75,20 @@ function getResizedImage($img, $w, $h, $com)
 			}
 		}
 
-	if( !empty($type))
-		{
-		switch($imgsize[2])
-			{
-			case '2':
-				$tmp = imagecreatefromjpeg($imgf);
-				break;
-			case '1':
-				$tmp = imagecreatefromgif($imgf);
-				break;
-			case '3':
-				$tmp = imagecreatefrompng($imgf);
-				break;
-			default:
-				$tmp = 0;
-				break;
-			}
-		}
-
-	if( $tmp )
+	if( isset($tmp) )
 		{
 		$wtmp = imagesx($tmp);
 		$htmp = imagesy($tmp);
-		if( $wtmp > $htmp )
+		if( $w == "" )
+			$w = $wtmp;
+		if( $h == "" )
+			$h = $htmp;
+		if( $wtmp > $w )
 			{
 			$wimg = $w;
 			$himg = (real)( ((real)(($wimg/$wtmp)*100) * $wtmp)/100);          
 			}  
-		else if ($htmp > $wtmp)  
+		else if ($htmp > $h)  
 			{  
 			$himg = $h;  
 			$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
@@ -330,7 +315,8 @@ function iframe($editor,$path="")
 
 				if( $this->gd && ($imgsize[2] == 1 || $imgsize[2] == 2 || $imgsize[2] == 3))
 					{
-					$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->name."&w=50&h=50&com=".$com;
+
+					$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$filename."&w=50&h=50&com=".$com;
 					}
 				else
 					{
@@ -567,6 +553,8 @@ if (!isset($path))
 switch($idx)
 	{
 	case "get":
+		$w = '';
+		if (empty($h)) $h = 50;
 		getResizedImage($f, $w, $h, $com);
 		break;
 	case "rename_popup":
