@@ -67,7 +67,9 @@ function oldListArticles()
 				if( $this->res && $this->db->db_num_rows($this->res) > 0)
 					{
 					$this->arr = $this->db->db_fetch_array($this->res);
-					$this->author = bab_translate("by") . " ". bab_getArticleAuthor($this->arr['id']). " - ". bab_getArticleDate($this->arr['id']);
+					$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
+					$this->articledate = bab_getArticleDate($this->arr['id']);
+					$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 					$this->content = $this->arr['head'];
 
 					if( $this->com)
@@ -166,7 +168,9 @@ function ListArticles($idgroup)
 				$this->blen = $arr['blen'];
 				$this->title = $arr['title'];
 				$this->content = bab_replace($arr['head']);
-				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($arr['id']). " - ". bab_getArticleDate($arr['id']);
+				$this->articleauthor = bab_getArticleAuthor($arr['id']);
+				$this->articledate = bab_getArticleDate($arr['id']);
+				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id'];
 				$i++;
 				return true;
@@ -210,7 +214,9 @@ function readMore($article)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($arr['body']);
 				$this->title = $arr['title'];
-				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($arr['id']). " - ". bab_getArticleDate($arr['id']);
+				$this->articleauthor = bab_getArticleAuthor($arr['id']);
+				$this->articledate = bab_getArticleDate($arr['id']);
+				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$i++;
 				return true;
 				}
