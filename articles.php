@@ -365,7 +365,10 @@ function readMore($topics, $article)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = bab_replace($this->arr['body']);
+				if( !empty($this->arr['body']))
+					$this->content = bab_replace($this->arr['body']);
+				else
+					$this->content = bab_replace($this->arr['head']);
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
