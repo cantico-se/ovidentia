@@ -378,6 +378,66 @@ class bab_ArticleCategories extends bab_handler
 	}
 }
 
+
+class bab_ParentsArticleCategory extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_ParentsArticleCategory( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$categoryid = $ctx->get_value('categoryid');
+
+		if( $categoryid === false || $categoryid === '' )
+			$this->count = 0;
+		else
+			{
+			$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$categoryid."'");
+			while($arr = $babDB->db_fetch_array($res))
+				{
+				if( $arr['id_parent'] == 0 )
+					break;
+				$this->IdEntries[] = $arr['id_parent'];
+				$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
+				}
+
+			$this->count = count($this->IdEntries);
+			$reverse = $ctx->get_value('reverse');
+			if( $reverse === false || $reverse !== '1' )
+				$this->IdEntries = array_reverse($this->IdEntries);
+			}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->IdEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CategoryName', $arr['title']);
+			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
+			$this->ctx->curctx->push('CategoryId', $arr['id']);
+			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
+			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
 class bab_ArticleCategoryPrevious extends bab_ArticleCategory
 {
 	var $handler;
@@ -1630,6 +1690,203 @@ class bab_RecentFiles extends bab_handler
 		}
 
 	}
+
+
+class bab_WaitingArticles extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $topicid;
+
+	function bab_WaitingArticles($ctx)
+		{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+
+		if( $GLOBALS['BAB_SESS_USERID'] != '')
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+			$this->topicid = $ctx->get_value('topicid');
+			$req = "select id, id_topic from ".BAB_ARTICLES_TBL." where confirmed='N'";
+			if( $this->topicid !== false && $this->topicid !== '' )
+				$req .= " and id_topic IN (".implode(',', $this->topicid).")";
+
+			$res = $babDB->db_query($req);
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select idsaart  from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
+				if( isUserApproverFlow($rr['idsaart'], $GLOBALS['BAB_SESS_USERID']))
+					{
+					$this->idEntries[] = $arr['id'];
+					}
+				}
+			$this->count = count($this->idEntries);
+			}
+		else
+			$this->count = 0;
+
+		$this->ctx->curctx->push('CCount', $this->count);
+		}
+
+	function getnext()
+		{
+		global $babBody, $babDB;
+		static $i=0;
+		if( $i < $this->count)
+			{
+			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->idEntries[$i]."'"));
+			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
+			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
+			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			$this->ctx->curctx->push('ArticleId', $arr['id']);
+			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
+			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+			$i++;
+			$this->index = $i;
+			return true;
+			}
+		else
+			{
+			$i = 0;
+			return false;
+			}
+		}
+}
+
+
+class bab_WaitingComments extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $articleid;
+
+	function bab_WaitingComments($ctx)
+		{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+
+		if( $GLOBALS['BAB_SESS_USERID'] != '')
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+
+			$this->articleid = $ctx->get_value('articleid');
+			$req = "select id, id_topic from ".BAB_COMMENTS_TBL." where confirmed='N'";
+			if( $this->articleid !== false && $this->articleid !== '' )
+				$req .= " and id_article IN (".implode(',', $this->articleid).")";
+			
+			$res = $babDB->db_query($req);
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select idsacom  from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
+				if( isUserApproverFlow($rr['idsacom'], $GLOBALS['BAB_SESS_USERID']))
+					{
+					$this->idEntries[] = $arr['id'];
+					}
+				}
+			$this->count = count($this->idEntries);
+			}
+		else
+			$this->count = 0;
+
+		$this->ctx->curctx->push('CCount', $this->count);
+		}
+
+	function getnext()
+		{
+		global $babBody, $babDB;
+		static $i=0;
+		if( $i < $this->count)
+			{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$this->idEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CommentTitle', $arr['subject']);
+			$this->ctx->curctx->push('CommentText', $arr['message']);
+			$this->ctx->curctx->push('CommentId', $arr['id']);
+			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
+			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
+			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
+			$i++;
+			$this->index = $i;
+			return true;
+			}
+		else
+			{
+			$i = 0;
+			return false;
+			}
+		}
+}
+
+
+class bab_WaitingFiles extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $folderid;
+
+	function bab_WaitingFiles($ctx)
+		{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+
+		if( $GLOBALS['BAB_SESS_USERID'] != '')
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+
+			$this->folderid = $ctx->get_value('folderid');
+			$req = "select id, id_owner from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N'";
+			if( $this->folderid !== false && $this->folderid !== '' )
+				$req .= " and id_owner IN (".implode(',', $this->folderid).")";
+			
+			$res = $babDB->db_query($req);
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select idsa  from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
+				if( isUserApproverFlow($rr['idsa'], $GLOBALS['BAB_SESS_USERID']))
+					{
+					$this->idEntries[] = $arr['id'];
+					}
+				}
+			$this->count = count($this->idEntries);
+			}
+		else
+			$this->count = 0;
+
+		$this->ctx->curctx->push('CCount', $this->count);
+		}
+
+	function getnext()
+		{
+		global $babBody, $babDB;
+		static $i=0;
+		if( $i < $this->count)
+			{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->idEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FileId', $arr['id']);
+			$this->ctx->curctx->push('FileName', $arr['name']);
+			$this->ctx->curctx->push('FilePath', $arr['path']);
+			$this->ctx->curctx->push('FileDesc', $arr['description']);
+			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
+			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
+			$this->ctx->curctx->push('FileAuthor', $arr['author']);
+			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
+			$i++;
+			$this->index = $i;
+			return true;
+			}
+		else
+			{
+			$i = 0;
+			return false;
+			}
+		}
+}
 
 
 
