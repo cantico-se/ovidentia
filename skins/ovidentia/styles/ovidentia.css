@@ -153,6 +153,10 @@ a.BabTopicsFooterMoreLink:Hover {COLOR: black; font : 10px Verdana, Arial, sans-
 
 .BabTopicsButtonBackground {background: #FFFFFF }
 
+a.BabTopicsTitleNavigationLink:Link { COLOR: white; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsTitleNavigationLink:Visited { COLOR: white; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsTitleNavigationLink:Hover {COLOR: white; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
 /********** AGENDA **** CALENDAR ******************************/
 
 .BabCalendarCadreBackground {background: #D1D1D9}
