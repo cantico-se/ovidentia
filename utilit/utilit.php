@@ -530,7 +530,6 @@ function babUserSection()
 	$this->head .= "</b></center><br>";
 	$this->foot = "";
 
-	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -548,6 +547,10 @@ function babUserSection()
 				}
 			}
 		}
+
+	$req = "select count(".BAB_FILES_TBL.".id) from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state='' and ".BAB_FILES_TBL.".created >= '".$babBody->lastlog."'";
+
+	list($babBody->newfiles) = $db->db_fetch_row($db->db_query($req));	
 	}
 
 function addUrl()
@@ -586,7 +589,7 @@ function getnextnew()
 	{
 	global $babBody;
 	static $i = 0;
-	if( $i < 3)
+	if( $i < 4)
 		{
 		switch( $i )
 			{
@@ -604,6 +607,11 @@ function getnextnew()
 				$this->newcount = $babBody->newposts;
 				$this->newtext = bab_translate("Replies");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=calview&idx=for";
+				break;
+			case 3:
+				$this->newcount = $babBody->newfiles;
+				$this->newtext = bab_translate("Files");
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=calview&idx=fil";
 				break;
 			}
 		$i++;
@@ -928,6 +936,7 @@ function babBody()
 	$this->newarticles = 0;
 	$this->newcomments = 0;
 	$this->newposts = 0;
+	$this->newfiles = 0;
 }
 
 function resetContent()
