@@ -799,7 +799,7 @@ CREATE TABLE `bab_sites` (
   `date_longformat` varchar(255) NOT NULL default '',
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',
-  `stat_update_time` NOT NULL default '0000-00-00 00:00:00',
+  `stat_update_time` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
