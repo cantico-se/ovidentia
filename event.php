@@ -25,6 +25,7 @@ function newEvent($calendarid, $day, $month, $year)
 		var $arrresid = array();
 		var $countres;
 		var $bcategory;
+		var $daytypechecked;
 
 		function temp($calendarid, $day, $month, $year)
 			{
@@ -58,6 +59,15 @@ function newEvent($calendarid, $day, $month, $year)
 			$this->description = babTranslate("Description");
 			$this->category = babTranslate("Category");
 			$this->db = new db_mysql();
+			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$res = $this->db->db_query($req);
+			$this->daytypechecked = "";
+			if( $res && $this->db->db_num_rows($res))
+				{
+				$arr = $this->db->db_fetch_array($res);
+				if( $arr[allday] == "Y")
+					$this->daytypechecked = "checked";
+				}
 
 			switch( $this->caltype)
 				{
