@@ -393,7 +393,9 @@ function bab_deleteUser($id)
 	bab_deleteUploadUserFiles("N", $id);
 
 	// delete user from BAB_DBDIR_ENTRIES_TBL
-	$res = $db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'");	
+	list($iddu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'"));	
+	$db->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id_user='".$iddu."'");
+	$res = $db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id='".$iddu."'");	
 
 	// delete user from VACATION
 	$db->db_query("delete from ".BAB_VAC_MANAGERS_TBL." where id_user='".$id."'");
@@ -405,7 +407,7 @@ function bab_deleteUser($id)
 		$db->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$arr['id']."'");
 		$db->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$arr['id']."'");
 	}
-
+	
 	// delete user
 	$res = $db->db_query("delete from ".BAB_USERS_TBL." where id='$id'");
 	bab_callAddonsFunction('onUserDelete', $id);

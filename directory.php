@@ -1441,7 +1441,12 @@ function deleteDbContact($id, $idu)
 	$db = $GLOBALS['babDB'];
 	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 	if( $idgroup != 0 )
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+		list($iddu) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));	
+		bab_deleteUser($iddu);
 		return;
+		}
 	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."' and id='".$idu."'");
 	}
 

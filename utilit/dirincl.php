@@ -288,9 +288,13 @@ function summaryDbContact($id, $idu, $update=true)
 
 			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				{
 				$this->count = $this->db->db_num_rows($this->res);
+				}
 			else
+				{
 				$this->count = 0;
+				}
 			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup != 0? 0: $id)."' and id='".$idu."'");
 			$this->showph = false;
 			if( $res && $this->db->db_num_rows($res) > 0)
@@ -302,12 +306,10 @@ function summaryDbContact($id, $idu, $update=true)
 
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu;
 
-				if( $idgroup != 0 )
-					$this->del = false;
-				else
+				$this->del = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+				if( $idgroup == 0 )
 					{
 					$allowuu = "N";
-					$this->del = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
 					}
 
 				$this->modify = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
