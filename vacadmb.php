@@ -1055,7 +1055,6 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 	$req = "select * from ".BAB_VAC_ENTRIES_TBL;
 	if( count($idstatus) < 3 || $dateb != "" || $datee != "")
 		{
-		$req .= " where ";
 
 
 		if( count($idstatus) < 3)
@@ -1096,6 +1095,7 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 
 	if( sizeof($aaareq) > 0 )
 		{
+		$req .= " where ";
 		if( sizeof($aaareq) > 1 )
 			$req .= implode(' and ', $aaareq);
 		else
