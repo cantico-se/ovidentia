@@ -1577,7 +1577,8 @@ class bab_FileFields extends bab_handler
 			$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."' and id_file='".$this->fileid."'");
 			if( $res && $babDB->db_num_rows($res) > 0)
 				{
-				list($fieldval) = htmlentities($babDB->db_fetch_array($res));
+				list($fieldval) = $babDB->db_fetch_array($res);
+				$fieldval = htmlentities($fieldval);
 				}
 			$this->ctx->curctx->push('FileFieldValue', $fieldval);
 			$this->idx++;
