@@ -301,8 +301,11 @@ function changeSkin($skin)
 							{
 							if( is_file($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/".$file))
 								{
-									if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
+									if( strtolower(substr(strrchr($file, "."), 1)) == "css" )
+										{
+										if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
 										$this->arrstyles[] = $file; 
+										}
 								}
 							} 
 						}
