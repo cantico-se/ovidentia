@@ -544,7 +544,7 @@ function bab_mailAccessLevel()
 function bab_notesAccess()
 	{
 	global $babBody;
-	if( $babBody->ovgroups[1]['mail'] == 'Y' )
+	if( $babBody->ovgroups[1]['notes'] == 'Y' )
 		return true;
 
 	for( $i = 0; $i < count($babBody->usergroups); $i++)
