@@ -154,6 +154,37 @@ function viewQuestion($idcat, $id)
 	return true;
 	}
 
+function viewPopupQuestion($id)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $arr = array();
+		var $db;
+		var $res;
+		var $more;
+		var $baCss;
+		var $close;
+
+
+		function temp($id)
+			{
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->close = bab_translate("Close");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from faqqr where id='$id'";
+			$res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($res);
+			$this->arr['response'] = bab_replace($this->arr['response']);
+			}
+		}
+	
+	$temp = new temp($id);
+	echo bab_printTemplate($temp,"faq.html", "popupquestion");
+	}
+
 function faqPrint($idcat)
 	{
 	global $babBody;
@@ -452,6 +483,10 @@ switch($idx)
 			//	$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
+
+	case "viewpq":
+		viewPopupQuestion($item);
+		exit;
 
 	case "viewq":
 		$babBody->title = bab_translate("Questions and Answers");
