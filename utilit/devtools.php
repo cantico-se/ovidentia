@@ -155,4 +155,192 @@ return false;
 }
 
 
+
+
+
+
+
+class bab_synchronizeSql
+	{
+	var $fileContent = '';
+	var $tables = array();
+	var $create = array();
+	var $insert = array();
+	var $return = array();
+
+	/*
+
+	return array( table => action )
+
+	action == 0 : nothing done on the table
+	action == 1 : table has been created
+	action == 2 : fields in the table has been updated
+
+	*/
+
+	function bab_synchronizeSql($file)
+		{
+		$this->file = $file;
+		$this->db = &$GLOBALS['babDB'];
+
+		if ($this->getFileContent())
+			{
+			if ($this->getCreateQueries())
+				{
+				unset($this->fileContent);
+				$this->showTables();
+				$this->checkTables();
+				}
+			}
+		}
+
+	function getFileContent()
+		{
+		$f = @fopen($this->file,'r');
+		if ($f === false)
+			{
+			trigger_error('There is an error into synchronizeSql function, can\'t read sql dump file '.$this->file);
+			return false;
+			}
+		while (!feof($f)) 
+			{
+			$this->fileContent .= fread($f, 1024);
+			}
+		fclose($f);
+		return true;
+		}
+
+	function getCreateQueries()
+		{
+		if (preg_match_all("/CREATE\s+TABLE\s+`(.*?)`\s+\((.*?)\;/s", $this->fileContent, $m))
+			{
+			for ($k = 0; $k < count($m[1]); $k++ )
+				{
+				$l = (strlen(strrchr($m[2][$k],')'))*-1);
+				$fields = substr($m[2][$k],0,$l);
+
+				$field = array();
+				$keys = array();
+
+				preg_match_all("/(.*?)[\s|\(]`(.*?)`.*/", $fields, $n);
+				for ($l = 0; $l < count($n[2]); $l++ )
+					{
+					$key = trim($n[1][$l]);
+					$f = $n[2][$l];
+
+					if (!empty($key))
+						{
+						$keys[$f] = trim(trim($n[0][$l]),",");
+						}
+					else
+						{
+						$field[$f] = str_replace("`$f`",'',$n[0][$l]);
+						$field[$f] = trim(trim($field[$f]),",");
+						}
+					}
+
+				$this->create[$m[1][$k]] = array(
+								'create' => $m[0][$k],
+								'fields' => $field,
+								'keys' => $keys
+								);
+				
+				}
+			}
+		else
+			{
+			trigger_error('can\'t fetch file content : '.$this->file);
+			return false;
+			}
+
+		return true;
+		}
+
+
+	function showTables()
+		{
+		$res = $this->db->db_query("SHOW TABLES");
+		while (list($table) = $this->db->db_fetch_array($res))
+			{
+			$this->tables[$table] = array();
+			$res2 = $this->db->db_query("SHOW COLUMNS FROM ".$table);
+			while ($arr = $this->db->db_fetch_assoc($res2))
+				{
+				$this->tables[$table][$arr['Field']] = $arr;
+				}
+			}
+
+		}
+
+	function checkTables()
+		{
+		foreach($this->create as $table => $arr)
+			{
+			if (isset($this->tables[$table]))
+				{
+				if ($this->checkFields($table))
+					$this->return[$table] = 2;
+				else
+					$this->return[$table] = 0;
+				}
+			else
+				{
+				$this->db->db_query(trim($this->tables[$table]['create']," ;"));
+				$this->return[$table] = 1;
+				}
+			}
+		}
+
+
+	function checkFields($table)
+		{
+		$return = false;
+
+		foreach($this->create[$table]['fields'] as $field => $options)
+			{
+			if (isset($this->tables[$table][$field]))
+				{
+				if ($this->checkOptions($table, $field))
+					$return = true;
+				}
+			else
+				{
+				$this->db->db_query("ALTER TABLE `".$table."` ADD `".$field."` ".$options);
+				$return = true;
+				}
+			}
+
+		foreach($this->tables[$table] as $field => $arr)
+			{
+			if (!isset($this->create[$table]['fields'][$field]))
+				{
+				$this->db->db_query("ALTER TABLE `".$table."` DROP `".$field."`");
+				$return = true;
+				}
+			}
+
+		return $return;
+		}
+
+	function checkOptions($table, $field)
+		{
+		$option_file = $this->create[$table]['fields'][$field];
+		$null = $this->tables[$table][$field]['Null'] != 'YES' ? ' NOT NULL' : '';
+		$default = $this->tables[$table][$field]['Default'] != '' || false !== strpos($this->tables[$table][$field]['Type'],'char') ? " default '".$this->tables[$table][$field]['Default']."'" : '';
+		$extra = !empty($this->tables[$table][$field]['Extra']) ? ' '.$this->tables[$table][$field]['Extra'] : '';
+		$option_table = $this->tables[$table][$field]['Type'].$null.$default.$extra;
+
+		
+		if ($option_file !== $option_table)
+			{
+			$this->db->db_query("ALTER TABLE `".$table."` CHANGE `".$field."` `".$field."` ".$option_file);
+			return true;
+			}
+
+		return false;
+		}
+	}
+
+	
+
 ?>
