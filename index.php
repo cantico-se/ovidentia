@@ -27,6 +27,8 @@ if (!session_is_registered('BAB_SESS_USER')) { session_register("BAB_SESS_USER")
 if (!session_is_registered('BAB_SESS_EMAIL')) { session_register("BAB_SESS_EMAIL"); $BAB_SESS_EMAIL = ""; }
 if (!session_is_registered('BAB_SESS_USERID')) { session_register("BAB_SESS_USERID"); $BAB_SESS_USERID = ""; }
 if (!session_is_registered('BAB_SESS_HASHID')) { session_register("BAB_SESS_HASHID"); $BAB_SESS_HASHID = ""; }
+if (!session_is_registered('BAB_SESS_GROUPID')) { session_register("BAB_SESS_GROUPID"); $BAB_SESS_GROUPID = ""; }
+if (!session_is_registered('BAB_SESS_GROUPNAME')) { session_register("BAB_SESS_GROUPNAME"); $BAB_SESS_GROUPNAME = ""; }
 if (!empty($_GET))
 	$babTmp =& $_GET;
 else  if (!empty($HTTP_GET_VARS)) 
@@ -755,6 +757,10 @@ switch($tg)
 		break;
 	case "htmlarea":
 		include $babInstallPath."htmlarea.php";
+		exit;
+		break;
+	case "imgget":
+		include $babInstallPath."imgget.php";
 		exit;
 		break;
 	case "oml":
