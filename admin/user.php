@@ -241,6 +241,8 @@ function changePassword($item, $pos, $grp)
 		{
 		var $newpwd;
 		var $renewpwd;
+		var $newnickname;
+		var $nicknameval;
 		var $update;
 		var $item;
 		var $pos;
@@ -248,12 +250,15 @@ function changePassword($item, $pos, $grp)
 
 		function tempb($item, $pos, $grp)
 			{
+			global $babDB;
 			$this->item = $item;
 			$this->pos = $pos;
 			$this->grp = $grp;
+			$this->newnickname = bab_translate("Nickname");
 			$this->newpwd = bab_translate("New Password");
 			$this->renewpwd = bab_translate("Retype New Password");
-			$this->update = bab_translate("Update Password");
+			$this->update = bab_translate("Update");
+			list($this->nicknameval) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
 			}
 		}
 
@@ -458,11 +463,11 @@ function confirmDeleteUser($id)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}
 
-function updatePassword($item, $newpwd1, $newpwd2)
+function updatePassword($item, $newpwd1, $newpwd2, $newnick)
 	{
-	global $babBody;
+	global $babBody, $BAB_HASH_VAR;
 
-	if( empty($newpwd1) || empty($newpwd2))
+	if( empty($newpwd1) || empty($newpwd2) || empty($newnick))
 		{
 		$babBody->msgerror = bab_translate("You must complete all fields !!");
 		return false;
@@ -478,8 +483,23 @@ function updatePassword($item, $newpwd1, $newpwd2)
 		return false;
 		}
 
+	if ( strpos($newnick, ' ') !== false )
+		{
+		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
+		return false;
+		}
+
 	$db = $GLOBALS['babDB'];
-	$req="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' ".
+	$query = "select * from ".BAB_USERS_TBL." where nickname='".$newnick."' and id!='".$item."'";	
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("This nickname already exists !!");
+		return false;
+		}
+
+	$hash=md5($newnick.$BAB_HASH_VAR);
+	$req="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "', confirm_hash='".$hash."', nickname='".$newnick."'".
 		"where id='". $item . "'";
 	$res = $db->db_query($req);
 	if ($db->db_affected_rows() < 1)
@@ -511,7 +531,7 @@ if( isset($modify))
 
 if( isset($update) && $update == "password")
 	{
-	if(!updatePassword($item, $newpwd1, $newpwd2))
+	if(!updatePassword($item, $newpwd1, $newpwd2, $newnick))
 		$idx = "Modify";
 	else
 		{
