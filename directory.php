@@ -2014,7 +2014,7 @@ switch($idx)
 		break;
 
 	case "dbexp":
-		$babBody->title = bab_translate("Import file to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
+		$babBody->title = bab_translate("Export file from").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
 		$babBody->addItemMenu("sdb", bab_translate("Browse"), $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)

@@ -473,7 +473,7 @@ class cal_wmdbaseCls
 		$time = mktime( 0,0,0, $this->month, $this->day +1, $this->year);
 		$this->nextdayurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
 
-		$this->gotodateurl = $GLOBALS['babUrlScript']."?tg=month&year=".$this->year."&month=".$this->month."&callback=gotodate";
+		$this->gotodateurl = $GLOBALS['babUrlScript']."?tg=month&year=".date('Y')."&month=".date('n')."&callback=gotodate";
 
 		switch($tg)
 		{
@@ -521,6 +521,8 @@ class cal_wmdbaseCls
 		$this->t_modify_event = bab_translate("Modify event");
 		$this->t_search = bab_translate("Search");
 		$this->t_eventlist = bab_translate("Detailed sight");
+		$this->t_catlist = bab_translate("Categories");
+		
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."|date=".$date."|calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
@@ -626,6 +628,21 @@ class cal_wmdbaseCls
 			return htmlentities($str);
 		}
 
+	function getPropertiesString(&$arr)
+		{
+		$el = array('bprivate' => bab_translate('Private'),'block' => bab_translate('Locked'),'bfree' => bab_translate('Free'));
+		foreach ($el as $k => $v)
+			{
+			if ($arr[$k] != 'Y')
+				unset($el[$k]);
+			}
+		$this->t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
+		if (count($el) > 0)
+			return implode(', ',$el);
+		else
+			return '';
+		}
+
 	function printout($file,$template)
 		{
 		global $babBody;
@@ -682,7 +699,7 @@ class calendarchoice
 		$this->resuser_sort = array();
 		foreach($this->resuser as $k => $v)
 			{
-			if ($_GET['tg'] != 'event' || $v['access'] > 0)
+			if ($_REQUEST['tg'] != 'event' || $v['access'] > 0)
 				$this->resuser_sort[$k] = $v['name'];
 			}
 		asort($this->resuser_sort);
@@ -690,7 +707,7 @@ class calendarchoice
 		$this->respub_sort = array();
 		foreach($this->respub as $k => $v)
 			{
-			if ($_GET['tg'] != 'event' || $v['manager'] == 1)
+			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1)
 				$this->respub_sort[$k] = $v['name'];
 			}
 		asort($this->respub_sort);
@@ -699,7 +716,7 @@ class calendarchoice
 
 		foreach($this->resres as $k => $v)
 			{
-			if ($_GET['tg'] != 'event' || $v['manager'] == 1)
+			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1)
 				$this->resres_sort[$k] = $v['name'];
 			}
 		asort($this->resres_sort);

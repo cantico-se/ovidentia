@@ -13,7 +13,7 @@
 
 .bab_calnavbar .prev span,
 .bab_calnavbar .next span,
-#bab_calweek .calfreeover {
+.bab_calendar .calfreeover {
 	visibility: hidden;
 	position:absolute;
 	background-color:#fff;
@@ -166,11 +166,11 @@ a img {
 	}
 
 .HeaderDayCalendar a.dayview {
-	background-image:url('../skins/ovidentia/images/Puces/PuceMoreEvent.png');
+	background:transparent url('../skins/ovidentia/images/Puces/PuceMoreEvent.png') no-repeat 0 0;
 	}
 
 .HeaderDayCalendar a.insert {
-	background-image:url('../skins/ovidentia/images/Puces/PuceNewEvent.png');
+	background:transparent url('../skins/ovidentia/images/Puces/PuceNewEvent.png') no-repeat 0 0;
 	}
 
 .HeaderDayCalendar a.dayview img, .HeaderDayCalendar a.insert img {
@@ -230,10 +230,15 @@ a img {
 	}
 
 .bab_calendar .innertable td.event span, 
-.bab_calendar .innertable td.freeevent span,
-.bab_calendar .innertable td.used span {
+.bab_calendar .freeevent span,
+.bab_calendar .freeevent strong,
+.bab_calendar .used strong,
+.bab_calendar .used span {
 	white-space:nowrap;
+	font-family:Arial;
+	font-size:10px;
 	}
+
 	
 #bab_calweek tbody th, #bab_calday tbody th {
 	padding-top:10px;
@@ -268,6 +273,12 @@ a img {
 	background-image:url('../skins/ovidentia/images/Puces/popupselect.gif');
 	}
 
+.bab_cal_buttons a.categories {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/FileLog.gif');
+	}
+
 
 .BabTodayEvent .HeaderDayCalendar {
    border-bottom:#f00 2px solid;
@@ -291,6 +302,13 @@ a img {
 	border-bottom:#390 1px solid;
 	}
 
+#bab_calmonth .freeevent strong,
+#bab_calmonth .used strong,
+#bab_calweek .freeevent strong,
+#bab_calweek .used strong {
+	display:none;
+	}
+
 .bab_calendar .used {
 	background-color:lightgrey;
 	background-image:url('../skins/ovidentia/images/Puces/stripsbackground.gif');
@@ -299,9 +317,7 @@ a img {
 .bab_calendar .used .bab_tooltip {
 	background-color:lightgrey;
 	}
-.bab_calendar .used, .bab_calendar .freeevent {
-	font-size:9px;
-	}
+
 
 /* EVENTLIST */
 
@@ -338,20 +354,9 @@ a img {
 	font-size:1.2em;
 	}
 
-#eventlist h6 {
-	font-size:.9em;
-	margin:0;
-	}
-
-#eventlist h5 {
-	font-size:1.2em;
-	margin:0;
-	font-weight:normal;
-	text-decoration:underline;
-	}
-
-#eventlist h5 span {
+#eventlist h5, #eventlist h6 {
 	color:#000;
+	font-size:.9em;
 	margin:0;
 	}
 

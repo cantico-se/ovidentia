@@ -110,7 +110,7 @@ function calendarsCategories()
 			$this->desctxt = bab_translate("Description");
 			$this->bgcolortxt = bab_translate("Color");
 			$this->t_delete = bab_translate("Delete");
-			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL."");
+			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name,description ");
 			$this->countcal = $babDB->db_num_rows($this->res);
 			}
 			
@@ -188,7 +188,7 @@ function calendarsPublic()
 
 	class calendarsPublicCls
 		{
-
+		var $altbg = true;
 		function calendarsPublicCls()
 			{
 			global $babDB, $babBody;
@@ -202,7 +202,7 @@ function calendarsPublic()
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
 
-			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."'");
+			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -213,6 +213,7 @@ function calendarsPublic()
 		
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->name = $arr['name'];
 				$this->description = $arr['description'];
@@ -249,6 +250,7 @@ function calendarsResource()
 
 	class calendarsResourceCls
 		{
+		var $altbg = true;
 
 		function calendarsResourceCls()
 			{
@@ -263,7 +265,7 @@ function calendarsResource()
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
 
-			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."'");
+			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babBody->currentAdmGroup."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -274,6 +276,7 @@ function calendarsResource()
 		
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->name = $arr['name'];
 				$this->description = $arr['description'];

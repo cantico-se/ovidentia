@@ -86,32 +86,39 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td align="right" nowrap valign="middle"><b>{ begindatetxt }</b></td>
-<td align="left" valign="middle">{ begindate }</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle"><b>{ enddatetxt }</b></td>
-<td align="left" valign="middle">{ enddate }</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle"><b>{ titletxt }</b></td>
-<td align="left" valign="middle">{ title }</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle"><b>{ desctxt }</b></td>
-<td align="left" valign="middle">{ description }</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle"><b>{ cattxt }</b></td>
-<td align="left" valign="middle">{ category }</td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+	<tr> 
+	<td align="right"><b>{ begindatetxt }</b></td>
+	<td>{ begindate }</td>
+	</tr>
+	<tr> 
+	<td align="right"><b>{ enddatetxt }</b></td>
+	<td>{ enddate }</td>
+	</tr>
+	<tr> 
+	<td align="right"><b>{ titletxt }</b></td>
+	<td>{ title }</td>
+	</tr>
+	<tr> 
+	<td align="right"><b>{ desctxt }</b></td>
+	<td>{ description }</td>
+	</tr>
+	<tr> 
+	<td align="right"><b>{ cattxt }</b></td>
+	<td>{ category }</td>
+	</tr>
+	<!--#if properties -->
+	<tr> 
+	<td align="right"><b>{ t_option }</b></td>
+	<td>{ properties }</td>
+	</tr>
+	<!--#endif properties -->
+	</table>
 </td>
 </tr>
 </table>
 <!--#endif access -->
+<br /><br /><br />
 <!--#end eventdetail -->
 
 <!--#begin calendarchoice -->
@@ -307,36 +314,30 @@ movecalendar(0);
 
 
 <!--#begin categorieslist -->
-<BR>
-<table  width="0" cellpadding="5" cellspacing="0" align="left">
-<tr>
-<td > 
-<table cellpadding="2" cellspacing="2">        
-<tr>
-<td>
-&nbsp;
-</td>
-<td class="BabMenuActiveBackground">
-{ description } 
-</td>
-</tr>
-<tr>
-<td>
-&nbsp;
-</td><td>
-&nbsp;
-</td>
-</tr>
-<!--#in getnextcat -->
-<tr> 
-<td bgcolor="#{ bgcolor }" width="10">&nbsp;</td>
-<td>&nbsp;{ catdesc }</td>
-</tr>
-<!--#endin getnextcat -->
+<table  width="70%" cellpadding="5" cellspacing="0" align="center">
+	<tr >
+		<td width="20">
+			&nbsp;
+		</td>
+		<td class="BabLoginMenuBackground">
+			{ t_name } 
+		</td>
+		<td class="BabLoginMenuBackground">
+			{ t_description } 
+		</td>
+	</tr>
+	<!--#in getnextcat -->
+	<tr> 
+		<td bgcolor="#{ bgcolor }" >&nbsp;</td>
+		<td>{ name }</td>
+		<td>{ description }</td>
+	</tr>
+	<!--#endin getnextcat -->
 </table>
-</td>
-</tr>
-</table>
+<br /><br /><br />
+<div align="center">
+	<input type="button" onclick="window.close()" value="{ t_close }" />
+</div>
 <!--#end categorieslist -->
 
 
@@ -444,30 +445,36 @@ function dateEnd(day, month, year)
 </style>
 <ul id="eventlist">
 <!--#in getnextevent -->
+	
+	
 	<!--#if evt[private] -->
-	<li id="event{ idevent }">
+	<li id="event{ idevent }" style="color:#{ evt[color] }">
 		<h3>{ t_private }</h3>
-	</li>
 	<!--#else evt[private] -->
 	<li id="event{ idevent }" style="color:#{ evt[color] }">
 		<h3>{ evt[title] }</h3>
 		<h4>{ evt[start_date] } <span>-</span> { evt[end_date] }</h4>
 		<!--#if evt[categoryname] -->
-		<h5 title="{ evt[categorydescription] }" style="color:#{ evt[color] }"><span title="{ evt[categorydescription] }">{ evt[categoryname] }</span></h5>
+		<h5 title="{ evt[categorydescription] }">{ t_category } : { evt[categoryname] }</h5>
 		<!--#endif evt[categoryname] -->
 		<!--#if evt[creator] -->
-		<h6>{ evt[creator] }</h6>
+		<h6>{ t_from } : { evt[creator] }</h6>
 		<!--#endif evt[creator] -->
 		<!--#if evt[description] -->
 		<p>{ evt[description] }</p>
 		<!--#endif evt[description] -->
+		<!--#if evt[properties] -->
+		<p>{ evt[t_option] } : { evt[properties] }</p>
+		<!--#endif evt[properties] -->
+	<!--#endif evt[private] -->
 		<ul>
 		<!--#in getnextcalendar -->
 			<li><strong>{ calendar[type] } : </strong>{ calendar[name] }</li>
 		<!--#endin getnextcalendar -->
 		</ul>
+
 	</li>
-	<!--#endif evt[private] -->
+	
 <!--#endin getnextevent -->
 </ul>
 <div class="bab_cal_buttons">

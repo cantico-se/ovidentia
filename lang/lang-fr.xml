@@ -1494,11 +1494,11 @@
 <string id="Are you sure you want to delete this calendar">Etes vous sûr de vouloir supprimer cet agenda</string>
 <string id="WARNING: This operation will delete the calendar and all associated events">ATTENTION: Cette opération supprime l'agenda et les évènements associés</string>
 <string id="Add event category">Ajouter une catégorie d'évènement</string>
-<string id="Delete resource calendar">Delete resource calendar</string>
-<string id="Del">Del</string>
+<string id="Delete resource calendar">Supprimer l'agenda de ressource</string>
+<string id="Del">Supprimer</string>
 <string id="Delete public calendar">Delete public calendar</string>
-<string id="Add resource calendar">Supprimer l'agenda de ressource</string>
-<string id="Add public calendar">Ajouter un agend collectif</string>
+<string id="Add resource calendar">Ajouter l'agenda de ressource</string>
+<string id="Add public calendar">Ajouter un agenda collectif</string>
 <string id="Personal calendars List">List des groupes ayant des agendas personnels</string>
 <string id="Resources calendars List">Liste des agendas de ressources</string>
 <string id="Public calendars List">Liste des agendas collectifs</string>
@@ -1588,4 +1588,5 @@
 <string id="Selected calendars">Agendas sélectionnés</string>
 <string id="Use calendar options">Utiliser les options de l'agenda</string>
 <string id="The user has not received his confirmation email">L'utilisateur n'a pas recu son email de confirmation</string>
+<string id="Export file from">Exporter un fichier depuis</string>
 </fr>

@@ -242,6 +242,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			{
 			$i = 0;
 			$this->bevent = false;
+			
 			if (isset($this->harray[$this->cindex-1][$this->icols]))
 				{
 				while( $i < count($this->harray[$this->cindex-1][$this->icols]))
@@ -283,6 +284,7 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->bprivate = $arr['bprivate'];
 						$this->block = $arr['block'];
 						$this->bfree = $arr['bfree'];
+						$this->properties = $this->getPropertiesString($arr);
 						if( !$this->allow_viewtitle  )
 							{
 							$this->title = bab_translate("Private");
@@ -317,6 +319,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					$i++;
 					}
 				}
+			$this->md5 = md5($this->icols.$this->dayname.$this->currday.$this->h_start);
 			$this->icols++;
 			return true;
 			}
@@ -380,7 +383,11 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->startdate = bab_shortDate($time0, false);
 			$this->endtime = bab_time($time1);
 			$this->enddate = bab_shortDate($time1, false);
-			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1;
+
+			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1."&st=".$time0;
+
+
+			$this->md5 = md5($this->dayname.$this->currday.$this->h_start);
 			return true;
 			}
 		else

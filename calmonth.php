@@ -199,6 +199,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->bprivate = $arr['bprivate'];
 			$this->block = $arr['block'];
 			$this->bfree = $arr['bfree'];
+			$this->properties = $this->getPropertiesString($arr);
 			$this->nbowners = $arr['nbowners'];
 			if( !$this->allow_viewtitle  )
 				{

@@ -161,6 +161,21 @@ function displayAttendees($evtid, $idcal)
 	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "listattendees"));
 }
 
+function getPropertiesString(&$arr, &$t_option)
+		{
+		$el = array('bprivate' => bab_translate('Private'),'block' => bab_translate('Locked'),'bfree' => bab_translate('Free'));
+		foreach ($el as $k => $v)
+			{
+			if ($arr[$k] != 'Y')
+				unset($el[$k]);
+			}
+		$t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
+		if (count($el) > 0)
+			return implode(', ',$el);
+		else
+			return '';
+		}
+
 
 function displayEventDetail($evtid, $idcal)
 {
@@ -187,6 +202,10 @@ function displayEventDetail($evtid, $idcal)
 					$this->cattxt = bab_translate("Category");
 					$this->begindate = bab_longDate(bab_mktime($arr['start_date']));
 					$this->enddate = bab_longDate(bab_mktime($arr['end_date']));
+
+					$this->t_option = ''; 
+					$this->properties = getPropertiesString($arr, $this->t_option);
+
 					if( $arr['bprivate'] ==  'Y' && $GLOBALS['BAB_SESS_USERID']  != $iarr['idowner'])
 						{
 						$this->title= '';
@@ -233,6 +252,10 @@ function categoriesList()
 			global $babBodyPopup, $babBody, $babDB;
 			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL."");
 			$this->count = $babDB->db_num_rows($this->res);
+
+			$this->t_name = bab_translate('Name');
+			$this->t_description = bab_translate('Description');
+			$this->t_close = bab_translate('Close');
 			}
 
 		function getnextcat()
@@ -242,11 +265,8 @@ function categoriesList()
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				if (trim($arr['description']) == '') 
-					{
-					$arr['description'] = $arr['name'];
-					}
-				$this->catdesc = $arr['description'];
+				$this->name = $arr['name'];
+				$this->description = $arr['description'];
 				$this->bgcolor = $arr['bgcolor'];
 				$i++;
 				return true;
@@ -287,7 +307,9 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$this->resevent = array();
 
 			$this->t_print = bab_translate('Print');
-			$this->t_private = bab_translate('private');
+			$this->t_private = bab_translate('Private');
+			$this->t_from = bab_translate('Par');
+			$this->t_category = bab_translate('Category');
 
 			foreach ($idcals as $idcal)
 				{
@@ -321,10 +343,23 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['description'] : '';
 					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['bgcolor'] : $arr['color'];
 					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_getUserName($arr['id_creator']) : '';
-					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && (isset($arr['private']) && $arr['private'] == 'Y');
+					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && (isset($arr['bprivate']) && $arr['bprivate'] == 'Y');
 					$evt['nbowners'] = $arr['nbowners']+1;
+					$evt['t_option'] = ''; 
+					$evt['properties'] = getPropertiesString($arr, $evt['t_option']);
+
+					$sortvalue[$arr['id_event']] = $arr['start_date'];
 					}
 				}
+
+			asort($sortvalue);
+			reset($sortvalue);
+
+			while (list ($arr_key, $arr_val) = each ($sortvalue)) {
+					 $new_array[$arr_key] = $this->resevent[$arr_key];
+					}
+
+			$this->resevent = $new_array;
 
 			}
 
@@ -416,18 +451,16 @@ switch($idx)
 		exit;
 		break;
 	case "vevent":
+	case "attendees":
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Event Detail");
 		displayEventDetail($evtid, $idcal);
-		printBabBodyPopup();
-		exit;
-		break;
-	case "attendees":
-		include_once $babInstallPath."utilit/uiutil.php";
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Attendees");
-		displayAttendees($evtid, $idcal);
+		if ($idx == "attendees")
+			{
+			$babBodyPopup->title = bab_translate("Attendees");
+			displayAttendees($evtid, $idcal);
+			}
 		printBabBodyPopup();
 		exit;
 		break;

@@ -318,7 +318,7 @@ if (!isset($_GET['callback']))
 
 $month = isset($_GET['month']) ? $_GET['month'] : date('m');
 $year = isset($_GET['year']) ? $_GET['year'] : date('Y');
-$ymin = isset($_GET['ymin']) ? $_GET['ymin'] : 5;
+$ymin = isset($_GET['ymin']) ? $_GET['ymin'] : 33; // minor than 1 Jan 1970 is risky
 $ymax = isset($_GET['ymax']) ? $_GET['ymax'] : 60;
 
 $m = new bab_calendar($month, $year, $_GET['callback'], $ymin, $ymax);

@@ -15,6 +15,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
+	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
 	<!--#endif print -->
 </div>
 
@@ -78,7 +79,7 @@ document.onmousemove = bab_tooltipPosition;
 			<!--#if currentday "== 1" --> class="BabCalendarMenuActiveBackground" <!--#else currentday --> class="BabCalendarDays" <!--#endif currentday -->>
 			<!--#else currentmonth -->
 			class="BabCalendarDays">
-			<!--#endif currentmonth -->{ dayname } { daynumbername }<span id="calfree_{ dayname }{ daynumbername }" class="calfreeover">{ dayname } { daynumbername }</span></td>
+			<!--#endif currentmonth -->{ dayname } { daynumbername }</td>
 		<!--#endin getnextdayname -->	
 	</tr>
 	</thead>
@@ -114,10 +115,15 @@ document.onmousemove = bab_tooltipPosition;
 								<h5>
 									<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
 									<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
+									<!--#if id_creator -->
 						            <p><strong>{ t_creator } : </strong> { creatorname }</p>
+									<!--#endif id_creator -->
 									<!--#if category -->
 									<p><strong>{ t_category } : </strong> { category }</p>
 									<!--#endif category -->
+									<!--#if properties -->
+									<p><strong>{ t_option } : </strong> { properties }</p>
+									<!--#endif properties -->
 								</h5>
 								<div class="description">{ description }</div>
 							</div>
@@ -145,7 +151,7 @@ document.onmousemove = bab_tooltipPosition;
 						</td>
 						<!--#else bevent -->
 						<!--#if allow_create -->		
-						<td class="free" onmouseover="this.className='freeover';bab_showOnMouse('calfree_{ dayname }{ currday }',1);" onmouseout="this.className='free';bab_showOnMouse('calfree_{ dayname }{ currday }',0);" onclick="bab_popup('{ hoururl }',5)">{ h_start }</td>
+						<td class="free" onmouseover="this.className='freeover';bab_showOnMouse('{ md5 }',1);" onmouseout="this.className='free';bab_showOnMouse('{ md5 }',0);" onclick="bab_popup('{ hoururl }',5)"><span id="{ md5 }" class="calfreeover">{ dayname } { currday } { h_start }</span>&nbsp;</td>
 						<!--#else allow_create -->		
 						<td>&nbsp;</td>
 						<!--#endif allow_create -->		
@@ -169,6 +175,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
+	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
 	<!--#endif print -->
 </div>
 <!--#end calweek -->
@@ -278,15 +285,17 @@ document.onmousemove = bab_tooltipPosition;
 				<tr>	
 					<!--#in getfreeevent -->
 					<!--#if free -->
-					<td class="freeevent" <!--#if allow_create --> style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)"<!--#endif allow_create -->>
+					<td class="freeevent" <!--#if allow_create --> style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)"<!--#endif allow_create --> onmouseover="bab_showOnMouse('{ md5 }',1);" onmouseout="bab_showOnMouse('{ md5 }',0);">
+					
+					<span id="{ md5 }" class="calfreeover">{ dayname } { currday } { h_start }</span>
 					<!--#else free -->
 					<td class="used">
 					<!--#endif free -->
 						<!--#if first -->
-						<span>
-							<strong>{ t_date_from } : </strong> { startdate }&nbsp;{ starttime }</br>
-							<strong>{ t_date_to } : </strong> { enddate }&nbsp;{ endtime }
-						</span>
+							<span><strong>{ t_date_from } : </strong> { startdate }&nbsp;{ starttime }</span></br>
+							<span><strong>{ t_date_to } : </strong> { enddate }&nbsp;{ endtime }</span>
+						<!--#else first -->
+						&nbsp;
 						<!--#endif first -->
 					<!--#endin getfreeevent -->
 					</td>

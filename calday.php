@@ -182,6 +182,7 @@ class cal_dayCls extends cal_wmdbaseCls
 						$this->bprivate = $arr['bprivate'];
 						$this->block = $arr['block'];
 						$this->bfree = $arr['bfree'];
+						$this->properties = $this->getPropertiesString($arr);
 						if( !$this->allow_viewtitle  )
 							{
 							$this->title = bab_translate("Private");
@@ -216,6 +217,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					$i++;
 					}
 				}
+			$this->md5 = md5($this->icols.$this->h_start);
 			$this->icols++;
 			return true;
 			}

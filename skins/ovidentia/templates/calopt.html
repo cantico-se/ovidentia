@@ -444,6 +444,21 @@ function calview()
 		</td>
 	</tr>
 </table>
+<script type="text/javascript">
+<!--
+function resize_select()
+	{
+	var sel = document.forms['calendarchoice'].getElementsByTagName('select');
+	
+	for(var i = 0 ; i < sel.length ; i++ )
+		{
+		sel[i].style.height = screen.height/2;
+		}
+	}
+
+resize_select();
+//-->
+</script>
 </form>
 <!--#end calendarchoice -->
 
