@@ -96,7 +96,7 @@ if (!session_is_registered('BAB_SESS_NTREGISTER'))
 	header("location:".$GLOBALS['babUrl'].$babPhpSelf);
 	}
 
-if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && isset($HTTP_COOKIE_VARS['ntident']) && $HTTP_COOKIE_VARS['ntident'] == "connexion")
+if (isset($NTidUser) && $GLOBALS['BAB_SESS_NTREGISTER'] && isset($HTTP_COOKIE_VARS['ntident']) && $HTTP_COOKIE_VARS['ntident'] == "connexion")
 	{
 	if (NTuserLogin($NTidUser))
 		{
