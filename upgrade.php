@@ -4376,8 +4376,8 @@ if( !$res)
 $res = $db->db_query("select id, email_confirm from ".BAB_SITES_TBL."");
 
 $req = "ALTER TABLE ".BAB_SITES_TBL." CHANGE `email_confirm` `email_confirm` TINYINT( 2 ) UNSIGNED DEFAULT '0' NOT NULL ";
-$res = $db->db_query($req);
-if( !$res)
+$res2 = $db->db_query($req);
+if( !$res2)
 	{
 	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
 	return $ret;
