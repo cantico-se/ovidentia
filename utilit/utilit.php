@@ -47,6 +47,10 @@ function bab_getCssUrl()
 	if( !file_exists( $filepath ) )
 		{
 		$filepath = $babSkinPath."styles/". $GLOBALS['babStyle'];
+		if( !file_exists( $filepath ) )
+			{
+			$filepath = $babInstallPath."skins/ovidentia/styles/ovidentia.css";
+			}
 		}
 	return $filepath;
 	}
@@ -1492,11 +1496,12 @@ function bab_updateUserSettings()
 			if($arr['langfilter'] != '')
 				$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
 			
-			if( $arr['skin'] != "" && (is_dir($GLOBALS['babInstallPath']."skins/".$arr['skin']) || is_dir("skins/".$arr['skin'])))
+			if( $arr['skin'] != "" && is_dir("skins/".$arr['skin']))
 				{
 				$GLOBALS['babSkin'] = $arr['skin'];
 				}
-			if( $arr['style'] != "")
+
+			if( $arr['style'] != ""  && is_file("skins/".$GLOBALS['babSkin']."/styles/".$arr['style']))
 				{
 				$GLOBALS['babStyle'] = $arr['style'];
 				}
