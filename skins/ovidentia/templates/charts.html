@@ -1,11 +1,28 @@
 <!--#begin oclist -->
+<script type="text/javascript">
+<!--
+var opc;
+function open_Chart(url,name)
+{
+var f = document.forms.gcreate;
+if( opc == null || opc.closed )
+	{
+	opc = this.open(url, name, 'width='+(screen.width-6)+',height='+(screen.height-60)+',status=no,resizable=yes,top=1,left=1,scrollbars=yes');
+	}
+else
+	{
+	opc.focus();
+	}
+
+}
+//-->
+</script>
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle"	nowrap>{ 
-name }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle"	nowrap>{ name }</td>
 <td class="BabSiteAdminTitleFontBackground" 
 valign="middle">{ description }</td>
 <td class="BabSiteAdminTitleFontBackground" 
@@ -14,12 +31,12 @@ valign="middle" align="center" colspan="1">&nbsp;</td>
 <!--#in getnext -->
 <tr> 
 <td class="BabSiteAdminFontBackground" valign="middle" 
-nowrap><a class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', 'OrgChartWin{ ocid }', 'status=no,resizable=yes,scrollbars=yes');" nowrap>{ urlname }</a></td>
+nowrap><a class="BabSiteAdminListLink" href="javascript: open_Chart('{ viewurl }', 'OrgChartWin{ ocid }');" nowrap>{ urlname }</a></td>
 <td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
 <td class="BabSiteAdminFontBackground" valign="middle">
 <!--#if bedit -->
 <!--#if bediturl -->
-<a class="BabSiteAdminListLink" href="javascript: Start('{ editurl }', 'OrgChartWin{ ocid }', 'status=no,resizable=yes,scrollbars=yes');" nowrap>{ edit }</a>
+<a class="BabSiteAdminListLink" href="javascript: open_Chart('{ editurl }', 'OrgChartWin{ ocid }');" nowrap>{ edit }</a>
 <!--#if lock "== Y" -->
 &nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ unlockurl }" nowrap>{ unlock }</a>
 <!--#endif lock -->
