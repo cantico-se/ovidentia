@@ -165,7 +165,14 @@ function entity_members($ide)
 			{
 			if (list($this->id_user,$this->name) = each($this->users))
 				{
-				list($this->collection, $this->schema ) = $this->more[$this->id_user] ;
+				if (isset($this->more[$this->id_user]))
+					list($this->collection, $this->schema ) = $this->more[$this->id_user] ;
+				
+				if (!isset($this->collection))
+					$this->collection = '';
+				if (!isset($this->schema))
+					$this->schema = '';
+
 				return true;
 				}
 			else

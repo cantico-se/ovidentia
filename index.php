@@ -123,6 +123,17 @@ if( $tg != "version" || $idx != "upgrade")
 	bab_updateUserSettings();
 	$babLangFilter->translateTexts();
 	}
+else
+	{
+	if (!isset($babLanguage))
+		$babLanguage = 'en';
+
+	if (!isset($babStyle))
+		$babStyle = 'ovidentia.css';
+
+	if (!isset($babSkin))
+		$babSkin = 'ovidentia';
+	}
 
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 if(!is_dir($babSkinPath)) {

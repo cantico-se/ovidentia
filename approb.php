@@ -680,6 +680,7 @@ function confirmWaitingVacation($id)
 			$this->confirm = bab_translate("Confirm");
 			$this->refuse = bab_translate("Refuse");
 			$this->remarktxt = bab_translate("Description");
+			$this->t_alert = bab_translate("Negative balance");
 			$this->db = $GLOBALS['babDB'];
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
 			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
@@ -688,6 +689,15 @@ function confirmWaitingVacation($id)
 			$this->halfnameend = $babDayType[$row['day_end']];
 			$this->fullname = bab_getUserName($row['id_user']);
 			$this->remark = nl2br($row['comment']);
+
+			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
+			$this->negative = array();
+			foreach ($rights as $r)
+				{
+				$after = $r['quantitydays'] - $r['waiting'];
+				if ($after < 0)
+					$this->negative[$r['id']] = $after;
+				}
 
 			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id."'";
 			$this->res = $this->db->db_query($req);
@@ -704,6 +714,8 @@ function confirmWaitingVacation($id)
 				$arr = $this->db->db_fetch_array($this->res);
 				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$arr['id_type']."'"));
 				$this->nbdays = $arr['quantity'];
+				$this->alert = isset($this->negative[$arr['id_type']]) ? $this->negative[$arr['id_type']] : false;
+
 				$this->totalval += $this->nbdays;
 				$i++;
 				return true;
@@ -715,7 +727,12 @@ function confirmWaitingVacation($id)
 		}
 
 	$temp = new temp($id);
-	echo bab_printTemplate($temp, "approb.html", "confirmvacation");
+
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = & new babBodyPopup();
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "approb.html", "confirmvacation"));
+	printBabBodyPopup();
+
 	return $temp->count;
 	}
 
@@ -1246,6 +1263,7 @@ switch($idx)
 		break;
 
 	case "confvac":
+		include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
 		confirmWaitingVacation($idvac);
 		exit;
 		break;

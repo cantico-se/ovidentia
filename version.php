@@ -183,6 +183,8 @@ function echoLang($path)
 if( !isset($idx))
 	$idx = "version";
 
+
+
 $str = "";
 switch($idx)
 	{

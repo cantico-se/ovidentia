@@ -99,6 +99,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$this->t_days = bab_translate("working days");
 			$this->period_nbdays = $_POST['period_nbdays'];
 
+
 			$this->db = & $GLOBALS['babDB'];
 
 			list($yearbegin, $monthbegin, $daybegin) = explode('-',$begin);
@@ -106,6 +107,13 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 
 			$begin = mktime(0, 0, 0, $monthbegin, $daybegin, $yearbegin );
 			$end = mktime(0, 0, 0, $monthend, $dayend, $yearend);
+
+			
+			if (empty($this->period_nbdays))
+				{
+				$this->period_nbdays = round(($end - $begin)/86400);
+				$this->t_days = bab_translate("Day(s)");
+				}
 
 			$this->begin = $yearbegin.'-'.$monthbegin.'-'.$daybegin;
 			$this->end = $yearend.'-'.$monthend.'-'.$dayend;
@@ -357,6 +365,7 @@ function period($id_user, $id = 0)
 			if ($this->right = & current($this->rights))
 				{
 				next($this->rights);
+				$this->right['quantitydays'] = $this->right['quantitydays'] - $this->right['waiting'];
 				$this->total += $this->right['quantitydays'];
 				$this->total_waiting += $this->right['waiting'];
 				return true;
@@ -710,10 +719,16 @@ switch ($_POST['action'])
 		break;
 
 	case 'delete_request':
-		if (bab_isRequestEditable($_POST['id']))
+		$id_user = bab_isRequestEditable($_POST['id']);
+		if ($id_user)
 		{
 			delete_request($_POST['id']);
-			$idx = 'lvreq';
+			if ($id_user == $GLOBALS['BAB_SESS_USERID'])
+				$idx = 'lvreq';
+			else
+				{
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+				}
 		}
 		break;
 	}
