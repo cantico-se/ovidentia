@@ -43,7 +43,7 @@ function summaryXlinks($col, $order, $startday, $endday)
 			$this->summaryBaseCls();
 			$this->fullname = bab_translate("External links");
 			$this->hitstxt = bab_translate("Hits");
-			$req = "SELECT  * FROM  ".BAB_STATS_XLINKS_TBL."";
+			$req = "SELECT st_xlink_url , sum(st_hits) hits FROM  ".BAB_STATS_XLINKS_TBL."";
 			if( !empty($startday) && !empty($endday))
 				{
 				$req .= " where st_date between '".$startday."' and '".$endday."'";
@@ -70,7 +70,7 @@ function summaryXlinks($col, $order, $startday, $endday)
 				{
 				$tmparr = array();
 				$tmparr['link'] = $arr['st_xlink_url'];
-				$tmparr['hits'] = $arr['st_hits'];
+				$tmparr['hits'] = $arr['hits'];
 				$this->arrinfo[] = $tmparr;
 				$this->totalhits += $tmparr['hits'];
 				}
