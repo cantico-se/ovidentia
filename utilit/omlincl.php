@@ -306,6 +306,7 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
 			$i++;
@@ -580,6 +581,7 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
 			$this->ctx->curctx->push('TopicId', $arr['id']);
+			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
 			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
@@ -670,6 +672,7 @@ class bab_ArticleTopic extends bab_handler
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
 			$this->ctx->curctx->push('TopicId', $arr['id']);
+			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
 			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
@@ -740,6 +743,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -798,6 +802,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1509,6 +1514,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1580,6 +1586,7 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('CommentAuthor', $arr['name']);
+			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$i++;
@@ -1909,6 +1916,7 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewa&article=".$arr['id']."&topics=".$arr['id_topic']);
 			$i++;
@@ -1975,6 +1983,7 @@ class bab_WaitingComments extends bab_handler
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('CommentAuthor', $arr['name']);
+			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=ReadC&com=".$arr['id']."&topics=".$arr['id_topic']."&article=".$arr['id_article']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$i++;
@@ -2156,6 +2165,7 @@ class bab_Faqs extends bab_handler
 			$this->ctx->curctx->push('FaqName', $arr['category']);
 			$this->ctx->curctx->push('FaqDescription', $arr['description']);
 			$this->ctx->curctx->push('FaqId', $arr['id']);
+			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
 			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
 			$i++;
 			$this->index = $i;
@@ -2242,6 +2252,7 @@ class bab_Faq extends bab_handler
 			$this->ctx->curctx->push('FaqName', $arr['category']);
 			$this->ctx->curctx->push('FaqDescription', $arr['description']);
 			$this->ctx->curctx->push('FaqId', $arr['id']);
+			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
 			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
 			$i++;
 			$this->index = $i;
