@@ -227,6 +227,9 @@ function upgrade($id)
 			$func_name = $row['title']."_upgrade";
 			if ( compare_versions($row['version'],$arr_ini['version']) || $row['version'] == "" )
 				{
+				$GLOBALS['babAddonFolder'] = $row['title'];
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 				require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
 				if ((function_exists($func_name) && $func_name($row['version'],$arr_ini['version'])) || !function_exists($func_name))
 					{
