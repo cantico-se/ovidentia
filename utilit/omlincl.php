@@ -1507,7 +1507,7 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
+			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$i++;
 			$this->index = $i;
@@ -1586,7 +1586,9 @@ class bab_RecentPosts extends bab_handler
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
 			$this->ctx->curctx->push('PostId', $arr['id']);
-			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
+			list($threadid) = $babDB->db_fetch_array($babDB->db_query("select post from ".BAB_THREADS_TBL." where id='".$arr['id_thread']."'"));
+			$this->ctx->curctx->push('PostThreadId', $threadid);
+			$this->ctx->curctx->push('PostForumId', $this->arrfid[$i]);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
@@ -1602,6 +1604,92 @@ class bab_RecentPosts extends bab_handler
 			}
 		}
 }
+
+
+class bab_RecentThreads extends bab_handler
+{
+	var $arrid = array();
+	var $arrfid = array();
+	var $resposts;
+	var $count;
+	var $lastlog;
+	var $nbdays;
+	var $last;
+	var $forumid;
+
+	function bab_RecentThreads($ctx)
+		{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->nbdays = $ctx->get_value('from_lastlog');
+		$this->last = $ctx->get_value('last');
+		$this->forumid = $ctx->get_value('forumid');
+		if( $this->forumid === false || $this->forumid === '' )
+			$arr = array();
+		else
+			$arr = explode(',', $this->forumid);
+
+		if( count($arr) > 0 )
+			{
+			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p,  ".BAB_THREADS_TBL." t where p.id_thread=t.id and t.forum IN (".implode(',', $arr).") and p.confirmed='Y' and p.id_parent='0'";
+			}
+		else
+			{
+			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p where p.confirmed='Y' and p.id_parent='0'";
+			}
+
+		if( $this->nbdays !== false)
+			$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
+		$req .= " order by p.date desc";
+		if( $this->last !== false)
+			$req .= " limit 0, ".$this->last;
+
+		$res = $babDB->db_query($req);
+
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			list($forum) = $babDB->db_fetch_array($babDB->db_query("select forum from ".BAB_THREADS_TBL." where id='".$row['id_thread']."'"));
+			if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
+				{
+				array_push($this->arrid, $row['id']);
+				array_push($this->arrfid, $forum);
+				}
+			}
+		$this->count = count($this->arrid);
+		$this->ctx->curctx->push('CCount', $this->count);
+		}
+
+	function getnext()
+		{
+		global $babBody, $babDB;
+		static $i=0;
+		if( $i < $this->count)
+			{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('PostTitle', $arr['subject']);
+			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
+			$this->ctx->curctx->push('PostId', $arr['id']);
+			list($threadid) = $babDB->db_fetch_array($babDB->db_query("select post from ".BAB_THREADS_TBL." where id='".$arr['id_thread']."'"));
+			$this->ctx->curctx->push('PostThreadId', $threadid);
+			$this->ctx->curctx->push('PostForumId', $this->arrfid[$i]);
+			$this->ctx->curctx->push('PostAuthor', $arr['author']);
+			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+			}
+		else
+			{
+			$i = 0;
+			return false;
+			}
+		}
+}
+
 
 class bab_RecentFiles extends bab_handler
 	{
@@ -1936,7 +2024,9 @@ class bab_WaitingPosts extends bab_handler
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
 			$this->ctx->curctx->push('PostId', $arr['id']);
-			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
+			list($threadid) = $babDB->db_fetch_array($babDB->db_query("select post from ".BAB_THREADS_TBL." where id='".$arr['id_thread']."'"));
+			$this->ctx->curctx->push('PostThreadId', $threadid);
+			$this->ctx->curctx->push('PostForumId', $arr['forum']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
