@@ -350,7 +350,6 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 		function tempa($name, $msg)
 			{
             global $babSiteName;
-            $this->linkurl = $link;
             $this->linkname = bab_translate("link");
             $this->username = $name;
 			$this->sitename = $babSiteName;
