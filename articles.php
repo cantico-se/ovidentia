@@ -972,7 +972,6 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	$bodytext = imagesReplace($bodytext, $article."_art_", $ar);
 
 	$db = $GLOBALS['babDB'];
-//2003-03-01
 	if($GLOBALS['babApplyLanguageFilter'] == 'loose')
 	{
 		$req = "select lang from ".BAB_TOPICS_TBL." where id='".$topicid."'";
@@ -980,7 +979,6 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 		$arr = $db->db_fetch_array($res);
 		if($arr['lang'] != '*') $lang = '*';
 	}
-//2003-03-01
 	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."', lang='" .$lang. "' where id='".$article."'";
 	$res = $db->db_query($req);
 
@@ -1190,5 +1188,4 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
 ?>

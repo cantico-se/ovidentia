@@ -71,7 +71,7 @@ function listCategories()
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$this->arr = $this->db->db_fetch_array($res);
-					$this->arr['description'] = $this->arr['description'];// nl2br($this->arr['description']);
+					$this->arr['description'] = $this->arr['description'];
 					$this->urlcategory = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$this->arr['id'];
 					$this->namecategory = $this->arr['category'];
 					}
@@ -84,15 +84,10 @@ function listCategories()
 		}
 		
 	$db = $GLOBALS['babDB'];
-/*	$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
-	$req = "select * from ".BAB_FAQCAT_TBL;
-	if( count($langFilterValues) > 0 )
-		$req .= " where SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
-*/
 
 	$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
 	switch($langFilterValue)
-	{
+		{
 		case 2:
 			$req = "select * from ".BAB_FAQCAT_TBL." where lang='".$GLOBALS['babLanguage']."' or lang='*' or lang = ''";
 			if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
@@ -106,7 +101,8 @@ function listCategories()
 		case 0:
 		default:
 			$req = "select * from ".BAB_FAQCAT_TBL;
-	}
+			break;
+		}
 	$res = $db->db_query($req);
 
 	while( $row = $db->db_fetch_array($res))
@@ -154,7 +150,6 @@ function listQuestions($idcat)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->question = $this->arr['question'];
 				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$this->idcat."&idq=".$this->arr['id'];
-				//$this->arr['response'] = nl2br($this->arr['response']);
 				$i++;
 				return true;
 				}
@@ -559,7 +554,6 @@ switch($idx)
 			$babBody->addItemMenu("questions", bab_translate("Questions"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			if( isUserManager($item))
 				$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=$item");
-			//	$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
 
@@ -578,7 +572,6 @@ switch($idx)
 			$babBody->addItemMenu("questions", bab_translate("Questions"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			if( isUserManager($item))
 				$babBody->addItemMenu("ModifyQ", bab_translate("Edit"),$GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq);
-			//	$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
 
@@ -590,16 +583,6 @@ switch($idx)
 			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=faq&idx=Delete&item=$item&idq=$idq");
 			}
 		break;
-	/*
-	case "Questions":
-		$babBody->title = bab_translate("List of questions");
-		if(isUserManager($item) && listAdmQuestions($item))
-			{
-			$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=$item");
-			$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=$item");
-			}		
-		break;
-	*/
 
 	case "addq":
 		$babBody->title = bab_translate("Add question");
@@ -638,6 +621,4 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-
 ?>

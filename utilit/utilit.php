@@ -1541,8 +1541,6 @@ function bab_updateUserSettings()
 			if( $this->nbdays !== false)
 				$req .= " and f.modified >= '".$babBody->lastlog."'";
 
-			//$req = "select count(".BAB_FILES_TBL.".id) from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state='' and ".BAB_FILES_TBL.".modified >= '".$babBody->lastlog."'";
-
 			list($babBody->newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
 			}
 		}
