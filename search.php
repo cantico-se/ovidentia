@@ -516,7 +516,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->folder=bab_translate("Folder");
 			$this->author=bab_translate("Author");
 			$this->datem=bab_translate("Last update");
-			$this->directory=bab_translate("Directory&nbsp;");
+			$this->directory=bab_translate("Site directory");
 			$this->department=bab_translate("Department");
 
 			$this->fields = $GLOBALS['HTTP_POST_VARS'];
