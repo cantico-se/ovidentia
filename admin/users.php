@@ -41,20 +41,32 @@ function listUsers($pos, $grp)
 
 		function temp($pos, $grp)
 			{
-			$this->fullname = babTranslate("Full Name");
 			$this->email = babTranslate("Email");
 			$this->allname = babTranslate("All");
 			$this->db = new db_mysql();
 			$this->group = getGroupName($grp);
 			$this->grp = $grp;
 
-			$req = "select * from users where firstname like '".$pos."%' order by firstname, lastname asc";
+			if( $pos[0] == "-" )
+				{
+				$this->pos = $pos[1];
+				$this->ord = $pos[0];
+				$req = "select * from users where lastname like '".$this->pos."%' order by lastname, firstname asc";
+				$this->fullname = babTranslate("Lastname"). " " . babTranslate("Firstname");
+				$this->fullnameurl = $GLOBALS['babUrl']."index.php?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
+				}
+			else
+				{
+				$this->pos = $pos;
+				$this->ord = "";
+				$req = "select * from users where firstname like '".$this->pos."%' order by firstname, lastname asc";
+				$this->fullname = babTranslate("Firstname"). " " . babTranslate("Lastname");
+				$this->fullnameurl = $GLOBALS['babUrl']."index.php?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
+				}
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
-			$this->pos = $pos;
-
-			if( empty($pos))
+			if( empty($this->pos))
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
@@ -69,8 +81,12 @@ function listUsers($pos, $grp)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->pos."&grp=".$this->grp;
-				$this->urlname = composeName($this->arr['firstname'],$this->arr['lastname']);
+				$this->url = $GLOBALS['babUrl']."index.php?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&grp=".$this->grp;
+				if( $this->ord == "-" )
+					$this->urlname = composeName($this->arr['lastname'],$this->arr['firstname']);
+				else
+					$this->urlname = composeName($this->arr['firstname'],$this->arr['lastname']);
+
 				$this->userid = $this->arr['id'];
 				$req = "select * from users_log where id_user='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
@@ -111,13 +127,16 @@ function listUsers($pos, $grp)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=".$this->selectname."&grp=".$this->grp;
+				$this->selecturl = $GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=".$this->ord.$this->selectname."&grp=".$this->grp;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else 
 					{
-					$req = "select * from users where firstname like '".$this->selectname."%'";
+					if( $this->ord == "-" )
+						$req = "select * from users where lastname like '".$this->selectname."%'";
+					else
+						$req = "select * from users where firstname like '".$this->selectname."%'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
@@ -220,6 +239,14 @@ if( isset($adduser))
 		$pos = substr($firstname,0,1);
 }
 
+if( $idx == "chg")
+{
+	if( $pos[0] == "-")
+		$pos = $pos[1];
+	else
+		$pos = "-" .$pos;
+	$idx = "List";
+}
 
 switch($idx)
 	{	
