@@ -144,6 +144,8 @@ a.BabSummaryLinkColor:Hover {COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-s
 .BabTopicsBackground { BACKGROUND: #FFFFFF; COLOR: #000000;  font: 11px Verdana, Arial, sans-serif}
 .BabTopicsAuthorBackground {background: #E6E6F7; COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
 
+.BabArticleSpacing { height: 5px }
+
 a.BabTopicsFooterLink:Link { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
 a.BabTopicsFooterLink:Visited { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
 a.BabTopicsFooterLink:Hover {COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
