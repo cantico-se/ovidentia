@@ -209,6 +209,11 @@ while( $arr = $db->db_fetch_array($res1))
 
 $req = "ALTER TABLE users CHANGE fullname hashname CHAR (32)";
 $res1 = $db->db_query($req);
+if( !$res1)
+	{
+	$ret = "Alteration of <b>users</b> table failed !<br>";
+	return $ret;
+	}
 
 $replace = array( " " => "", "-" => "");
 
@@ -223,6 +228,11 @@ while( $arr = $db->db_fetch_array($res1))
 
 $req = "ALTER TABLE posts ADD id_parent INT (11) UNSIGNED not null AFTER id_thread";
 $res1 = $db->db_query($req);
+if( !$res1)
+	{
+	$ret = "Alteration of <b>posts</b> table failed !<br>";
+	return $ret;
+	}
 
 $req = "select * from threads";
 $res1 = $db->db_query($req);
@@ -243,7 +253,7 @@ while( $arr = $db->db_fetch_array($res1))
 		$res = $db->db_query($req);
 		}
 	}
+return $ret;
 }
 
-upgrade();
 ?>
