@@ -210,9 +210,9 @@ function viewVersion()
 			{
 			include $GLOBALS['babInstallPath']."version.inc";
 			$this->srcversiontxt = bab_translate("Ovidentia version");
-			$this->srcversion = $CurrentVersion.".".$CurrentRelease;
+			$this->srcversion = $bab_ver_major.".".$bab_ver_minor.".".$bab_ver_build;
 			$this->phpversiontxt = bab_translate("Php version");
-			$this->phpversion = phpversion();//$GLOBALS['CurrentVersion'];
+			$this->phpversion = phpversion();
 			$this->baseversiontxt = bab_translate("Database server version");
 			$db = $GLOBALS['babDB'];
 			$arr = $db->db_fetch_array($db->db_query("show variables like 'version'"));
