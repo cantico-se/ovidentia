@@ -379,13 +379,12 @@ if( isset($add) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups']
 if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
 	{
 	if (!isset($mailgrpids)) $mailgrpids = array();
-	if (!isset($calgrpids)) $calgrpids = array();
 	if (!isset($notgrpids)) $notgrpids = array();
 	if (!isset($congrpids)) $congrpids = array();
 	if (!isset($pdsgrpids)) $pdsgrpids = array();
 	if (!isset($dirgrpids)) $dirgrpids = array();
 	if (!isset($calperids)) $calperids = array();
-	saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids, $calperids);
+	saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids);
 	}
 
 switch($idx)
