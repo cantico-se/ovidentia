@@ -38,14 +38,13 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->elapstime = $babBody->icalendars->elapstime;
 		list($this->startwtime, , ) = sscanf($babBody->icalendars->starttime, "%d:%d:%d");
 		list($this->endwtime, , ) = sscanf($babBody->icalendars->endtime, "%d:%d:%d");
-		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime);
-
-		$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $this->day, $this->year), false);
+		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
 
 		$time1 = mktime( 0,0,0, $this->month, $this->day, $this->year);
 		$time2 = $time1 + 41*24*3600;
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
+		$this->dayname = bab_longDate($time1, false);
 
 		$this->alternate = false;
 		$this->cindex = 0;
@@ -128,8 +127,14 @@ class cal_dayCls extends cal_wmdbaseCls
 			{
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
-			$this->bgcolor = $arr['color'];
-			//$this->bgcolor = $this->icals[$this->cindex]->getCategoryColor($arr['id_cat']);
+			if( $arr['id_cat'] == 0 )
+				{
+				$this->bgcolor = $arr['color'];
+				}
+			else
+				{
+				$this->bgcolor = $this->mcals->getCategoryColor($arr['id_cat']);
+				}
 			$this->idevent = $arr['id'];
 			$time = bab_mktime($arr['start_date']);
 			$this->starttime = bab_time($time);
@@ -146,11 +151,13 @@ class cal_dayCls extends cal_wmdbaseCls
 			$this->description = $arr['description'];
 			$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
 			$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+			$this->nbowners = $arr['nbowners'];
+			$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+			$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 			return true;
 			}
 		else
 			{
-			$this->cindex++;
 			return false;
 			}
 		}
@@ -209,7 +216,7 @@ function cal_day_free($calids, $date, $starttime)
 /* main */
 if(!isset($idx))
 	{
-	$idx='viewq';
+	$idx='viewd';
 	}
 
 if( !isset($start)) { $start='';}

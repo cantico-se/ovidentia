@@ -303,6 +303,7 @@ class bab_icalendar
 			//echo "select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."' order by ce.start_date asc";
 			while( $arr = $babDB->db_fetch_array($res))
 				{
+				list($arr['nbowners']) = $babDB->db_fetch_row($babDB->db_query("select count(ceo.id_cal) from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$arr['id']."' and ceo.id_cal != '".$calid."'"));
 				$this->events[] = $arr;
 				}
 			}
@@ -396,6 +397,7 @@ class cal_wmdbaseCls
 		$this->weekurlname = bab_translate("Week");
 		$this->dayurlname = bab_translate("Day");
 		$this->gotodayname = bab_translate("Go to Today");
+		$this->attendeestxt = bab_translate("Attendees");
 
 	}
 }

@@ -24,7 +24,7 @@
 include_once "base.php";
 define("BAB_DBDIR_MAX_COMMON_FIELDS", 100);
 
-/* calndars */
+/* calendars */
 define("BAB_CAL_USER_TYPE", 1);
 define("BAB_CAL_PUB_TYPE", 2);
 define("BAB_CAL_RES_TYPE", 3);
@@ -36,6 +36,10 @@ define("BAB_CAL_ACCESS_FULL",	2); /* full access */
 define("BAB_CAL_VIEW_MONTH",	0); /* month view */
 define("BAB_CAL_VIEW_WEEK",		1); /* week view */
 define("BAB_CAL_VIEW_DAY",		2); /* day view */
+
+define("BAB_CAL_STATUS_ACCEPTED", 0);
+define("BAB_CAL_STATUS_NONE",  1);
+define("BAB_CAL_STATUS_DECLINED",  2);
 
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
