@@ -51,10 +51,15 @@ mail.html					            changed action="index.php" to action="{ babPhpSelf }"
 maildoms.html					        changed action="index.php" to action="{ babPhpSelf }"
 mailinfo.html
 mailopt.html					        changed action="index.php" to action="{ babPhpSelf }"
-month.html
+month.html                              Added <html>....<body>
+                                        Added </body>....</html>
+                                        Changed href="{ dayurl }" to href={ dayurl }
 montha.html
 notes.html					            changed action="index.php" to action="{ babPhpSelf }"
 options.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        changeskin      Added javascript                                 
+                        changeskin      Added to form tag : name="formskin"
+                        changeskin      Added <select name="style"> ... </select>
 page.html
 posts.html					            changed action="index.php" to action="{ babPhpSelf }"
 readme.txt
