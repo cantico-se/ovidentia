@@ -24,12 +24,14 @@ function newEvent($calendarid, $day, $month, $year)
 		var $arrresname = array();
 		var $arrresid = array();
 		var $countres;
+		var $bcategory;
 
 		function temp($calendarid, $day, $month, $year)
 			{
 			global $BAB_SESS_USERID, $body;
 			$this->calid = $calendarid;
 			$this->caltype = getCalendarType($calendarid);
+			$body->title = babTranslate("Calendar"). "  ". getCalendarOwnerName($this->calid, $this->caltype);
 			$this->ymin = 2;
 			$this->ymax = 5;
 			$this->yearbegin = $year;
@@ -57,35 +59,52 @@ function newEvent($calendarid, $day, $month, $year)
 			$this->category = babTranslate("Category");
 			$this->db = new db_mysql();
 
-			if( $this->caltype == 1 )
+			switch( $this->caltype)
 				{
-				$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
-				$this->resgroups = $this->db->db_query($req);
-				if( $this->resgroups )
-					{
-					$this->countgroups = $this->db->db_num_rows($this->resgroups); 
-					}
-
-				$req = "select * from resourcescal where id_group='1'";
-				$req2 = "select * from categoriescal where id_group='1'";
-				if( $this->countgroups > 0)
-					{
-					for( $i = 0; $i < $this->countgroups; $i++)
+				case 1: // user
+					$this->bcategory = 1;
+					$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+					$this->resgroups = $this->db->db_query($req);
+					if( $this->resgroups )
 						{
-						$arr = $this->db->db_fetch_array($this->resgroups);
-						$req .= " or id_group='".$arr[id]."'"; 
-						$req2 .= " or id_group='".$arr[id]."'"; 
+						$this->countgroups = $this->db->db_num_rows($this->resgroups); 
 						}
-					$this->db->db_data_seek($this->resgroups, 0);
-					}
-				$this->resres = $this->db->db_query($req);
-				$this->countres = $this->db->db_num_rows($this->resres);
 
-				$this->rescat = $this->db->db_query($req2);
-				$this->countcat = $this->db->db_num_rows($this->rescat); 
+					$req = "select * from resourcescal where id_group='1'";
+					$req2 = "select * from categoriescal where id_group='1'";
+					if( $this->countgroups > 0)
+						{
+						for( $i = 0; $i < $this->countgroups; $i++)
+							{
+							$arr = $this->db->db_fetch_array($this->resgroups);
+							$req .= " or id_group='".$arr[id]."'"; 
+							$req2 .= " or id_group='".$arr[id]."'"; 
+							}
+						$this->db->db_data_seek($this->resgroups, 0);
+						}
+					$this->resres = $this->db->db_query($req);
+					$this->countres = $this->db->db_num_rows($this->resres);
+
+					$this->rescat = $this->db->db_query($req2);
+					$this->countcat = $this->db->db_num_rows($this->rescat); 
+					break;
+				case 2: // group
+					$this->bcategory = 1;
+					$req = "select * from calendar where id='".$calendarid."'";
+					$res = $this->db->db_query($req);
+					$arr = $this->db->db_fetch_array($res);
+					$req = "select * from categoriescal where id_group='".$arr[owner]."'";
+					$this->rescat = $this->db->db_query($req);
+					$this->countcat = $this->db->db_num_rows($this->rescat); 
+					break;
+				case 3: // resource
+				default:
+					$this->bcategory = 0;
+					$this->countgroups = 0;
+					$this->countres = 0;
+					$this->countcat = 0;
+					break;
 				}
-			else
-				$this->countgroups = 0;
 /*
 $body->script = <<<EOD
 EOD;
@@ -298,25 +317,6 @@ EOD;
 
 			}
 		
-		function getnextcal()
-			{
-			static $i = 0;
-			if( $i < $this->countres)
-				{
-				$arr = $this->db->db_fetch_array($this->resres);
-				$this->resname = $arr[name];
-				$this->rescalid = getCalendarId($arr[id], 3);
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
-
-			}
-
 		}
 
 	$temp = new temp($calendarid, $day, $month, $year);
@@ -349,6 +349,7 @@ function modifyEvent($calendarid, $evtid)
 		var $arrresid = array();
 		var $countres;
 		var $evtid;
+		var $bcategory;
 
 		function temp($calendarid, $evtid)
 			{
@@ -357,6 +358,8 @@ function modifyEvent($calendarid, $evtid)
 			$this->calid = $calendarid;
 			$this->evtid = $evtid;
 			$this->caltype = getCalendarType($calendarid);
+			$body->title = babTranslate("Calendar"). "  ". getCalendarOwnerName($this->calid, $this->caltype);
+
 			$req = "select * from cal_events where id='$evtid'";
 			$res = $this->db->db_query($req);
 			$this->evtarr = $this->db->db_fetch_array($res);
@@ -384,6 +387,48 @@ function modifyEvent($calendarid, $evtid)
 			$this->title = babTranslate("Title");
 			$this->description = babTranslate("Description");
 			$this->category = babTranslate("Category");
+
+			switch( $this->caltype)
+				{
+				case 1: // user
+					$this->bcategory = 1;
+					$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+					$this->resgroups = $this->db->db_query($req);
+					if( $this->resgroups )
+						{
+						$this->countgroups = $this->db->db_num_rows($this->resgroups); 
+						}
+
+					$req2 = "select * from categoriescal where id_group='1'";
+					if( $this->countgroups > 0)
+						{
+						for( $i = 0; $i < $this->countgroups; $i++)
+							{
+							$arr = $this->db->db_fetch_array($this->resgroups);
+							$req2 .= " or id_group='".$arr[id]."'"; 
+							}
+						$this->db->db_data_seek($this->resgroups, 0);
+						}
+					$this->rescat = $this->db->db_query($req2);
+					$this->countcat = $this->db->db_num_rows($this->rescat); 
+					break;
+				case 2: // group
+					$this->bcategory = 1;
+					$req = "select * from calendar where id='".$calendarid."'";
+					$res = $this->db->db_query($req);
+					$arr = $this->db->db_fetch_array($res);
+					$req = "select * from categoriescal where id_group='".$arr[owner]."'";
+					$this->rescat = $this->db->db_query($req);
+					$this->countcat = $this->db->db_num_rows($this->rescat); 
+					break;
+				case 3: // resource
+				default:
+					$this->bcategory = 0;
+					$this->countgroups = 0;
+					$this->countres = 0;
+					$this->countcat = 0;
+					break;
+				}
 
 			if( $this->caltype == 1 )
 				{
@@ -643,7 +688,7 @@ function deleteEvent($calid, $evtid)
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, 	$description, $category, $type)
+function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, 	$description, $category)
 {
 	global $body;
 	
@@ -654,9 +699,6 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		}
 	
 	$db = new db_mysql();
-
-	if( !empty($type))
-		$calid = $type;
 
 
 	if( empty($category))
@@ -846,7 +888,7 @@ if( isset($modifyevent) && $modifyevent == "modify")
 	}
 
 if( isset($addevent) && $addevent == "add")
-	addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category, $type);
+	addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category);
 
 switch($idx)
 	{

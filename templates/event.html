@@ -163,6 +163,7 @@ function dateEnd(day, month, year)
 <td colspan="4"><textarea cols="40" rows="5" name="description"></textarea></td>
 </tr>
 
+<!--#if bcategory "== 1" -->
 <tr>
 <td align="right">{ category }</td>
 <td colspan="4">
@@ -174,21 +175,8 @@ function dateEnd(day, month, year)
 </select>
 </td>
 </tr>
+<!--#endif bcategory -->
 
-<tr>
-<td align="right">{ type }</td>
-<td colspan="4">
-<select name="type">
-<option value="" selected >{ private }</option>
-<!--#in getnextgroup -->
-<option value="{ groupcalid }">{ groupname }</option>
-<!--#endin getnextgroup -->
-<!--#in getnextcal -->
-<option value="{ rescalid }">{ resname }</option>
-<!--#endin getnextcal -->
-</select>
-</td>
-</tr>
 
 <tr>
 <td align="right" nowrap>&nbsp;</td>
@@ -332,6 +320,7 @@ function dateEnd(day, month, year)
 <td align="right">{ description }</td>
 <td colspan="4"><textarea cols="40" rows="5" name="description">{ evtarr[description] }</textarea></td>
 </tr>
+<!--#if bcategory "== 1" -->
 <tr>
 <td align="right">{ category }</td>
 <td colspan="4">
@@ -343,6 +332,7 @@ function dateEnd(day, month, year)
 </select>
 </td>
 </tr>
+<!--#endif bcategory -->
 <tr>
 <td align="right" nowrap>&nbsp;</td>
 <td colspan="4"><input type="submit" name="Submit" value="{ modify }"></td>
