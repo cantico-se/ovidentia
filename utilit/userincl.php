@@ -319,66 +319,6 @@ function bab_getUserSetting($id, $what)
 		}
 	}
 
-function bab_isUserVacationApprover($groupid = 0)
-	{
-	global $BAB_SESS_USERID;
-	$db = $GLOBALS['babDB'];
-	if( $groupid == 0)
-		$query = "select id from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID' or supplier='$BAB_SESS_USERID'";
-	else
-		$query = "select id from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID'  or supplier='$BAB_SESS_USERID' and id_group='$groupid'";
-
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		return true;
-		}
-	else
-		{
-		return false;
-		}
-	}
-
-function bab_isUserVacationAdmin()
-	{
-	global $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select id from ".BAB_VAC_MANAGERS_TBL." where id_user='".$BAB_SESS_USERID."'" );
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		return true;
-		}
-	else
-		{
-		return false;
-		}
-	}
-
-function bab_isUserUseVacation($iduser)
-	{
-	$db = $GLOBALS['babDB'];
-	if( empty($iduser) || $iduser == 0 )
-		return false;
-
-	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='$iduser' and isprimary='Y'";
-	$res = $db->db_query($query);
-
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		$query = "select id from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."' and vacation='Y'";
-		$res = $db->db_query($query);
-		if( $res && $db->db_num_rows($res) > 0)
-			{
-			return true;
-			}
-		else
-			return false;
-		}
-	else
-		{
-		return false;
-		}
-	}
 
 function bab_getGroupName($id)
 	{
@@ -478,17 +418,7 @@ function bab_contactsAccess()
 function bab_vacationsAccess()
 	{
 	$db = $GLOBALS['babDB'];
-/*
-	$arr = $db->db_fetch_array($db->db_query("select vacations from ".BAB_GROUPS_TBL." where id='1'"));
-	if( $arr['vacations'] == "Y" )
-		return true;
 
-	$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and vacations='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group");
-	if( $res && $db->db_num_rows($res) > 0 )
-		return true;
-
-	return false;
-*/
 	$array = array();
 	$res = $db->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
 	if( $res && $db->db_num_rows($res) > 0)
