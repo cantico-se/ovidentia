@@ -1068,6 +1068,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							$this->db->db_query($req);
 							}
 
+						
+
 						if( count($dbdirxfields) > 0 )
 							{
 							for( $m=0; $m < count($dbdirxfields); $m++)
@@ -1185,6 +1187,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 									$req .= " group by det.id order by sn asc,givenname asc";
 									$this->db->db_query($req);
 
+									
+
 									$rs2 = $this->db->db_query("select dext.id_entry from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." dext left join ".BAB_DBDIR_ENTRIES_TBL." det on dext.id_entry=det.id left join ".BAB_USERS_GROUPS_TBL." UG on UG.id_object=det.id_user where ".$plus." det.id_directory='0'");
 
 									while( $rr = $this->db->db_fetch_array($rs2))
@@ -1192,9 +1196,21 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 										$rs3 = $this->db->db_query("select id from dirresults where id='".$rr['id_entry']."'");
 										if( !$rs3 || $this->db->db_num_rows($rs3) == 0 )
 											{
-											$this->db->db_query("insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where det.id='".$rr['id_entry']."'");
+											$req = "insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where ";
+											if( !empty($likedir))
+												{
+												$req .= " ".$likedir." and";
+												}
+											$req .= " det.id='".$rr['id_entry']."' ";
+											if( !empty($crit_fields) )
+												{
+												$req .= " and ".$crit_fields;
+												}
+
+											$this->db->db_query($req);
 											}
-										}								
+										}
+
 									}
 								}
 							else
@@ -1212,12 +1228,16 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								$req .= " group by det.id order by sn asc,givenname asc";
 								$this->db->db_query($req);
 
+								
+
+
 								$rs2 = $this->db->db_query("select dext.id_entry from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." dext left join ".BAB_DBDIR_ENTRIES_TBL." det on dext.id_entry=det.id where ".$plus." det.id_directory='".($row['id_group'] != 0? 0: $row['id'])."'");
 								while( $rr = $this->db->db_fetch_array($rs2))
 									{
 									$rs3 = $this->db->db_query("select id from dirresults where id='".$rr['id_entry']."'");
 									if( !$rs3 || $this->db->db_num_rows($rs3) == 0 )
 										{
+										
 										$this->db->db_query("insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where det.id='".$rr['id_entry']."'");
 										}
 									}
@@ -1233,6 +1253,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$req = "select count(*) from dirresults";
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
+
 				$navpos = $this->navpos;
 				if ($navitem != "g") $navpos = 0;
 				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);

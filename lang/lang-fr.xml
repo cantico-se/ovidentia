@@ -1663,9 +1663,9 @@
 <string id="User collection">Régime de l'utilisateur</string>
 <string id="Add/Modify users by group">Ajouter/modifier les utilisateurs par groupe</string>
 <string id="Add/Modify">Ajouter/modifier</string>
-<string id="Entities">Entitées</string>
-<string id="Entity members">Membres de l'entitée</string>
-<string id="Entities list">Liste des entitées</string>
+<string id="Entities">Entités</string>
+<string id="Entity members">Membres de l'entité</string>
+<string id="Entities list">Liste des entités</string>
 <string id="The period contain">La période contient</string>
 <string id="working days">jours travaillés</string>
 <string id="You can't take more than">Vous ne pouvez pas prendre plus de</string>
