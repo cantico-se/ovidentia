@@ -1842,7 +1842,7 @@ function bab_updateSiteSettings()
 		}
 	else
 		$GLOBALS['babBody']->nameorder = Array('F','L');
-	if( $arr['remember_login'] == "Y" || $GLOBALS['babCookieIdent'])
+	if( $arr['remember_login'] == "Y")
 		{
 		$GLOBALS['babCookieIdent'] = true;
 		}

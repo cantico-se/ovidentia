@@ -97,14 +97,13 @@ if( !isset($tg))
 
 if( $tg != "version" )
 	{
-	bab_isUserLogged();
 	bab_updateSiteSettings();
+	if ($babNTauth) include $babInstallPath."utilit/ntident.php";
+	if ($babCookieIdent) include $babInstallPath."utilit/cookieident.php";
+	bab_isUserLogged();
 	bab_updateUserSettings();
 	$babLangFilter->translateTexts();
 	}
-
-if ($babNTauth) include $babInstallPath."utilit/ntident.php";
-if ($babCookieIdent) include $babInstallPath."utilit/cookieident.php";
 
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 if(!is_dir($babSkinPath)) {
