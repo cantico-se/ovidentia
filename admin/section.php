@@ -211,6 +211,14 @@ function sectionDelete($id)
 
 function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang)
 	{
+	global $babBody;
+
+	if( empty($title))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a title !!");
+		return false;
+		}
+
 	if( $script == "Y")
 		$php = "Y";
 	else
