@@ -145,6 +145,7 @@ function addonsList($upgradeall)
 				$this->description = "";
 				if( !empty($arr_ini['version']))
 					{
+					$this->addversion = $this->arr['version'];
 					if ( compare_versions($this->arr['version'],$arr_ini['version']) || $this->arr['version'] == "" )
 						{
 						$func_name = $this->arr['title']."_upgrade";
@@ -155,6 +156,7 @@ function addonsList($upgradeall)
 								{
 								$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$this->arr['id']."'";
 								$this->db->db_query($req);
+								$this->addversion = $arr_ini['version'];
 								}
 							else
 								$this->upgradeurl = $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$this->arr['id'];
@@ -163,11 +165,12 @@ function addonsList($upgradeall)
 							{
 							$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$this->arr['id']."'";
 							$this->db->db_query($req);
+							$this->addversion = $arr_ini['version'];
 							}
 						else
 							$this->upgradeurl = $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$this->arr['id'];
 						}
-					$this->addversion = $this->arr['version'];
+					
 					}
 				if( !empty($arr_ini['description']))
 					$this->description = $arr_ini['description'];
