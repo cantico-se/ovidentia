@@ -212,7 +212,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 	$res = $db->db_query($req);
 	if (!$res || $db->db_num_rows($res) < 1)
 		{
-		$body->msgerror = babTranslate("Passsssword incorrect");
+		$body->msgerror = babTranslate("Password incorrect");
 		return false;
 		}
 	else
