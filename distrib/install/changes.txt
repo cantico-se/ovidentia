@@ -1,6 +1,9 @@
 /************************************************************************/
 October 2002: Version 3.4.1
 /************************************************************************/
+- Vacation emails notification are enhanced
+- User can now list articles that are submitted by himself
+- Groups members can be notified when article has been submited or updated
 - Folder manager can move files between folders 
 - Fixed some minors bugs
 - Improved performance
@@ -8,6 +11,8 @@ October 2002: Version 3.4.1
 /************************************************************************/
 Septembre 2002: Version 3.4.1b
 /************************************************************************/
+- Possibility to upload and link images to faq
+- Possibility to assign user to one group after registration
 - Enhanced Approval flow files
 - Files Manager is now independant from groups structure
 ( Administrators can create folders as many as they want )
