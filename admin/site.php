@@ -66,6 +66,7 @@ function siteModify($id)
 			$this->create = bab_translate("Modify");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->delete = bab_translate("Delete");
 			$this->confirmation = bab_translate("Send email confirmation")."?";
 			$this->registration = bab_translate("Activate Registration")."?";
 			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
@@ -435,8 +436,15 @@ function siteUpdateHomePage1($item, $listpage1)
 /* main */
 if( isset($modify))
 	{
-	if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin, $register, $confirm))
-		$idx = "modify";
+	if( !empty($Submit))
+		{
+		if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin, $register, $confirm))
+			$idx = "modify";
+		}
+	else if( !empty($delete))
+		{
+		$idx = "Delete";
+		}
 	}
 
 if( isset($update) )
@@ -478,7 +486,6 @@ switch($idx)
 		siteHomePage1($item);
 		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=site&idx=Delete&item=".$item);
 		break;
 	}
 
