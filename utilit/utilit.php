@@ -302,12 +302,12 @@ function printout()
 	global $babInstallPath, $babSkinPath;
 
 	$file = "sectiontemplate.html";
-	$filepath = "templates/". $file;
-	if( !file_exists( $filepath) )
+	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+	if( !file_exists( $filepath ) )
 		{
-		$filepath = $babSkinPath.$filepath;
+		$filepath = $babSkinPath."templates/". $file;
 		}
-
+	
 	$str = implode("", @file($filepath));
 
 	$tpl = new babTemplate();
