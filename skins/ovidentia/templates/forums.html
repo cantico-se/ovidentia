@@ -38,11 +38,20 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ moderation }</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ moderation }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <select name="moderation">
 <option value="Y" selected >{ yes }</option>
 <option value="N" >{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ notification }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="notification">
+<option value="Y">{ yes }</option>
+<option value="N" selected>{ no }</option>
 </select>
 </td>
 </tr>
@@ -129,6 +138,24 @@ valign="middle">{ moderation }:</td>
 <!--#if arr[moderation] "== N" -->
 selected 
 <!--#endif arr[moderation] -->
+>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap 
+valign="middle">{ notification }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="notification">
+ <option value="Y" 
+<!--#if arr[notification] "== Y" -->
+   selected 
+<!--#endif arr[notification] -->
+>{ yes }</option>
+<option value="N"  
+<!--#if arr[notification] "== N" -->
+selected 
+<!--#endif arr[notification] -->
 >{ no }</option>
 </select>
 </td>
