@@ -101,7 +101,7 @@ foreach ($GLOBALS['babBody']->babaddons as $value)
 
 if (isset($version_base))
 	{
-	$arr_ini = @parse_ini_file( $GLOBALS['babInstallPath'].$name.'/addonini.php');
+	$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$name.'/addonini.php');
 	if ($arr_ini['version'] == $version_base)
 		return true;
 	}
