@@ -1084,28 +1084,25 @@ function babTopcatSection($close)
 	$this->babSectionTemplate("topcatsection.html", "template");
 	$this->title = bab_translate("Topics categories");
 
-	$res = $babDB->db_query("select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='0' and type='1' order by ordering asc");
+	//$res = $babDB->db_query("select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='0' and type='1' order by ordering asc");
+	$res = $babDB->db_query("SELECT tct.id, tct.title FROM ".BAB_TOPCAT_ORDER_TBL." tot left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tot.id_topcat=tct.id WHERE tot.id_parent='0' and tot.type='1' order by tot.ordering asc");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if( in_array($row['id_topcat'], $babBody->topcatview) )
+		if( in_array($row['id'], $babBody->topcatview) )
 			{
 			if( $close )
 				{
 				$this->count = 1;
 				return;
 				}
-			if( !in_array($row['id_topcat'], $this->arrid))
-				array_push($this->arrid, $row['id_topcat']);
+
+			$this->arrid[] = array($row['id'], $row['title']);
 			}
 		}
 	$this->head = bab_translate("List of different topics categories");
 	$this->count = count($this->arrid);
+	$this->count = count($this->arrid);
 
-	if($this->count > 0)
-		{
-		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".implode(',', $this->arrid).")");
-		$this->count = $babDB->db_num_rows($this->res);
-		}
 	}
 
 function topcatGetNext()
@@ -1114,9 +1111,8 @@ function topcatGetNext()
 	static $i = 0;
 	if( $i < $this->count)
 		{
-		$this->arr = $babDB->db_fetch_array($this->res);
-		$this->text = $this->arr['title'];
-		$this->url = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arr['id'];
+		$this->text = $this->arrid[$i][1];
+		$this->url = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0];
 		$i++;
 		return true;
 		}

@@ -453,7 +453,9 @@ switch($idx)
 		$babBody->title = bab_translate("Order a topic category");
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
+			{
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		break;
 	case "Create":
@@ -461,24 +463,21 @@ switch($idx)
 		$babBody->title = bab_translate("Create a topic category");
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
+			{
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		break;
 	case "List":
 	default:
-		if( topcatsList($idp) >  0)
-		{
+		topcatsList($idp);
 		$babBody->title = bab_translate("topics categories list");
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
+			{
 			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-		}
-		else
-		{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
-			exit;
-		}
 		break;
 	}
 
