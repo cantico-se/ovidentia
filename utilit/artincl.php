@@ -537,7 +537,7 @@ function acceptWaitingArticle($idart)
 				{
 				$req .= ", date_modification=now()";
 				}
-			$rq .= " where id='".$articleid."'";
+			$req .= " where id='".$articleid."'";
 			$babDB->db_query($req);
 			bab_deleteArticleFiles($articleid);
 			}

@@ -1061,10 +1061,7 @@ function confirmModifyArticle($topics, $article, $comment, $bupdmod)
 			$idart = bab_newArticleDraft($topics, $article);
 			if( $idart != 0 )
 			{
-				if( $bupdmod == 'N')
-					{
-					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='N' where id='".$idart."'");		
-					}
+				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$bupdmod."' where id='".$idart."'");		
 
 				if( bab_isMagicQuotesGpcOn())
 					{
@@ -1153,7 +1150,7 @@ if( isset($conf) && $conf == "mod" )
 {
 	if( isset($bupdate))
 		{
-		if( !isset($bupdmod)) { $bupdmod ='N';}
+		if( !isset($bupdmod)) { $bupdmod ='Y';}
 		confirmModifyArticle($topics, $article, $comment, $bupdmod);
 		}
 }
