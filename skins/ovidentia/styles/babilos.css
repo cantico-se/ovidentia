@@ -255,7 +255,7 @@ a.BabFaqLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FO
 .BabFaqTitleFontBg {background: #D1D1D9; COLOR: #000000; font : 12px Verdana, Arial, sans-serif;  FONT-WEIGHT: bold }
 
 /************ ADMINISTRATION GROUPS***********/
-.BabAdminMembers { BACKGROUND: #FF3333; COLOR: #FFFFFF ; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+.BabAdminMembers { BACKGROUND: #FFFFFF; COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
 
 a.BabAdminMembersList:Link { COLOR: #0000CC  ; font : 10px Verdana, Arial, sans-serif }
 a.BabAdminMembersList:Visited { COLOR: #0000CC ; font : 10px Verdana, Arial, sans-serif }
