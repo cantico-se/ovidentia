@@ -590,21 +590,26 @@ setselects(document.forms.searchForm.g_directory);
 <tr><td class="BabBodyTitleBackground" >{ dirtitle }</td></tr></table>
 <table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr class="BabTopicsBackground">
-	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','sn, givenname')">{ lastname }</a></td>
-	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','givenname, sn')">{ firstname }</a></td>
-	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','organisationname')">{ company }</a></td>
-	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','departmentnumber')">{ department }</a></td>
-	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','mfunction')">{ email }</a></td>
-	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','name')">{ directory }</A></td>
+	<!--#in getnextdirfield -->
+	<td class="BabCalendarDaySection">
+	<a class="BabTitleSmall" href="javascript:orderSearch('g','{ ordercmd }')">{ t_name }</a></td>
+	<!--#endin getnextdirfield -->
 </tr>
 <!--#in getnextdir -->
   <tr> 
-	<td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ dirurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ dir[sn] }</a></td>
-    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ dirurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ dir[givenname] }</a></td>
-    <td class="BabTopicsBackground" valign="top">{ dir[organisationname] }</td>
-    <td class="BabTopicsBackground" valign="top">{ dir[departmentnumber] }</td>
-    <td class="BabTopicsBackground" valign="top"><!--#if BAB_SESS_LOGGED --><a href="mailto:{ dir[email] }"><!--#endif BAB_SESS_LOGGED -->{ dir[email] }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --></td>
-    <td class="BabTopicsBackground" valign="top">{ dir[name] }</td>
+	<!--#in getnextdirfield -->
+	<td class="BabTopicsBackground" valign="top">
+	<!--#if dirurl -->
+		<!--#if popup -->
+		<a class="BabFaqLink" href="javascript: Start('{ dirurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ dirvalue }</a>
+		<!--#else popup -->
+		<a class="BabFaqLink" href="{ dirurl }">{ dirvalue }</a>
+		<!--#endif popup -->
+	<!--#else dirurl -->
+		{ dirvalue }
+	<!--#endif dirurl -->
+	</td>
+	<!--#endin getnextdirfield -->
   </tr>
 <!--#endin getnextdir -->
 </table>

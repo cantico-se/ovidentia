@@ -336,8 +336,8 @@ function searchKeyword($item , $option = "OR")
 				$this->name = $arr['name'];
 				$this->description = $arr['description'];
 				$this->descriptionJs = addslashes($arr['description']);
-				$this->fieldvalue = "".$this->fields[$arr['name']];
-				if ( $this->fields['dirselect_'.$this->j] == $arr['name'])
+				$this->fieldvalue = isset($this->fields[$arr['name']])?$this->fields[$arr['name']]:'';
+				if ( isset($this->fields['dirselect_'.$this->j]) && $this->fields['dirselect_'.$this->j] == $arr['name'])
 					$this->selected = "selected";
 				else	
 					$this->selected = false;
@@ -649,7 +649,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if( !$this->counttot && $this->countcom > 0 )
 					$this->counttot = true;
 				}
-
+				if (!isset($nbrows)) $nbrows = 0;
 				$this->nbresult += $nbrows;
 
 			// ------------------------------------------------- POSTS
@@ -890,33 +890,21 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 				if ($this->like || $this->like2)
 					{
-					$likedir = "(".finder($this->like,"cn",$option,$this->like2).
-								" or ".finder($this->like,"sn",$option,$this->like2).
-								" or ".finder($this->like,"mn",$option,$this->like2).
-								" or ".finder($this->like,"givenname",$option,$this->like2).
-								" or ".finder($this->like,"email",$option,$this->like2).
-								" or ".finder($this->like,"btel",$option,$this->like2).
-								" or ".finder($this->like,"mobile",$option,$this->like2).
-								" or ".finder($this->like,"htel",$option,$this->like2).
-								" or ".finder($this->like,"bfax",$option,$this->like2).
-								" or ".finder($this->like,"title",$option,$this->like2).
-								" or ".finder($this->like,"departmentnumber",$option,$this->like2).
-								" or ".finder($this->like,"organisationname",$option,$this->like2).
-								" or ".finder($this->like,"bstreetaddress",$option,$this->like2).
-								" or ".finder($this->like,"bcity",$option,$this->like2).
-								" or ".finder($this->like,"bpostalcode",$option,$this->like2).
-								" or ".finder($this->like,"bstate",$option,$this->like2).
-								" or ".finder($this->like,"bcountry",$option,$this->like2).
-								" or ".finder($this->like,"hstreetaddress",$option,$this->like2).
-								" or ".finder($this->like,"hcity",$option,$this->like2).
-								" or ".finder($this->like,"hpostalcode",$option,$this->like2).
-								" or ".finder($this->like,"hstate",$option,$this->like2).
-								" or ".finder($this->like,"hcountry",$option,$this->like2).
-								" or ".finder($this->like,"user1",$option,$this->like2).
-								" or ".finder($this->like,"user2",$option,$this->like2).
-								" or ".finder($this->like,"user3",$option,$this->like2).
-								") and ";
+					$likedir = "(";
+					
+					$res = $this->db->db_query("SELECT * FROM ".BAB_DBDIR_FIELDS_TBL." WHERE name != 'jpegphoto'");
+					while ($arr = $this->db->db_fetch_array($res))
+						{
+						$dir_fields['name'][$arr['id']] = $arr['name'];
+						$dir_fields['description'][$arr['id']] = $arr['description'];
+						if ($likedir != "(")
+						$likedir .= " or ";
+						$likedir .= finder($this->like,$arr['name'],$option,$this->like2);
+						}
+					$likedir .= ") and ";
 					}
+				else
+					$likedir = '';
 				$req = "create temporary table dirresults select *,sn name from ".BAB_DBDIR_ENTRIES_TBL." where 0";
 				$this->db->db_query($req);
 				$req = "alter table dirresults add unique (id)";
@@ -935,28 +923,25 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							{
 							list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 							if( $bdir == 'Y' )
-								$diradd = true;		
+								{
+								$grp = ($row['id_group'] > 1) ? "UG.id_group='".$row['id_group']."' and ":'';
+								$req = "insert into dirresults select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." ".$grp." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
+								$this->db->db_query($req);
+								}
 							}
 						else
-							$diradd= true;
-
-						if( $diradd )
 							{
-							if( $row['id_group'] > 1 )
-								{
-								$req = "select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." UG.id_group='".$row['id_group']."' and UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
-								}
-							else
-								{
-								$req = "select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
-								}
-							}
-
-						if( $diradd && !empty($req))
-							{
-							$req = "insert into dirresults ".$req;
+							$req = "insert into dirresults select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
 							$this->db->db_query($req);
 							}
+						}
+					$req = "SELECT f.name,f.description FROM ".BAB_DBDIR_FIELDSEXTRA_TBL." e,".BAB_DBDIR_FIELDS_TBL." f WHERE f.id=e.id_field AND e.id_directory='".($row['id_group'] != 0? 0: $row['id'])."' AND e.ordering > 0 ORDER BY e.ordering";
+					
+					$resfields = $this->db->db_query($req);
+					while($arr = $this->db->db_fetch_array($resfields))
+						{
+						$this->dirfields['name'][] = $arr['name'];
+						$this->dirfields['description'][] = $arr['description'];
 						}
 					}
 				else
@@ -969,35 +954,26 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$diradd = false;
 						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 							{
-							if( $row['id_group'] > 0 )
+							if( $row['id_group'] == 1 )
 								{
 								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 								if( $bdir == 'Y' )
-									$diradd = true;		
+									{
+									$req = "insert into dirresults select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where ".$likedir." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
+									$this->db->db_query($req);
+									}
 								}
 							else
-								$diradd= true;
-
-							if( $diradd )
 								{
-								if( $row['id_group'] > 1 )
-									{
-									$req = "select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." UG.id_group='".$row['id_group']."' and UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
-									}
-								else
-									{
-									$req = "select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
-									}
-								}
-
-							if( $diradd && !empty($req))
-								{
-								$req = "insert into dirresults ".$req;
+								$req = "insert into dirresults select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
 								$this->db->db_query($req);
 								}
 							}
 						}
+					$this->dirfields['name'] = array($dir_fields['name'][2],$dir_fields['name'][4]);
+					$this->dirfields['description'] = array($dir_fields['description'][2],$dir_fields['description'][4]);
 					}
+				$this->countdirfields = count($this->dirfields['name']);
 
 				$req = "select count(*) from dirresults";
 				$res = $this->db->db_query($req);
@@ -1006,8 +982,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($navitem != "g") $navpos = 0;
 				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);
 				$tmp = explode(" ",$order);
-				if (in_array("title",$tmp)) $order_tmp = "sn ASC, givenname ASC";
-				$req = "select * from dirresults order by ".$order_tmp." limit ".$navpos.", ".$babLimit;
+				if (in_array("title",$tmp)) $order_tmp = "order by sn ASC, givenname ASC";
+				else $order_tmp = "order by ".$order;
+				$req = "select * from dirresults ".$order_tmp." limit ".$navpos.", ".$babLimit;
 				$this->resdir = $this->db->db_query($req);
 				$this->countdir = $this->db->db_num_rows($this->resdir);
 				if( !$this->counttot && $this->countdir > 0 )
@@ -1266,6 +1243,48 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				}
 			}
 
+		function getnextdirfield()
+			{
+			static $i = 0;
+			if( $i < $this->countdirfields)
+				{
+				$this->name = $this->dirfields['name'][$i];
+				$this->ordercmd = $this->name == 'sn' ? 'sn, givenname':($this->name == 'givenname' ? 'givenname, sn' : $this->name);
+				$this->t_name = bab_translate($this->dirfields['description'][$i]);
+				if (isset($this->dir))
+				switch ($this->name)
+					{
+					case 'sn':
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what;
+						$this->popup = true;
+						break;
+					case 'givenname':
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what;
+						$this->popup = true;
+						break;
+					case 'mfunction':
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirurl = 'mailto:'.$this->dirvalue;
+						$this->popup = false;
+						break;
+					default:
+						$this->dirvalue = isset($this->dir[$this->name]) ? $this->dir[$this->name]  : '';
+						$this->dirurl = false;
+						$this->popup = false;
+						break;
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
 		function getnextdir()
 			{
 			static $i = 0;
@@ -1273,9 +1292,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$arr = $this->db->db_fetch_array($this->resdir);
 				foreach ($arr as $key => $value)
-					$arr[$key] = stripslashes($value);
-				$this->dir= $arr ;
-				$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$arr['id']."&w=".$this->what;
+					{
+					if (in_array($key,$this->dirfields['name']))
+						$arr[$key] = stripslashes($value);
+					}
+				$this->dir= $arr;
 				$i++;
 				return true;
 				}
