@@ -185,7 +185,7 @@ CREATE TABLE bab_groups (
    pcalendar enum('Y','N') NOT NULL default 'Y',
    id_dggroup int(11) unsigned NOT NULL default '0',
    id_dgowner int(11) unsigned NOT NULL default '0',
-   id_entity int(11) unsigned NOT NULL default '0',
+   id_ocentity int(11) unsigned NOT NULL default '0',
    PRIMARY KEY (id),
    KEY manager (manager),
    KEY id_dggroup (id_dggroup),
