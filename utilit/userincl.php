@@ -28,7 +28,7 @@ define("BAB_ART_STATUS_WAIT", 1);
 define("BAB_ART_STATUS_OK"	, 2);
 define("BAB_ART_STATUS_NOK"	, 3);
 
-function bab_editor($content, $editname, $formname)
+function bab_editor($content, $editname, $formname, $heightpx=160)
 	{
 	global $babBody;
 
@@ -38,7 +38,7 @@ function bab_editor($content, $editname, $formname)
 		var $formname;
 		var $contentval;
 
-		function babEditorCls($content, $editname, $formname)
+		function babEditorCls($content, $editname, $formname, $heightpx)
 			{
 			$this->editname = $editname;
 			$this->formname = $formname;
@@ -72,7 +72,7 @@ function bab_editor($content, $editname, $formname)
 			}	
 		}
 	
-	$temp = new babEditorCls($content, $editname, $formname);
+	$temp = new babEditorCls($content, $editname, $formname, $heightpx);
 	return bab_printTemplate($temp,"uiutil.html", "babeditortemplate");
 	}
 

@@ -170,15 +170,15 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <!--#if msie "== 1" -->
 <!--#if babOldEditor -->
 <script language="JavaScript">
-	editor.InFrame(0, "{ editname }", "{ formname }", "100%", "160");
+	editor.InFrame(0, "{ editname }", "{ formname }", "100%", "{ heightpx }");
 </script>
 <!--#else babOldEditor -->
 <iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1','{ editname }')">
 </iframe>
-<textarea id="{ editname }" name="{ editname }" onfocus="savef(document.{ formname }.headtext)" style="width:100%" rows="20">{ contentval }</textarea>
+<textarea id="{ editname }" name="{ editname }" onfocus="savef(document.{ formname }.headtext)" style="width:100%;height:{ heightpx }px" rows="20">{ contentval }</textarea>
 <!--#endif babOldEditor -->
 <!--#else msie -->
-<textarea id="{ editname }" name="{ editname }" onfocus="savef(document.{ formname }.headtext)" style="width:100%" rows="20">{ contentval }</textarea>
+<textarea id="{ editname }" name="{ editname }" onfocus="savef(document.{ formname }.headtext)" style="width:100%;height:{ heightpx }px" rows="20">{ contentval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
