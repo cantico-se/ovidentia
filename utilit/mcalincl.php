@@ -385,7 +385,7 @@ class bab_icalendar
 		$i = 0;
 		while( $i < count($this->events) )
 			{			
-			if( $enddate > $this->events[$i]['start_date'] && $startdate < $this->events[$i]['end_date'] )
+			if( $enddate >= $this->events[$i]['start_date'] && $startdate <= $this->events[$i]['end_date'] )
 				{
 				$arr[] = $this->events[$i];
 				}
