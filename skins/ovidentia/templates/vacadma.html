@@ -186,7 +186,7 @@ function calwin(callback)
 			<tr> 
 				<td align="right">{ t_id_type }:</td>
 				<td>
-					<select name="id_type" onChange="mmvac(document.forms.gcreate.idtype.selectedIndex)">
+					<select name="id_type" onChange="mmvac(this.selectedIndex)">
 					<!--#in getnexttype -->
 					<option value="{ typeid }" { selected }>{ typename }</option>
 					<!--#endin getnexttype -->

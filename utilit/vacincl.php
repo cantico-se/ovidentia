@@ -224,7 +224,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 			if ( $arr['right_inperiod'] == 1 && 
 				!empty($arr['period_start']) && 
 				!empty($arr['period_end']) && 
-				($period_start >= $end || $period_end >= $begin) )
+				($period_start <= $begin && $period_end >= $end) )
 					{
 					$access = true;
 					}
@@ -262,7 +262,6 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 				list($nbdays) = $db->db_fetch_array($db->db_query($req));
 
 				$access = false;
-				
 				if ( $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] )
 					$access = true;
 				}
@@ -684,7 +683,8 @@ function listVacationRequests($id_user)
 			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
 				{
-				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=";
+				$ide = isset($_REQUEST['ide']) ? $_REQUEST['ide'] : '';
+				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&ide=".$ide."&pos=";
 				if( $this->pos > 0)
 					{
 					$this->topurl = $tmpurl."0";
