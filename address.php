@@ -69,7 +69,7 @@ function listAddress($pos)
 
 		function temp($pos)
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID,$babBody;
 			$this->fullname = bab_translate("Contact")." / ".bab_translate("List");
 			$this->email = bab_translate("Email");
 			$this->allname = bab_translate("All");
@@ -87,7 +87,18 @@ function listAddress($pos)
 
 			$this->db = $GLOBALS['babDB'];
 
-			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
+			switch ($babBody->nameorder[0]) {
+				case "L":
+					$namesearch = "lastname";
+					$namesearch2 = "firstname";
+				break; 
+				case "F":
+				default:
+					$namesearch = "firstname";
+					$namesearch2 = "lastname";
+				break;}
+
+			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$namesearch." like '".$pos."%' order by ".$namesearch.", ".$namesearch2." asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
@@ -98,7 +109,7 @@ function listAddress($pos)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=";
-			$req = "select distinct p3.id, p3.firstname, p3.lastname, p3.email from ".BAB_USERS_TBL." as p3, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and firstname like '".$pos."%' order by firstname, lastname asc";
+			$req = "select distinct p3.id, p3.".$namesearch.", p3.".$namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$namesearch." like '".$pos."%' order by ".$namesearch.", ".$namesearch2." asc";
 			$this->resgrpm = $this->db->db_query($req);
 			$this->countgrpm = $this->db->db_num_rows($this->resgrpm);
 
