@@ -111,6 +111,7 @@ function readMore($topics, $article)
 		var $res;
 		var $more;
 		var $topics;
+		var $author;
 
 		function temp($topics, $article)
 			{
@@ -128,6 +129,7 @@ function readMore($topics, $article)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['body']);
+				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($this->arr['id']). " - ". bab_getArticleDate($this->arr['id']);
 				$i++;
 				return true;
 				}

@@ -163,7 +163,7 @@ function ListArticles($idgroup)
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->title = $arr['title'];
-				$this->content = $arr['head'];
+				$this->content = bab_replace($arr['head']);
 				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($arr['id']). " - ". bab_getArticleDate($arr['id']);
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id'];
 				$i++;
@@ -190,6 +190,7 @@ function readMore($article)
 		var $count;
 		var $res;
 		var $title;
+		var $author;
 
 		function temp($article)
 			{
@@ -205,8 +206,9 @@ function readMore($article)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->content = $arr['body'];
+				$this->content = bab_replace($arr['body']);
 				$this->title = $arr['title'];
+				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($arr['id']). " - ". bab_getArticleDate($arr['id']);
 				$i++;
 				return true;
 				}
