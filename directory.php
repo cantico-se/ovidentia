@@ -267,11 +267,11 @@ function browseLdapDirectory($id, $pos)
 function browseDbDirectory($id, $pos, $xf, $badd)
 {
 	global $babBody;
-	var $altbg = true;
+
 	class temp
 		{
 		var $count;
-
+		var $altbg = true;
 		function temp($id, $pos, $xf, $badd)
 			{
 			$this->allname = bab_translate("All");
