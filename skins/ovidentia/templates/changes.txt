@@ -197,3 +197,22 @@ Style Sheet file:
 	   border-top: 1px solid red
 			}
 .HeaderDayCalendar { BACKGROUND: #FFFFFF }
+
+/****************************/
+version 3.3.0 beta / 3.3
+/****************************/
+--------------------------------------------------------------------------------
+file			        section		        change 
+--------------------------------------------------------------------------------
+search.html                                 Replace 'var t=document.open' by 'Start'
+calview.html                                Replace 'var t=document.open' by 'Start'
+comments.html                               Replace 'var t=document.open' by 'Start'
+contacts.html                               Replace 'var t=document.open' by 'Start'
+event.html                                  Replace 'var t=document.open' by 'Start'
+fileman.html                                Replace 'var t=document.open' by 'Start'
+inbox.html                                  Replace 'var t=document.open' by 'Start'
+mail.html                                   Replace 'var t=document.open' by 'Start'
+sites.html                                  Replace 'var t=document.open' by 'Start'
+topics.html                                 Replace 'var t=document.open' by 'Start'
+topman.html                                 Replace 'var t=document.open' by 'Start'
+vacation.html                               Replace 'var t=document.open' by 'Start'
