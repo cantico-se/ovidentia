@@ -61,7 +61,12 @@
 <table border="0" class="BabMonthDayBgnd" width="100%" cellpadding="0" cellspacing="3">
 <!--#endif currentmonth -->
 <tr>
+
+<!--#if bowner "== 1" -->
 <td align="left"><a class=BabMenuLink href="{ neweventurl }">{ new }</a></td>
+<!--#else bowner -->
+<td align="left">&nbsp;</td>
+<!--#endif bowner -->
 <td>&nbsp;</td>
 <td align="right"><a class=BabMenuLink href="{ daynumberurl }">{ daynumbername }</a></td>
 </tr>
@@ -154,7 +159,11 @@
 </tr>
 <!--#endin getgroupevent -->
 <tr>
+<!--#if bowner "== 1" -->
 <td colspan="3" nowrap><a class=BabMenuLink href="{ neweventurl }">{ new }</a></td>
+<!--#else bowner "== 1" -->
+<td colspan="3" nowrap>&nbsp;</td>
+<!--#endif bowner -->
 </tr>
 </table>
 </td></tr></table>
@@ -219,7 +228,11 @@
 </tr>
 <!--#in getnexthour -->
 <tr>
+<!--#if bowner "== 1" -->
 <td width="1%" bgcolor="white"><a class=BabMenuLink href="{ hoururl }">{ hour }</a></td>
+<!--#else bowner -->
+<td width="1%" bgcolor="white">{ hour }</td>
+<!--#endif bowner -->
 <!--#in getnextevent -->
 <!--#if notempty "== 1" -->
 <td bgcolor="{ bgcolor }"><a class="BabMenuLink" href="{ titletenurl }">{ titleten }</a></td>
@@ -272,5 +285,67 @@
 </table>
 </form>
 <!--#end calday -->
+<!--#begin access -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ fullname }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ accessname }</b></td>
+</tr>
+<!--#in getnext -->
+<tr>
+<td nowrap>{ arr[fullname] }</td>
+<td nowrap>{ arr[email] }</td>
+<td nowrap>{ yesno }</td>
+</tr>
+<!--#endin getnext -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end userslist -->
+<br>
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="calendar">
+<input type="hidden" name="idx" value="{ view }">
+<input type="hidden" name="day" value="{ day }">
+<input type="hidden" name="month" value="{ month }">
+<input type="hidden" name="year" value="{ year }">
+<input type="hidden" name="start" value="">
+<input type="hidden" name="calendar" value="{ calid }">
+<input type="hidden" name="accessuser" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td>{ textinfo }</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ email }:</td>
+<td><input type="text" name="emails" size="60"></td>
+</tr>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td><input type="checkbox" name="baccess" value="y">&nbsp;&nbsp;{ useraccess }</td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="Submit" value="{ addusers }">&nbsp;&nbsp;<input type="submit" name="del" value="{ delusers }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end access -->
+<br><br><br><br><br>
 </BODY>
 </HTML>

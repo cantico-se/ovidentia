@@ -289,7 +289,7 @@ switch($idx)
 	case "view":
 		$body->title = babTranslate("Upcoming Events");
 		$idcal = getCalendarid($BAB_SESS_USERID, 1);
-		if( $idcal != 0)
+		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
 			upComingEvents($idcal);
 			$body->addItemMenu("viewm", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&calid=".$idcal);

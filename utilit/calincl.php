@@ -63,6 +63,22 @@ function getCalendarType($idcal)
 		}
 }
 
+function getCalendarOwner($idcal)
+{
+	$db = new db_mysql();
+	$query = "select * from calendar where id='$idcal'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr[owner];
+		}
+	else
+		{
+		return 0;
+		}
+}
+
 function getEventTitle($evtid)
 {
 	$db = new db_mysql();

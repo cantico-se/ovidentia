@@ -10,6 +10,16 @@ function getAvailableCalendars()
 	array_push($tab, $rr);
 
 	$db = new db_mysql();
+	$req = "select * from calaccess_users where id_user='".$BAB_SESS_USERID."'";
+	$res = $db->db_query($req);
+	while($row = $db->db_fetch_array($res))
+	{
+		$rr[name] = getCalendarOwnerName($row[id_cal], 1);
+		$rr[idcal] = $row[id_cal];
+		array_push($tab, $rr);
+	}
+
+
 	$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
 	$resgroups = $db->db_query($req);
 	if( $resgroups )
@@ -51,11 +61,11 @@ function getEventsResult($calid, $day, $month, $year)
 	$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 	$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 	$req = "select * from cal_events where id_cal='".$calid."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-	$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax')";
+	$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date asc";
 	return $this->resevent = $db->db_query($req);
 }
 
-function calendarMonth($calid, $day, $month, $year)
+function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 {
 	global $body;
 
@@ -85,9 +95,9 @@ function calendarMonth($calid, $day, $month, $year)
 		var $nbevent;
 		var $new;
 	
-		function temp($calid, $day, $month, $year)
+		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			{
-			global $babMonths;
+			global $BAB_SESS_USERID, $babMonths;
 			$this->db = new db_mysql();
 			$this->view = "viewm";
 			$this->w = 0;
@@ -97,9 +107,49 @@ function calendarMonth($calid, $day, $month, $year)
 			$this->month = $month;
 			$this->year = $year;
 			$this->calid = $calid;
-			$this->caltype = getCalendarType($calid);
+			$this->caltype = $caltype;
 			$this->viewthis = babTranslate("View this calendar");
 			$this->new = babTranslate("New");
+
+			switch($caltype)
+				{
+				case 1:
+					if( $owner == $BAB_SESS_USERID)
+						$this->bowner = 1;
+					else
+						{
+						$this->bowner = 0;
+						$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
+						$res = $this->db->db_query($req);
+						if( $res && $this->db->db_num_rows($res) > 0)
+							{
+							$row = $this->db->db_fetch_array($res);
+							if($row[bwrite] == "Y")
+								$this->bowner = 1;
+							}
+						}
+					$grpid = getPrimaryGroupId($owner);
+					if( isUserGroupManager($grpid))
+						$this->bmanager = 1;
+					else
+						$this->bmanager = 0;
+					break;
+				case 2:
+					if( isUserGroupManager($owner))
+						$this->bowner = 1;
+					else
+						$this->bowner = 0;
+					$this->bmanager = 0;
+					break;
+				case 3:
+					$this->bowner = 1;
+					$this->bmanager = 0;
+					break;
+				default:
+					$this->bowner = 0;
+					$this->bmanager = 0;
+					break;	
+				}
 
 			$this->previousmonth = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&day=".$day;
 			$this->previousmonth .= "&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
@@ -294,24 +344,14 @@ function calendarMonth($calid, $day, $month, $year)
 
 		}
 
-
-	if( empty($month))
-		$month = Date("n");
-	
-	if( empty($year))
-		$year = Date("Y");
-
-	if( empty($day))
-		$day = Date("j");
-
-	$temp = new temp($calid, $day, $month, $year);
+	$temp = new temp($calid, $day, $month, $year, $caltype, $owner, $bmanager);
 	$body->babecho(	babPrintTemplate($temp,"calendar.html", "calmonth"));
 	return $temp->count;
 
 }
 
 
-function calendarWeek($calid, $day, $month, $year)
+function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 {
 	global $body;
 
@@ -343,15 +383,54 @@ function calendarWeek($calid, $day, $month, $year)
 
 		var $db;
 		
-		function temp($calid, $day, $month, $year)
+		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			{
 			$this->db = new db_mysql();
 			$this->view = "viewq";
 			$this->calid = $calid;
-			$this->caltype = getCalendarType($calid);
+			$this->caltype = $caltype;
 			$this->month = $month;
 			$this->year = $year;
 			$this->day = $day;
+			switch($caltype)
+				{
+				case 1:
+					if( $owner == $BAB_SESS_USERID)
+						$this->bowner = 1;
+					else
+						{
+						$this->bowner = 0;
+						$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
+						$res = $this->db->db_query($req);
+						if( $res && $this->db->db_num_rows($res) > 0)
+							{
+							$row = $this->db->db_fetch_array($res);
+							if($row[bwrite] == "Y")
+								$this->bowner = 1;
+							}
+						}
+					$grpid = getPrimaryGroupId($owner);
+					if( isUserGroupManager($grpid))
+						$this->bmanager = 1;
+					else
+						$this->bmanager = 0;
+					break;
+				case 2:
+					if( isUserGroupManager($owner))
+						$this->bowner = 1;
+					else
+						$this->bowner = 0;
+					$this->bmanager = 0;
+					break;
+				case 3:
+					$this->bowner = 1;
+					$this->bmanager = 0;
+					break;
+				default:
+					$this->bowner = 0;
+					$this->bmanager = 0;
+					break;	
+				}
 			$this->curday = date("w", mktime(0,0,0,$month, $day, $year));
 			$d = $day - 7;
 			if( $d == 0)
@@ -506,23 +585,13 @@ function calendarWeek($calid, $day, $month, $year)
 
 		}
 
-
-	if( empty($month))
-		$month = Date("n");
-	
-	if( empty($year))
-		$year = Date("Y");
-
-	if( empty($day))
-		$day = Date("j");
-
-	$temp = new temp($calid, $day, $month, $year);
+	$temp = new temp($calid, $day, $month, $year, $caltype, $owner, $bmanager);
 	$body->babecho(	babPrintTemplate($temp,"calendar.html", "calweek"));
 	return $temp->count;
 
 }
 
-function calendarDay($calid, $day, $month, $year, $starttime)
+function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager)
 {
 	global $body;
 
@@ -554,7 +623,7 @@ function calendarDay($calid, $day, $month, $year, $starttime)
 		var $curhour;
 		var $colspan;
 	
-		function temp($calid, $day, $month, $year, $starttime)
+		function temp($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager)
 			{
 			global $BAB_SESS_USERID;
 			$this->db = new db_mysql();
@@ -562,7 +631,46 @@ function calendarDay($calid, $day, $month, $year, $starttime)
 			$this->colspan ="";
 			$this->firsttime ="";
 			$this->calid = $calid;
-			$this->caltype = getCalendarType($calid);
+			$this->caltype = $caltype;
+			switch($caltype)
+				{
+				case 1:
+					if( $owner == $BAB_SESS_USERID)
+						$this->bowner = 1;
+					else
+						{
+						$this->bowner = 0;
+						$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
+						$res = $this->db->db_query($req);
+						if( $res && $this->db->db_num_rows($res) > 0)
+							{
+							$row = $this->db->db_fetch_array($res);
+							if($row[bwrite] == "Y")
+								$this->bowner = 1;
+							}
+						}
+					$grpid = getPrimaryGroupId($owner);
+					if( isUserGroupManager($grpid))
+						$this->bmanager = 1;
+					else
+						$this->bmanager = 0;
+					break;
+				case 2:
+					if( isUserGroupManager($owner))
+						$this->bowner = 1;
+					else
+						$this->bowner = 0;
+					$this->bmanager = 0;
+					break;
+				case 3:
+					$this->bowner = 1;
+					$this->bmanager = 0;
+					break;
+				default:
+					$this->bowner = 0;
+					$this->bmanager = 0;
+					break;	
+				}
 			if( $starttime == 1)
 				{
 				$this->prevtimeurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".date("j", mktime( 0,0,0, $month, $day-1, $year));
@@ -804,18 +912,124 @@ function calendarDay($calid, $day, $month, $year, $starttime)
 		}
 
 
-	if( empty($month))
-		$month = Date("n");
-	
-	if( empty($year))
-		$year = Date("Y");
-
-	if( empty($day))
-		$day = Date("j");
-
-	$temp = new temp($calid, $day, $month, $year, $starttime);
+	$temp = new temp($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager);
 	$body->babecho(	babPrintTemplate($temp,"calendar.html", "calday"));
 	return $temp->count;
+
+}
+
+function accessCalendar($view, $day, $month, $year, $start, $calid)
+{
+	global $body;
+	
+	class temp
+		{
+		var $email;
+		var $textinfo;
+		var $view;
+		var $day;
+		var $month;
+		var $year;
+		var $start;
+		var $calid;
+		var $addusers;
+		var $useraccess;
+		var $fullname;
+		var $accessname;
+		var $yesno;
+		var $delusers;
+
+		var $db;
+		var $res;
+		var $count;
+		var $arr = array();
+
+		function temp($view, $day, $month, $year, $start, $calid)
+			{
+			$this->db = new db_mysql();
+			$this->view = $view;
+			$this->day = $day;
+			$this->month = $month;
+			$this->year = $year;
+			$this->start = $start;
+			$this->calid = $calid;
+			$this->email = babTranslate("Email");
+			$this->textinfo = babTranslate("Enter user email. ( You can enter multiple emails separated by space )");
+			$this->addusers = babTranslate("Update access");
+			$this->useraccess = babTranslate("User can update my calendar");
+			$this->fullname = babTranslate("Fullname");
+			$this->accessname = babTranslate("Update");
+			$this->delusers = babTranslate("Delete users");
+			$req = "select * from calaccess_users where id_cal='".$calid."'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			static $k=0;
+			if( $k < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$req = "select * from users where id='".$arr[id_user]."'";
+				$res = $this->db->db_query($req);
+				$this->arr = $this->db->db_fetch_array($res);
+				if( $arr[bwrite] == "Y")
+					$this->yesno = babTranslate("Yes");
+				else
+					$this->yesno = babTranslate("No");
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+		}
+
+	$temp = new temp($view, $day, $month, $year, $start, $calid);
+	$body->babecho(	babPrintTemplate($temp,"calendar.html", "access"));
+
+}
+
+function addAccessUsers( $emails, $calid, $baccess, $del )
+{
+	$db = new db_mysql();
+	$arr = explode(" ", $emails);
+
+	if( $baccess == "y")
+		$acc = "Y";
+	else
+		$acc = "N";
+
+	for( $i = 0; $i < count($arr); $i++)
+		{
+		$req = "select * from users where email='".trim($arr[$i])."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$rr = $db->db_fetch_array($res);
+			$iduser = $rr[id];
+			$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$iduser."'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$rr = $db->db_fetch_array($res);
+				if( $del )
+					$req = "delete from calaccess_users where id='".$rr[id]."'";
+				else
+					$req = "update calaccess_users set id_user='".$iduser."', bwrite='".$acc."' where id='".$rr[id]."'";
+				$res = $db->db_query($req);
+				}
+			else if($del == false)
+				{
+				$req = "insert into calaccess_users (id_cal, id_user, bwrite) values ('".$calid."', '".$iduser."', '".$acc."')";
+				$res = $db->db_query($req);
+				}
+			}
+		}
 
 }
 
@@ -830,21 +1044,62 @@ if( isset($viewcal) && $viewcal == "view")
 	Header("Location: index.php?tg=calendar&idx=".$idx."&calid=".$calendar."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
 }
 
+if( isset($accessuser) && $accessuser == "add")
+{
+	if( !empty($del))
+		$del = true;
+	else
+		$del = false;
+	addAccessUsers($emails, $calendar, $baccess, $del);
+	Header("Location: index.php?tg=calendar&idx=".$idx."&calid=".$calendar."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
+}
+
+$caltype = getCalendarType($calid);
+$owner = getCalendarOwner($calid);
+$bmanager = isUserGroupManager();
+
+if( empty($month))
+	$month = Date("n");
+
+if( empty($year))
+	$year = Date("Y");
+
+if( empty($day))
+	$day = Date("j");
+
 switch($idx)
 	{
-	case "viewd":
-		$body->title = "";
-		calendarDay($calid, $day, $month, $year, $start);
-		if( isUserGroupManager())
+
+	case "access":
+		accessCalendar($view, $day, $month, $year, $start, $calid);
+		//$body->title = "Access to". " ". getCalendarOwnerName($calid, $caltype). " " .babTranslate("Calendar");
+		$body->title = babTranslate("Access to Calendar");
+		$body->addItemMenu($view, babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year."&start=".$start. "&calid=".$calid);
+		$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=access&day=".$day."&month=".$month."&year=".$year."&start=".$start."&calid=".$calid);
+		if( $bmanager)
 			{
 			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
 			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 			}
 		break;
+	case "viewd":
+		$body->title = "";
+		calendarDay($calid, $day, $month, $year, $start, $caltype, $owner, $bmanager);
+		if( $caltype == 1)
+			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=access&day=".$day."&month=".$month."&year=".$year."&start=".$start."&calid=".$calid."&view=viewd");
+		if( $bmanager)
+			{
+			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+			}
+
+		break;
 	case "viewq":
 		$body->title = "";
-		calendarWeek($calid, $day, $month, $year);
-		if( isUserGroupManager())
+		calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager);
+		if( $caltype == 1)
+			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=access&day=".$day."&month=".$month."&year=".$year."&calid=".$calid."&view=viewq");
+		if( $bmanager)
 			{
 			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
 			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
@@ -853,8 +1108,10 @@ switch($idx)
 	default:
 	case "viewm":
 		$body->title = "";
-		calendarMonth($calid, $day, $month, $year);
-		if( isUserGroupManager())
+		calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager);
+		if( $caltype == 1)
+			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=access&day=".$day."&month=".$month."&year=".$year."&calid=".$calid."&view=viewm");
+		if( $bmanager)
 			{
 			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
 			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");

@@ -47,3 +47,11 @@ INSERT INTO calendar VALUES ( '1', '1', 'Y', '1');
 INSERT INTO calendar VALUES ( '2', '1', 'Y', '2');
 INSERT INTO calendar VALUES ( '3', '2', 'N', '2');
 INSERT INTO calendar VALUES ( '4', '3', 'Y', '2');
+
+CREATE TABLE calaccess_users (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	id_cal INT (11) UNSIGNED not null,
+	id_user INT (11) UNSIGNED not null,
+	bwrite enum('N','Y') DEFAULT 'N' NOT NULL,
+	PRIMARY KEY (id)
+);

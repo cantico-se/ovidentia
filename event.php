@@ -688,6 +688,42 @@ function deleteEvent($calid, $evtid)
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function viewEvent($calid, $evtid)
+	{
+	global $body;
+	
+	class temp
+		{
+		var $title;
+		var $titlename;
+		var $startdatename;
+		var $startdate;
+		var $enddatename;
+		var $enddate;
+		var $descriptionname;
+		var $description;
+
+		function temp($calid, $evtid)
+			{
+			$this->titlename = babTranslate("Title");
+			$this->startdatename = babTranslate("Begin date");
+			$this->enddatename = babTranslate("End date");
+			$this->descriptionname = babTranslate("Description");
+			$db = new db_mysql();
+			$req = "select * from cal_events where id='".$evtid."'";
+			$res = $db->db_query($req);
+			$arr = $db->db_fetch_array($res);
+			$this->title = $arr[title];
+			$this->description = $arr[description];
+			$this->startdate = bab_strftime(bab_mktime($arr[start_date]), false) . " " . substr($arr[start_time], 0 ,5);
+			$this->enddate = bab_strftime(bab_mktime($arr[end_date]), false) . " " . substr($arr[end_time], 0 ,5);
+			}
+		}
+
+	$temp = new temp($calid, $evtid);
+	$body->babecho(	babPrintTemplate($temp,"event.html", "viewevent"));
+	}
+
 function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, 	$description, $category)
 {
 	global $body;
@@ -905,14 +941,43 @@ switch($idx)
 		break;
 
 	case "modify":
-		modifyEvent($calid, $evtid);
+		$caltype = getCalendarType($calid);
+		$owner = getCalendarOwner($calid);
+		$bmanager = isUserGroupManager();
+		switch($caltype)
+			{
+			case 1:
+				if( $owner == $BAB_SESS_USERID)
+					$bmodif = 1;
+				else
+					$bmodif = 0;
+				break;
+			case 2:
+				if( isUserGroupManager($owner))
+					$bmodif = 1;
+				else
+					$bmodif = 0;
+				break;
+			case 3:
+				$bmodif = 1;
+				break;
+			default:
+				$bmodif = 0;
+				break;	
+			}
+		if( $bmodif )
+			modifyEvent($calid, $evtid);
+		else
+			viewEvent($calid, $evtid);
+
 		if( isUserGroupManager())
 			{
 			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
 			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 			}
 		$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
-		$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=event&idx=delete&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid. "&evtid=".$evtid);
+		if( $bmodif )
+			$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=event&idx=delete&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid. "&evtid=".$evtid);
 		break;
 
 	case "newevent":
