@@ -1093,6 +1093,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			calendarDay($calid, $day, $month, $year, $start);
+			$babBody->addItemMenu("viewd", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd");
 			}
 		break;
 	case "viewq":
@@ -1102,6 +1103,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid));
+			$babBody->addItemMenu("viewq", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq");
 			}
 		break;
 	default:
@@ -1112,6 +1114,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			calendarMonth($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid));
+			$babBody->addItemMenu("viewm", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm");
 			}
 		break;
 	}

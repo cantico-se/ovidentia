@@ -866,14 +866,17 @@ function babForumsSection($close)
 	global $babDB, $babBody;
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = bab_translate("Forums");
-	if( $close )
-		return;
 
 	$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." order by ordering asc");
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 			{
+			if( $close )
+				{
+				$this->count = 1;
+				return;
+				}
 			array_push($this->arrid, $row['id']);
 			}
 		}

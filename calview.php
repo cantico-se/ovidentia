@@ -530,18 +530,22 @@ switch($idx)
 	case "com":
 		$babBody->title = bab_translate("Summary");
 		newComments(0);
+		$babBody->addItemMenu("com", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
 		break;
 	case "art":
 		$babBody->title = bab_translate("Summary");
 		newArticles(0);
+		$babBody->addItemMenu("art", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
 		break;
 	case "for":
 		$babBody->title = bab_translate("Summary");
 		newThreads(0);
+		$babBody->addItemMenu("for", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
 		break;
 	case "fil":
 		$babBody->title = bab_translate("Summary");
 		newFiles(0);
+		$babBody->addItemMenu("fil", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
 		break;
 	default:
 	case "view":
@@ -568,6 +572,7 @@ switch($idx)
 			{
 			newEmails();
 			}
+		$babBody->addItemMenu("view", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

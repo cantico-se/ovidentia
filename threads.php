@@ -323,7 +323,7 @@ switch($idx)
 			{
 			$babBody->title = bab_getForumName($forum);
 			newThread($forum);
-			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
+			$babBody->addItemMenu("List", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 			$babBody->addItemMenu("newthread", bab_translate("New thread"), $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$forum);
 
 			}		
@@ -333,7 +333,7 @@ switch($idx)
 		$babBody->title = bab_getForumName($forum);
 		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
-			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
+			$babBody->addItemMenu("List", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 			$count = listThreads($forum, "N", $pos);
 			if( $count > 0)
 				$babBody->addItemMenu("ListC", bab_translate("Closed"), $GLOBALS['babUrlScript']."?tg=threads&idx=ListC&forum=".$forum);
@@ -352,7 +352,7 @@ switch($idx)
 			{
 			$count = listThreads($forum, "Y", $pos);
 			//if( $count > 0)
-				$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
+				$babBody->addItemMenu("List", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 			if( getClosedThreads($forum) > 0)
 				$babBody->addItemMenu("ListC", bab_translate("Closed"), $GLOBALS['babUrlScript']."?tg=threads&idx=ListC&forum=".$forum);
 

@@ -56,7 +56,7 @@ function notesList()
 			$this->date = bab_translate("Date");
 			$this->content = bab_translate("Content");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$BAB_SESS_USERID."' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -116,7 +116,7 @@ switch($idx)
 	case "Create":
 		$babBody->title = bab_translate("Create a note");
 		notesCreate();
-		$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+		$babBody->addItemMenu("List", bab_translate("Notes"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=notes&idx=Create");
 		break;
 
@@ -125,7 +125,7 @@ switch($idx)
 		$babBody->title = bab_translate("Notes list");
 		if( notesList() > 0 )
 			{
-			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+			$babBody->addItemMenu("List", bab_translate("Notes"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 			}
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=notes&idx=Create");
 		break;

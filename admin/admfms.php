@@ -149,6 +149,9 @@ function updateFolders($notifies, $actives)
 
 
 /* main */
+if( !isset($idx))
+	$idx = "list";
+
 if( isset($add) && $add == "addfolder")
 	saveFolder($fname, $managerid, $active, $said, $notification);
 
