@@ -354,7 +354,7 @@ ctrlf = t;
 
 
 
-<!--#begin createarticle -->
+<!--#begin createarticle1 -->
 <!--#if msie "!= 1" -->
 <script type="text/javascript">
 <!--
@@ -390,7 +390,7 @@ ctrlf = t;
 <!-- toolbar articlescreate -->
 <!--#if msie "!= 1" -->
 <tr> 
-<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', 'OvidentiaImages', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', 'OvidentiaFiles', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">files</a></center>
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', 'OvidentiaImages', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', 'OvidentiaFiles', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ files }</a></center>
 </td>
 </tr>
 <!--#endif msie -->
@@ -480,7 +480,7 @@ ctrlf = t;
 </tr>
 </table>
 </form>
-<!--#end createarticle -->
+<!--#end createarticle1 -->
 
 
 
@@ -529,3 +529,164 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end articleview -->
+
+
+<!--#begin createarticle -->
+<form name="createart" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="articles">
+<input type="hidden" name="idx" value="More">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="addart" value="add">
+<table class="BabLoginCadreBackground" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!-- toolbar articlescreate -->
+<!--#if msie "!= 1" -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', 'OvidentiaImages', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', 'OvidentiaFiles', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ files }</a></center>
+</td>
+</tr>
+<!--#endif msie -->
+<!--#if msie "== 1" -->
+<!--#if babEditorA -->
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle"> 
+<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
+<script src="{ babScriptPath }editor.js"></script>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext">{ headval }</textarea>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext">{ bodyval }</textarea>
+<script language="JavaScript"> 
+			var idGenerator = new IDGenerator(0);
+			var editor = new Editor(idGenerator, '{ babEditorImages }');
+			editor.ListImagesUrl('{ urlimages }')
+			editor.ListFilesUrl('{ urlfiles }')
+			editor.ToolBar();
+			</script>
+</td>
+</tr>
+<!--#else babEditorA -->
+<style type="text/css">
+@import url({ babUrl }{ babScriptPath }htmlarea/htmlarea.css);
+</style>
+
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
+<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
+
+
+<script type="text/javascript">
+var editor = null;
+function initEditor(ta) {
+  editor = new HTMLArea(ta,'{ babUrl }','{ babInstallPath }','{ babLanguage }');
+  editor.generate();
+}
+</script>
+<!--#endif babEditorA -->
+<!--#endif msie -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle" align="center">{ title } </td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<input type="text" name="title" size="60" value="{ titleval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ head } </td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<!--#if babEditorA -->
+<script language="JavaScript">
+	editor.InFrame(0, "headtext", "createart", "100%", "160");
+</script>
+<!--#else babEditorA -->
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('headtext')">
+</iframe>
+<textarea id="headtext" name="headtext"  onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea>
+<!--#endif babEditorA -->
+<!--#else msie -->
+<textarea id="headtext" name="headtext" onblur="this.focus()" onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ body }</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<!--#if babEditorA -->
+<script language="JavaScript">
+	editor.InFrame(1, "bodytext", "createart", "100%", "200");
+</script>
+<!--#else babEditorA -->
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('bodytext')">
+</iframe>
+<textarea id="bodytext" name="bodytext" onfocus="savef(document.createart.bodytext)" style="width:100%" rows="20">{ bodyval } </textarea>
+<!--#endif babEditorA -->
+<!--#else msie -->
+<textarea cols="50" rows="20" name="bodytext" onfocus="savef(document.createart.bodytext)">{ bodyval }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr><td align="center" valign="middle">
+{ langLabel }&nbsp;:&nbsp;<select name="lang">
+<!--#in getnextlang -->
+ <option value="{ langValue }" { langSelected }>{ langValue }</option>
+<!--#endin getnextlang -->
+</select>
+</td></tr>
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<!--#if babEditorA -->
+<input onClick=SetVals() type="submit" name="submit" value="{ modify }">
+<script language="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.FinalInstantiate(1);
+	editor.CloseInitSection();
+</script>
+<!--#endif babEditorA -->
+<!--#else msie -->
+<input type="submit" name="submit" value="{ modify }">
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td align="center" valign="middle">{ notearticle }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#if msie "!= 1" -->
+<script type="text/javascript">
+<!--
+var ctrlf = null;
+function onInsertFile(idf,txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+}
+
+function onInsertImage(txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
+}
+
+function savef(t)
+{
+ctrlf = t;
+}
+
+savef(document.createart.headtext);
+//-->
+</script>
+<!--#endif msie -->
+<!--#end createarticle -->

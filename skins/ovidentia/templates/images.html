@@ -8,22 +8,6 @@
 <script type="text/javascript" src="{ babScriptPath }htmlarea/popups/popup.js"></script>
 <script type="text/javascript">
 <!--
-function Init() {
-if (!document.all) {
-		// init dialogArguments, as IE gets it
-		window.dialogArguments = opener.Dialog._arguments;
-		window.addEventListener("unload", __dlg_onclose, true);
-		// center on parent
-		var px1 = opener.screenX;
-		var px2 = opener.screenX + opener.outerWidth;
-		var py1 = opener.screenY;
-		var py2 = opener.screenY + opener.outerHeight;
-		var x = (px2 - px1 - window.outerWidth) / 2;
-		var y = (py2 - py1 - window.outerHeight) / 2;
-		window.moveTo(x, y);
-	}
-};
-
 function onOK(id, url) {
 	var alt = document.getElementById('f_alt');
 
@@ -93,7 +77,7 @@ window.focus();
 </script>
 
 </HEAD>
-<BODY onload="Init()">
+<BODY>
 <br>
 <center><table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
 <tr>
@@ -216,14 +200,14 @@ refresh }</a></td>
 <td valign=middle>
 <!--#if gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
 <!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:opener.onInsertImage('{ imgurl }')">
+<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
 <!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
@@ -260,14 +244,14 @@ refresh }</a></td>
 <td valign=middle>
 <!--#if gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
 <!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
 <!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
