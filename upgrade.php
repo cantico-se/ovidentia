@@ -870,6 +870,8 @@ if( !$res || $db->db_num_rows($res) == 0 )
 	$beta = "beta2";
 	}
 
+$db->db_query("INSERT INTO ".BAB_INI_TBL." VALUES ('ver_prod', 'E')");
+
 $db->db_query("ALTER TABLE ".BAB_ADDONS_GROUPS_TBL." ADD INDEX(id_object)");
 $db->db_query("ALTER TABLE ".BAB_ADDONS_GROUPS_TBL." ADD INDEX(id_group)");
 
