@@ -243,7 +243,7 @@ function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $con
 
 	$db = $GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', vacation='N', notes='N', contacts='N'"); 
+	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', vacation='N', notes='N', contacts='N', ustorage='N'"); 
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{
 		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id='".$mailgrpids[$i]."'"); 
@@ -264,7 +264,7 @@ function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $con
 		$db->db_query("update ".BAB_GROUPS_TBL." set contacts='Y' where id='".$congrpids[$i]."'"); 
 	}
 
-	for( $i=0; $i < count($congrpids); $i++)
+	for( $i=0; $i < count($pdsgrpids); $i++)
 	{
 		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id='".$pdsgrpids[$i]."'"); 
 	}
