@@ -849,6 +849,10 @@ switch($tg)
 		include $babInstallPath."imgget.php";
 		exit;
 		break;
+	case "link":
+		include $babInstallPath."link.php";
+		exit;
+		break;
 	case "oml":
 		$incl = "oml";
 		break;

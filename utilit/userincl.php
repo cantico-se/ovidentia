@@ -1238,6 +1238,23 @@ function bab_replace_ref( &$txt, $remove = '')
 							bab_replace_var($txt,$var,$title_object);
 							break;
 							
+						case 'ARTICLEFILEID':
+							$id_object = $param[0];
+							$title_object = isset($param[1]) ? $param[1] : '';
+							$res = $db->db_query("select aft.*, at.id_topic, at.restriction from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id='".$id_object."'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
+									{
+									$title_object = empty($title_object) ? (empty($arr['description'])? $arr['name']: $arr['description']) : $title_object;
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$arr['id_topic']."&idf=".$arr['id'],$title_object);
+									}
+
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+
 						case 'CONTACT':
 							$title_object = $param[0].' '.$param[1];
 							$res = $db->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and firstname LIKE '%".addslashes($param[0])."%' and lastname LIKE '%".addslashes($param[1])."%'");
@@ -1352,6 +1369,13 @@ function bab_replace_ref( &$txt, $remove = '')
 							bab_replace_var($txt,$var,$title_object);
 							break;
 							
+						case 'LINKPOPUP':
+							$url_object = $param[0];
+							$name_object = isset($param[1]) ? $param[1] : $url_object;
+							$title_object = bab_replace_make_link("javascript:Start('".$GLOBALS['babUrlScript']."?tg=link&idx=popup&url=".urlencode($url_object)."','', '');",$name_object);
+							bab_replace_var($txt,$var,$title_object);
+							break;
+
 						case 'VAR':
 							$title_object = $param[0];
 							switch($title_object)
