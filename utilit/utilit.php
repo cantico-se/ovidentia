@@ -20,6 +20,17 @@ function bab_isEmailValid ($email)
 	//return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
 	}
 
+function bab_getCssUrl()
+	{
+	global $babInstallPath, $babSkinPath;
+	$filepath = "skins/".$GLOBALS['babSkin']."/styles/". $GLOBALS['babStyle'];
+	if( !file_exists( $filepath ) )
+		{
+		$filepath = $babSkinPath."styles/". $GLOBALS['babStyle'];
+		}
+	return $filepath;
+	}
+
 function bab_isMagicQuotesGpcOn()
 	{
 	$mqg = ini_get("magic_quotes_gpc");
@@ -1394,7 +1405,7 @@ function bab_updateUserSettings()
 				{
 				$GLOBALS['babSkin'] = $arr['skin'];
 				}
-			if( $arr['style'] != "" && is_file($GLOBALS['babInstallPath']."skins/".$arr['skin']."/styles/".$arr['style']))
+			if( $arr['style'] != "")
 				{
 				$GLOBALS['babStyle'] = $arr['style'];
 				}
@@ -1452,6 +1463,10 @@ function bab_updateSiteSettings()
 		if( $arr['skin'] != "")
 			{
 			$GLOBALS['babSkin'] = $arr['skin'];
+			}
+		if( $arr['style'] != "")
+			{
+			$GLOBALS['babStyle'] = $arr['style'];
 			}
 		}
 }
