@@ -76,12 +76,12 @@ function browse($url,$cb)
 				$upperpath = substr($url,0,strrpos($url,"/"));
 				$this->backlink = $GLOBALS['babUrlScript']."?tg=editorovml&url=".$upperpath;
 				}
-			$this->path = is_dir($GLOBALS['babOvmlPath'].'editor') ? $GLOBALS['babOvmlPath'].'editor/' : $GLOBALS['babOvmlPath'];
+			$this->path = is_dir($GLOBALS['babOvmlPath'].'editor') ? 'editor/' : '';
 			$this->url = $url;
 			$this->cb = "".$cb;
 			$this->ext = array (".ovml", ".html", ".htm", ".oml",".ovm");
-			$this->tablo_dir = dire_dir($this->path.$url);
-			$this->tablo_files = dire_ext($this->path.$url,$this->ext);
+			$this->tablo_dir = dire_dir($GLOBALS['babOvmlPath'].$this->path.$this->url);
+			$this->tablo_files = dire_ext($GLOBALS['babOvmlPath'].$this->path.$this->url,$this->ext);
 			$this->count_dir = count($this->tablo_dir);
 			if (is_array($this->tablo_files))
 				$this->count_files = count($this->tablo_files);
@@ -96,7 +96,7 @@ function browse($url,$cb)
 			static $i = 0;
 			if( $i < $this->count_dir)
 				{
-				$subfiles = dire_ext($this->path.$this->tablo_dir[$i],$this->ext);
+				$subfiles = dire_ext($GLOBALS['babOvmlPath'].$this->path.$this->tablo_dir[$i],$this->ext);
 				if (count($subfiles)>0)
 					{
 					$this->displink = true;
@@ -121,7 +121,7 @@ function browse($url,$cb)
 				{
 				$this->file = $this->tablo_files[$i];
 				if ($this->url != "") $url=$this->url."/";
-				$this->urlfile = $url.$this->tablo_files[$i];
+				$this->urlfile = $this->path.$url.$this->tablo_files[$i];
 					
 				$i++;
 				return true;
