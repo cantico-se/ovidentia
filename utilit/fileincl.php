@@ -12,6 +12,35 @@ function getFullPath($gr, $id)
 		return $GLOBALS['babUploadPath']."/U".$id."/";
 }
 
+function formatSize($size, $roundoff = true)
+{
+	if( $size <= 0 )
+		return 0;
+
+	if( $size <= 1024 )
+		return 1;
+	else
+		{
+		if( $roundoff)
+			$size = (int)($size / 1024);
+		if( ($l = strlen($size)) > 3)
+			{
+			if( $l % 3 > 0 )
+				{
+				$txt = substr( $size, 0, $l % 3);
+				}
+			for( $i = 0; $i < ($l / 3); $i++)
+				{
+				$txt .= " ". substr($size, $l%3 + $i*3, 3);
+				}
+			}
+		else
+			$txt = $size;
+		return $txt;
+		}
+		
+}
+
 function babDeleteFiles($path)
 	{
 	if (file_exists($path))
