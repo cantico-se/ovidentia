@@ -163,6 +163,90 @@ class bab_IfGreaterThanOrEqual extends bab_Operator
 	}
 }
 
+
+class bab_Addon extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_Addon( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$name = $ctx->get_value('name');
+		$addonid = 0;
+		foreach ($babBody->babaddons as $value)
+			{
+			if ($value['title'] == $name)
+				{
+				$addonid = $value['id'];
+				break;
+				}
+			}
+
+		if( $addonid && isset($babBody->babaddons[$addonid]) && $babBody->babaddons[$addonid]['access'] )
+			{
+			$addonpath = $GLOBALS['babAddonsPath'].$babBody->babaddons[$addonid]['title'];
+			if( is_file($addonpath."/ovml.php" ))
+				{
+				/* save old vars */
+				$this->AddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
+				$this->AddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
+				$this->AddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
+				$this->AddonPhpPath =  isset($GLOBALS['babAddonPhpPath'])? $GLOBALS['babAddonPhpPath']: '';
+				$this->AddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
+				$this->AddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
+
+				$GLOBALS['babAddonFolder'] = $babBody->babaddons[$addonid]['title']['title'];
+				$GLOBALS['babAddonTarget'] = "addon/".$addonid;
+				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$addonid."/";
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$babBody->babaddons[$addonid]['title']."/";
+				$GLOBALS['babAddonHtmlPath'] = "addons/".$babBody->babaddons[$addonid]['title']."/";
+				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$babBody->babaddons[$addonid]['title']."/";
+				require_once( $addonpath."/ovml.php" );
+
+				$call = $babBody->babaddons[$addonid]['title']."_ovml";
+				if( !empty($call)  && function_exists($call) )
+					{
+					$args = $ctx->get_variables('bab_Addon');
+					$this->IdEntries = $call($args);
+					}
+				}
+			}
+		$this->count = count( $this->IdEntries );
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			foreach($this->IdEntries[$this->idx] as $name => $val)
+				{
+				$this->ctx->curctx->push($name, $val);
+				}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$GLOBALS['babAddonFolder'] = $this->AddonFolder;
+			$GLOBALS['babAddonTarget'] = $this->AddonTarget;
+			$GLOBALS['babAddonUrl'] = $this->AddonUrl;
+			$GLOBALS['babAddonPhpPath'] = $this->AddonPhpPath;
+			$GLOBALS['babAddonHtmlPath'] = $this->AddonHtmlPath;
+			$GLOBALS['babAddonUpload'] = $this->AddonUpload;
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
 class bab_ArticlesHomePages extends bab_handler
 {
 	var $IdEntries = array();
@@ -3697,6 +3781,17 @@ class bab_context
 			return false;
 			}
 	}
+
+	function getname()
+	{
+		return $this->name;
+	}
+
+	function getvars()
+	{
+		return $this->variables;
+	}
+
 }
 
 
@@ -3761,6 +3856,18 @@ function get_value($var)
 			}
 		}
 	return false;
+	}
+
+function get_variables($contextname)
+	{
+	for( $i = count($this->contexts)-1; $i >= 0; $i--)
+		{
+		if( $this->contexts[$i]->getname() == $contextname )
+			{
+			return $this->contexts[$i]->getvars();
+			}
+		}
+	return array();
 	}
 
 function push_handler(&$handler)
