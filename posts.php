@@ -393,6 +393,50 @@ function deleteThread($forum, $thread)
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function notifyThreadAuthor($threadTitle, $email, $author)
+	{
+	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+    include $babInstallPath."utilit/mailincl.php";
+
+	class tempa
+		{
+		var $message;
+        var $from;
+        var $author;
+        var $thread;
+        var $threadname;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($threadTitle, $email, $author)
+			{
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->message = babTranslate("A new post has been registered on thread");
+            $this->from = babTranslate("Author");
+            $this->thread = babTranslate("Thread");
+            $this->threadname = $threadTitle;
+            $this->site = babTranslate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = babTranslate("Date");
+            $this->dateval = bab_strftime(mktime());
+
+            $this->author = $author;
+			}
+		}
+	
+	$tempa = new tempa($threadTitle, $email, $author);
+	$message = babPrintTemplate($tempa,"mailinfo.html", "newpost");
+
+    $mail = new babMail();
+    $mail->mailTo($email);
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject(babTranslate("New post"));
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
 
 
 function saveReply($forum, $thread, $post, $name, $subject, $message)
@@ -447,8 +491,9 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		$req = "select * from users where id='".$arr[starter]."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
-		$msg = babTranslate("A new post has been registered on thread").": \n  ". getThreadTitle($thread);
-		mail ($arr[email],'New Post',$msg,"From: ".$babAdminEmail);
+		//$msg = babTranslate("A new post has been registered on thread").": \n  ". getThreadTitle($thread);
+		//mail ($arr[email],'New Post',$msg,"From: ".$babAdminEmail);
+        notifyThreadAuthor(getThreadTitle($thread), $arr[email], $name);
 		}
 	}
 
