@@ -446,7 +446,7 @@ function topcatSection()
 	$this->title = babTranslate("Topics categories");
 	$this->head = babTranslate("List of different topics categories");
 	$this->db = new db_mysql();
-	$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and topics_categories.enabled='Y'";
+	$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id";
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{

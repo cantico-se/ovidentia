@@ -66,7 +66,7 @@ function sectionsList()
 			$this->counta = $this->db->db_num_rows($this->resa);
 
 			$this->rescat = $this->db->db_query("select * from topics_categories");
-			$this->countcat = $this->db->db_num_rows($this->resa);
+			$this->countcat = $this->db->db_num_rows($this->rescat);
 			}
 
 		function getnextp()

@@ -34,7 +34,7 @@ function listCategories()
 			$this->waiting = babTranslate("Waiting");
 			$this->db = new db_mysql();
 			$req = "select * from topics where id_approver='".$BAB_SESS_USERID."'";
-			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and topics_categories.enabled='Y' and topics.id_approver='".$BAB_SESS_USERID."'";
+			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and topics.id_approver='".$BAB_SESS_USERID."'";
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);

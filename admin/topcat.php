@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include $babInstallPath."utilit/topincl.php";
 
 function topcatModify($id)
 	{
@@ -74,7 +75,7 @@ function topcatDelete($id)
 		function temp($id)
 			{
 			$this->message = babTranslate("Are you sure you want to delete this topic category");
-			$this->title = getGroupName($id);
+			$this->title = getTopicCategoryTitle($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the topic category with all references"). "!";
 			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=topcat&idx=Delete&group=".$id."&action=Yes";
 			$this->yes = babTranslate("Yes");
@@ -124,6 +125,11 @@ function confirmDeleteTopcat($id)
 	// delete from sections_states
 	$req = "delete from sections_states where id_section='$id' and private='3'";
 	$res = $db->db_query($req);	
+
+	// delete all topics/articles/comments
+	$res = $db->db_query("select * from topics where id_cat='".$id."'");
+	while( $arr = $db->db_fetch_array($res))
+		confirmDeleteCategory($arr['id']);
 
 	// delete topic category
 	$req = "delete from topics_categories where id='$id'";

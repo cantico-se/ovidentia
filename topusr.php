@@ -32,7 +32,7 @@ function listCategories($cat)
 			$this->articles = babTranslate("Article") ."(s)";
 			$this->waiting = babTranslate("Waiting");
 			$this->db = new db_mysql();
-			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and topics_categories.enabled='Y' and topics.id_cat='".$cat."'";
+			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and  topics.id_cat='".$cat."'";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
