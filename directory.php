@@ -1713,13 +1713,10 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		if( !empty($cphoto))
 			$req .= "'".$cphoto."',";
 
-		if( isset($fields[$arr['name']]))
-			{
-			if( $idgroup > 0 )
-				$req .= "'0', '".$iduser."')";
-			else
-				$req .= "'".$id."', '0')";
-			}
+		if( $idgroup > 0 )
+			$req .= "'0', '".$iduser."')";
+		else
+			$req .= "'".$id."', '0')";
 		$db->db_query($req);
 		$iddbu = $db->db_insert_id();
 		}
