@@ -337,6 +337,7 @@ CREATE TABLE users_log (
    id_user int(11) unsigned DEFAULT '0' NOT NULL,
    islogged enum('N','Y') DEFAULT 'N' NOT NULL,
    datelog datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+   lastlog datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    dateact datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    PRIMARY KEY (id)
 );

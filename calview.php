@@ -98,7 +98,7 @@ function newArticles()
 		var $count;
 		var $resarticles;
 		var $countarticles;
-		var $datelog;
+		var $lastlog;
 		var $newarticles;
 
 		function temp2()
@@ -108,7 +108,7 @@ function newArticles()
 			$req = "select * from users_log where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			$row = $this->db->db_fetch_array($res);
-			$this->datelog = $row[datelog];
+			$this->lastlog = $row[lastlog];
 
 			$req = "select * from topics";
 			$res = $this->db->db_query($req);
@@ -128,7 +128,7 @@ function newArticles()
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from articles where id_topic='".$this->arrid[$k]."' and confirmed='Y' and date >= '".$this->datelog."' order by date desc";
+				$req = "select * from articles where id_topic='".$this->arrid[$k]."' and confirmed='Y' and date >= '".$this->lastlog."' order by date desc";
 				$this->resarticles = $this->db->db_query($req);
 				$this->countarticles = $this->db->db_num_rows($this->resarticles);
 				$k++;

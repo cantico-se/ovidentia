@@ -1,5 +1,6 @@
 
 ALTER TABLE groups ADD manager INT (11) UNSIGNED not null AFTER vacation;
+ALTER TABLE users_log ADD lastlog DATETIME not null AFTER datelog;
 
 CREATE TABLE categoriescal (
 	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,

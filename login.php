@@ -95,11 +95,12 @@ function signOn( $email, $password)
 	$res=$db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$req="update users_log set datelog=now(), dateact=now(),islogged='Y' where id_user='$BAB_SESS_USERID'";
+		$arr = $db->db_fetch_array($res);
+		$req="update users_log set datelog=now(), lastlog='".$arr[datelog]."', dateact=now(),islogged='Y' where id_user='$BAB_SESS_USERID'";
 		}
 	else
 		{
-		$req="insert into users_log (id_user, datelog,dateact,islogged) values ('$BAB_SESS_USERID', now(), now(), 'Y')";
+		$req="insert into users_log (id_user, datelog, lastlog, dateact,islogged) values ('$BAB_SESS_USERID', now(), now(), now(), 'Y')";
 		}
 	$res=$db->db_query($req);
 	return true;
