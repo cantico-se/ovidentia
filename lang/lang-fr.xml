@@ -1100,6 +1100,7 @@
 <string id="Article's model">Modèle d'article</string>
 <string id="Display template">Patron d'affichage</string>
 <string id="Optional">Optionnel</string>
+<string id="Optional(fem)">Optionnelle</string>
 <string id="Number of topics categories">Nombre de catégories de thèmes</string>
 <string id="Top">Début</string>
 <string id="Order a topic category">Ordonner les catégories de sujets</string>
