@@ -369,7 +369,8 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 						}
 					else
 						{
-						$headinfo = imap_header($this->mbox, imap_msgno($this->mbox, $msg));
+						$msg = imap_msgno($this->mbox, $msg); 
+						$headinfo = imap_header($this->mbox, $msg); 
 						$arr = $headinfo->from;
 						for($i=0; $i < count($arr); $i++)
 							{

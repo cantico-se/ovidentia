@@ -106,7 +106,7 @@ function startSearch($pat, $item, $what, $pos)
 
 		function temp($pat, $item, $what, $pos)
 			{
-			global $BAB_SESS_USERID, $babLimit;
+			global $BAB_SESS_USERID, $babLimit, $babBody;
 
 			$this->db = $GLOBALS['babDB'];
 			$this->search = bab_translate("Search");
@@ -144,18 +144,13 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "alter table comresults add unique (id)";
 				$this->db->db_query($req);
 
-				$req = "select id from ".BAB_TOPICS_TBL."";
-				$res = $this->db->db_query($req);
-				while( $row = $this->db->db_fetch_array($res))
-					{
-					if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
+				for( $i = 0; $i < count($babBody->topview); $i++ )
 						{
-						$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where (title ".$this->like." or head ".$this->like." or body ".$this->like.") and confirmed='Y' and id_topic='".$row['id']."'";
+					$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where (title ".$this->like." or head ".$this->like." or body ".$this->like.") and confirmed='Y' and id_topic='".$babBody->topview[$i]."'";
 						$this->db->db_query($req);
 
-						$req = "insert into comresults select id, id_article, id_topic, subject from ".BAB_COMMENTS_TBL." where (subject ".$this->like." or message ".$this->like.") and confirmed='Y' and id_topic='".$row['id']."'";
+					$req = "insert into comresults select id, id_article, id_topic, subject from ".BAB_COMMENTS_TBL." where (subject ".$this->like." or message ".$this->like.") and confirmed='Y' and id_topic='".$babBody->topview[$i]."'";
 						$this->db->db_query($req);
-						}
 					}
 
 				$req = "select count(*) from artresults";

@@ -79,9 +79,7 @@ function getEventsResult($calid, $day, $month, $year)
 	$db = $GLOBALS['babDB'];
 	$mktime = mktime(0,0,0,$month, $day,$year);
 	$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-	$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-	$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-	$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";
+	$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and '$daymin' between start_date and end_date";
 	return $db->db_query($req);
 }
 

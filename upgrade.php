@@ -531,6 +531,125 @@ if( !$res)
 	return $ret;
 	}
 
+$db->db_query("ALTER TABLE ".BAB_ADDONS_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_ADDONS_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_CALACCESS_USERS_TBL." ADD INDEX(id_cal)");
+$db->db_query("ALTER TABLE ".BAB_CALACCESS_USERS_TBL." ADD INDEX(id_user)");
+
+$db->db_query("ALTER TABLE ".BAB_FAQCAT_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_FAQCAT_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_FORUMSPOST_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_FORUMSPOST_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_FORUMSREPLY_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_FORUMSREPLY_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_FORUMSVIEW_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_FORUMSVIEW_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_TOPICSCOM_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_TOPICSCOM_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_TOPICSSUB_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_TOPICSSUB_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_TOPICSVIEW_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_TOPICSVIEW_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_USERS_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_USERS_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_VACATIONSMAN_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_VACATIONSMAN_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_VACATIONSVIEW_GROUPS_TBL." ADD INDEX(id_object)");
+$db->db_query("ALTER TABLE ".BAB_VACATIONSVIEW_GROUPS_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." ADD INDEX(id_topic)");  
+$db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." ADD INDEX(date)");  
+
+$db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD INDEX(id_cal)");
+$db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD INDEX(start_date)");
+$db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD INDEX(end_date)");
+
+$db->db_query("ALTER TABLE ".BAB_CALENDAR_TBL." ADD INDEX(owner)");
+$db->db_query("ALTER TABLE ".BAB_CALENDAR_TBL." ADD INDEX(type)");
+
+$db->db_query("ALTER TABLE ".BAB_CALOPTIONS_TBL." ADD INDEX(id_user)");
+
+
+$db->db_query("ALTER TABLE ".BAB_CATEGORIESCAL_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD INDEX(id_article)");
+$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD INDEX(id_topic)");
+$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD INDEX(date)");
+
+
+$db->db_query("ALTER TABLE ".BAB_CONTACTS_TBL." ADD INDEX(owner)");
+$db->db_query("ALTER TABLE ".BAB_CONTACTS_TBL." ADD INDEX(firstname)");
+$db->db_query("ALTER TABLE ".BAB_CONTACTS_TBL." ADD INDEX(lastname)");
+
+
+$db->db_query("ALTER TABLE ".BAB_FILES_TBL." ADD INDEX(id_owner)");
+$db->db_query("ALTER TABLE ".BAB_FILES_TBL." ADD INDEX(name)");
+
+$db->db_query("ALTER TABLE ".BAB_GROUPS_TBL." ADD INDEX(manager)");
+
+$db->db_query("ALTER TABLE ".BAB_HOMEPAGES_TBL." ADD INDEX(id_site)");
+$db->db_query("ALTER TABLE ".BAB_HOMEPAGES_TBL." ADD INDEX(id_group)");
+$db->db_query("ALTER TABLE ".BAB_HOMEPAGES_TBL." ADD INDEX(ordering)");
+
+$db->db_query("ALTER TABLE ".BAB_MAIL_ACCOUNTS_TBL." ADD INDEX(owner)");
+
+$db->db_query("ALTER TABLE ".BAB_MAIL_DOMAINS_TBL." ADD INDEX(owner)");
+
+$db->db_query("ALTER TABLE ".BAB_MAIL_SIGNATURES_TBL." ADD INDEX(owner)");
+
+
+$db->db_query("ALTER TABLE ".BAB_NOTES_TBL." ADD INDEX(id_user)");
+
+$db->db_query("ALTER TABLE ".BAB_POSTS_TBL." ADD INDEX(id_thread)");
+$db->db_query("ALTER TABLE ".BAB_POSTS_TBL." ADD INDEX(id_parent)");
+$db->db_query("ALTER TABLE ".BAB_POSTS_TBL." ADD INDEX(date)");
+
+$db->db_query("ALTER TABLE ".BAB_RESOURCESCAL_TBL." ADD INDEX(id_group)");
+
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_ORDER_TBL." ADD INDEX(id_section)");
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_ORDER_TBL." ADD INDEX(type)");
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_ORDER_TBL." ADD INDEX(ordering)");
+
+
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_STATES_TBL." ADD INDEX(id_section)");
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_STATES_TBL." ADD INDEX(type)");
+$db->db_query("ALTER TABLE ".BAB_SECTIONS_STATES_TBL." ADD INDEX(id_user)");
+
+
+$db->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD INDEX(name)");
+
+$db->db_query("ALTER TABLE ".BAB_THREADS_TBL." ADD INDEX(forum)");
+$db->db_query("ALTER TABLE ".BAB_THREADS_TBL." ADD INDEX(date)");
+
+$db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD INDEX(id_approver)");
+$db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD INDEX(id_cat)");
+$db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD INDEX(ordering)");
+
+$db->db_query("ALTER TABLE ".BAB_USERS_TBL." ADD INDEX(nickname)");
+$db->db_query("ALTER TABLE ".BAB_USERS_TBL." ADD INDEX(firstname)");
+$db->db_query("ALTER TABLE ".BAB_USERS_TBL." ADD INDEX(lastname)");
+$db->db_query("ALTER TABLE ".BAB_USERS_TBL." ADD INDEX(hashname)");
+
+$db->db_query("ALTER TABLE ".BAB_USERS_LOG_TBL." ADD INDEX(id_user)");
+
+$db->db_query("ALTER TABLE ".BAB_VACATIONS_TBL." ADD INDEX(userid)");
+$db->db_query("ALTER TABLE ".BAB_VACATIONS_TBL." ADD INDEX(datebegin)");
+$db->db_query("ALTER TABLE ".BAB_VACATIONS_TBL." ADD INDEX(dateend)");
+$db->db_query("ALTER TABLE ".BAB_VACATIONS_TBL." ADD INDEX(type)");
+
 return $ret;
 }
 ?>

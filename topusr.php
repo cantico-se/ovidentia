@@ -54,7 +54,7 @@ function listCategories($cat)
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
+				if(in_array($row['id'], $babBody->topview))
 					{
 					array_push($this->arrid, $row['id']);
 					}

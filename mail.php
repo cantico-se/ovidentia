@@ -401,7 +401,8 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 }
             else
                 {
-                $headinfo = imap_header($mbox, imap_msgno($mbox, $idreply));
+				$idreply = imap_msgno($mbox, $idreply);
+                $headinfo = imap_header($mbox, $idreply);
                 $arr = $headinfo->from;
                 $toval = "";
                 for($i=0; $i < count($arr); $i++)

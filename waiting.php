@@ -60,8 +60,11 @@ function listArticles($topics)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
-				$this->articledate = bab_getArticleDate($this->arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
@@ -111,8 +114,11 @@ function readMore($topics, $article)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['body']);
-				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
-				$this->articledate = bab_getArticleDate($this->arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$i++;
 				return true;
