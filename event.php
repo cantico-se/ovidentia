@@ -1062,8 +1062,8 @@ function calendarquerystring()
 
 /* main */
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "newevent";
-record_calendarchoice();
-$calid = $babBody->icalendars->user_calendarids;
+//record_calendarchoice();
+$calid = $_POST['selected_calendars'];
 
 
 $calid = bab_isCalendarAccessValid($calid);
