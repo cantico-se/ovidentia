@@ -643,6 +643,7 @@
 <string id="Required">Obligatoire</string>
 <string id="Reset">Réinitialiser</string>
 <string id="Resources calendars">Ressources</string>
+<string id="Resource">Ressource</string>
 <string id="Resources">Ressources</string>
 <string id="Response">Réponse</string>
 <string id="Restore">Restaurer</string>
@@ -1511,7 +1512,8 @@
 <string id="Next year">Année suivante</string>
 <string id="New event">Nouvel évènement</string>
 <string id="Day view">Vue quotidienne</string>
-<string id="Collectifs">Collectifs</string>
+<string id="Public">Collectif</string>
+<string id="Publics">Collectifs</string>
 <string id="Push right">Déplacer vers la droite</string>
 <string id="Push left">Déplacer vers la gauche</string>
 <string id="Record">Enregistrer</string>
