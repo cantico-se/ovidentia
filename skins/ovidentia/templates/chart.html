@@ -12,7 +12,7 @@
 </HEAD>
 <frameset cols="240,*" rows="*"  border="1" frameborder="1" framespacing="0">
 
-<frameset rows="*, *" framespacing="0" frameborder="1" border="1">
+<frameset rows="*, *" framespacing="0" frameborder="1" border="1" onUnload="opener.location.href='{ unlockurl }'">
 	<frame src="{ flturl }" name="flt" frameborder="1" />
 	<frame src="" name="flb" frameborder="1" />
 </frameset>
@@ -21,7 +21,7 @@
 	<frame src="{ frurl }" name="fr" frameborder="1" />
  </frameset>
  <noframes>
-<body bgcolor="#FFFFFF" onUnload="opener.location.href='{ unlockurl }'">
+<body bgcolor="#FFFFFF">
 <p>{ errorframe }</p>
 </body>
 
