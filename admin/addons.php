@@ -24,6 +24,18 @@
 include_once "base.php";
 include $babInstallPath."admin/acl.php";
 
+$GLOBALS['addons_files_location'] = 
+array('loc_in' => array("addons",
+				"lang/addons",
+				"skins/ovidentia/templates/addons",
+				"skins/ovidentia/ovml/addons",
+				"skins/ovidentia/images/addons"),			
+	'loc_out' => array("programs",
+				"langfiles",
+				"skins/ovidentia/templates",
+				"skins/ovidentia/ovml",
+				"skins/ovidentia/images"));
+
 function compare_versions($ver1,$ver2) // return true if ver2 >ver1
 {
 $tmp1 = explode(" ",$ver1);
@@ -311,18 +323,9 @@ function export($id)
 		$addarr[] = array('description.html',$addon_txt);
 		}
 	
-	$loc_in = array("addons",
-				"lang/addons",
-				"skins/ovidentia/templates/addons",
-				"skins/ovidentia/ovml/addons",
-				"skins/ovidentia/images/addons");
-				
-	$loc_out = array("programs",
-				"langfiles",
-				"skins/ovidentia/templates",
-				"skins/ovidentia/ovml",
-				"skins/ovidentia/images");
-				
+	$loc_in = $GLOBALS['addons_files_location']['loc_in'];
+	$loc_out = $GLOBALS['addons_files_location']['loc_out'];
+			
 	include $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 	$zip = new Zip;
 	$res = array();
@@ -348,6 +351,96 @@ function export($id)
 	die($zip->get_file());
 	}
 
+
+function upload()
+{
+	global $babBody;
+	class temp
+		{
+		function temp()
+			{
+			$this->t_button = bab_translate("Upload");
+			}
+		}
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "addons.html", "upload"));
+}
+
+function import()
+	{
+	if( !empty($_FILES['uploadf']['name']) && $_FILES['uploadf']['type'] == "application/zip")
+		{
+		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize'])
+			{
+			$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+			return false;
+			}
+		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		$totalsize = getDirSize('addons');
+		if( $_FILES['uploadf']['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
+			{
+			$babBody->msgerror = bab_translate("There is not enough free space");
+			return false;
+			}
+		if( !get_cfg_var('safe_mode'))
+			set_time_limit(0);
+		
+		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
+		$zip = new Zip;
+		$zipcontents = $zip->get_List($_FILES['uploadf']['tmp_name']);
+		
+		$loc_in = $GLOBALS['addons_files_location']['loc_in'];
+		$loc_out = $GLOBALS['addons_files_location']['loc_out'];
+		
+		foreach ($loc_in as $directory)
+			{
+			if (!is_dir($GLOBALS['babInstallPath'].$directory))
+				@mkdir($GLOBALS['babInstallPath'].$directory,0777);
+			}
+		
+		$path_file = array();
+		$file_zipid = array();
+		
+		foreach ($zipcontents as $k => $arr)
+			{
+			$tmppath = substr($arr['filename'],0,strrpos($arr['filename'],'/'));
+			if (!empty($tmppath))
+				{
+				if (!is_array($path_file[$tmppath])) $path_file[$tmppath] = array();
+				foreach ($loc_out as $key => $zippath)
+					{
+					if ($arr['folder'] == 0 && substr_count($arr['filename'],$zippath))
+						{
+						$file_zipid[] = array($key,$arr['index'],$k);
+						}
+					}
+				}
+			}
+
+		$fn = substr($_FILES['uploadf']['name'],0,strrpos($_FILES['uploadf']['name'],'.'));
+		$arr = explode('-',$fn);
+		$i = 0;
+		while(isset($arr[$i]) && !is_numeric($arr[$i]))
+			{
+			if (isset($addon_name))
+				$addon_name .= '-'.$arr[$i];
+			else $addon_name = $arr[$i];
+			$i++;
+			}
+			
+		if (empty($addon_name) || count($path_file) == 0) return false;
+		
+		foreach ($file_zipid as $arr)
+			{
+			$path = $GLOBALS['babInstallPath'].$loc_in[$arr[0]].'/'.$addon_name;
+			$subdir = dirname(substr($zipcontents[$arr[2]]['filename'],strlen($loc_out[$arr[0]])+1));
+			$subdir = isset($subdir) && $subdir != '.' ? '/'.$subdir : '';
+			$zip->Extract($_FILES['uploadf']['tmp_name'],$path.$subdir,$arr[1],false );
+			}
+		}
+	}
+
 /* main */
 if( !isset($idx))
 	$idx = "list";
@@ -369,6 +462,8 @@ if( isset($acladd))
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 	}
 
+if (isset($action) && $action == 'import')
+	import();
 
 switch($idx)
 	{
@@ -377,6 +472,12 @@ switch($idx)
 		aclGroups("addons", "list", BAB_ADDONS_GROUPS_TBL, $item, "acladd");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 		$babBody->addItemMenu("view", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$item);
+		break;
+
+	case "upload":
+		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		$babBody->title = bab_translate("Upload");
+		upload();
 		break;
 
 	case "export":
@@ -396,7 +497,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 		break;
 	}
-
+$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 $babBody->setCurrentItemMenu($idx);
 
 ?>

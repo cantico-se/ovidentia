@@ -83,3 +83,27 @@
 </body>
 </html>
 <!--#end addon_txt -->
+
+<!--#begin upload -->
+<form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="tg" value="addons">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }">
+<input type="hidden" name="action" value="import">
+	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+			<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">
+			<input type="file" name="uploadf" size="40" maxlength="255" value="">
+			<br><br>
+			<input name="" type="submit" value="{ t_button }">
+			</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+</form>
+<!--#end upload -->

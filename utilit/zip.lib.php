@@ -135,7 +135,7 @@ class zip
     ($timearray['minutes'] << 5) | ($timearray['seconds'] >> 1);
  }
 
- function Extract ( $zn, $to, $index = Array(-1) )
+ function Extract ( $zn, $to, $index = Array(-1),$createpath =true )
  {
    if(!@is_dir($to)) @mkdir($to,0777);
    $ok = 0; $zip = @fopen($zn,'rb');
@@ -156,7 +156,7 @@ class zip
      $header['index'] = $i; $pos_entry = ftell($zip);
      @rewind($zip); fseek($zip, $header['offset']);
      if(in_array("-1",$index)||in_array($i,$index))
-      $stat[$header['filename']]=$this->ExtractFile($header, $to, $zip);
+      $stat[$header['filename']]=$this->ExtractFile($header, $to, $zip,$createpath);
       
    }
    fclose($zip);
@@ -252,10 +252,10 @@ class zip
   return $centd;
  }
 
- function ExtractFile($header,$to,$zip)
+ function ExtractFile($header,$to,$zip,$createpath = true)
  {
    $header = $this->readfileheader($zip);
-
+	if (!$createpath) $header['filename'] = basename ($header['filename']);
    if(substr($to,-1)!="/") $to.="/";
    if(substr($header['filename'],-1)=="/")
    {
