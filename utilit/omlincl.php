@@ -3751,7 +3751,6 @@ function format_output($val, $matches)
 					}
 				if( count($trans)> 0 )
 					{
-					print_r($trans);
 					$val = strtr($val, $trans);
 					}
 				}
