@@ -770,7 +770,8 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		return false;
 		}
 
-	set_time_limit(0);
+	if( !get_cfg_var('safe_mode'))
+		set_time_limit(0);
 	if( !move_uploaded_file($tmp, $pathx.$filename))
 		{
 		$babBody->msgerror = bab_translate("The file could not be uploaded");
