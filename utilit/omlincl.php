@@ -3828,7 +3828,7 @@ function vars_replace($txt)
 			{
 			$handler = "bab_".$m[1][$i];
 			$val = $this->$handler($this->vars_replace(trim($m[2][$i])));
-			$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", $val, $txt);
+			$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 			}
 		}
 
@@ -3847,7 +3847,7 @@ function vars_replace($txt)
 						$val = $this->format_output($val, $mm);
 						}
 					}
-				$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", $val, $txt);
+				$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 				}
 			}
 		}
