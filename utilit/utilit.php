@@ -549,7 +549,7 @@ function babUserSection($close)
 		{
 		$this->head = bab_translate("You are not yet logged in")."<br><center><b>";
 		}
-	$this->head .= "</b></center><br>";
+	$this->head .= "</b></center>";
 	$this->foot = "";
 	$this->aidetxt = bab_translate("Since your last connection:");
 
