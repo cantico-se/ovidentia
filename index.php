@@ -106,6 +106,7 @@ include_once $babInstallPath."utilit/defines.php";
 include_once $babInstallPath."utilit/dbutil.php";
 $babDB = new babDatabase();
 include_once $babInstallPath."utilit/statincl.php";
+$babWebStat =& new bab_WebStatEvent();
 
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);

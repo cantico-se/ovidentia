@@ -35,6 +35,10 @@ class bab_WebStatEvent
 
 	function bab_WebStatEvent()
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		register_shutdown_function(array(&$this, 'updateInfo'));
 		$this->idevt = 0;
 		$this->info = array();
@@ -75,6 +79,10 @@ class bab_WebStatEvent
 
 	function logEvent()
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		global $babBody, $babDB, $BAB_SESS_USERID;
 		$babDB->db_query("insert into ".BAB_STATS_EVENTS_TBL." (evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser) values (now(), '".addslashes($this->tg)."', '0', '".addslashes($this->referer)."', '".$this->ip."', '".addslashes($this->host)."', '".addslashes($this->client)."', '".addslashes($this->url)."', '".session_id()."', '0')");
 		$this->idevt = $babDB->db_insert_id();
@@ -82,11 +90,19 @@ class bab_WebStatEvent
 
 	function addInfo($var, $value)
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->info[$var] = $value;
 	}
 
 	function addArrayInfo($var, $value)
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		if( !isset($this->variables[$var]) || count($this->variables[$var]) == 0 || !in_array($value, $this->variables[$var]))
 			{
 			$this->info[$var][] = $value;
@@ -95,86 +111,154 @@ class bab_WebStatEvent
 
 	function module($name) /* module name: script file */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_module', $name);
 	}
 
 	function addon($name) /* addon name */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_addon', $name);
 	}
 
 	function page($name) /* if you want to tag this page */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_page', $name);
 	}
 
 	function addArticle($id) /* articles read from this page */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_articles', $id);
 	}
 	
 	function addOvmlFile($file) /* ovml files parsed */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_ovml', $file);
 	}
 
 	function addArticleFile($id) /* documents associated downloaded from this request */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_artfiles', $id);
 	}
 
 	function addFolder($id) /* folder ( FM ) */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_fmfolders', $id);
 	}
 
 	function addFilesManagerFile($id) /* file ( FM ) downloaded from this page */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_fmfiles', $id);
 	}
 
 	function addForum($id) /* forum */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_forums', $id);
 	}
 
 	function addForumPost($id) /* posts read from this page */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_posts', $id);
 	}
 
 	function addForumThread($id) /* thread view from this page */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_threads', $id);
 	}
 
 	function addFaq($id) /* faq */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_faqs', $id);
 	}
 
 	function addFaqsQuestion($id) /* question read from this page */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_faqsqr', $id);
 	}
 
 	function addSearchWord($word) /* word to search */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_searchword', addslashes($word));
 	}
 
 	function addExternalLink($url) /* external links */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_xlinks', $url);
 	}
 
 	function addDatabaseDirectory($id) /* database directory */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_dbdirectories', $id);
 	}
 
 	function addLdapDirectory($id) /* ldap directory */
 	{
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		$this->addArrayInfo('bab_ldapdirectories', $id);
 	}
 
@@ -182,6 +266,10 @@ class bab_WebStatEvent
 	{
 		global $babBody, $babDB, $BAB_SESS_USERID;
 
+		if( $GLOBALS['babStatOnOff'] != 'Y')
+		{
+			return;
+		}
 		if( $this->idevt)
 			{
 			if( !empty($BAB_SESS_USERID))
@@ -205,11 +293,6 @@ else
 {
 list($babStatOnOff) = $babDB->db_fetch_row($babDB->db_query("select stat_log from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 }
-
-if( $babStatOnOff != 'Y' )
-	{
-	return;
-	}
 
 if( isset($tg) && $tg == "statinfo" )
 {
@@ -260,5 +343,4 @@ if( isset($tg) && $tg == "statinfo" )
   exit;
 }
 
-$babWebStat =& new bab_WebStatEvent();
 ?>
