@@ -82,8 +82,8 @@ function cookieUserLogin($nickname,$password)
 		}
 	}
 
-if (trim($c_nickname) != "" && trim($c_password) != "" && !$GLOBALS['BAB_SESS_USERID'])
+if (trim($HTTP_COOKIE_VARS['c_nickname']) != "" && trim($HTTP_COOKIE_VARS['c_password']) != "" && !$GLOBALS['BAB_SESS_USERID'])
 	{
-	cookieUserLogin($c_nickname,$c_password);
+	cookieUserLogin($HTTP_COOKIE_VARS['c_nickname'],$HTTP_COOKIE_VARS['c_password']);
 	}
 ?>
