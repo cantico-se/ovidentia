@@ -97,16 +97,15 @@ function aclGroups($target, $index, $table, $id, $return)
 				if($this->count1 > 0)
 					{
 					$this->db->db_data_seek($this->res1, 0);
+					$this->arrgroups[select] = "";
 					for( $j = 0; $j < $this->count1; $j++)
 						{
 						$this->groups = $this->db->db_fetch_array($this->res1);
 						if( $this->groups[id_group] == $this->arrgroups[id])
 							{
 							$this->arrgroups[select] = "selected";
+							break;
 							}
-						else
-							$this->arrgroups[select] = "";
-							
 						}
 					}
 				$i++;
