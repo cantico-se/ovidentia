@@ -293,7 +293,10 @@ editor.CloseInitSection();
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-{ babMeta }
+<META NAME="Generator" CONTENT="Ovidentia">
+<META NAME="Author" CONTENT="Ovidentia Community">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
 { babCss }
 <script type="text/javascript">
 <!--
@@ -323,3 +326,47 @@ editor.CloseInitSection();
 </BODY>
 </HTML>
 <!--#end articleview -->
+<!--#begin categoryorder -->
+<form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="topics">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="cat" value="{ idcat }">
+<input type="hidden" name="update" value="order">
+
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td valign="middle" align="center"> 
+<select name="listtopics[]"  size=12 multiple>
+  <option value="0">{ catname }</option>
+  <!--#in getnext --> 
+  <option value="{ topicid }">{ topicval }</option>
+  <!--#endin getnext --> 
+</select>
+</td>
+<td valign="middle" align="center"><a 
+href="Javascript:move(true, document.ordform.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
+width="22" height="18" border=0 alt="{ moveup }"></a> <br>
+<br>
+<a href="Javascript:move(false, document.ordform.elements[4])"> 
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+</td>
+</tr>
+<tr> 
+<td align="center"> 
+<input type="submit" name="Submit" value="{ create }" 
+onClick="Javascript:selectAll(document.ordform.elements[4]); document.ordform.submit()">
+<br>
+<br>
+</td>
+<td>&nbsp; </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+
+<!--#end categoryorder -->
