@@ -1019,7 +1019,13 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 		$remarks = addslashes($remarks);
 		}
 
-	$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set date_begin='".sprintf("%04d-%02d-%02d", $startyear + $yearbegin - 1, $monthbegin, $daybegin)."', date_end='".sprintf("%04d-%02d-%02d", $startyear + $yearend - 1, $monthend, $dayend)."', day_begin='".$halfdaybegin."', day_end='".$halfdayend."', comment='".$remarks."' where id='".$vrid."'");
+	$b = sprintf("%04d-%02d-%02d", $startyear + $yearbegin - 1, $monthbegin, $daybegin);
+	$e = sprintf("%04d-%02d-%02d", $startyear + $yearend - 1, $monthend, $dayend);
+
+	$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set date_begin='".$b."', date_end='".$e."', day_begin='".$halfdaybegin."', day_end='".$halfdayend."', comment='".$remarks."' where id='".$vrid."'");
+
+	$res = $babDB->db_query("UPDATE ".BAB_CAL_EVENTS_TBL." SET start_date='".$b." 00:00:00', end_date='".$e." 23:59:59' where hash='V_".$vrid."'");
+
 
 	for( $i = 0; $i < count($nbdays['id']); $i++)
 		{
@@ -1165,8 +1171,7 @@ function doDeleteVacationRequests($date, $userid)
 	$res = 	$babDB->db_query($req);
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$arr['id']."'");
-		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$arr['id']."'");
+		doDeleteVacationRequest($arr['id']);
 	}
 }
 
