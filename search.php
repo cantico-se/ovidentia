@@ -55,10 +55,19 @@ function put_text($txt,$limit=60,$limitmot=30)
 return bab_replace(implode(" ",$arr));
 }
 
+function he($tbl,$str,$not="")
+	{
+	if ($not == "NOT") $op = "AND";
+	else $op =  "OR";
+	$tmp = htmlentities($str);
+	if ($tmp != $str)
+		return " ".$op." ".$tbl.$not." like '%".$tmp."%'";
+	}
+
 function finder($req2,$tablename,$option = "OR",$req1="")
 {
-if (trim($req1) != "")
-	$like = $tablename." like '%".$req1."%'";
+if (trim($req1) != "") 
+	$like = $tablename." like '%".$req1."%'".he($tablename,$req1);
 
 if( !bab_isMagicQuotesGpcOn())
 	$req2 = addslashes($req2);
@@ -74,7 +83,7 @@ if (trim($req2) != "")
 				if (trim($req1) == "" && $key==0)
 					$like = $tablename." like '%".$mot."%'";
 				else
-					$like .= " AND ".$tablename." NOT like '%".$mot."%'";
+					$like .= " AND ".$tablename." NOT like '%".$mot."%'".he($tablename,$mot," NOT");
 				}
 		break;
 		case "OR":
@@ -82,10 +91,13 @@ if (trim($req2) != "")
 		default:
 			foreach($tb as $key => $mot)
 				{
+				$he = he($tablename,$mot);
 				if (trim($req1) == "" && $key==0)
-					$like = $tablename." like '%".$mot."%'";
+					$like = $tablename." like '%".$mot."%'".$he;
+				else if ($he != "" && $option == "AND")
+					$like .= " AND (".$tablename." like '%".$mot."%'".$he.")";
 				else
-					$like .= " ".$option." ".$tablename." like '%".$mot."%'";
+					$like .= " ".$option." ".$tablename." like '%".$mot."%'".$he;
 				}
 		break;
 		}
@@ -1633,7 +1645,5 @@ switch($idx)
 		searchKeyword( $item ,$option);
 		break;
 	}
-
 $babBody->setCurrentItemMenu($idx);
 ?>
-
