@@ -14,7 +14,8 @@
 </tr>
 <!-- toolbar -->
 <!--#if msie "== 1" -->
-<script src="{ babScriptPath }SaisieFormatee.js"></script>
+<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
+<script src="{ babScriptPath }editor.js"></script>
 <tr> 
 <td> 
 <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content"></textarea>
@@ -104,7 +105,8 @@ width="10%"><a class="BabFaqLink" href="{ editurl }">{ editname }</a> </td>
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
-         <script src="{ babScriptPath }SaisieFormatee.js"></script><tr> 
+<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
+<script src="{ babScriptPath }editor.js"></script>
 <td> 
 <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ arr[content] }</textarea>
 </td>
