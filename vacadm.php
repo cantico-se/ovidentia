@@ -650,7 +650,7 @@ function deleteVacationPersonnel($pos, $idcol, $idsa, $userids)
 					$this->title .= "<br>". bab_composeUserName($arr['firstname'], $arr['lastname']);
 					$items .= $arr['id'];
 					}
-				if( $i < count($item) -1)
+				if( $i < count($userids) -1)
 					$items .= ",";
 				}
 			$this->warning = bab_translate("WARNING: This operation will remove users and their references"). "!";
