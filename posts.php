@@ -202,7 +202,7 @@ function listPosts($forum, $thread, $post)
 						$this->replymail = $r['email']."?subject=";
 						if( substr($arr['subject'], 0, 3) != "RE:")
 							$this->replymail .= "RE: ";
-						$this->replymail .= urlencode($arr['subject']);
+						$this->replymail .= $arr['subject'];
 						}
 					else
 						$this->replymail = 0;

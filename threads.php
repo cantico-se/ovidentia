@@ -124,15 +124,25 @@ function listThreads($forum, $active, $pos)
 					$this->arrpost = $this->db->db_fetch_array($res);
 					$this->subjecturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->arrthread['id']."&views=1";
 					$this->subjectname = $this->arrpost['subject'];
-					$req = "select * from posts where id_thread='".$this->arrthread['id']."' and id='".$this->arrthread['lastpost']."'";
-					$res = $this->db->db_query($req);
-					$arr = $this->db->db_fetch_array($res);
 				
-					$tmp = explode(" ", $arr['date']);
+					$tmp = explode(" ", $this->arrpost['date']);
 					$arr0 = explode("-", $tmp[0]);
 					$arr1 = explode(":", $tmp[1]);
 					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
 					//$this->lastpostdate = bab_strftime(bab_mktime($arr['date']));
+
+					$res = $this->db->db_query("select email from users where id='".bab_getUserId( $this->arrpost['author'])."'");
+					if( $res && $this->db->db_num_rows($res) > 0)
+						{
+						$r = $this->db->db_fetch_array($res);
+
+						$this->replymail = $r['email']."?subject=";
+						if( substr($this->arrpost['subject'], 0, 3) != "RE:")
+							$this->replymail .= "RE: ";
+						$this->replymail .= $this->arrpost['subject'];
+						}
+					else
+						$this->replymail = 0;
 
 					$req = "select count(*) as total from posts where id_thread='".$this->arrthread['id']."' and confirmed='Y'";
 					$res = $this->db->db_query($req);

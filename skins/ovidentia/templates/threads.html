@@ -40,7 +40,13 @@
 <!--#else disabled -->
 <td class="BabForumBackground"><a class="BabContentLinkColor" href="{ subjecturl }">{ subjectname }</a></td>
 <!--#endif disabled -->
-<td class="BabForumBackground" align="center" nowrap>{ arrpost[author] }</td>
+<td class="BabForumBackground" align="center" nowrap>
+<!--#if replymail "!= 0" -->
+<a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ arrpost[author] }</a>
+<!--#else replymail -->
+{ arrpost[author] }
+<!--#endif replymail -->
+</td>
 <td class="BabForumBackground" align="center">{ replies }</td>                  
 <td class="BabForumBackground" align="center">{ arrthread[views] }</td>
 <td class="BabForumBackground" align="right" nowrap>{ lastpostdate }</td>
