@@ -32,7 +32,7 @@
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ filename }</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="file" name="filename" size="25" maxlength="40">
+<input type="file" name="filename" size="25">
 </td>
 </tr>
 <tr> 
@@ -230,8 +230,8 @@
 <td class="BabLoginMenuBackground" align="center" valign="middle"> 
 <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
 <script src="{ babScriptPath }editor.js"></script>
-<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext"></textarea>
-<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext"></textarea>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext">{ headval }</textarea>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext">{ bodyval }</textarea>
 <script language="JavaScript"> 
 			var idGenerator = new IDGenerator(0);
 			var editor = new Editor(idGenerator, '{ babEditorImages }');
@@ -245,7 +245,7 @@
 </tr>
 <tr> 
 <td align="center" valign="middle"> 
-<input type="text" name="title" size="60" >
+<input type="text" name="title" size="60" value="{ titleval }">
 </td>
 </tr>
 <tr> 
@@ -258,7 +258,7 @@
 	editor.InFrame(0, "headtext", "createart", "100%", "160");
 </script>
 <!--#else msie -->
-<textarea cols="50" rows="5" name="headtext"></textarea>
+<textarea cols="50" rows="5" name="headtext">{ headval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
@@ -272,7 +272,7 @@
 	editor.InFrame(1, "bodytext", "createart", "100%", "200");
 </script>
 <!--#else msie -->
-<textarea cols="50" rows="20" name="bodytext"></textarea>
+<textarea cols="50" rows="20" name="bodytext">{ bodyval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
