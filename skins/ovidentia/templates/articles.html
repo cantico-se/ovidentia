@@ -133,9 +133,9 @@
 
 <!--#begin articleview -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<html>
+<head>
+<title>{ babSiteName }</title>
 { babMeta }
 { babCss }
 <script type="text/javascript">
@@ -143,75 +143,79 @@
 window.focus();
 //-->
 </script>
-</HEAD>
-<BODY class="BabTopicsAdminArticleViewFontBackground">
+</head>
+<body>
 <br>
-<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0">
-<tr>
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] 
-}</b></td>
-</tr>
-<tr><td>{ head }</td></tr>
-<tr>
-<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
-</tr>
-<tr><td>{ content }</td></tr>
-<tr>
-<!--#if countf -->
-<tr>
-<td class="BabSiteAdminTitleFontBackground">{ attachmentxt }</td>
-</tr>
-<!--#in getnextdoc -->
-<tr><td>
-<a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;
-</td></tr>
-<!--#endin getnextdoc -->
-<!--#endif countf -->
+<table border="0" width="100%" cellpadding="5" cellspacing="0">
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground" align="center" nowrap>{ arr[title] }</td>
+	</tr>
+	<tr>
+		<td class="BabTopicsBackground">{ head }</td>
+	</tr>
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="BabTopicsBackground">{ content }</td>
+	</tr>
+	<tr>
+	<!--#if countf -->
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground">{ attachmentxt }</td>
+	</tr>
+	<!--#in getnextdoc -->
+	<tr>
+		<td><a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;</td>
+	</tr>
+	<!--#endin getnextdoc -->
+	<!--#endif countf -->
 
-<!--#if countcom -->
-<tr>
-<td class="BabSiteAdminTitleFontBackground">{ commentstxt }</td>
-</tr>
-<tr><td>
-<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<!--#in getnextcom -->
-<!--#if altbg -->
-<tr class="BabSummaryContentBackground">
-<!--#else altbg -->
-<tr class="BabTopicsAuthorBackground">
-<!--#endif altbg -->
-<td>{ authorname }</td>
-<td align="left"><span style="font-Size:9">{ commenttitle }</span>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSummaryContentBackground">
-<!--#else altbg -->
-<tr class="BabTopicsAuthorBackground">
-<!--#endif altbg -->
-<td>{ commentdate }</td>
-<td align="left">{ commentbody }&nbsp;
-</td>
-</tr>
-<!--#endin getnextcom --> 
+	<!--#if countcom -->
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground">{ commentstxt }</td>
+	</tr>
+	<tr>
+		<td>
+			<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr> 
+					<td class="BabLoginMenuBackground"> 
+						<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+						<!--#in getnextcom -->
+						<!--#if altbg -->
+						<tr class="BabSummaryContentBackground">
+						<!--#else altbg -->
+						<tr class="BabTopicsAuthorBackground">
+						<!--#endif altbg -->
+						<td>{ authorname }</td>
+						<td align="left"><span style="font-Size:9">{ commenttitle }</span>
+						</td>
+						</tr>
+						<!--#if altbg -->
+						<tr class="BabSummaryContentBackground">
+						<!--#else altbg -->
+						<tr class="BabTopicsAuthorBackground">
+						<!--#endif altbg -->
+						<td>{ commentdate }</td>
+						<td align="left">{ commentbody }&nbsp;
+						</td>
+						</tr>
+						<!--#endin getnextcom --> 
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<!--#endif countcom -->
+	<tr>
+		<td colspan="2" align="center">
+		<br />
+		<a href="javascript:this.close()">{ close }</a>
+		<br />
+		</td>
+	</tr>
 </table>
-</td>
-</tr>
-</table>
-</td></tr>
-<!--#endif countcom -->
-
-<tr>
-<td colspan="2" align="center">
-<br>
-<a href="javascript:this.close()">{ close }</a>
-<br>
-</td>
-</tr>
-</table>
-</BODY>
-</HTML>
+</body>
+</html>
 <!--#end articleview -->
