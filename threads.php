@@ -257,11 +257,12 @@ function newThread($forum)
 				{
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
+				}
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
-				$this->msie = 0;	
-				}
+				$this->msie = 0;
+
 			if( bab_isForumModerated($forum))
 				$this->noteforum = bab_translate("Note: Posts are moderate and consequently your post will not be visible immediately");
 			else
