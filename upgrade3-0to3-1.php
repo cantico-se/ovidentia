@@ -16,6 +16,24 @@
 ************************************************************************/
 include "config.php";
 
+function updateConfig()
+{
+	$filename = "config.php";
+
+	$file = @fopen($filename, "r");
+	if( $file )
+	{
+		$txt = fread($file, filesize($filename));
+		$txt .= "\r\n\$babMaxFileSize = 1000000;";
+		$txt .= "\r\n\$babMaxUserSize = 2000000;";
+		$txt .= "\r\n\$babMaxGroupSize = 5000000;";
+		$txt .= "\r\n\$babMaxTotalSize = 100000000;";
+		$txt .= "\r\n\$babUploadPath = \"\";";
+		fputs($file, $txt);
+		fclose($file);
+	}
+}
+
 function upgrade()
 {
 $ret = "";
@@ -231,6 +249,7 @@ $db->db_query("INSERT INTO mime_types VALUES ('xls', 'application/vnd.ms-excel')
 $db->db_query("INSERT INTO mime_types VALUES ('xml', 'text/xml')";
 $db->db_query("INSERT INTO mime_types VALUES ('zip', 'application/zip')";
 
+updateConfig();
 return $ret;
 }
 ?>
