@@ -100,13 +100,13 @@ function addonsList()
 					$this->catchecked = "checked";
 				else
 					$this->catchecked = "";
-				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$this->arr['title']."/addonini.php", true );
+				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$this->arr['title']."/addonini.php");
 				$this->addversion = "";
 				$this->description = "";
-				if( !empty($arr_ini['general']['version']))
-					$this->addversion = $arr_ini['general']['version'];
-				if( !empty($arr_ini['general']['description']))
-					$this->description = $arr_ini['general']['description'];
+				if( !empty($arr_ini['version']))
+					$this->addversion = $arr_ini['version'];
+				if( !empty($arr_ini['description']))
+					$this->description = $arr_ini['description'];
 				$i++;
 				return true;
 				}
