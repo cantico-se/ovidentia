@@ -203,7 +203,9 @@ a img {
 	height:20px;
 	}
 
-#bab_calweek .innertable td.event span {
+#bab_calweek .innertable td.event span, 
+#bab_calweek .innertable td.freeevent span,
+#bab_calweek .innertable td.used span {
 	white-space:nowrap;
 	}
 	
@@ -237,12 +239,18 @@ a img {
 
 .bab_calendar .freeevent, .bab_calendar .used {
 	padding:2px;
+	}
+
+#bab_calmonth .freeevent, #bab_calmonth .used {
 	margin-top:3px;
 	margin-bottom:3px;
 	}
 
 .bab_calendar .freeevent {
 	background-color:#cf6;
+	}
+
+#bab_calmonth .freeevent {
 	border-top:#390 1px solid;
 	border-bottom:#390 1px solid;
 	}
@@ -250,4 +258,8 @@ a img {
 .bab_calendar .used {
 	background-color:lightgrey;
 	background-image:url('../images/Puces/stripsbackground.gif');
+	}
+
+.bab_calendar .used .bab_tooltip {
+	background-color:lightgrey;
 	}

@@ -369,6 +369,7 @@ function cal_week_free($calids, $date)
 	global $babBody;
 
 	$temp = new cal_weekCls("free", $calids, $date);
+	$temp->updateFreeAccess();
 	$temp->printout("calweek.html", "calfreeweek");
 }
 
