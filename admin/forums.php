@@ -214,7 +214,7 @@ if(!isset($idx))
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
-	if( !saveForum($name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active))
+	if( !saveForum($fname, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
 

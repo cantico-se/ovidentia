@@ -165,7 +165,7 @@ if(!isset($idx))
 if( isset($update) && $update == "updateforum")
 	{
 	if( isset($submit))
-		updateForum($item, $name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active);
+		updateForum($item, $fname, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active);
 	else if( isset($bdelete))
 		{
 		$idx = "Delete";
