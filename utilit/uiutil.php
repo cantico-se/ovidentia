@@ -23,23 +23,25 @@
 ************************************************************************/
 include_once "base.php";
 
-function popupUnload($message, $redirecturl)
+function popupUnload($message, $redirecturl, $openerreload=false)
 	{
 	class temp
 		{
 		var $message;
 		var $close;
 		var $redirecturl;
+		var $openerreload;
 
-		function temp($message, $redirecturl)
+		function temp($message, $redirecturl, $openerreload)
 			{
 			$this->message = $message;
 			$this->close = bab_translate("Close");
 			$this->redirecturl = $redirecturl;
+			$this->openerreload = $openerreload;
 			}
 		}
 
-	$temp = new temp($message, $redirecturl);
+	$temp = new temp($message, $redirecturl, $openerreload);
 	echo bab_printTemplate($temp,"uiutil.html", "popupunload");
 	}
 

@@ -15,7 +15,11 @@ window.focus();
 <!--#if redirecturl -->
 <BODY onUnload="javascript:this.opener.location.href='{ redirecturl }';">
 <!--#else redirecturl -->
+<!--#if openerreload -->
+<BODY onUnload="this.opener.location.reload()">
+<!--#else openerreload -->
 <BODY>
+<!--#endif openerreload -->
 <!--#endif redirecturl -->
 <br><br><br><br>
 
