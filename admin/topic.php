@@ -337,7 +337,6 @@ function addToHomePages($item, $homepage, $art)
 		else
 			{
 				$req = "delete from homepages where id_article='".$arr['id']."' and id_group='".$homepage."'";
-					echo $req."<br>";
 				$db->db_query($req);
 			}
 
