@@ -358,9 +358,9 @@ function calendarMonth($calid, $day, $month, $year)
 				if( $arr['ampm'] == "Y")
 					$this->ampm = true;
 				if( $arr['defaultviewweek'] )
-					$this->defvw = "viewqc";
-				else
 					$this->defvw = "viewq";
+				else
+					$this->defvw = "viewqc";
 				}
 
 			$this->bowner = isCalUpdate($this->mcals);
@@ -819,9 +819,9 @@ function calendarDay($calid, $day, $month, $year, $starttime)
 				if( $arr['ampm'] == "Y")
 					$this->ampm = true;
 				if( $arr['defaultviewweek'] )
-					$this->defvw = "viewqc";
-				else
 					$this->defvw = "viewq";
+				else
+					$this->defvw = "viewqc";
 				}
 
 			$this->bowner = isCalUpdate($this->mcals);
