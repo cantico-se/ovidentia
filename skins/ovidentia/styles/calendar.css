@@ -237,6 +237,8 @@ a img {
 
 .bab_calendar .freeevent, .bab_calendar .used {
 	padding:2px;
+	margin-top:2px;
+	margin-bottom:2px;
 	}
 
 .bab_calendar .freeevent {

@@ -433,6 +433,8 @@ class cal_wmdbaseCls
 		$this->allow_modify = false;
 		$this->allow_view = false;
 		$this->allow_viewtitle = true;
+		$this->allow_freeevent_create = false;
+
 
 		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
 
@@ -567,6 +569,32 @@ class cal_wmdbaseCls
 			}
 	
 	}
+
+	function updateFreeAccess()
+		{
+		global $babBody;
+		foreach ($this->idcals as $cal)
+			{
+			$calinfo = $babBody->icalendars->getCalendarInfo($cal);
+			switch( $calinfo['type'] )
+				{
+				case BAB_CAL_USER_TYPE:
+					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE)
+						{
+						$this->allow_freeevent_create = true;
+						return;
+						}
+					break;
+				case BAB_CAL_PUB_TYPE:
+				case BAB_CAL_RES_TYPE:
+					if ($calinfo['manager'])
+						{
+						$this->allow_freeevent_create = true;
+						return;
+						}
+				}
+			}
+		}
 
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
 		{

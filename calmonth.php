@@ -247,6 +247,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$time = bab_mktime($arr[1]);
 			$this->endtime = bab_time($time);
 			$this->enddate = bab_shortDate($time, false);
+			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $time).",".date("m", $time).",".date("d", $time)."&calid=".implode(',',$this->idcals)."&view=viewm&st=".$this->starttime;
 			return true;
 			}
 		else
@@ -272,6 +273,7 @@ function cal_month_free($calids, $date)
 	global $babBody;
 
 	$temp = new cal_monthCls("free", $calids, $date);
+	$temp->updateFreeAccess();
 	$temp->printout("calmonth.html", "calfreemonth");
 }
 

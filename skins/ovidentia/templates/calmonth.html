@@ -200,12 +200,16 @@ document.onmousemove = bab_tooltipPosition;
 			</div>
 			<!--#in getfreeevent -->
 			<!--#if free -->
-			<div class="freeevent" <!--#if allow_create -->style="cursor:pointer" onClick="bab_popup('{ titletenurl }',5)"<!--#endif allow_create -->>
+				<!--#if allow_freeevent_create -->
+				<div class="freeevent" style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)">
+				<!--#else allow_freeevent_create -->
+				<div class="freeevent">
+				<!--#endif allow_freeevent_create -->
 			<!--#else free -->
-			<div class="used">
+				<div class="used">
 			<!--#endif free -->
-				{ startdate } { starttime }<br />{ enddate } { endtime }
-			</div>
+					{ startdate } { starttime }<br />{ enddate } { endtime }
+				</div>
 			<!--#endin getfreeevent -->
 		</td> 
 		<!--#endin getnextday -->
