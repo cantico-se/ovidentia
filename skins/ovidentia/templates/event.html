@@ -94,7 +94,7 @@ href="{ datebegin }">{ datebegintxt }</a>:</td>
 <td valign="middle" nowrap colspan="4"> 
 <table class="BabLoginMenuBackground" border="0" cellspacing="0" cellpadding="0">
 <tr> 
-<td width="70" align="right" valign="middle">{ from }&nbsp;</td>
+<td width="70" align="right" valign="middle">{ starttime }&nbsp;</td>
 <td width="50" valign="middle"> 
 <select name="timebegin">
 <!--#in getnexttime -->
@@ -102,7 +102,7 @@ href="{ datebegin }">{ datebegintxt }</a>:</td>
 <!--#endin getnexttime -->
 </select >
 </td>
-<td width="70" align="right" valign="middle">{ to }&nbsp;</td>
+<td width="70" align="right" valign="middle">{ endtime }&nbsp;</td>
 <td width="50" valign="middle"> 
 <select name="timeend">
 <!--#in getnexttime -->
@@ -131,8 +131,7 @@ href="{ datebegin }">{ datebegintxt }</a>:</td>
 </td>
 </tr>
 <tr> 
-<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="{ dateend }">{ 
-dateendtxt }</a>:</td>
+<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="{ dateend }">{ dateendtxt }</a>:</td>
 <td valign="middle"> 
 <select name="dayend">
 <!--#in getnextday -->
@@ -349,7 +348,7 @@ dateendtxt }</a>:</td>
 </td>
 </tr>
 <tr> 
-<td align="right" nowrap valign="middle">{ from }</td>
+<td align="right" nowrap valign="middle">{ starttime }</td>
 <td valign="middle"> 
 <select name="timebegin">
 <!--#in getnexttime -->
@@ -357,7 +356,7 @@ dateendtxt }</a>:</td>
 <!--#endin getnexttime -->
 </select >
 </td>
-<td align="right" nowrap valign="middle">{ to }</td>
+<td align="right" nowrap valign="middle">{ endtime }</td>
 <td valign="middle"> 
 <select name="timeend">
 <!--#in getnexttime -->
@@ -416,10 +415,8 @@ dateendtxt }</a>:</td>
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabSiteAdminTitleFontBackground" width="35%" nowrap valign="middle"><b>{ 
-titlename }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="65%" valign="middle">{ title 
-} </td>
+<td class="BabSiteAdminTitleFontBackground" width="35%" nowrap valign="middle"><b>{ titlename }</b></td>
+<td class="BabSiteAdminTitleFontBackground" width="65%" valign="middle">{ title } </td>
 </tr>
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><b>{  startdatename }</b></td>
