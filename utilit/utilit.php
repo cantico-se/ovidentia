@@ -1909,11 +1909,17 @@ function bab_updateUserSettings()
 
 			bab_fileManagerAccessLevel();
 
-			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
-			{
-				if($babBody->aclfm['down'][$i])
-					$arrfid[] = $babBody->aclfm['id'][$i];
-			}
+			$arrfid = array();
+			if( isset($babBody->aclfm['id']))
+				{
+				for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+					{
+					if($babBody->aclfm['down'][$i])
+						{
+						$arrfid[] = $babBody->aclfm['id'][$i];
+						}
+					}
+				}
 
 			if( count($arrfid) > 0 )
 				{
