@@ -1609,7 +1609,7 @@ switch($idx)
 		$babBody->title = bab_translate("Add entry to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		if($badd)
 			{
-			if (!isset($fields)) $fields = '';
+			if (!isset($fields)) { $fields = array() ;}
 			addDbContact($id, $fields);
 			exit;
 			}
