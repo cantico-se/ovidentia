@@ -2403,3 +2403,12 @@ CREATE TABLE bab_stats_articles_ref (
   KEY st_article_id (st_article_id),
   KEY st_module_id (st_module_id)
 );
+
+CREATE TABLE bab_forumsfiles_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group`)
+);
