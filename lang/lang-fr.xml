@@ -497,8 +497,8 @@
 <string id="Until date">Jusqu'à une date</string>
 <string id="All day">Toute la journée</string>
 <string id="Add Event">Ajouter un événement</string>
-<string id="starttime">Date de début</string>
-<string id="endtime">Date de Fin</string>
+<string id="starttime">Heure de début</string>
+<string id="endtime">Heure de Fin</string>
 <string id="Week recurrence">Récurrence hebdomadaire</string>
 <string id="Or">Ou</string>
 <string id="Repeat">Répéter</string>
