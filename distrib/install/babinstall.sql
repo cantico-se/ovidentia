@@ -1314,7 +1314,7 @@ CREATE TABLE bab_fm_fields (
   name char(255) NOT NULL default '',
   defaultval char(255) NOT NULL default '',
   PRIMARY KEY  (id),
-  KEY id_user (id_folder)
+  KEY id_folder (id_folder)
 );
 
 #
@@ -1327,8 +1327,8 @@ CREATE TABLE bab_fm_fieldsval (
   id_file int(11) unsigned NOT NULL default '0',
   fvalue char(255) NOT NULL default '',
   PRIMARY KEY  (id),
-  KEY id_user (id_file),
-  KEY id_user (id_folder)
+  KEY id_file (id_file),
+  KEY id_field (id_field)
 );
 
 #
@@ -1346,7 +1346,7 @@ CREATE TABLE bab_fm_filesver (
   idfai int(11) unsigned NOT NULL default '0',
   confirmed enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
-  PRIMARY KEY  (id_file)
+  KEY id_file (id_file)
 ); 
 
 #
@@ -1362,5 +1362,5 @@ CREATE TABLE bab_fm_fileslog (
   comment tinytext NOT NULL,
   version varchar(10) NOT NULL default '',
   PRIMARY KEY  (id),
-  PRIMARY KEY  (id_file)
+  KEY id_file (id_file)
 );

@@ -1717,7 +1717,7 @@ $req .= "id_folder int(11) unsigned NOT NULL default '0',";
 $req .= "name char(255) NOT NULL default '',";
 $req .= "defaultval char(255) NOT NULL default '',";
 $req .= "PRIMARY KEY  (id),";
-$req .= "PRIMARY KEY  (id_folder)";
+$req .= "KEY id_folder (id_folder)";
 $req .= ")";
 
 $res = $db->db_query($req);
@@ -1733,8 +1733,8 @@ $req .= "id_field int(11) unsigned NOT NULL default '0',";
 $req .= "id_file int(11) unsigned NOT NULL default '0',";
 $req .= "fvalue char(255) NOT NULL default '',";
 $req .= "PRIMARY KEY  (id),";
-$req .= "KEY id_user (id_file),";
-$req .= "KEY id_user (id_folder)";
+$req .= "KEY id_file (id_file),";
+$req .= "KEY id_field (id_field)";
 $req .= ");";
 
 $res = $db->db_query($req);
@@ -1755,13 +1755,32 @@ $req .= "comment tinytext NOT NULL,";
 $req .= "idfai int(11) unsigned NOT NULL default '0',";
 $req .= "confirmed enum('N','Y') NOT NULL default 'N',";
 $req .= "PRIMARY KEY  (id),";
-$req .= "PRIMARY KEY  (id_file)";
+$req .= "KEY id_file (id_file)";
 $req .= ");"; 
 
 $res = $db->db_query($req);
 if( !$res)
 	{
 	$ret = "Creation of <b>".BAB_FM_FILESVER_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FM_FILESLOG_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_file int(11) unsigned NOT NULL default '0',";
+$req .= "date datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "author int(11) unsigned NOT NULL default '0',";
+$req .= "action smallint(5) unsigned NOT NULL default '0',";
+$req .= "comment tinytext NOT NULL,";
+$req .= "version varchar(10) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_file (id_file)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FM_FILESLOG_TBL."</b> table failed !<br>";
 	return $ret;
 	}
 
