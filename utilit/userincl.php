@@ -8,7 +8,7 @@ function bab_isUserApprover($topics)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_TOPICS_TBL." where id='$topics' and id_approver='$BAB_SESS_USERID'";
+	$query = "select id from ".BAB_TOPICS_TBL." where id='$topics' and id_approver='$BAB_SESS_USERID'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -27,9 +27,9 @@ function bab_isUserGroupManager($grpid="")
 		return false;
 
 	if( empty($grpid))
-		$query = "select * from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID'";
+		$query = "select id from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID'";
 	else
-		$query = "select * from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID' and id='$grpid'";
+		$query = "select id from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID' and id='$grpid'";
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -51,12 +51,12 @@ function bab_isMemberOfGroup($groupname, $userid="")
 		if( $userid == "")
 			$userid = $BAB_SESS_USERID;
 		$db = $GLOBALS['babDB'];
-		$req = "select * from ".BAB_GROUPS_TBL." where name='$groupname'";
+		$req = "select id from ".BAB_GROUPS_TBL." where name='$groupname'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and id_group='".$arr['id']."'";
+			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and id_group='".$arr['id']."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				return $arr['id'];
@@ -74,7 +74,7 @@ function bab_isUserAdministrator()
 {
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and id_group='3'";
+	$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and id_group='3'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -95,7 +95,7 @@ function bab_isAccessValid($table, $idobject)
 		return $add;
 		}
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".$table." where id_object='$idobject' and id_group='0'"; // everybody
+	$req = "select id from ".$table." where id_object='$idobject' and id_group='0'"; // everybody
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -103,7 +103,7 @@ function bab_isAccessValid($table, $idobject)
 		}
 	else
 		{
-		$req = "select * from ".$table." where id_object='$idobject' and id_group='1'"; // users
+		$req = "select id from ".$table." where id_object='$idobject' and id_group='1'"; // users
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 && $BAB_SESS_LOGGED)
 			{
@@ -111,7 +111,7 @@ function bab_isAccessValid($table, $idobject)
 			}
 		else
 			{
-			$req = "select * from ".$table." where id_object='$idobject' and id_group='2'"; //guests
+			$req = "select id from ".$table." where id_object='$idobject' and id_group='2'"; //guests
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
@@ -120,13 +120,13 @@ function bab_isAccessValid($table, $idobject)
 				}
 			else if( $BAB_SESS_USERID != "")
 				{
-				$req = "select * from ".$table." where id_object='$idobject'"; //groups
+				$req = "select id_group from ".$table." where id_object='$idobject'"; //groups
 				$res = $db->db_query($req);
 				if( $res && $db->db_num_rows($res) > 0 )
 					{
 					while( $row = $db->db_fetch_array($res))
 						{
-						$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object=$BAB_SESS_USERID and id_group='".$row['id_group']."'"; //groups
+						$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object=$BAB_SESS_USERID and id_group='".$row['id_group']."'"; //groups
 						$res2 = $db->db_query($req);
 						if( $res2 && $db->db_num_rows($res2) > 0 )
 							{
@@ -145,7 +145,7 @@ function bab_isAccessValid($table, $idobject)
 function bab_isUserAlreadyLogged($iduser)
 {
 	$db = $GLOBALS['babDB'];
-	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$iduser'";
+	$req="select islogged from ".BAB_USERS_LOG_TBL." where id_user='$iduser'";
 	$res=$db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -187,7 +187,7 @@ function bab_userIsloggedin()
 function bab_getUserName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_USERS_TBL." where id='$id'";
+	$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -200,14 +200,62 @@ function bab_getUserName($id)
 		}
 	}
 
+function bab_getUserEmail($id)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select email from ".BAB_USERS_TBL." where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['email'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
+function bab_getUserNickname($id)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select nickname from ".BAB_USERS_TBL." where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['nickname'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
+function bab_getUserSetting($id, $what)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select ".$what." from ".BAB_USERS_TBL." where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr[$what];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
 function bab_isUserVacationApprover($groupid = 0)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
 	if( $groupid == 0)
-		$query = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID' or supplier='$BAB_SESS_USERID'";
+		$query = "select id from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID' or supplier='$BAB_SESS_USERID'";
 	else
-		$query = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID'  or supplier='$BAB_SESS_USERID' and id_group='$groupid'";
+		$query = "select id from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID'  or supplier='$BAB_SESS_USERID' and id_group='$groupid'";
 
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -224,13 +272,13 @@ function bab_isUserVacationApprover($groupid = 0)
 function bab_isUserUseVacation($iduser)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$iduser' and isprimary='Y'";
+	$query = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='$iduser' and isprimary='Y'";
 	$res = $db->db_query($query);
 
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."' and vacation='Y'";
+		$query = "select id from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."' and vacation='Y'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -255,7 +303,7 @@ function bab_getGroupName($id)
 			return bab_translate("Unregistered users");
 		default:
 			$db = $GLOBALS['babDB'];
-			$query = "select * from ".BAB_GROUPS_TBL." where id='$id'";
+			$query = "select name from ".BAB_GROUPS_TBL." where id='$id'";
 			$res = $db->db_query($query);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
@@ -272,7 +320,7 @@ function bab_getGroupName($id)
 function bab_getPrimaryGroupId($userid)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
+	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -296,7 +344,7 @@ function bab_mailAccessLevel()
 	if( $res && $db->db_num_rows($res) > 0 )
 		$bemail = 1;
 
-	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
+	$req = "select id from ".BAB_GROUPS_TBL." where manager='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -376,7 +424,7 @@ function bab_getUserId( $name )
 	$replace = array( " " => "", "-" => "");
 	$db = $GLOBALS['babDB'];
 	$hash = md5(strtolower(strtr($name, $replace)));
-	$query = "select * from ".BAB_USERS_TBL." where hashname='".$hash."'";	
+	$query = "select id from ".BAB_USERS_TBL." where hashname='".$hash."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
