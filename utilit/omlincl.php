@@ -1779,10 +1779,10 @@ class bab_RecentArticles extends bab_handler
 
 			switch(strtoupper($order))
 			{
-				case "ASC": $order = "date ASC"; break;
+				case "ASC": $order = "date_modification ASC"; break;
 				case "RAND": $order = "rand()"; break;
 				case "DESC":
-				default: $order = "date DESC"; break;
+				default: $order = "date_modification DESC"; break;
 			}
 
 			$req .= " order by ".$order;
