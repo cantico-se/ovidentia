@@ -447,86 +447,66 @@ window.focus();
 <!--#end waitingAddons --> 
 
 <!--#begin confirmvacation -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<br>
+
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" align="left"><strong>{ fullname }</strong></td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left"> 
-<!--#in getnexttype -->
-{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
-<!--#endin getnexttype -->
-</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ totaltxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ totalval }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="approb">
-<input type="hidden" name="idx" value="unload">
-<input type="hidden" name="conf" value="vac">
-<input type="hidden" name="veid" value="{ veid }">
-<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">{ commenttxt }: </td>
-</tr> 
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">
-<textarea cols="40" rows="10" name="remarks"></textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">
-<div align="center"><input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
-</td>
-</tr>
-</table>
+<td class="BabLoginCadreBackground"> 
+	<table class="BabSiteAdminFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td colspan="2" align="center"><h4>{ fullname }</h4></td>
+	</tr>
+	<tr> 
+		<td align="right">{ datebegintxt }:</td>
+		<td>{ datebegin } { halfnamebegin }</td>
+	</tr>
+	<tr> 
+		<td align="right">{ dateendtxt }:</td>
+		<td>{ dateend } { halfnameend }</td>
+	</tr>
+	<tr> 
+		<td align="right" valign="top">{ nbdaystxt }:</td>
+		<td > 
+		<!--#in getnexttype -->
+		<p>{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp; <!--#if alert --> - <span class="BabErrorMessage">{ t_alert } ({ alert })</span><!--#endif alert --></p>
+		<!--#endin getnexttype -->
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ totaltxt }:</td>
+		<td>{ totalval }</td>
+	</tr>
+	<tr> 
+		<td align="right">{ remarktxt }:</td>
+		<td>{ remark }</td>
+	</tr>
+	</table>
+
+	<form method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="approb">
+	<input type="hidden" name="idx" value="unload">
+	<input type="hidden" name="conf" value="vac">
+	<input type="hidden" name="veid" value="{ veid }">
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td align="center">{ commenttxt }: </td>
+		</tr> 
+		<tr> 
+			<td align="center">
+			<textarea cols="40" rows="10" name="remarks"></textarea>
+			</td>
+		</tr>
+		<tr> 
+			<td align="center">
+				<input type="submit" name="confirm" value="{ confirm }" />&nbsp;&nbsp;
+				<input type="submit" name="refuse" value="{ refuse }" />
+			</td>
+		</tr>
+	</table>
+	</form>
 </td>
 </tr>
 </table>
-</form>
-</BODY>
-</HTML>
+
 <!--#end confirmvacation -->
 
 <!--#begin confirmpost -->

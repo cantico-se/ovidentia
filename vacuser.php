@@ -111,7 +111,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			
 			if (empty($this->period_nbdays))
 				{
-				$this->period_nbdays = round(($end - $begin)/86400);
+				$this->period_nbdays = round(($end - $begin)/86400) + 1;
 				$this->t_days = bab_translate("Day(s)");
 				}
 
@@ -676,6 +676,8 @@ function delete_request($id_request)
 		deleteFlowInstance($idfai);
 
 	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'");
+
+	notifyOnRequestChange($id_request, true);
 }
 
 /* main */

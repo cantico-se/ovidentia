@@ -514,12 +514,12 @@ window.focus();
 		
 		<ul>
 			<!--#in getnexttype -->
-			<li title="{ arr[description] }"><span class="used" style="background-color:#{ arr[color] }">&nbsp;</span>{ arr[name] }</li>
+			<li title="{ arr[description] }"><span class="used" style="background-color:#{ arr[color] }"> &nbsp; </span>{ arr[name] }</li>
 			<!--#endin getnexttype -->
-			<li><span class="nonworking">&nbsp;</span>{ t_nonworking }</li>
-			<li><span class="weekend">&nbsp;</span>{ t_weekend }</li>
+			<li><span class="nonworking"> &nbsp; </span>{ t_nonworking }</li>
+			<li><span class="weekend"> &nbsp; </span>{ t_weekend }</li>
 			<!--#if period -->
-			<li><span class="selected">&nbsp;</span>{ t_selected }</li>
+			<li><span class="selected"> &nbsp; </span>{ t_selected }</li>
 			<!--#endif period -->
 		</ul>
 
@@ -604,12 +604,14 @@ function setPeriod(obj)
 			td.className = 'free';
 			}
 		}
+
+	document.forms['vacform'].period_nbdays.value = nbd;
+	window.status = '{ t_period_nbdays } : '+nbd;
+
 	obj.className = 'selected';
 	if (!setbegin)
 		begindate = obj.id;
 
-	document.forms['vacform'].period_nbdays.value = nbd;
-	window.status = '{ t_period_nbdays } : '+nbd;
 	}
 
 

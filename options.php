@@ -692,8 +692,8 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 			{
 			global $babDB;
 
-			$this->fromtxt = bab_translate("From");
-			$this->totxt = bab_translate("To");
+			$this->fromtxt = bab_translate("date_from");
+			$this->totxt = bab_translate("date_to");
 			$this->usertxt = bab_translate("Substitute");
 			$this->deletetxt = bab_translate("Delete");
 			$this->update = bab_translate("Update");
@@ -1245,6 +1245,7 @@ switch($idx)
 		if( !isset($fromdate)) { $fromdate ='';}
 		if( !isset($todate)) { $todate ='';}
 		if( !isset($id_substitute)) { $id_substitute ='';}
+		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 		if( $iduser == $GLOBALS['BAB_SESS_USERID'] || bab_isUserAdministrator())
 			{
 			showUnavailability($iduser, $fromdate, $todate, $id_substitute);

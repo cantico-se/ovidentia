@@ -86,7 +86,7 @@ function notifyVacationApprovers($id, $users)
 	}
 
 
-function notifyOnRequestChange($id)
+function notifyOnRequestChange($id, $delete = false)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 
@@ -94,10 +94,10 @@ function notifyOnRequestChange($id)
 		{
 
 
-		function tempb($row)
+		function tempb($row, $msg)
 			{
 			global $babDayType, $babDB;
-			$this->message = bab_translate("Vacation request has been modified");
+			$this->message = $msg;
 			$this->fromuser = bab_translate("User");
 			$this->from = bab_translate("from");
 			$this->until = bab_translate("until");
@@ -120,9 +120,11 @@ function notifyOnRequestChange($id)
 	$mail->mailTo(bab_getUserEmail($row['id_user']), bab_getUserName($row['id_user']));
 
 	$mail->mailFrom($BAB_SESS_EMAIL, $BAB_SESS_USER);
-	$mail->mailSubject(bab_translate("Vacation request has been modified"));
 
-	$tempb = new tempb($row);
+	$msg = $delete ? bab_translate("Vacation request has been deleted") : bab_translate("Vacation request has been modified");
+	$mail->mailSubject($msg);
+
+	$tempb = new tempb($row, $msg);
 	$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "newvacation"));
 	$mail->mailBody($message, "html");
 
@@ -215,17 +217,19 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 
 			$access = false;
 
+
 			if ($arr['right_inperiod'] == 0)
 				$access = true;
 
 			if ( $arr['right_inperiod'] == 1 && 
 				!empty($arr['period_start']) && 
 				!empty($arr['period_end']) && 
-				($period_start >= $begin && $period_end <= $end) )
+				($period_start >= $end || $period_end >= $begin) )
 					{
 					$access = true;
 					}
 
+			
 			if ($arr['right_inperiod'] == 2 && 
 				!empty($arr['period_start']) && 
 				!empty($arr['period_end']) && 
@@ -236,6 +240,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 			
 			if ( $access )
 				{
+				
 				switch ($arr['trigger_inperiod'])
 					{
 					case 0:
@@ -257,7 +262,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 				list($nbdays) = $db->db_fetch_array($db->db_query($req));
 
 				$access = false;
-
+				
 				if ( $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] )
 					$access = true;
 				}
@@ -679,7 +684,7 @@ function listVacationRequests($id_user)
 			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
 				{
-				$tmpurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq&pos=";
+				$tmpurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=";
 				if( $this->pos > 0)
 					{
 					$this->topurl = $tmpurl."0";
@@ -966,7 +971,7 @@ function addVacationPersonnel($idp = false)
 				$this->add = bab_translate("Modify");
 				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->idp."'"));
 				$this->userid = $arr['id_user'];
-				$this->userval = bab_getUserName($this->userid);
+				$this->userval = bab_getUserName($this->idp);
 				$this->idcol = $arr['id_coll'];
 				$this->idsa = $arr['id_sa'];
 				}
@@ -1196,7 +1201,7 @@ function changeucol($id_user,$newcol)
 			$this->id_user = $id_user;
 			$this->id_coll = $newcol;
 
-			$req = "SELECT c.name old, c2.name new FROM ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c2 ON c2.id='".$newcol."' WHERE p.id_user='".$id_user."' AND c.id = p.id_coll";
+			$req = "SELECT c.name new, IFNULL(c2.name,'') old FROM ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c2 ON  p.id_user='".$id_user."' AND c2.id = p.id_coll WHERE c.id='".$newcol."'";
 
 			$arr = $this->db->db_fetch_array($this->db->db_query($req));
 
@@ -1253,7 +1258,7 @@ function changeucol($id_user,$newcol)
 			{
 			if (list($this->id,$this->right) = each($this->rights))
 				{
-				$default = isset($this->right['quantity_new']) && $this->right['quantitydays'] > $this->right['quantity_new'] ? $this->right['quantity_new'] : $this->right['quantitydays'];
+				$default = (isset($this->right['quantity_new']) && $this->right['quantitydays'] > $this->right['quantity_new']) || !is_numeric($this->right['quantitydays']) ? $this->right['quantity_new'] : $this->right['quantitydays'];
 				$this->newrightvalue = isset($_POST['right_'.$this->id]) ? $_POST['right_'.$this->id] : $default;
 				if (!isset($this->right['quantity_new']))
 					$this->right['quantity_new'] = '';
@@ -1302,8 +1307,7 @@ function updateVacationPersonnel($iduser, $idsa)
 			}
 		else
 			{
-			$babBody->msgerror = bab_translate("This user does'nt exist in personnel list") ." !";
-			return false;
+			$babDB->db_query("INSERT INTO ".BAB_VAC_PERSONNEL_TBL." ( id_user,id_sa ) VALUES ('".$iduser."', '".$idsa."' )");
 			}
 		}
 

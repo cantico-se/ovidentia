@@ -1648,6 +1648,7 @@
 <string id="Confirm account without address email validation">Confirmer le compte sans envoi de courrier</string>
 <string id="Domain name">Nom de domaine</string>
 <string id="Vacation request has been modified">La demande de congé à été modifiée</string>
+<string id="Vacation request has been deleted">La demande de congé à été supprimée</string>
 <string id="Week-end">Week-end</string>
 <string id="Add/Modify by group">Ajouter/modifier par groupe</string>
 <string id="View calendars">Voir les agendas</string>
@@ -1697,4 +1698,5 @@
 <string id="Negative balance are not alowed on right">Les soldes négatifs ne sont pas autorisés sur le droit</string>
 <string id="Group schema">Schéma de groupes</string>
 <string id="You must have LDAP enabled on the server">Les fonction LDAP doivent être installées sur le serveur</string>
+<string id="Negative balance">Solde négatif</string>
 </fr>
