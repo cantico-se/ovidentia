@@ -223,7 +223,6 @@ switch($idx)
 	case "del":
 		domainDelete($userid, $item, $bgrp);
 		$babBody->title = bab_translate("Delete doamain mail");
-		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("list", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=maildom&idx=modify&item=".$item."&bgrp=".$bgrp);
 		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=maildom&idx=del&item=".$item."&userid=".$userid."&bgrp=".$bgrp);
@@ -232,7 +231,6 @@ switch($idx)
 	default:
 		domainModify($userid, $item, $bgrp);
 		$babBody->title = getDomainName($item) . " ". bab_translate("mail domain");
-		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("list", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=maildom&idx=modify&item=".$item."&bgrp=".$bgrp);
 		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=maildom&idx=del&item=".$item."&userid=".$userid."&bgrp=".$bgrp);
