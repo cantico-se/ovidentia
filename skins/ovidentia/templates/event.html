@@ -95,14 +95,14 @@
 			-->
 			</script>
 			&nbsp;&nbsp;&nbsp;
-			{ t_repeat }:<input type="checkbox" name="repeat_cb" value="0" onclick="repeat_checkbox(this)" { repeat_cb_checked } />
+			{ t_repeat }:<input type="checkbox" name="repeat_cb" value="1" onclick="repeat_checkbox(this)" { repeat_cb_checked } />
 		</td>
 	</tr>
 	
 	<tr id="repeat_tr"> 
 		<td align="right" valign="top" nowrap>
 			<label for="repeat_radio_1">{ t_daily }</label>
-			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" /><br />
+			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" checked /><br />
 			<label for="repeat_radio_2">{ t_weekly }</label>
 			<input type="radio" id="repeat_radio_2" name="repeat" value="2" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_3">{ t_monthly }</label>
@@ -114,7 +114,7 @@
 		
 			
 		</td>
-		<td valign="top"> 
+		<td valign="top">
 			<div id="event_repeat_0"></div>
 			<div id="event_repeat_1">{ t_all_the }<input type="text" name="repeat_n_1" size="4" maxlength="4" />{ t_days }</div>
 			<div id="event_repeat_2">{ t_all_the }<input type="text" name="repeat_n_2" size="4" maxlength="4" />{ t_weeks }
@@ -279,8 +279,34 @@
 	</tr>
 	<tr> 
 		<td align="right">&nbsp;</td>
-		<td colspan="2"> 
-			<select name="bupdrec">
+		<td colspan="2">
+			<script type="">
+			<!--
+			function bupdrec_onchange(obj)
+				{
+				var f = document.forms['vacform'];
+				if (obj.value == 1)
+					{
+					f.daybegin.disabled = true;
+					f.monthbegin.disabled = true;
+					f.yearbegin.disabled = true;
+					f.dayend.disabled = true;
+					f.monthend.disabled = true;
+					f.yearend.disabled = true;
+					}
+				else
+					{
+					f.daybegin.disabled = false;
+					f.monthbegin.disabled = false;
+					f.yearbegin.disabled = false;
+					f.dayend.disabled = false;
+					f.monthend.disabled = false;
+					f.yearend.disabled = false;
+					}
+				}
+			-->
+			</script>
+			<select name="bupdrec" onchange="bupdrec_onchange(this)">
 				<option value="1">{ all }</option>
 				<option value="2" selected>{ thisone }</option>
 			</select>
@@ -289,8 +315,7 @@
 	<!--#endif brecevt -->
 	<tbody id="event_date_time">
 	<tr> 
-		<td align="right" nowrap width="25%" valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ 
-		datebegintxt }</a>:</td>
+		<td align="right" nowrap width="25%" valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:</td>
 		<td> 
 			<select name="daybegin">
 			<!--#in getnextday -->
@@ -491,7 +516,7 @@ window.focus();
 <!--
 function repeat_switch(grp)
 	{
-	var v = grp ? grp.value : 0 ;
+	var v = grp ? grp.value : 1 ;
 	var i=0;
 	while(div = document.getElementById('event_repeat_'+i))
 		{
