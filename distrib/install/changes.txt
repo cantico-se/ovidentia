@@ -83,3 +83,7 @@ Mai 2002: Version 3.3b
   telling you how many files have been uploaded for the groups of which you are a member. 
 - In the file manager, on the page titled "Update file", an additionallink will
   allow to download the file for which information is displayed on this page
+/************************************************************************/
+Mai 2002: Version 3.3
+/************************************************************************/
+- Fixed some minors bugs
