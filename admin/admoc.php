@@ -373,7 +373,7 @@ switch($idx)
 		if( !isset($role)) $role =0;
 		if( !isset($vpos)) $vpos =0;
 		if( !isset($echo)) $echo =1;
-		if( !isset($type)) $type ='0,1';
+		if( !isset($type)) $type ='0,1,3';
 		if( !isset($eid)) $eid =0;
 		browseRoles($ocid, $eid, $role, $type, $cb, $vpos, $echo);
 		exit;
