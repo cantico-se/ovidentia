@@ -596,6 +596,7 @@ function modifyArticle($topics, $article)
 		var $langSelected;
 		var $langFiles;
 		var $countLangFiles;
+		var $topicid;
 
 
 		function temp($topics, $article)
@@ -612,6 +613,19 @@ function modifyArticle($topics, $article)
 			$this->no = bab_translate("No");
 			$this->langLabel = bab_translate('Language');
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+//2003-02-28 start
+			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
+			{
+				$this->db = $GLOBALS['babDB'];
+				$this->res = $this->db->db_query("select lang from ".BAB_TOPICS_TBL." where id='".$topics."'");
+				$this->arr = $this->db->db_fetch_array($this->res);
+				if($this->arr['lang'] != '*')
+				{
+					$this->langFiles = array();
+					$this->langFiles[] = '*';
+				}
+			}
+//2003-02-28 end
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
@@ -714,6 +728,11 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 		var $langSelected;
 		var $langFiles;	
 		var $countLangFiles;
+//2003-02-28 start
+		var $db;
+		var $res;
+		var $arr;
+//2003-02-28 end
 
 		function temp($title, $headtext, $bodytext, $topics)
 			{
@@ -740,6 +759,19 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->files = bab_translate("Files");
 			$this->langLabel = bab_translate('Language');
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+//2003-02-28 start
+			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
+			{
+				$this->db = $GLOBALS['babDB'];
+				$this->res = $this->db->db_query("select lang from ".BAB_TOPICS_TBL." where id='".$topics."'");
+				$this->arr = $this->db->db_fetch_array($this->res);
+				if($this->arr['lang'] != '*')
+				{
+					$this->langFiles = array();
+					$this->langFiles[] = '*';
+				}
+			}
+//2003-02-28 end
 			$this->countLangFiles = count($this->langFiles);
 			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
@@ -938,6 +970,15 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	$bodytext = imagesReplace($bodytext, $article."_art_", $ar);
 
 	$db = $GLOBALS['babDB'];
+//2003-03-01
+	if($GLOBALS['babApplyLanguageFilter'] == 'loose')
+	{
+		$req = "select lang from ".BAB_TOPICS_TBL." where id='".$topicid."'";
+		$res = $db->db_query($req);
+		$arr = $db->db_fetch_array($res);
+		if($arr['lang'] != '*') $lang = '*';
+	}
+//2003-03-01
 	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."', lang='" .$lang. "' where id='".$article."'";
 	$res = $db->db_query($req);
 
@@ -946,7 +987,7 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 		$arr = $db->db_fetch_array($db->db_query("select category from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 		notifyArticleGroupMembers($arr['category'], $topics, $title, bab_getArticleAuthor($article), 'mod');
 	}
-	}
+	} // function updateArticle
 
 
 /* main */

@@ -84,12 +84,31 @@ function listCategories()
 		}
 		
 	$db = $GLOBALS['babDB'];
-	$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
+/*	$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
 	$req = "select * from ".BAB_FAQCAT_TBL;
 	if( count($langFilterValues) > 0 )
 		$req .= " where SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
+*/
 
+	$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
+	switch($langFilterValue)
+	{
+		case 2:
+			$req = "select * from ".BAB_FAQCAT_TBL." where lang='".$GLOBALS['babLanguage']."' or lang='*' or lang = ''";
+			if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
+				$req.= " or id_manager = '" .$GLOBALS['BAB_SESS_USERID']. "'";
+			break;
+		case 1:
+			$req = "select * from ".BAB_FAQCAT_TBL." where lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%' or lang='*' or lang = ''";
+			if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
+				$req.= " or id_manager = '" .$GLOBALS['BAB_SESS_USERID']. "'";
+			break;
+		case 0:
+		default:
+			$req = "select * from ".BAB_FAQCAT_TBL;
+	}
 	$res = $db->db_query($req);
+
 	while( $row = $db->db_fetch_array($res))
 		{
 		if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))

@@ -829,24 +829,29 @@ function babTopicsSection($cat, $close)
 	$this->setTemplate($r['template']);
 	$this->title = $r['title'];
 	$this->head = $r['description'];
-	$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
-	$req = "select id from ".BAB_TOPICS_TBL." where id_cat='".$cat."'";
-	if( count($langFilterValues) > 0 )
-		$req .= " and SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
 
-	$req .= " order by ordering asc";
-
+	$req = "select id, lang from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
 	$res = $babDB->db_query($req);
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if(in_array($row['id'], $babBody->topview) || ($GLOBALS['BAB_SESS_USERID'] != "" && bab_isUserTopicManager($row['id'])))
+		if(in_array($row['id'], $babBody->topview)) //2003-02-27
 			{
 			if( $close )
 				{
 				$this->count = 1;
 				return;
 				}
-			array_push($this->arrid, $row['id']);
+
+			$whatToFilter = $GLOBALS['babLangFilter']->getFilterAsInt();
+
+			if(($row['lang'] == '*') or ($row['lang'] == ''))
+				$whatToFilter = 0;
+			else if(($GLOBALS['babApplyLanguageFilter'] == 'loose') and ( bab_isUserTopicManager($row['id']) or bab_isUserArticleApprover($row['id']) or bab_isUserCommentApprover($row['id'])))
+				$whatToFilter = 0;
+
+			if(($whatToFilter == 0)	or ($whatToFilter == 1 and (substr($row['lang'], 0, 2) == substr($GLOBALS['babLanguage'], 0, 2)))
+				or ($whatToFilter == 2 and ($row['lang'] == $GLOBALS['babLanguage'])))
+				array_push($this->arrid, $row['id']);
 			}
 		}
 
@@ -864,7 +869,7 @@ function babTopicsSection($cat, $close)
 	$this->waitingcimg = &$waitingcimg;
 
 	$this->count = count($this->arrid);
-	}
+	} // function babTopicsSection
 
 function topicsGetNext()
 	{

@@ -512,6 +512,13 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 				}
 			}
 		}
+
+	if (($GLOBALS['babApplyLanguageFilter'] == 'loose') and ($lang != $arr['lang']) and ($lang != '*'))
+	{
+		$query = "update ".BAB_ARTICLES_TBL." set lang='*' where id_topic='".$id."'";
+		$db->db_query($query);
+	}
+
 	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."' where id = '".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
