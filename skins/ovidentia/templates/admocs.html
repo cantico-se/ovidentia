@@ -96,26 +96,24 @@ valign="middle">{  name }:</td>
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"	nowrap>{ name }</td>
-<td class="BabSiteAdminTitleFontBackground" width="50%" valign="middle">{ directory }</td>
-<td class="BabSiteAdminTitleFontBackground" width="50%" valign="middle">{ description }</td>
-<td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle" align="center" colspan="2">{ access }</td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td width="10%" nowrap>{ name }</td>
+<td width="50%">{ directory }</td>
+<td width="50%">{ description }</td>
+<td width="20%" align="center">{ access }</td>
 </tr>
 <!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="10%" valign="middle" nowrap><a class="BabSiteAdminListLink" href="{ url }" nowrap>{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" width="55%" valign="middle">{ dirval }</td>
-<td class="BabSiteAdminFontBackground" width="55%" valign="middle">{ descval }</td>
-<td class="BabSiteAdminFontBackground" width="5%" valign="middle"><a class="BabSiteAdminListLink" href="{ gupdateurl }" nowrap>{ gupdate }</a></td>
-<td class="BabSiteAdminFontBackground" width="5%" valign="middle"><a class="BabSiteAdminListLink" href="{ gviewurl }" nowrap>{ gview }</a></td>
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td width="10%" nowrap><a class="BabSiteAdminListLink" href="{ url }" nowrap>{ urlname }</a></td>
+<td width="55%">{ dirval }</td>
+<td width="55%">{ descval }</td>
+<td width="5%"><a class="BabSiteAdminListLink" href="{ grightsurl }" nowrap>{ grights }</a></td>
 </tr>
 <!--#endin getnext -->
 </table>
 </td>
 </tr>
 </table>
-<br>
 <!--#end oclist -->
 
 <!--#begin browseroles -->

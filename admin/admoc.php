@@ -356,16 +356,8 @@ if( isset($update) && $update == "updateoc")
 
 if( isset($aclview))
 	{
-	aclUpdate($table, $item, $groups, $what);
-	if( $table == BAB_OCVIEW_GROUPS_TBL )
-		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admoc&idx=ocupdate&item=".$item);
-		}
-	else
-		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
-		}
-	exit;
+	maclGroups();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 	}
 
 if( isset($action) && $action == "Yes")
@@ -387,13 +379,18 @@ switch($idx)
 		exit;
 		break;
 
-	case "ocview":
+	case "ocrights":
 		$babBody->title = bab_getOrgChartName($item) . ": ".bab_translate("List of groups");
-		aclGroups("admoc", "modify", BAB_OCVIEW_GROUPS_TBL, $item, "aclview");
+
+		$macl = new macl("admoc", "modify", $item, "aclview");
+        $macl->addtable( BAB_OCVIEW_GROUPS_TBL,bab_translate("View"));
+		$macl->addtable( BAB_OCUPDATE_GROUPS_TBL,bab_translate("Update"));
+		$macl->filter(0,0,1,0,1);
+        $macl->babecho();
+
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
-		$babBody->addItemMenu("ocview", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$item);
-		$babBody->addItemMenu("ocupdate", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocupdate&item=".$item);
+		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 
 	case "ocupdate":
@@ -401,8 +398,7 @@ switch($idx)
 		aclGroups("admoc", "modify", BAB_OCUPDATE_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
-		$babBody->addItemMenu("ocview", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$item);
-		$babBody->addItemMenu("ocupdate", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocupdate&item=".$item);
+		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 
 	case "delete":
@@ -410,8 +406,7 @@ switch($idx)
 		deleteOrgChart($item);
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
-		$babBody->addItemMenu("ocview", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$item);
-		$babBody->addItemMenu("ocupdate", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocupdate&item=".$item);
+		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 
 	default:
@@ -420,10 +415,8 @@ switch($idx)
 		modifyOrgChart($item);
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
-		$babBody->addItemMenu("ocview", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$item);
-		$babBody->addItemMenu("ocupdate", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocupdate&item=".$item);
+		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
 ?>

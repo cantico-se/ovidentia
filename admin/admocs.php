@@ -94,6 +94,7 @@ function listOrgCharts()
 		var $gupdateurl;
 		var $descval;
 		var $access;
+		var $altbg = true;
 
 		function temp()
 			{
@@ -102,8 +103,7 @@ function listOrgCharts()
 			$this->description = bab_translate("Description");
 			$this->directory = bab_translate("Directories");
 			$this->access = bab_translate("Access");
-			$this->gupdate = bab_translate("Update");
-			$this->gview = bab_translate("View");
+			$this->grights = bab_translate("Rights");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select oc.*, dd.name as dirname from ".BAB_ORG_CHARTS_TBL." oc left join ".BAB_DB_DIRECTORIES_TBL." dd on oc.id_directory=dd.id where oc.id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->res = $this->db->db_query($req);
@@ -115,10 +115,10 @@ function listOrgCharts()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=admoc&idx=modify&item=".$this->arr['id'];
-				$this->gviewurl = $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$this->arr['id'];
-				$this->gupdateurl = $GLOBALS['babUrlScript']."?tg=admoc&idx=ocupdate&item=".$this->arr['id'];
+				$this->grightsurl = $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$this->arr['id'];
 				$this->dirval = $this->arr['dirname'];
 				$this->urlname = $this->arr['name'];
 				$this->descval = $this->arr['description'];
