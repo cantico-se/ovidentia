@@ -204,19 +204,20 @@ function getAvailableResourcesCalendars($bwrite = false)
 	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
 	$tab = array();
 	$rr = array();
-
-	$db = $GLOBALS['babDB'];
-	for( $i = 0; $i < count($babBody->calendarids); $i++ )
+	if ($GLOBALS['BAB_SESS_LOGGED'])
 	{
-		if( $babBody->calendarids[$i]['type'] == 3 )
+		$db = $GLOBALS['babDB'];
+		for( $i = 0; $i < count($babBody->calendarids); $i++ )
 		{
-			list($name) = $db->db_fetch_row($db->db_query("select name from ".BAB_RESOURCESCAL_TBL." where id='".$babBody->calendarids[$i]['owner']."'"));
-			$rr['name'] = $name;
-			$rr['idcal'] = $babBody->calendarids[$i]['id'];
-			array_push($tab, $rr);
+			if( $babBody->calendarids[$i]['type'] == 3 )
+			{
+				list($name) = $db->db_fetch_row($db->db_query("select name from ".BAB_RESOURCESCAL_TBL." where id='".$babBody->calendarids[$i]['owner']."'"));
+				$rr['name'] = $name;
+				$rr['idcal'] = $babBody->calendarids[$i]['id'];
+				array_push($tab, $rr);
+			}
 		}
 	}
-
 	return $tab;
 }
 
