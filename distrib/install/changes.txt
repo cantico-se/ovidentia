@@ -1,5 +1,5 @@
 /************************************************************************/
-August 2003: Version 4.0.8
+September 2003: Version 4.0.8 / MP
 /************************************************************************/
 - Bug: Administrateur can register user with blank nickname
 - Bug: Modified date is not updated when a file is commited without approbation
