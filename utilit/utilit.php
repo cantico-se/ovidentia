@@ -2484,7 +2484,6 @@ function bab_updateSiteSettings()
 	if( $arr['authentification'] == 1 ) // LDAP authentification
 		{
 		$babBody->babsite['registration'] ='N';
-		$babBody->babsite['change_password'] ='N';
 		$babBody->babsite['change_nickname'] ='N';
 		}
 

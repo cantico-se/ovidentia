@@ -57,7 +57,7 @@ function encrypt($str, $encryption)
 	}
 }
 
-function changePassword($msgerror)
+function changePassword()
 	{
 	global $babBody,$BAB_SESS_USERID;
 	class tempb
@@ -68,15 +68,16 @@ function changePassword($msgerror)
 		var $update;
 		var $title;
 
-		function tempb($msgerror,$changepwd)
+		function tempb($changepwd)
 			{
+			global $babBody;
 			$this->changepwd = $changepwd!=0 ? true : false;
 			$this->oldpwd = bab_translate("Old Password");
 			$this->newpwd = bab_translate("New Password");
 			$this->renewpwd = bab_translate("Retype New Password");
 			$this->update = bab_translate("Update Password");
 			$this->title = bab_translate("Change password");
-			$this->msgerror = $this->changepwd ? ($msgerror!='' ? $msgerror : false ) : bab_translate("Sorry, You cannot change your password. Please contact administrator");
+			$this->msgerror = $this->changepwd ? ($babBody->msgerror!='' ? $babBody->msgerror : false ) : bab_translate("Sorry, You cannot change your password. Please contact administrator");
 			}
 		}
 
@@ -85,7 +86,7 @@ function changePassword($msgerror)
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
-	$tempb = new tempb($msgerror,$arr['changepwd']);
+	$tempb = new tempb($arr['changepwd']);
 	die(bab_printTemplate($tempb,"options.html", "changepassword"));
 	}
 
@@ -862,6 +863,23 @@ function userChangePassword($oldpwd, $newpwd)
 								$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
 								return false;
 								}
+
+							// create the unicode password 
+							$len = strlen($newpwd); 
+							$newPass = '"'; 
+							for ($i = 0; $i < $len; $i++) 
+							{ 
+								$newPass .= "{$newpwd{$i}}\000"; 
+							} 
+							$newPass .= '"'; 
+
+							$ret = $ldap->modify($entries[0]['dn'], array('unicodePwd'=>$newPass));
+							$ldap->close();
+							if( !$ret)
+								{
+								$babBody->msgerror = bab_translate("Nothing Changed");
+								return false;
+								}
 							}
 						break;
 					default:
@@ -881,16 +899,17 @@ function userChangePassword($oldpwd, $newpwd)
 							$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
 							return  false;
 							}
-						break;
-					}
 
-				$ldpapw = encrypt($newpwd, $babBody->babsite['ldap_encryptiontype']);
-				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldpapw));
-				$ldap->close();
-				if( !$ret)
-					{
-					$babBody->msgerror = bab_translate("Nothing Changed");
-					return false;
+						$ldappw = encrypt($newpwd, $babBody->babsite['ldap_encryptiontype']);
+						$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
+						$ldap->close();
+						if( !$ret)
+							{
+							$babBody->msgerror = bab_translate("Nothing Changed");
+							return false;
+							}
+
+						break;
 					}
 				}
 
@@ -924,19 +943,20 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	global $babBody, $babInstallPath;
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
-		return true;
+		return false;
 
 	if( empty($oldpwd) || empty($newpwd1) || empty($newpwd2))
 		{
-		return bab_translate("You must complete all fields !!");
+		$babBody->msgerror =  bab_translate("You must complete all fields !!");
+		return false;
 		}
 	if( $newpwd1 != $newpwd2)
 		{
-		return bab_translate("Passwords not match !!");
+		$babBody->msgerror =  bab_translate("Passwords not match !!");
+		return false;
 		}
 
-	userChangePassword( $oldpwd, $newpwd1);
-	return false;
+	return userChangePassword( $oldpwd, $newpwd1);
 	}
 
 
@@ -1256,10 +1276,14 @@ if( isset($update))
         {
         case "password":
 			$msgerror = updatePassword($oldpwd, $newpwd1, $newpwd2);
-        	if (!$msgerror)
+        	if ($msgerror)
+			{
 				changePasswordUnload(bab_translate("Your password has been modified"));
+			}
 			else
+			{
 				$idx = "changePassword";
+			}
             break;
         case "lang":
         	updateLanguage($lang, $babLangFilter->convertFilterToInt($langfilter));
@@ -1361,7 +1385,7 @@ switch($idx)
 	case "changePassword":
 		if ($babBody->babsite['change_password'] == 'Y' ) 
 			{
-			changePassword($msgerror);
+			changePassword();
 			}
 		break;
 	case "changePasswordUnload":
