@@ -97,7 +97,7 @@ $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 if( !isset($tg))
 	$tg = '';
 
-if( $tg != "version" )
+if( $tg != "version" || $idx != "upgrade")
 	{
 	bab_updateSiteSettings();
 	if ($babNTauth) include $babInstallPath."utilit/ntident.php";
