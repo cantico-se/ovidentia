@@ -242,8 +242,8 @@ function bab_getAddonsMenus($row, $what)
 				}
 			else if( $res && $db->db_num_rows($res) > 0 && !function_exists($func))
 				{
-				$db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$id."' and type='4'");	
-				$db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$id."' and type='4'");	
+				$db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$row['id']."' and type='4'");	
+				$db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$row['id']."' and type='4'");	
 				}
 			}
 		}
