@@ -90,8 +90,10 @@ $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
+if( !isset($tg))
+	$tg = 'entry';
 
-if( !isset($tg) || isset($tg) && $tg != "version" )
+if( $tg != "version" )
 	{
 	bab_isUserLogged();
 	bab_updateSiteSettings();
@@ -127,7 +129,7 @@ $babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
 				bab_translate("Friday"), bab_translate("Saturday"));
 
 $babSearchUrl = "abcdefg";
-$babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts", 'g' => "Directories");  
+$babSearchItems = array ('a' => bab_translate("Articles"), 'b' => bab_translate("Forums"), 'c' => bab_translate("Faq"), 'd' => bab_translate("Notes"), 'e' => bab_translate("Files"), 'f' => bab_translate("Contacts"), 'g' => bab_translate("Directories"));  
 
 $babJs = $GLOBALS['babScriptPath']."ovidentia.js";
 $babCssPath = bab_getCssUrl();
@@ -222,7 +224,7 @@ function printBody()
 				$this->bsearch = 0;
 				}
 
-			if ($GLOBALS['babMarquee'] == "")
+			if (!isset($GLOBALS['babMarquee']) || $GLOBALS['babMarquee'] == '')
 				$this->babSlogan = $babSlogan;
 			else
 				$this->babSlogan = $GLOBALS['babMarquee'];
