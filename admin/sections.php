@@ -187,6 +187,8 @@ function sectionsOrder()
 
 		function temp()
 			{
+			global $babBody;
+
 			$this->listleftsectxt = "----------------- ". bab_translate("Left sections") . " -----------------";
 			$this->listrightsectxt = "----------------- ". bab_translate("Right sections") . " -----------------";
 			$this->update = bab_translate("Update");
@@ -457,6 +459,7 @@ function saveSectionsOrder($listleft, $listright)
 				$db->db_query("update ".BAB_SECTIONS_TBL." set position='1' where id='".$listright[$i]."'");
 				}
 		}
+
 	}
 
 function disableSections($sections)
@@ -516,7 +519,7 @@ if( isset($create))
 
 if( isset($update))
 	{
-	if( $update == "order" )
+	if( $update == "order" && $babBody->isSuperAdmin)
 		saveSectionsOrder($listleft, $listright);
 	else if( $update == "disable" )
 		disableSections($sections);
@@ -537,7 +540,8 @@ switch($idx)
 		$babBody->title = bab_translate("Sections order");
 		sectionsOrder();
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{
 			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
@@ -550,7 +554,8 @@ switch($idx)
 		$babBody->title = bab_translate("Create section");
 		sectionCreate(0);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{
 			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
@@ -563,7 +568,8 @@ switch($idx)
 		$babBody->title = bab_translate("Create section");
 		sectionCreate(1);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{
 			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
@@ -579,7 +585,8 @@ switch($idx)
 			$babBody->title = bab_translate("There is no section");
 
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{
 			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
@@ -591,6 +598,4 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-
 ?>
