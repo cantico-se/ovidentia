@@ -107,7 +107,7 @@ function contactUnload($pos, $bliste)
 			$this->style = $GLOBALS[babStyle];
 			$this->babUrl = $GLOBALS[babUrl];
 			$this->sitename = $GLOBALS[babSiteName];
-			$this->message = babTranslate("You contacts list has been updated");
+			$this->message = babTranslate("Your contacts list has been updated");
 			$this->close = babTranslate("Close");
 			$this->url = $GLOBALS[babUrl]."index.php?tg=contacts&idx=list&pos=".$pos;
 			$this->bliste = $bliste;
