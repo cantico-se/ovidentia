@@ -1677,6 +1677,33 @@ CREATE TABLE bab_ldap_sites_fields (
   KEY id_site (id_site)
 );
 
+INSERT INTO bab_ldap_sites_fields VALUES (1, 'cn', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (2, 'sn', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (3, 'mn', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (4, 'givenname', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (5, 'jpegphoto', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (6, 'email', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (7, 'btel', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (8, 'mobile', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (9, 'htel', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (10, 'bfax', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (11, 'title', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (12, 'departmentnumber', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (13, 'organisationname', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (14, 'bstreetaddress', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (15, 'bcity', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (16, 'bpostalcode', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (17, 'bstate', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (18, 'bcountry', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (19, 'hstreetaddress', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (20, 'hcity', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (21, 'hpostalcode', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (22, 'hstate', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (23, 'hcountry', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (24, 'user1', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (25, 'user2', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (26, 'user3', '', '1');
+
 
 #
 # Structure de la table `bab_art_drafts`
