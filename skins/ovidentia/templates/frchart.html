@@ -401,8 +401,10 @@ if (w == 0)
 	}
 	
 }
-center_chart();
-location.href = '#ENT{ coeid }';
+if ({ coeid } == 1)
+	center_chart();
+else
+	location.href = '#ENT{ coeid }';
 //-->
 </script>
 <!--#endif first -->
