@@ -191,10 +191,10 @@ function topcatsList($idp)
 			global $babBody;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->disabled = bab_translate("Disabled");
+			$this->disabled = bab_translate("Section disabled");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
-			$this->update = bab_translate("Disable");
+			$this->update = bab_translate("Update");
 			$this->topics = bab_translate("Number of topics");
 			$this->topcats = bab_translate("Number of topics categories");
 			$this->db = $GLOBALS['babDB'];
@@ -389,7 +389,7 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 		}
 	}
 
-function disableTopcats($topcats)
+function disableTopcats($topcats, $idp)
 	{
 	global $babBody;
 	$db = $GLOBALS['babDB'];

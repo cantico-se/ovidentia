@@ -65,7 +65,7 @@ function topcatModify($id)
 			global $babBody, $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->enabled = bab_translate("Enabled");
+			$this->enabled = bab_translate("Section enabled");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->modify = bab_translate("Modify");
