@@ -149,6 +149,7 @@ CREATE TABLE groups (
    name varchar(20) NOT NULL,
    description varchar(200) NOT NULL,
    vacation enum('N','Y') DEFAULT 'N' NOT NULL,
+   mail enum('N','Y') DEFAULT 'N' NOT NULL,
    manager int(11) unsigned  DEFAULT '0' NOT NULL,
    PRIMARY KEY (id)
 );
@@ -307,6 +308,7 @@ CREATE TABLE users (
    confirm_hash text,
    is_confirmed tinyint(1) unsigned DEFAULT '0' NOT NULL,
    disabled tinyint(1) unsigned DEFAULT '0' NOT NULL,
+   lang varchar(10) NOT NULL,
    PRIMARY KEY (id)
 );
 
@@ -500,3 +502,107 @@ CREATE TABLE calaccess_users (
 	bwrite enum('N','Y') DEFAULT 'N' NOT NULL,
 	PRIMARY KEY (id)
 );
+
+# --------------------------------------------------------
+#
+# Structure de la table 'caloptions'
+#
+
+CREATE TABLE caloptions (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT, 
+	id_user INT (11) UNSIGNED not null, 
+	startday TINYINT DEFAULT '0' not null, 
+	allday ENUM ('Y','N') not null, 
+	viewcat ENUM ('Y','N') not null, 
+	usebgcolor ENUM ('Y','N') not null, 
+	PRIMARY KEY (id)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'mailview_groups'
+#
+
+CREATE TABLE mailview_groups (
+	id int(11) unsigned NOT NULL auto_increment,
+	id_object int(11) unsigned DEFAULT '0' NOT NULL,
+	id_group int(11) unsigned DEFAULT '0' NOT NULL,
+	UNIQUE id (id)
+); 
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'mail_domains'
+#
+
+CREATE TABLE mail_domains (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	name VARCHAR (254) not null,
+	description VARCHAR (224) not null,
+	outserver VARCHAR (224) not null,
+	inserver VARCHAR (224) not null,
+	outport VARCHAR (5) not null,
+	inport VARCHAR (5) not null,
+	access VARCHAR (10) not null,
+	bgroup enum('N','Y') DEFAULT 'N' NOT NULL,
+	owner INT (11) UNSIGNED not null,	
+	PRIMARY KEY (id)
+);
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'mail_accounts'
+#
+
+CREATE TABLE mail_accounts (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	name VARCHAR (255) not null,
+	email VARCHAR (255) not null,
+	account VARCHAR (255) not null,
+	password VARCHAR (255) not null,
+	domain INT (11) UNSIGNED not null,
+	owner INT (11) UNSIGNED not null,
+	maxrows TINYINT (2) not null,
+	prefered enum('N','Y') DEFAULT 'N' NOT NULL,
+	format VARCHAR (5) DEFAULT 'plain' NOT NULL,
+	PRIMARY KEY (id)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'mail_signatures'
+#
+
+CREATE TABLE mail_signatures (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	name varchar(255) NOT NULL,
+	owner INT (11) UNSIGNED not null,
+	html enum('Y','N') DEFAULT 'N' NOT NULL,
+	text TEXT not null,
+	PRIMARY KEY (id)
+); 
+
+# --------------------------------------------------------
+#
+# Structure de la table 'contacts'
+#
+
+CREATE TABLE contacts (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	owner INT (11) UNSIGNED not null,
+	firstname TEXT not null,
+	lastname TEXT not null,
+	email TEXT not null,
+	compagny varchar(255) NOT NULL,
+	hometel varchar(255) not null,
+	mobiletel varchar(255) not null,
+	businesstel varchar(255) not null,
+	businessfax varchar(255) not null,
+	jobtitle varchar(255) not null,
+	businessaddress TEXT not null,
+	homeaddress TEXT not null,
+	PRIMARY KEY (id)
+); 
+

@@ -191,7 +191,7 @@ EOD;
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = $babMonths[$i];
+				$this->monthname = babTranslate($babMonths[$i]);
 				if( date("n") == $i)
 					{
 					$this->selected = "selected";
