@@ -402,7 +402,7 @@ if( isset($login) && $login == "login")
 	else
 		{
 		$url = urldecode($referer);
-		if (substr_count($url,$GLOBALS['babUrlScript']) == 1)
+		if (substr_count($url,$GLOBALS['babUrlScript']) == 1 && substr_count($url,'tg=login&cmd=signon') == 0)
 			Header("Location: ". $url);
 		else
 			Header("Location: ". $GLOBALS['babUrlScript']);
