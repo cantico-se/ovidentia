@@ -2104,8 +2104,78 @@ function restoreFiles($items)
 		$db->db_query("update ".BAB_FILES_TBL." set state='' where id='".$items[$i]."'");
 		}
 	}
+
+function autoFile($id_dir,$path)
+	{
+	$path = urldecode($path);
+	$db = & $GLOBALS['babDB'];
+
+
+	class FolderListing {
+	   var $newarr = array();
+
+	   function loop($stack) {
+		   if(count($stack) > 0) {
+			   $arr = array();
+			   foreach($stack as $key => $value) {
+				   array_push($this->newarr, $stack[$key]);
+				   if ($dir = @opendir($stack[$key])) {
+					   while (($file = readdir($dir)) !== false) {
+						   if (($file != '.') && ($file != '..')) {
+							   array_push($arr, $stack[$key].'/'.$file);
+						   }
+					   }
+				   }
+				   @closedir($dir);
+			   }
+			   $this->loop($arr);
+		   } else {
+			   $sorted = sort($this->newarr);
+			   return($sorted);
+		   }
+	   }
+	}
+
+	$start = new FolderListing;
+	$full = $GLOBALS['babUploadPath'].'/G'.$id_dir.'/';
+	$base = array($full.trim($path,'/'));
+	$start->loop($base);
+
+	$filelist = array();
+	$res = $db->db_query("SELECT CONCAT(path,'/',name) FROM ".BAB_FILES_TBL." WHERE id_owner='".$id_dir."'");
+	while (list($name) = $db->db_fetch_array($res))
+		{
+		$filelist[$name] = 1;
+		}
+
+	header("content-type:text/plain");
+
+	$i = 0;
+
+	foreach($start->newarr as $value) {
+
+		if (is_file($value))
+			{
+			$filepath = trim(substr($value,strlen($full)),'/');
+
+			if (!isset($filelist[$filepath]))
+				{
+				$db->db_query("INSERT INTO ".BAB_FILES_TBL." (name, path, id_owner, bgroup, created, author, modified, modifiedby, confirmed) VALUES ('".basename($value)."','".dirname($filepath)."','".$id_dir."','Y',NOW(),'".$GLOBALS['BAB_SESS_USERID']."', NOW(),'".$GLOBALS['BAB_SESS_USERID']."','Y' )");
+
+				echo $db->db_insert_id().', '.basename($value)."\n";
+
+				$i++;
+				}
+			}
+		} 
+
+	die('inserted files : '.$i);
+	}
+
 	
 /* main */
+
+
 $upload = false;
 $bmanager = false;
 $access = false;
@@ -2290,6 +2360,10 @@ switch($idx)
 		if(!isset($inl)) { $inl ='';}
 		getFile($file, $id, $gr, $path, $inl);
 		exit;
+		break;
+
+	case "auto":
+		autoFile($_GET['id'],$_GET['path']);
 		break;
 
 	case "trash":
