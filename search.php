@@ -1234,15 +1234,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$select_idcal = '';
 				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
-					$crit_date = " and h.start_date >= '".$this->fields['after']." 00:00:00'";
+					$crit_date = " and ce.start_date >= '".$this->fields['after']." 00:00:00'";
 					}
 				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
-					$crit_date .= " and h.end_date <= '".$this->fields['before']."' 23:59:59";
+					$crit_date .= " and ce.end_date <= '".$this->fields['before']."' 23:59:59";
 					}
 				if (isset($this->fields['h_calendar']) && trim($this->fields['h_calendar']) != "")
 					{
-					$select_idcal = " and h.id_cal = '".$this->fields['h_calendar']."'";
+					$select_idcal = " and ceo.id_cal = '".$this->fields['h_calendar']."'";
 					}
 
 				$req = "create temporary table ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo, ".BAB_CAL_EVENTS_TBL." ce, ".BAB_CAL_CATEGORIES_TBL." cct where 0";
