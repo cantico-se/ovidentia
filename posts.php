@@ -480,6 +480,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		{
 		$subject = addslashes($subject);
 		$message = addslashes($message);
+		$name = addslashes($name);
 		}
 
 	$req = "insert into posts (id_thread, date, subject, message, author, confirmed, id_parent) values ";

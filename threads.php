@@ -247,6 +247,13 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 		$confirmed = "N";
 	else
 		$confirmed = "Y";
+
+	if(!get_cfg_var("magic_quotes_gpc"))
+		{
+		$subject = addslashes($subject);
+		$message = addslashes($message);
+		$name = addslashes($name);
+		}
 	$req = "insert into posts (id_thread, date, subject, message, author, confirmed) values ";
 	$req .= "('" .$idthread. "', now(), '" . $subject. "', '" . $message. "', '". $name. "', '". $confirmed. "')";
 	$res = $db->db_query($req);
