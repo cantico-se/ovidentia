@@ -5,6 +5,7 @@
 <!--
 function updateDates(elemDay, elemMonth, elemYear)
 {
+	ds = elemDay.selectedIndex;
 	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
 	timeDifference = timeA - 86400000;
 	timeB = new Date(timeDifference);
@@ -17,7 +18,10 @@ function updateDates(elemDay, elemMonth, elemYear)
 	{
 	elemDay.options[i] = new Option(i+1);
 	}
-	elemDay.options[0].selected = true;
+	if( ds < daysInMonth )
+	elemDay.options[ds].selected = true;
+	else
+	elemDay.options[daysInMonth-1].selected = true;
 }
 
 function dateBegin(day, month, year)
