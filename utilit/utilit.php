@@ -325,10 +325,12 @@ var $newcount;
 var $newtext;
 var $newurl;
 var $blogged;
+var $aidetxt;
 
 function userSection()
 	{
 	global $body, $BAB_SESS_USERID, $bab, $babSearchUrl;
+	$this->aidetxt = babTranslate("Since your last connection:");
 	$this->blogged = false;
 	$pgrpid = getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
