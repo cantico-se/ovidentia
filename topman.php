@@ -175,6 +175,7 @@ function viewArticle($article)
 		{
 	
 		var $content;
+		var $head;
 		var $arr = array();
 		var $db;
 		var $count;
@@ -193,7 +194,8 @@ function viewArticle($article)
 			$req = "select * from articles where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->content = $this->arr['body'];
+			$this->content = babReplace($this->arr['body']);
+			$this->head = babReplace($this->arr['head']);
 			}
 		}
 	

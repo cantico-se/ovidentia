@@ -273,6 +273,7 @@ function viewArticle($article)
 		var $topics;
 		var $baCss;
 		var $close;
+		var $head;
 
 
 		function temp($article)
@@ -283,7 +284,8 @@ function viewArticle($article)
 			$req = "select * from articles where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->content = $this->arr['body'];
+			$this->content = babReplace($this->arr['body']);
+			$this->head = babReplace($this->arr['head']);
 			}
 		}
 	
