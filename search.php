@@ -920,13 +920,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							if( $bdir == 'Y' )
 								{
 								$grp = ($row['id_group'] > 1) ? "UG.id_group='".$row['id_group']."' and ":'';
-								$req = "insert into dirresults select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." ".$grp." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
+								$req = "insert into dirresults select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." ".$grp." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." group by g.id order by sn asc,givenname asc";
 								$this->db->db_query($req);
 								}
 							}
 						else
 							{
-							$req = "insert into dirresults select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
+							$req = "insert into dirresults select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." group by g.id order by sn asc,givenname asc";
 							$this->db->db_query($req);
 							}
 						}
@@ -954,13 +954,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 								if( $bdir == 'Y' )
 									{
-									$req = "insert into dirresults select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where ".$likedir." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
+									$req = "insert into dirresults select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where ".$likedir." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." group by g.id order by sn asc,givenname asc";
 									$this->db->db_query($req);
 									}
 								}
 							else
 								{
-								$req = "insert into dirresults select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
+								$req = "insert into dirresults select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." group by g.id order by sn asc,givenname asc";
 								$this->db->db_query($req);
 								}
 							}
@@ -986,7 +986,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$this->counttot = true;
 				$this->nbresult += $nbrows;
 				}
-				
+								
 		
 		// --------------------------------------------- AGENDA
 
