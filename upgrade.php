@@ -3788,7 +3788,7 @@ $req = "CREATE TABLE ".BAB_CAL_EVENTS_OWNERS_TBL." (";
 $req .= "id_event int(10) unsigned NOT NULL default '0',";
 $req .= "id_cal int(10) unsigned NOT NULL default '0',";
 $req .= "status tinyint(3) unsigned NOT NULL default '0',";
-$req .= "KEY id_event (id_event,id_cal,status)")";
+$req .= "KEY id_event (id_event,id_cal,status))";
 
 $res = $db->db_query($req);
 if( !$res)

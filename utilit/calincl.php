@@ -252,6 +252,15 @@ class bab_icalendars
 		global $babBody, $babDB;
 
 		$pcalendar = false;
+		$this->startday = 1;
+		$this->allday = 'Y';
+		$this->usebgcolor = 'Y';
+		$this->elapstime = 60;
+		$this->defaultview = BAB_CAL_VIEW_MONTH;
+		$this->starttime = "08:00:00";
+		$this->endtime = "18:00:00";
+		$this->workdays = "1,2,3,4,5";
+		$this->user_calendarids = '';
 
 		if( !empty($GLOBALS['BAB_SESS_USERID']))
 		{
@@ -288,23 +297,11 @@ class bab_icalendars
 			$this->workdays = $arr['work_days'];
 			$this->user_calendarids = $arr['user_calendarids'];
 			}
-		else
-			{
-			$this->startday = 1;
-			$this->allday = 'Y';
-			$this->usebgcolor = 'Y';
-			$this->elapstime = 60;
-			$this->defaultview = BAB_CAL_VIEW_MONTH;
-			$this->starttime = "08:00:00";
-			$this->endtime = "18:00:00";
-			$this->workdays = "1,2,3,4,5";
-			$this->user_calendarids = '';
-			}
+		}
 		if( empty($this->user_calendarids) && $this->id_percal != 0)
 			{
 			$this->user_calendarids = $this->id_percal;
 			}
-		}
 	}
 
 	function initializePublicCalendars()

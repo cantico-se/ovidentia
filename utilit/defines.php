@@ -48,6 +48,7 @@ define("BAB_ART_LOG_TBL", "bab_art_log");
 define("BAB_CAL_CATEGORIES_TBL", "bab_cal_categories");
 define("BAB_CAL_USER_OPTIONS_TBL", "bab_cal_user_options");
 define("BAB_CAL_EVENTS_TBL", "bab_cal_events");
+define("BAB_CAL_EVENTS_OWNERS_TBL", "bab_cal_events_owners");
 define("BAB_CAL_PUBLIC_TBL", "bab_cal_public");
 define("BAB_CAL_PUB_VIEW_GROUPS_TBL", "bab_cal_pub_view_groups");
 define("BAB_CAL_PUB_MAN_GROUPS_TBL", "bab_cal_pub_man_groups");
