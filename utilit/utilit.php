@@ -224,7 +224,7 @@ function bab_getTimeFormat($format)
 
 function bab_strftime($time, $hour=true)
 	{
-	return bab_longDate($time, true, $hour);
+	return bab_longDate($time, $hour);
 	}
 
 function bab_shortDate($time, $hour=true)
@@ -992,8 +992,8 @@ function babUserSection($close)
 			{
 			$babBody->icalendars->initializeCalendars();
 			}
-		$idcal = $babBody->icalendars->user_calendarids;
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=".$view."&calid=".$babBody->icalendars->id_percal;
+		$idcals = $babBody->icalendars->user_calendarids;
+		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=".$view."&calid=".$idcals;
 		}
 
 	if( $bemail )
