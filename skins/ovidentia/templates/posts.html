@@ -239,11 +239,16 @@ alt=""><!--#else parent --><img src="{ babSkinPath }images/Puces/Puce-h.gif" wid
 </tr>
 </table>
 </td>
+<td class="BabForumTopicsNavTreeAuthor" nowrap valign="middle">
+<!--#if replymail "!= 0" -->
+<a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ replyauthor }</a>
+<!--#else replymail -->
+{ replyauthor }
+<!--#endif replymail -->
+</td>
 <!--#if alternate "== 0" -->
-<td class="BabForumTopicsNavTreeAuthor" nowrap valign="middle">{ replyauthor }</td>
 <td class="BabForumTopicsNavTreeDate" nowrap valign="middle" align="center">&nbsp;{ replydate }&nbsp;</td>
 <!--#else alternate -->
-<td class="BabForumTopicsNavTreeAuthor" nowrap valign="middle">{ replyauthor }</td>
 <td class="BabForumTopicsNavTreeDate" nowrap valign="middle" align="center">&nbsp;{ replydate }&nbsp;</td>
 <!--#endif alternate -->
 </tr>

@@ -194,6 +194,18 @@ function listPosts($forum, $thread, $post)
 					$this->replydate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
 					$this->replyauthor = $arr['author'];
 					$this->replysubject = $arr['subject'];
+					$res = $this->db->db_query("select email from users where id='".bab_getUserId( $arr['author'])."'");
+					if( $res && $this->db->db_num_rows($res) > 0)
+						{
+						$r = $this->db->db_fetch_array($res);
+
+						$this->replymail = $r['email']."?subject=";
+						if( substr($arr['subject'], 0, 3) != "RE:")
+							$this->replymail .= "RE: ";
+						$this->replymail .= urlencode($arr['subject']);
+						}
+					else
+						$this->replymail = 0;
 					}
 				if( $arr['confirmed'] == "N")
 					$this->confirmed = "C";
@@ -460,8 +472,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		{
 		if( empty($name))
 			{
-			$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
-			return;
+			$name = bab_translate("Anonymous");
 			}
 		}
 	else

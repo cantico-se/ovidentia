@@ -62,6 +62,8 @@ options.html					        changed action="index.php" to action="{ babPhpSelf }"
                         changeskin      Added <select name="style"> ... </select>
 page.html
 posts.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        newpostslist    added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
+                                        to let user email contributors
 readme.txt
 search.html					            changed action="index.php" to action="{ babPhpSelf }"
 sections.html					        changed action="index.php" to action="{ babPhpSelf }"
