@@ -453,6 +453,11 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 					$tmparr['hits'] = $arr['hits'];
 					$tmparr['id'] = $arr['id'];
 					$tmparr['idthread'] = $arr['id_thread'];
+
+					$rr = $babDB->db_fetch_array($babDB->db_query("select pt.subject, ft.name from ".BAB_FORUMS_TBL." ft left join ".BAB_THREADS_TBL." tt on tt.forum=ft.id left join ".BAB_POSTS_TBL." pt on pt.id=tt.post where tt.id='".$arr['id_thread']."'"));
+					$tmparr['forum'] = $rr['name'];
+					$tmparr['thread'] = $rr['subject'];
+					
 					$this->arrinfo[] = $tmparr;
 					$this->ptotalhits += $tmparr['hits'];
 					}
@@ -465,16 +470,16 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 			usort($this->arrinfo, array($this, 'compare'));
 			$this->count = count($this->arrinfo);
 
-			$this->urlordmod = "idx=topart&order=".($col == 'module'? $this->sortord: $order)."&col=module&pos=".$pos;
-			$this->urlordhits = "idx=topart&order=".($col == 'hits'? $this->sortord: $order)."&col=hits&pos=".$pos;
-			$this->urlordfor = "idx=topart&order=".($col == 'forum'? $this->sortord: $order)."&col=forum&pos=".$pos;
-			$this->urlordforth = "idx=topart&order=".($col == 'thread'? $this->sortord: $order)."&col=thread&pos=".$pos;
+			$this->urlordmod = "idx=forpo&order=".($col == 'module'? $this->sortord: $order)."&col=module&pos=".$pos;
+			$this->urlordhits = "idx=forpo&order=".($col == 'hits'? $this->sortord: $order)."&col=hits&pos=".$pos;
+			$this->urlordfor = "idx=forpo&order=".($col == 'forum'? $this->sortord: $order)."&col=forum&pos=".$pos;
+			$this->urlordforth = "idx=forpo&order=".($col == 'thread'? $this->sortord: $order)."&col=thread&pos=".$pos;
 			if( $this->bnavigation )
 				{
-				$this->prevpageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$prev;
-				$this->nextpageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$next;
-				$this->toppageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$top;
-				$this->bottompageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$bottom;
+				$this->prevpageurl = "idx=forpo&order=".$order."&col=".$col."&pos=".$prev;
+				$this->nextpageurl = "idx=forpo&order=".$order."&col=".$col."&pos=".$next;
+				$this->toppageurl = "idx=forpo&order=".$order."&col=".$col."&pos=".$top;
+				$this->bottompageurl = "idx=forpo&order=".$order."&col=".$col."&pos=".$bottom;
 				}
 			$this->summaryBaseCls();
 			}
@@ -504,11 +509,8 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 				$this->size=$taille;
 				$this->size2=100-$taille;
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=stat&idx=sforpo&item=".$this->arrinfo[$i]['id']."&date=".$this->currentdate;
-
-				$arr = $babDB->db_fetch_array($babDB->db_query("select pt.subject, ft.name from ".BAB_FORUMS_TBL." ft left join ".BAB_THREADS_TBL." tt on tt.forum=ft.id left join ".BAB_POSTS_TBL." pt on pt.id=tt.post where tt.id='".$this->arrinfo[$i]['idthread']."'"));
-
-				$this->forumname = $arr['name'];
-				$this->threadname = $arr['subject'];
+				$this->forumname = $this->arrinfo[$i]['forum'];
+				$this->threadname = $this->arrinfo[$i]['thread'];
 				
 				$i++;
 				return true;
