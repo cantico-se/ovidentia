@@ -192,7 +192,13 @@ function saveFolder($fname, $managerid, $active, $said, $notification, $version)
 	if( empty($fname))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return;
+		return false;
+		}
+
+	if( !is_numeric($managerid))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide manager !!");
+		return false;
 		}
 
 	if( !bab_isMagicQuotesGpcOn())
@@ -204,6 +210,7 @@ function saveFolder($fname, $managerid, $active, $said, $notification, $version)
 	if( $babDB->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This folder already exists");
+		return false;
 		}
 	else
 		{
@@ -212,6 +219,7 @@ function saveFolder($fname, $managerid, $active, $said, $notification, $version)
 		if( empty($said))
 			$said = 0;
 		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, manager, idsa, filenotify, active, version, id_dgowner) VALUES ('" .$fname. "', '" . $managerid. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "', '" . $babBody->currentAdmGroup. "')");
+		return true;
 		}
 
 }
@@ -253,7 +261,8 @@ if( !isset($idx))
 	$idx = "list";
 
 if( isset($add) && $add == "addfolder")
-	saveFolder($fname, $managerid, $active, $said, $notification, $version);
+	if (!saveFolder($fname, $managerid, $active, $said, $notification, $version))
+		$idx = "addf";
 
 if( isset($update) && $update == "folders")
 	updateFolders($notifies, $actives, $versions);
