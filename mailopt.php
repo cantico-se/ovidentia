@@ -451,7 +451,6 @@ function signaturesList()
 		var $db;
 		var $count;
 		var $res;
-        var $arr = array();
 		var $editurl;
 		var $editname;
 		var $delname;

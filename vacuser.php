@@ -117,16 +117,12 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 		var $db;
 		var $res;
 		var $count;
-		
-		var $daybegin;
-		var $monthbegin;
-		var $yearbegin;
+
 		var $dayend;
 		var $monthend;
 		var $yearend;
 		var $halfdaybegin;
 		var $halfdayend;
-		var $nbdays;
 		var $remarks;
 
 		var $daysel;
@@ -823,7 +819,6 @@ function listVacationRequests($pos)
 		var $editurl;
 		var $begindatetxt;
 		var $enddatetxt;
-		var $quantitytxt;
 		var $quantitytxt;
 		var $statustxt;
 		var $begindate;

@@ -53,7 +53,6 @@ function topcatModify($id)
 		var $templateval;
 		var $templateid;
 		var $tmplselected;
-		var $templateid;
 		var $disptmpltxt;
 		var $topcattxt;
 		var $topcatid;
