@@ -138,7 +138,7 @@ function sectionUpdate($id, $title, $pos, $desc, $content, $script)
 	$arr = $db->db_fetch_array($res);
 	if( $arr[position] != $pos)
 		{
-		$query = "select max(ordering) from sections_order where private='N' and position='".$pos."'";
+		$query = "select max(ordering) from sections_order where private='N' and position='".$arr[position]."'";
 		$res = $db->db_query($query);
 		$arr = $db->db_fetch_array($res);
 		$query = "update sections_order set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";

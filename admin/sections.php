@@ -232,10 +232,14 @@ function saveSectionsOrder($listleft, $listright)
 		{
 			$req = "update sections_order set position='0', ordering='".($i+1)."' where id='".$listleft[$i]."'";
 			$res = $db->db_query($req);
+			$req = "update sections set position='0' where id='".$listleft[$i]."'";
+			$res = $db->db_query($req);
 		}
 		for( $i = 0; $i < count($listright); $i++)
 		{
 			$req = "update sections_order set position='1', ordering='".($i+1)."' where id='".$listright[$i]."'";
+			$res = $db->db_query($req);
+			$req = "update sections set position='1' where id='".$listleft[$i]."'";
 			$res = $db->db_query($req);
 		}
 	}
