@@ -21,3 +21,4 @@
 	var STR_ENTER_LINK = "Link eingeben (i.e.";
 	var STR_UNCHEK = "Bitte Kaestchen deaktivieren \"View HTML\" um die Werkzeugleiste benutzen zu koennen.";
 	var STR_CONFIRM = "Sie werden die Formatierung verlieren, wollen Sie fortfahren ? ";
+	var STR_INSERT_IMAGE = "Bild einfügen";
