@@ -321,7 +321,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		$subject = babTranslate("Vacation request"); 
 		$username = getUserName($arr['userid']);
 	
-		$message = babTranslate("Mr/Mrs"). " ". $username . " ." .babTranslate("request a vacation").":\n";
+		$message = babTranslate("Mr")."/".babTranslate("Mrs"). " ". $username . " ." .babTranslate("request a vacation").":\n";
 		$message .= babTranslate("Request date") .": " . bab_strftime(bab_mktime($arr['date']), false) ."\n";
 
 		$message .= babTranslate("Vacation").":\n";
