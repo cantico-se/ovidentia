@@ -450,7 +450,10 @@ if( !isset($idx))
 if( isset($modify))
 	{
 	if(isset($bupdate))
+		{
+		$group = isset($group) ? $group : '';
 		updateUser($item, $changepwd, $is_confirmed, $disabled, $group);
+		}
 	else if(isset($bdelete))
 		$idx = "Delete";
 	}
