@@ -120,7 +120,7 @@ function bab_confirmDeleteCategory($id)
 		// delete article and comments
 		bab_confirmDeleteArticle($id, $arr['id']);
 		}
-	$req = "delete from BAB_".TOPICSCOM_GROUPS_TBL." where id_object='$id'";
+	$req = "delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 	
 	$req = "delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_object='$id'";
