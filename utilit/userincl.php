@@ -248,10 +248,19 @@ function bab_getWaitingIdSA($iduser)
 function bab_isWaitingApprobations()
 	{
 		global $babDB;
+		static $iwa_called = false;
+		static $iwa_result = false;
+
+		if($iwa_called)
+		{
+			return $iwa_result;
+		}
+		$iwa_called = true;
 
 		$arr = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 		if( count($arr) > 0 )
 		{
+			$iwa_result = true;
 			return true;
 		}
 
@@ -276,6 +285,7 @@ function bab_isWaitingApprobations()
 				$result = true;
 				}
 			}
+		$iwa_result = $result;
 		return $result;
 	}
 

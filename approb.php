@@ -1106,8 +1106,8 @@ switch($idx)
 	default:
 		$babBody->title = bab_translate("Approbations");
 
-		//if( $babBody->waitapprobations  || count($approbinit) > 0 )
-		//{
+		if( $babBody->waitapprobations  || count($approbinit) > 0 )
+		{
 		listWaitingArticles();
 		listWaitingComments();
 		listWaitingFiles();
@@ -1115,7 +1115,7 @@ switch($idx)
 		listWaitingVacations();
 		listWaitingAddons();
 		
-		//}
+		}
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;
 	}
