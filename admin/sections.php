@@ -101,8 +101,8 @@ function sectionsList()
 			if( $i < $this->countcat)
 				{
 				$this->arr = $this->db->db_fetch_array($this->rescat);
-				$this->arr['title'] = babTranslate($this->arr['title']);
-				$this->arr['description'] = babTranslate($this->arr['description']);
+				$this->arr['title'] = $this->arr['title'];
+				$this->arr['description'] = $this->arr['description'];
 				$this->idvalue = $this->arr['id']."-3";
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
