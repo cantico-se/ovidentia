@@ -222,6 +222,7 @@ function printBody()
 			$this->script = $babBody->script;
 			$this->babSessTimeout = ini_get('session.gc_maxlifetime');
 			$this->babSessTimeoutMsg = bab_translate("Session expire in");
+			$this->babSessTimeoutMsgLast = bab_translate("Session expired");
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript'];
 			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )
