@@ -8,6 +8,11 @@
 </HEAD>
 <BODY>
 <br>
+<center><table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center" >{ msgerror }</td>
+</tr></table><br>
+</center>
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maximagessize }">
 <input type="hidden" name="tg" value="images">
@@ -23,6 +28,17 @@
 <input type="file" name="uploadf" size="40" maxlength="255" value="">
 </td>
 </tr>
+<!--#if badmin -->
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ shared }</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<select name="share">
+<option value="Y">{ yes }</option>
+<option value="N" selected>{ no }</option>
+</select>
+</td>
+</tr>
+<!--#endif badmin -->
 <tr>
 <td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
@@ -41,6 +57,19 @@
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  border="2" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextcomfiles -->
+<tr>
+<!--#in getnextfile -->
+<td align="middle" valign="middle" width="50">
+<!--#if gd -->
+<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank"><img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
+<!--#else gd -->
+<a class="BabSiteAdminListLink" href="{ srcurl }" target="_blank"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
+<!--#endif gd -->
+</td>
+<!--#endin getnextfile -->
+</tr>
+<!--#endin getnextcomfiles -->
 <!--#in getnextfiles -->
 <tr>
 <!--#in getnextfile -->

@@ -6,10 +6,19 @@
  ***********************************************************************/
 include $babInstallPath."utilit/tempfile.php";
 
-function getResizedImage($img, $w, $h)
+define("BAB_FILE_TIMEOUT", 600);
+define("BAB_IMAGES_UPLOADDIR", "images/");
+define("BAB_IMAGES_UPLOADDIR_TMP", "images/tmp/");
+define("BAB_IMAGES_UPLOADDIR_COMMON", "images/common/");
+define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");
+
+function getResizedImage($img, $w, $h, $com)
 	{
 	$type = "";
-	$imgf = $GLOBALS['babInstallPath']."images/".$img;
+	if($com)
+		$imgf = BAB_IMAGES_UPLOADDIR_COMMON.$img;
+	else
+		$imgf = BAB_IMAGES_UPLOADDIR_TMP.$img;
 	if( file_exists($imgf))
 		{
 		$imgsize = @getimagesize($imgf);
@@ -99,32 +108,62 @@ function listImages()
 
 		function temp()
 			{
-			$this->imagemaxsize = "25000";
+			$this->maximagessize = "25000";
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->shared = bab_translate("Shared");
 			$this->refresh = bab_translate("Refresh");
-			$tf = new babTempFiles($GLOBALS['babInstallPath']."images/", 600);
-			$h = opendir($GLOBALS['babInstallPath']."images/");
+			$this->badmin = bab_isUserAdministrator();
+			$this->comnum = 0;
+			$tf = new babTempFiles(BAB_IMAGES_UPLOADDIR_TMP, BAB_FILE_TIMEOUT);
+			$h = opendir(BAB_IMAGES_UPLOADDIR_COMMON);
 			while (($f = readdir($h)) != false)
 				{
 				if ($f != "." and $f != "..") 
 					{
-					if (is_file($GLOBALS['babInstallPath']."images/".$f))
+					if (is_file(BAB_IMAGES_UPLOADDIR_COMMON.$f))
 						{
-						$this->arrfile[] = $f;
-						$this->arrufile[] = $GLOBALS['babInstallPath']."images/".$f;
+						$this->arrufile[] = BAB_IMAGES_UPLOADDIR_COMMON.$f;
+						$this->comnum++;
 						}
 					}
 				}
 			closedir($h);
+			$db = $GLOBALS['babDB'];
+			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				if( !is_dir(BAB_IMAGES_UPLOADDIR_TMP))
+					mkdir(BAB_IMAGES_UPLOADDIR_TMP, 0700);
+				while( $arr = $db->db_fetch_array($res))
+					{
+					if( is_file(BAB_IMAGES_UPLOADDIR_TMP.$arr['name']))
+						$this->arrufile[] = BAB_IMAGES_UPLOADDIR_TMP.$arr['name'];
+					else
+						$db->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$arr['id']."'");
+					}
+				}
+
 			$this->ifiles = 0;
 			$this->gd = extension_loaded('gd');
 			$this->refurl = $GLOBALS['babUrlScript']."?tg=images";
 			}
 
+		function getnextcomfiles()
+			{
+			if( $this->ifiles < count($this->arrufile) && $this->ifiles < $this->comnum)
+				{
+				return true;
+				}
+			else
+				return false;
+			}
+
 		function getnextfiles()
 			{
-			if( $this->ifiles < count($this->arrfile))
+			if( $this->ifiles < count($this->arrufile))
 				{
 				return true;
 				}
@@ -135,16 +174,20 @@ function listImages()
 		function getnextfile()
 			{
 			static $i = 0;
-			if( $i < 5 && $this->ifiles < count($this->arrfile))
+			if( $i < 5 && $this->ifiles < count($this->arrufile))
 				{
-				$this->name = $this->arrfile[$this->ifiles];
-				$imgsize = getimagesize($GLOBALS['babInstallPath']."images/".$this->arrfile[$this->ifiles]);
+				$this->name = basename($this->arrufile[$this->ifiles]);
+				$imgsize = getimagesize($this->arrufile[$this->ifiles]);
 				$this->imgalt = $imgsize[0]." X ".$imgsize[1];
-				if( $imgsize[0] > 50 && $imgsize[1] > 50)
+				if( $imgsize[0] > 50 || $imgsize[1] > 50)
 					{
 					if( $this->gd && ($imgsize[2] == 1 || $imgsize[2] == 2 || $imgsize[2] == 3))
 						{
-						$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->arrfile[$this->ifiles]."&w=50&h=50";
+						$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->name."&w=50&h=50";
+						if( $this->ifiles < $this->comnum )
+							$this->srcurl .= "&com=1";
+						else
+							$this->srcurl .= "&com=0";
 						$this->imgurl = $this->arrufile[$this->ifiles];
 						}
 					else
@@ -190,15 +233,43 @@ function listImages()
 	echo bab_printTemplate($temp,"images.html", "imageslist");
 	}
 
-function saveImage($file, $size, $tmpfile)
+$msgerror = "";
+function saveImage($file, $size, $tmpfile, $share)
 	{
-	$tf = new babTempFiles($GLOBALS['babInstallPath']."images/", 600);
-	$nf = $tf->tempfile($tmpfile, $file);
+	$nf = "";
+	if( !strstr($file, "..") && is_uploaded_file($tmpfile))
+		{
+		if( !is_dir(BAB_IMAGES_UPLOADDIR_TMP))
+			mkdir(BAB_IMAGES_UPLOADDIR_TMP, 0700);
+		$tf = new babTempFiles(BAB_IMAGES_UPLOADDIR_TMP, BAB_FILE_TIMEOUT);
+		if( !empty($share) && $share == "Y" && bab_isUserAdministrator())
+			{
+			if( !is_dir(BAB_IMAGES_UPLOADDIR_COMMON))
+				mkdir(BAB_IMAGES_UPLOADDIR_COMMON, 0700);
+			if( is_file(BAB_IMAGES_UPLOADDIR_COMMON.$file))
+				{
+				$GLOBALS['msgerror'] = bab_translate("A file with the same name already exists");
+				return $nf;
+				}
+			if( move_uploaded_file($tmpfile, BAB_IMAGES_UPLOADDIR_COMMON.$file))
+				$nf = BAB_IMAGES_UPLOADDIR_COMMON.$file;
+			}
+		else if( !empty($GLOBALS['BAB_SESS_USERID']))
+			{
+			$nf = $tf->tempfile($tmpfile, $file);
+			if( !empty($nf))
+				{
+				$db = $GLOBALS['babDB'];
+				$db->db_query("insert into ".BAB_IMAGES_TEMP_TBL." (name, id_owner) values ('".basename($nf)."', '".$GLOBALS['BAB_SESS_USERID']."')");
+				}
+			}
+		}
+	
 	if( empty($nf))
 		{
-		$babBody->msgerror = bab_translate("Cannot upload file");
-		return;
+		$GLOBALS['msgerror'] = bab_translate("Cannot upload file");
 		}
+	return $nf;
 	}
 
 /* main */
@@ -207,13 +278,13 @@ if( !isset($idx))
 
 if( isset($Submit))
 	{
-	saveImage($uploadf_name, $uploadf_size,$uploadf);
+	saveImage($uploadf_name, $uploadf_size,$uploadf, $share);
 	}
 
 switch($idx)
 	{
 	case "get":
-		getResizedImage($f, $w, $h);
+		getResizedImage($f, $w, $h, $com);
 		break;
 	case "list":
 	default:
