@@ -426,6 +426,16 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 	global $babBody, $babDB;
 	$nbdays = array();
 
+	
+	$arr = explode('-',$begin);
+	$ts_begin = mktime(0, 0, 0, $arr[1], $arr[2] , $arr[0]);
+
+	$arr = explode('-',$end);
+	$ts_end = mktime(0, 0, 0, $arr[1], $arr[2] , $arr[0]);
+
+	if (!test_period2($id_request,$id_user,$ts_begin,$ts_end,$halfdaybegin,$halfdayend))
+		return false;
+
 
 	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id_user."'"));
 
@@ -465,11 +475,6 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 		return false;
 		}
 
-	$arr = explode('-',$begin);
-	$ts_begin = mktime(0, 0, 0, $arr[1], $arr[2] , $arr[0]);
-
-	$arr = explode('-',$end);
-	$ts_end = mktime(0, 0, 0, $arr[1], $arr[2] , $arr[0]);
 
 	if( $ts_begin > $ts_end || ( $begin == $end && $halfdaybegin != $halfdayend ))
 		{
@@ -637,10 +642,43 @@ function viewVacationRequestDetail($id)
 	return $temp->count;
 	}
 
+
+function test_period2($id_entry,$id_user,$begin,$end,$halfdaybegin,$halfdayend)
+{
+	global $babBody;
+	$db = &$GLOBALS['babDB'];
+
+	if( $begin > $end || ( $begin == $end && $halfdaybegin > $halfdayend ) || ($begin == $end && $halfdaybegin == 1 && $halfdayend != 1) || ($begin == $end && $halfdaybegin != 1 && $halfdayend == 1) )
+		{
+		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
+		return false;
+		}
+
+	if ($begin == $end && $halfdaybegin == 2 && $halfdayend == 3)
+		{
+		$_POST['halfdaybegin'] = 1;
+		$_POST['halfdayend'] = 1;
+		}
+
+	$date_begin = date('Y-m-d',$begin);
+	$date_end = date('Y-m-d',$end);
+
+	
+	$req = "SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$id_user."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."')) AND id <> '".$id_entry."' AND status<>'N'";
+	$res = $db->db_query($req);
+
+	if ($db->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("ERROR: a request is allready defined on this period");
+		return false;
+		}
+
+	return true;
+}
+
 function test_period()
 {
 global $babBody;
-$db = & $GLOBALS['babDB'];
 
 if (!isset($_POST['daybegin']) || 
 	!isset($_POST['monthbegin']) ||
@@ -663,32 +701,9 @@ if (!isset($_POST['daybegin']) ||
 	$begin = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $yearbegin);
 	$end = mktime( 0,0,0,$_POST['monthend'], $_POST['dayend'], $yearend);
 
-	if( $begin > $end || ( $begin == $end && $_POST['halfdaybegin'] > $_POST['halfdayend'] ) || ($begin == $end && $_POST['halfdaybegin'] == 1 && $_POST['halfdayend'] != 1) || ($begin == $end && $_POST['halfdaybegin'] != 1 && $_POST['halfdayend'] == 1) )
-		{
-		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
-		return false;
-		}
-
-	if ($begin == $end && $_POST['halfdaybegin'] == 2 && $_POST['halfdayend'] == 3)
-		{
-		$_POST['halfdaybegin'] = 1;
-		$_POST['halfdayend'] = 1;
-		}
-
-	$date_begin = sprintf("%04d-%02d-%02d", $yearbegin, $_POST['monthbegin'], $_POST['daybegin']);
-	$date_end = sprintf("%04d-%02d-%02d", $yearend, $_POST['monthend'], $_POST['dayend']);
-
 	$id_entry = isset($_POST['id']) ? $_POST['id'] : 0;
 
-	$res = $db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$_POST['id_user']."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."')) AND id <> '".$id_entry."' AND status<>'N'");
-
-	if ($db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("ERROR: a request is allready defined on this period");
-		return false;
-		}
-
-return true;
+return test_period2($id_entry,$_POST['id_user'],$begin,$end,$_POST['halfdaybegin'],$_POST['halfdayend']);
 }
 
 
