@@ -15,6 +15,11 @@ function groupModify($id)
 		var $description;
 		var $managertext;
 		var $managerval;
+		var $useemail;
+		var $no;
+		var $yes;
+		var $noselected;
+		var $yesselected;
 		var $modify;
 
 		var $db;
@@ -26,11 +31,24 @@ function groupModify($id)
 			$this->name = babTranslate("Name");
 			$this->description = babTranslate("Description");
 			$this->managertext = babTranslate("Manager");
+			$this->useemail = babTranslate("Use email");
+			$this->no = babTranslate("No");
+			$this->yes = babTranslate("Yes");
 			$this->modify = babTranslate("Modify Group");
 			$this->db = new db_mysql();
 			$req = "select * from groups where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			if( $this->arr[mail] == "Y")
+				{
+				$this->noselected = "";
+				$this->yesselected = "selected";
+				}
+			else
+				{
+				$this->noselected = "selected";
+				$this->yesselected = "";
+				}
 			$req = "select * from users where id='".$this->arr[manager]."'";
 			$res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($res) > 0)
@@ -218,7 +236,7 @@ function groupVacation($id)
 	}
 
 
-function modifyGroup($oldname, $name, $description, $manager, $id)
+function modifyGroup($oldname, $name, $description, $manager, $bemail, $id)
 	{
 	global $body;
 	if( empty($name))
@@ -252,7 +270,7 @@ function modifyGroup($oldname, $name, $description, $manager, $id)
 		else
 			$idmanager = 0;
 
-		$query = "update groups set name='$name', description='$description', manager='$idmanager' where id='$id'";
+		$query = "update groups set name='$name', description='$description', mail='$bemail', manager='$idmanager' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: index.php?tg=groups&idx=List");
@@ -294,22 +312,50 @@ function vacationGroup($usevacation, $approver, $item)
 				else
 					$approverid = 0;
 				
-				$req = "select * from vacationsman_groups where id_group ='$item' and id_object='$approverid'";
-				$res = $db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0)
+				if( $approverid != 0)
 					{
-					$req = "update vacationsman_groups set ordering='".($i+1)."' where id_group ='$item' and id_object='$approverid'";
+					$req = "select * from vacationsman_groups where id_group ='$item' and ordering='".($i+1)."'";
+					$res = $db->db_query($req);
+					if( $res && $db->db_num_rows($res) > 0)
+						{
+						$arr = $db->db_fetch_array($res);
+						if( $arr[id_object] !== $approverid)
+							{
+							$req = "delete from vacations_states where id='".$arr[status]."'";
+							$res = $db->db_query($req);
+							$name = "Waiting to validate by". " " .$approver[$i].
+							$description = "";
+							$req = "insert into vacations_states (status, description) VALUES ('" .$name. "', '" . $description. "')";
+							$res = $db->db_query($req);
+							$statusid = $db->db_insert_id();
+							$req = "update vacationsman_groups set id_object='".$approverid."', status='".$statusid."' where id_group ='$item' and ordering='".($i+1)."'";
+							$res = $db->db_query($req);
+							}
+						}
+					else
+						{
+						$name = "Waiting to validate by". " " .$approver[$i].
+						$description = "";
+						$req = "insert into vacations_states (status, description) VALUES ('" .$name. "', '" . $description. "')";
+						$res = $db->db_query($req);
+						$statusid = $db->db_insert_id();
+						$req = "insert into vacationsman_groups (id_object, id_group, ordering, status) VALUES ('" .$approverid. "', '" .$item. "', '".($i+1)."', '".$statusid."')";
+						$res = $db->db_query($req);
+						}
 					}
 				else
 					{
-					$name = "Waiting to validate by". " " .$approver[$i].
-					$description = "";
-					$req = "insert into vacations_states (status, description) VALUES ('" .$name. "', '" . $description. "')";
+					$req = "select * from vacationsman_groups where id_group ='$item' and ordering='".($i+1)."'";
 					$res = $db->db_query($req);
-					$statusid = $db->db_insert_id();
-					$req = "insert into vacationsman_groups (id_object, id_group, ordering, status) VALUES ('" .$approverid. "', '" .$item. "', '".($i+1)."', '".$statusid."')";
+					if( $res && $db->db_num_rows($res) > 0)
+						{
+						$arr = $db->db_fetch_array($res);
+						$req = "delete from vacations_states where id='".$arr[status]."'";
+						$res = $db->db_query($req);
+						$req = "delete from vacationsman_groups where id_group ='$item' and ordering='".($i+1)."'";
+						$res = $db->db_query($req);
+						}
 					}
-				$res = $db->db_query($req);
 				}
 			}
 		}
@@ -380,7 +426,15 @@ function confirmDeleteGroup($id)
 	$req = "delete from calendar where owner='$id' and type='2'";
 	$res = $db->db_query($req);	
 
-	// delete group
+	// delete user from mailview_groups
+	$req = "delete from mailview_groups where id_group='$id'";
+	$res = $db->db_query($req);	
+
+	// delete user from mailview_domains
+	$req = "delete from mailview_groups where owner='$id' and bgroup='Y'";
+	$res = $db->db_query($req);	
+
+    // delete group
 	$req = "delete from groups where id='$id'";
 	$res = $db->db_query($req);
 	Header("Location: index.php?tg=groups&idx=List");
@@ -391,7 +445,7 @@ if( !isset($idx))
 	$idx = "Modify";
 
 if( isset($modify))
-	modifyGroup($oldname, $name, $description, $manager, $item);
+	modifyGroup($oldname, $name, $description, $manager, $bemail, $item);
 
 if( isset($vacation) && $vacation == "update")
 	{

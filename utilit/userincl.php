@@ -164,19 +164,17 @@ function userIsloggedin()
 		if ($hash == $BAB_SESS_HASHID)
 			{
 			$LOGGED_IN=true;
-			return true;
 			}
 		else
 			{
 			$LOGGED_IN=false;
-			return false;
 			}
 		}
 	else
 		{
 		$LOGGED_IN=false;
-		return false;
 		}
+    return $LOGGED_IN;
 	}
 
 function getUserName($id)
@@ -270,6 +268,29 @@ function getPrimaryGroupId($userid)
 		{
 		return "";
 		}
+	}
+
+/* 0 no access, 1 user, 2 user/manager, 3 manager*/ 
+function mailAccessLevel()
+	{
+	$db = new db_mysql();
+
+	$bemail = 0;
+	$req = "select * from users_groups join groups where id_object='$GLOBALS[BAB_SESS_USERID]' and mail='Y'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0 )
+		$bemail = 1;
+
+	$req = "select * from groups where manager='$GLOBALS[BAB_SESS_USERID]' and mail='Y'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		if( $bemail )
+			$bemail++;
+		else
+			$bemail = 3;
+		}
+	return $bemail;
 	}
 
 ?>

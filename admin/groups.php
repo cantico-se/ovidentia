@@ -9,6 +9,9 @@ function groupCreate()
 		var $name;
 		var $description;
 		var $managertext;
+		var $useemail;
+		var $no;
+		var $yes;
 		var $add;
 
 		function temp()
@@ -16,6 +19,9 @@ function groupCreate()
 			$this->name = babTranslate("Name");
 			$this->description = babTranslate("Description");
 			$this->managertext = babTranslate("Manager");
+			$this->useemail = babTranslate("Use email");
+			$this->no = babTranslate("No");
+			$this->yes = babTranslate("Yes");
 			$this->add = babTranslate("Add Group");
 			}
 		}
@@ -30,6 +36,7 @@ function groupList()
 	class temp
 		{
 		var $name;
+		var $mail;
 		var $urlname;
 		var $url;
 		var $description;
@@ -43,6 +50,7 @@ function groupList()
 		function temp()
 			{
 			$this->name = babTranslate("Name");
+			$this->mail = babTranslate("Mail");
 			$this->description = babTranslate("Description");
 			$this->manager = babTranslate("Manager");
 			$this->db = new db_mysql();
@@ -64,6 +72,10 @@ function groupList()
 				$this->url = $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$this->arr[id];
 				$this->urlname = $this->arr[name];
 				$this->managername = getUserName($this->arr[manager]);
+				if( $this->arr[mail] == "Y")
+					$this->arr[mail] = babTranslate("Yes");
+				else
+					$this->arr[mail] = babTranslate("No");
 				$i++;
 				return true;
 				}
@@ -78,7 +90,7 @@ function groupList()
 	}
 
 
-function addGroup($name, $description, $manager)
+function addGroup($name, $description, $manager, $bemail)
 	{
 	global $body;
 	if( empty($name))
@@ -112,7 +124,7 @@ function addGroup($name, $description, $manager)
 			}
 		else
 			$idmanager = 0;
-		$req = "insert into groups (name, description, vacation, manager) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "', '" . $managerid. "')";
+		$req = "insert into groups (name, description, vacation, mail, manager) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "', '". $bemail. "', '" . $managerid. "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 
@@ -126,7 +138,7 @@ if( !isset($idx))
 	$idx = "List";
 
 if( isset($add))
-	addGroup($name, $description, $manager);
+	addGroup($name, $description, $manager, $bemail);
 
 
 switch($idx)
