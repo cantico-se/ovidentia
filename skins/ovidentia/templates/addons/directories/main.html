@@ -66,21 +66,21 @@
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLetterlists" colspan="3"> 
+<td class="BabSiteAdminTitleFontBackground" colspan="3"> 
 <!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp; 
+{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="8" border="0">
 <!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="8" border="0">
 <!--#endif allselected -->
 <!--#in getnextselect -->
 <!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp;
+{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
 <!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-<td class="BabLetterlists" align="right">&nbsp;
+<td class="BabSiteAdminTitleFontBackground" align="right"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
 <!--#if badd -->
 <a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addname }</a>
 <!--#endif badd -->
@@ -90,26 +90,30 @@
 <tr>
 <td>
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap >&nbsp;</td>
-<td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap >&nbsp;</td>
-<!--#in getnextcol -->
-<td class="BabSiteAdminSmall" valign="middle" nowrap ><b><a class="BabAlphabetLink" href="{ colurl }">{ coltxt }</a></b></td>
-<!--#endin getnextcol -->
-<td class="BabSiteAdminSmall" valign="middle" nowrap >&nbsp;</td>
-</tr>
-<!--#in getnext -->
-<tr>
-<td class="BabFontBackground" align="center" valign="middle" width="1%" >
-<!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=700,status=no,resizable=yes,top=130,left=200,scrollbars=yes');"><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top><!--#endif accid --><img src="{ babSkinPath }images/Puces/txt.gif" border="0"></a></td>
-<td class="BabFontBackground" valign="middle" width="1%" ><a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/edit.gif" border="0"></a></td>
-<!--#in getnextcolval -->
-<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ coltxt }</td>
-<!--#endin getnextcolval -->
-<td class="BabFontBackground" valign="middle" nowrap >&nbsp;</td>
-</tr>
-<!--#endin getnext -->
-</table>
+        <tr> 
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#in getnextcol -->
+          <td class="BabSiteAdminSmall" valign="middle" nowrap ><b><a class="BabAlphabetLink" href="{ colurl }">{ 
+            coltxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></b></td>
+          <!--#endin getnextcol -->
+        </tr>
+        <!--#in getnext -->
+        <tr> 
+          <td class="BabFontBackground" align="center" valign="middle" width="1%" > 
+            <!--#if accid "!= 0" -->
+            <a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=700,status=no,resizable=yes,top=130,left=200,scrollbars=yes');">
+            <!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>
+            <!--#endif accid -->
+            <img src="{ babSkinPath }images/addons/directories/mail.png" border="0"></a></td>
+          <td class="BabFontBackground" valign="middle" width="1%" ><a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/addons/directories/contact.png" border="0"></a></td>
+          <!--#in getnextcolval -->
+          <td class="BabFontBackground" align="left" valign="middle">{ coltxt 
+            }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#endin getnextcolval -->
+        </tr>
+        <!--#endin getnext -->
+      </table>
 </td>
 </tr>
 </table>
@@ -120,36 +124,36 @@
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLetterlists" colspan="3"> 
+<td class="BabSiteAdminTitleFontBackground" colspan="3"> 
 <!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp; 
+{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
 <!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
 <!--#endif allselected -->
 <!--#in getnextselect -->
 <!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp; 
+{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
 <!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="8" border="0">
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-<td class="BabLetterlists" align="right">&nbsp;
+<td class="BabSiteAdminTitleFontBackground" align="right"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">
 <!--#if badd -->
 <a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addname }</a>
 <!--#endif badd -->
 </td>
 </tr><tr> 
 <td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ cntxt }</b> </td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ emailtxt }</b></td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ bteltxt }</b></td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ hteltxt }</b></td>
+<td class="BabSiteAdminSmall" valign="middle" align="left"><b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ emailtxt }</b></td>
+<td class="BabSiteAdminSmall" valign="middle" align="left"><b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ bteltxt }</b></td>
+<td class="BabSiteAdminSmall" valign="middle" align="left"><b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ hteltxt }</b></td>
 </tr>
 <!--#in getnext -->
 <tr><td class="BabFontBackground"valign="middle"><a class="BabNameEmailLink" href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cn }</a></td>
 <td class="BabFontBackground" align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
-<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ btel }</td>
-<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ htel }</td>
+<td class="BabFontBackground" align="left" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ btel }</td>
+<td class="BabFontBackground" align="left" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">{ htel }</td>
 </tr>
 <!--#endin getnext -->
 </table>
@@ -199,12 +203,12 @@
 <br>
 <table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
 <tr>
-<td align="center">&nbsp;
+<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;
 <!--#if modify -->
-<a class="BabSiteAdminListLink" href="{ modifyurl }">{ modifytxt }</a>
+<a class="BabAlphabetLink" href="{ modifyurl }">{ modifytxt }</a>
 <!--#endif modify -->
 &nbsp;<!--#if del -->
-<a class="BabSiteAdminListLink" href="{ delurl }">{ deltxt }</a>
+<a class="BabAlphabetLink" href="{ delurl }">{ deltxt }</a>
 <!--#endif del -->
 </td>
 </tr></table></center>
