@@ -299,8 +299,10 @@ CREATE TABLE topicsview_groups (
 
 CREATE TABLE users (
    id int(11) unsigned NOT NULL auto_increment,
-   name text,
-   fullname text,
+   nickname varchar(30),
+   firstname varchar(60),
+   lastname varchar(30),
+   hashname varchar(32),
    email text,
    date datetime DEFAULT '0000-00-00 00:00:00',
    password text,
@@ -313,7 +315,7 @@ CREATE TABLE users (
    PRIMARY KEY (id)
 );
 
-INSERT INTO users VALUES ( '1', '', 'Administrator', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0');
+INSERT INTO users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0');
 
 # --------------------------------------------------------
 #
@@ -609,4 +611,23 @@ CREATE TABLE contacts (
    PRIMARY KEY (id),
    KEY hashname (hashname),
    KEY id (id)
+);
+
+CREATE TABLE sites (
+   id int(11) unsigned NOT NULL auto_increment,
+   name char(30) NOT NULL,
+   description char(100) NOT NULL,
+   lang char(10) NOT NULL,
+   adminemail char(255) NOT NULL,
+   PRIMARY KEY (id)
+);
+
+CREATE TABLE homepages (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	id_article INT (11) UNSIGNED not null,
+	id_site INT (11) UNSIGNED not null,
+	id_group INT (11) UNSIGNED not null,
+	status ENUM ('N', 'Y') not null,
+	ordering INT (11) UNSIGNED not null,
+	PRIMARY KEY (id)
 );

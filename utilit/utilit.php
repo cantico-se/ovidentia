@@ -233,6 +233,7 @@ function adminSection()
 	{
 	global $sectionTitlesBgnd;
 	$this->babSectionTemplate("adminsection.html", "template");
+	$this->array_urls[babTranslate("Sites")] = $GLOBALS[babUrl]."index.php?tg=sites";
 	$this->array_urls[babTranslate("Sections")] = $GLOBALS[babUrl]."index.php?tg=sections";
 	$this->array_urls[babTranslate("Users")] = $GLOBALS[babUrl]."index.php?tg=users";
 	$this->array_urls[babTranslate("Groups")] = $GLOBALS[babUrl]."index.php?tg=groups";
@@ -294,6 +295,13 @@ function userSection()
 	if( $res && $db->db_num_rows($res) > 0 || useVacation($GLOBALS[BAB_SESS_USERID]))
 		$vac = true;
 
+	$req = "select * from topics where id_approver='".$GLOBALS[BAB_SESS_USERID]."'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0 )
+		$mtopics = true;
+	else
+		$mtopics = false;
+
 	$bemail = mailAccessLevel();
 	if( $bemail == 1 || $bemail == 2)
 		$bemail = true;
@@ -301,6 +309,8 @@ function userSection()
 		$bemail = false;
 
 	$this->babSectionTemplate("usersection.html", "template");
+	if( $mtopics )
+		$this->array_urls[babTranslate("Topics")] = $GLOBALS[babUrl]."index.php?tg=topics&userid=".$GLOBALS[BAB_SESS_USERID];
 	$this->array_urls[babTranslate("Summary")] = $GLOBALS[babUrl]."index.php?tg=calview";
 	$this->array_urls[babTranslate("Options")] = $GLOBALS[babUrl]."index.php?tg=options";
 	$this->array_urls[babTranslate("Notes")] = $GLOBALS[babUrl]."index.php?tg=notes";
@@ -802,6 +812,7 @@ function printout()
 			}
 		}
 }
+
 function updateUserSettings()
 {
 	global $BAB_SESS_USERID;

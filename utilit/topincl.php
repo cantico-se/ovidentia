@@ -124,6 +124,8 @@ function confirmDeleteArticle($topics, $article)
 	$req = "delete from comments where id_article='$article'";
 	$res = $db->db_query($req);
 
+	$req = "delete from homepages where id_article='".$arr[$i]."'";
+	$res = $db->db_query($req);
 
 	// delete article
 	$req = "delete from articles where id='$article'";

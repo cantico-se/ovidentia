@@ -30,7 +30,7 @@ function addCategory()
 	$body->babecho(	babPrintTemplate($temp,"topics.html", "categorycreate"));
 	}
 
-function listCategories()
+function listCategories($adminid)
 	{
 	global $body;
 	class temp
@@ -49,13 +49,19 @@ function listCategories()
 		var $urlarticles;
 		var $nbarticles;
 
-		function temp()
+		function temp($adminid)
 			{
+			global $BAB_SESS_USERID;
 			$this->articles = babTranslate("Article") ."(s)";
 			$this->db = new db_mysql();
-			$req = "select * from topics";
+			if( $adminid > 0)
+				$req = "select * from topics";
+			else
+				$req = "select * from topics where id_approver='".$BAB_SESS_USERID."'";
+
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			$this->adminid = $adminid;
 			}
 
 		function getnext()
@@ -88,7 +94,7 @@ function listCategories()
 				return false;
 			}
 		}
-	$temp = new temp();
+	$temp = new temp($adminid);
 	$body->babecho(	babPrintTemplate($temp,"topics.html", "categorylist"));
 	return $temp->count;
 	}
@@ -129,12 +135,14 @@ function saveCategory($category, $description, $approver)
 
 
 /* main */
+$adminid = isUserAdministrator();
+
 if(!isset($idx))
 	{
 	$idx = "list";
 	}
 
-if( isset($add))
+if( isset($add) && $adminid > 0)
 	{
 	saveCategory($category, $description, $approver);
 	}
@@ -143,22 +151,26 @@ switch($idx)
 	{
 	case "addtopic":
 		$body->title = babTranslate("Add a new topic");
+		if( $adminid > 0)
+		{
 		addCategory();
 		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=topics&idx=list");
 		$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=topics&idx=addtopic");
+		}
 		break;
 
 	default:
 	case "list":
 		$body->title = babTranslate("List of all topics");
-		if( listCategories() > 0 )
+		if( listCategories($adminid) > 0 )
 			{
 			$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=topics&idx=list");
 			}
 		else
 			$body->title = babTranslate("There is no topic");
 
-		$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=topics&idx=addtopic");
+		if( $adminid > 0)
+			$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=topics&idx=addtopic");
 		break;
 	}
 $body->setCurrentItemMenu($idx);

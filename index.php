@@ -252,11 +252,11 @@ switch($tg)
 			$incl = "admin/admfaq";
 		break;
 	case "topics":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN)
 			$incl = "admin/topics";
 		break;
 	case "topic":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN)
 			$incl = "admin/topic";
 		break;
 	case "forums":
@@ -282,6 +282,14 @@ switch($tg)
 	case "admcal":
 		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admcal";
+		break;
+	case "sites":
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+			$incl = "admin/sites";
+		break;
+	case "site":
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+			$incl = "admin/site";
 		break;
 	case "options":
 		if( $LOGGED_IN)

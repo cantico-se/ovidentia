@@ -139,7 +139,25 @@ CREATE TABLE contacts (
    KEY id (id)
 );
 
-#------- babinstall.sql
 ALTER TABLE users CHANGE name nickname CHAR (30);
 ALTER TABLE users ADD firstname CHAR (60) not null AFTER nickname , ADD lastname CHAR (60) not null AFTER firstname;
 ALTER TABLE posts ADD id_parent INT (11) UNSIGNED not null AFTER id_thread;
+
+CREATE TABLE sites (
+   id int(11) unsigned NOT NULL auto_increment,
+   name char(30) NOT NULL,
+   description char(100) NOT NULL,
+   lang char(10) NOT NULL,
+   adminemail char(255) NOT NULL,
+   PRIMARY KEY (id)
+);
+
+CREATE TABLE homepages (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	id_article INT (11) UNSIGNED not null,
+	id_site INT (11) UNSIGNED not null,
+	id_group INT (11) UNSIGNED not null,
+	status ENUM ('N', 'Y') not null,
+	ordering INT (11) UNSIGNED not null,
+	PRIMARY KEY (id)
+);

@@ -181,6 +181,8 @@ function confirmArticle($article, $topics)
 			$this->action = babTranslate("Action");
 			$this->confirm = babTranslate("Confirm");
 			$this->refuse = babTranslate("Refuse");
+			$this->homepage0 = babTranslate("Add to unregistered users's home page");
+			$this->homepage1 = babTranslate("Add to registered users's home page");
 			$this->what = babTranslate("Send an email to submiter");
 			$this->message = babTranslate("Message");
 			$this->confval = "article";
@@ -356,11 +358,11 @@ function confirmComment($article, $topics, $com, $newc)
 	$body->babecho(	babPrintTemplate($temp,"waiting.html", "confirmarticle"));
 	}
 
-function updateConfirmArticle($topics, $article, $action, $send, $author, $message)
+function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1)
 	{
 	global $body, $new;
-
 	$db = new db_mysql();
+
 	$query = "select * from articles where id='$article'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
@@ -383,13 +385,33 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		{
 		$query = "update articles set confirmed='Y' where id = '$article'";
 		$subject = babTranslate("Your article has been accepted");
+		$res = $db->db_query($query);
+
+		$query = "select * from sites where name='".$GLOBALS[babSiteName]."'";
+		$res = $db->db_query($query);
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$arr = $db->db_fetch_array($res);
+			if( $homepage0 == "2")
+				{
+				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr[id]. "', '" . $homepage0. "')";
+				$res = $db->db_query($query);
+				}
+
+			if( $homepage1 == "1")
+				{
+				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr[id]. "', '" . $homepage1. "')";
+				$res = $db->db_query($query);
+				}
+			}
+
 		}
 	else
 		{
 		$query = "delete from articles where id = '$article'";
 		$subject = babTranslate("Your article has been refused");
+		$res = $db->db_query($query);
 		}
-	$res = $db->db_query($query);
 
 	if( $send == "1")
 		{
@@ -473,7 +495,7 @@ if( isset($modify))
 if( isset($confirm) )
 	{
 	if($confirm == "article")
-		updateConfirmArticle($topics, $article, $action, $send, $author, $message);
+		updateConfirmArticle($topics, $article, $action, $send, $author, $message,$homepage0, $homepage1);
 	if($confirm == "comment")
 		updateConfirmComment($topics, $article, $action, $send, $author, $message, $comment, $new);
 	}

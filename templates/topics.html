@@ -50,7 +50,13 @@
 <table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
 <table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="0">
 <TBODY>
-<tr><td class="BabFaqTitleBgnd" nowrap><b><a class=BabMenuLink href="{ urlcategory }">{ namecategory }</a>   ( { approver } )</b></td>
+<tr><td class="BabFaqTitleBgnd" nowrap><b>
+<!--#if adminid "> 0" -->
+<a class=BabMenuLink href="{ urlcategory }">{ namecategory }</a>   ( { approver } )</b>
+<!--#else adminid -->
+{ namecategory }</b>
+<!--#endif adminid -->
+</td>
 <td class="BabFaqTitleBgnd"  align="right">
 <!--#if nbarticles "== 0" -->
 { nbarticles }&nbsp;{ articles }
@@ -143,17 +149,35 @@ function Start(page)
 <table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
 <tr>
 <td width="2%" class="BabListTitleBgnd"><a href="javascript:onCheckAll('art', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a></td>
+<td width="2%" class="BabListTitleBgnd">&nbsp;</td>
+<td width="2%" class="BabListTitleBgnd">&nbsp;</td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ titlename }</b></td>
 </tr>
 <!--#in getnext -->
 <tr>
 <td><input width="2%" type="checkbox" name="art[]" value="{ articleid }">
+<td>&nbsp;{ bhomepage0 }</td>
+<td>&nbsp;{ bhomepage1 }</td>
 <td nowrap><a class=BabMenuLink href="{ urltitle }">{ title }</a></td>
 </tr>
 <!--#endin getnext -->
 <tr>
 <td class="BabListTitleBgnd"><a href="javascript:onCheckAll('art', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
 <td class="BabListTitleBgnd">&nbsp;</td>
+<td class="BabListTitleBgnd">&nbsp;</td>
+<td class="BabListTitleBgnd">&nbsp;</td>
+</tr>
+</table>
+</td></tr>
+</table>
+<br>
+<table border="0" width="50%" cellpadding="1" cellspacing="0"><tr><td>
+<table border="0" width="100%" cellpadding="2" cellspacing="2">
+<tr>
+<td><input type="checkbox" name="homepage0" value="2" checked>&nbsp;&nbsp;{ homepage0 }</td>
+</tr>
+<tr>
+<td><input type="checkbox" name="homepage1" value="1">&nbsp;&nbsp;{ homepage1 }</td>
 </tr>
 </table>
 </td></tr>

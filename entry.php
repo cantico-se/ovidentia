@@ -6,7 +6,7 @@
  ***********************************************************************/
 include $babInstallPath."utilit/topincl.php";
 
-function listArticles()
+function oldListArticles()
 	{
 	global $body;
 
@@ -115,6 +115,111 @@ function listArticles()
 	return $temp->count;
 	}
 
+function ListArticles()
+	{
+	global $body;
+
+	class temp
+		{	
+		var $title;
+		var $content;
+		var $db;
+		var $countres;
+		var $res;
+		var $author;
+		var $moreurl;
+		var $morename;
+
+		function temp()
+			{
+			$this->db = new db_mysql();
+			$req = "select * from sites where name='".$GLOBALS[babSiteName]."'";
+			$res = $this->db->db_query($req);
+			if( !$res || $this->db->db_num_rows($res) < 1)
+				{
+				$req = "insert into sites ( name, adminemail, lang ) values ('" .$GLOBALS[babSiteName]. "', '" . $GLOBALS[babAdminEmail]. "', '" . $GLOBALS[babLanguage]. "')";
+				$res = $this->db->db_query($req);
+				$idsite = $this->db->db_insert_id();
+				}
+			else
+				{
+				$arr = $this->db->db_fetch_array($res);
+				$idsite = $arr[id];
+				}
+			$req = "select * from homepages where id_group='2' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
+			$this->res = $this->db->db_query($req);
+			$this->countres = $this->db->db_num_rows($this->res);
+			$this->morename = babTranslate("Read More");
+			}
+
+		function getnext()
+			{
+			global $new; 
+			static $i = 0;
+			if( $i < $this->countres)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$req = "select * from articles where id='".$arr[id_article]."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->title = $arr[title];
+				$this->content = $arr[head];
+				$this->author = babTranslate("by") . " ". getArticleAuthor($arr[id]). " - ". getArticleDate($arr[id]);
+				$this->moreurl = $GLOBALS[babUrl]."index.php?tg=entry&idx=more&article=".$arr[id];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	
+	$temp = new temp();
+	$body->babecho(	babPrintTemplate($temp,"entry.html", "homepage0"));
+	return $temp->count;
+	}
+
+function readMore($article)
+	{
+	global $body;
+
+	class temp
+		{
+	
+		var $content;
+		var $db;
+		var $count;
+		var $res;
+		var $title;
+
+		function temp($article)
+			{
+			$this->db = new db_mysql();
+			$req = "select * from articles where id='$article' and confirmed='Y'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->content = $arr[body];
+				$this->title = $arr[title];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	
+	$temp = new temp($article);
+	$body->babecho(	babPrintTemplate($temp,"entry.html", "readmore"));
+	}
+
 /* main */
 if(!isset($idx))
 	{
@@ -123,10 +228,16 @@ if(!isset($idx))
 
 switch($idx)
 	{
+	case "more":
+		readMore($article);
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=entry");
+		$body->addItemMenu("more", babTranslate("Article"), $GLOBALS[babUrl]."index.php?tg=entry&idx=more");
+		break;
 
 	default:
 	case "list":
 		$body->title = babTranslate("List of articles");
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=entry");
 		listArticles();
 		break;
 	}

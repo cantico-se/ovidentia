@@ -68,16 +68,16 @@
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
 <tr>
-<td width="107" align="right">{ head }</td>
-<td width="103"><textarea cols="70" rows="10" name="headtext">{ headval }</textarea></td>
+<td align="right">{ head }</td>
+<td><textarea cols="70" rows="10" name="headtext">{ headval }</textarea></td>
 </tr>
 <tr>
-<td width="107" align="right">{ body }</td>
-<td width="103"><textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea></td>
+<td align="right">{ body }</td>
+<td><textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea></td>
 </tr>
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ modify }"></td>
 </tr>
 </table>
 </center>
@@ -104,30 +104,36 @@
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
 <tr>
-<td width="107" align="right">{ name }:</td>
-<td width="103" nowrap><b>{ fullname }</b></td>
+<td align="right">{ name }:</td>
+<td nowrap><b>{ fullname }</b></td>
 </tr>
 <tr>
-<td width="107" align="right">{ action }:</td>
-<td width="103">
+<td align="right">{ action }:</td>
+<td>
 <select name="action">
 <option value="1" selected>{ confirm }</option>
 <option value="0" >{ refuse }</option>
 </select>
 </td>
 <tr>
-<td width="107" align="right"></td>
-<td width="103" nowrap>
-<input type="checkbox" name="send" value="1"> { what }
-</td>
+<td align="right"></td>
+<td nowrap><input type="checkbox" name="send" value="1">&nbsp;{ what }</td>
 </tr>
 <tr>
-<td width="107" align="right">{ message }:</td>
-<td width="103"><textarea cols="50" rows="10" name="message"></textarea></td>
+<td align="right"></td>
+<td nowrap><input type="checkbox" name="homepage0" value="2">&nbsp;{ homepage0 }</td>
 </tr>
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+<td align="right"></td>
+<td nowrap><input type="checkbox" name="homepage1" value="1">&nbsp;{ homepage1 }</td>
+</tr>
+<tr>
+<td align="right">{ message }:</td>
+<td ><textarea cols="50" rows="10" name="message"></textarea></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ modify }"></td>
 </tr>
 </table>
 </center>
