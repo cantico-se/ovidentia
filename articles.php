@@ -305,6 +305,62 @@ function articlePrint($topics, $article)
 	echo babPrintTemplate($temp,"articleprint.html");
 	}
 
+function notifyApprover($top, $title, $approveremail)
+	{
+	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+    include $babInstallPath."utilit/mailincl.php";
+
+	class tempa
+		{
+		var $articletitle;
+		var $message;
+        var $from;
+        var $author;
+        var $category;
+        var $categoryname;
+        var $title;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($top, $title)
+			{
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->articletitle = $title;
+            $this->message = babTranslate("A new article is waiting for you");
+            $this->from = babTranslate("Author");
+            $this->category = babTranslate("Topic");
+            $this->title = babTranslate("Title");
+            $this->categoryname = $top;
+            $this->site = babTranslate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = babTranslate("Date");
+            $this->dateval = bab_strftime(mktime());
+            if( !empty($BAB_SESS_USER))
+                $this->author = $BAB_SESS_USER;
+            else
+                $this->author = babTranslate("Unknown user");
+
+            if( !empty($BAB_SESS_EMAIL))
+                $this->authoremail = $BAB_SESS_EMAIL;
+            else
+                $this->authoremail = "";
+			}
+		}
+	
+	$tempa = new tempa($top, $title);
+	$message = babPrintTemplate($tempa,"mailinfo.html", "articlewait");
+
+    $mail = new babMail();
+    $mail->mailTo($approveremail);
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject(babTranslate("New waiting article"));
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
+
 function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	{
 	global $BAB_SESS_USERID, $body , $babAdminEmail;
@@ -339,21 +395,24 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
+        $top = $arr[category];
 		$arr = $db->db_fetch_array($res);
 		$req = "select * from users where id='$arr[id_approver]'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$message = babTranslate("A new article is waiting for you"). ":\n". $title ."\n";
-			mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
+			//$message = babTranslate("A new article is waiting for you"). ":\n". $title ."\n";
+            notifyApprover($top, $title, $arr[email]);
+			//mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
 			}
 		}
 	}
 
+
 function saveArticle($title, $headtext, $bodytext, $topics)
 	{
-	global $BAB_SESS_USERID, $body , $babAdminEmail;
+	global $BAB_SESS_USERID, $body ;
 
 	if( empty($title))
 		{
@@ -382,13 +441,14 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
+        $top = $arr[category];
 		$req = "select * from users where id='$arr[id_approver]'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$message = babTranslate("A new article is waiting for you"). ":\n". $title ."\n";
-			mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
+            notifyApprover($top, $title, $arr[email]);
+			//mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
 			}
 		}
 	}
@@ -428,11 +488,13 @@ if(!isset($idx))
 if( isset($addarticle))
 	{
 	saveArticleByFile($filename, $title, $doctag, $introtag, $topics);
+	$idx = "Articles";
 	}
 
 if( isset($addart) && $addart == "add")
 	{
 	saveArticle($title, $headtext, $bodytext, $topics);
+	$idx = "Articles";
 	}
 
 if( isset($action) && $action == "Yes" && isUserApprover($topics))
@@ -443,6 +505,7 @@ if( isset($action) && $action == "Yes" && isUserApprover($topics))
 if( isset($modify))
 	{
 	updateArticle($topics, $title, $article, $headtext, $bodytext);
+	$idx = "Articles";
 	}
 
 $approver = isUserApprover($topics);
