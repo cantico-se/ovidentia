@@ -263,3 +263,6 @@ a img {
 .bab_calendar .used .bab_tooltip {
 	background-color:lightgrey;
 	}
+.bab_calendar .used, .bab_calendar .freeevent {
+	font-size:9px;
+	}

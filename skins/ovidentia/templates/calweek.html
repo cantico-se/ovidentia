@@ -239,15 +239,16 @@ document.onmousemove = bab_tooltipPosition;
 				<tr>	
 					<!--#in getfreeevent -->
 					<!--#if free -->
-					<td class="freeevent" <!--#if allow_freeevent_create --> style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)"<!--#endif allow_freeevent_create --> onmouseover="bab_showOnMouse('calevent{ cdate }{ h_start }',1)" onmouseout="bab_showOnMouse('calevent{ cdate }{ h_start }',0)">
+					<td class="freeevent" <!--#if allow_freeevent_create --> style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)"<!--#endif allow_freeevent_create -->>
 					<!--#else free -->
-					<td class="used" onmouseover="bab_showOnMouse('calevent{ cdate }{ h_start }',1)" onmouseout="bab_showOnMouse('calevent{ cdate }{ h_start }',0)">
+					<td class="used">
 					<!--#endif free -->
-						<div id="calevent{ cdate }{ h_start }" class="bab_tooltip">
-							<strong>{ t_date_from } : </strong> { startdate }&nbsp;{ starttime }<br />
+						<!--#if first -->
+						<span>
+							<strong>{ t_date_from } : </strong> { startdate }&nbsp;{ starttime }</br>
 							<strong>{ t_date_to } : </strong> { enddate }&nbsp;{ endtime }
-						</div>
-						<span></span>
+						</span>
+						<!--#endif first -->
 					<!--#endin getfreeevent -->
 					</td>
 				</tr>

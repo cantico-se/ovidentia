@@ -334,8 +334,14 @@ class cal_weekCls extends cal_wmdbaseCls
 		{
 		global $babBody;
 		$arr = array();
+		$this->first=0;
 		if( $this->mcals->getNextFreeEvent($this->startdt, $this->enddt, $arr))
 			{
+			if( !isset($this->bfirstevents[$arr[0].$this->cdate]) )
+				{
+				$this->first=1;
+				$this->bfirstevents[$arr[0].$this->cdate] = 1;
+				}
 			$this->free = $arr[2] == 0;
 			$time = bab_mktime($arr[0]);
 			$this->starttime = bab_time($time);

@@ -229,7 +229,7 @@ class bab_mcalendars
 					}
 				else
 					{
-					$tmparr[] = $this->freeevents[$i];
+					$tmparr[] = $this->freeevents[$i]; 
 					}
 
 				}

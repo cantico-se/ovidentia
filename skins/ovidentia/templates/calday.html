@@ -194,21 +194,19 @@ document.onmousemove = bab_tooltipPosition;
 			<!--#endif bowner -->
 		</th>
 
-		<td class="event">
-					<!--#in getfreeevent -->
-			<!--#if free -->
-				<!--#if allow_freeevent_create -->
-				<div class="freeevent" style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)">
-				<!--#else allow_freeevent_create -->
-				<div class="freeevent">
-				<!--#endif allow_freeevent_create -->
-			<!--#else free -->
-				<div class="used">
-			<!--#endif free -->
-					{ startdate } { starttime }&nbsp;{ enddate } { endtime }
-				</div>
-					<!--#endin getfreeevent -->
-		</td>
+
+		<!--#in getfreeevent -->
+		<!--#if free -->
+			<td class="freeevent" <!--#if allow_freeevent_create -->style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)"<!--#endif allow_freeevent_create -->>
+		<!--#else free -->
+			<td class="used">
+		<!--#endif free -->
+				<!--#if first -->
+				<strong>{ t_date_from } : </strong> { startdate }&nbsp;{ starttime }<br />
+				<strong>{ t_date_to } : </strong> { enddate }&nbsp;{ endtime }
+				<!--#endif first -->
+			</td>
+		<!--#endin getfreeevent -->
 	</tr>
 	</tbody>
 <!--#endin getnexthour -->
