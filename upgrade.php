@@ -3342,6 +3342,15 @@ function upgrade501to502()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_DG_GROUPS_TBL." ADD orgchart ENUM( 'N', 'Y' ) DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_DG_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 
