@@ -9,6 +9,7 @@
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="gr" value="{ gr }">
 <input type="hidden" name="path" value="{ path }">
+<input type="hidden" name="readonly" value="N">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -30,15 +31,6 @@
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="readonly">
-<option value="N" selected>{ no }</option>
-<option value="Y" >{ yes }</option>
-</select>
 </td>
 </tr>
 <tr>
@@ -242,6 +234,7 @@ alt="{ paste }"></a>
 <input type="hidden" name="path" value="{ path }">
 <input type="hidden" name="file" value="{ file }">
 <input type="hidden" name="idf" value="{ idf }">
+<input type="hidden" name="readonly" value="N">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -267,15 +260,6 @@ alt="{ paste }"></a>
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
 <td class="BabLoginMenuBackground" valign="middle">
 <input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<select name="readonly">
-  <option value="N" { noselected }>{ no }</option>
-  <option value="Y" { yesselected }>{ yes }</option>
-</select>
 </td>
 </tr>
 <!--#if bmanager -->
