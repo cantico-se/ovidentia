@@ -81,12 +81,8 @@ function listArticles($id)
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->siteid = $babBody->babsite['id'];
-			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$babBody->babsite['id'];
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
-				$this->bshowhpg = true;
-			else
-				$this->bshowhpg = false;
-
+			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id'];
+			$this->bshowhpg = bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL,1);
 			}
 
 		function getnext()
