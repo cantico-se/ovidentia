@@ -166,6 +166,7 @@ function listSubmitedArticles()
 			$this->emptytxt = bab_translate("Empty");
 			$this->restoretxt = bab_translate("Restore");
 			$this->attachmenttxt = bab_translate("Attachments");
+			$this->notestxt = bab_translate("Notes");
 			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=new";
 			$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.trash !='Y' and adt.result!='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_submission desc";
 			$this->res = $babDB->db_query($req);
