@@ -465,7 +465,7 @@ switch($cmd)
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if ($GLOBALS['babEmailPassword'] ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		if (!$referer) $referer = urlencode($HTTP_REFERER);
+		if (!isset($referer)) $referer = urlencode($GLOBALS['HTTP_REFERER']);
 			displayLogin($referer);
 		break;
 	}
