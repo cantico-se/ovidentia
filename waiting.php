@@ -46,6 +46,9 @@ function listArticles($topics, $new)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
+				$this->articledate = bab_getArticleDate($this->arr['id']);
+				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$this->topics."&article=".$this->arr['id'];
@@ -101,6 +104,9 @@ function readMore($topics, $article)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['body']);
+				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
+				$this->articledate = bab_getArticleDate($this->arr['id']);
+				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$i++;
 				return true;
 				}

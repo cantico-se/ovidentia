@@ -1,18 +1,15 @@
 
 <!--#begin introlist -->
-
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="articles">
-<input type="hidden" name="idx" value="Articles">
 <!--#in getnext -->
 <table   border="0" width="95%%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td class="BabTopicsTitleBackground">{ arr[title] }</td>
+<td colspan="2" class="BabTopicsTitleBackground">{ arr[title] }</td>
 </tr>
 <tr> 
-<td class="BabTopicsBackground">{ content }</td>
+<td colspan="2" class="BabTopicsBackground">{ content }</td>
 </tr>
 <tr> 
+<td class="BabTopicsAuthorBackground" nowrap width="80%">{ author }</td>
 <td class="BabTopicsAuthorBackground" nowrap valign="middle" align="right">
 <a href="{ confirmurl }"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt="{ confirm }"></a>&nbsp;&nbsp;&nbsp;<a href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ modify }"></a>&nbsp;&nbsp;&nbsp;
 <a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a></td>
@@ -20,7 +17,6 @@
 </table>
 <br>
 <!--#endin getnext -->
-</form>
 <br>
 <!--#end introlist -->
 <br>
@@ -38,7 +34,7 @@
 <td class="BabTopicsBackground" >{ content }</td>
 </tr>
 <tr>
-<td colspan="2" class="" align="right" nowrap></td>
+<td class="BabTopicsAuthorBackground" align="left" nowrap>{ author }</td>
 </tr>
 </table>
 <br>
