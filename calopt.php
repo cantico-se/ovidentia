@@ -205,9 +205,23 @@ function accessCalendar($calid, $urla)
 			$this->usertxt = bab_translate("Add user");
 			$this->addtxt = bab_translate("Add");
 			$req = "select cut.id_user, cut.bwrite, ut.firstname, ut.lastname from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_USERS_TBL." ut on ut.id=cut.id_user where cut.id_cal='".$calid."'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+
+			$res = $this->db->db_query($req);
+
+			$this->arrusers = array();
+			while( $arr = $this->db->db_fetch_array($res))
+				{
+				$this->arrusers[] = array('user'=>bab_composeUserName($arr['firstname'], $arr['lastname']), 'id'=>$arr['id_user'], 'access'=>$arr['bwrite']);
+				}
+			usort($this->arrusers, array($this, 'compare'));
+			$this->count = count($this->arrusers);
+
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=brow";
+			}
+
+		function compare($a, $b)
+			{
+			return strnatcmp($a['user'],$b['user']);
 			}
 
 		function getnext()
@@ -215,10 +229,9 @@ function accessCalendar($calid, $urla)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->fullnameval = bab_composeUserName($arr['firstname'], $arr['lastname']);
-				$this->userid = $arr['id_user'];
-				switch( $arr['bwrite'])
+				$this->fullnameval = $this->arrusers[$k]['user'];
+				$this->userid = $this->arrusers[$k]['id'];
+				switch( $this->arrusers[$k]['access'])
 					{
 					case 1:
 						$this->cheched0 = "";
@@ -593,6 +606,11 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 if(!isset($idx))
 	{
 	$idx = "options";
+	}
+
+if(!isset($urla))
+	{
+	$urla = "";
 	}
 
 if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))

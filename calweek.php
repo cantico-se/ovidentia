@@ -322,7 +322,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			}
 		}
 
-	function getfreeevent()
+	function getfreeevent(&$skip)
 		{
 		global $babBody;
 		$arr = array();
@@ -335,10 +335,44 @@ class cal_weekCls extends cal_wmdbaseCls
 				$this->bfirstevents[$arr[0].$this->cdate] = 1;
 				}
 			$this->free = $arr[2] == 0;
-			$time0 = bab_mktime($arr[0]);
+			$workdate0 = $this->cdate.' '.$babBody->icalendars->starttime;
+			$workdate1 = $this->cdate.' '.$babBody->icalendars->endtime;
+			if( $this->free )
+				{
+				if( $arr[1] <= $workdate0 || $arr[0] >= $workdate1 )
+					{
+					$skip = true;
+					return true;
+					}
+				if( $arr[0] <= $workdate0 )
+					{
+					$startdate = $workdate0;
+					}
+				else
+					{
+					$startdate = $arr[0];
+					}
+
+				if( $arr[1] >= $workdate1 )
+					{
+					$enddate = $workdate1;
+					}
+				else
+					{
+					$enddate = $arr[1];
+					}
+				}
+			else
+				{
+				$startdate = $arr[0];
+				$enddate = $arr[1];
+				}
+
+
+			$time0 = bab_mktime($startdate);
+			$time1 = bab_mktime($enddate);
 			$this->starttime = bab_time($time0);
 			$this->startdate = bab_shortDate($time0, false);
-			$time1 = bab_mktime($arr[1]);
 			$this->endtime = bab_time($time1);
 			$this->enddate = bab_shortDate($time1, false);
 			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1;
@@ -370,7 +404,7 @@ function cal_week_free($calids, $date)
 	$temp->printout("calweek.html", "calfreeweek");
 }
 
-function searchAvailability($calid, $date, $date0, $date1, $gap)
+function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 {
 	if( empty($date0) || empty($date1))
 	{
@@ -380,7 +414,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap)
 		$date0 = date("Y,n,j", mktime(0,0,0, $rr[1], 1, $rr[0]));
 		$date1 = date("Y,n,j", mktime(0,0,0, (int)($rr[1])+1, 0, $rr[0]));
 	}
-	cal_searchAvailability("calweek", $calid, $date, $date0, $date1, $gap);
+	cal_searchAvailability("calweek", $calid, $date, $date0, $date1, $gap, $bopt);
 }
 
 /* main */
@@ -413,7 +447,8 @@ switch($idx)
 		if( !isset($gap)) { $gap = 0;}
 		if( !isset($date0)) { $date0 = "";}
 		if( !isset($date1)) { $date1 = "";}
-		searchAvailability($calid, $date, $date0, $date1, $gap);
+		if( !isset($bopt)) { $bopt = "Y";}
+		searchAvailability($calid, $date, $date0, $date1, $gap, $bopt);
 		printBabBodyPopup();
 		exit;
 		break;

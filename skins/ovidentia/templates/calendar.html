@@ -386,10 +386,19 @@ function dateEnd(day, month, year)
 		<td align="right">{ gaptxt }:</td>
 		<td> 
 			<select name="gap">
-			<option value="" selected ></option>
+			<option value="" ></option>
 			<!--#in getnextgap -->
-			<option value="{ gapval }">{ gapname }</option>
+			<option value="{ gapval }" { selected }>{ gapname }</option>
 			<!--#endin getnextgap -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ optiontxt }:</td>
+		<td> 
+			<select name="bopt">
+			<option value="Y" selected >{ yes }</option>
+			<option value="N">{ no }</option>
 			</select>
 		</td>
 	</tr>
@@ -411,14 +420,12 @@ function dateEnd(day, month, year)
 <td align="right"><b>{ intervaltxt }</b></td>
 </tr>
 <!--#in getnextfreeevent -->
-<!--#if free -->
 <!--#if altbg --><tr valign="middle" class="BabFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
 <td>
 <a class="BabSiteAdminListLink" href="{ refurl }">{ startdate }&nbsp;{ starttime }&nbsp;/&nbsp;{ enddate }&nbsp;{ endtime }</a>
 </td>
 <td align="right">{ interval }</td>
 </tr>        
-<!--#endif free -->
 <!--#endin getnextfreeevent -->
 <tr class="BabSiteAdminTitleFontBackground"> 
 <td>&nbsp;</td>
