@@ -207,11 +207,23 @@ function searchKeyword($item , $option = "OR")
 			$req = "select name,description from ".BAB_DBDIR_FIELDS_TBL." order by description";
 			$this->resfields = $this->db->db_query($req);
 			$this->countfields = $this->db->db_num_rows($this->resfields);
-
+			$i = 0;
 			while ($arr = $this->db->db_fetch_array($this->resfields))
 				{
-				$this->tblfields[] = $arr;
+				$this->tbln[$i] = $arr['name'];
+				$this->tbld[$i] = bab_translate($arr['description']);
+				$i++;
 				}
+			$fliped = array_flip($this->tbld);
+			ksort($fliped);
+			$i = 0;
+			foreach($fliped as $value => $key)
+				{
+				$this->tblfields[$i]['name'] = $this->tbln[$key];
+				$this->tblfields[$i]['description'] = $value;
+				$i++;
+				}
+
 
 			$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
 			$this->countcal = count($this->rescal);
@@ -314,7 +326,7 @@ function searchKeyword($item , $option = "OR")
 				{
                 $arr = $this->tblfields[$i];
 				$this->name = $arr['name'];
-				$this->description = bab_translate($arr['description']);
+				$this->description = $arr['description'];
 				$this->fieldvalue = "".$this->fields[$arr['name']];
 				if ( $this->fields['dirselect_'.$this->j] == $arr['name'])
 					$this->selected = "selected";
