@@ -238,23 +238,8 @@ function changeSkin($skin)
 				closedir($h);
 				$this->cntskins = count($this->arrskins);
 				}
-
-			if( is_dir($GLOBALS['babInstallPath']."skins/".$this->skin."/styles/"))
-				{
-				$h = opendir($GLOBALS['babInstallPath']."skins/".$this->skin."/styles/"); 
-				while ( $file = readdir($h))
-					{ 
-					if ($file != "." && $file != "..")
-						{
-						if( is_file($GLOBALS['babInstallPath']."skins/".$this->skin."/styles/".$file))
-							{
-								$this->arrstyles[] = $file; 
-							}
-						} 
-					}
-				closedir($h);
-				$this->cntstyles = count($this->arrstyles);
-				}
+            $this->skselectedindex = 0;
+            $this->stselectedindex = 0;
 			}
 
 		function getnextskin()
@@ -262,33 +247,80 @@ function changeSkin($skin)
 			static $i = 0;
 			if( $i < $this->cntskins)
 				{
+				$this->iindex = $i;
                 $this->skinname = $this->arrskins[$i];
                 $this->skinval = $this->arrskins[$i];
                 if( $this->skinname == $this->skin )
+					{
+	                $this->skselectedindex = $i;
                     $this->skinselected = "selected";
+					}
                 else
                     $this->skinselected = "";
 
+				$this->arrstyles = array();
+				if( is_dir("skins/".$this->skinname."/styles/"))
+					{
+					$h = opendir("skins/".$this->skinname."/styles/"); 
+					while ( $file = readdir($h))
+						{ 
+						if ($file != "." && $file != "..")
+							{
+							if( is_file("skins/".$this->skinname."/styles/".$file))
+								{
+									$this->arrstyles[] = $file; 
+								}
+							} 
+						}
+					closedir($h);
+					}
+
+				if( is_dir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"))
+					{
+					$h = opendir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"); 
+					while ( $file = readdir($h))
+						{ 
+						if ($file != "." && $file != "..")
+							{
+							if( is_file($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/".$file))
+								{
+									if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
+										$this->arrstyles[] = $file; 
+								}
+							} 
+						}
+					closedir($h);
+					}
+				$this->cntstyles = count($this->arrstyles);
 				$i++;
 				return true;
 				}
 			else
+				{
+				$i = 0;
 				return false;
+				}
 			}
 
 		function getnextstyle()
 			{
-			static $i = 0;
-			if( $i < $this->cntstyles)
+			static $j = 0;
+			if( $j < $this->cntstyles)
 				{
-                $this->stylename = $this->arrstyles[$i];
-                $this->styleval = $this->arrstyles[$i];
-				$i++;
+                $this->stylename = $this->arrstyles[$j];
+                $this->styleval = $this->arrstyles[$j];
+                if( $this->skinname == $this->skin && $this->userstyle == $this->styleval)
+					$this->stselectedindex = $j;
+				$j++;
 				return true;
 				}
 			else
+				{
+				$j = 0;
 				return false;
+				}
 			}
+		
 		}
 
 
