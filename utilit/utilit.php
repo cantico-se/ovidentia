@@ -1516,6 +1516,8 @@ function babBody()
 	$this->saarray = array();
 	$this->babaddons = array();
 	$this->waitapprobations = false;
+	$this->substitutes[0] = array(); /* nominatif */
+	$this->substitutes[1] = array(); /* fonctionnel */
 
 	$res = $babDB->db_query("select * from ".BAB_GROUPS_TBL."");
 	while( $arr = $babDB->db_fetch_array($res))
@@ -2233,8 +2235,6 @@ function bab_updateUserSettings()
 			
 			}
 
-		$babBody->substitutes[0] = array(); /* nominatif */
-		$babBody->substitutes[1] = array(); /* fonctionnel */
 		$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
