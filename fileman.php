@@ -326,7 +326,7 @@ function showDiskSpace($id, $gr, $path)
 				$this->diskspace = bab_formatSizeFile($size).$this->kilooctet;
 				$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxUserSize']).$this->kilooctet;
 				$this->remainingspace =  bab_formatSizeFile($GLOBALS['babMaxUserSize'] - $size).$this->kilooctet;
-				$this->groupname = bab_translate("Personnal Folder");
+				$this->groupname = bab_translate("Personal Folder");
 				$i++;
 				return true;
 				}

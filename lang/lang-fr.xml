@@ -573,7 +573,7 @@
 <string id="Path">Chemin</string>
 <string id="Period">Période</string>
 <string id="Personal disk space">Espace disque personnel</string>
-<string id="Personnal Folder">Dossier personnel</string>
+<string id="Personal Folder">Dossier personnel</string>
 <string id="Personnel">Personnel</string>
 <string id="Php version">Version du moteur PHP</string>
 <string id="Plain text">Texte</string>
@@ -1119,10 +1119,10 @@
 <string id="Topics category parent">Catégorie de sujet parent</string>
 <string id="Group calendar">Calendrier de groupe</string>
 <string id="Personal calendar">Agenda personnel</string>
-<string id="Allow user update personnal information">Permettre de mettre à jour les informations personnelles</string>
+<string id="Allow user update personal information">Permettre de mettre à jour les informations personnelles</string>
 <string id="Create event category">Créer une catégorie d'évènement</string>
 <string id="Event categories list">Liste des catégories d'évènements</string>
-<string id="Update personnal informations">Mettre à jour les informations personnelles</string>
+<string id="Update personal informations">Mettre à jour les informations personnelles</string>
 <string id="Update nickname">Mettre à jour le pseudonyme</string>
 <string id="The maximum number of authorized optional sections was reached">Le nombre maximum de sections optionnelles autorisées a été atteint</string>
 <string id="New documents">Nouveaux documents</string>

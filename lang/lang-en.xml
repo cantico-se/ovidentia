@@ -578,7 +578,7 @@
 <string id="Path">Path</string>
 <string id="Period">Period</string>
 <string id="Personal disk space">Personal disk space</string>
-<string id="Personnal Folder">Personal Folder</string>
+<string id="Personal Folder">Personal Folder</string>
 <string id="Personnel">Personnel</string>
 <string id="Php version">Php version</string>
 <string id="Plain text">Plain text</string>
@@ -1122,10 +1122,10 @@
 <string id="Optional sections list">Optional sections list</string>
 <string id="Group calendar">Group calendar</string>
 <string id="Personal calendar">Personal calendar</string>
-<string id="Allow user update personnal information">Allow user update personnal information</string>
+<string id="Allow user update personal information">Allow user update personal information</string>
 <string id="Create event category">Create event category</string>
 <string id="Event categories list">Event categories list</string>
-<string id="Update personnal informations">Update personnal informations</string>
+<string id="Update personal informations">Update personal informations</string>
 <string id="Update nickname">Update nickname</string>
 <string id="The maximum number of authorized optional sections was reached">The maximum number of authorized optional sections was reached</string>
 </en>

@@ -346,7 +346,7 @@ function modifyDb($id)
 			$this->delete = bab_translate("Delete");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
-			$this->allowuserupdate = bab_translate("Allow user update personnal information");
+			$this->allowuserupdate = bab_translate("Allow user update personal information");
 			$this->bdel = true;
 			$this->bfields = true;
 			$this->ballowuserupdate = false;
