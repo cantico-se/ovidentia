@@ -10,7 +10,7 @@
 <td class="BabMailBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLetterlists" colspan="4">
+<td colspan="5" nowrap class="BabLetterlists">
 <!--#if allselected "== 1" -->
 { allname }&nbsp;&nbsp;
 <!--#else allselected -->
@@ -268,29 +268,28 @@ valign="middle">{ primarygroup } </td>
 <input type="hidden" name="updategroups" value="update">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabTitleSmallFontBg" width="2%" nowrap valign="middle">&nbsp;</td>
-<td class="BabTitleSmallFontBg" width="10%" nowrap>&nbsp;</td>
-<td class="BabTitleSmallFontBg" width="88%" valign="middle"> { group } </td>
-</tr>
-<!--#in getnextgroup -->
-<tr>
-<td class="BabMailBackground" width="2%" align="center" valign="middle"> 
-<input type="checkbox" name="groups[]" value="{ groupid  }" { checked }>
-</td>
-<td class="BabMailBackground" align="center" valign="middle" nowrap> 
-<!--#if primary "== Y" -->
-<img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }"> 
-<!--#endif primary -->
-&nbsp; </td>
-<td class="BabMailBackground" valign="middle"><a class="BabAdminMembersList" href="{ groupurl }">{ 
-groupname }</a> </td>
-</tr>
-<!--#endin getnextgroup -->
-</table>
-</td>
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabTitleSmallFontBg" width="2%" nowrap valign="middle">&nbsp;</td>
+            <td class="BabTitleSmallFontBg" width="10%" nowrap>&nbsp;</td>
+            <td class="BabTitleSmallFontBg" width="88%" valign="middle"> { group 
+              } </td>
+          </tr>
+          <!--#in getnextgroup -->
+          <tr> 
+            <td class="BabMailBackground" width="2%" align="center" valign="middle"> 
+              <input type="checkbox" name="groups[]" value="{ groupid  }" { checked }> 
+            </td>
+            <td class="BabMailBackground" align="center" valign="middle" nowrap> 
+              <!--#if primary "== Y" -->
+              <img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }"> 
+              <!--#endif primary -->
+              &nbsp; </td>
+            <td class="BabMailBackground" valign="middle"><a class="BabAdminMembersList" href="{ groupurl }">{ 
+              groupname }</a> </td>
+          </tr>
+          <!--#endin getnextgroup -->
+        </table></td>
 </tr>
 </table>
 <input type="hidden" name="groupst" value="{ groupst }">
