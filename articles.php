@@ -633,6 +633,8 @@ function readMore($topics, $article, $approver)
 			$this->countart = $this->db->db_num_rows($this->resart);
 			$this->topictxt = bab_translate("In the same topic");
 			$this->approver = $approver;
+			$this->article = $article;
+			$this->artcount = 0;
 			}
 
 		function getnext(&$skip)
@@ -672,12 +674,13 @@ function readMore($topics, $article, $approver)
 			if( $i < $this->countart)
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
-				if( !$this->approver && $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
+				if( (!$this->approver && $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction'])) || $this->article == $arr['id'])
 					{
 					$skip = true;
 					$i++;
 					return true;
 					}
+				$this->artcount++;
 				$this->titlearticle = $arr['title']; 
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id'];
 				$this->urlreadmore = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id'];
@@ -685,7 +688,11 @@ function readMore($topics, $article, $approver)
 				return true;
 				}
 			else
+				{
+				$this->db->db_data_seek($this->resart,0);
+				$i=0;
 				return false;
+				}
 			}
 		}
 	
@@ -1442,6 +1449,7 @@ switch($idx)
 		if( $approver)
 			{
 			viewCategoriesHierarchy($topics);
+			if (!isset($newc)) $newc = '';
 			deleteArticle($topics, $article, $new, $newc);
 			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$topics."&article=".$article);
 			}
