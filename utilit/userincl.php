@@ -593,7 +593,7 @@ function bab_fileManagerAccessLevel()
 		$upda = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $row['id']);
 		$man = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $row['id']);
 
-		if( $down || $uplo || $upda || $man == $BAB_SESS_USERID)
+		if( $down || $uplo || $upda || $man )
 			{
 			$babBody->aclfm['id'][] = $row['id'];
 			$babBody->aclfm['folder'][] = $row['folder'];
