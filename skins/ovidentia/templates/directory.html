@@ -443,22 +443,6 @@ window.focus();
 </script>
 </HEAD>
 <BODY>
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<!--#if error -->
-<br>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center">{ msgerror }</td>
-</tr></table>
-<!--#endif error -->
-<br>
-<table border="0" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ name }</td>
-</tr></table>
-<br>
 <form name="admodify" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="list">
@@ -466,73 +450,94 @@ window.focus();
 <input type="hidden" name="idu" value="{ idu }">
 <input type="hidden" name="refresh" value="{ refresh }">
 <input type="hidden" name="modify" value="{ what }">
-<!--#if showph -->
-<center><img src="{ urlimg }" border="0" alt="{ name }"><br>
-<b>{ delete }&nbsp;:</b>&nbsp;&nbsp;<input type="checkbox" name="photod" value="delete">
-</center>
-<!--#endif showph -->
-<!--#if modify -->
-<center><b>{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value=""></center>
 <br>
-<!--#endif modify -->
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<!--#if buserinfo -->
-<tr>
-<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ nickname }</b></td>
-<td class="BabSiteAdminFontBackground"><input type="text" name="nickname" size="30" maxlength="60" value=""></td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ password }</b></td>
-<td class="BabSiteAdminFontBackground"><input type="password" name="password1" size="20" maxlength="15" value=""></td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ repassword }</b></td>
-<td class="BabSiteAdminFontBackground"><input type="password" name="password2" size="20" maxlength="15" value=""></td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right"><b>&nbsp;{ notifyuser }</b></td>
-<td class="BabSiteAdminFontBackground"><select name="notifyuser"><option value="Y" selected>{ yes }</option><option value="N">{ no }</option></select></td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right"><b>&nbsp;{ sendpassword }</b></td>
-<td class="BabSiteAdminFontBackground"><select name="sendpwd"><option value="Y">{ yes }</option><option value="N" selected>{ no }</option></select></td>
-</tr>
-<!--#endif buserinfo -->
-<!--#in getnextfield -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabSiteAdminFontBackground" align="right"><b><!--#if required "== Y" -->*&nbsp;<!--#endif required -->
-{ fieldn }</b>
-</td>
-<td class="BabSiteAdminFontBackground">
-<!--#if modify -->
-<!--#if fieldt "== N" -->
-<input type="text" name="fields[{ fieldv }]" size="40" value="{ fvalue }">
-<!--#else fieldt -->
-<textarea cols="30" rows="4" name="fields[{ fieldv }]">{ fvalue }</textarea>
-<!--#endif fieldt -->
-<!--#else modify -->
-{ fvalue }
-<!--#endif modify -->
-</td>
-</tr>
-<!--#endin getnextfield -->
-<tr>
-<td valign="middle" colspan="4">
-<center><input type="submit" name="dbcupdate" value="{ update }"></center>
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground"valign="middle" colspan="4"><center><b>*&nbsp;{ helpfields }</b></center>
+<td class="BabLoginCadreBackground"> 
+	<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<!--#if error -->
+	<tr>
+		<td class="BabErrorMessage" align="center" colspan="2">
+		{ msgerror }
+		</td>
+	</tr>
+	<!--#endif error -->
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground" align="center" colspan="2">{ name }</td>
+	</tr>
+
+	<tr>
+		<td align="center" class="BabSiteAdminFontBackground" colspan="2">
+		<br>
+		<!--#if showph -->
+		<img src="{ urlimg }" border="0" alt="{ name }"><br>
+		<b>{ delete }&nbsp;:</b>&nbsp;&nbsp;<input type="checkbox" name="photod" value="delete">
+		<!--#endif showph -->
+		<!--#if modify -->
+		<b>{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value="">
+		<!--#endif modify -->
+		<br><br>
+		</td>
+	</tr>
+	<!--#if buserinfo -->
+	<tr>
+		<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ nickname }</b></td>
+		<td class="BabSiteAdminFontBackground"><input type="text" name="nickname" size="30" maxlength="60" value=""></td>
+	</tr>
+	<tr>
+		<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ password }</b></td>
+		<td class="BabSiteAdminFontBackground"><input type="password" name="password1" size="20" maxlength="15" value=""></td>
+	</tr>
+	<tr>
+		<td class="BabSiteAdminFontBackground" align="right"><b>*&nbsp;{ repassword }</b></td>
+		<td class="BabSiteAdminFontBackground"><input type="password" name="password2" size="20" maxlength="15" value=""></td>
+	</tr>
+	<tr>
+		<td class="BabSiteAdminFontBackground" align="right"><b>&nbsp;{ notifyuser }</b></td>
+		<td class="BabSiteAdminFontBackground"><select name="notifyuser"><option value="Y" selected>{ yes }</option><option value="N">{ no }</option></select></td>
+	</tr>
+	<tr>
+		<td class="BabSiteAdminFontBackground" align="right"><b>&nbsp;{ sendpassword }</b></td>
+		<td class="BabSiteAdminFontBackground"><select name="sendpwd"><option value="Y">{ yes }</option><option value="N" selected>{ no }</option></select></td>
+	</tr>
+	<!--#endif buserinfo -->
+	<!--#in getnextfield -->
+	<tr> 
+		<td class="BabSiteAdminFontBackground" align="right"><b><!--#if required "== Y" -->*&nbsp;<!--#endif required -->
+		{ fieldn }</b>
+		</td>
+		<td class="BabSiteAdminFontBackground">
+		<!--#if modify -->
+		<!--#if fieldt "== N" -->
+		<input type="text" name="fields[{ fieldv }]" size="40" value="{ fvalue }">
+		<!--#else fieldt -->
+		<textarea cols="30" rows="4" name="fields[{ fieldv }]">{ fvalue }</textarea>
+		<!--#endif fieldt -->
+		<!--#else modify -->
+		{ fvalue }
+		<!--#endif modify -->
+		</td>
+	</tr>
+	<!--#endin getnextfield -->
+	<tr>
+		<td class="BabSiteAdminFontBackground" valign="middle" colspan="2">
+		<center><input type="submit" name="dbcupdate" value="{ update }"></center>
+		</td>
+	</tr>
+	<tr>
+		<td class="BabSiteAdminFontBackground" valign="middle" colspan="2"><center><b>*&nbsp;{ helpfields }</b></center>
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
+<br>
 </form>
-</td>
-</tr>
-</table>
 </BODY>
 </HTML>
 <!--#end modifycontact -->
+
 <!--#begin dbcontactunload -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
