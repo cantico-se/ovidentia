@@ -13,9 +13,17 @@
 <tr>
 <!--#in getnextday -->
 <!--#if event "== 1" -->
-<td { bgcolor }><a class=BabMenuLink href="{ dayurl }">{ day }</a></td>
+<!--#if bgcolor "== 1" -->
+<td bgcolor="white"><a class=BabMenuLink href="{ dayurl }">{ day }</a></td>
+<!--#else bgcolor -->
+<td><a class=BabMenuLink href="{ dayurl }">{ day }</a></td>
+<!--#endif bgcolor -->
 <!--#else event -->
-<td { bgcolor }>{ day }</td>
+<!--#if bgcolor "== 1" -->
+<td bgcolor="white">{ day }</td>
+<!--#else bgcolor -->
+<td>{ day }</td>
+<!--#endif bgcolor -->
 <!--#endif event -->
 <!--#endin getnextday -->
 </tr>

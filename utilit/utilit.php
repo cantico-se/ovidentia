@@ -680,7 +680,7 @@ function printout()
 		static $total = 0;
 		if( $d < 7)
 			{
-			$this->bgcolor = "";
+			$this->bgcolor = 0;
 			$this->event = 0;
 
 			if( $this->w == 1 &&  $d < $this->daynumber)
@@ -720,7 +720,7 @@ function printout()
 					}
 				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
 					{
-					$this->bgcolor = "bgcolor=\"white\"";
+					$this->bgcolor = 1;
 					}
 
 				}
