@@ -49,11 +49,12 @@ class bab_event
 		{
 		$this->db = $GLOBALS['babDB'];
 
-		$this->curday = $this->getValue('curday');
-		$this->curmonth = $this->getValue('curmonth');
-		$this->curyear = $this->getValue('curyear');
-		$this->curview = $this->getValue('curview');
-		$this->calid = $this->getValue('calid');
+		$this->curday = !empty($_REQUEST['curday']) ? $_REQUEST['curday'] : date('d');
+		$this->curmonth = !empty($_REQUEST['curmonth']) ? $_REQUEST['curmonth'] : date('m');
+		$this->curyear = !empty($_REQUEST['curyear']) ? $_REQUEST['curyear'] : date('Y');
+		$this->curview = !empty($_REQUEST['curview']) ? $_REQUEST['curview'] : 'viewm';
+
+		$this->calid = $_REQUEST['calid'];
 
 		$this->datebegintxt = bab_translate("Begin date");
 		$this->dateendtxt = bab_translate("Until date");
@@ -128,9 +129,6 @@ function newEvent()
 		function temp()
 			{
 
-
-
-
 			$this->bab_event();
 
 
@@ -141,9 +139,6 @@ function newEvent()
 				$this->st = "08:00";
 			else
 				$this->st = $_REQUEST['st'];
-			
-
-
 
 
 			$this->mcals = explode(",", $this->calid);
@@ -164,24 +159,8 @@ function newEvent()
 			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->curmonth."&year=".$this->curyear;
 			
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
+			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
 			$res = $this->db->db_query($req);
 			$this->daytypechecked = "";
 			$this->elapstime = 30;
@@ -203,60 +182,7 @@ function newEvent()
 					$this->ampm = true;
 				}
 
-			$this->catarr = array();
-			for($i=0; $i < count($this->mcals); $i++)
-				{
-				$arrcat = array();
-				switch(bab_getCalendarType($this->mcals[$i]))
-					{
-					case 1:
-						$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
-						$res = $this->db->db_query($req);
-						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1'";
-						while( $arr = $this->db->db_fetch_array($res) )
-						{
-							$req .= " or id_group='".$arr['id_group']."'"; 
-						}
-						$res = $this->db->db_query($req);
-						while( $arr = $this->db->db_fetch_array($res) )
-						{
-							$arrcat[] = $arr['id'];
-						}
-
-						$this->bprivate = true;
-						$this->block = true;
-						$this->bfree = true;
-						break;
-					case 2:
-						$req = "select * from ".BAB_CALENDAR_TBL." where id='".$this->mcals[$i]."'";
-						$res = $this->db->db_query($req);
-						$arr = $this->db->db_fetch_array($res);
-						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1' or id_group='".$arr['owner']."'";
-						$res = $this->db->db_query($req);
-						while( $arr = $this->db->db_fetch_array($res) )
-						{
-							$arrcat[] = $arr['id'];
-						}
-						break;
-					case 3:
-						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1'";
-						$res = $this->db->db_query($req);
-						while( $arr = $this->db->db_fetch_array($res) )
-						{
-							$arrcat[] = $arr['id'];
-						}
-						break;
-					}
-				if( $i > 0)
-					$this->catarr = array_intersect($this->catarr, $arrcat);
-				else
-					$this->catarr = array_merge($this->catarr,$arrcat);
-				}
-
-			if( count($this->catarr) > 0)
-				$this->bcategory = 1;
-			else
-				$this->bcategory = 0;
+			$this->rescat = $this->db->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ");
 			
 			$this->calendars = calendarchoice('vacform');
 
@@ -400,22 +326,7 @@ function newEvent()
 
 		function getnextcat()
 			{
-			static $i = 0;
-			if( $i < count($this->catarr))
-				{
-				$arr = each($this->catarr);
-				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['value']."'"));
-				$this->catid = $arr['id'];
-				$this->catname = $arr['name'];
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
-
+			return $this->cat = $this->db->db_fetch_array($this->rescat);
 			}
 
 		
@@ -1295,10 +1206,9 @@ class calendarchoice
 		{
 		$this->formname = $formname;
 		$this->db = $GLOBALS['babDB'];
-
-		$this->db->db_fetch_array($this->db->db_query("SELECT user_calendarids FROM ".BAB_CALOPTIONS_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
-
-		$this->selectedCalendars = array();
+		$icalendars = &$GLOBALS['babBody']->icalendars;
+		$icalendars->initializeCalendars();
+		$this->selectedCalendars = is_array($icalendars->user_calendarids) ? $icalendars->user_calendarids : array();
 
 		$this->usrcalendarstxt = bab_translate('Users');
 		$this->grpcalendarstxt = bab_translate('Collectifs');
@@ -1306,30 +1216,45 @@ class calendarchoice
 		$this->t_goright = bab_translate('Push right');
 		$this->t_goleft = bab_translate('Push left');
 
-		$this->resusr = $this->db->db_query("SELECT c.id, u.firstname, u.lastname FROM ".BAB_CALENDAR_TBL." c, ".BAB_USERS_TBL." u WHERE u.id=c.owner AND c.type='1'");
-		$this->resgrp = $this->db->db_query("SELECT c.id,a.name FROM ".BAB_CALENDAR_TBL." c, ".BAB_CAL_PUBLIC_TBL." a WHERE c.type='2' AND a.id = c.owner");
-		$this->resres = $this->db->db_query("SELECT c.id,a.name FROM ".BAB_CALENDAR_TBL." c, ".BAB_CAL_RESOURCES_TBL." a WHERE c.type='3' AND a.id = c.owner");
+		$this->resuser = $icalendars->usercal;
+		$this->respub = $icalendars->pubcal;
+		$this->resres = $icalendars->rescal;
+
+		if (!empty($icalendars->id_percal))
+			{
+			$this->personal = $icalendars->id_percal;
+			$this->selected = in_array($icalendars->id_percal, $this->selectedCalendars) ? 'selected' : '';
+			}
+
 		}
 
 	function getnextusrcal()
 		{
-		$out = list($this->id, $firstname, $lastname) = $this->db->db_fetch_array($this->resusr);
-		$this->name = bab_composeUserName($firstname,$lastname);
-		$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+		$out = list($this->id, list($this->name)) = each($this->resuser);
+		if ($out)
+			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 		return $out;
 		}
 
-	function getnextgrpcal()
+	function getnextpubcal()
 		{
-		$out = list($this->id, $this->name) = $this->db->db_fetch_array($this->resgrp);
-		$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+		$out = list($this->id, $cal) = each($this->respub);
+		if ($out)
+			{
+			$this->name = $cal['name'];
+			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			}
 		return $out;
 		}
 
 	function getnextrescal()
 		{
-		$out = list($this->id, $this->name) = $this->db->db_fetch_array($this->resres);
-		$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+		$out = list($this->id, $cal) = each($this->resres);
+		if ($out)
+			{
+			$this->name = $cal['name'];
+			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			}
 		return $out;
 		}
 
@@ -1348,7 +1273,7 @@ function record_calendarchoice()
 {
 if (isset($_POST['selected_calendars']))
 	{
-
+	print_r($_POST['selected_calendars']);
 	}
 }
 
@@ -1367,6 +1292,8 @@ function calendarquerystring()
 
 if( !isset($idx))
 	$idx = "newevent";
+
+record_calendarchoice();
 
 $calid = bab_isCalendarAccessValid($calid);
 if( !$calid )

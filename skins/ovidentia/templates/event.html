@@ -1,7 +1,7 @@
 
 <!--#begin newevent -->
 
-<form name="vacform" method="post" action="{ babPhpSelf }" >
+<form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this))" >
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="addevent" />
 <input type="hidden" name="curday" value="{ curday }" />
@@ -351,7 +351,7 @@ function movecalendar(action)
 	//{}
 	var form = '{ formname }';
 	var src = document.forms[form].calendars;
-	var dest = document.forms[form].selected_calendars;
+	var dest = document.forms[form].elements['selected_calendars[]'];
 
 	switch (action)
 		{
@@ -364,6 +364,16 @@ function movecalendar(action)
 			break;
 		}
 	}
+
+
+function calendarChoice_selectAll(formname)
+	{
+	var list = document.forms[formname].elements['selected_calendars[]'];
+	for(i=0; i < list.options.length; i++)
+	{
+		list.options[i].selected = true;
+	}
+	}
 //-->
 </script>
 <table align="center" width="100%">
@@ -371,14 +381,17 @@ function movecalendar(action)
 		<td width="45%">
 		<select name="calendars" multiple="multiple" size="10" style="width:100%">
 			<optgroup class="usr" label="{ usrcalendarstxt }">
+			<!--#if personal -->
+				<option value="{ personal }" { selected }>{ BAB_SESS_USER }</option>
+			<!--#endif personal -->
 			<!--#in getnextusrcal -->
 				<option value="{ id }" { selected }>{ name }</option>
 			<!--#endin getnextusrcal -->
 			</optgroup>
 			<optgroup class="grp" label="{ grpcalendarstxt }">
-			<!--#in getnextgrpcal -->
+			<!--#in getnextpubcal -->
 				<option value="{ id }" { selected }>{ name }</option>
-			<!--#endin getnextgrpcal -->
+			<!--#endin getnextpubcal -->
 			</optgroup>
 			<optgroup class="res" label="{ rescalendarstxt }">
 			<!--#in getnextrescal -->
@@ -395,7 +408,7 @@ function movecalendar(action)
 		</td>
 
 		<td width="45%">
-			<select name="selected_calendars" multiple="multiple" size="10" style="width:100%">
+			<select name="selected_calendars[]" multiple="multiple" size="10" style="width:100%">
 				<optgroup class="usr" label="{ usrcalendarstxt }">
 				</optgroup>
 				<optgroup class="grp" label="{ grpcalendarstxt }">
@@ -864,6 +877,14 @@ function evtSetColor(color)
 	var f = document.forms['vacform'];
 	f.color.value = color;
 	document.getElementById('evtColor').style.backgroundColor = '#'+color;
+	}
+
+function submitCtrl(form)
+	{
+	if (typeof calendarChoice_selectAll == 'function')
+		{
+		calendarChoice_selectAll(form.name);
+		}
 	}
 
 //-->
