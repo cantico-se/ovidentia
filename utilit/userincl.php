@@ -87,7 +87,7 @@ function bab_isUserAdministrator()
 
 function bab_isAccessValid($table, $idobject)
 {
-	global $babBody, $BAB_SESS_USERID, $LOGGED_IN;
+	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
 	$add = false;
 	if( !isset($idobject))
 		{
@@ -105,7 +105,7 @@ function bab_isAccessValid($table, $idobject)
 		{
 		$req = "select * from ".$table." where id_object='$idobject' and id_group='1'"; // users
 		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 && $LOGGED_IN)
+		if( $res && $db->db_num_rows($res) > 0 && $BAB_SESS_LOGGED)
 			{
 			$add = true;
 			}
@@ -115,7 +115,7 @@ function bab_isAccessValid($table, $idobject)
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
-				if(!$LOGGED_IN)
+				if(!$BAB_SESS_LOGGED)
 					$add = true;
 				}
 			else if( $BAB_SESS_USERID != "")
@@ -159,29 +159,29 @@ function bab_isUserAlreadyLogged($iduser)
 /* for current user */
 function bab_userIsloggedin()
 	{
-	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$LOGGED_IN;
+	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 
-	if (isset($LOGGED_IN))
+	if (isset($BAB_SESS_LOGGED))
 		{
-		return $LOGGED_IN;
+		return $BAB_SESS_LOGGED;
 		}
 	if (!empty($BAB_SESS_NICKNAME) && !empty($BAB_SESS_HASHID))
 		{
 		$hash=md5($BAB_SESS_NICKNAME.$BAB_HASH_VAR);
 		if ($hash == $BAB_SESS_HASHID)
 			{
-			$LOGGED_IN=true;
+			$BAB_SESS_LOGGED=true;
 			}
 		else
 			{
-			$LOGGED_IN=false;
+			$BAB_SESS_LOGGED=false;
 			}
 		}
 	else
 		{
-		$LOGGED_IN=false;
+		$BAB_SESS_LOGGED=false;
 		}
-    return $LOGGED_IN;
+    return $BAB_SESS_LOGGED;
 	}
 
 function bab_getUserName($id)

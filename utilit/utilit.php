@@ -917,7 +917,7 @@ function loadSection($title, $pos=-1)
 
 function loadSections()
 {
-	global $babBody, $LOGGED_IN, $BAB_SESS_USERID, $babSearchUrl;
+	global $babBody, $BAB_SESS_LOGGED, $BAB_SESS_USERID, $babSearchUrl;
 	$add = false;
 	$db = $GLOBALS['babDB'];
 	$req = "select * from ".BAB_SECTIONS_ORDER_TBL." order by ordering asc";
@@ -932,7 +932,7 @@ function loadSections()
 				switch( $arr['id_section'] )
 					{
 					case 1: // admin
-						if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+						if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 							{
 							$add = true;
 							$sec = new babAdminSection();
@@ -967,7 +967,7 @@ function loadSections()
 						if( $r['enabled'] == "Y" )
 							$add = true;
 						$sec = new babUserSection();
-						if( isset($LOGGED_IN) && $LOGGED_IN)
+						if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 							{
 							$babSearchUrl .= "d";
 							}

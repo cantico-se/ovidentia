@@ -232,7 +232,7 @@ if(!isset($idg))
 	$idg = 2; // non registered users
 	}
 
-if( $LOGGED_IN)
+if( $BAB_SESS_LOGGED)
 	$idg = 1; // registered users
 
 switch($idx)

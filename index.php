@@ -4,7 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-unset($LOGGED_IN);
+unset($BAB_SESS_LOGGED);
 session_start();
 session_register("BAB_SESS_NICKNAME");
 session_register("BAB_SESS_USER");
@@ -74,7 +74,7 @@ function printBody()
 
 		function tpl()
 			{
-			global $babBody, $LOGGED_IN, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
+			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
 			$this->version = $GLOBALS['babVersion'];
 			$this->babLogoLT = "";
 			$this->babLogoRT = "";
@@ -93,7 +93,7 @@ function printBody()
 			$this->script = $babBody->script;
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript']."?tg=entry";
-			if( isset($LOGGED_IN) && $LOGGED_IN == true )
+			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )
 				{
 				$this->login = bab_translate("Logout");
 				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&cmd=signoff";
@@ -223,149 +223,149 @@ switch($tg)
 		$incl = "login";
 		break;
 	case "sections":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/sections";
 		break;
 	case "section":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/section";
 		break;
 	case "register":
 		$incl = "admin/register";
 		break;
 	case "users":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/users";
 		break;
 	case "user":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/user";
 		break;
 	case "groups":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/groups";
 		break;
 	case "group":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/group";
 		break;
 	case "admfaqs":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfaqs";
 		break;
 	case "admfaq":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfaq";
 		break;
 	case "topcat":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/topcat";
 		break;
 	case "topcats":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/topcats";
 		break;
 	case "topman":
-		if( isset($LOGGED_IN) && $LOGGED_IN)
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "topman";
 		break;
 	case "topics":
-		if( isset($LOGGED_IN) && $LOGGED_IN)
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "admin/topics";
 		break;
 	case "topic":
-		if( isset($LOGGED_IN) && $LOGGED_IN)
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "admin/topic";
 		break;
 	case "topusr":
 		$incl = "topusr";
 		break;
 	case "forums":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/forums";
 		break;
 	case "forum":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/forum";
 		break;
 	case "admvacs":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admvacs";
 		break;
 	case "admvac":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admvac";
 		break;
 	case "admcals":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admcals";
 		break;
 	case "admcal":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admcal";
 		break;
 	case "sites":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/sites";
 		break;
 	case "site":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/site";
 		break;
 	case "admfiles":
-		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfiles";
 		break;
 	case "options":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "options";
 		break;
 	case "mail":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "mail";
 		break;
 	case "mailopt":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "mailopt";
 		break;
 	case "maildoms":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "maildoms";
 		break;
 	case "maildom":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "maildom";
 		break;
 	case "confcals":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "confcals";
 		break;
 	case "confcal":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "confcal";
 		break;
 	case "calendar":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "calendar";
 		break;
 	case "event":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "event";
 		break;
 	case "calview":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "calview";
 		break;
 	case "calopt":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "calopt";
 		break;
 	case "vacation":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "vacation";
 		break;
 	case "vacapp":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
     		$incl = "vacapp";
 		break;
 	case "threads":
@@ -393,23 +393,23 @@ switch($tg)
 		$incl = "fileman";
 		break;
 	case "notes":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
 			$incl = "notes";
 		break;
 	case "note":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
 			$incl = "note";
 		break;
 	case "inbox":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
 			$incl = "inbox";
 		break;
 	case "contacts":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
 			$incl = "contacts";
 		break;
 	case "contact":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
 			{
 			$incl = "contact";
 			include $babInstallPath."$incl.php";
@@ -417,7 +417,7 @@ switch($tg)
 			}
 		break;
 	case "address":
-		if( $LOGGED_IN)
+		if( $BAB_SESS_LOGGED)
 			{
 			$incl = "address";
 			include $babInstallPath."$incl.php";

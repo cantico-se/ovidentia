@@ -76,7 +76,7 @@ function signOn( $nickname, $password)
 
 function signOff()
 	{
-	global $babBody, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$LOGGED_IN;
+	global $babBody, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 	
 	$db = $GLOBALS['babDB'];
 	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
