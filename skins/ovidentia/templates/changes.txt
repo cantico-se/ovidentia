@@ -49,7 +49,8 @@ inbox.html					            changed action="index.php" to action="{ babPhpSelf }"
 login.html					            changed action="index.php" to action="{ babPhpSelf }"
 mail.html					            changed action="index.php" to action="{ babPhpSelf }"
 maildoms.html					        changed action="index.php" to action="{ babPhpSelf }"
-mailinfo.html
+mailinfo.html           adminregistration   addded warning variable
+                                        Added template userconfirmation
 mailopt.html					        changed action="index.php" to action="{ babPhpSelf }"
 month.html                              Added <html>....<body>
                                         Added </body>....</html>
@@ -69,6 +70,8 @@ search.html					            changed action="index.php" to action="{ babPhpSelf }
 sections.html					        changed action="index.php" to action="{ babPhpSelf }"
 sectiontemplate.html
 sites.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        sitecreate      Added two select options ( register and confirm )
+                        sitemodify      Added two select options ( register and confirm )
 threads.html					        changed action="index.php" to action="{ babPhpSelf }"
 topcats.html					        changed action="index.php" to action="{ babPhpSelf }"
 topcatsection.html

@@ -386,10 +386,11 @@ CREATE TABLE users (
    disabled tinyint(1) unsigned DEFAULT '0' NOT NULL,
    lang varchar(10) NOT NULL,
    skin text,
+   style text,
    PRIMARY KEY (id)
 );
 
-INSERT INTO users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '');
+INSERT INTO users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '');
 
 # --------------------------------------------------------
 #
@@ -682,6 +683,8 @@ CREATE TABLE sites (
    lang char(10) NOT NULL,
    adminemail char(255) NOT NULL,
    skin char(255) NOT NULL,
+   registration enum('Y','N') DEFAULT 'Y' NOT NULL,
+   email_confirm enum('Y','N') DEFAULT 'Y' NOT NULL,
    PRIMARY KEY (id)
 );
 
