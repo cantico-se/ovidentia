@@ -259,7 +259,7 @@ function cal_day($calids, $date, $starttime)
 {
 	global $babBody;
 
-	$temp = new cal_dayCls("viewq", $calids, $date, $starttime);
+	$temp = new cal_dayCls("view", $calids, $date, $starttime);
 	$temp->printout("calday.html", "calday");
 }
 
@@ -332,10 +332,11 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			cal_day_free($calid, $date, $start);
-			$babBody->addItemMenu("viewd", $babBody->title, $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
 			}
 		break;
+	case "view":
 	case "viewd":
 	default:
 		$calid = bab_isCalendarAccessValid($calid);
@@ -347,7 +348,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			cal_day($calid, $date, $start);
-			$babBody->addItemMenu("viewd", $babBody->title, $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
 			}
 		break;

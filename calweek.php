@@ -355,7 +355,7 @@ function cal_week($calids, $date)
 {
 	global $babBody;
 
-	$temp = new cal_weekCls("viewq", $calids, $date);
+	$temp = new cal_weekCls("view", $calids, $date);
 	$temp->printout("calweek.html", "calweek");
 }
 
@@ -426,10 +426,11 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			cal_week_free($calid, $date);
-			$babBody->addItemMenu("viewm", $babBody->title, $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
 			}
 		break;
+	case "view":
 	case "viewq":
 	default:
 		$calid = bab_isCalendarAccessValid($calid);
@@ -441,7 +442,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			cal_week($calid, $date);
-			$babBody->addItemMenu("viewq", $babBody->title, $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
 			}
 		break;

@@ -265,7 +265,7 @@ function cal_month($calids, $date)
 {
 	global $babBody;
 
-	$temp = new cal_monthCls("viewm", $calids, $date);
+	$temp = new cal_monthCls("view", $calids, $date);
 	$temp->printout("calmonth.html", "calmonth");
 }
 
@@ -298,7 +298,7 @@ $calid = isset($_GET['calid']) ? $_GET['calid'] : $babBody->icalendars->user_cal
 
 if(!isset($idx))
 	{
-	$idx='viewm';
+	$idx='view';
 	}
 
 if( empty($date))
@@ -341,10 +341,11 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			cal_month_free($calid, $date);
-			$babBody->addItemMenu("viewm", $babBody->title, $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
 			}
 		break;
+	case "view":
 	case "viewm":
 	default:
 		$calid = bab_isCalendarAccessValid($calid);
@@ -356,7 +357,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Calendar");
 			cal_month($calid, $date);
-			$babBody->addItemMenu("viewm", $babBody->title, $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
 			}
 		break;
