@@ -319,7 +319,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			else
 				$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=2&gr=Y&path=";
 			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
-			$this->urldiskspace = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".$path."')";
+			$this->urldiskspace = $GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".$path;
 
 			$this->path = $path;
 			$this->id = $id;

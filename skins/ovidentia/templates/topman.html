@@ -34,34 +34,6 @@ href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }&nbsp;{ newa }&nbsp;{ wai
 <br>
 <br><br><br><br>
 <!--#begin articleslist -->
-<script language="javascript">
-function onCheckAll(ctrlPrefix, state)
-{
-	var i;
-	var objCtrl;
-
-	for (i = 0; i < document.forms.listform.elements.length; i++)
-		{
-		objCtrl = document.forms.listform.elements[i];
-		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			objCtrl.checked = state;
-		}
-}
-
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
-}
-
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-
-</script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topman">
 <input type="hidden" name="idx" value="deletea">
@@ -86,7 +58,7 @@ document.forms.listform.submit();
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 }>
 </td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="{ urltitle }">{ title }</a></td>
+<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: var t=document.open('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
@@ -96,11 +68,11 @@ document.forms.listform.submit();
 <!--#endin getnext -->
 </tr>
 <tr> 
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage0')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" width="20" height="20" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage1')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" width="20" height="20" border="0"></a></td>
 <td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;</td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('archive')"><img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="{ archivealt }" width="20" height="20" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('deletea')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('archive', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="{ archivealt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
 </tr>
 </table>
 </td>
@@ -128,10 +100,7 @@ document.forms.listform.submit();
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META NAME="Generator" CONTENT="Ovidentia">
-<META NAME="Author" CONTENT="Ovidentia Community">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+{ babMeta }
 { babCss }
 <script type="text/javascript">
 <!--
@@ -163,34 +132,6 @@ document.forms.listform.submit();
 <!--#end articleview -->
 
 <!--#begin oldarticleslist -->
-<script language="javascript">
-function onCheckAll(ctrlPrefix, state)
-{
-	var i;
-	var objCtrl;
-
-	for (i = 0; i < document.forms.listform.elements.length; i++)
-		{
-		objCtrl = document.forms.listform.elements[i];
-		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			objCtrl.checked = state;
-		}
-}
-
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
-}
-
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-
-</script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topman">
 <input type="hidden" name="idx" value="list">
@@ -208,11 +149,11 @@ document.forms.listform.submit();
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="{ urltitle }">{ title }</a></td>
+<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: var t=document.open('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
 <!--#endin getnext -->
 </tr>
 <tr> 
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('unarch')"><img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="{ archivealt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('unarch', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="{ archivealt }" width="20" height="20" border="0"></a></td>
 </tr>
 </table>
 </td>

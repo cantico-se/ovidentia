@@ -233,34 +233,6 @@ editor.CloseInitSection();
 <!--#end categorymodify -->
 <br><br><br><br><br>
 <!--#begin articleslist -->
-<script language="javascript">
-function onCheckAll(ctrlPrefix, state)
-{
-	var i;
-	var objCtrl;
-
-	for (i = 0; i < document.forms.listform.elements.length; i++)
-		{
-		objCtrl = document.forms.listform.elements[i];
-		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			objCtrl.checked = state;
-		}
-}
-
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
-}
-
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-
-</script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topic">
 <input type="hidden" name="idx" value="deletea">
@@ -284,17 +256,17 @@ document.forms.listform.submit();
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 }>
 </td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="{ urltitle }">{ title }</a></td>
+<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: var t=document.open('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="art[]" value="{ articleid }">
 </td>
 <!--#endin getnext -->
 </tr>
 <tr> 
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage0')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" width="20" height="20" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage1')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" width="20" height="20" border="0"></a></td>
 <td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;</td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('deletea')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
+<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
 </tr>
 </table>
 </td>

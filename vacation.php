@@ -144,9 +144,9 @@ function newVacation()
 			{
 			global $babBody;
 			$this->yearbegin = date("Y");
-			$this->datebegin = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=2');";
+			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=2";
 			$this->datebegintxt = bab_translate("Begin date");
-			$this->dateend = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=2');";
+			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=2";
 			$this->dateendtxt = bab_translate("End date");
 			$this->vactype = bab_translate("Vacation type");
 			$this->addvac = bab_translate("Add Vacation");

@@ -405,7 +405,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
 				$this->article = $arr['title'];
-				$this->articleurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what."')";
+				$this->articleurl = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
 				}
@@ -424,7 +424,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->com = $arr['subject'];
-				$this->comurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what."')";
+				$this->comurl = $GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
 				}
@@ -443,7 +443,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resfor);
 				$this->post = $arr['subject'];
-				$this->posturl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what."')";
+				$this->posturl = $GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
 				}
@@ -461,7 +461,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resfaq);
 				$this->question = $arr['question'];
-				$this->questionurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what."')";
+				$this->questionurl = $GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
 				}
@@ -484,7 +484,7 @@ function startSearch($pat, $item, $what, $pos)
 					$this->filedesc = "( ".$arr['description']." )";
 				else
 					$this->filedesc = "";
-				$this->fileurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what."')";
+				$this->fileurl = $GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
 				}
@@ -503,7 +503,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->rescon);
 				$this->fullname = bab_composeUserName( $arr['firstname'], $arr['lastname']);
-				$this->fullnameurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=f&id=".$arr['id']."&w=".$this->what."')";;
+				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=search&idx=f&id=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
 				}

@@ -14,12 +14,6 @@
 
 <script type="text/javascript">
 <!--
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=650,height=500,status=no,resizable=yes,top=200,left=200, scrollbars=yes");
-}
-
 <!--#if bhtml "== 1" -->
 function mm()
 {
@@ -57,19 +51,19 @@ function mm()
 <td  class="BabMailText" width="80%" valign="middle"><b>{ fromval }</b></td>
 </tr>
 <tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="{ urlto }">{ to }</a></td>
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: var t=document.open('{ urlto }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ to }</a></td>
 <td  class="BabMailBackground" valign="middle">
 <input type="text" name="to" size="40" value="{ toval }"> 
 </td>
 </tr>
 <tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="{ urlto }">{ cc }</a></td>
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: var t=document.open('{ urlto }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cc }</a></td>
 <td class="BabMailBackground" valign="middle"> 
 <input type="text" name="cc" size="40" value="{ ccval }"> 
 </td>
 </tr>
 <tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="{ urlto }">{ bcc }</a></td>
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: var t=document.open('{ urlto }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ bcc }</a></td>
 <td class="BabMailBackground" valign="middle"> 
 <input type="text" name="bcc" size="40" value="{ bccval }"> 
 </td>

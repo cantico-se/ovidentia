@@ -121,7 +121,6 @@ function addComment($topics, $article, $subject, $com="")
 				$this->msie = 1;
 			else
 				$this->msie = 0;
-			//$this->urlsee = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article."');";
 			$this->urlsee = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article;
 			$res = $db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $db->db_fetch_row($res);

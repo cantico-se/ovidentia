@@ -158,7 +158,7 @@ function listArticles($id)
 					$this->checked1 = "";
 				$this->title = $arr['title'];
 				$this->articleid = $arr['id'];
-				$this->urltitle = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id']."');";
+				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -218,7 +218,7 @@ function listOldArticles($id)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->title = $arr['title'];
 				$this->articleid = $arr['id'];
-				$this->urltitle = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id']."');";
+				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -248,13 +248,15 @@ function viewArticle($article)
 		var $res;
 		var $more;
 		var $topics;
-		var $baCss;
+		var $babMeta;
+		var $babCss;
 		var $close;
 
 
 		function temp($article)
 			{
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->babMeta = bab_printTemplate($this,"config.html", "babMeta");
 			$this->close = bab_translate("Close");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
@@ -451,7 +453,7 @@ switch($idx)
 		deleteArticles($art, $item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
-		$babBody->addItemMenu("deletea", bab_translate("Delete"), "javascript:(submitForm('deletea'))");
+		$babBody->addItemMenu("deletea", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topman&idx=deletea&art=".$art);
 		break;
 
 	case "alist":

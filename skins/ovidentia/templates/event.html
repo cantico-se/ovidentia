@@ -19,13 +19,6 @@ function updateDates(elemDay, elemMonth, elemYear)
 	elemDay.options[0].selected = true;
 }
 
-
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "CalendarWindow", "width=250,height=250,status=no,resizable=no,top=200,left=200");
-}
-
 function dateBegin(day, month, year)
 {
 	document.vacform.elements['daybegin'].options[day-1].selected = true;
@@ -59,7 +52,7 @@ function dateEnd(day, month, year)
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
 <tr> 
 <td align="right" nowrap width="30%" valign="middle"><a class="BabEventFaqLink" 
-href="{ datebegin }">{ datebegintxt }</a>:</td>
+href="javascript: var t=document.open('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:</td>
 <td valign="middle" width="10%"> 
 <select name="daybegin">
 <!--#in getnextday -->
@@ -131,7 +124,7 @@ href="{ datebegin }">{ datebegintxt }</a>:</td>
 </td>
 </tr>
 <tr> 
-<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="{ dateend }">{ dateendtxt }</a>:</td>
+<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="javascript: var t=document.open('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>:</td>
 <td valign="middle"> 
 <select name="dayend">
 <!--#in getnextday -->
@@ -258,19 +251,6 @@ function updateDates(elemDay, elemMonth, elemYear)
 	elemDay.options[0].selected = true;
 }
 
-
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "CalendarWindow", "width=250,height=250,status=no,resizable=no,top=200,left=200");
-}
-
-function StartWW(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "Editor", "width=600,height=400,status=no,resizable=yes,top=200,left=200");
-}
-
 function dateBegin(day, month, year)
 {
 	document.vacform.elements['daybegin'].options[day-1].selected = true;
@@ -304,7 +284,7 @@ function dateEnd(day, month, year)
 <td>
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
 <tr> 
-<td align="right" nowrap width="25%" valign="middle"><a class="BabEventFaqLink" href="{ datebegin }">{ 
+<td align="right" nowrap width="25%" valign="middle"><a class="BabEventFaqLink" href="javascript: var t=document.open('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ 
 datebegintxt }</a>:</td>
 <td width="15%" valign="middle"> 
 <select name="daybegin">
@@ -329,7 +309,7 @@ datebegintxt }</a>:</td>
 </td>
 </tr>
 <tr> 
-<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="{ dateend }">{ 
+<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="javascript: var t=document.open('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ 
 dateendtxt }</a>:</td>
 <td valign="middle"> 
 <select name="dayend">
@@ -383,7 +363,7 @@ dateendtxt }</a>:</td>
 <td colspan="4" valign="top">&nbsp;</td>
 </tr>
 <tr> 
-<td align="right" valign="top"><a class="BabEventFaqLink" href="{ descurl }">{ description }</a></td>
+<td align="right" valign="top"><a class="BabEventFaqLink" href="javascript: var t=document.open('{ descurl }', 'Editor', 'width=600,height=400,status=no,resizable=yes,top=200,left=200');">{ description }</a></td>
 <td colspan="4" valign="top">{ evtarr[description] }</td>
 </tr>
 <tr> 

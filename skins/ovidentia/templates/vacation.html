@@ -54,7 +54,7 @@ function dateEnd(day, month, year)
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="{ datebegin }">{ datebegintxt }</a>: </td>
+<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
 <td valign="middle"> 
 <select name="daybegin">
   <!--#in getnextday -->
@@ -85,7 +85,7 @@ function dateEnd(day, month, year)
 </td>
 </tr>
 <tr> 
-<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="{ dateend }">{ dateendtxt }</a>: </td>
+<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"">{ dateendtxt }</a>: </td>
 <td valign="middle"> 
 <select name="dayend">
   <!--#in getnextday -->

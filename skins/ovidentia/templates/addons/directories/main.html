@@ -90,7 +90,7 @@ function Start(page)
 </td>
 <td class="BabLetterlists" align="right">&nbsp;
 <!--#if badd -->
-<a class="BabAlphabetLink" href="{ addurl }">{ addname }</a>
+<a class="BabAlphabetLink" href="javascript: var t=document.open('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addname }</a>
 <!--#endif badd -->
 </td>
 </tr><tr> 
@@ -100,8 +100,8 @@ function Start(page)
 <td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ hteltxt }</b></td>
 </tr>
 <!--#in getnext -->
-<tr><td valign="middle"><a class="BabNameEmailLink" href="{ url }">{ cn }</a></td>
-<td align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="{ urlmail }">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
+<tr><td valign="middle"><a class="BabNameEmailLink" href="javascript: var t=document.open('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cn }</a></td>
+<td align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: var t=document.open('{ urlmail }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
 <td class="BabFontBackground" align="left" valign="middle">&nbsp;{ btel }</td>
 <td class="BabFontBackground" align="left" valign="middle">&nbsp;{ htel }</td>
 </tr>

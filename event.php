@@ -59,9 +59,9 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 			$this->yearmin = $year - $this->ymin;
 			$this->daybegin = $day;
 			$this->monthbegin = $month;
-			$this->datebegin = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year."');";
+			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year;
 			$this->datebegintxt = bab_translate("Begin date");
-			$this->dateend = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year."');";
+			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year;
 			$this->dateendtxt = bab_translate("Until date");
 			$this->private = bab_translate("Private");
 			$this->type = bab_translate("Type");
@@ -417,9 +417,9 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 			$this->nbdaysend = date("t", mktime(0,0,0, $this->monthend, $this->dayend,$this->yearend));
 			$this->timebegin = substr($this->evtarr['start_time'], 0, 5);
 			$this->timeend = substr($this->evtarr['end_time'], 0, 5);
-			$this->datebegin = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin."');";
+			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin;
 			$this->datebegintxt = bab_translate("Begin date");
-			$this->dateend = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend."');";
+			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend;
 			$this->dateendtxt = bab_translate("End date");
 			$this->modify = bab_translate("Update Event");
 			$this->starttime = bab_translate("starttime");
@@ -427,7 +427,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 			$this->title = bab_translate("Title");
 			$this->description = bab_translate("Description");
 			$this->category = bab_translate("Category");
-			$this->descurl = "javascript:StartWW('".$GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$calendarid."&evtid=".$evtid."');";
+			$this->descurl = $GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$calendarid."&evtid=".$evtid;
 			$this->curday = $this->daybegin;
 			$this->curmonth = $this->monthbegin;
 			$this->curyear = $this->yearbegin;

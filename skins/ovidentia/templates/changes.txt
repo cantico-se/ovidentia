@@ -25,6 +25,7 @@ address.html					        changed action="index.php" to action="{ babPhpSelf }"
 admcals.html					        changed action="index.php" to action="{ babPhpSelf }"
 admfaqs.html					        changed action="index.php" to action="{ babPhpSelf }"
 admfiles.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        admfileslist    Removed Javascript
 adminsection.html       template        Added <!--#in addAddonUrl --> ... <!--#endin addAddonUrl -->
 admvacs.html					        changed action="index.php" to action="{ babPhpSelf }"
 artcileprint.html
@@ -49,13 +50,26 @@ contacts.html					        changed action="index.php" to action="{ babPhpSelf }"
                                         Changed href="{ urlmail }" to javascript
 entry.html
 event.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        newevent        Removed Start() Javascript function
+                                        Changed href="{ datebegin }" 
+                                        Changed href="{ dateend }" 
+                        modifyevent     Removed Start() Javascript function
+                                        Changed href="{ datebegin }"
+                                        Changed href="{ dateend }"
+                                        Removed StartWW() Javascript function
+                                        Changed href="{ descurl }"
+                                       
 faq.html					            changed action="index.php" to action="{ babPhpSelf }"
                                         Addded popupquestion section
 faqprint.html
 fileman.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        fileslist       Changed href="{ urldiskspace }"
 forums.html					            changed action="index.php" to action="{ babPhpSelf }"
 forumssection.html
 groups.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        groupsmodify    Added <!--#if bdel --> ... <!--#endif bdel -->
+                        memberslist     Removed Javascript
+                                        Added an icon to delete members
 inbox.html					            changed action="index.php" to action="{ babPhpSelf }"
                         maillist        Removed JavaScript
                                         Changed href="{ msgfromurl }" to javascript call
@@ -68,6 +82,8 @@ inbox.html					            changed action="index.php" to action="{ babPhpSelf }"
                                         
 login.html					            changed action="index.php" to action="{ babPhpSelf }"
 mail.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        mailcompose     Removed JavaScript Start()
+                                        Changed href="{ urlto }" to javascript call
 maildoms.html					        changed action="index.php" to action="{ babPhpSelf }"
 mailinfo.html           adminregistration   addded warning variable
                                         Added template userconfirmation
@@ -94,25 +110,40 @@ posts.html					            changed action="index.php" to action="{ babPhpSelf }"
 readme.txt
 
 search.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        searchresult    Removed JavaScript Start()
+                                        Changed href="{ articleurl }" to javascript call
+                                        Changed href="{ comurl }" to javascript call
+                                        Changed href="{ posturl }" to javascript call
+                                        Changed href="{ questionurl }" to javascript call
+                                        Changed href="{ fileurl }" to javascript call
+                                        Changed href="{ fullnameurl }" to javascript call
 
 sections.html					        changed action="index.php" to action="{ babPhpSelf }"
-
+                        sectionslist    Removed Javascript
 sectiontemplate.html
 
 sites.html					            changed action="index.php" to action="{ babPhpSelf }"
                         sitecreate      Added two select options ( register and confirm )
                         sitemodify      Added two select options ( register and confirm )
                                         Added <input type="submit" name="delete" value="{ delete }">
+                        versions        Removed JavaScript Start()
+                                        Changed href="{ urlphpinfo }" to javascript call
 
 threads.html					        changed action="index.php" to action="{ babPhpSelf }"
                         threadlist      added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
 topcats.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        topcatslist     Removed Javascript
 topcatsection.html
 topics.html					            changed action="index.php" to action="{ babPhpSelf }"
+                        articleslist    Removed JavaScript Start()
+                                        Changed href="{ urltitle }" to javascript call
 topicssection.html
 topman.html					            changed action="index.php" to action="{ babPhpSelf }"
                                         added checkboxes to archive articles
                                         Added oldarticleslist section
+                                        Removed all javascripts
+                                        Changed submitForm call
+                                        Changed href="{ urltitle } to javascript
 topusr.html
 users.html					            changed action="index.php" to action="{ babPhpSelf }"
                         userslist       Removed javascript
@@ -131,6 +162,9 @@ users.html					            changed action="index.php" to action="{ babPhpSelf }"
 usersection.html        template        Added <!--#in addAddonUrl --> ... <!--#endin addAddonUrl -->
 vacapp.html					            changed action="index.php" to action="{ babPhpSelf }"
 vacation.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        newvacation     Removed JavaScript Start()
+                                        Changed href="{ datebegin }" to javascript call
+                                        Changed href="{ dateend }" to javascript call
 waiting.html					        changed action="index.php" to action="{ babPhpSelf }"
 warning.html
 

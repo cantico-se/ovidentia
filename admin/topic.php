@@ -85,7 +85,7 @@ function listArticles($id, $userid)
 					$this->checked1 = "";
 				$this->title = $arr['title'];
 				$this->articleid = $arr['id'];
-				$this->urltitle = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topic&idx=viewa&item=".$arr['id']."');";
+				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topic&idx=viewa&item=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -468,7 +468,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&userid=".$userid);
 		}
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item."&userid=".$userid);
-		$babBody->addItemMenu("deletea", bab_translate("Delete"), "javascript:(submitForm('deletea'))");
+		$babBody->addItemMenu("deletea", bab_translate("Delete"), "");
 		break;
 
 	case "Articles":

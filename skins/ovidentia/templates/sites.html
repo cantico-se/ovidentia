@@ -404,13 +404,6 @@ onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.
 <br>
 <!--#end sitehomepage1 -->
 <!--#begin versions -->
-<script language="javascript">
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
-}
-</script>
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -428,7 +421,7 @@ function Start(page)
 <td align="left" width="50%" nowrap valign="middle">{ baseversion }</td>
 </tr>
 <tr> 
-<td align="center" nowrap valign="middle" colspan="2"><a href="{ urlphpinfo }">{ phpinfo }</a>&nbsp;</td>
+<td align="center" nowrap valign="middle" colspan="2"><a href="javascript: var t=document.open('{ urlphpinfo }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ phpinfo }</a>&nbsp;</td>
 </tr>
 <tr> 
 <td align="center" nowrap valign="middle" colspan="2"><P class="copyright">&copy; 2001-2002, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</P></td>

@@ -207,7 +207,7 @@ function viewVersion()
 			$db = $GLOBALS['babDB'];
 			$arr = $db->db_fetch_array($db->db_query("show variables like 'version'"));
 			$this->baseversion = $arr['Value'];
-			$this->urlphpinfo = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=sites&idx=phpinfo');";
+			$this->urlphpinfo = $GLOBALS['babUrlScript']."?tg=sites&idx=phpinfo";
 			$this->phpinfo = "phpinfo";
 			}
 		}

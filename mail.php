@@ -186,7 +186,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$this->html = bab_translate("Html");
             $this->selectsig = "-- ".bab_translate("Select signature"). " --";
 			$this->none = "-- ".bab_translate("Select destinataire"). " --";
-			$this->urlto = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=address&idx=list')";
+			$this->urlto = $GLOBALS['babUrlScript']."?tg=address&idx=list";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				{
 				$this->bhtml = 1;

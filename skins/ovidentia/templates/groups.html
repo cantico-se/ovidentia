@@ -130,6 +130,9 @@
 <td class="BabLoginMenuBackground">&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <input type="submit" name="submit" value="{ modify }">
+<!--#if bdel -->
+&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ delete }">
+<!--#endif bdel -->
 <br>
 </td>
 </tr>
@@ -142,32 +145,10 @@
 <!--#end groupsmodify -->
 <br><br><br><br>
 <!--#begin memberslist -->
-<script language="javascript">
-function onCheckAll(ctrlPrefix, state)
-{
-	var i;
-	var objCtrl;
-
-	for (i = 0; i < document.forms.listform.elements.length; i++)
-		{
-		objCtrl = document.forms.listform.elements[i];
-		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			objCtrl.checked = state;
-		}
-}
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-</script>
-
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Deletem">
 <input type="hidden" name="item" value="{ grpid }">
-
 <table border="0" width="10%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabAdminMembers" align="center" valign="middle">{ group }</td>
@@ -211,7 +192,9 @@ class="BabAdminMembersList" href="{ url }">{ urlname }</a>
 </td>
 </tr>
 <!--#endin getnext -->
-</table>
+<tr> 
+<td class="BabTitleSmallFontBg" colspan="4"><a href="javascript:submitForm('Deletem','listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
+</tr></table>
 
 </td></tr></table>
 </form>

@@ -27,6 +27,8 @@ function groupModify($id)
 		var $noselected;
 		var $yesselected;
 		var $modify;
+		var $delete;
+		var $bdel;
 
 		var $db;
 		var $arr = array();
@@ -41,6 +43,7 @@ function groupModify($id)
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->modify = bab_translate("Modify Group");
+			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_GROUPS_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
@@ -64,6 +67,10 @@ function groupModify($id)
 				}
 			else
 				$this->managerval = "";
+			if( $id > 3 )
+				$this->bdel = true;
+			else
+				$this->bdel = false;
 			}
 		}
 
@@ -83,6 +90,7 @@ function groupMembers($id)
 		var $group;
 		var $grpid;
 		var $primary;
+		var $deletealt;
 			
 		var $arr = array();
 		var $arr = array();
@@ -94,6 +102,7 @@ function groupMembers($id)
 			{
 			$this->grpid = $id;
 			$this->fullname = bab_translate("Full Name");
+			$this->deletealt = bab_translate("Delete group's members");
 			$this->idgroup = $id;
 			$this->group = bab_getGroupName($id);
 			$this->db = $GLOBALS['babDB'];
@@ -510,7 +519,12 @@ if( !isset($idx))
 	$idx = "Modify";
 
 if( isset($modify))
-	modifyGroup($oldname, $name, $description, $manager, $bemail, $item);
+	{
+	if( isset($submit))
+		modifyGroup($oldname, $name, $description, $manager, $bemail, $item);
+	else if( isset($deleteg) )
+		$idx = "Delete";
+	}
 
 if( isset($vacation) && $vacation == "update")
 	{
@@ -544,7 +558,7 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Deletem", bab_translate("Delete"), "javascript:(submitForm('Deletem'))");
+		$babBody->addItemMenu("Deletem", bab_translate("Delete"), "");
 		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
 		break;
 	case "Members":
@@ -553,7 +567,6 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Deletem", bab_translate("Delete"), "javascript:(submitForm('Deletem'))");
 		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
 		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
 		break;
@@ -573,8 +586,7 @@ switch($idx)
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
-		if( $item > 3 )
-			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
 		break;
 	case "Modify":
 	default:
@@ -584,8 +596,6 @@ switch($idx)
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
-		if( $item > 3 )
-			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
 		break;
 	}
 

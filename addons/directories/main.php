@@ -203,7 +203,7 @@ function browseDbDirectory($id, $pos, $badd)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=";
-			$this->addurl = "javascript:Start('".$GLOBALS['babAddonUrl']."main&idx=adbc&id=".$id."');";
+			$this->addurl = $GLOBALS['babAddonUrl']."main&idx=adbc&id=".$id;
 			$this->count = 0;
 			$this->db = $GLOBALS['babDB'];
 			if(bab_isAccessValid(ADDON_DIRVIEW_GROUPS_TBL, $id))
@@ -241,9 +241,9 @@ function browseDbDirectory($id, $pos, $badd)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->cn = $arr['givenname']. " ". $arr['sn'];
-				$this->urlmail = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$arr['email']."');";
+				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$arr['email'];
 				$this->email = $arr['email'];
-				$this->url = "javascript:Start('".$GLOBALS['babAddonUrl']."main&idx=ddb&id=".$this->id."&idu=".$arr['id']."&pos=".$this->pos."');";
+				$this->url = $GLOBALS['babAddonUrl']."main&idx=ddb&id=".$this->id."&idu=".$arr['id']."&pos=".$this->pos;
 				$this->btel = $arr['btel'];
 				$this->htel = $arr['htel'];
 				$i++;
