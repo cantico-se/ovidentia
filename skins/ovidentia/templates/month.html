@@ -35,13 +35,18 @@ window.focus();
 <!--#endin getnextday3 -->
 </tr>
 <!--#in getnextweek -->
-<tr> 
-<!--#in getnextday -->
-<td bgcolor="{ bgcolor }" align="center" valign="middle">
-<a href={ dayurl } class="BabSectionsLinkColor">{ day }</a>
-</td>
-<!--#endin getnextday -->
-</tr>
+	<tr> 
+		<!--#in getnextday -->
+		<!--#if currentday -->
+		<td class="BabCalendarCurrentDayNumberSection" align="center" valign="middle">
+		<a href={ dayurl } class="BabSectionsDayLink">{ day }</a>
+		<!--#else currentday -->
+		<td class="BabCalendarDayNumberSection" align="center" valign="middle">
+		<a href={ dayurl } class="BabSectionsLinkColor">{ day }</a>
+		<!--#endif currentday -->
+		</td>
+		<!--#endin getnextday -->
+	</tr>
 <!--#endin getnextweek -->
 </table>
 	</td>
