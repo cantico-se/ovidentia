@@ -110,7 +110,7 @@ function addComment($topics, $article, $subject, $com="")
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->titleval = $arr['title'];
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
