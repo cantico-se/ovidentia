@@ -24,6 +24,7 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/topincl.php";
 include_once $babInstallPath."utilit/treeincl.php";
+include_once $babInstallPath."utilit/imgincl.php";
 
 function isUserManager()
 	{
