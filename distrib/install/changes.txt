@@ -1,4 +1,11 @@
 /************************************************************************/
+September 2004: Version 5.4.3
+/************************************************************************/
+- Improvement of the performances
+- Forums: possibilité to associate documents with posts
+- Fixed some minors bugs in forums, ldap, search function ...
+
+/************************************************************************/
 August 2004: Version 5.4.2
 /************************************************************************/
 - calendars: correction of bugs and enhancement
