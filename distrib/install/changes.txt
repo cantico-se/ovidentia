@@ -1,5 +1,5 @@
 /************************************************************************/
-Septembre 2002: Version 3.4.0
+August 2002: Version 3.4.0b
 /************************************************************************/
 - Improved calendar ( pm/am, scale time, multiple views...)
 - Possibility to order forums and topics in sections 
