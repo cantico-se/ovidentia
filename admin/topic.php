@@ -27,6 +27,7 @@ function listArticles($id)
 
 		var $homepage0;
 		var $homepage1;
+		var $deletea;
 		var $bhomepage0;
 		var $bhomepage1;
 		var $addtohome;
@@ -38,7 +39,7 @@ function listArticles($id)
 			$this->checkall = babTranslate("Check all");
 			$this->homepage0 = babTranslate("Unregistered users home page");
 			$this->homepage1 = babTranslate("Registered users home page");
-			$this->addtohome = babTranslate("Add");
+			$this->deletea = babTranslate("Delete");
 
 			$this->item = $id;
 			$this->db = new db_mysql();
@@ -296,16 +297,12 @@ function confirmDeleteArticles($items)
 		}
 }
 
-function addToHomePages($item, $homepage0, $homepage1, $art)
+function addToHomePages($item, $homepage, $art)
 {
 	global $idx;
 
 	$idx = "Articles";
 	$count = count($art);
-	if($count < 1)
-	{
-		return;
-	}
 
 	$db = new db_mysql();
 
@@ -323,41 +320,28 @@ function addToHomePages($item, $homepage0, $homepage1, $art)
 		$idsite = $arr['id'];
 	}
 
-	for( $i = 0; $i < $count; $i++)
-	{
-		if( !empty($homepage0))
+	$req = "select * from articles where id_topic='".$item."' order by date desc";
+	$res = $db->db_query($req);
+	while( $arr = $db->db_fetch_array($res))
 		{
-			$req = "select * from homepages where id_article='".$art[$i]."' and id_group='".$homepage0."'";
-			$res = $db->db_query($req);
-			if( !$res || $db->db_num_rows($res) < 1)
+		if( $count > 0 && in_array($arr['id'], $art))
 			{
-				$req = "insert into homepages (id_article, id_site, id_group) values ('" .$art[$i]. "', '" . $idsite. "', '" . $homepage0. "')";
-				$res = $db->db_query($req);
+				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='".$homepage."'";
+				$res2 = $db->db_query($req);
+				if( !$res2 || $db->db_num_rows($res2) < 1)
+				{
+					$req = "insert into homepages (id_article, id_site, id_group) values ('" .$arr['id']. "', '" . $idsite. "', '" . $homepage. "')";
+					$db->db_query($req);
+				}
 			}
-		}
 		else
-		{
-			$req = "delete from homepages where id_article='".$art[$i]."' and id_group='2'";
-			$res = $db->db_query($req);
-		}
+			{
+				$req = "delete from homepages where id_article='".$arr['id']."' and id_group='".$homepage."'";
+					echo $req."<br>";
+				$db->db_query($req);
+			}
 
-		
-		if( !empty($homepage1))
-		{
-			$req = "select * from homepages where id_article='".$art[$i]."' and id_group='".$homepage1."'";
-			$res = $db->db_query($req);
-			if( !$res || $db->db_num_rows($res) < 1)
-			{
-				$req = "insert into homepages (id_article, id_site, id_group) values ('" .$art[$i]. "', '" . $idsite. "', '" . $homepage1. "')";
-				$res = $db->db_query($req);
-			}
 		}
-		else
-		{
-			$req = "delete from homepages where id_article='".$art[$i]."' and id_group='1'";
-			$res = $db->db_query($req);
-		}
-	}
 }
 
 /* main */
@@ -372,14 +356,17 @@ if( isset($update) && $adminid >0)
 	updateCategory($item, $category, $description, $approver);
 	}
 
-if( $idx == "Update")
-	{
-	addToHomePages($item, $homepage0, $homepage1, $art);
-	}
-
 if( isset($aclview) && $adminid >0)
 	{
 	aclUpdate($table, $item, $groups, $what);
+	}
+
+if( isset($upart) && $upart == "articles")
+	{
+	if( !empty($homepage0))
+		addToHomePages($item, 2, $art);
+	else if( !empty($homepage1))
+		addToHomePages($item, 1, $art);
 	}
 
 if( isset($action) && $action == "Yes")
@@ -401,7 +388,7 @@ switch($idx)
 	case "viewa":
 		viewArticle($item);
 		exit;
-	case "Deletea":
+	case "deletea":
 		$body->title = babTranslate("Delete articles");
 		deleteArticles($art, $item);
 		if( $adminid > 0)
@@ -409,7 +396,7 @@ switch($idx)
 		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list");
 		}
 		$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$item);
-		$body->addItemMenu("Deletea", babTranslate("Delete"), "javascript:(submitForm('Deletea'))");
+		$body->addItemMenu("deletea", babTranslate("Delete"), "javascript:(submitForm('deletea'))");
 		break;
 
 	case "Articles":
@@ -420,8 +407,6 @@ switch($idx)
 		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list");
 		}
 		$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$item);
-		$body->addItemMenu("Deletea", babTranslate("Delete"), "javascript:(submitForm('Deletea'))");
-		$body->addItemMenu("Update", babTranslate("Update"), "javascript:(submitForm('Update'))");
 		break;
 
 	case "Groups":
