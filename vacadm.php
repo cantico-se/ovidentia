@@ -339,9 +339,12 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->addpurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addp&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
 			$this->db = $GLOBALS['babDB'];
 
-			if( $pos[0] == "-" )
+			$this->idcol = $idcol;
+			$this->idsa = $idsa;
+
+			if( strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos =strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				$req = "select ".BAB_USERS_TBL.".*, ".BAB_VAC_PERSONNEL_TBL.".id_sa, ".BAB_VAC_PERSONNEL_TBL.".id_coll from ".BAB_USERS_TBL." join ".BAB_VAC_PERSONNEL_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_PERSONNEL_TBL.".id_user and ".BAB_USERS_TBL.".lastname like '".$this->pos."%' ";
 				if( !empty($idcol))
@@ -365,9 +368,6 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&chg=&pos=".$this->ord.$this->pos."&idcol=".$this->idcol."&idsa=".$this->idsa;
 				}
-
-			$this->idcol = $idcol;
-			$this->idsa = $idsa;
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
@@ -1250,6 +1250,9 @@ switch($idx)
 		exit;
 		break;
 	case "delu":
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
 		$babBody->title = bab_translate("Delete users");
 		deleteVacationPersonnel($pos, $idcol, $idsa, $userids);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
@@ -1275,6 +1278,9 @@ switch($idx)
 		break;
 
 	case "addp":
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
 		$babBody->title = bab_translate("Add users");
 		if( !isset($idp)) $idp ="";
 		addVacationPersonnel($idcol, $idsa, $idp);
@@ -1307,6 +1313,9 @@ switch($idx)
 		break;
 
 	case "lcol":
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
 		$babBody->title = bab_translate("Vacations type's collections");
 		listVacationCollections();
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
@@ -1319,6 +1328,9 @@ switch($idx)
 
 	case "modvc":
 		$babBody->title = bab_translate("Modify vacation type's collection");
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
 		if( !isset($vcid)) $vcid =$id;
 		if( !isset($what)) $what ="modvc";
 		if( !isset($tname)) $tname ="";
@@ -1336,6 +1348,9 @@ switch($idx)
 
 	case "addvc":
 		$babBody->title = bab_translate("Add vacation type's collection");
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
 		if( !isset($vcid)) $vcid =$id;
 		if( !isset($what)) $what ="addvc";
 		if( !isset($tname)) $tname ="";
@@ -1352,6 +1367,9 @@ switch($idx)
 
 	case "modvt":
 		$babBody->title = bab_translate("Modify vacation type");
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
 		if( !isset($vtid)) $vtid =$id;
 		if( !isset($what)) $what ="modvt";
 		if( !isset($tname)) $tname ="";
@@ -1372,7 +1390,10 @@ switch($idx)
 
 	case "addvt":
 		$babBody->title = bab_translate("Add vacation type");
-		if( !isset($vtdid)) $vtdid ="";
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
+		if( !isset($vtid)) $vtid ="";
 		if( !isset($what)) $what ="addvt";
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";
@@ -1390,6 +1411,9 @@ switch($idx)
 
 	case "lvt":
 	default:
+		if( !isset($pos)) $pos ="";
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
 		$babBody->title = bab_translate("Vacations types");
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
