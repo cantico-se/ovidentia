@@ -142,29 +142,29 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 
-			$res = $db->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where  id_object='".$idclas[$i]."'");
+			$res = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where  id_object='".$idclas[$i]."'");
 			$arrusers = array();
-			if( $res && $db->db_num_rows($res) > 0 )
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				while( $row = $db->db_fetch_array($res))
+				while( $row = $babDB->db_fetch_array($res))
 					{
 					switch($row['id_group'])
 						{
 						case 0:
 						case 1:
-							$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+							$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
 							break;
 						case 2:
 							return;
 						default:
-							$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
+							$res2 = $babDB->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
 							break;
 						}
 
-					if( $res2 && $db->db_num_rows($res2) > 0 )
+					if( $res2 && $babDB->db_num_rows($res2) > 0 )
 						{
 						$count = 0;
-						while(($arr = $db->db_fetch_array($res2)))
+						while(($arr = $babDB->db_fetch_array($res2)))
 							{
 							$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
 							$count++;
@@ -195,7 +195,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 
 function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals)
 	{
-	global $babBody, $babAdminEmail;
+	global $babBody, $babDB, $babAdminEmail;
 
 	if(!class_exists("clsNotifyResourceEvent"))
 		{
@@ -251,29 +251,29 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 
-			$res = $db->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where  id_object='".$idclas[$i]."'");
+			$res = $babDB->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where  id_object='".$idclas[$i]."'");
 			$arrusers = array();
-			if( $res && $db->db_num_rows($res) > 0 )
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				while( $row = $db->db_fetch_array($res))
+				while( $row = $babDB->db_fetch_array($res))
 					{
 					switch($row['id_group'])
 						{
 						case 0:
 						case 1:
-							$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+							$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
 							break;
 						case 2:
 							return;
 						default:
-							$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
+							$res2 = $babDB->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
 							break;
 						}
 
-					if( $res2 && $db->db_num_rows($res2) > 0 )
+					if( $res2 && $babDB->db_num_rows($res2) > 0 )
 						{
 						$count = 0;
-						while(($arr = $db->db_fetch_array($res2)))
+						while(($arr = $babDB->db_fetch_array($res2)))
 							{
 							$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
 							$count++;

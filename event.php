@@ -922,6 +922,11 @@ function updateEvent(&$message)
 		$title = addslashes($_POST['title']);
 		$description = addslashes($_POST['evtdesc']);
 		}
+	else
+		{
+		$title = $_POST['title'];
+		$description = $_POST['evtdesc'];
+		}
 		
 	$db = $GLOBALS['babDB'];
 
