@@ -1,5 +1,5 @@
 /************************************************************************/
-October 2002: Version 3.4.1
+Novembre 2002: Version 3.4.2b
 /************************************************************************/
 - Vacation emails notification are enhanced
 - User can now list articles that are submitted by himself

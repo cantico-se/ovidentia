@@ -851,23 +851,17 @@ if( !$res)
 return $ret;
 }
 
-function upgrade341betas(&$beta)
+function upgrade341to342()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
 
-/* 341beta -> 341 */
-$res = $db->db_query("SHOW COLUMNS from ".BAB_TOPICS_TBL." like 'notify'");
-if( !$res || $db->db_num_rows($res) == 0 )
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD notify ENUM('N','Y') NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
 	{
-	$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD notify ENUM('N','Y') NOT NULL";
-	$res = $db->db_query($req);
-	if( !$res)
-		{
-		$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
-		return $ret;
-		}
-	$beta = "beta2";
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
 	}
 
 $db->db_query("INSERT INTO ".BAB_INI_TBL." VALUES ('ver_prod', 'E')");
@@ -992,8 +986,6 @@ $db->db_query("ALTER TABLE ".BAB_THREADS_TBL." ADD INDEX(date)");
 $db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD INDEX(id_approver)");
 $db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD INDEX(id_cat)");
 $db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." ADD INDEX(ordering)");
-
-
 
 $db->db_query("ALTER TABLE ".BAB_USERS_TBL." ADD INDEX(nickname)");
 $db->db_query("ALTER TABLE ".BAB_USERS_TBL." ADD INDEX(firstname)");
