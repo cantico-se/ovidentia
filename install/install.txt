@@ -5,7 +5,7 @@ Base Requirements
 PHP4 (http://www.php.net)
 MySQL database server (http://www.mysql.com)
 
-Unzip the package into your web server.
+Unzip the package into your web server root.
 
 - Create a database called, for example, ovidentia:
 
@@ -15,13 +15,14 @@ Unzip the package into your web server.
 
     mysql ovidentia < babinstall.sql
 
-- Edit config.php file located in 'bab' directory and change those variables:
+- copy  config.php and index.php files located in 'ovidentia31/example' directory 
+  to you web root folder and change those variables:
 	
 	$babDBHost		Mysql Host name
 	$babDBLogin		Mysql Login 
-	$babDBPasswd		Mysql Password
+	$babDBPasswd	Mysql Password
 	$babDBName		Mysql database name ( for example ovidentia )
 	
-- Now pointe your brower to http://domain/bab31/example/
+- Now pointe your brower to http://your-site/
 
 - That's all
