@@ -1223,7 +1223,13 @@ function updateDescription($calid, $evtid, $content, $bupdrec)
 
 function isUpdateEvent($calid, $evtid)
 {
+global $babDB;
 $bmodif = 0;
+
+list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id ='".$evtid."'"));
+if( substr($hash, 0, 2) == "V_")
+	return $bmodif;
+
 $caltype = bab_getCalendarType($calid);
 $owner = bab_getCalendarOwner($calid);
 switch($caltype)
@@ -1233,16 +1239,15 @@ switch($caltype)
 			$bmodif = 1;
 		else
 			{
-			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select bwrite from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
-			if( $res && $db->db_num_rows($res) > 0 )
+			$res = $babDB->db_query("select bwrite from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $db->db_fetch_array($res);
+				$arr = $babDB->db_fetch_array($res);
 				if( $arr['bwrite'] == 2 )
 					$bmodif = 1;
 				else
 					{
-					$arr = $db->db_fetch_array($db->db_query("select id_creator from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+					$arr = $babDB->db_fetch_array($babDB->db_query("select id_creator from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
 					if( $arr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] )
 						$bmodif = 1;
 					}

@@ -609,7 +609,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select idfai from ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
+	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end from ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
 	$arr = $babDB->db_fetch_array($res);
 
 	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $action);
@@ -633,6 +633,13 @@ function confirmVacationRequest($veid, $remarks, $action)
 				$remarks = addslashes($remarks);
 				}
 			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='Y', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
+			$idcal = bab_getCalendarId($arr['id_user'], 1);
+			if( $idcal != 0 )
+				{
+				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, start_date, start_time, end_date, end_time, id_creator, hash) values ";
+				$req .= "('".$idcal."', '".bab_translate("Vacation")."', '".$arr['date_begin']."', '00:00:00', '".$arr['date_end']."', '23:59:59', '0', 'V_".$veid."')";
+				$babDB->db_query($req);
+				}
 			$subject = bab_translate("Your vacation request has been accepted");
 			notifyVacationAuthor($veid, $subject);
 			break;
@@ -705,7 +712,7 @@ function listVacationRequests($pos)
 			$this->prevname = "";
 			$this->pos = $pos;
 			$this->db = $GLOBALS['babDB'];
-			$req = "".BAB_VAC_ENTRIES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' order by date, id desc";
+			$req = "".BAB_VAC_ENTRIES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'";
 
 			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
@@ -740,7 +747,7 @@ function listVacationRequests($pos)
 					}
 				}
 
-
+			$req .= " order by date, id desc";
 			if( $total > VAC_MAX_REQUESTS_LIST)
 				{
 				$req .= " limit ".$pos.",".VAC_MAX_REQUESTS_LIST;
