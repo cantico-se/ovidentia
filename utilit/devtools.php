@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 
-
+// Used in addons from 5.4.1
 class bab_myAddonSection
 {
 function bab_myAddonSection()
@@ -85,5 +85,71 @@ function getHtml()
 
 }
 
+
+
+// Used in addons from 5.4.2
+function bab_isAddonInstalled($name)
+{
+foreach ($GLOBALS['babBody']->babaddons as $value)
+	if ($value['title'] == $name)
+		{
+		$version_base = $value['version'];
+		break;
+		}
+
+if (isset($version_base))
+	{
+	$arr_ini = @parse_ini_file( $GLOBALS['babInstallPath'].$name.'/addonini.php');
+	if ($arr_ini['version'] == $version_base)
+		return true;
+	}
+return false;
+}
+
+// Used in addons from 5.4.2
+function bab_tableAutoRecord($table)
+{
+$db = &$GLOBALS['babDB'];
+$res = $db->db_query("DESCRIBE ".$table);
+$update = false;
+$cols = array();
+$values = array();
+while ( $arr = $db->db_fetch_array($res))
+	{
+	if ($arr['Extra'] == 'auto_increment' && !empty($_POST[$arr['Field']])
+		{
+		$indexcol = $arr['Field'];
+		$update = true;
+		}
+
+	if (isset($_POST[$arr['Field']]))
+		{
+		$cols[] = $arr['Field'];
+		$values[] = $_POST[$arr['Field']];
+		}
+	}
+
+
+if (count($cols) > 0)
+	{
+	if ($update)
+		{
+		$ud = array();
+		foreach ($cols as $k => $col)
+			{
+			$ud[] = $col."='".$values[$k]."'";
+			}
+
+		$db->db_query("UPDATE ".$table." SET ".implode(',',$ud)." WHERE ".$indexcol."='".$_POST[$indexcol]."'");
+		return $_POST[$indexcol];
+		}
+	else
+		{
+		$db->db_query("INSERT INTO ".$table." (".implode(',',$cols).") VALUES ('".implode('\',\'',$values)."')");
+		return $db->db_insert_id();
+		}
+	}
+return false;
+}
 
 ?>
