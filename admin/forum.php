@@ -26,6 +26,7 @@ function modifyForum($id)
 		var $active;
 		var $moderatorval;
 		var $update;
+		var $delete;
 
 		var $db;
 		var $arr = array();
@@ -45,6 +46,7 @@ function modifyForum($id)
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->notification = bab_translate("Notify moderator");
+			$this->delete = bab_translate("Delete");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
 			$this->db = $GLOBALS['babDB'];
@@ -162,7 +164,12 @@ if(!isset($idx))
 
 if( isset($update) && $update == "updateforum")
 	{
-	updateForum($item, $name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active);
+	if( isset($submit))
+		updateForum($item, $name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active);
+	else if( isset($bdelete))
+		{
+		$idx = "Delete";
+		}
 	}
 
 if( isset($aclview))
@@ -187,7 +194,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
 		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=forum&idx=Delete&item=".$item);
 		break;
 
 	case "Reply":
@@ -198,7 +204,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
 		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=forum&idx=Delete&item=".$item);
 		break;
 
 	case "Post":
@@ -209,7 +214,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
 		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=forum&idx=Delete&item=".$item);
 		break;
 
 	case "Delete":
@@ -220,7 +224,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
 		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=forum&idx=Delete&item=".$item);
 		break;
 
 	default:
@@ -232,7 +235,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
 		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=forum&idx=Delete&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
