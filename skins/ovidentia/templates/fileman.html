@@ -419,20 +419,19 @@ value="{ restore }">
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <!--#if bupdate -->
+<!--#if bmanager -->
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
 <td class="BabLoginMenuBackground" width="70%" valign="middle">
 <input type="file" name="uploadf" size="30" maxlength="255" value="">
 </td>
 </tr>
-<!--#if bmanager -->
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
 <td class="BabLoginMenuBackground" width="70%" valign="middle">
 <input type="text" name="fname" size="30" maxlength="255" value="{ nameval }">
 </td>
 </tr>
-<!--#endif bmanager -->
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
 <td class="BabLoginMenuBackground" valign="middle">
 <input type="text" name="description" size="60" maxlength="255" value="{ descval }">
@@ -445,7 +444,6 @@ value="{ restore }">
 </td>
 </tr>
 <!--#endif bupdate -->
-<!--#if bmanager -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
 <td class="BabLoginMenuBackground" valign="middle">
@@ -466,13 +464,13 @@ value="{ restore }">
 </td>
 </tr>
 <!--#endif bconfirm -->
-<!--#endif bmanager -->
 <tr>
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle">
 <input type="submit" name="submit" value="{ update }">
 </td>
 </tr>
+<!--#endif bmanager -->
 </table>
 </td>
 </tr>
