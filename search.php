@@ -552,7 +552,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 // ---------------------------------------- SEARCH ARTICLES AND ARTICLES COMMENTS ---------
 			if( empty($item) || $item == "a")
 				{
-				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, 'yyyy-mm-dd' date from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id AND 0";
+				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, 'yyyy-mm-dd' date from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id AND 0";
 				$this->db->db_query($req);
 				$req = "alter table artresults add unique (id)";
 				$this->db->db_query($req);
@@ -593,7 +593,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($this->like || $this->like2)
 					$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
 				
-				$req = "insert into artresults SELECT a.id, a.id_topic, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
+				$req = "insert into artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
 				$this->db->db_query($req);
 
 				$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
@@ -1076,10 +1076,21 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->arttopicid = $arr['id_topic'];
 				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what;
 				if (strlen(trim(stripslashes($arr['body']))) > 0)
-					$this->urlok = true;
+					{
+					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
+					}
 				else
-					$this->urlok = false;
-				$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
+					{
+					if( $arr['archive'] ==  'Y' )
+						{
+						$urlidx = "larch";
+						}
+					else
+						{
+						$urlidx = "Articles";
+						}
+					$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=".$urlidx."&topics=".$arr['id_topic']."#art".$arr['id'];
+					}
 				$this->authormail = bab_getUserEmail($arr['id_author']);
 				$this->intro = put_text($arr['head'],300);
 				$i++;
@@ -1112,7 +1123,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$this->urlok = false;
 				$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id_article'];
 				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id_article']."&w=".$this->what;
-				$this->comurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$arr['id_topic']."&article=".$arr['id_article'];
+				$this->comurl = $this->articleurl;
 				$this->comurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what;
 				$this->intro = put_text($arr['message'],300);
 				$i++;
@@ -1363,7 +1374,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 	$babBody->babecho(	bab_printTemplate($temp,"search.html", "searchresult"));
 	}
 
-function viewArticle($article, $w)
+function viewArticle($article)
 	{
 	global $babBody;
 
@@ -1372,36 +1383,99 @@ function viewArticle($article, $w)
 	
 		var $content;
 		var $head;
-		var $title;
-		var $topic;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $more;
+		var $topics;
+		var $babMeta;
 		var $babCss;
+		var $close;
+		var $altbg = false;
 
-		function temp($article, $w)
+
+		function temp($article)
 			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."'";
-			$res = $db->db_query($req);
-			$arr = $db->db_fetch_array($res);
-	
-			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && bab_articleAccessByRestriction($arr['restriction']))
+			$this->close = bab_translate("Close");
+			$this->attachmentxt = bab_translate("Associated documents");
+			$this->commentstxt = bab_translate("Comments");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->countf = 0;
+			$this->countcom = 0;
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
-				$this->head = highlightWord( $w, bab_replace($arr['head']));
-				$this->content = highlightWord( $w, bab_replace($arr['body']));
-				$this->title = highlightWord( $w, $arr['title']);
-				$this->topic =bab_getCategoryTitle($arr['id_topic']);
+				$this->content = bab_replace($this->arr['body']);
+				$this->head = bab_replace($this->arr['head']);
+
+				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
+				$this->countf = $this->db->db_num_rows($this->resf);
+
+				if( $this->countf > 0 )
+					{
+					$this->battachments = true;
+					}
+				else
+					{
+					$this->battachments = false;
+					}
+
+				$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
+				$this->countcom = $this->db->db_num_rows($this->rescom);
 				}
 			else
 				{
-				$this->head = '';
-				$this->content = bab_translate("Access denied");
-				$this->title = '';
-				$this->topic ='';
+				$this->content = "";
+				$this->head = bab_translate("Access denied");
+				}
+			}
+
+		function getnextdoc()
+			{
+			global $arrtop;
+			static $i = 0;
+			if( $i < $this->countf)
+				{
+				$arr = $this->db->db_fetch_array($this->resf);
+				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id'];
+				$this->docname = $arr['name'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnextcom()
+			{
+			static $i = 0;
+			if( $i < $this->countcom)
+				{
+				$arr = $this->db->db_fetch_array($this->rescom);
+				$this->altbg = !$this->altbg;
+				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
+				$this->authorname = $arr['name'];
+				$this->commenttitle = $arr['subject'];
+				$this->commentbody = bab_replace($arr['message']);
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->db->db_data_seek($this->rescom,0);
+				$i=0;
+				return false;
 				}
 			}
 		}
 	
-	$temp = new temp($article, $w);
+	$temp = new temp($article);
 	echo bab_printTemplate($temp,"search.html", "viewart");
 	}
 

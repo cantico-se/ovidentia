@@ -416,11 +416,7 @@ setselects(document.forms.searchForm.g_directory);
 <tr>
 <td class="BabTopicsBackground" valign="top">
 { arttopic }&gt; 
-<!--#if urlok -->
 <a class="BabFaqLink" href="{ articleurl }">{ article }</a> 
-<!--#else urlok -->
-{ article } 
-<!--#endif urlok -->
 [ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
  <br>
  { intro }
@@ -651,9 +647,9 @@ setselects(document.forms.searchForm.g_directory);
 <br><br><br><br>
 <!--#begin viewart -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<html>
+<head>
+<title>{ babSiteName }</title>
 { babMeta }
 { babCss }
 <script type="text/javascript">
@@ -661,43 +657,82 @@ setselects(document.forms.searchForm.g_directory);
 window.focus();
 //-->
 </script>
-</HEAD>
-<BODY class="BabBackground">
+</head>
+<body>
 <br>
-<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr> 
-<td class="BabMailBackground"> 
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabBodyTitleBackground" align="center" > { topic } </td>
-</tr>
+<table border="0" width="100%" cellpadding="5" cellspacing="0">
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground" align="center" nowrap>{ arr[title] }</td>
+	</tr>
+	<tr>
+		<td class="BabTopicsBackground">{ head }</td>
+	</tr>
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="BabTopicsBackground">{ content }</td>
+	</tr>
+	<tr>
+	<!--#if countf -->
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground">{ attachmentxt }</td>
+	</tr>
+	<!--#in getnextdoc -->
+	<tr>
+		<td><a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;</td>
+	</tr>
+	<!--#endin getnextdoc -->
+	<!--#endif countf -->
+
+	<!--#if countcom -->
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground">{ commentstxt }</td>
+	</tr>
+	<tr>
+		<td>
+			<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr> 
+					<td class="BabLoginMenuBackground"> 
+						<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+						<!--#in getnextcom -->
+						<!--#if altbg -->
+						<tr class="BabSummaryContentBackground">
+						<!--#else altbg -->
+						<tr class="BabTopicsAuthorBackground">
+						<!--#endif altbg -->
+						<td>{ authorname }</td>
+						<td align="left"><span style="font-Size:9">{ commenttitle }</span>
+						</td>
+						</tr>
+						<!--#if altbg -->
+						<tr class="BabSummaryContentBackground">
+						<!--#else altbg -->
+						<tr class="BabTopicsAuthorBackground">
+						<!--#endif altbg -->
+						<td>{ commentdate }</td>
+						<td align="left">{ commentbody }&nbsp;
+						</td>
+						</tr>
+						<!--#endin getnextcom --> 
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<!--#endif countcom -->
+	<tr>
+		<td colspan="2" align="center">
+		<br />
+		<a href="javascript:this.close()">{ close }</a>
+		<br />
+		</td>
+	</tr>
 </table>
-<br>
-<table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabTopicsTitleBackground">{ title }</td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" >{ head }</td>
-</tr>
-<tr> 
-<td class="BabTopicsTitleBackground">&nbsp;</td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" >{ content }</td>
-</tr>
-<tr> 
-<td colspan="2">&nbsp;</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
 </body>
 </html>
 <!--#end viewart -->
-
 <!--#begin viewcom -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
