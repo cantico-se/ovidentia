@@ -752,6 +752,7 @@ CREATE TABLE bab_files (
   modifiedby int(11) unsigned NOT NULL default '0',
   confirmed enum('N','Y') NOT NULL default 'N',
   hits int(11) unsigned NOT NULL default '0',
+  idfai int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_owner (id_owner),
   KEY name (name)
