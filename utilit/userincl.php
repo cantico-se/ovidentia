@@ -809,7 +809,7 @@ function bab_replace( $txt )
 			if( is_readable($filepath))
 				{
 				$tmp = new babOvTemplate();
-				$txt = preg_replace("/\\\$OVML\(".preg_quote($m[1][$k])."\)/", $tmp->printout(implode("", file($filepath))), $txt);
+				$txt = preg_replace("/\\\$OVML\(".preg_quote($m[1][$k], "/")."\)/", $tmp->printout(implode("", file($filepath))), $txt);
 				}
 			}
 		}

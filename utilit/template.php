@@ -164,6 +164,21 @@ function processTemplate(&$class, $str)
 			}
 		}
 
+	if( preg_match_all("/".$this->startPatternV."\s+\\\$OVML\((.*?)\)\s+".$this->endPatternV."/", $str, $m))
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
+		for ($i = 0; $i < count($m[1]); $i++ )
+			{
+			$filepath = $GLOBALS['babOvmlPath']. $m[1][$i];
+			if( is_readable($filepath))
+				{
+				$reg = "/".$this->startPatternV."\s+\\\$OVML\(" . preg_quote($m[1][$i], "/"). "\)\s+".$this->endPatternV."/";
+				$tmp = new babOvTemplate();
+				$str = preg_replace($reg, $tmp->printout(implode("", file($filepath))), $str);
+				}
+			}
+		}
+
 	preg_match_all("/".$this->startPatternV."\s+(.*?)\s+".$this->endPatternV."/", $str, $m);
 
 	for ($i = 0; $i < count($m[1]); $i++ )

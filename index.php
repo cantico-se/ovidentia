@@ -119,6 +119,7 @@ if(!is_dir($babSkinPath)) {
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
+$babOvmlPath = "skins/".$GLOBALS['babSkin']."/ovml/";
 
 $babMonths = array(1=>bab_translate("January"), bab_translate("February"), bab_translate("March"), bab_translate("April"),
                         bab_translate("May"), bab_translate("June"), bab_translate("July"), bab_translate("August"),
@@ -774,7 +775,7 @@ switch($tg)
 				$file = "private.html";
 			else
 				$file = "public.html";
-			if( file_exists("skins/".$GLOBALS['babSkin']."/templates/".$file))
+			if( file_exists($GLOBALS['babOvmlPath'].$file))
 				$incl = "oml";
 			else
 				$incl = "entry";

@@ -1003,13 +1003,13 @@ if( isset($topics ) && $BAB_SESS_USERID != "")
 else
 	$approver = false;
 
-if( isset($addarticle) && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics))
+if( isset($addarticle) && ($approver || bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)))
 	{
 	saveArticleByFile($filename, $title, $doctag, $introtag, $topics, $lang);
 	$idx = "Articles";
 	}
 
-if( isset($addart) && $addart == "add" && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics))
+if( isset($addart) && $addart == "add" && ($approver || bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)))
 	{
 	if( saveArticle($title, $headtext, $bodytext, $topics, $lang))
 		$idx = "Articles";

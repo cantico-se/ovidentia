@@ -352,7 +352,7 @@ var $template;
 function babSection($title = "Section", $content="<br>This is a sample of content<br>")
 {
 	$this->title = $title;
-	$this->content = $content;
+	$this->content = bab_replace($content);
 	$this->hiddenz = false;
 	$this->position = 0;
 	$this->close = 0;
