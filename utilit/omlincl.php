@@ -802,7 +802,10 @@ class bab_Articles extends bab_handler
 			}
 
 			$this->count = count($this->IdEntries);
+			if( $this->count > 0 )
+			{
 			$this->res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $this->IdEntries).") order by ".$order);
+			}
 		}
 		else
 			$this->count = 0;
