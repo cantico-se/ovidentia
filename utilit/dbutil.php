@@ -7,9 +7,8 @@ var $babDBHost;
 var $babDBLogin;
 var $baDBPasswd;
 var $babDBName;
-var $dieOn;
 var $idlink;
-var $DB_DIE_ON_FAIL = false;
+var $db_die_on_fail;
 
 function db_mysql()
 	{
@@ -22,14 +21,14 @@ function db_mysql()
 	$this->babDBLogin = $babDBLogin;
 	$this->babDBPasswd= $babDBPasswd;
 	$this->babDBName = $babDBName;
-	$this->dieOn = $dieOn;
+	$this->db_die_on_fail = false;
 	}
 
 function db_print_error($text)
     {
     print("<h2>" . $text . "</h2>\n");
     print("<p><b>Database Error: " . mysql_error() . "</b></p>\n");
-	if ($this->DB_DIE_ON_FAIL)
+	if ($this->db_die_on_fail)
         {
 		echo "<p>This script cannot continue, terminating.";
 		die();
