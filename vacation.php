@@ -414,6 +414,7 @@ if( isset($addvacation) && $addvacation == "add")
 switch($idx)
 	{
 	case "confirmvac":
+		$babBody->title = bab_translate("Confirm vacation");
 		if( bab_isUserUseVacation($GLOBALS['BAB_SESS_USERID']))
 			{
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacation&idx=listvac");
@@ -426,6 +427,7 @@ switch($idx)
 		break;
 
 	case "newvac";
+		$babBody->title = bab_translate("Add new vacation");
 		if( bab_isUserUseVacation($GLOBALS['BAB_SESS_USERID']))
 			{
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacation&idx=listvac");
@@ -438,6 +440,7 @@ switch($idx)
 
 	case "listvac":
 	default:
+		$babBody->title = bab_translate("Vacations");
 		if( bab_isUserUseVacation($GLOBALS['BAB_SESS_USERID']))
 			{
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacation&idx=listvac");

@@ -780,9 +780,9 @@ switch($idx)
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 				}
 			if( $nbarch < 1)
-				$babBody->title = bab_translate("Today, there is no articles");
+				$babBody->title = bab_getCategoryTitle($topics).": ". bab_translate("Today, there are no articles");
 			else
-				$babBody->title = bab_translate("List of old articles").": ". bab_getCategoryTitle($topics);
+				$babBody->title = bab_getCategoryTitle($topics).": ".bab_translate("List of old articles");
 			}
 		break;
 
@@ -805,7 +805,7 @@ switch($idx)
 
 				}
 			if( $arr[0] < 1)
-				$babBody->title = bab_translate("Today, there is no articles");
+				$babBody->title = bab_getCategoryTitle($topics).": ".bab_translate("Today, there are no articles");
 			else
 				$babBody->title = bab_getCategoryTitle($topics);
 			}

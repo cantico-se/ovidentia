@@ -542,20 +542,24 @@ if(!isset($idx))
 switch($idx)
 	{
 	case "com":
+		$babBody->title = bab_translate("Summary");
 		newComments(0);
 		break;
 	case "art":
+		$babBody->title = bab_translate("Summary");
 		newArticles(0);
 		break;
 	case "for":
+		$babBody->title = bab_translate("Summary");
 		newThreads(0);
 		break;
 	case "fil":
+		$babBody->title = bab_translate("Summary");
 		newFiles(0);
 		break;
 	default:
 	case "view":
-		$babBody->title = "";
+		$babBody->title = bab_translate("Summary");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{

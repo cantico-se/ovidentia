@@ -1473,6 +1473,7 @@ switch($idx)
 		break;
 
 	case "disk":
+		$babBody->title = bab_translate("File manager");
 		showDiskSpace($id, $gr, $path);
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
 		if( $upload)
@@ -1486,7 +1487,7 @@ switch($idx)
 		/* no break */
 	default:
 	case "list":
-		$babBody->title = "";
+		$babBody->title = bab_translate("File manager");
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
 		if( $upload)
 			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
