@@ -147,9 +147,9 @@ function listArticles($id)
 				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='1' and id_site='".$this->siteid."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
-					$this->checked0 = "checked";
+					$this->checked1 = "checked";
 				else
-					$this->checked0 = "";
+					$this->checked1 = "";
 				$this->title = $arr['title'];
 				$this->articleid = $arr['id'];
 				$this->urltitle = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id']."');";
