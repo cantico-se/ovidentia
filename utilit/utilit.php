@@ -1705,6 +1705,7 @@ function loadSections()
 												$sec = new babSection($stitle, "");
 												}
 											$sec->setTemplate($arr2['title']);
+											$sec->htmlid = $arr2['title'];
 											$arrsections[$objectid] = $sec;
 										}
 								}
