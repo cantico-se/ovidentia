@@ -430,7 +430,7 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 		}
 	else
 		{
-		$query = "delete from articles where id = '$article'";
+		$query = "delete from comments where id = '$com'";
 		}
 	$res = $db->db_query($query);
 
