@@ -389,7 +389,7 @@ function startSearch($pat, $item, $what, $pos)
 							{
 							if( $row['id_group'] > 1 )
 								{
-								$req = "select ".BAB_DBDIR_ENTRIES_TBL.".* from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS." where ".BAB_USERS_GROUPS.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='0' and ".$likedir." order by sn asc";
+								$req = "select ".BAB_DBDIR_ENTRIES_TBL.".* from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='0' and ".$likedir." order by sn asc";
 								}
 							else
 								{

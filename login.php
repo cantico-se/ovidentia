@@ -308,13 +308,13 @@ function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $pas
 		return false;
 		}
 
-	if ( !bab_isEmailValid($fields['email']))
+	if ( !bab_isEmailValid($email))
 		{
 		$babBody->msgerror = bab_translate("Your email is not valid !!");
 		return false;
 		}
 
-	$iduser = registerUser($firstname, $middlename, $lastname, $email,$nickname, $password1, $password2, false);
+	$iduser = registerUser($firstname, $lastname, $middlename, $email,$nickname, $password1, $password2, false);
 	if( $iduser == false )
 		return false;
 

@@ -311,7 +311,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					$this->select = implode($tmp, ",");
 					if( $this->idgroup > 1 )
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS." where ".BAB_USERS_GROUPS.".id_group='".$this->idgroup."' and ".BAB_USERS_GROUPS.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".".$this->xf." like '".$this->pos."%' and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."' order by ".$this->xf." ";
+						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$this->idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".".$this->xf." like '".$this->pos."%' and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."' order by ".$this->xf." ";
 						}
 					else
 						{
@@ -701,7 +701,7 @@ function addDbContact($id, $fields)
 					$this->fvalue = $this->fields[$arr['name']];
 				else
 					$this->fvalue = "";
-				$res = $this->db->db_query("select multilignes, required, modifiable, default_value from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$this->id."' and id_field='".$arr['id']."'");
+				$res = $this->db->db_query("select multilignes, required, modifiable, default_value from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field='".$arr['id']."'");
 
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
@@ -1225,17 +1225,18 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file)
 
 	if( $idgroup > 0)
 		{
+		list($iduser) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
+
 		$replace = array( " " => "", "-" => "");
 
 		$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
-		$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."'";	
+		$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$iduser."'";	
 		$res = $db->db_query($query);
 		if( $db->db_num_rows($res) > 0)
 			{
 			$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
 			return false;
 			}
-		list($iduser) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
 
 		$db->db_query("update ".BAB_USERS_TBL." set firstname='".addslashes($fields['givenname'])."', lastname='".addslashes($fields['sn'])."', email='".addslashes($fields['email'])."', hashname='".$hashname."' where id='".$iduser."'");
 		}
@@ -1285,7 +1286,10 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return false;
 			}
-		$req .= $arr['name'].",";
+		if( $idgroup > 0 )
+			$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
+		else
+			$req .= $arr['name'].",";
 		}
 
 	if( $idgroup > 0 )
@@ -1315,9 +1319,19 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		$iduser = registerUser($fields['givenname'], $fields['sn'], $fields['mn'], $fields['email'], $nickname, $password1, $password2, true);
 		if( $iduser == false )
 			return false;
-		if( $id > 1 )
+		if( $idgroup > 1 )
 			{
-			$db->db_query("insert into ".BAB_USERS_GROUPS." (id_object, id_group) values ('".$iduser."','".$idgroup."')");
+			$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$iduser."','".$idgroup."')");
+			}
+		
+		if( $notifyuser == "Y" )
+			{
+			if( bab_isMagicQuotesGpcOn())
+				{
+				$firstname = addslashes($fields['givenname']);
+				$lastname = addslashes($fields['sn']);
+				}
+			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $fields['email'], $nickname, $sendpwd == "Y"? $password1: "" );
 			}
 		}
 
@@ -1331,9 +1345,23 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			}
 		}
 	if( !empty($cphoto))
-		$req .= "photo_data,";
+		{
+		if( $idgroup > 0 )
+			{
+			$req .= " photo_data='".$cphoto."'";
+			}
+		else
+			$req .= "photo_data,";
+		}
 
-	if( !empty($req))
+	if( $idgroup > 0 && !empty($req))
+		{
+		list($iddbu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$iduser."'"));
+		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . substr($req, 0, strlen($req) -1);
+		$req .= " where id='".$idu."'";
+		$db->db_query($req);
+		}
+	else if( !empty($req))
 		{
 		$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (".$req."id_directory, id_user) values (";
 		$db->db_data_seek($res, 0);
@@ -1407,7 +1435,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 
 	if( $idgroup > 1 )
 	{
-	$res2 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS." where ".BAB_USERS_GROUPS.".id_group='".$idgroup."' and ".BAB_USERS_GROUPS.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='0'");
+	$res2 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='0'");
 	}
 	else
 		$res2 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id_directory ='".($idgroup != 0? 0: $id)."'");

@@ -1294,7 +1294,7 @@ $res = $db->db_query($req);
 /* id_directory = '0' means entry is owned by Ovidentia directory */
 while($arr = $db->db_fetch_array($res))
 	{
-	$req = "insert into ".BAB_DBDIR_ENTRIES." (sn, givenname, email, id_directory, id_user) values ('".addslashes($arr['lastname'])."', '".addslashes($arr['firstname'])."', '".addslashes($arr['email'])."', '0', '".$arr['id']."')";
+	$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (sn, givenname, email, id_directory, id_user) values ('".addslashes($arr['lastname'])."', '".addslashes($arr['firstname'])."', '".addslashes($arr['email'])."', '0', '".$arr['id']."')";
 	$db->db_query($req);
 	}
 return $ret;
