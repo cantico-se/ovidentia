@@ -320,6 +320,7 @@ CREATE TABLE bab_topics (
    ordering smallint(6) unsigned NOT NULL default '0',
    idsaart int(11) unsigned NOT NULL default '0',
    idsacom int(11) unsigned NOT NULL default '0',
+   notify enum('N','Y') NOT NULL default 'N',
    PRIMARY KEY (id)
 );
 
