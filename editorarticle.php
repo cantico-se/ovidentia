@@ -217,6 +217,11 @@ function browse($topics,$cat,$cb)
 	echo bab_printTemplate($temp,"editorarticle.html", "editorarticle");
 	}
 
+if(!isset($idx))
+	{
+	$idx = 'browse';
+	}
+
 if(!isset($cat))
 	{
 	$cat = 0;
