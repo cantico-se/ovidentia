@@ -159,9 +159,9 @@ CREATE TABLE bab_groups (
    PRIMARY KEY (id)
 );
 
-INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'N');
-INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N');
-INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'N');
+INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'N', 'Y');
+INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N', 'Y');
+INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'N', 'Y');
 
 # --------------------------------------------------------
 #
