@@ -634,6 +634,7 @@ CREATE TABLE bab_mail_domains (
 	access VARCHAR (10) not null,
 	bgroup enum('N','Y') DEFAULT 'N' NOT NULL,
 	owner INT (11) UNSIGNED not null,	
+    id_dgowner int(11) unsigned NOT NULL default '0',
 	PRIMARY KEY (id),
     KEY owner (owner)
 );

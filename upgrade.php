@@ -2033,6 +2033,22 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE ".BAB_MAIL_DOMAINS_TBL." ADD id_dgowner INT( 11 ) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_MAIL_DOMAINS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_MAIL_DOMAINS_TBL." ADD INDEX ( id_dgowner )" ;
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_MAIL_DOMAINS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 $req = "ALTER TABLE ".BAB_USERS_LOG_TBL." ADD id_dggroup INT( 11 ) UNSIGNED NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
