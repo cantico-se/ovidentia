@@ -550,7 +550,7 @@ function unload()
 
 	}
 
-function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays, $useweeknb)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
@@ -575,12 +575,12 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$req = "update ".BAB_CAL_USER_OPTIONS_TBL." set startday='".$startday."', allday='".$allday."', start_time='".$starttime."', end_time='".$endtime."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', work_days='".$workdays."', week_numbers='".$useweeknb."' where id_user='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_CAL_USER_OPTIONS_TBL." set startday='".$startday."', allday='".$allday."', start_time='".$starttime."', end_time='".$endtime."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', work_days='".$workdays."', week_numbers='Y' where id_user='".$BAB_SESS_USERID."'";
 		}
 	else
 		{
 		$req = "insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers) values ";
-		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$starttime."', '".$endtime."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$workdays."', '".$useweeknb."')";
+		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$starttime."', '".$endtime."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$workdays."', 'Y')";
 		}
 	$res = $db->db_query($req);
 	}
@@ -601,7 +601,7 @@ if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERI
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	if( !isset($workdays)) { $workdays = array();}
-	updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays, $useweeknb);
+	updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays);
 	}
 
 switch($idx)

@@ -177,7 +177,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 				$this->category = $this->mcals->getCategoryName($arr['id_cat']);
 				}
 
-			$this->bgcolor = empty($arr['color'])? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color'];
+			$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? (empty($arr['color']) ? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'fff';
 			$this->idevent = $arr['id'];
 			$time = bab_mktime($arr['start_date']);
 			$this->starttime = bab_time($time);
@@ -198,8 +198,8 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->nbowners = $arr['nbowners'];
 			if( !$this->allow_viewtitle  )
 				{
-				$this->title = "xxxxxxxxxx";
-				$this->titleten = "xxxxxxxxxx";
+				$this->title = bab_translate("Private");
+				$this->titleten = $this->title;
 				$this->description = "";
 				}
 			else

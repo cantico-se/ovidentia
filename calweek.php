@@ -261,14 +261,8 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->idcal = $arr['id_cal'];
 						$this->status = $arr['status'];
 
-						if( $arr['id_cat'] == 0 )
-							{
-							$this->bgcolor = $arr['color'];
-							}
-						else
-							{
-							$this->bgcolor = $this->mcals->getCategoryColor($arr['id_cat']);
-							}
+						$this->bgcolor = $babBody->icalendars->usebgcolor == 'Y' ? (empty($arr['color']) ? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color']) : 'fff';
+
 						$this->idevent = $arr['id'];
 						$time = bab_mktime($arr['start_date']);
 						$this->starttime = bab_time($time);
@@ -288,8 +282,8 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->bfree = $arr['bfree'];
 						if( !$this->allow_viewtitle  )
 							{
-							$this->title = "xxxxxxxxxx";
-							$this->titleten = "xxxxxxxxxx";
+							$this->title = bab_translate("Private");
+							$this->titleten = $this->title;
 							$this->description = "";
 							}
 						else
