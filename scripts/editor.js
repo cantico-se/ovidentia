@@ -1035,7 +1035,7 @@
 
 			var editor = editorMap[id];
 			editor.selectionRange = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
-			eval(EDITOR_FORE_COLOR_CHOOSER_PREFIX + id).Show(eval(EDITOR_FOREGROUND_BUTTON_PREFIX + id).offsetLeft + 350, eval(EDITOR_BOTTOM_TOOLBAR_PREFIX + id).offsetTop + eval(EDITOR_BOTTOM_TOOLBAR_PREFIX + id).offsetHeight + 130);
+			eval(EDITOR_FORE_COLOR_CHOOSER_PREFIX + id).Show(eval(EDITOR_FOREGROUND_BUTTON_PREFIX + id).style.left, eval(EDITOR_FOREGROUND_BUTTON_PREFIX + id).style.top);
 		}
 	}
 
@@ -1079,7 +1079,7 @@
 
 			var editor = editorMap[id];
 			editor.selectionRange = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
-			eval(EDITOR_BACK_COLOR_CHOOSER_PREFIX + id).Show(eval(EDITOR_BACKGROUND_BUTTON_PREFIX + id).offsetLeft + 350, eval(EDITOR_BOTTOM_TOOLBAR_PREFIX + id).offsetTop + eval(EDITOR_BOTTOM_TOOLBAR_PREFIX + id).offsetHeight + 130);
+			eval(EDITOR_BACK_COLOR_CHOOSER_PREFIX + id).Show(eval(EDITOR_BACKGROUND_BUTTON_PREFIX + id).style.left, eval(EDITOR_BACKGROUND_BUTTON_PREFIX + id).style.top);
 		}
 	}
 
