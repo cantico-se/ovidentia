@@ -205,7 +205,7 @@ CREATE TABLE sections (
    description varchar(200),
    content text,
    script enum('N','Y') DEFAULT 'N' NOT NULL,
-   jcript enum('N','Y') DEFAULT 'N' NOT NULL,
+   jscript enum('N','Y') DEFAULT 'N' NOT NULL,
    PRIMARY KEY (id)
 );
 
