@@ -73,7 +73,7 @@ function print_groups_access($topics, $article, $popup=0)
 			$this->popup = $popup;
 
 			$this->bgashow = false;
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$topics."' and id_object > '2'");
+			$this->res = $babDB->db_query("select * from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$topics."' and id_group > '2'");
 			if( $this->res )
 				{
 				$this->bgashow = true;
@@ -1179,7 +1179,11 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics, $lang
 	notifyApprovers($id, $topics);
 	list($accrestriction) = $db->db_fetch_row($db->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 	if( $accrestriction == 'Y' )
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$id);
+		{
+		$arr = $db->db_fetch_array($db->db_query("select count(id) as total from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$topics."' and id_group > '2'"));
+		if( $arr['total'] > 1 )
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$id);
+		}
 	}
 
 
@@ -1223,7 +1227,11 @@ function saveArticle($title, $headtext, $bodytext, $topics, $lang='')
 	notifyApprovers($id, $topics);
 	list($accrestriction) = $db->db_fetch_row($db->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 	if( $accrestriction == 'Y' )
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$id);
+		{
+		$arr = $db->db_fetch_array($db->db_query("select count(id) as total from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$topics."' and id_group > '2'"));
+		if( $arr['total'] > 1 )
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$id);
+		}
 	return true;
 	}
 
