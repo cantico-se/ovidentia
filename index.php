@@ -77,6 +77,7 @@ function printBody()
 		var $nbsectright;
 		var $content;
 		var $message;
+		var $version;
 
 		function tpl()
 			{
@@ -86,6 +87,7 @@ function printBody()
 			$this->banner = 0;
 			$this->logoLB = 0;
 			$this->logoRB = 0;
+			$this->version = $GLOBALS[babVersion];
 			if( isset($babLogoLT) && !empty($babLogoLT))
 				$this->logoLT = 1;
 			if( isset($babLogoRT) && !empty($babLogoRT))
