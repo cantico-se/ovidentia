@@ -4,7 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-$CurrentVersion = "3.1";
+include $babInstallPath."version.inc";
 
 function getVersion()
 {
