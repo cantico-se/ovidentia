@@ -372,6 +372,17 @@ function deletePost($post)
 	$db = new db_mysql();
 	$req = "delete from posts where id = '$post'";
 	$res = $db->db_query($req);
+
+	/* if it's the only post in the thread, delete the thread also */
+	$req = "select * from threads where post = '$post' and lastpost='$post'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		$req = "delete from threads where id = '".$arr[id]."'";
+		$res = $db->db_query($req);
+		}
+
 	if( $newpost > 0)
 		$newpost -= 1;
 	}
