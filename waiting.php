@@ -22,9 +22,16 @@ function listArticles($topics, $new)
 		var $moreurl;
 		var $morename;
 		var $topics;
+		var $modify;
+		var $confirm;
+		var $modifyurl;
+		var $confirmurl;
+
 
 		function temp($topics, $new)
 			{
+			$this->modify = bab_translate("Modify");
+			$this->confirm = bab_translate("Confirm");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
@@ -40,9 +47,15 @@ function listArticles($topics, $new)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['head']);
+				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
+				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 				if( $this->new > 0)
+					{
 					$this->moreurl .= "&new=".$this->new;
+					$this->modifyurl .= "&new=".$this->new;
+					$this->confirmurl .= "&new=".$this->new;
+					}
 
 				$this->morename = bab_translate("Read more")."...";
 				$i++;
