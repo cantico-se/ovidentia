@@ -312,6 +312,7 @@ if( isset($adduser) && $babBody->isSuperAdmin )
 		switch ($babBody->nameorder[0]){
 			case "L":
 				$pos = substr($lastname,0,1);
+			break;
 			case "F":
 			default:
 				$pos = substr($firstname,0,1);
