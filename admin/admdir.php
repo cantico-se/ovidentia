@@ -915,9 +915,10 @@ function addDbDirectory($name, $description, $fields, $rw, $rq, $ml, $dz)
 			$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, disabled, ordering, list_ordering) VALUES ('" .$id. "', '" . $arr['id']. "', '0', '".$modifiable."', '".$required."', '".$multilignes."', '".$disabled."', '".$ordering."', '".($k++)."')";
 			$db->db_query($req);
 			$fxid = $db->db_insert_id();
-			if( !empty($fields[$arr['name']]))
+			$fieldval = trim($fields[$arr['name']]); 
+			if( !empty($fieldval))
 				{
-				$db->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$fxid."', '".$fields[$arr['name']]."')");		
+				$db->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$fxid."', '".$fieldval."')");		
 				$fvid = $db->db_insert_id();			
 				$db->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$fvid."' where id='".$fxid."'");
 				}
@@ -1147,6 +1148,7 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvy
 			}
 		else
 			{
+			$value = trim($value);
 			if (!bab_isMagicQuotesGpcOn())
 				$value = addslashes($value);
 			$babDB->db_query("INSERT INTO ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('".$fxid."','".$value."')");
@@ -1231,7 +1233,7 @@ function addDbField($id, $fieldn, $fieldv, &$message)
 		$fxid = $babDB->db_insert_id();
 		if( !empty($fieldv))
 			{
-			$babDB->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$fxid."', '".$fieldv."')");		
+			$babDB->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$fxid."', '".trim($fieldv)."')");		
 			$fvid = $babDB->db_insert_id();			
 			$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$fvid."' where id='".$fxid."'");
 			}
