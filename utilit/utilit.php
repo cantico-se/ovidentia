@@ -168,7 +168,7 @@ function bab_translate($str, $folder = "", $lang="")
 	if( empty($lang) || empty($str))
 		return $str;
 
-	if( empty($folder))
+	if( !empty($folder))
 		$tag = $folder."/".$lang;
 	else
 		$tag = "bab/".$lang;
