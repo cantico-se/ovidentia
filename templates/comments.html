@@ -91,23 +91,24 @@
 <!--#begin commentslist -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
   <tr> 
-    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+    <td class="BabCommentListCadreFontBackground" align="center" valign="middle"> 
       <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
         <!--#in getnext -->
-<!--#if alternate "== 1" --><tr> 
-          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentLink" href="{ subjecturl }">{ 
+        <!--#if alternate "== 1" -->
+        <tr> 
+          <td class="BabCommentListBodyFontBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentsListLink" href="{ subjecturl }">{ 
             subjectname }</a></td>
-          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+          <td class="BabCommentListBodyFontBackground" width="35%" align="left" valign="middle">{ 
             arr[name] } </td>
-          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+          <td class="BabCommentListDateFontBackground" width="35%" align="right" valign="middle">{ 
             arr[date] }</td>
         </tr><!--#else alternate -->
         <tr> 
-          <td class="BabLoginMenuBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentLink" href="{ subjecturl }">{ 
+          <td class="BabCommentListBodyFontBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentsListLink" href="{ subjecturl }">{ 
             subjectname }</a></td>
-          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+          <td class="BabCommentListBodyFontBackground" width="35%" align="left" valign="middle">{ 
             arr[name] } </td>
-          <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">{ 
+          <td class="BabCommentListDateFontBackground" width="35%" align="right" valign="middle">{ 
             arr[date] }</td>
         </tr>
      <!--#endif alternate -->
@@ -122,25 +123,25 @@
   <tr> 
     <td class="BabCommentCadreFontBackground" align="center" valign="middle"> 
       <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-        <tr> 
-          <td class="BabCommentTitleFontBackground" colspan="2" align="left" nowrap valign="middle"><font face="courier">{ 
-            arr[date] }</font></td>
+        <tr align="right"> 
+          <td class="BabCommentTitleFontBackground" colspan="2" nowrap valign="middle">{ 
+            arr[date] }</td>
         </tr>
         <tr> 
-          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle"><font face="courier">{ 
-            by }:</font></td>
-          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle"><font face="courier">{ 
-            arr[name] } </font></td>
+          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ 
+            by }:</td>
+          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle">{ 
+            arr[name] } </td>
         </tr>
         <tr> 
-          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle"><font face="courier">{ 
-            subject }:</font></td>
-          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle"><font face="courier">{ 
-            arr[subject] } </font></td>
+          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ 
+            subject }:</td>
+          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle">{ 
+            arr[subject] } </td>
         </tr>
         <tr> 
-          <td class="BabCommentFontBackground" align="left" nowrap valign="middle" height="26" colspan="2"><font face="courier">{ 
-            arr[message] } </font></td>
+          <td class="BabCommentFontBackground" align="left" nowrap valign="middle" height="26" colspan="2">{ 
+            arr[message] } </td>
         </tr>
       </table>
     </td>
