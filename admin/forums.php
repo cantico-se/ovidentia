@@ -77,9 +77,9 @@ function listForums()
 			$this->moderator = babTranslate("Moderator Email");
 			$this->description = babTranslate("Description");
 			$this->access = babTranslate("Access");
-			$this->groups = babTranslate("Groups");
+			$this->groups = babTranslate("View");
 			$this->reply = babTranslate("Reply");
-			$this->posts = babTranslate("Posts");
+			$this->posts = babTranslate("Post");
 			$this->db = new db_mysql();
 			$req = "select * from forums order by name asc";
 			$this->res = $this->db->db_query($req);
