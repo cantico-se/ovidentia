@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."utilit/afincl.php";
-//define("BAB_DEBUG_FA", 1);
+define("BAB_DEBUG_FA", 1);
 
 function getApprovalSchemaName($id)
 {
@@ -420,9 +420,15 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $type)
 	}
 
 	if( count($result) > 0 )
+		{
 		$ret = implode(",", $result);
+		}
 	else
+		{
 		$ret = "";
+		$babBody->msgerror = bab_translate("ERROR: You must provide at least one approver !!");
+		return $ret;
+		}
 
 	if( empty($schname))
 		{
@@ -430,11 +436,6 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $type)
 		return $ret;
 		}
 
-	if( empty($ret))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide at least one approver !!");
-		return $ret;
-		}
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -520,6 +521,7 @@ if( isset($add))
 	{
 	if( isset($addb))
 		{
+		if( !isset($order)) { $order = 'N';} 
 		$formula = saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $type);
 		if( $formula != "")
 			switch($add)
