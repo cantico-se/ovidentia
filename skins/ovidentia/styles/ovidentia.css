@@ -3,6 +3,9 @@ body {  margin: 0px 0px; background: #FFFFFF;font-family: arial;font-size:10px}
 /* input */
 INPUT { font-family: Verdana;font-size:10px; color:#000000;background-color:#FFFFFF;border-width:1;border-color:#000000;font-weight:bold }
 
+/* form */
+FORM {margin-top: 0px; margin-bottom: 0px; padding: 0px;}
+
 /* general links */
 a:link {color: #3366FF }
 a:hover {color: red }
