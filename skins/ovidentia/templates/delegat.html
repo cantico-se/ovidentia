@@ -15,7 +15,7 @@
 <td class="BabSiteAdminFontBackground">&nbsp;{ delegval }</td>
 <td class="BabSiteAdminFontBackground">
 	<!--#in getnextgroup -->
-	 { grpmval } ,&nbsp;
+	 { grpmval } <!--#if end --><!--#else end -->,&nbsp;<!--#endif end -->
 	<!--#endin getnextgroup -->
 </td>
 <td class="BabSiteAdminFontBackground" align="right">&nbsp;<a href="{ urlmem }"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ memberstxt }" border="0" align="middle"></a></td>
@@ -69,6 +69,20 @@ op.close();
 <input type="text" name="description" size="45" maxlength="255" value="{ grpdesc }">
 </td>
 </tr>
+<tr>
+	<td class="BabLoginMenuBackground" align="right">&nbsp;{ functions }:</td>
+	<td class="BabLoginMenuBackground">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><input type="checkbox" name="delegitems[]" value="{ delegitem }" { checked }></td>
+<td class="BabLoginMenuBackground" valign="middle">{ delegitemdesc }</td>
+</tr>
+<!--#endin getnext -->
+<tr>
+	<td class="BabLoginMenuBackground">&nbsp;</td>
+	<td class="BabLoginMenuBackground">&nbsp;</td>
+</tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="top">{ grp_members }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
@@ -79,12 +93,6 @@ op.close();
 	</select>
 </td>
 </tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><input type="checkbox" name="delegitems[]" value="{ delegitem }" { checked }></td>
-<td class="BabLoginMenuBackground" valign="middle">{ delegitemdesc }</td>
-</tr>
-<!--#endin getnext -->
 <tr> 
 <td class="BabLoginMenuBackground">&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
