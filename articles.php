@@ -245,7 +245,7 @@ function modifyArticle($topics, $article)
 				$this->bodyval = htmlentities($this->arr['body']);
 				$this->titleval = $this->arr['title'];
 				}
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
