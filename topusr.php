@@ -110,6 +110,7 @@ function listTopicCategory($cat)
 				if( $this->arrid[$i][1] == 1 )
 					{
 					$this->childname = bab_getTopicCategoryTitle($this->arrid[$i][0]);
+					$this->childdescription = bab_getTopicCategoryDescription($this->arrid[$i][0]);
 					$this->childurl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0];
 					$this->istopcat = true;
 					}

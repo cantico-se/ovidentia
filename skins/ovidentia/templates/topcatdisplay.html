@@ -24,19 +24,25 @@
 </TABLE>
 <!--#endif parentscount -->
 
-<table width="1%" border="0" align="left" cellpadding="0" cellspacing="0">
+<table border="0" align="left" cellpadding="0" cellspacing="0">
   <tr>
     <td>
       <!--#if count -->
-      <table  border="0" width="1%" cellpadding="1" cellspacing="0" align="center">
+      <table  border="0" cellpadding="1" cellspacing="0" align="center">
         <!--#in getnext -->
         <!--#if istopcat -->
         <tr>
-          <td valign="top" nowrap>{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
+          <td valign="top" nowrap>{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" border="0"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
+        </tr>
+		<tr>
+          <td valign="top" class="BabCategChildNavigation">{ childdescription }</td>
         </tr>
         <!--#else istopcat -->
         <tr>
-          <td valign="top" nowrap>{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
+          <td valign="top" nowrap>{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" border="0"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
+        </tr>
+		<tr>
+          <td valign="top" class="BabCategChildNavigation">{ childdescription }</td>
         </tr>
         <!--#endif istopcat -->
         <!--#endin getnext -->
