@@ -1746,6 +1746,7 @@ function loadSections()
 										$sec = new babSection($arr2['title'], "");
 										}
 									$sec->setTemplate($arr2['template']);
+									$sec->htmlid = 'customsection';
 									$arrsections[$objectid] = $sec;
 								}
 						}
