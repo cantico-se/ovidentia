@@ -73,6 +73,7 @@ function listUsers($pos, $grp)
 			$this->t_online = bab_translate("Online");
 			$this->t_unconfirmed = bab_translate("Unconfirmed");
 			$this->t_disabled = bab_translate("Disabled");
+			$this->t_disabled = bab_translate("Disabled");
 
 			$this->db = $GLOBALS['babDB'];
 			$this->group = bab_getGroupName($grp);
@@ -89,14 +90,16 @@ function listUsers($pos, $grp)
 					$this->namesearch2 = "lastname";
 				break; }
 
+			$req = "select u.*, dbt.id as idu from ".BAB_USERS_TBL." u left join ".BAB_DBDIR_ENTRIES_TBL." dbt on u.id=dbt.id_user and dbt.id_directory='0'";
+
 			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
 				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
+					$req .= " where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				else
-					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->pos."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
+					$req .= ", ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->pos."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
@@ -105,9 +108,9 @@ function listUsers($pos, $grp)
 				$this->pos = $pos;
 				$this->ord = "";
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+					$req .= " where ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 				else
-					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
+					$req .= ", ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
@@ -126,6 +129,8 @@ function listUsers($pos, $grp)
 				$this->bmodname = false;
 
 			$this->userst = '';
+			list($this->iddir) = $this->db->db_fetch_row($this->db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+
 			}
 
 		function getnext()
@@ -164,6 +169,7 @@ function listUsers($pos, $grp)
 					$this->checked = "";
 					}
 
+				$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->iddir."&idu=".$this->arr['idu']."&pos=&xf=";
 				$i++;
 				return true;
 				}
