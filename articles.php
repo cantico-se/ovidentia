@@ -537,6 +537,19 @@ function readMore($topics, $article)
 				{
 				$this->bsubmit = false;
 				}
+
+			$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
+			$this->countf = $this->db->db_num_rows($this->resf);
+
+			if( $this->countf > 0 )
+				{
+				$this->attachmentxt = bab_translate("Associated documents");
+				$this->battachments = true;
+				}
+			else
+				{
+				$this->battachments = false;
+				}
 			}
 
 		function getnext(&$skip)
@@ -624,6 +637,27 @@ function readMore($topics, $article)
 				return false;
 				}
 			}
+
+		function getnextdoc()
+			{
+			global $arrtop;
+			static $i = 0;
+			if( $i < $this->countf)
+				{
+				$arr = $this->db->db_fetch_array($this->resf);
+				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->topics."&idf=".$arr['id'];
+				$this->docname = $arr['name'];
+				$this->docdesc = $arr['description'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
 		}
 	
 	if( $arrtop['display_tmpl'] != '' )
