@@ -1165,7 +1165,7 @@ function bab_replace_var(&$txt,$var,$new)
 function bab_replace_make_link($url,$text,$popup = 0,$url_popup = false)
 	{
 	$url = ($popup == 1 || $popup == true) && $url_popup != false ? $url_popup : $url;
-	if ($popup == 1 || $popup == true)
+	if ($popup == 1 || $popup === true)
 		{
 		return '<a href="javascript:bab_popup(\''.$url.'\')">'.$text.'</a>';
 		}
