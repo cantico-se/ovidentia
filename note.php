@@ -39,7 +39,6 @@ function notesModify($id)
 		var $db;
 		var $arr = array();
 		var $res;
-		var $msie;
 
 		function temp($id)
 			{

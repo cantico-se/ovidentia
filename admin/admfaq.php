@@ -60,7 +60,6 @@ function modifyCategory($id)
 		var $db;
 		var $arr = array();
 		var $res;
-		var $msie;
 		var $delete;
 		var $langLabel;
 		var $langValue;

@@ -30,7 +30,6 @@ function notesCreate()
 		{
 		var $notes;
 		var $create;
-		var $msie;
 
 		function temp()
 			{

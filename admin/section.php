@@ -65,7 +65,6 @@ function sectionModify($id)
 		var $arr = array();
 		var $db;
 		var $res;
-		var $msie;
 		var $delete;
 		var $langLabel;
 		var $langValue;

@@ -49,7 +49,6 @@ function addCategory()
 		var $description;
 		var $Manager;
 		var $add;
-		var $msie;
 		var $langLabel;
 		var $langValue;
 		var $langSelected;

@@ -419,7 +419,6 @@ function sectionCreate($jscript)
 		var $left;
 		var $right;
 		var $script;
-		var $msie;
 		var $jscript;
 		var $langLabel;
 		var $langValue;
@@ -453,7 +452,7 @@ function sectionCreate($jscript)
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->jscript = $jscript;
-			if(( $jscript == 0 && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
+			if(( $jscript == 0)
 				{
 				$this->editor = bab_editor('', 'content', 'secmod');
 				}

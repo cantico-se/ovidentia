@@ -73,31 +73,7 @@ valign="middle">{ langLabel } :</td>
 </table>
 <br>
 </form>
-<!--#if msie "!= 1" -->
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
 
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-
-savef(document.catcreate.faqdesc);
-//-->
-</script>
-<!--#endif msie -->
 <!--#end categorycreate -->
 <br>
 <br>

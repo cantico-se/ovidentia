@@ -171,31 +171,7 @@
     </tr>
   </table>
 </form>
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
 
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-<!--#if msie "!= 1" -->
-savef(document.catcr.topdesc);
-<!--#endif msie -->
-//-->
-</script>
-<br>
 <!--#end categorycreate -->
 <br><br><br><br><br>
 
