@@ -716,6 +716,10 @@ function showDbFieldValuesModify($id, $idfieldx)
 			$this->yestxt = bab_translate("Yes");
 			$this->notxt = bab_translate("No");
 			$this->multivaluestxt = bab_translate("Use a listbox");
+			$this->t_fields_values = bab_translate("Values");
+			$this->t_value  = bab_translate("Value");
+			$this->t_delvalue = bab_translate("Delete value");
+			$this->js_error = bab_translate("You must enter two or more values");
 			$this->id = $id;
 			$this->idfield = $idfieldx;
 			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$idfieldx."' order by id asc");
@@ -723,24 +727,23 @@ function showDbFieldValuesModify($id, $idfieldx)
 			$this->fvalnum = 1;
 			$rr = $babDB->db_fetch_array($babDB->db_query("select id_field, default_value, multi_values from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$idfieldx."'"));
 			$this->fvdefid = $rr['default_value'];
-			if( $this->count > 0 && $this->count < 2 )
+
+			if( $rr['multi_values'] == 'Y' )
 				{
-				$this->bshowmultivalue = true;
-				if( $rr['multi_values'] == 'Y' )
-					{
-					$this->yesselected = 'selected';
-					$this->noselected = '';
-					}
-				else
-					{
-					$this->yesselected = '';
-					$this->noselected = 'selected';
-					}
+				$this->yesselected = 'selected';
+				$this->noselected = '';
+				$this->value = '';
 				}
 			else
 				{
-				$this->bshowmultivalue = false;
+				$this->yesselected = '';
+				$this->noselected = 'selected';
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->value = htmlentities($arr['field_value']);
+				if ($this->count > 0)
+					$babDB->db_data_seek($this->res, 0);
 				}
+
 
 			if( $rr['id_field'] > BAB_DBDIR_MAX_COMMON_FIELDS )
 				{
@@ -762,11 +765,9 @@ function showDbFieldValuesModify($id, $idfieldx)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->fvid = $arr['id'];
 				$this->fval = htmlentities($arr['field_value']);
-				$this->fvalnum = $i+1;
 				$this->fvdefselected = '';
-				if( $this->fvid == $this->fvdefid )
+				if( $arr['id'] == $this->fvdefid )
 					{
 					$this->fvdefselected = 'selected';
 					}
@@ -776,10 +777,6 @@ function showDbFieldValuesModify($id, $idfieldx)
 			else
 				{
 				$i = 0;
-				if( $this->count > 0 )
-					{
-					$this->fvalnum++;
-					}
 				if( $this->count > 0 )
 					{
 					$babDB->db_data_seek($this->res, 0);
@@ -1102,7 +1099,7 @@ function deleteFieldsExtra($id, $fxid)
 	}
 }
 
-function updateFieldsExtraValues($id, $fxid, $fields_values, $fields_ids, $fvdef,$mvyn)
+function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvyn)
 {
 	global $babDB;
 	$addslashes = false;
@@ -1131,66 +1128,54 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fields_ids, $fvdef
 		}
 	}
 
-
-	$delids = array();
-	for( $i = 0; $i < count($fields_ids); $i++ )
-	{
-		if( $fields_ids[$i] == 0 && $fields_values[$i] != '' )
+	$existing = array();
+	$res = $babDB->db_query("SELECT * FROM ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id_fieldextra = '".$fxid."'");
+	while ($arr = $babDB->db_fetch_array($res))
 		{
-		if( $addslashes )
-			{
-			$fields_values[$i] = addslashes($fields_values[$i]);
-			}
-		$babDB->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('" .$fxid."', '".$fields_values[$i]."')");
+		$existing[$arr['field_value']] = $arr['id'];
 		}
-		elseif( $fields_ids[$i] != 0 )
+	
+	function fieldvalue(&$existing,$value)
 		{
-			if( $fields_values[$i] != '' )
+		global $babDB,$fxid,$addslashes;
+
+		if (isset($existing[$value]))
 			{
-			if( $addslashes )
-				{
-				$fields_values[$i] = addslashes($fields_values[$i]);
-				}
-			$babDB->db_query("update ".BAB_DBDIR_FIELDSVALUES_TBL." set field_value='".$fields_values[$i]."' where id='".$fields_ids[$i]."'");
+			$id = $existing[$value];
+			unset($existing[$value]);
+			return $id;
 			}
-			else
+		else
 			{
-			$babDB->db_query("delete from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$fields_ids[$i]."'");
-			$delids[] = $fields_ids[$i];
+			if (!bab_isMagicQuotesGpcOn())
+				$value = addslashes($value);
+			$babDB->db_query("INSERT INTO ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) VALUES ('".$fxid."','".$value."')");
+			return $babDB->db_insert_id();
 			}
 		}
-	}
 
-	if( !empty($fvdef) )
-	{
-		if( count($delids) > 0  && in_array($rr['default_value'], $delids))
+	$default_value = 0;
+
+	if ($mvyn == 'Y')
 		{
-			$fvdef = '0';
+		foreach($fields_values as $value)
+			{
+			$tmp = fieldvalue($existing,$value);
+			if ($value == $fvdef)
+				$default_value = $tmp;
+			}
 		}
-	}
+	else
+		{
+		$default_value = fieldvalue($existing,$value);
+		}
 
-	$rr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$fxid."'"));
-	switch($rr['total'])
-	{
-		case 0:
-			$multivalue = 'N';
-			break;
-		case 1:
-			if( $mvyn == 'Y' || $mvyn == 'N' )
-				{
-				$multivalue = $mvyn;
-				}
-			else
-				{
-				$multivalue = 'N';
-				}	
-			break;
-		default:
-			$multivalue = 'Y';
-			break;
-	}
+	$babDB->db_query("UPDATE ".BAB_DBDIR_FIELDSEXTRA_TBL." SET  multi_values = '".$mvyn."', default_value='".$default_value."' WHERE id='".$fxid."'");
 
-	$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$fvdef."', multi_values='".$multivalue."' where id='".$fxid."'");
+	foreach($existing as $id)
+		{
+		$babDB->db_query("DELETE FROM ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id='".$id."'");
+		}
 }
 
 
@@ -1335,7 +1320,9 @@ if( isset($modify))
 					}
 				else
 					{
-					updateFieldsExtraValues($id, $fxid, $fields_values, $fields_ids, $fvdef,$mvyn);
+					$fields_values = isset($_POST['fields_values']) ? $_POST['fields_values'] : array();
+
+					updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef, $value, $mvyn);
 					}
 				if( isset($adfsav) || isset($adfdel))
 					{

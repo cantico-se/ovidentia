@@ -531,72 +531,167 @@ function selectAll(list)
 <br>
 <!--#end dbdisplay -->
 
+
+
 <!--#begin dbfieldvalues -->
-<form name="addfval" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="admdir">
-<input type="hidden" name="idx" value="addval">
-<input type="hidden" name="id" value="{ id }">
-<input type="hidden" name="fxid" value="{ idfield }">
-<input type="hidden" name="modify" value="dbfval">
-<!--#if bdelete -->
-<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
-<tr><td align="center" ><input type="text" name="fieldname" size="45" value="{ fieldval }"></td></tr></table>
-<br />
-<!--#endif bdelete -->
-<table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<script type="text/javascript">
+<!--
+function remove_from_select()
+	{
+	var f = document.forms['addfval'];
+	var sel = f.elements["fields_values[]"];
+	var def = f.elements["fvdef"];
+	var srclen = sel.options.length;
+	for(i = 0; i < srclen; i++)
+		{
+		if (sel.options[i].selected)
+			{
+			sel.options[i] = null;
+			def.options[i+1] = null;
+			}
+		}
+	}
+	
+function add_to_select()
+	{
+	var f = document.forms['addfval'];
+	if (f.value_to_add.value != '')
+		{
+		var sel = f.elements["fields_values[]"];
+		var def = f.elements["fvdef"];
+		var srclen = sel.options.length;
+		var opt = new Option(f.value_to_add.value);
+		var opt2 = new Option(f.value_to_add.value);
+		sel.options[srclen] = opt;
+		def.options[srclen+1] = opt2;
+		f.value_to_add.value = ''
+		}
+	}
+
+function mvyn_onchange()
+	{
+	var f = document.forms['addfval'];
+	if (f.mvyn.value == 'Y')
+		{
+		document.getElementById('addfval_simple').style.display = 'none';
+		document.getElementById('addfval_multiple').style.display = '';
+		}
+	else
+		{
+		document.getElementById('addfval_simple').style.display = '';
+		document.getElementById('addfval_multiple').style.display = 'none';
+		}
+	}
+
+function submitCtr()
+	{
+	var f = document.forms['addfval'];
+	
+	var list = f.elements["fields_values[]"];
+	if ( list.options.length < 2 && f.mvyn.value == 'Y')
+		{
+		//}
+		alert('{ js_error }');
+		list.focus();
+		return false;
+		}
+
+	for(i=0; i < list.options.length; i++)
+		{
+		list.options[i].selected = true;
+		}
+	return true;
+	}
+-->
+</script>
+<form name="addfval" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtr())">
+<input type="hidden" name="tg" value="admdir" />
+<input type="hidden" name="idx" value="addval" />
+<input type="hidden" name="id" value="{ id }" />
+<input type="hidden" name="fxid" value="{ idfield }" />
+<input type="hidden" name="modify" value="dbfval" />
+
+<table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<!--#in getnextdbfieldvalue -->
-<tr> 
-<td align="right" nowrap valign="middle">{ fvalnum }:</td>
-<td valign="middle">
-<input type="text" name="fields_values[]" size="45" value="{ fval }">
-<input type="hidden" name="fields_ids[]" size="45" value="{ fvid }">
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr>
+		<td align="right">
+			{ multivaluestxt }
+		</td>
+		<td>
+			<select name="mvyn" onchange="mvyn_onchange()">
+			<option value="N" { noselected }>{ notxt }</option>
+			<option value="Y" { yesselected }>{ yestxt }</option>
+			</select>
+		</td>
+	</tr>
+	<tbody id="addfval_simple">
+	<tr>
+		<td align="right">
+		{ t_value }
+		</td>
+		<td>
+			<input type="text" name="value" value="{ value }" />
+		</td>
+	</tr>
+	</tbody>
+	<tbody id="addfval_multiple">
+	<tr>
+		<td align="right">
+		{ t_fields_values }
+		</td>
+		<td>
+			<select multiple name="fields_values[]"  size="6">
+			<!--#in getnextdbfieldvalue -->
+			<option value="{ fval }">{ fval }</option>
+			<!--#endin getnextdbfieldvalue -->
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+		{ addtxt }
+		</td>
+		<td>
+			<input type="text" name="value_to_add" value="" size="15" /><br />
+			<input type="button" value="{ addtxt }" onclick="add_to_select()" /><br />
+			<input type="button" value="{ t_delvalue }" onclick="remove_from_select()" />
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+		{ fvdeftxt }
+		</td>
+		<td>
+			<select name="fvdef">
+				<option value="0"></option>
+				<!--#in getnextdbfieldvalue -->
+				<option value="{ fval }" { fvdefselected }>{ fval }</option>
+				<!--#endin getnextdbfieldvalue -->
+			</select>
+		</td>
+	</tr>
+	</tbody>
+	<tr>
+		<td colspan="2" align="center">
+		<input type="submit" name="adfsav" value="{ savetxt }" />
+		<!--#if bdelete -->
+		<input type="submit" name="adfdel" value="{ deltxt }" />
+		<!--#endif bdelete -->
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
-<!--#endin getnextdbfieldvalue -->
-<tr> 
-<td align="right" nowrap valign="middle">{ fvalnum }:</td>
-<td valign="middle">
-<input type="text" name="fields_values[]" size="45" value="">
-<input type="hidden" name="fields_ids[]" size="45" value="0">
-</td>
-</tr>
-<!--#if bshowmultivalue -->
-<tr> 
-<td align="right" nowrap valign="middle">{ multivaluestxt }:</td>
-<td valign="middle">
-<select name="mvyn">
-<option value="N" { noselected }>{ notxt }</option>
-<option value="Y" { yesselected }>{ yestxt }</option>
-</select>
-</td>
-</tr>
-<!--#endif bshowmultivalue -->
-<!--#if count -->
-<tr> 
-<td align="right" nowrap valign="middle">{ fvdeftxt }:</td>
-<td valign="middle">
-<select name="fvdef">
-  <option value="0"></option>
-<!--#in getnextdbfieldvalue -->
-  <option value="{ fvid }" { fvdefselected }>{ fval }</option>
-<!--#endin getnextdbfieldvalue -->
-</select>
-</td>
-</tr>
-<!--#endif count -->
 </table>
-</td>
-</tr>
-</table>
-<br>
-<center><input type="submit" name="adfsav" value="{ savetxt }">&nbsp;&nbsp;<input type="submit" name="adfadd" value="{ addtxt }">
-<!--#if bdelete -->
-&nbsp;&nbsp;<input type="submit" name="adfdel" value="{ deltxt }">
-<!--#endif bdelete -->
 </form>
+
+<script type="text/javascript">
+<!--
+mvyn_onchange();
+-->
+</script>
 <!--#end dbfieldvalues -->
 
 <!--#begin dbaddfield -->
