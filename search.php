@@ -105,8 +105,12 @@ function startSearch($pat, $item, $what, $pos)
 			$this->next = bab_translate( "Next" );
 
 			//$this->like = "not regexp '<.*".$what."[^>]*'";
-			$this->like = "like '%".$what."%'";
-			$this->what = urlencode($what);
+			if( !bab_isMagicQuotesGpcOn())
+				$this->like = "like '%".addslashes($what)."%'";
+			else
+				$this->like = "like '%".$what."%'";
+			$this->what = urlencode(addslashes($what));
+			echo $this->what;
 			$this->countart = 0;
 			$this->countfor = 0;
 			$this->countnot = 0;
