@@ -96,19 +96,19 @@
         <!--#in getnext -->
         <!--#if alternate "== 1" -->
         <tr> 
-          <td class="BabCommentListBodyFontBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentsListLink" href="{ subjecturl }">{ 
+          <td class="BabCommentListBodyFontBackground" width="30%" align="left" valign="middle"><a class="BabCommentsListLink" href="{ subjecturl }">{ 
             subjectname }</a></td>
           <td class="BabCommentListBodyFontBackground" width="35%" align="left" valign="middle">{ 
             arr[name] } </td>
-          <td class="BabCommentListDateFontBackground" width="35%" align="right" valign="middle">{ 
+          <td class="BabCommentListDateFontBackground" width="35%" align="left" valign="middle">{ 
             arr[date] }</td>
         </tr><!--#else alternate -->
         <tr> 
-          <td class="BabCommentListBodyFontBackground" width="30%" align="left" nowrap valign="middle"><a class="BabCommentsListLink" href="{ subjecturl }">{ 
+          <td class="BabCommentListBodyFontBackground" width="30%" align="left" valign="middle"><a class="BabCommentsListLink" href="{ subjecturl }">{ 
             subjectname }</a></td>
           <td class="BabCommentListBodyFontBackground" width="35%" align="left" valign="middle">{ 
             arr[name] } </td>
-          <td class="BabCommentListDateFontBackground" width="35%" align="right" valign="middle">{ 
+          <td class="BabCommentListDateFontBackground" width="35%" align="left" valign="middle">{ 
             arr[date] }</td>
         </tr>
      <!--#endif alternate -->
@@ -140,7 +140,7 @@
             arr[subject] } </td>
         </tr>
         <tr> 
-          <td class="BabCommentFontBackground" align="left" nowrap valign="middle" height="26" colspan="2">{ 
+          <td class="BabCommentFontBackground" align="left" valign="middle" height="26" colspan="2">{ 
             arr[message] } </td>
         </tr>
       </table>
