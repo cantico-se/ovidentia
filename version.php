@@ -193,7 +193,7 @@ function cpaddons($from,$to)
          return $arr;
      }
 	function cp($wf, $wto){ 
-		  if (!is_dir($wto)) mkdir($wto,0777);
+		  if (!is_dir($wto)) mkdir($wto,$GLOBALS['babMkdirMask']);
 		   $arr=ls_a($wf);
 		  foreach ($arr as $fn){
 				  if($fn){
@@ -209,7 +209,7 @@ function cpaddons($from,$to)
 	$el = explode("/",$path);
 	foreach ($el as $rep)
 		{
-		if (!is_dir($memo.$rep)) mkdir($memo.$rep,0777);
+		if (!is_dir($memo.$rep)) mkdir($memo.$rep,$GLOBALS['babMkdirMask']);
 		$memo = $memo.$rep."/";
 		}
 	}

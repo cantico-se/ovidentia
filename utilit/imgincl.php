@@ -47,7 +47,7 @@ function imagesReplace($txt, $prefix, &$tab)
 				{
 				$newfile = $prefix.$arr[sizeof($arr) -1];
 				if( !is_dir(BAB_IUD_ARTICLES))
-					mkdir(BAB_IUD_ARTICLES, 0700);
+					mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMask']);
 				if( rename(BAB_IUD_TMP.$arr[sizeof($arr) -1], BAB_IUD_ARTICLES.$newfile))
 					{
 					$tab[$arr[sizeof($arr) -1]] = $newfile;

@@ -137,7 +137,7 @@ class zip
 
  function Extract ( $zn, $to, $index = Array(-1),$createpath =true )
  {
-   if(!@is_dir($to)) mkdir($to,0777);
+   if(!@is_dir($to)) mkdir($to,$GLOBALS['babMkdirMask']);
    $ok = 0; $zip = @fopen($zn,'rb');
    if(!$zip) return(-1);
    $cdir = $this->ReadCentralDir($zip,$zn);
@@ -259,14 +259,14 @@ class zip
    if(substr($to,-1)!="/") $to.="/";
    if(substr($header['filename'],-1)=="/")
    {
-    @mkdir($to.$header['filename']);
+    @mkdir($to.$header['filename'], $GLOBALS['babMkdirMask']);
     return +2;
    }
 
    $pth = explode("/",dirname($header['filename']));
    for($i=0,$tmp="";isset($pth[$i]);$i++){
      if(!$pth[$i]) continue;
-     if(!is_dir($to.$tmp.$pth[$i])) @mkdir($to.$pth[$i],0777);
+     if(!is_dir($to.$tmp.$pth[$i])) @mkdir($to.$pth[$i],$GLOBALS['babMkdirMask']);
      $tmp.=$pth[$i]."/";
    }
    

@@ -162,11 +162,11 @@ function listImages($editor,$path="")
 			$this->comnum = 0;
 			$this->editor = $editor;
 			if( !is_dir(BAB_IUD_TMP))
-				bab_mkdir(BAB_IUD_TMP, 0700);
+				bab_mkdir(BAB_IUD_TMP, $GLOBALS['babMkdirMask']);
 			if( !is_dir(BAB_IUD_COMMON))
-				bab_mkdir(BAB_IUD_COMMON, 0700);
+				bab_mkdir(BAB_IUD_COMMON, $GLOBALS['babMkdirMask']);
 			if( !is_dir(BAB_IUD_ARTICLES))
-				bab_mkdir(BAB_IUD_ARTICLES, 0700);
+				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMask']);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON);
 			$this->arrcfile = array();
@@ -237,11 +237,11 @@ function iframe($editor,$path="")
 			$this->msg_renametree = bab_translate("WARNING!: If you rename this folder, the articles containing the a picture from this folder will be corrupted. Do really whant to rename this directory")."?";
 
 			if( !is_dir(BAB_IUD_TMP))
-				bab_mkdir(BAB_IUD_TMP, 0700);
+				bab_mkdir(BAB_IUD_TMP, $GLOBALS['babMkdirMask']);
 			if( !is_dir(BAB_IUD_COMMON))
-				bab_mkdir(BAB_IUD_COMMON, 0700);
+				bab_mkdir(BAB_IUD_COMMON, $GLOBALS['babMkdirMask']);
 			if( !is_dir(BAB_IUD_ARTICLES))
-				bab_mkdir(BAB_IUD_ARTICLES, 0700);
+				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMask']);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON.$path);
 			$this->arrcfile = array();
@@ -503,7 +503,7 @@ if ( isset($directory) && $directory != "" && bab_isUserAdministrator() )
 	if ( substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
 	if (!is_dir(BAB_IUD_COMMON.$p.$directory))
-		mkdir(BAB_IUD_COMMON.$p.$directory,0700);
+		mkdir(BAB_IUD_COMMON.$p.$directory,$GLOBALS['babMkdirMask']);
 	else
 		$GLOBALS['msgerror'] = bab_translate("A folder with the same name already exists");
 	}

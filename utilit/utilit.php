@@ -435,7 +435,7 @@ function bab_translate_old($str, $folder = "")
 		if( !file_exists($filename))
 			{
 			if( !empty($folder) && !is_dir($GLOBALS['babInstallPath']."lang/addons/".$folder))
-				mkdir($GLOBALS['babInstallPath']."lang/addons/".$folder, 0777);
+				mkdir($GLOBALS['babInstallPath']."lang/addons/".$folder, $GLOBALS['babMkdirMask']);
 			$file = @fopen($filename, "w");
 			if( $file )
 				fclose($file);

@@ -86,6 +86,11 @@ if (!empty($_FILES))
 			}
 	}
 
+if( !isset($GLOBALS['babMkdirMask']))
+	{
+	$GLOBALS['babMkdirMask'] = '0700';
+	}
+
 $babSiteName = substr($babSiteName, 0, 30);
 include_once "base.php";
 include $babInstallPath."utilit/utilit.php";
