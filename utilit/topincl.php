@@ -207,6 +207,24 @@ function bab_getArticleTitle($article)
 		}
 	}
 
+// used in add-ons since 4.09
+function bab_getArticleArray($article,$fullpath = false)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$article."' AND a.confirmed = 'Y' AND t.id=a.id_topic";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		if ($fullpath) $arr['CategoriesHierarchy'] = viewCategoriesHierarchy_txt($arr['id_topic']);
+		return $arr;
+		}
+	else
+		{
+		return array();
+		}
+	}
+
 function bab_getArticleDate($article)
 	{
 	$db = $GLOBALS['babDB'];
