@@ -309,7 +309,7 @@ function confirmUser($hash, $nickname)
 function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2)
 	{
 	global $babBody, $babDB;
-	if( empty($email) || empty($firstname) || empty($lastname) || empty($password1) || empty($password2))
+	if( empty($nickname) || empty($email) || empty($firstname) || empty($lastname) || empty($password1) || empty($password2))
 		{
 		$babBody->msgerror = bab_translate( "You must complete all fields !!");
 		return false;
@@ -322,6 +322,12 @@ function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $pas
 	if ( strlen($password1) < 6 )
 		{
 		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
+	if ( strpos($nickname, ' ') !== false )
+		{
+		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
 		return false;
 		}
 
