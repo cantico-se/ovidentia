@@ -982,6 +982,7 @@ switch($idx)
 				if( $approver && isset($new) && $new > 0 )
 					$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 				}
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			if( $arr[0] < 1)
 				$babBody->title = bab_getCategoryTitle($topics).": ".bab_translate("Today, there are no article");
 			else

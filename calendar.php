@@ -1138,6 +1138,7 @@ switch($idx)
 			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
 			calendarDay($calid, $day, $month, $year, $start, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
 			categoriesList($calid);
+			$babBody->addItemMenu("viewd", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd");
 			}
 		break;
 	case "viewq":
@@ -1148,6 +1149,7 @@ switch($idx)
 			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
 			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
 			categoriesList($calid);
+			$babBody->addItemMenu("viewq", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq");
 			}
 		break;
 	default:
@@ -1159,6 +1161,7 @@ switch($idx)
 			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
 			calendarMonth($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
 			categoriesList($calid);
+			$babBody->addItemMenu("viewm", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm");
 			}
 		break;
 	}

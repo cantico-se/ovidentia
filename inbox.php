@@ -822,7 +822,7 @@ switch($idx)
 		$nbm = listMails($accid, $criteria, $reverse, $start);
 	    $babBody->title = $nbm['mailbox']. " : ". $nbm['count']." ".bab_translate("Message")."(s)";
 		$accid = $nbm['accid'];
-		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		$babBody->addItemMenu("list", bab_translate("Inbox"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		$babBody->addItemMenu("refresh", bab_translate("Refresh"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		break;
 	}
