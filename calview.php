@@ -227,7 +227,7 @@ function newArticles($days)
 				{
 				$arr = $this->db->db_fetch_array($this->rescomments);
 				$this->title = $arr[subject];
-				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=comments&idx=read&topics=".$arr[id_topic]."&article=".$arr[id]."&com=".$arr[id];
+				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=comments&idx=read&topics=".$arr[id_topic]."&article=".$arr[id_article]."&com=".$arr[id];
 				$this->author = $arr[name];
 				$this->date = bab_strftime(bab_mktime($arr[date]));
 				$k++;
