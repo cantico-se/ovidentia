@@ -783,6 +783,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$idfile = "";
 				$grpfiles = " and F.bgroup='Y' ";
 
+				if (isset($babBody->aclfm['id']) && is_array($babBody->aclfm['id']))
 				for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 					{
 					if( $babBody->aclfm['down'][$i] == 1 || $babBody->aclfm['ma'][$i] == 1)
