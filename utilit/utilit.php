@@ -384,13 +384,7 @@ function open()
 
 function printout()
 {
-	global $babInstallPath, $babSkinPath;
 	$file = "sectiontemplate.html";
-	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-	if( !file_exists( $filepath ) )
-		{
-		$filepath = $babSkinPath."templates/". $file;
-		}
 	$str = bab_printTemplate($this,$file, $this->title);
 	if( empty($str))
 		return bab_printTemplate($this,$file, "default");
@@ -414,7 +408,11 @@ function babSectionTemplate($file, $section="")
 
 function printout()
 	{
-	return bab_printTemplate($this,$this->file, $this->section);		
+	$str = bab_printTemplate($this,$this->file, $this->section);
+	if( empty($str))
+		return bab_printTemplate($this,$this->file, "template");
+	else
+		return $str;
 	}
 }
 
@@ -801,6 +799,7 @@ function babTopicsSection($cat, $close)
 	static $foot, $waitingc, $waitinga, $waitingaimg, $waitingcimg;
 	$this->babSectionTemplate("topicssection.html", "template");
 	$r = $babDB->db_fetch_array($babDB->db_query("select description, title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
+	$this->section = $r['title'];
 	$this->title = $r['title'];
 	$this->head = $r['description'];
 	$req = "select id from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
