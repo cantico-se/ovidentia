@@ -192,12 +192,38 @@ function processTemplate(&$class, $str)
 		if( preg_match("/(.*?)\[([^\]]*)/", $m[1][$i], $m2) > 0)
 			{
 			if( isset($class->{$m2[1]}[$m2[2]]))
-				$str = preg_replace($reg, $class->{$m2[1]}[$m2[2]], $str);
+				{
+				$tmp = $class->{$m2[1]}[$m2[2]];
+				preg_match_all("/\\$[0-9]/", $tmp, $x);
+				$workdone = array();
+				for ($j = 0; $j < count($x[0]); $j++ )
+					{
+					if (!in_array($x[0][$j],$workdone))
+						{
+						$tmp = str_replace($x[0][$j],"\\".$x[0][$j],$tmp);
+						$workdone[] = $x[0][$j];
+						}
+					}
+				$str = preg_replace($reg, $tmp, $str);
+				}
 			}
 		else
 			{
 			if( isset($class->$m[1][$i]))
-				$str = preg_replace($reg, $class->$m[1][$i], $str);
+				{
+				$tmp = $class->$m[1][$i];
+				preg_match_all("/\\$[0-9]/", $tmp, $x);
+				$workdone = array();
+				for ($j = 0; $j < count($x[0]); $j++ )
+					{
+					if (!in_array($x[0][$j],$workdone))
+						{
+						$tmp = str_replace($x[0][$j],"\\".$x[0][$j],$tmp);
+						$workdone[] = $x[0][$j];
+						}
+					}
+				$str = preg_replace($reg, $tmp , $str);
+				}
 			else if( isset($GLOBALS[$m[1][$i]]))
 				$str = preg_replace($reg, $GLOBALS[$m[1][$i]], $str);
 			}
