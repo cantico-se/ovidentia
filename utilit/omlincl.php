@@ -215,7 +215,7 @@ class bab_ArticlesHomePages extends bab_handler
 		else
 			$filter = true;
 
-		$res = $babDB->db_query("select at.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$this->idgroup."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' group by at.id order by ".$order);
+		$res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$this->idgroup."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' GROUP BY at.id order by ".$order);
 		while($arr = $babDB->db_fetch_array($res))
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
@@ -230,7 +230,7 @@ class bab_ArticlesHomePages extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select at.* from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where at.id IN (".implode(',', $this->IdEntries).")  group by at.id order by ".$order);
+			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id left join ".BAB_ART_FILES_TBL." aft on aft.id_article=at.id where ht.id IN (".implode(',', $this->IdEntries).") group by at.id order by ".$order);
 			}
 
 		$this->count = isset($this->res) ? $babDB->db_num_rows($this->res) : 0;
@@ -259,6 +259,7 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
+			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);			
 			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
 			$this->idx++;
@@ -730,7 +731,7 @@ class bab_Articles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $this->IdEntries).") order by ".$order);
+			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".implode(',', $this->IdEntries).") group by at.id order by ".$order);
 			}
 		}
 		else
@@ -761,6 +762,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
+			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -800,7 +802,7 @@ class bab_Article extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $this->IdEntries).")");
+				$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".implode(',', $this->IdEntries).") group by at.id");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 		}
@@ -831,6 +833,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
+			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -843,6 +846,63 @@ class bab_Article extends bab_handler
 	}
 }
 
+
+class bab_ArticleFiles extends bab_handler
+{
+	var $IdEntries = array();
+	var $res;
+	var $index;
+	var $count;
+
+	function bab_ArticleFiles( &$ctx)
+	{
+		global $babDB;
+		$this->bab_handler($ctx);
+		$articleid = $ctx->get_value('articleid');
+		if( $articleid === false || $articleid === '' )
+			$this->count = 0;
+		else
+		{
+			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.")");
+			while( $arr = $babDB->db_fetch_array($res))
+			{
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
+				{
+				$this->IdEntries[] = $arr['id'];
+				}
+			}
+			$this->count = count($this->IdEntries);
+			if( $this->count > 0 )
+				{
+				$this->res = $babDB->db_query("select aft.*, at.id_topic from ".BAB_ART_FILES_TBL." aft left join ".BAB_ARTICLES_TBL." at on aft.id_article=at.id where aft.id_article IN (".implode(',', $this->IdEntries).")");
+				$this->count = $babDB->db_num_rows($this->res);
+				}
+		}
+		
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('ArticleFileName', $arr['name']);
+			$this->ctx->curctx->push('ArticleFileDescription', $arr['description']);
+			$this->ctx->curctx->push('ArticleFileUrlGet', $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$arr['id_topic']."&idf=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
 
 class bab_ArticlePrevious extends bab_Article
 {
@@ -1711,7 +1771,7 @@ class bab_RecentArticles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $this->IdEntries).") order by ".$order);
+				$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".implode(',', $this->IdEntries).") group by at.id order by ".$order);
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -1745,6 +1805,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
+			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2207,7 +2268,7 @@ class bab_WaitingArticles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id IN (".implode(',', $this->IdEntries).") order by date_submission desc");
+				$this->res = $babDB->db_query("select adt.*, count(adft.id) as nfiles from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adt.id=adft.id_draft where adt.id IN (".implode(',', $this->IdEntries).") group by adt.id order by adt.date_submission desc");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -2244,6 +2305,7 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_submission']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
+			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=approb");
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id']."&topics=".$arr['id_topic']);
 			$this->idx++;
