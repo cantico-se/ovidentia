@@ -762,7 +762,19 @@
 <string id="Today, there are no article">Aujourd'hui, il n'y a pas d'articles</string>
 <string id="Ovidentia Administrator">Administrateur d'Ovidentia</string>
 <string id="Max image size ( Kb )">Taille maximale d'une image ( Ko )</string>
-<string id="Index of questions">Liste des questions</string>
-<string id="comments - ERROR: You must provide a title">ERREUR: vous devez fournir un titre à votre commentaire</string>
-<string id="comments - ERROR: You must provide a comment">ERREUR: vous devez fournir un commentaire</string>
+<string id="comments-Title">Titre du commentaire</string>
+<string id="comments-Comment">Commentaire</string>
+<string id="View categories">Voir les categories</string>
+<string id="Alignment">Alignement</string>
+<string id="Index of questions">Index des questions</string>
+<string id="comments - ERROR: You must provide a title">ERREUR: Vous devez donnez un titre à votre commentaire</string>
+<string id="comments - ERROR: You must provide a comment">ERREUR: Vous devez donnez un commentaire</string>
+<string id="FAQ Name">Intitulé de la FAQ</string>
+<string id="ERROR: You must provide a FAQ !!">ERREUR: Vous devez donnez une FAQ !!</string>
+<string id="ERROR: This FAQ already exists">ERREUR: Cette FAQ existe déjà</string>
+<string id="Update FAQ">Mettre à jour la FAQ</string>
+<string id="WARNING: This operation will delete the FAQ with all questions and responses">ATTENTION: Cette action supprime la FAQ avec les questions et les réponses</string>
+<string id="ERROR: You must provide a FAQ name !!">ERREURR: Vous devez donner un intitulé à la FAQ !!</string>
+<string id="Delete FAQ">Supprimer la FAQ</string>
+<string id="Modify FAQ">Modifier la FAQ</string>
 </fr>
