@@ -1,5 +1,6 @@
 <!--#begin search -->
 <script language="javascript">
+<!--
 <!--#if item "== a" --><!-- ARTICLES -->
 function validateNum(field) 
 	{
@@ -10,6 +11,57 @@ function validateNum(field)
 		if (valid.indexOf(temp) == "-1") 
 			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
 		}
+	}
+
+<!--#endif item -->
+<!--#if item "== g" --><!-- DIRECTORIES -->
+function setselects(obj) 
+	{
+	var id = 0;
+	if (isNaN(parseInt(obj.value)))
+		id = -1;
+	else
+		id = obj.value;
+	var sf = document.forms.searchForm;
+	var full = new Array();
+	var select = new Array();
+	var fields = new Array();
+	fields[-1] = new Array();
+	<!--#in getnextfieldtosearch -->
+		<!--#in selectname -->
+			<!--#if fieldcounter "== 0" -->
+			full["{ name }"] = "{ description }";
+			fields[-1][{ selindex }] = "{ name }";
+			<!--#endif fieldcounter -->
+			<!--#if selected -->
+			select[{ fieldcounter }] = "{ name }";
+			<!--#endif selected -->
+		<!--#endin selectname -->
+	<!--#endin getnextfieldtosearch -->
+	<!--#in getnextdir -->
+	fields[{ topicid }]=new Array();
+		<!--#in getnextfield -->
+		//
+		fields[{ topicid }][{ fieldindex }] = "{ fieldnamefromdir }";
+		<!--#endin getnextfield -->
+	<!--#endin getnextdir -->
+
+	<!--#in getnextfieldtosearch -->
+	var j,k = 0;
+
+	for (j=sf.dirselect_{ fieldcounter }.options.length-1;j>=0;j--)
+		sf.dirselect_{ fieldcounter }.options[j]=null;
+
+	for (k=0;k<fields[id].length;k++)
+		sf.dirselect_{ fieldcounter }.options[k] = new Option( full[fields[id][k]],fields[id][k]);
+
+	for (j=sf.dirselect_{ fieldcounter }.options.length-1;j>=0;j--)
+		{
+		if (sf.dirselect_{ fieldcounter }.options[j].value == select[{ fieldcounter }])
+			sf.dirselect_{ fieldcounter }.options[j].selected = true;
+		}
+	
+	<!--#endin getnextfieldtosearch -->
 	}
 
 <!--#endif item -->
@@ -112,6 +164,7 @@ function cleanAfter() {
 	sf.after.value='';
 }
 <!--#endif item -->
+-->
 </script>
 
 <form name="searchForm" method="post" action="{ babPhpSelf }" onSubmit="return (prepareSQL())">
@@ -231,7 +284,7 @@ function cleanAfter() {
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
  <!--#in getnextfieldtosearch -->
 	<tr>
-	<td align="right" width="5">
+	<td align="right" width="100">
 	<select name="dirselect_{ fieldcounter }">
 	<!--#in selectname -->
 		<option { selected } value="{ name }">{ description }</option>
@@ -242,7 +295,7 @@ function cleanAfter() {
  <!--#endin getnextfieldtosearch -->
 </table>
 </td>
-<td valign="top"><select name="g_directory">
+<td valign="top"><select name="g_directory" onchange="setselects(this)">
 	<option value="">{ all }</option>
   <!--#in getnextdir -->
 		<!--#if fields[g_directory] "== topicid" -->
@@ -254,6 +307,11 @@ function cleanAfter() {
 </select></td>
 </tr>
 </table>
+<script language="javascript">
+<!--
+setselects(document.forms.searchForm.g_directory);
+-->
+</script>
 <!--#endif item -->
 <!--#if item "== h" --><!-- CALENDAR -->
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">

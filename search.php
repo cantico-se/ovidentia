@@ -191,7 +191,7 @@ function searchKeyword($item , $option = "OR")
 			$this->restopics = $this->db->db_query($req);
 			$this->counttopics = $this->db->db_num_rows($this->restopics);
 
-			$req = "select D.id, D.name from ".BAB_DB_DIRECTORIES_TBL." D,".BAB_GROUPS_TBL." G where D.id_group = '0' OR (D.id_group = G.id AND G.directory='Y') order by D.name";
+			$req = "select D.id, D.name, D.id_group id_group from ".BAB_DB_DIRECTORIES_TBL." D,".BAB_GROUPS_TBL." G where D.id_group = '0' OR (D.id_group = G.id AND G.directory='Y') order by D.name";
 			$this->resdirs = $this->db->db_query($req);
 			$i = 0;
 			while ($arr = $this->db->db_fetch_array($this->resdirs) )
@@ -223,7 +223,6 @@ function searchKeyword($item , $option = "OR")
 				$this->tblfields[$i]['description'] = $value;
 				$i++;
 				}
-
 
 			$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
 			$this->countcal = count($this->rescal);
@@ -269,7 +268,6 @@ function searchKeyword($item , $option = "OR")
 				{
 				$this->acces['e'] = true;
 				}
-
 			}
 
 		function getnextitem()
@@ -306,17 +304,23 @@ function searchKeyword($item , $option = "OR")
 		
 		function getnextdir() 
 			{
-			static $i = 0;
-			if( $i < $this->countdirs)
+			static $l = 0;
+			if( $l < $this->countdirs)
 				{
-                $arr = $this->dirarr[$i];
+                $arr = $this->dirarr[$l];
 				$this->topicid = $arr['id'];
 				$this->topictitle = put_text($arr['name'],30);
-				$i++;
+				$req = "SELECT DISTINCT(f.name) name FROM ".BAB_DBDIR_FIELDSEXTRA_TBL." e LEFT JOIN ".BAB_DBDIR_FIELDS_TBL." f ON f.id = e.id_field WHERE e.ordering!=0 AND e.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)." GROUP BY f.name ORDER BY e.ordering'";
+				$this->resfieldsfromdir = $this->db->db_query($req);
+				$this->countfieldsfromdir = $this->db->db_num_rows($this->resfieldsfromdir);				
+				$l++;
 				return true;
 				}
 			else
+				{
+				$l = 0;
 				return false;
+				}
 			}
 		
 		function selectname() 
@@ -324,19 +328,38 @@ function searchKeyword($item , $option = "OR")
 			static $i = 0;
 			if( $i < $this->countfields)
 				{
+				$this->selindex = $i;
                 $arr = $this->tblfields[$i];
 				$this->name = $arr['name'];
 				$this->description = $arr['description'];
+				$this->descriptionJs = addslashes($arr['description']);
 				$this->fieldvalue = "".$this->fields[$arr['name']];
 				if ( $this->fields['dirselect_'.$this->j] == $arr['name'])
 					$this->selected = "selected";
 				else	
-					$this->selected = "";
+					$this->selected = false;
 				$i++;
 				return true;
 				}
 			else
 				{$i = 0;
+				return false;}
+			}
+
+		function getnextfield()
+			{
+			static $k = 0;
+			if( $k < $this->countfieldsfromdir)
+				{
+				$arr = $this->db->db_fetch_array($this->resfieldsfromdir);
+				$this->fieldnamefromdir = $arr['name'] ;
+				$this->fieldindex = $k;
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
 				return false;}
 			}
 
@@ -352,6 +375,7 @@ function searchKeyword($item , $option = "OR")
 				}
 			else
 				{
+				$j = 0;
 				return false;}
 			}
 
