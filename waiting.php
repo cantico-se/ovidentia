@@ -444,16 +444,16 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
+			$arr3 = $db->db_fetch_array($res);
 			if( $homepage0 == "2")
 				{
-				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr[id]. "', '" . $homepage0. "')";
+				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3[id]. "', '" . $homepage0. "')";
 				$res = $db->db_query($query);
 				}
 
 			if( $homepage1 == "1")
 				{
-				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr[id]. "', '" . $homepage1. "')";
+				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3[id]. "', '" . $homepage1. "')";
 				$res = $db->db_query($query);
 				}
 			}
