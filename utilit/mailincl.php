@@ -115,6 +115,7 @@ class babMail
 		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
 		$this->mail->From = $GLOBALS['babAdminEmail'];
 		$this->mail->FromName = $GLOBALS['babAdminName'];
+		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath']."utilit/");
 	}
 
 	function mailFrom($email, $name='')
