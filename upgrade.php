@@ -3290,6 +3290,26 @@ if( !$res)
 $arr= $db->db_fetch_array($db->db_query("select id from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 $db->db_query("INSERT INTO ".BAB_SITES_HPMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."', '3')");
 
+
+$subdir = trim(substr($_SERVER['SCRIPT_NAME'],0,strlen($_SERVER['SCRIPT_NAME'])-strlen(strrchr($_SERVER['SCRIPT_NAME'],'/'))),'/');
+if (substr($_SERVER['DOCUMENT_ROOT'],-1) == '/')
+	$subdir = $_SERVER['DOCUMENT_ROOT'].$subdir.'/skins/';
+else
+	$subdir = $_SERVER['DOCUMENT_ROOT'].'/'.$subdir.'/skins/';
+if (is_dir($subdir))
+	{
+	if ($dh = opendir($subdir)) {
+       while (($file = readdir($dh)) !== false) 
+		   {
+		   if (is_dir($subdir.$file) && is_file($subdir.$file.'/templates/topicsdisplay.html'))
+				{
+				rename($subdir.$file.'/templates/topicsdisplay.html',$subdir.$file.'/templates/topicsdisplay.html.old');
+				}
+			}
+		closedir($dh);
+		}
+	}
+
 return $ret;
 }
 ?>
