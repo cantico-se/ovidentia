@@ -361,7 +361,7 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 	$db->db_query("update ".BAB_USERS_GROUPS_TBL." set isprimary='N' where id_object='$id'");
 	if( !empty($group))
 		{
-		$db->db_query("update ".BAB_USERS_GROUPS_TBL." set isprimary='Y'where id_object='$id' and id_group='$group'");
+		$db->db_query("update ".BAB_USERS_GROUPS_TBL." set isprimary='Y' where id_object='$id' and id_group='$group'");
 		}
 
 	if( $is_confirmed == 1 && $r['is_confirmed'] == 0 )
