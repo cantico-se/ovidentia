@@ -51,6 +51,10 @@ function aclGroups($target, $index, $table, $id, $return)
 			$this->listgroups = babTranslate("Groups List");
 			$this->db = new db_mysql();
 			$this->id = $id;
+			$this->what[everybody] = "";
+			$this->what[users] = "";
+			$this->what[guests] = "";
+			$this->what[disabled] = "";
 			
 			$req = "select * from ".$table." where id_object='$id'";
 			$this->res1 = $this->db->db_query($req);
@@ -100,6 +104,9 @@ function aclGroups($target, $index, $table, $id, $return)
 							{
 							$this->arrgroups[select] = "selected";
 							}
+						else
+							$this->arrgroups[select] = "";
+							
 						}
 					}
 				$i++;
