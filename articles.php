@@ -50,7 +50,7 @@ function listArticles($topics, $newc)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr[id]). " ".babTranslate("on")." ". getArticleDate($this->arr[id]);
+				$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr[id]). " - ". getArticleDate($this->arr[id]);
 				$this->content = $this->arr[head];
 
 				if( $this->com)

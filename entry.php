@@ -67,7 +67,7 @@ function listArticles()
 				if( $this->res && $this->db->db_num_rows($this->res) > 0)
 					{
 					$this->arr = $this->db->db_fetch_array($this->res);
-					$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr[id]). " ".babTranslate("on")." ". getArticleDate($this->arr[id]);
+					$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr[id]). " - ". getArticleDate($this->arr[id]);
 					$this->content = $this->arr[head];
 
 					if( $this->com)
