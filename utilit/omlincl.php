@@ -2743,7 +2743,7 @@ function vars_replace($txt)
 
 function handle_text($txt)
 	{
-	if(preg_match_all("/(.*?)<".BAB_TAG_CONTAINER."([^\s]*)\s*(\w+\s*=\s*[\"].*?\")*\s*(\w*)>(.*?)<\/".BAB_TAG_CONTAINER."\\2\s*\\4>(.*)/s", $txt, $m))
+	if(preg_match_all("/(.*?)<".BAB_TAG_CONTAINER."([^\s]*)\s*(\w+\s*=\s*[\"].*?\")*\s*(\w*)\s*>(.*?)<\/".BAB_TAG_CONTAINER."\\2\s*\\4\s*>(.*)/s", $txt, $m))
 		{
 		$out = '';
 		for( $i = 0; $i< count($m[3]); $i++)
