@@ -155,6 +155,8 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 					}
 				else
 					$this->messageval = $pmsg;
+				if( $pformat == "html")
+					$this->messageval = nl2br($this->messageval);
 				}
 			$this->file1 = "";
 			if( !empty($pfiles[0]))
@@ -364,6 +366,7 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
     {
     global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
+    $CRLF = "\r\n";
 	$db = $GLOBALS['babDB'];
 	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
@@ -440,12 +443,12 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 					$format = "html";
                     $msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$msg&cid=\\3\\4", $msgbody);
                     }
-                $messageval = CRLF.CRLF.CRLF.CRLF."------".bab_translate("Original Message")."------".CRLF;
-                $messageval .= "From: ".$fromorg.CRLF;
-                $messageval .= "Sent: ".bab_strftime($headinfo->udate).CRLF;
-                $messageval .= "To: ".$toorg.CRLF;
+				$messageval = $CRLF.$CRLF.$CRLF.$CRLF."------".bab_translate("Original Message")."------".$CRLF;
+                $messageval .= "From: ".$fromorg.$CRLF;
+                $messageval .= "Sent: ".bab_strftime($headinfo->udate).$CRLF;
+                $messageval .= "To: ".$toorg.$CRLF;
                 if( !empty($ccorg))
-                    $messageval .= "Cc: ".$ccorg.CRLF;
+                    $messageval .= "Cc: ".$ccorg.$CRLF;
                 $messageval .= $msgbody;
                 imap_close($mbox);
                 }
