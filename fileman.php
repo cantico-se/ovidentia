@@ -2213,10 +2213,23 @@ if( isset($updf) && $updf == "upd")
 		$descup = true;
 	else
 		$descup = false;
+	if( !isset($uploadf_name)) { $uploadf_name = '';}
+	if( !isset($uploadf_size)) { $uploadf_size = 0;}
+	if( !isset($uploadf)) { $uploadf = '';}
+	if( !isset($fname)) { $fname = '';}
+	if( !isset($description)) { $description = '';}
+	if( !isset($keywords)) { $keywords = '';}
+	if( !isset($readonly)) { $readonly = '';}
+	if( !isset($confirm)) { $confirm = '';}
+	if( !isset($bnotify)) { $bnotify = '';}
+	if( !isset($newfolder)) { $newfolder = '';}
+	if( !isset($descup)) { $descup = '';}
 	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup))
 		$idx = "viewfile";
 	else
+		{
 		$idx = "unload";
+		}
 	}
 
 if( isset($mkdir) && $mkdir == "mkdir")
