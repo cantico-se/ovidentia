@@ -26,7 +26,7 @@ function upComingEvents($idcal)
 			$this->calid = $idcal;
 			$this->db = new db_mysql();
 			$mktime = mktime();
-			$this->newevents = babTranslate("Upcoming Events");
+			$this->newevents = babTranslate("Upcoming Events ( in the seven next days )");
 			$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 			$mktime = $mktime + 518400;
 			$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
@@ -134,8 +134,8 @@ function newArticles($days)
 			$this->count = count($this->arrid);
 			if( $days > 0 )
 				{
-				$this->newarticles = babTranslate("Last articles");
-				$this->newcomments = babTranslate("Last comments");
+				$this->newarticles = babTranslate("Last articles ( Since seven days before your last visit )");
+				$this->newcomments = babTranslate("Last comments ( Since seven days before your last visit )");
 				}
 			else
 				{
@@ -282,7 +282,7 @@ function newThreads($nbdays)
 				}
 			$this->count = count($this->arrid);
 			if( $nbdays > 0)
-				$this->newposts = babTranslate("Last posts");
+				$this->newposts = babTranslate("Last posts ( Since seven days before your last visit )");
 			else
 				$this->newposts = babTranslate("New posts");
 			}
