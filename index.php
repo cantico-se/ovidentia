@@ -224,7 +224,7 @@ function printBody()
 			$this->babSessTimeoutMsg = bab_translate("Session expire in");
 			$this->babSessTimeoutUnit = strtolower(bab_translate("Minutes"));
 			$this->babSessTimeoutMsgLast = bab_translate("Session expired");
-			$this->babSessLimited = !isset($_COOKIE['c_password']) || trim($_COOKIE['c_password']) == '' || !$BAB_SESS_LOGGED ? false : true;
+			$this->babSessLimited = !$BAB_SESS_LOGGED || (isset($_COOKIE['c_password']) && trim($_COOKIE['c_password'])!='') ? false : true;
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript'];
 			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )
