@@ -232,6 +232,20 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ email_password_title }</td>
+            <td width="70%"> 
+				<select name="remember_login">
+				<!--#if dbvalue[email_password] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[email_password] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[email_password] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
             <td width="70%"> 
 				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }">
@@ -571,6 +585,20 @@ function validateNum(field)
 				<option value="Y">{ yes }</option>
 				<option value="N" selected>{ no }</option>
 				<!--#endif dbvalue[remember_login] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ email_password_title }</td>
+            <td width="70%"> 
+				<select name="email_password">
+				<!--#if dbvalue[email_password] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[email_password] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[email_password] -->
 				</select>
 			</td>
 		</tr>
