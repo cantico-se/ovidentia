@@ -73,7 +73,7 @@ function listAddress($pos)
 			$this->babUrl = $GLOBALS[babUrl];
 			$this->sitename = $GLOBALS[babSiteName];
 
-			$req = "select * from contacts where firstname like '".$pos."%' order by firstname, lastname asc";
+			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
