@@ -55,6 +55,15 @@
 </form>
 <!--#end addfile -->
 <!--#begin fileslist -->
+<script type="text/javascript">
+<!--
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=650,height=500,status=no,resizable=yes,top=200,left=200, scrollbars=yes");
+}
+//-->
+</script>
 <br>
 <table width="98%" border="0" cellspacing="0" cellpadding="0" align="center" class="BabMailBackground">
 <tr>
@@ -195,6 +204,8 @@ alt="{ paste }"></a>
 </form>
 <!--#endif bmanager -->
 <br>
+<center><a class="BabSiteAdminListLink" href="{ urldiskspace }">{ diskspace }</a></center>
+<br>
 </td>
 </tr>
 </table>
@@ -305,3 +316,81 @@ value="{ restore }">
 </table>
 </form>
 <!--#end trashfiles -->
+
+<!--#begin diskspace -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Ovidentia">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<table class="BabMailBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabBodyTitleBackground" width="40%">{ grouptxt }</td>
+<td class="BabBodyTitleBackground" width="20%">{ diskspacetxt }</td>
+<td class="BabBodyTitleBackground" width="20%">{ allowedspacetxt }</td>
+<td class="BabBodyTitleBackground" width="20%">{ remainingspacetxt }</td>
+</tr>
+<!--#in getprivatespace -->
+<tr> 
+<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
+</tr>
+<!--#endin getprivatespace -->
+<!--#in getnextgrp -->
+<tr> 
+<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
+</tr>
+<!--#endin getnextgrp -->
+<!--#in getnextmgrp -->
+<tr> 
+<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
+</tr>
+<!--#endin getnextmgrp -->
+<tr> 
+<td class="BabSiteAdminFontBackground" width="40%">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" width="20%">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" width="20%">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" width="20%">&nbsp;</td>
+</tr>
+<!--#in getglobalspace -->
+<tr> 
+<td class="BabSiteAdminFontBackground" width="40%">{ groupname }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ diskspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ allowedspace }</td>
+<td class="BabSiteAdminFontBackground" width="20%">{ remainingspace }</td>
+</tr>
+<!--#endin getglobalspace -->
+<tr> 
+<td class="BabMailBackground"> 
+<input type="button" name="cancel" value="{ cancel }"  onClick="window.close()">
+</td>
+<td class="BabSiteAdminFontBackground">&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</BODY>
+</HTML>
+<!--#end diskspace -->

@@ -97,6 +97,144 @@ function listTrashFiles($id, $gr)
 	$body->babecho(	babPrintTemplate($temp,"fileman.html", "trashfiles"));
 	}
 
+function showDiskSpace($id, $gr, $path)
+	{
+	global $body, $aclfm;
+
+	class temp
+		{
+		var $id;
+		var $gr;
+		var $path;
+		var $cancel;
+		var $bytes;
+		var $babCss;
+		var $arrgrp = array();
+		var $arrmgrp = array();
+		var $countgrp;
+		var $countmgrp;
+		var $diskp;
+		var $diskg;
+		var $groupname;
+		var $diskspace;
+		var $allowedspace;
+		var $remainingspace;
+		var $grouptxt;
+		var $diskspacetxt;
+		var $allowedspacetxt;
+		var $remainingspacetxt;
+
+
+		function temp($id, $gr, $path)
+			{
+			global $aclfm;
+			$this->id = $id;
+			$this->gr = $gr;
+			$this->grouptxt = babTranslate("Name");
+			$this->diskspacetxt = babTranslate("Used");
+			$this->allowedspacetxt = babTranslate("Allowed");
+			$this->remainingspacetxt = babTranslate("Remaining");
+			$this->cancel = babTranslate("Close");
+			$this->bytes = babTranslate("bytes");
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			for( $i = 0; $i < count($aclfm['id']); $i++)
+				{
+				if($aclfm['pu'][$i] == 1 && $aclfm['ma'][$i] == 0)
+					$this->arrgrp[] = $aclfm['id'][$i];
+
+				if($aclfm['pu'][$i] == 1 && $aclfm['ma'][$i] == 1)
+					{
+					$this->arrmgrp[] = $aclfm['id'][$i];
+					}
+				}
+			if( !empty($GLOBALS['BAB_SESS_USERID'] ) && in_array(1, $aclfm['pr'] ))
+				$this->diskp = 1;
+			else
+				$this->diskp = 0;
+			if( !empty($GLOBALS['BAB_SESS_USERID'] ) && isUserAdministrator() )
+				$this->diskg = 1;
+			else
+				$this->diskg = 0;
+			$this->countgrp = count($this->arrgrp);
+			$this->countmgrp = count($this->arrmgrp);
+			}
+
+		function getprivatespace()
+			{
+			static $i = 0;
+			if( $i < $this->diskp)
+				{
+				$pathx = getFullPath("N", $GLOBALS['BAB_SESS_USERID']);
+				$this->diskspace = getDirSize($pathx);
+				$this->allowedspace = $GLOBALS['babMaxUserSize'];
+				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$this->groupname = babTranslate("Personnal Folder");
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getglobalspace()
+			{
+			static $i = 0;
+			if( $i < $this->diskg)
+				{
+				$pathx = getFullPath("N", $GLOBALS['BAB_SESS_USERID']);
+				$this->diskspace = getDirSize($GLOBALS['babUploadPath']);
+				$this->allowedspace = $GLOBALS['babMaxTotalSize'];
+				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$this->groupname = babTranslate("Global space");
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextgrp()
+			{
+			static $i = 0;
+			if( $i < $this->countgrp)
+				{
+				$pathx = getFullPath("Y", $this->arrgrp[$i]);
+				$this->diskspace = getDirSize($pathx);
+				$this->allowedspace = $GLOBALS['babMaxGroupSize'];
+				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$this->groupname = getGroupName($this->arrgrp[$i]);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextmgrp()
+			{
+			static $i = 0;
+			if( $i < $this->countmgrp)
+				{
+				$this->groupname = getGroupName($this->arrmgrp[$i]);
+				$pathx = getFullPath("Y", $this->arrmgrp[$i]);
+				$this->diskspace = getDirSize($pathx);
+				$this->allowedspace = $GLOBALS['babMaxGroupSize'];
+				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		}
+
+	$temp = new temp($id, $gr, $path);
+	echo babPrintTemplate($temp,"fileman.html", "diskspace");
+	exit;
+	}
+
+
 function listFiles($id, $gr, $path, $bmanager)
 	{
 	global $body, $aclfm;
@@ -132,6 +270,8 @@ function listFiles($id, $gr, $path, $bmanager)
 		var $paste;
 		var $undo;
 		var $deltxt;
+		var $urldiskspace;
+		var $diskspace;
 		var $arrext = array();
 
 		var $arrdir = array();
@@ -156,12 +296,14 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->sizetxt = babTranslate("Size");
 			$this->modifiedtxt = babTranslate("Modified");
 			$this->postedtxt = babTranslate("Posted by");
+			$this->diskspace = babTranslate("Show disk space usage");
 
 			if( !empty($BAB_SESS_USERID))
 				$this->rooturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$BAB_SESS_USERID."&gr=N&path=";
 			else
 				$this->rooturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=2&gr=Y&path=";
 			$this->refreshurl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
+			$this->urldiskspace = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".$path."')";
 
 			$this->path = $path;
 			$this->id = $id;
@@ -414,8 +556,8 @@ function addFile($id, $gr, $path, $description, $keywords)
 			$this->path = $path;
 			$this->gr = $gr;
 			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
-			$this->descval = $description;
-			$this->keysval = $keywords;
+			$this->descval = isset($description)? $description: "";
+			$this->keysval = isset($keywords)? $keywords: "";
 			}
 		}
 
@@ -576,7 +718,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	$totalsize = getDirSize($GLOBALS['babUploadPath']);
 	if( $size + $totalsize > $GLOBALS['babMaxTotalSize'])
 		{
-		$body->msgerror = babTranslate("There is not enough free space1");
+		$body->msgerror = babTranslate("There is not enough free space");
 		return false;
 		}
 	$pathx = getFullPath($gr, $id);
@@ -1280,8 +1422,17 @@ switch($idx)
 			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
 		break;
 	case "add":
-		$body->title = babTranslate("Upload file to")." /".$path;
+		$body->title = babTranslate("Upload file to")." /".$path. " ( ".$GLOBALS['babMaxFileSize']." ".babTranslate("Bytes") . " ".babTranslate("Max")." )";
 		addFile($id, $gr, $path, $description, $keywords);
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		if( $upload)
+			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+		if( $bmanager)
+			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+		break;
+
+	case "disk":
+		showDiskSpace($id, $gr, $path);
 		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
 		if( $upload)
 			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
