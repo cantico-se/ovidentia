@@ -358,7 +358,7 @@ function addGroup($name, $description, $managerid, $bemail, $grpdg)
 			$managerid = 0;
 		if( empty($grpdg))
 			$grpdg = 0;
-		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, id_dgowner) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "', '".$grpdg. "', '".$babBody->currentAdmGroup."')";
+		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "', '".$grpdg. "', 'N', 'N', 'N','".$babBody->currentAdmGroup."')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 
