@@ -1151,13 +1151,16 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	$workdays = array_unique($workdays);
 
-	foreach ($calopt as $user)
+	if( count($calopt) > 0 )
 		{
-		foreach ($workdays as $k => $day)
+		foreach ($calopt as $user)
 			{
-			if (!in_array($day,$user))
+			foreach ($workdays as $k => $day)
 				{
-				unset($workdays[$k]);
+				if (!in_array($day,$user))
+					{
+					unset($workdays[$k]);
+					}
 				}
 			}
 		}
@@ -1169,13 +1172,17 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	$GLOBALS['avariability'] = array();
 
-	for($i = 0; $i < $nbdays; $i++)
+	if( count($workdays) > 0)
 		{
-		$begin_day = $begin + $i*(24*3600);
-		if (!in_array(date('w',$begin_day),$workdays))
+		for($i = 0; $i < $nbdays; $i++)
+
 			{
-			$GLOBALS['avariability'][] = bab_longDate($begin_day,false);
-			$message1 = bab_translate("The event is on a non-working day");
+			$begin_day = $begin + $i*(24*3600);
+			if (!in_array(date('w',$begin_day),$workdays))
+				{
+				$GLOBALS['avariability'][] = bab_longDate($begin_day,false);
+				$message1 = bab_translate("The event is on a non-working day");
+				}
 			}
 		}
 	$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin),date('H',$begin),date('H',$begin),date('i',$begin), date('s',$begin));
