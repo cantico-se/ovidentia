@@ -299,6 +299,12 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		return;
 		}
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$desc = addslashes($desc);
+		$content = addslashes(bab_stripDomainName($content));
+		$title = addslashes($title);
+		}
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_SECTIONS_TBL." where title='$title'";	
 	$res = $db->db_query($query);
@@ -308,12 +314,6 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$desc = addslashes($desc);
-			$content = addslashes(bab_stripDomainName($content));
-			$title = addslashes($title);
-			}
 		
 		if( $script == "Y")
 			$php = "Y";
