@@ -682,7 +682,7 @@ function listFiles($id, $gr, $path, $bmanager)
 		$pathx = bab_getUploadFullPath($gr, $id);
 		if( substr($pathx, -1) == "/" )
 			$pathx = substr($pathx, 0, -1);
-		if(!mkdir($pathx, 0700))
+		if(!is_dir($pathx) && !mkdir($pathx, 0700))
 			$babBody->msgerror = bab_translate("Can't create directory: ").$pathx;
 		}
 
