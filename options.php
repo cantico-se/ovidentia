@@ -1085,6 +1085,11 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 	{
 	global $babBody, $babDB;
 
+	if( $iduser != $GLOBALS['BAB_SESS_USERID'] && !bab_isUserAdministrator())
+		{
+		return;
+		}
+
 	if( empty($fromdate) || empty($todate))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must choose a valid date !!");
@@ -1240,8 +1245,15 @@ switch($idx)
 		if( !isset($fromdate)) { $fromdate ='';}
 		if( !isset($todate)) { $todate ='';}
 		if( !isset($id_substitute)) { $id_substitute ='';}
-		showUnavailability($iduser, $fromdate, $todate, $id_substitute);
-		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
+		if( $iduser == $GLOBALS['BAB_SESS_USERID'] || bab_isUserAdministrator())
+			{
+			showUnavailability($iduser, $fromdate, $todate, $id_substitute);
+			$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("Access denied");
+			}
 		break;
 
 	case "cb":

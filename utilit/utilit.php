@@ -2258,9 +2258,35 @@ function bab_updateUserSettings()
 					{
 					$idsup = $arr['id_user'];
 					}
-				elseif( $arr['id_substitute'] == $BAB_SESS_USERID)
+				elseif( $arr['id_substitute'] == $BAB_SESS_USERID && (count($babBody->substitutes) == 0 || !in_array($arr['id_user'], $babBody->substitutes)))
 					{
-					$idsup = $arr['id_user'];
+					$entities = bab_OCGetUserEntities($arr['id_user']);
+					if( count($entities['superior']) > 0 )
+						{
+						$add = true;
+						for( $i=0; $i < count($entities['superior']); $i++ )
+							{
+							$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]);
+							if( $idte && $idte != $BAB_SESS_USERID)
+								{
+								$res2 = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date and id_user='".$idte."'");
+								if( !$res2 || $babDB->db_num_rows($res2) == 0 )
+									{
+									$add = false;
+									break;
+									}
+								}
+							}
+
+						if( $add )
+							{
+							$idsup = $arr['id_user'];
+							}
+						}
+					else
+						{
+						$idsup = $arr['id_user'];
+						}
 					}
 				if( $idsup && (count($babBody->substitutes) == 0 || !in_array($idsup, $babBody->substitutes) ))
 					{
