@@ -335,6 +335,7 @@ function listArticles($topics, $approver)
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' and confirmed='N'");
 			list($this->nbws) = $this->db->db_fetch_row($res);
 			$this->approver = $approver;
+			$this->waitcom = bab_getWaitingComments($topics);
 			}
 
 		function getnext(&$skip)
@@ -370,11 +371,17 @@ function listArticles($topics, $approver)
 					$res = $this->db->db_query($req);
 					$ar = $this->db->db_fetch_array($res);
 					$total = $ar['total'];
-
-					$req = "select count(".BAB_COMMENTS_TBL.".id) as total from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-					$res = $this->db->db_query($req);			
-					$ar = $this->db->db_fetch_array($res);
-					$totalw = $ar['total'];
+					if( count($this->waitcom) > 0 )
+						{
+						$req = "select count(".BAB_COMMENTS_TBL.".id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and id IN (".implode(',',$this->waitcom).")";
+						$res = $this->db->db_query($req);			
+						$ar = $this->db->db_fetch_array($res);
+						$totalw = $ar['total'];
+						}
+					else
+						{
+						$totalw = 0;
+						}
 					if( $total > 0 || ( $totalw > 0 && bab_isUserCommentApprover($this->topics) ))
 						{
 						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];

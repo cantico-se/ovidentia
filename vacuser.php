@@ -426,8 +426,16 @@ function listWaitingVacation()
 			$this->confirm = bab_translate("Confirm");
 			$this->refuse = bab_translate("Refuse");
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select ".BAB_VAC_ENTRIES_TBL.".* from ".BAB_VAC_ENTRIES_TBL." join ".BAB_FAR_INSTANCES_TBL." where status='' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_VAC_ENTRIES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y' order by ".BAB_VAC_ENTRIES_TBL.".date desc");
-			$this->count = $this->db->db_num_rows($this->res);
+			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+			if( count($arrschi) > 0 )
+				{
+				$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".implode(',', $arrschi).") order by date desc");
+				$this->count = $this->db->db_num_rows($this->res);
+				}
+			else
+				{
+				$this->count = 0;
+				}
 			}
 
 		function getnext()

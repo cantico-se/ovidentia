@@ -110,9 +110,17 @@ class listFiles
 
 				if( $what == "list" && $gr == "Y" && $babBody->aclfm['idsa'][$i] != 0 && ($this->buaf = isUserApproverFlow($babBody->aclfm['idsa'][$i], $BAB_SESS_USERID)) )
 					{
-					$req = "select f.* from ".BAB_FILES_TBL." f join ".BAB_FAR_INSTANCES_TBL." i where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='N' and i.idschi=f.idfai and i.iduser='".$BAB_SESS_USERID."' and i.result='' and  i.notified='Y'";
-					$this->reswf = $this->db->db_query($req);
-					$this->countwf = $this->db->db_num_rows($this->reswf);
+					$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+					if( count($arrschi) > 0 )
+						{
+						$req = "select f.* from ".BAB_FILES_TBL." f where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='N' and f.idfai IN (".implode(',', $arrschi).")";
+						$this->reswf = $this->db->db_query($req);
+						$this->countwf = $this->db->db_num_rows($this->reswf);
+						}
+					else
+						{
+						$this->countwf = 0;
+						}
 					}
 				}
 			}
@@ -1135,13 +1143,15 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 						}
 					else
 						{
-						$res = $db->db_query("select ".BAB_FILES_TBL.".id from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where ".BAB_FILES_TBL.".id='".$arr['id']."' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'");
-						if( $res && $db->db_num_rows($res) > 0 )
+						$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+						if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
+							{
 							break;
+							}
 						else
 							{
-							$babBody->msgerror = bab_translate("Access denied");
-							return false;
+								$babBody->msgerror = bab_translate("Access denied");
+								return false;
 							}
 						}
 					}
@@ -1959,9 +1969,11 @@ function viewFile( $idf)
 			{
 			if( $arr['confirmed'] == "N" )
 				{
-				$res = $db->db_query("select ".BAB_FILES_TBL.".id from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where ".BAB_FILES_TBL.".id='".$arr['id']."' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'");
-				if( $res && $db->db_num_rows($res) > 0 )
+				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+				if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
+					{
 					$bconfirm = true;
+					}
 				}
 
 			for( $i = 0; $i < count($babBody->aclfm['id']); $i++ )

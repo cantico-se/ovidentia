@@ -871,9 +871,14 @@ switch($idx)
 		if( $ucapp )
 		{
 		$newc = 0;
-		$req = "select ".BAB_COMMENTS_TBL.".* from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$article."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-		$res = $babDB->db_query($req);			
-		$newc = $babDB->db_num_rows($res);
+		$waitcom = bab_getWaitingComments($topics);
+		if( count($waitcom) > 0 )
+			{
+			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and id IN (".implode(',',$waitcom).")";
+			$res = $babDB->db_query($req);			
+			$newc = $babDB->db_num_rows($res);
+			}
+
 		if( $newc > 0 )
 			{
 			$babBody->title = bab_translate("Waiting comments");
@@ -910,9 +915,13 @@ switch($idx)
 		if( $uaapp )
 		{
 			$new = 0;
-			$req = "select ".BAB_ARTICLES_TBL.".* from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$topics."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y' order by date desc";
-			$res = $babDB->db_query($req);
-			$new = $babDB->db_num_rows($res);
+			$waitcom = bab_getWaitingArticles($topics);
+			if( count($waitcom) > 0 )
+				{
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and id IN (".implode(',',$waitcom).")  order by date desc";
+				$res = $babDB->db_query($req);			
+				$new = $babDB->db_num_rows($res);
+				}
 			if( $new > 0 )
 			{
 				$babBody->title = $babLevelTwo;

@@ -345,8 +345,8 @@ if(!isset($idx))
 
 if(isset($addcomment) && ( $approver || bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)))
 	{
-	if( isset($name) && empty($name))
-		$name = "Anonymous";
+	if( !isset($cname) || empty($cname))
+		$cname = "Anonymous";
 	if( !saveComment($topics, $article, $cname, $subject, $message, $com))
 		{
 		if( empty($com))
@@ -363,9 +363,14 @@ if( isset($action) && $action == "Yes" && $approver)
 
 if( $ucapp )
 	{
-	$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$article."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-	$res = $babDB->db_query($req);			
-	$new = $babDB->db_num_rows($res);
+	$waitcom = bab_getWaitingComments($topics);
+	if( count($waitcom) > 0 )
+		{
+		$req = "select count(".BAB_COMMENTS_TBL.".id) as total from ".BAB_COMMENTS_TBL." where id_article='".$article."' and id IN (".implode(',',$waitcom).")";
+		$res = $babDB->db_query($req);			
+		$ar = $babDB->db_fetch_array($res);
+		$new = $ar['total'];
+		}
 	}
 
 $babLevelTwo = bab_getCategoryTitle($topics);

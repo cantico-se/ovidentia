@@ -162,6 +162,19 @@ function bab_isUserAdministrator()
 	return $babBody->isSuperAdmin;
 }
 
+function bab_getWaitingIdSAInstance($iduser)
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	$arr = getWaitingApprobations($iduser);
+	return $arr['idschi'];
+	}
+
+function bab_getWaitingIdSA($iduser)
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	$arr = getWaitingApprobations($iduser);
+	return $arr['idsch'];
+	}
 
 function bab_getWaitingArticles($topics)
 	{
@@ -169,10 +182,14 @@ function bab_getWaitingArticles($topics)
 	if( !isset($babBody->waitingarticles))
 		{
 		$babBody->waitingarticles = array();
-		$res = $babDB->db_query("SELECT at.id , at.id_topic FROM ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_FAR_INSTANCES_TBL." fi on at.idfai = fi.idschi WHERE fi.iduser =  '".$BAB_SESS_USERID."' AND fi.result =  '' AND fi.notified ='Y'");
-		while( $arr = $babDB->db_fetch_array($res))
+		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		if( count($arrschi) > 0 )
 			{
-			$babBody->waitingarticles[$arr['id_topic']] = $arr['id'];
+			$res = $babDB->db_query("SELECT at.id , at.idfai, at.id_topic FROM ".BAB_ARTICLES_TBL." at WHERE at.confirmed='N'");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$babBody->waitingarticles[$arr['id_topic']][] = $arr['id'];
+				}
 			}
 		}
 	if( isset($babBody->waitingarticles[$topics]))
@@ -191,10 +208,14 @@ function bab_getWaitingComments($topics)
 	if( !isset($babBody->waitingcomments))
 		{
 		$babBody->waitingcomments = array();
-		$res = $babDB->db_query("SELECT ct.id , ct.id_topic FROM ".BAB_COMMENTS_TBL." ct LEFT JOIN ".BAB_FAR_INSTANCES_TBL." fi on ct.idfai = fi.idschi WHERE fi.iduser =  '".$BAB_SESS_USERID."' AND fi.result =  '' AND fi.notified ='Y'");
-		while( $arr = $babDB->db_fetch_array($res))
+		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		if( count($arrschi) > 0 )
 			{
-			$babBody->waitingcomments[$arr['id_topic']] = $arr['id'];
+			$res = $babDB->db_query("SELECT ct.id , ct.idfai, ct.id_topic FROM ".BAB_COMMENTS_TBL." ct where ct.confirmed='N'");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$babBody->waitingcomments[$arr['id_topic']][] = $arr['id'];
+				}
 			}
 		}
 	if( isset($babBody->waitingcomments[$topics]))
@@ -591,6 +612,7 @@ function bab_contactsAccess()
 
 function bab_vacationsAccess()
 	{
+	global $babBody;
 	$db = $GLOBALS['babDB'];
 
 	$array = array();
@@ -606,10 +628,15 @@ function bab_vacationsAccess()
 		$array['manager'] = true;
 		}
 
-	$res = $db->db_query("select ".BAB_VAC_ENTRIES_TBL.".* from ".BAB_VAC_ENTRIES_TBL." join ".BAB_FAR_INSTANCES_TBL." where status='' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_VAC_ENTRIES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'");
-	if($res && $db->db_num_rows($res) > 0 )
+	$arrchi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+	$res = $db->db_query("select * from ".BAB_VAC_ENTRIES_TBL."  where status=''");
+	while($arr =  $db->db_fetch_array($res) )
 		{
-		$array['approver'] = true;
+		if( count($arrchi) > 0  && in_array($arr['idfai'], $arrchi))
+			{
+			$array['approver'] = true;
+			break;
+			}
 		}
 
 	return $array;
@@ -1177,14 +1204,24 @@ function bab_replace( $txt, $remove = '' )
 				if ( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id_directory']) || $arr['id_directory'] == 0 )
 					{
 					if (trim($m[2][$k]) == '')
+						{
 						$title = bab_composeUserName($arr['sn'],$arr['givenname']);
+						}
+					else
+						{
+						$title = trim($m[2][$k]);
+						}
 					$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$arr['id_directory']."&idu=".$arr['id']."', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
 					}
 				else
+					{
 					$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
+					}
 				}
 			else
+				{
 				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
+				}
 			}
 		}
 	else
