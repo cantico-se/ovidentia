@@ -54,7 +54,7 @@ class bab_WebStatEvent
 			$this->host = getenv("REMOTE_HOST");
 			$this->ip = gethostbyname(getenv("REMOTE_HOST"));
 			}
-		if (!$ip)
+		if (!$this->ip)
 			{
 			$this->ip = "unknown";
 			}
