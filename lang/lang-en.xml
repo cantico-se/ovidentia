@@ -762,4 +762,12 @@
 <string id="Shared">Shared</string>
 <string id="Invalid image extension">Invalid image extension</string>
 <string id="Alignment">Alignment</string>
+<string id="FAQ Name">FAQ Name</string>
+<string id="ERROR: You must provide a FAQ !!">ERROR: You must provide a FAQ !!</string>
+<string id="ERROR: This FAQ already exists">ERROR: This FAQ already exists</string>
+<string id="Update FAQ">Update FAQ</string>
+<string id="WARNING: This operation will delete the FAQ with all questions and responses">WARNING: This operation will delete the FAQ with all questions and responses</string>
+<string id="ERROR: You must provide a FAQ name !!">ERROR: You must provide a FAQ name !!</string>
+<string id="Delete FAQ">Delete FAQ</string>
+<string id="Modify FAQ">Modify FAQ</string>
 </en>
