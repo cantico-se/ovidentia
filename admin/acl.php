@@ -194,11 +194,10 @@ class macl
 
 
 	
-function maclUpdate()
+function maclGroups()
 	{
 	global $babBody;
 	$db = $GLOBALS['babDB'];
-	//print_r($_POST);
 	$prefix = 'macl_what_';
 	foreach($_POST as $field => $value)
 		{
@@ -207,7 +206,7 @@ function maclUpdate()
 			$table = substr($field,strlen($prefix));
 			$id = $_POST['item'];
 			$what = $_POST['macl_what_'.$table];
-			$groups = $_POST['macl_groups_'.$table];
+			$groups = isset($_POST['macl_groups_'.$table])?$_POST['macl_groups_'.$table]:array();
 			
 			$req = "delete from ".$table." where id_object = '".$id."'";
 			$res = $db->db_query($req);
@@ -247,6 +246,6 @@ function aclGroups($target, $index, $table, $id, $return)
 
 function aclUpdate($table, $id, $groups, $what)
 	{
-	maclUpdate();
+	maclGroups();
 	}
 ?>
