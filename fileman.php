@@ -1343,7 +1343,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 						break;
 					case 1:
 						deleteFlowInstance($arr['idfai']);
-						$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$arr['id']."'");
+						$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0', modified=now() where id = '".$arr['id']."'");
 						if( $bnotify == "Y")
 							{
 							fileNotifyMembers($arr['name'], $arr['path'], $arr['id_owner'], bab_translate("A new file has been uploaded"));
