@@ -172,7 +172,7 @@ function confirmDeleteSection($id)
 	$res = $db->db_query($req);	
 
 	// delete from sections_states
-	$req = "delete from sections_states where id_section='$id' and private='2'";
+	$req = "delete from sections_states where id_section='$id' and type='2'";
 	$res = $db->db_query($req);	
 
 	// delete section

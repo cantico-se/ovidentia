@@ -314,11 +314,10 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		$query = "insert into sections (title, position, description, content, script, jscript) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
-		$query = "select max(ordering) from sections_order where position='".$pos."'";
-		$res = $db->db_query($query);
+		$db->db_query("insert into sections_groups (id_object, id_group) values ('". $id. "', '3')");
+		$res = $db->db_query("select max(ordering) from sections_order where position='".$pos."'");
 		$arr = $db->db_fetch_array($res);
-		$query = "insert into sections_order (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')";
-		$db->db_query($query);		
+		$db->db_query("insert into sections_order (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')");		
 		}
 	}
 
