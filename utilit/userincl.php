@@ -626,6 +626,22 @@ function bab_getUserGroups($id = "")
 	return $arr;
 	}
 
+function bab_getGroups()
+	{
+	$arr = array();
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from ".BAB_GROUPS_TBL." where id!='1' and id != '2'");
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		while( $r = $db->db_fetch_array($res))
+			{
+			$arr['id'][] = $r['id'];
+			$arr['name'][] = $r['name'];
+			}
+		}
+	return $arr;
+	}
+
 function bab_replace( $txt )
 {
 	global $babBody;
