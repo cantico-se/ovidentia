@@ -16,6 +16,7 @@ articles.html           modifyarticle       Added { images } and { files }
                                             Added editor.ListFilesUrl('{ urlfiles }') javascript
                                             Added javascript functions onInsertFile() and savef()
                                             Added onFocus() in headtext and bodytext textarea
+                        readmore            Added icone for printing friendly                                         
 
 waiting.html            modifyarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
@@ -24,7 +25,7 @@ waiting.html            modifyarticle       Added { images } and { files }
                                             Added onFocus attribute to headtext textarea
                                             Added onFocus attribute to bodytext textarea
 fileman.html                                Added template 'browsefiles'
-                        viewfile            Permute <!--#if bupdate --> <!--#if bmanager -->
+                        viewfile            Permute <!--#if bupdate --> and <!--#if bmanager -->
 
 faq.html                admquestioncreate   Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
@@ -38,6 +39,12 @@ faq.html                admquestioncreate   Added { images } and { files }
                                             Added editor.ListFilesUrl('{ urlfiles }') javascript
                                             Added javascript functions onInsertFile() and savef()
                                             Added onFocus() in headtext and bodytext textarea
+                                            <input type="text" name="question" size="80"> : removed maxlength
+topics.html             categorycreate      Changed maxlength to 60 in category field
+                        categorymodify      Changed maxlength to 60 in category field
+
+sites.html              sitemodify          Added imgsize input field   
+                        sitecreate          Added imgsize input field 
 
 
 

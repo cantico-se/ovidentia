@@ -94,7 +94,6 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 		var $nameval;
 		var $descriptionval;
 		var $lang;
-		var $langval;
 		var $siteemail;
 		var $siteemailval;
 		var $create;
