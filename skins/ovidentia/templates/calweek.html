@@ -48,9 +48,6 @@
 	<tr>
 		<td class="BabMonthCalendarCurentDayBackground" width="1%">
 			<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
-				<tr height="30">
-					<td>&nbsp;</td>
-				</tr>
 			<!--#in getnexthour -->
 				<tr height="30">
 					<td class="BabMonthCalendarCurentDayBackground" >
@@ -71,9 +68,7 @@
 				<tr>
 					<!--#in getnextcal -->
 					<!--#if nbCalEvents -->
-					<td colspan="{ nbmaxcol }" align="center" nowrap>{ fullname }</td>
-					<!--#else nbCalEvents -->
-					<td>&nbsp;</td>
+					<td colspan="{ cols }" align="center" nowrap>{ fullname }</td>
 					<!--#endif nbCalEvents -->
 					<!--#endin getnextcal -->
 				<tr>
@@ -81,7 +76,6 @@
 				<tr height="30">
 					<!--#in getnextcal -->
 					<!--#in getnexteventcol -->
-					<!--#in getnextevent -->
 						<!--#if bevent -->
 						<td class="BabCalendarBodyFont" style="background-color:{ bgcolor };" title="{ title }" nowrap>
 							<!--#if first -->
@@ -94,7 +88,6 @@
 						<!--#else bevent -->
 						<td nowrap>&nbsp;</td>
 						<!--#endif bevent -->
-					<!--#endin getnextevent -->
 					<!--#endin getnexteventcol -->
 					<!--#endin getnextcal -->
 				</tr>

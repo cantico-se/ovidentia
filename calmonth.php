@@ -165,6 +165,24 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$arr = $this->evtarr[$i];
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
+			if( $this->status == BAB_CAL_STATUS_NONE )
+				{
+				$this->statusurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=confvent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+				$this->bstatus = true;
+				$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+				if( $iarr['type'] == BAB_CAL_USER_TYPE && $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+					{
+					$this->bstatusurl = true;
+					}
+				else
+					{
+					$this->bstatusurl = false;
+					}
+				}
+			else
+				{
+				$this->bstatus = false;
+				}
 			$this->bgcolor = $arr['color'];
 			//$this->bgcolor = $this->icals[$this->cindex]->getCategoryColor($arr['id_cat']);
 			$this->idevent = $arr['id'];
@@ -181,8 +199,12 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->block = $arr['block'];
 			$this->bfree = $arr['bfree'];
 			$this->description = $arr['description'];
+			$this->nbowners = $arr['nbowners'];
 			$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
 			$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+			$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+			$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+			$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 			$i++;
 			return true;
 			}

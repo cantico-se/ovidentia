@@ -472,6 +472,7 @@ class cal_wmdbaseCls
 		$this->dayurlname = bab_translate("Day");
 		$this->gotodayname = bab_translate("Go to Today");
 		$this->attendeestxt = bab_translate("Attendees");
+		$this->statustxt = bab_translate("Waiting event");
 		$this->t_calendarchoice = bab_translate('Calendars');
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));

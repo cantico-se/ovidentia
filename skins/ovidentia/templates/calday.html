@@ -33,18 +33,18 @@
 	</tr>
 </table>
 
-<table width="98%" cellpadding="1" cellspacing="0" align="center" border="1">
+<table width="98%" cellpadding="1" cellspacing="0" align="center" border="0">
 
 	<tr class="BabMonthCalendarCurentDayBackground">
 		<td width="1%"  nowrap>&nbsp;</td>
 		<!--#in getnextcal -->
-		<td colspan="{ nbmaxcol }" class="BabMonthAltCalendarCurentUserBackground" nowrap align="center">{ fullname }</td>
+		<td colspan="{ cols }" class="BabMonthAltCalendarCurentUserBackground" nowrap align="center">{ fullname }</td>
 		<!--#endin getnextcal -->
 	</tr>
 
 <!--#in getnexthour -->
 	<tr class="BabMonthCalendarCurentDayBackground" height="30">
-		<td width="1%" nowrap>
+		<td width="1%" valign="top" nowrap>
 			<!--#if bowner "== 1" -->
 			<a class="BabDayCalendarHourLink" href="{ hoururl }">{ hour }</a>
 			<!--#else bowner -->
@@ -55,18 +55,21 @@
 		<!--#in getnextcal -->
 
 		<!--#in getnexteventcol -->
-		<!--#in getnextevent -->
 		<!--#if bevent -->
 		<td width="50%" bgcolor="{ bgcolor }" nowrap cellpadding="0" >
-			<a class="BabDayCalendarEventLink" href="{ titletenurl }" title="{ title }" nowrap>{ titleten }</a>
+			<!--#if first -->
+			<!--{ starttime }&nbsp;-->
+			<a class="BabMonthCalendarEventLink" href="{ titletenurl }" title="{ title }" nowrap>{ titleten }</a>
 			<!--#if nbowners -->
 			<a class="BabDayCalendarEventLink" href="javascript:bab_popup('{ attendeesurl }',2)" title="{ attendeestxt }" nowrap><img src="{ babSkinPath }images/Puces/head.gif" border="0"></a>
 			<!--#endif nbowners -->
+			<!--#else first -->
+			&nbsp;
+			<!--#endif first -->
 		</td>
 		<!--#else bevent -->
 		<td width="50%" nowrap cellpadding="0">&nbsp;</td>
 		<!--#endif bevent -->
-		<!--#endin getnextevent -->
 		<!--#endin getnexteventcol -->
 
 	<!--#endin getnextcal -->

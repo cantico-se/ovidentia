@@ -813,7 +813,7 @@ function addEvent(&$message)
 					$time = $begin;
 					do
 						{
-						createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+						createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
 						$time += $rtime;
 						}
 					while( $time < $repeatdate );
@@ -831,7 +831,7 @@ function addEvent(&$message)
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin+$delta, $yearbegin );
 						do
 							{
-							createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+							createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
 							$time += 24*3600*7;
 							}
 						while( $time < $repeatdate );
@@ -852,7 +852,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
 					}
 				while( $time < $repeatdate );
@@ -870,7 +870,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
 					}
 				while( $time < $repeatdate );
@@ -892,7 +892,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, BAB_CAL_STATUS_ACCEPTED, $hash);
 					$time += $rtime;
 					}
 				while( $time < $repeatdate );
@@ -1063,7 +1063,7 @@ function calendarquerystring()
 /* main */
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "newevent";
 //record_calendarchoice();
-$calid = $_REQUEST['calid'];
+$calid = isset($_REQUEST['selected_calendars'])? implode($_REQUEST['selected_calendars']): $calid;
 
 
 $calid = bab_isCalendarAccessValid($calid);
@@ -1120,14 +1120,14 @@ switch($idx)
 		switch($view)
 		{
 			case 'viewd':
-				$refreshurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."date=".$curyear.",".$curmonth.",".$curday;
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$curcalids."&date=".$date;
 				break;
 			case 'viewq':
-				$refreshurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."date=".$curyear.",".$curmonth.",".$curday;
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$curcalids."&date=".$date;
 				break;
 			case 'viewm':
 			default:
-				$refreshurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."date=".$curyear.",".$curmonth.",".$curday;
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$curcalids."&date=".$date;
 				break;
 		}
 		popupUnload($popupmessage, $refreshurl);

@@ -240,7 +240,7 @@ function getAvailableResourcesCalendars($bwrite = false)
 
 function createEvent($idcals, $title, $description, $startdate, $enddate, $category, $color, $status, $hash='')
 {
-	global $babDB;
+	global $babDB, $babDB;
 
 	if( bab_isMagicQuotesGpcOn())
 		{
@@ -254,6 +254,16 @@ function createEvent($idcals, $title, $description, $startdate, $enddate, $categ
 
 	foreach($idcals as $id_cal)
 		{
+		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+		if( $arr['type'] == BAB_CAL_USER_TYPE && $arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+			{
+			$ustatus = BAB_CAL_STATUS_ACCEPTED;
+			}
+		else
+			{
+			$ustatus = $status;
+			}
+
 		$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$id_cal."', '".$status."')");
 		}
 }
@@ -583,7 +593,7 @@ class bab_icalendars
 					{ 
 					if( $row[0] == $idcal)
 						{
-						return $row[1]['owner'];
+						return $row[1]['idowner'];
 						}
 					}
 			}
@@ -595,7 +605,7 @@ class bab_icalendars
 					{ 
 					if( $row[0] == $idcal)
 						{
-						return $row[1]['owner'];
+						return $row[1]['idowner'];
 						}
 					}
 			}
@@ -607,7 +617,55 @@ class bab_icalendars
 					{ 
 					if( $row[0] == $idcal)
 						{
-						return $row[1]['owner'];
+						return $row[1]['idowner'];
+						}
+					}
+			}
+		}
+	return false;
+	}
+
+	function getCalendarInfo($idcal)
+	{
+		if( $idcal == $this->id_percal )
+		{
+			return array('name' => $GLOBALS['BAB_SESS_USER'], 'description' => '', 'type' => BAB_CAL_USER_TYPE, 'idowner' => $GLOBALS['BAB_SESS_USERID'], 'access' => BAB_CAL_ACCESS_FULL);
+		}
+		else
+		{
+			$this->initializeCalendars();
+			if( count($this->pubcal) > 0 )
+			{
+				reset($this->pubcal);
+				while( $row=each($this->pubcal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1];
+						}
+					}
+			}
+			
+			if( count($this->rescal) > 0 )
+			{
+				reset($this->rescal);
+				while( $row=each($this->rescal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1];
+						}
+					}
+			}
+
+			if( count($this->usercal) > 0 )
+			{
+				reset($this->usercal);
+				while( $row=each($this->usercal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1];
 						}
 					}
 			}
@@ -646,7 +704,12 @@ function bab_deleteCalendar($idcal)
 			break;
 		}
 
-	$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$idcal."'");	
+	$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id_event']."'");	
+		}
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");	
 	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$idcal."'");	
 }
 

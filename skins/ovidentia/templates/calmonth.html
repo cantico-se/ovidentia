@@ -68,7 +68,24 @@
 			<!--#endif countevent -->
 			<!--#in getnextevent -->
 			<div style="background-color : { bgcolor }; width :100%;padding:2px" title="{ title }" nowrap>
-				{ starttime }&nbsp;&nbsp;<a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
+				<table width="100%" border="0" align="center">
+					<tr>
+						<td align="left" valign="middle">{ starttime }&nbsp;&nbsp;<a class="BabMonthCalendarEventLink" href="javascript:bab_popup('{ titletenurl }',2)">{ titleten }</a>
+						</td>
+						<td align="right" valign="middle">&nbsp;
+						<!--#if nbowners -->
+						<a class="BabDayCalendarEventLink" href="javascript:bab_popup('{ attendeesurl }',2)" title="{ attendeestxt }" nowrap><img src="{ babSkinPath }images/Puces/head.gif" border="0"></a>&nbsp;
+						<!--#endif nbowners -->
+						<!--#if bstatus -->
+						<!--#if bstatusurl -->
+						<a class="BabDayCalendarEventLink" href="javascript:bab_popup('{ statusurl }',3)" title="{ statustxt }" nowrap><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0"></a>
+						<!--#else bstatusurl -->
+						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0">
+						<!--#endif bstatusurl -->
+						<!--#endif bstatus -->
+						</td>
+					</tr>
+				</table>
 			</div>
 			<!--#endin getnextevent -->
 			<!--#endin getnextcal -->
