@@ -19,6 +19,18 @@ function Start(page)
 	OpenWin = this.open(page, "", "width=650,height=500,status=no,resizable=yes,top=200,left=200, scrollbars=yes");
 }
 </script>
+<!--#if bhtml "== 1" -->
+<script language="JavaScript">
+<!--
+function mm()
+{
+  document.forms.composef.compose.value = "";
+  document.forms.composef.idx.value = "compose";
+  document.forms.composef.submit.click();
+}
+//-->
+</script>
+<!--#endif bhtml -->
 <center>
 <table border="0" width="90%" cellpadding="0" cellspacing="0">
 <tr><td>
@@ -67,14 +79,42 @@ function Start(page)
 <tr>
 <td align="right" nowrap>{ format }:</td>
 <td>
-<select name="format">
+<select name="format" 
+<!--#if bhtml "== 1" --> 
+onChange="mm()"<!--#endif bhtml -->>
 <option value="plain" { plainselect }>{ plain }</option>
 <option value="html" { htmlselect }>{ html }</option>
 </select>
 </td>
 </tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
 <tr>
-<td colspan="2"><textarea cols="70" rows="20" name="message">{ messageval }</textarea></td>
+<td align="right" nowrap>&nbsp;</td>
+<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="message">{ messageval }</textarea></td>
+</tr>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td>
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+<tr>
+<td colspan="2">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "message", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+<textarea cols="70" rows="20" name="message">{ messageval }</textarea>
+<!--#endif msie -->
+</td>
 </tr>
 <tr>
 <td colspan="2" align="center">
@@ -86,9 +126,19 @@ function Start(page)
 </select>
 </td>
 </tr>
+<!--#if msie "== 1" -->
+<tr>
+<td colspan="2" align="center"><input onclick=SetVals() type="submit" name="submit" value="{ send }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 <tr>
 <td colspan="2" align="center"><input type="submit" name="submit" value="{ send }"></td>
 </tr>
+<!--#endif msie -->
 </table>
 </center>
 </form>

@@ -472,7 +472,7 @@ function signaturesList()
 	return $temp->count;
 	}
 
-function signatureAdd()
+function signatureAdd($signature, $name, $html)
 	{
 	global $body;
 	class temp
@@ -483,8 +483,14 @@ function signatureAdd()
 		var $yes;
 		var $no;
 		var $add;
+		var $msie;
+		var $signatureval;
+		var $nameval;
+		var $htmlselected;
+		var $textselected;
+		var $bhtml;
 
-		function temp()
+		function temp($signature, $name, $html)
 			{
 			$this->name = babTranslate("Name");
 			$this->signature = babTranslate("Signature");
@@ -492,14 +498,41 @@ function signatureAdd()
 			$this->yes = babTranslate("Yes");
 			$this->no = babTranslate("No");
 			$this->add = babTranslate("Add");
+			$this->signatureval = $signature != ""? $signature: "";
+			$this->nameval = $name != ""? $name: "";
+			$this->onchange = "";
+			if( strtolower(browserAgent()) == "msie")
+				{
+				if( empty($html))
+					$html = "Y";
+				$this->bhtml = 1;
+				$this->msie = 1;
+				}
+			else
+				{
+				$this->bhtml = 0;
+				$this->msie = 0;
+				}
+			if( $html == "Y")
+				{
+				$this->htmlselected = "selected";
+				$this->textselected = "";
+				}
+			else
+				{
+				if( $html == "N" )
+					$this->msie = 0;
+				$this->htmlselected = "";
+				$this->textselected = "selected";
+				}
 			}
 		}
 
-	$temp = new temp();
+	$temp = new temp($signature, $name, $html);
 	$body->babecho(	babPrintTemplate($temp,"mailopt.html", "signaturecreate"));
 	}
 
-function signatureModify($sigid)
+function signatureModify($sigid, $signature, $name, $html)
 	{
 	global $body;
 	class temp
@@ -512,8 +545,13 @@ function signatureModify($sigid)
 		var $add;
         var $noselected;
         var $yesselected;
+		var $msie;
+		var $bhtml;
+		var $signatureval;
+		var $nameval;
+		var $id;
 
-		function temp($sigid)
+		function temp($sigid, $signature, $name, $html)
 			{
 			$this->name = babTranslate("Name");
 			$this->signature = babTranslate("Signature");
@@ -521,24 +559,49 @@ function signatureModify($sigid)
 			$this->yes = babTranslate("Yes");
 			$this->no = babTranslate("No");
 			$this->add = babTranslate("Modify");
-            $db = new db_mysql();
-            $req = "select * from mail_signatures where id='".$sigid."'";
-        	$res = $db->db_query($req);
-			$this->arr = $db->db_fetch_array($res);
-            if( $this->arr[html] == "Y")
+			$this->id = $sigid;
+			if( empty($html))
+				{
+	            $db = new db_mysql();
+	            $req = "select * from mail_signatures where id='".$sigid."'";
+				$res = $db->db_query($req);
+				$this->arr = $db->db_fetch_array($res);
+				$this->signatureval = $this->arr[text];
+				$this->nameval = $this->arr[name];
+				$html = $this->arr[html];
+				}
+			else
+				{
+				$this->signatureval = $signature;
+				$this->nameval = $name;
+				}
+
+			if( strtolower(browserAgent()) == "msie")
+				{
+				$this->bhtml = 1;
+				$this->msie = 1;
+				}
+			else
+				{
+				$this->bhtml = 0;
+				$this->msie = 0;
+				}
+            if( $html == "Y")
                 {
                 $this->noselected = "";
                 $this->yesselected = "selected";
                 }
             else
                 {
-                $this->noselected = "selected";
+ 				if( $html == "N" )
+					$this->msie = 0;
+				$this->noselected = "selected";
                 $this->yesselected = "";
                 }
 			}
 		}
 
-	$temp = new temp($sigid);
+	$temp = new temp($sigid,$signature, $name, $html);
 	$body->babecho(	babPrintTemplate($temp,"mailopt.html", "signaturemodify"));
 	}
 
@@ -749,7 +812,7 @@ switch($idx)
 	case "modsig":
 		$body->title = babTranslate("Modify Signature");
 		$bemail = mailAccessLevel();
-		signatureModify($sigid);
+		signatureModify($sigid,$signature, $name, $html);
 		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
 		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listsig");
 		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addsig");
@@ -764,7 +827,7 @@ switch($idx)
     case "addsig":
 		$body->title = babTranslate("Add Signature");
 		$bemail = mailAccessLevel();
-		signatureAdd();
+		signatureAdd($signature, $name, $html);
 		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
 		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listsig");
 		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addsig");

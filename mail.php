@@ -128,6 +128,9 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $rescl;
 		var $none;
 		var $urlto;
+		var $msie;
+		var $bhtml;
+
 
 		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
 			{
@@ -184,6 +187,16 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
             $this->selectsig = "-- ".babTranslate("Select signature"). " --";
 			$this->none = "-- ".babTranslate("Select destinataire"). " --";
 			$this->urlto = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=address&idx=list')";
+			if( strtolower(browserAgent()) == "msie")
+				{
+				$this->bhtml = 1;
+				$this->msie = 1;
+				}
+			else
+				{
+				$this->bhtml = 0;
+				$this->msie = 0;
+				}
 			$this->db = new db_mysql();
 			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 			$res = $this->db->db_query($req);
@@ -195,6 +208,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
                     $pformat = $arr[format];
 				if( $pformat == "plain")
                     {
+					$this->msie = 0;
 					$this->plainselect = "selected";
 					$this->htmlselect = "";
                     }
@@ -411,11 +425,13 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 $msgbody .= get_part($mbox, $idreply, "TEXT/HTML");
                 if(!$msgbody)
                     {
+					$format = "plain";
                     $msgbody = get_part($mbox, $idreply, "TEXT/PLAIN");
                     $msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a href='\\1'>\\1</a>",$msgbody); 
                     }
                 else
                     {
+					$format = "html";
                     $msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2index.php?tg=inbox&accid=".$accid."&idx=getpart&msg=$msg&cid=\\3\\4", $msgbody);
                     }
                 $messageval = CRLF.CRLF.CRLF.CRLF."------".babTranslate("Original Message")."------".CRLF;
@@ -429,7 +445,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 }
             }
         }
-    composeMail($accid, $criteria, $reverse, trim($toval), trim($ccval), "", $subjectval, array(), $arr[format], $messageval, 0);
+    composeMail($accid, $criteria, $reverse, trim($toval), trim($ccval), "", $subjectval, array(), $format, $messageval, 0);
 	}
 
 /* main */
