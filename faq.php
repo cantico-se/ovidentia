@@ -429,13 +429,22 @@ function saveQuestion($item, $question, $response)
 		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
 		}
-	if( !bab_isMagicQuotesGpcOn())
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$question = addslashes(bab_stripDomainName($question));
-		$response = addslashes(bab_stripDomainName($response));
+		$question = stripslashes(bab_stripDomainName($question));
+		$response = stripslashes(bab_stripDomainName($response));
 		}
+
 	$db = $GLOBALS['babDB'];
-	$query = "insert into ".BAB_FAQQR_TBL." (idcat, question, response) values ('" .$item. "', '" .$question. "', '" . $response. "')";
+
+	$query = "insert into ".BAB_FAQQR_TBL." (idcat, question) values ('" .$item. "', '" .addslashes($question). "')";
+	$db->db_query($query);
+	$id = $db->db_insert_id();
+
+	$ar = array();
+	$response = imagesReplace($response, $id."_faq_", $ar);
+
+	$query = "update ".BAB_FAQQR_TBL." set response='".addslashes(bab_stripDomainName($response))."' where id='".$id."'";
 	$db->db_query($query);
 	
 	}
@@ -447,14 +456,18 @@ function updateQuestion($idq, $question, $response)
 		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
 		}
-	if( !bab_isMagicQuotesGpcOn())
+
+	if( bab_isMagicQuotesGpcOn())
 		{
-		$question = addslashes(bab_stripDomainName($question));
-		$response = addslashes(bab_stripDomainName($response));
+		$question = stripslashes(bab_stripDomainName($question));
+		$response = stripslashes(bab_stripDomainName($response));
 		}
 
+	$ar = array();
+	$response = imagesReplace($response, $idq."_faq_", $ar);
+
 	$db = $GLOBALS['babDB'];
-	$query = "update ".BAB_FAQQR_TBL." set question='$question', response='$response' where id = '$idq'";
+	$query = "update ".BAB_FAQQR_TBL." set question='".addslashes($question)."', response='".addslashes(bab_stripDomainName($response))."' where id = '".$idq."'";
 	$db->db_query($query);
 
 	}
@@ -462,7 +475,9 @@ function updateQuestion($idq, $question, $response)
 function confirmDeleteQuestion($item, $idq)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "delete from ".BAB_FAQQR_TBL." where id = '$idq'";
+	$arr = $db->db_fetch_array($db->db_query("select response from ".BAB_FAQQR_TBL." where id='".$idq."'"));
+	deleteImages($arr['response'], $idq, "faq");
+	$req = "delete from ".BAB_FAQQR_TBL." where id = '".$idq."'";
 	$res = $db->db_query($req);
 	}
 

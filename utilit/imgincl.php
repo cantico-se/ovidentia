@@ -54,7 +54,7 @@ function imagesReplace($txt, $prefix, &$tab)
 	return $txt;
 	}
 
-function deleteImagesArticle($txt, $article)
+function deleteImages($txt, $id, $prefix)
 	{
 	preg_match_all("|src=\"?([^\"' >]+)|i", $txt, $m);
 	while(list(,$link) = each($m[1]))
@@ -62,7 +62,7 @@ function deleteImagesArticle($txt, $article)
 		$arr = explode('/', $link);
 		$file = $arr[sizeof($arr) -1];
 		$arr = explode( '_', $file );
-		if( $arr[0] = $article && $arr[1] = "art" && is_file(BAB_IUD_ARTICLES.$file))
+		if( $arr[0] = $id && $arr[1] = $prefix && is_file(BAB_IUD_ARTICLES.$file))
 			@unlink(BAB_IUD_ARTICLES.$file);
 		}
 	}
