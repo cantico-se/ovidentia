@@ -79,50 +79,52 @@
 <!--#end modifyarticle -->
 
 <!--#begin articlehistoric -->
-<br>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" >{ titletxt }:&nbsp;</td>
-<td class="BabErrorMessage" align="left" >{ arttitle }&nbsp;&nbsp;
-<!--#if editdrafttxt --><a class="BabSiteAdminListLink" href="{ editdrafturl }">(&nbsp;{ editdrafttxt }&nbsp;)</a><!--#endif editdrafttxt -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<tr class="BabSiteAdminFontBackground">
+		<td align="right">{ titletxt }:&nbsp;</td>
+		<td>{ arttitle }&nbsp;&nbsp;
+		<!--#if editdrafttxt --><a class="BabSiteAdminListLink" href="{ editdrafturl }">{ editdrafttxt }</a><!--#endif editdrafttxt -->
+		</td>
+	</tr>
+	<tr class="BabSiteAdminFontBackground">
+		<td align="right">{ pathtxt }:&nbsp;</td>
+		<td>{ artpath }</td>
+	</tr>
+	</table>
 </td>
 </tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" >{ pathtxt }:&nbsp;</td>
-<td class="BabErrorMessage" align="left" >{ artpath }</td>
-</tr></table></center>
-<br>
+</table>
+
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ authortxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ datelocktxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ actiontxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ commenttxt }</td>
-</tr> 
-<!--#in getnextlog -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle">{ author }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ datelock }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ action }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ comment }</td>
-</tr>
-<!--#endin getnextlog -->
-<tr > 
-<td colspan="4" class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
-<table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td width="1%"><a class="BabForumNavigation" href="{ topurl }">{ topname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="1%"><a class="BabForumNavigation" href="{ prevurl }">{ prevname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="1%"><a class="BabForumNavigation" href="{ nexturl }">{ nextname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="1%"><a class="BabForumNavigation" href="{ bottomurl }">{ bottomname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-</tr>
-</table>
-</td>
-</tr> 
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td nowrap>{ authortxt }</td>
+		<td nowrap>{ datelocktxt }</td>
+		<td nowrap>{ actiontxt }</td>
+		<td>{ commenttxt }</td>
+	</tr> 
+	<!--#in getnextlog -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>{ author }</td>
+		<td nowrap>{ datelock }</td>
+		<td nowrap>{ action }</td>
+		<td>{ comment }</td>
+	</tr>
+	<!--#endin getnextlog -->
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td colspan="4">
+			<a class="BabSiteAdminListLink" href="{ topurl }">{ topname }</a>&nbsp;&nbsp;
+			<a class="BabSiteAdminListLink" href="{ prevurl }">{ prevname }</a>&nbsp;&nbsp;
+			<a class="BabSiteAdminListLink" href="{ nexturl }">{ nextname }</a>&nbsp;&nbsp;
+			<a class="BabSiteAdminListLink" href="{ bottomurl }">{ bottomname }</a>&nbsp;&nbsp;
+		</td>
+	</tr> 
 </table>
 </td>
 </tr>

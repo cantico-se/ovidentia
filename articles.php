@@ -780,7 +780,7 @@ function viewArticleLog($topics, $article, $pos)
 
 		function temp($topics, $article, $pos)
 			{
-			global $babBodyPopup, $babDB;
+			global $babBodyPopup, $babDB, $rfurl;
 
 			$this->topurl = "";
 			$this->bottomurl = "";
@@ -805,7 +805,8 @@ function viewArticleLog($topics, $article, $pos)
 				if( $arr['id_author'] ==  $GLOBALS['BAB_SESS_USERID'] )
 					{
 					$this->editdrafttxt = bab_translate("Edit");
-					$this->editdrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+					$rfurl = !empty($rfurl) ? urlencode($rfurl) : urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+					$this->editdrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']."&rfurl=".$rfurl;
 					}
 				else
 					{
@@ -1118,6 +1119,8 @@ if( isset($conf) && $conf == "mod" )
 		}
 }
 
+$supp_rfurl = isset($rfurl) ? '&rfurl='.urlencode($rfurl) : '';
+
 switch($idx)
 	{
 	case "unload":
@@ -1158,9 +1161,9 @@ switch($idx)
 		$bmodify = viewArticleLog($topics, $article, $pos);
 		if( $bmodify )
 		{
-		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article);
+		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
 		}
-		$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article);
+		$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article.$supp_rfurl);
 		$babBodyPopup->setCurrentItemMenu($idx);
 		printBabBodyPopup();
 		exit;
@@ -1170,10 +1173,11 @@ switch($idx)
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Modify article");
 		$blog = modifyArticle($topics, $article);
-		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article);
+		
+		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
 		if( $blog )
 		{
-		$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article);
+		$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article.$supp_rfurl);
 		}
 		$babBodyPopup->setCurrentItemMenu($idx);
 		printBabBodyPopup();
