@@ -8,10 +8,13 @@ and copy files from 'programs' folder to this newly created folder.
 3- Create a folder 'directories' under $babInstallPath/skins/ovidentia/templates/addons
 and copy files from 'skins/ovidentia/templates' folder to this newly created folder.
 
-4- Create a folder 'directories' under $babInstallPath/lang/addons
+4- Create a folder 'directories' under $babInstallPath/skins/ovidentia/images/addons
+and copy files from 'skins/ovidentia/images' folder to this newly created folder.
+
+5- Create a folder 'directories' under $babInstallPath/lang/addons
 and copy files from langfiles folder to this newly created folder.
 
-5- Login as Administrator and give access right to this add-on by using
+6- Login as Administrator and give access right to this add-on by using
 'addons' menu from Administrator section.
 
 That's all.
