@@ -198,6 +198,8 @@ function sectionsOrder()
 		var $res;
 		var $moveup;
 		var $movedown;
+		var $arrleft = array();
+		var $arright = array();
 
 		function temp()
 			{
@@ -210,12 +212,89 @@ function sectionsOrder()
 			$this->movedown = bab_translate("Move Down");
 			$this->db = $GLOBALS['babDB'];
 
-			$req = "select * from ".BAB_SECTIONS_ORDER_TBL." where position='0' order by ordering asc";
-			$this->resleft = $this->db->db_query($req);
-			$this->countleft = $this->db->db_num_rows($this->resleft);
-			$req = "select * from ".BAB_SECTIONS_ORDER_TBL." where position='1' order by ordering asc";
-			$this->resright = $this->db->db_query($req);
-			$this->countright = $this->db->db_num_rows($this->resright);
+			$this->resleft = $this->db->db_query("select * from ".BAB_SECTIONS_ORDER_TBL." order by ordering asc");
+			while ( $arr = $this->db->db_fetch_array($this->resleft))
+				{
+				switch( $arr['type'] )
+					{
+					case "1":
+						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+						break;
+					case "3":
+						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'"));
+						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && $rr['id_dgowner'] == 0)
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+						else if( $babBody->isSuperAdmin && ($babBody->currentAdmGroup != $rr['id_dgowner']) )
+						{
+							if( $arr['position'] == 0 && !in_array($rr['id_dgowner']."-0", $this->arrleft))
+								{
+								$this->arrleft[] = $rr['id_dgowner']."-0";
+								}
+							else if( $arr['position'] == 1 && !in_array($rr['id_dgowner']."-1", $this->arright) )
+								{
+								$this->arright[] = $rr['id_dgowner']."-1";
+								}
+						}
+						break;
+					case "4":
+						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+						break;
+					default:
+						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'"));
+						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && $rr['id_dgowner'] == 0)
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+						else if( $babBody->isSuperAdmin && ($babBody->currentAdmGroup != $rr['id_dgowner']) )
+						{
+							if( $arr['position'] == 0 && !in_array($rr['id_dgowner']."-0", $this->arrleft))
+								{
+								$this->arrleft[] = $rr['id_dgowner']."-0";
+								}
+							else if( $arr['position'] == 1 && !in_array($rr['id_dgowner']."-1", $this->arright) )
+								{
+								$this->arright[] = $rr['id_dgowner']."-1";
+								}
+						}
+						break;
+					}
+				}
+			$this->countleft = count($this->arrleft);
+			$this->countright = count($this->arright);
 			}
 
 		function getnextsecleft()
@@ -223,29 +302,38 @@ function sectionsOrder()
 			static $i = 0;
 			if( $i < $this->countleft)
 				{
-				$arr = $this->db->db_fetch_array($this->resleft);
-				switch( $arr['type'] )
+				$rr = explode('-',$this->arrleft[$i]);
+				if( count($rr) > 1 )
 					{
-					case "1":
-						$req = "select * from ".BAB_PRIVATE_SECTIONS_TBL." where id ='".$arr['id_section']."'";
-						break;
-					case "3":
-						$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
-						break;
-					case "4":
-						$req = "select * from ".BAB_ADDONS_TBL." where id ='".$arr['id_section']."'";
-						break;
-					default:
-						$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
-						break;
+					$this->listleftsecval = "[[".bab_getGroupName($rr[0])."(". bab_translate("Left").")]]";
+					$this->secid = $this->arrleft[$i];
 					}
-				$res2 = $this->db->db_query($req);
-				$arr2 = $this->db->db_fetch_array($res2);
-				if( $arr['type'] == "1" )
-					$this->listleftsecval = bab_translate($arr2['title']);
 				else
-					$this->listleftsecval = $arr2['title'];
-				$this->secid = $arr['id'];
+					{
+					$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_SECTIONS_ORDER_TBL." where id='".$rr[0]."'"));
+					switch( $arr['type'] )
+						{
+						case "1":
+							$req = "select * from ".BAB_PRIVATE_SECTIONS_TBL." where id ='".$arr['id_section']."'";
+							break;
+						case "3":
+							$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
+							break;
+						case "4":
+							$req = "select * from ".BAB_ADDONS_TBL." where id ='".$arr['id_section']."'";
+							break;
+						default:
+							$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
+							break;
+						}
+					$res2 = $this->db->db_query($req);
+					$arr2 = $this->db->db_fetch_array($res2);
+					if( $arr['type'] == "1" )
+						$this->listleftsecval = bab_translate($arr2['title']);
+					else
+						$this->listleftsecval = $arr2['title'];
+					$this->secid = $this->arrleft[$i];
+					}
 				$i++;
 				return true;
 				}
@@ -258,29 +346,38 @@ function sectionsOrder()
 			static $j = 0;
 			if( $j < $this->countright)
 				{
-				$arr = $this->db->db_fetch_array($this->resright);
-				switch( $arr['type'] )
+				$rr = explode('-',$this->arright[$j]);
+				if( count($rr) > 1)
 					{
-					case "1":
-						$req = "select * from ".BAB_PRIVATE_SECTIONS_TBL." where id ='".$arr['id_section']."'";
-						break;
-					case "3":
-						$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
-						break;
-					case "4":
-						$req = "select * from ".BAB_ADDONS_TBL." where id ='".$arr['id_section']."'";
-						break;
-					default:
-						$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
-						break;
+					$this->listrightsecval = "[[".bab_getGroupName($rr[0])."(". bab_translate("Right").")]]";
+					$this->secid = $this->arright[$j];
 					}
-				$res2 = $this->db->db_query($req);
-				$arr2 = $this->db->db_fetch_array($res2);
-				if( $arr['type'] == "1" )
-					$this->listrightsecval = bab_translate($arr2['title']);
 				else
-					$this->listrightsecval = $arr2['title'];
-				$this->secid = $arr['id'];
+					{
+					$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_SECTIONS_ORDER_TBL." where id='".$rr[0]."'"));
+					switch( $arr['type'] )
+						{
+						case "1":
+							$req = "select * from ".BAB_PRIVATE_SECTIONS_TBL." where id ='".$arr['id_section']."'";
+							break;
+						case "3":
+							$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
+							break;
+						case "4":
+							$req = "select * from ".BAB_ADDONS_TBL." where id ='".$arr['id_section']."'";
+							break;
+						default:
+							$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
+							break;
+						}
+					$res2 = $this->db->db_query($req);
+					$arr2 = $this->db->db_fetch_array($res2);
+					if( $arr['type'] == "1" )
+						$this->listrightsecval = bab_translate($arr2['title']);
+					else
+						$this->listrightsecval = $arr2['title'];
+					$this->secid = $this->arright[$j];
+					}
 				$j++;
 				return true;
 				}
@@ -452,8 +549,18 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
 		else
 			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '".$babBody->currentAdmGroup."')");
-		$res = $db->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='".$pos."'");
+		$res = $db->db_query("select max(so.ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s where so.position='".$pos."' and  so.type='2' and so.id_section=s.id and s.id_dgowner='".$babBody->currentAdmGroup."'");
 		$arr = $db->db_fetch_array($res);
+		if( empty($arr[0]))
+			{
+			$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='".$pos."'";
+			$res = $db->db_query($req);
+			$arr = $db->db_fetch_array($res);
+			if( empty($arr[0]))
+				$arr[0] = 0;
+			}
+
+		$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='".$pos."' and ordering > '".$arr[0]."'");
 		$db->db_query("insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')");
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$id);
 		exit;
@@ -462,28 +569,114 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 
 function saveSectionsOrder($listleft, $listright)
 	{
+		global $babBody;
+
 		$db = $GLOBALS['babDB'];
 
-		for( $i = 0; $i < count($listleft); $i++)
+		if( $babBody->currentAdmGroup == 0 )
 		{
-			$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set position='0', ordering='".($i+1)."' where id='".$listleft[$i]."'");
-			$arr = $db->db_fetch_array($db->db_query("select id, type from ".BAB_SECTIONS_ORDER_TBL." where id='".$listleft[$i]."'"));
-			if( $arr['type'] == "2")
-				{
-				$db->db_query("update ".BAB_SECTIONS_TBL." set position='0' where id='".$listleft[$i]."'");
-				}
-		}
+			for( $k = 0; $k < 2; $k++ )
+			{
+				$pos = 1;
+				$tab = func_get_arg($k);
 
-		for( $i = 0; $i < count($listright); $i++)
+				for( $i = 0; $i < count($tab); $i++)
+				{
+					$rr = explode('-',  $tab[$i]);
+					if( count($rr) == 1 )
+					{
+						$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set position='".$k."', ordering='".($pos+1)."' where id='".$tab[$i]."'");
+						$arr = $db->db_fetch_array($db->db_query("select id, type from ".BAB_SECTIONS_ORDER_TBL." where id='".$tab[$i]."'"));
+						if( $arr['type'] == "2")
+							{
+							$db->db_query("update ".BAB_SECTIONS_TBL." set position='".$k."' where id='".$tab[$i]."'");
+							}
+						$pos++;
+					}
+					else
+					{
+						$res = $db->db_query("select distinct so.* from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='".$rr[1]."' and (( so.id_section=s.id and type='2' and s.id_dgowner='".$rr[0]."') or ( so.id_section=tc.id and type='3' and tc.id_dgowner='".$rr[0]."')) order by so.ordering asc");
+						while($arr = $db->db_fetch_array($res))
+						{
+							$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set position='".$k."', ordering='".($pos+1)."' where id='".$arr['id']."'");
+							if( $arr['type'] == "2")
+								{
+								$db->db_query("update ".BAB_SECTIONS_TBL." set position='".$k."' where id='".$tab[$i]."'");
+								}
+							$pos++;
+						}
+
+					}
+				}
+			}
+		}
+		else
 		{
-			$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set position='1', ordering='".($i+1)."' where id='".$listright[$i]."'");
-			$arr = $db->db_fetch_array($db->db_query("select id, type from ".BAB_SECTIONS_ORDER_TBL." where id='".$listright[$i]."'"));
-			if( $arr['type'] == "2")
-				{
-				$db->db_query("update ".BAB_SECTIONS_TBL." set position='1' where id='".$listright[$i]."'");
-				}
-		}
+			$apos = array();
 
+			for( $k = 0; $k < 2; $k++ )
+			{
+				$res = $db->db_query("select min(so.ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='".$k."' and (( so.id_section=s.id and type='2' and s.id_dgowner='".$babBody->currentAdmGroup."') or ( so.id_section=tc.id and type='3' and tc.id_dgowner='".$babBody->currentAdmGroup."')) order by so.ordering asc");
+				$arr = $db->db_fetch_array($res);
+				if( isset($arr[0]) )
+				{
+					$apos[$k] = $arr[0];
+
+				}
+				else
+				{
+					$res = $db->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='".$k."'");
+					$arr = $db->db_fetch_array($res);
+					if( empty($arr[0]))
+						$apos[$k] = 1;
+					else
+						$apos[$k] = $arr[0]+1;
+				}
+
+			}
+
+			$db->db_query("create temporary table bab_sec_ord select * from ".BAB_SECTIONS_ORDER_TBL." where 0");
+			$db->db_query("alter table bab_sec_ord add unique (id)");
+			$db->db_query("insert into bab_sec_ord select distinct so.* from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s, ".BAB_TOPICS_CATEGORIES_TBL." tc where ( so.id_section=s.id and type='2' and s.id_dgowner='".$babBody->currentAdmGroup."') or ( so.id_section=tc.id and type='3' and tc.id_dgowner='".$babBody->currentAdmGroup."') order by so.ordering asc");
+
+			$res = $db->db_query("select id from bab_sec_ord");
+			while($arr = $db->db_fetch_array($res))
+				$db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id='".$arr['id']."'");	
+
+
+			for( $k = 0; $k < 2; $k++ )
+			{
+				$ord = 1;
+				$res = $db->db_query("select id from ".BAB_SECTIONS_ORDER_TBL." where position='".$k."'");
+				while($arr = $db->db_fetch_array($res))
+					{
+					$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering='".$ord."' where id='".$arr['id']."'");
+					$ord += 1;
+					}
+			}
+
+
+			for( $k = 0; $k < 2; $k++ )
+			{
+				$tab = func_get_arg($k);
+				for( $i = 0; $i < count($tab); $i++)
+				{
+				$res = $db->db_query("select * from bab_sec_ord where id='".$tab[$i]."'");
+				if( $res && $db->db_num_rows($res) > 0 )
+					{
+					$arr = $db->db_fetch_array($res);
+					$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='".$k."' and ordering >= '".$apos[$k]."'");
+					$db->db_query("insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$arr['id_section']. "', '" . $k. "', '".$arr['type']."', '" . ($apos[$k]). "')");
+					$apos[$k] += 1;
+					if( $arr['type'] == "2")
+						{
+						$db->db_query("update ".BAB_SECTIONS_TBL." set position='".$k."' where id='".$db->db_insert_id()."'");
+						}
+					}
+				}
+			}
+
+		}
 	}
 
 function disableSections($sections, $sectopt)
@@ -562,7 +755,7 @@ if( isset($create))
 
 if( isset($update))
 	{
-	if( $update == "order" && $babBody->isSuperAdmin)
+	if( $update == "order" )
 		saveSectionsOrder($listleft, $listright);
 	else if( $update == "disable" )
 		disableSections($sections, $sectopt);
@@ -597,8 +790,7 @@ switch($idx)
 		$babBody->title = bab_translate("Create section");
 		sectionCreate(0);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{
 			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
@@ -611,8 +803,7 @@ switch($idx)
 		$babBody->title = bab_translate("Create section");
 		sectionCreate(1);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{
 			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
@@ -628,8 +819,7 @@ switch($idx)
 			$babBody->title = bab_translate("There is no section");
 
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{
 			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");

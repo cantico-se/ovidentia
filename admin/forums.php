@@ -139,6 +139,17 @@ function orderForum()
 	global $babBody;
 	class temp
 		{		
+		var $forumtxt;
+		var $moveup;
+		var $movedown;
+		var $create;
+		var $db;
+		var $res;
+		var $count;
+		var $arrid = array();
+		var $forumid;
+		var $forumval;
+
 
 		function temp()
 			{
@@ -148,9 +159,27 @@ function orderForum()
 			$this->movedown = bab_translate("Move Down");
 			$this->create = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FORUMS_TBL." order by ordering asc";
+			$req = "select id, id_dgowner from ".BAB_FORUMS_TBL." order by ordering asc";
 			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			while( $arr = $this->db->db_fetch_array($this->res) )
+				{
+					if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && $arr['id_dgowner'] == 0)
+						{
+						$this->arrid[] = $arr['id'];
+						}
+					else if( $babBody->currentAdmGroup == $arr['id_dgowner'] )
+						{
+						$this->arrid[] = $arr['id'];
+						}
+					else if( $babBody->isSuperAdmin && ($babBody->currentAdmGroup != $arr['id_dgowner']) )
+					{
+						if( count($this->arrid) == 0 || !in_array($arr['id_dgowner']."-0", $this->arrid))
+							{
+							$this->arrid[] = $arr['id_dgowner']."-0";
+							}
+					}
+				}
+			$this->count = count($this->arrid);
 			}
 
 		function getnext()
@@ -158,9 +187,13 @@ function orderForum()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->forumval = $arr['name'];
-				$this->forumid = $arr['id'];
+				$rr = explode('-',$this->arrid[$i]);
+				if( count($rr) > 1 )
+					$this->forumval = "[[".bab_getGroupName($rr[0])."]]";
+				else
+					$this->forumval = bab_getForumName($this->arrid[$i]);
+
+				$this->forumid = $this->arrid[$i];
 				$i++;
 				return true;
 				}
@@ -229,9 +262,50 @@ function saveOrderForums($listforums)
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 	
-	for($i=0; $i < count($listforums); $i++)
+	if( $babBody->currentAdmGroup == 0 )
 		{
-		$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$i."' where id='".$listforums[$i]."'");
+		$pos = 1;
+		for($i=0; $i < count($listforums); $i++)
+			{
+			$rr = explode('-',$listforums[$i]);
+			if( count($rr) > 1 )
+				{
+				$res = $db->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$rr[0]."' order by ordering asc");
+				while( $arr = $db->db_fetch_array($res))
+					{
+					$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$pos."' where id='".$arr['id']."'");
+					$pos++;
+					}
+				}
+			else
+				{
+				$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$pos."' where id='".$listforums[$i]."'");
+				$pos++;
+				}
+			}
+		}
+	else
+		{
+		$res = $db->db_query("select min(ordering) from ".BAB_FORUMS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+		$arr = $db->db_fetch_array($res);
+		if( isset($arr[0]))
+			$pos = $arr[0];
+		else
+			{
+			$res = $db->db_query("select max(ordering) from ".BAB_FORUMS_TBL."");
+			$arr = $db->db_fetch_array($res);
+			if( isset($arr[0]))
+				$pos = $arr[0];
+			else
+				{
+				$pos = 1;
+				}
+			}
+		for( $i = 0; $i < count($listforums); $i++)
+			{
+			$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$pos."' where id='".$listforums[$i]."'");
+			$pos++;
+			}
 		}
 	}
 /* main */
