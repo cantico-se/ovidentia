@@ -225,6 +225,7 @@ a.BabMailLink:Hover { COLOR: #FF3333 ; font : 12px Verdana, Arial, sans-serif ; 
 
 /*threads*/
 .BabForumBackground { BACKGROUND: #FFFFFF; COLOR: #000000; font: 10px Verdana, Arial, sans-serif}
+.BabForumBackground1 { BACKGROUND: #E8EEFF; COLOR: #000000; font: 10px Verdana, Arial, sans-serif}
 .BabForumTitle {background: #D1D1D9; COLOR: #000000; font: 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
 .BabForumNavigationBackground {background: #D1D1D9}
 
