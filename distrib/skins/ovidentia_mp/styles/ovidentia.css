@@ -1,0 +1,441 @@
+body {  margin: 0px 0px; background: #FFFFFF;font-family: arial;font-size:10px}
+
+.section_bt1_on {  background-image: url(../images/bt1on.gif); }
+.section_bt1_off { background-image: url(../images/bt1off.gif); }
+.section_bt2_on {  background-image: url(../images/bt2on.gif); }
+.section_bt2_off { background-image: url(../images/bt2off.gif); }
+
+
+/* input */
+INPUT { font-family: Verdana;font-size:10px; color:#000000;background-color:#FFFFFF;border-width:1;border-color:#000000;font-weight:bold }
+/* form */
+ FORM {margin-top: 0px; margin-bottom: 0px; padding: 0px;}
+
+ 
+/* general links */
+a:link {color: #3366FF }
+a:hover {color: red }
+a:visited {COLOR: #3366FF }
+
+/* general Font */
+TD { font: 11px Verdana, Arial, sans-serif}
+
+/*copyrightlink*/
+a.copy:link {color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
+a.copy:active {color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
+a.copy:visited {COLOR: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
+
+.BabHeaderBackground	{ background: #CCCCCC}
+.BabCnxMenuBackground { background: #111166}
+.BabMenuBackground { background: #FFFFFF}
+.BabContentBackground {  background: #FFFFFF}
+.BabFooterBackground {background: #FFFFFF ;COLOR: #000000; font-family : Verdana, Arial, sans-serif; font-size : 10px }
+.BabSectionsColBackground {background: #FFFFFF}
+
+.Babhighlight { background: #FF0000}
+.Blackbg { background: #000000}
+.BabSloganFont { COLOR: #FFFFFF; font-family : Verdana, Arial, sans-serif; font-size : 18px; FONT-WEIGHT: bold }
+
+a.BabCnxLink:Link { COLOR: #003399;  font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: none }
+a.BabCnxLink:Visited { COLOR: #003399;  font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: none }
+a.BabCnxLink:Hover {COLOR: #FFFFFF;  font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: none }
+
+a.BabMenuLink:Link { COLOR: #FFFFFF;  font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: none }
+a.BabMenuLink:Visited { COLOR: #FFFFFF;  font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: none }
+a.BabMenuLink:Hover {COLOR: #FFCC33;  font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: none }
+
+/* color and font menu active and tabs */
+.BabMenuActiveBackground { background: #FFCC33; COLOR: #003399; font-family : Verdana, Arial, sans-serif; 
+font-size : 10px ;FONT-WEIGHT: bold }
+.BabMenuTabBackground { background: #003399; COLOR: #FFFFFF; font-family : Verdana, Arial, sans-serif; 
+font-size : 10px ;FONT-WEIGHT: bold }
+
+/* background and font title pages (articles , forums , ....) */
+.BabBodyTitleBackground {background: #FFCC33; COLOR: #000000;  font:12px Verdana, Arial, sans-serif; 
+FONT-WEIGHT: bold}
+
+/* background and font error messages  */
+.BabErrorMessage { BACKGROUND: #FFFFFF; COLOR: #FF3333;  font:12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+
+/* background and font warnings */
+.BabWarningBodyBackground { BACKGROUND: #FFFFFF; COLOR: #000000;  font: 12px Verdana, Arial, sans-serif }
+.BabWarningTitleBackground { BACKGROUND: #FFFFFF; COLOR: #FF3333;  font: 12px Verdana, Arial, sans-serif }
+/* fontcolor and style of subject of warning */
+.BabWarningObjectBackground { BACKGROUND: #FFFFFF; COLOR: #000000;  font: 12px Verdana, Arial, sans-serif; 
+FONT-WEIGHT: bold}
+
+a.BabWarningLinkColor:Link { COLOR: #0000CC; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabWarningLinkColor:Visited { COLOR: #0000CC; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabWarningLinkColor:Hover {COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+/* borders background and font forms*/
+.BabLoginMenuBackground {background: #BFD7EF; COLOR: #000000;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+.BabLoginCadreBackground { BACKGROUND: #003399; COLOR: #FFFFFF;}
+
+/* admin letterlist users/contacts */
+.BabLetterlists { COLOR: #000000; background: #FFFFFF; font: 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+a.BabAlphabetLink:Link { COLOR: #003399; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+a.BabAlphabetLink:Visited { COLOR: #003399; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabAlphabetLink:Hover { COLOR: #3366FF; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+a.BabNameEmailLink:Link { COLOR: #000000; font : 10px Verdana, Arial, sans-serif }
+a.BabNameEmailLink:Visited { COLOR: #000000; font : 10px Verdana, Arial, sans-serif}
+a.BabNameEmailLink:Hover { COLOR: #0000CC; font : 10px Verdana, Arial, sans-serif }
+
+.BabFontBackground  { BACKGROUND: #FFFFFF; COLOR: #000000; font : 10px Verdana, Arial, sans-serif}
+
+/* notes,faq,eventeditor,vacation */
+a.BabEventFaqLink:Link { COLOR: #009933; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
+a.BabEventFaqLink:Visited { COLOR: #009933; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+a.BabEventFaqLink:Hover { COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+.BabDatesFont {background: #FFFFFF; COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
+
+/* color bg of titles in content when text is links */
+.BabTitleBg {background: #FFCC33}
+
+a.BabContentLinkColor:Link { COLOR: #0000CC; font: 10px  Verdana, Arial, sans-serif }
+a.BabContentLinkColor:Visited { COLOR: #0000CC; font : 10px Verdana, Arial, sans-serif }
+a.BabContentLinkColor:Hover {COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif }
+
+/* in use on inbox*/
+a.BabTitleSmall:Link { COLOR: #000000; font: 10px  Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabTitleSmall:Visited { COLOR: #000000; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabTitleSmall:Hover {COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+.BabTitleSmallFontBg {background: #FFCC33; COLOR: #000000 ; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+
+/****** SECTIONS GENERAL ***************************/
+.BabTitleSectionFont { COLOR: #000000;  font: 11px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+.BabTitleSectionBackground {background: #FFCC33 }
+.BabSectionBackground {background: #BFD7EF} 
+.BabSectionSpacing { height: 5px }
+.BabBodySection {COLOR: #003399;  font: 10px Verdana, Arial, sans-serif }
+
+/* font sections header footer */
+.BabHeaderBodySection { COLOR: #000000;  font: 11px Verdana, Arial, sans-serif}
+.BabFooterBodySection {COLOR: #000000;  font: 11px Verdana, Arial, sans-serif}
+
+a.BabSectionsLinkColor:Link { COLOR: #003399; font: 11px Verdana, Arial, sans-serif ; text-decoration: none }
+a.BabSectionsLinkColor:Visited { COLOR: #003399; font: 11px Verdana, Arial, sans-serif ; text-decoration: none }
+a.BabSectionsLinkColor:Hover { COLOR: red; font: 11px Verdana, Arial, sans-serif, sans-serif; text-decoration: underline  }
+
+/******SECTION CALENDER**************************/
+/* font and background days calender  */
+.BabCalendarDaySection { BACKGROUND: #FFFFFF; COLOR: #000000; font:11px Verdana, Arial, sans-serif, sans-serif ; FONT-WEIGHT: bold }
+/*font day numbers calender */
+.BabCalendarDayNumberSection { COLOR:#003399; font:10px Verdana, Arial, sans-serif, sans-serif}
+/*font current day */
+.BabCalendarCurrentDayNumberSection {background: #003399; COLOR: #FFFFFF ; font: 10px Verdana, Arial, sans-serif, sans-serif }
+
+a.BabSectionsDayLink:Link {  COLOR: red ; font: 10px Verdana, Arial, sans-serif, sans-serif; text-decoration: none }
+a.BabSectionsDayLink:Visited { COLOR: red; font: 10px Verdana, Arial, sans-serif, sans-serif; text-decoration: none }
+a.BabSectionsDayLink:Hover { COLOR: red; font: 10px Verdana, Arial, sans-serif, sans-serif; text-decoration: underline }
+
+/******* SECTION SUMMARY****************************/
+/* background and font title */
+.BabSummaryTitleFontBackground {background-color: #FFCC33; COLOR: #000000 ;  font:12px Verdana, Arial, sans-serif, sans-serif ; FONT-WEIGHT:bold }
+/* background content */
+.BabSummaryContentBackground { BACKGROUND: #FFFFFF; COLOR: #000000;  font: 10px Verdana, Arial, sans-serif }
+
+a.BabSummaryLinkColor:Link { COLOR: #000000; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabSummaryLinkColor:Visited { COLOR: #000000; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabSummaryLinkColor:Hover {COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+/* mail numbers */
+.BabSummaryNbrMessage { COLOR: #FF3333;  font: 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+/**************** CATEGORIES ****************************/
+.BabCategTitleNavigation {COLOR: #000000; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+.BabCategChildNavigation {COLOR: #999999; font-style:italic; font-family: Verdana,arial;font-size:10px }
+
+a.BabCategTitleNavigation:Link { COLOR: #000000; font : 12px Verdana, Arial, sans-serif; text-decoration: underline }
+a.BabCategTitleNavigation:Visited { COLOR: #000000; font : 12px Verdana, Arial, sans-serif; text-decoration: underline }
+a.BabCategTitleNavigation:Hover {COLOR: #000000; font : 12px Verdana, Arial, sans-serif; text-decoration: none }
+
+a.BabCategNavigationLink:Link { COLOR: #000000; font : 12px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabCategNavigationLink:Visited { COLOR: #000000; font : 12px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabCategNavigationLink:Hover {COLOR: #000000; font : 12px Verdana, Arial, sans-serif; text-decoration: underline }
+
+/**************** ARTICLES ****************************/
+/* titles */
+.BabTopicsTitleBackground {background: #FFCC33; COLOR: #003399; font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+/* font and background articles */
+.BabTopicsBackground { BACKGROUND: #FFFFFF; COLOR: #000000;  font: 11px Verdana, Arial, sans-serif}
+.BabTopicsAuthorBackground {background: #FFE9D8; COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
+
+.BabArticleSpacing { height: 5px }
+
+a.BabTopicsFooterLink:Link { COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterLink:Visited { COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterLink:Hover {COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
+a.BabTopicsFooterMoreLink:Link { COLOR: black; font : 10px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterMoreLink:Visited { COLOR: black; font : 10px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterMoreLink:Hover {COLOR: black; font : 10px Verdana, Arial, sans-serif; text-decoration: underline }
+
+.BabTopicsButtonBackground {background: #FFFFFF }
+
+.BabTopicsTitleNavigation {COLOR: white; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: underline}
+
+a.BabTopicsTitleNavigationLink:Link { COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsTitleNavigationLink:Visited { COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsTitleNavigationLink:Hover {COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
+/********** AGENDA **** CALENDAR ******************************/
+
+.BabCalendarCadreBackground {background: #003399}
+.BabCalendarMenuBackground {background: #FFCC33; COLOR: #003399;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+.BabCalendarMenuActiveBackground {background: #003399; COLOR: #FFCC33; font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+.BabCalendarBodyBackground { BACKGROUND: #000000 ; font: 10px Verdana, Arial, sans-serif }
+.BabCalendarBodyBadMonthBackground {background: #CCCCCC ; font: 10px Verdana, Arial, sans-serif}
+.BabMonthCalendarCurentDayBackground { BACKGROUND: #E6E6F7 ; font: 10px Verdana, Arial, sans-serif }
+/*also in use on inbox  */
+.BabCalendarBodyFont { COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
+
+.BabMonthCalendarEventLegendFont { COLOR: #FFFFFF; font: 10px Verdana, Arial, sans-serif}
+.BabMonthCalendarEventLegendTitleFont { COLOR: #FFFFFF;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+/*names of the days on top of monthcalendar*/
+.BabCalendarDays {background: #181A91; COLOR: #FFFFFF;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+
+.BabMonthCalendarEventHourfont { BACKGROUND: #FFFFFF; COLOR: #OO9933; font: 10px Verdana, Aria }
+
+a.BabCalendarNavLinkColor:Link { COLOR: #111166; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabCalendarNavLinkColor:Visited { COLOR: #111166; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabCalendarNavLinkColor:Hover {COLOR: #009933; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+a.BabDayCalendarNavigLink:Link { COLOR: #FFFFFF; font: 12px  Verdana, Arial, sans-serif }
+a.BabDayCalendarNavigLink:Visited { COLOR: #FFFFFF; font : 12px Verdana, Arial, sans-serif }
+a.BabDayCalendarNavigLink:Hover {COLOR: #6699CC; font : 12px Verdana, Arial, sans-serif }
+
+.BabDayCalendarTitleFont {background: #111166; COLOR: #FFFFFF; font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+a.BabMonthCalendarDayNumber:Link { COLOR: #0000CC; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabMonthCalendarDayNumber:Visited { COLOR: #0000CC; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabMonthCalendarDayNumber:Hover {COLOR: #009933; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+/*green link new and event*/
+a.BabDayCalendarEventLink:Link { COLOR: #009933; font: 10px  Verdana, Arial, sans-serif }
+a.BabDayCalendarEventLink:Visited { COLOR: #009933; font : 10px Verdana, Arial, sans-serif }
+a.BabDayCalendarEventLink:Hover {COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif }
+
+a.BabMonthCalendarEventLink:Link { COLOR: #000000; font: 10px  Verdana, Arial, sans-serif }
+a.BabMonthCalendarEventLink:Visited { COLOR: #000000; font : 10px Verdana, Arial, sans-serif }
+a.BabMonthCalendarEventLink:Hover {COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif }
+
+a.BabDayCalendarHourLink:Link { COLOR: #111166; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabDayCalendarHourLink:Visited { COLOR: #111166; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabDayCalendarHourLink:Hover {COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+/***************** MAIL ******************************/
+
+/* white background  in use on inbox  groups  - plus links */
+.BabMailBackground { BACKGROUND: #FFFFFF}
+
+.BabMailText { BACKGROUND: #FFFFFF; COLOR: #000000; font: 10px  Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+
+a.BabMailLink:Link { COLOR: #0000CC ; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+a.BabMailLink:Visited { COLOR: #0000CC ; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabMailLink:Hover { COLOR: #FF3333 ; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+/***************** FORUMS**********************************/
+
+/*threads*/
+.BabForumBackground { BACKGROUND: #FFFFFF; COLOR: #000000; font: 10px Verdana, Arial, sans-serif}
+.BabForumBackground1 { BACKGROUND: #FFE9D8; COLOR: #000000; font: 10px Verdana, Arial, sans-serif}
+.BabForumTitle {background: #FFCC33; COLOR: #000000; font: 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+.BabForumNavigationBackground {background: #FFCC33}
+
+a.BabForumNavigation:Link { COLOR: #111166; font: 12px  Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+a.BabForumNavigation:Visited { COLOR: #111166; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabForumNavigation:Hover {COLOR: #009933; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+ /*posts*/
+.BabForumTopicsNavTitle { background: #FFCC33; COLOR: #111166; font : 12px Verdana, Arial, sans-serif ;  FONT-WEIGHT: bold}
+.BabForumTopicsNavDate { background: #BFD7EF; COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif ;  FONT-WEIGHT: bold}
+.BabForumTopicsNavAuthor {  background: #BFD7EF; COLOR: #111166; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+a.BabForumTopicsConfirm:Link { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabForumTopicsConfirm:Visited { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabForumTopicsConfirm:Hover {COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
+a.BabForumTopicsNavContribution:Link { COLOR: #000000  ; font : 10px Verdana, Arial, sans-serif  }
+a.BabForumTopicsNavContribution:Visited { COLOR: #000000 ; font : 10px Verdana, Arial, sans-serif}
+a.BabForumTopicsNavContribution:Hover { COLOR: #0000CC ; font : 10px Verdana, Arial, sans-serif }
+
+.BabForumTopicsNavTreeBody { BACKGROUND: #FFFFFF; COLOR: #000000; font : 9px Verdana, Arial, sans-serif ;  FONT-WEIGHT: bold}
+.BabForumTopicsNavTreeDate { BACKGROUND: #FFFFFF; COLOR: #000000; font: 9px Verdana, Arial, sans-serif  }
+.BabForumTopicsNavTreeAuthor { BACKGROUND: #FFFFFF; COLOR: #000000; font : 9px Verdana, Arial, sans-serif }
+.BabForumTopicsNavTreeLive { BACKGROUND: #FFFFFF ; COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+/***************** FAQ****************************/
+.BabFaqAdminTitleBackground { BACKGROUND: #FFCC33}
+.BabFaqAdminBodyFontBackground {background: #FFFFFF; COLOR: #000000 ; font : 10px Verdana, Arial, sans-serif }
+
+a.BabFaqAdminTitleLink:Link { COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif  ; FONT-WEIGHT: bold}
+a.BabFaqAdminTitleLink:Visited { COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif  ; FONT-WEIGHT: bold}
+a.BabFaqAdminTitleLink:Hover { COLOR: #009933 ; font : 10px Verdana, Arial, sans-serif  ; FONT-WEIGHT: bold}
+
+/************* ADMINISTRATION SITES*************/
+
+.BabSiteAdminTitleFontBackground {background: #FFCC33; COLOR: #003399 ; font : 11px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+.BabSiteAdminSmall {background: #FFCC33; COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+.BabSiteAdminFontBackground {background: #FFFFFF; COLOR: #000000 ; font : 11px Verdana, Arial, sans-serif }
+.BabSiteAdminFont { COLOR: #000000 ; font : 11px Verdana, Arial, sans-serif }
+
+a.BabSiteAdminListLink:Link { COLOR: blue  ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}
+a.BabSiteAdminListLink:Visited { COLOR: blue ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}
+a.BabSiteAdminListLink:Hover { COLOR: blue ; font : 11px Verdana, Arial, sans-serif; text-decoration: none }
+
+/********* FAQ **** NOTES ********************************/
+a.BabFaqLink:Link { COLOR: #0000CC  ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
+a.BabFaqLink:Visited { COLOR: #0000CC ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabFaqLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+.BabFaqQuestion { background: #FFFFFF; COLOR: #OO00CC; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+.BabFaqBodyFontBg {background: #FFFFFF; COLOR: #000000; font : 10px Verdana, Arial, sans-serif }
+.BabFaqTitleFontBg {background: #FFCC33; COLOR: #000000; font : 12px Verdana, Arial, sans-serif;  FONT-WEIGHT: bold }
+
+/************ ADMINISTRATION GROUPS***********/
+.BabAdminMembers { BACKGROUND: #FFFFFF; COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+a.BabAdminMembersList:Link { COLOR: #0000CC  ; font : 10px Verdana, Arial, sans-serif }
+a.BabAdminMembersList:Visited { COLOR: #0000CC ; font : 10px Verdana, Arial, sans-serif }
+a.BabAdminMembersList:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif }
+
+/********** ADMINISTRATION THEMES TOPICS **********/
+.BabTopicsAdminListTitle {background: #FFCC33; COLOR: #003399; font : 10px Verdana, Arial, sans-serif  }
+
+a.BabTopicsAdminTitleLink:Link { COLOR: #111166; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+a.BabTopicsAdminTitleLink:Visited { COLOR: #111166; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+a.BabTopicsAdminTitleLink:Hover { COLOR: red ; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
+
+a.BabTopicsAdminNumberLink:Link { COLOR: #111166; font : 10px Verdana, Arial, sans-serif  }
+a.BabTopicsAdminNumberLink:Visited { COLOR: #111166; font : 10px Verdana, Arial, sans-serif }
+a.BabTopicsAdminNumberLink:Hover { COLOR: #009933 ; font : 10px Verdana, Arial, sans-serif }
+
+/******* LIST EMAIL RECIPIENTS Popup address.html******************************/
+
+.BabToChoiceMailPopupCadreFontBackground {background: #111166; COLOR: #FFFFFF ; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+.BabToChoiceMailPopupBodyFontBackground {background: #FFFFFF; COLOR: #000000 ; font : 10px Verdana, Arial, sans-serif  }
+.BabToChoiceMailPopupTitleFontBackground { BACKGROUND: #FFCC33; COLOR: #000000 ; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold }
+
+a.BabToChoiceMailPopupCloseLink:Link { COLOR: #FF3333  ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
+a.BabToChoiceMailPopupCloseLink:Visited { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+a.BabToChoiceMailPopupCloseLink:Hover { COLOR: #009933 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+a.BabToChoiceMailPopupToLink:Link { COLOR: #000000; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
+a.BabToChoiceMailPopupToLink:Visited { COLOR: #000000; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+a.BabToChoiceMailPopupToLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+a.BabToChoiceMailPopupNavigLink:Link { COLOR: #111166  ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
+a.BabToChoiceMailPopupNavigLink:Visited { COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+a.BabToChoiceMailPopupNavigLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+
+/**** FILE MANAGER **********************************************/
+
+a.BabSiteFileLink:Link { COLOR: #000000  ; font : 11px Verdana, Arial, sans-serif;text-decoration: none;  FONT-WEIGHT: bold }
+a.BabSiteFileLink:Visited { COLOR: #000000 ; font : 11px Verdana, Arial, sans-serif;text-decoration: none;  FONT-WEIGHT: bold }
+a.BabSiteFileLink:Hover { COLOR: #009933 ; font : 11px Verdana, Arial, sans-serif; text-decoration: underline;  FONT-WEIGHT: bold }
+
+a.BabSiteAdminFileLink:Link { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabSiteAdminFileLink:Visited { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabSiteAdminFileLink:Hover {COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
+
+
+/**** SCRIPT FOR FORMATTING MESSAGES WYSIWYG ********************/
+
+.ButtonNormal {
+
+	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; 
+	BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; 
+	BACKGROUND-COLOR: #CCCCCC }
+
+.ButtonPressed {
+
+	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; 
+	BORDER-LEFT: buttonshadow 1px solid; BORDER-BOTTOM: buttonhighlight 1px solid; 
+	BACKGROUND-COLOR: #CCCCCC }
+
+.ButtonMouseOver {
+
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
+	BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; 
+	BACKGROUND-COLOR: #CCCCCC }
+
+.ButtonDisabled {
+
+	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; 
+	BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; 
+	BACKGROUND-COLOR: #CCCCCC }
+
+.Image {
+
+	WIDTH: 22px; HEIGHT: 22px }
+
+.Toolbar {
+
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
+	BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; 
+	HEIGHT: 30px;background: #CCCCCC }
+
+.Divider {
+
+	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; 
+	BORDER-LEFT: buttonshadow 1px solid; WIDTH: 2px; 
+	BORDER-BOTTOM: buttonhighlight 1px solid; HEIGHT: 24px;background: #CCCCCC }
+
+.Swatch {
+
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; 
+	BORDER-LEFT: buttonhighlight 1px solid; WIDTH: 3px; 
+	BORDER-BOTTOM: buttonshadow 1px solid; HEIGHT: 24px;background: #CCCCCC }
+
+.Space {
+
+	WIDTH: 0px; HEIGHT: 24px;background: buttonface }
+
+.List {
+
+	BACKGROUND: #FFFFFF; COLOR: #000000; FONT: 8px Verdana, Arial, sans-serif  }
+
+.Text {
+
+	FONT: 8pt Verdana, Arial, sans-serif }
+
+.Heading {
+
+	BACKGROUND: #FFFFFF; COLOR: #000000 }
+
+/**** END Classes USED BY THE SCRIPT FOR FORMATTING MESSAGES WYSIWYG */
+
+/*Ovidentia 3.3 add*/
+.BabTodayEvent {
+	BACKGROUND: #E6E6F7 ; 
+	font: 10px Verdana, Arial, sans-serif ;
+       border-left: 1px solid red;
+       border-right: 1px solid red;
+       border-bottom: 1px solid red;
+	   border-top: 1px solid red
+			}
+.HeaderDayCalendar {
+					BACKGROUND: #FFFFFF
+					}
+
+/*BAB_EDITOR_CSS_BEGIN*/
+.Editor_Titre1 { COLOR: #aa0000;  font: 14px Verdana, Arial, sans-serif}
+.Editor_Titre2 { COLOR: #0000FF;  font: 18px Verdana, Arial, sans-serif}
+.Big_Titre { COLOR: #FF04A5;  font: 24px Verdana, Arial, sans-serif }
+.Big_Title { COLOR: #FF04A5;  font: 24px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; }
+.fond_gris {background: #D1D1D9; COLOR: #111166 ; font : 11px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+.Titre_Niv1 { COLOR: Navy ; BACKGROUND-COLOR: LightYellow; font : 16px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ;BORDER-TOP: Navy 1px solid; BORDER-BOTTOM: Navy 1px solid; BORDER-LEFT: Navy 1px solid; BORDER-RIGHT: Navy 1px solid;}
+.Titre_Niv2 { COLOR: Navy ; font : 14px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ;}
+.Titre_Niv3 { COLOR: Navy ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ;}
+.Surligne_Important { BORDER-TOP: red 1px solid; BORDER-BOTTOM: red 2px solid; BACKGROUND-COLOR: lightgreen }
+.Surligne_Simple { BACKGROUND-COLOR: #FFFF66 }
+/*BAB_EDITOR_CSS_END*/
+
+/*BAB_EDITOR_PAGE_BEGIN*/
+.page {background-color: #fff; font-family: Arial, Verdana,  sans-serif ; font-size:10pt}
+/*BAB_EDITOR_PAGE_END*/
