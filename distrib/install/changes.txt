@@ -5,6 +5,7 @@ December 2004: Version 5.5.1
 - Added possibility to disable statistics gathering
 - Added possibility to clean statistics log
 - Added search in entities view of charts
+- Fixed bug notification of members before an article is published
 - Fixed some minors bugs
 
 /************************************************************************/
