@@ -22,7 +22,13 @@ function func(faqid,title)
 </script>
 </HEAD>
 <BODY>
+<table border="0" width="200" cellpadding="10" cellspacing="0" align="left" >
+<tr><td>
 <table border="0" width="200" cellpadding="1" cellspacing="0" align="left" >
+<tr class="BabContentBackground">
+<td class="BabCategTitleNavigation">FAQS</td>
+<td>&nbsp;</td>
+</tr>
 <!--#if q -->
 <tr>
 <td>
@@ -33,13 +39,14 @@ function func(faqid,title)
 	<!--#in getnext -->
 	<!--#if display -->
 	<tr >
-	<td align="left">
 	<!--#if q -->
+	<td align="left" style="border-bottom:1px #DDDDDD solid">
 	{ titledisp }
 	</td>
 	<td align="right">
 	<a href="#" title="{ resp }" onclick="func({ faqid },'{ title }')"><img border="0" src="{ babSkinPath }images/Puces/PuceArrowRight.gif"></a>
 	<!--#else q -->
+	<td align="left">
 		<!--#if displink -->
 		<a title="{ desc }" href="{ url }" nowrap>{ title }</a>
 		<!--#else displink -->
@@ -60,6 +67,8 @@ function func(faqid,title)
 	</td>
 </tr>
 <!--#endif q -->
+</table>
+</td></tr>
 </table>
 </BODY>
 </HTML>
