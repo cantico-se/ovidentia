@@ -37,10 +37,10 @@ function bab_strftime($time, $hour=true)
 function babPrintTemplate( &$class, $file, $section="")
 	{
 	global $babInstallPath, $babSkinPath;
-	$filepath = $GLOBALS['babSkin']."/templates/". $file;
+	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
 	if( !file_exists( $filepath ) )
 		{
-		$filepath = $babSkinPath.$filepath;
+		$filepath = $babSkinPath."templates/". $file;
 		}
 	$tpl = new Template();
 	return $tpl->printTemplate($class,$filepath, $section);
