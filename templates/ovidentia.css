@@ -8,6 +8,9 @@
 /* Couleur du fond de la page */
 .BabBackground { BACKGROUND: #FF8000 }
 
+/* Couleur du fond du corps de la page */
+.BabBodyBackground { BACKGROUND: #FF8000 }
+
 /* Couleur du fond de l'entete */
 .BabHeaderBackground	{ BACKGROUND: #FF8000 }
 
