@@ -46,21 +46,33 @@ function listContacts($pos)
 
 		function temp($pos)
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID,$babBody;
+
+			switch ($babBody->nameorder[0]) {
+			case "L":
+				$this->namesearch = "lastname";
+				$this->namesearch2 = "firstname";
+			break; 
+			case "F":
+			default:
+				$this->namesearch = "firstname";
+				$this->namesearch2 = "lastname";
+			break;}
+
 			if( $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and lastname like '".$this->pos."%' order by lastname, firstname asc";
-				$this->fullname = bab_translate("Lastname Firstname");
+				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
+				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
 			else
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and firstname like '".$this->pos."%' order by firstname, lastname asc";
-				$this->fullname = bab_translate("Firstname Lastname");
+				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+				$this->fullname = bab_composeUserName(bab_translate("Firstname"), bab_translate("Lastname"));
 				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
 			$this->email = bab_translate("Email");
@@ -140,11 +152,11 @@ function listContacts($pos)
 					{
 					if( $this->ord == "-" )
 						{
-						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and lastname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch2." like '".$this->selectname."%'";
 						}
 					else
 						{
-						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and firstname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and ".$this->namesearch." like '".$this->selectname."%'";
 						}
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )

@@ -104,20 +104,20 @@ function browseUsers($pos, $cb, $idcal)
 
 			switch ($babBody->nameorder[0]) {
 				case "F":
-					$namesearch = "firstname";
-					$namesearch2 = "lastname";
+					$this->namesearch = "firstname";
+					$this->namesearch2 = "lastname";
 				break;
 				case "L":
 				default:
-					$namesearch = "lastname";
-					$namesearch2 = "firstname";
+					$this->namesearch = "lastname";
+					$this->namesearch2 = "firstname";
 				break; }
 
 			if( $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$reqa .= " and ".$namesearch2." like '".$this->pos."%' order by ".$namesearch2.", ".$namesearch." asc";
+				$reqa .= " and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=brow&pos=".$this->pos."&cb=".$this->cb;
 				}
@@ -125,7 +125,7 @@ function browseUsers($pos, $cb, $idcal)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$reqa .= " and ".$namesearch." like '".$this->pos."%' order by ".$namesearch.", ".$namesearch2." asc";
+				$reqa .= " and ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"), bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
 				}
@@ -178,9 +178,9 @@ function browseUsers($pos, $cb, $idcal)
 				else 
 					{
 					if( $this->ord == "-" )
-						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->selectname."%'";
 					else
-						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->selectname."%'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
