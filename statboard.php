@@ -607,7 +607,7 @@ function summarySections($col, $order)
 				$tmparr = array();
 				$tmparr['section'] = $arr['title'];
 				$tmparr['dgname'] = $arr['dgname'];
-				$tmparr['usage'] = $upercent;
+				$tmparr['usage'] = $this->upercent;
 				$this->arrinfo[] = $tmparr;				
 				}
 
