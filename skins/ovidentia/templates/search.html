@@ -213,13 +213,7 @@ function cleanAfter() {
 	<select name="item" onChange="resetOrder()">
 	  <option value="" >{ all }</option>
 	  <!--#in getnextitem -->
-		<!--#if perm -->
-		<!--#if item "!= itemvalue" -->
-			  <option value="{ itemvalue }">{ itemname }</option>
-		<!--#else item -->
-			  <option selected value="{ itemvalue }">{ itemname }</option>
-		<!--#endif item -->
-		<!--#endif perm -->
+		<option { selected } value="{ itemvalue }">{ itemname }</option>
 	  <!--#endin getnextitem -->
 	</select>
 	&nbsp;&nbsp;
@@ -637,6 +631,26 @@ setselects(document.forms.searchForm.g_directory);
 <br>
 { navbar_h }
 <!--#endif countage -->
+
+<!--#in getnextaddon -->
+<br>
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<tr><td class="BabBodyTitleBackground">{ addon_title }</td></tr></table>
+	<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<!--#in getnextaddonrow -->
+		<tr>
+			<td class="BabTopicsBackground">
+			<!--#if url --><a class="BabFaqLink" href="{ url }">{ urltxt }</a><!--#endif url -->
+			<!--#if urlpopup --> [ <a href="javascript: bab_popup('{ urlpopup }');">{ urlpopuptxt }</a> ]<!--#endif urlpopup --><br />
+			{ text }<br />
+			<br />
+			</td>
+		</tr>
+	<!--#endin getnextaddonrow -->
+	</table><br />
+{ navbar_i }
+<!--#endin getnextaddon -->
 <br>
 <br>
 </td>
