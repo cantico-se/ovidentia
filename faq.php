@@ -28,8 +28,8 @@ include_once $babInstallPath."utilit/imgincl.php";
 
 function isUserManager()
 	{
-	global $faqinfo, $BAB_SESS_USERID;
-	if( $BAB_SESS_USERID == $faqinfo['id_manager'])
+	global $faqinfo;
+	if( bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL,$faqinfo['id']))
 		{
 		return true;
 		}
@@ -680,10 +680,7 @@ function addQuestion($idcat, $idscat)
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			$this->files = bab_translate("Files");
 			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;	
+			$this->editor = bab_editor('', 'response', 'qcreate',400,1);
 			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$this->idcat."'");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -812,15 +809,12 @@ function modifyQuestion($item, $idscat, $idq)
 			$res = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res);
 			$this->question = htmlentities($arr['question']);
-			$this->response = htmlentities($arr['response']);
+
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			$this->files = bab_translate("Files");
 			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;
+			$this->editor = bab_editor($arr['response'], 'response', 'qmod',400,1);
 
 			$this->res = $this->db->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$this->idcat."'");
 			$this->count = $this->db->db_num_rows($this->res);

@@ -4661,7 +4661,7 @@ if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 				if( $res2 && $db->db_num_rows($res2) > 0 )
 					{
 					$grpname = "OVFAQ_".$rr['firstname']."_".$rr['lastname'];
-					$description = bab_translate("Folder manager");
+					$description = bab_translate("Faq manager");
 					$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '".$arr['id_dgowner']."', 'N', 'N', 'N','0')");
 					$id = $db->db_insert_id();
 					$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_manager']."','".$id."')");

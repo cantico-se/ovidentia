@@ -495,14 +495,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				{
-				$this->msie = 1;
-				}
-			else
-				{
-				$this->msie = 0;	
-				}
+			$this->editor = bab_editor($this->description, 'topdesc', 'catcr', 150);
 
 			$file = "articlestemplate.html";
 			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;

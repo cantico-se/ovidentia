@@ -82,22 +82,14 @@ function modifyCategory($id)
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->arr['category'] = htmlentities($this->arr['category']);
-			$this->arr['description'] = htmlentities($this->arr['description']);
-			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_manager']."'";
-			$this->res = $this->db->db_query($req);
-			$this->arr2 = $this->db->db_fetch_array($this->res);
-			$this->managerval = bab_composeUserName( $this->arr2['firstname'], $this->arr2['lastname']);
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;
+
+			$this->editor = bab_editor($this->arr['description'], 'faqdesc', 'catcreate',150);
 			$this->item = $id;
-			$this->managerid = $this->arr['id_manager'];
 			$this->bdel = true;
 			$this->tgval = "admfaq";
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->faqname = $this->arr['category'];
-			$this->faqdesc = $this->arr['description'];
+
 			} // function temp
 			
 			function getnextlang()

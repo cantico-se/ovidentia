@@ -66,10 +66,7 @@ function addCategory()
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;	
+			$this->editor = bab_editor('', 'faqdesc', 'catcreate',150);
 			$this->item = "";
 			$this->managerval = "";
 			$this->managerid = "";
@@ -206,7 +203,7 @@ function saveCategory($category, $description, $managerid, $lang)
 		$babBody->msgerror = bab_translate("ERROR: This FAQ already exists");
 		return;
 		}
-	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description, lang, id_dgowner) values ('" .$managerid. "', '" .$category. "', '" . $description. "', '" .$lang. "', '" .$babBody->currentAdmGroup. "')";
+	$query = "insert into ".BAB_FAQCAT_TBL." ( category, description, lang, id_dgowner) values ('" .$category. "', '" . $description. "', '" .$lang. "', '" .$babBody->currentAdmGroup. "')";
 	$db->db_query($query);
 	$idcat = $db->db_insert_id();
 

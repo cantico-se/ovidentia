@@ -36,10 +36,7 @@ function notesCreate()
 			{
 			$this->create = bab_translate("Create");
 			$this->notes = bab_translate("Content");
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;	
+			$this->editor = bab_editor('', 'content', 'notcreate');
 			}
 		}
 
@@ -92,7 +89,7 @@ function notesList($id)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->editurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id'];
-				$this->arr['content'] = bab_replace($this->arr['content']);// nl2br($this->arr['content']);
+				$this->arr['content'] = bab_replace($this->arr['content']);
 				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
 				$i++;
 				return true;
