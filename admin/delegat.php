@@ -207,7 +207,7 @@ function groupDelegatCreate($gname, $description)
 			$this->what = "add";
 			$this->checked = '';
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$GLOBALS['babBody']->currentAdmGroup."' and id_dggroup='0' order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$GLOBALS['babBody']->currentAdmGroup."' and id_dggroup='0' order by name asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
@@ -331,7 +331,7 @@ function groupDelegatModify($gname, $description, $id)
 			$this->res1 = $this->db->db_query($req);
 			$this->count1 = $this->db->db_num_rows($this->res1);
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$GLOBALS['babBody']->currentAdmGroup."' and (id_dggroup='0' or id_dggroup='".$id."') order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$GLOBALS['babBody']->currentAdmGroup."' and (id_dggroup='0' or id_dggroup='".$id."') order by name asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
