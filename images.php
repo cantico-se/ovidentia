@@ -260,9 +260,11 @@ function iframe($editor,$path="")
 			
 			$this->badmin = bab_isUserAdministrator();
 			$this->comnum = 0;
-
-			$this->msg_delfile = bab_translate("Do you really whant to delete this file")."?";
-			$this->msg_deltree = bab_translate("Do you really whant to delete this directory")."?";
+			
+			$this->msg_delfile = bab_translate("WARNING!: If you delete this file, the articles containing the picture will be corrupted. Do really whant to delete this file")."?";
+			$this->msg_deltree = bab_translate("WARNING!: If you delete this folder, the articles containing the a picture from this folder will be corrupted. Do really whant to delete this directory")."?";
+			$this->msg_renamefile = bab_translate("WARNING!: If you rename this file, the articles containing the picture will be corrupted. Do really whant to rename this file")."?";
+			$this->msg_renametree = bab_translate("WARNING!: If you rename this folder, the articles containing the a picture from this folder will be corrupted. Do really whant to rename this directory")."?";
 
 			if( !is_dir(BAB_IUD_TMP))
 				bab_mkdir(BAB_IUD_TMP, 0700);

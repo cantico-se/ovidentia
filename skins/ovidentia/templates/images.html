@@ -278,9 +278,10 @@ function errormanager()
 	if (msg != '' ) alert(msg);
 	}
 
-function rename_popup(url)
+function rename_popup(url,msg)
 	{
-	window.open(url, 'rename','toolbar=no,menubar=no,personalbar=no,width=300,height=100,scrollbars=no,resizable=no');
+	if ( confirm(msg) )
+		window.open(url, 'rename','toolbar=no,menubar=no,personalbar=no,width=300,height=100,scrollbars=no,resizable=no');
 	}
 -->
 </script>
@@ -337,7 +338,7 @@ function rename_popup(url)
 	<tr><td align="center" nowrap>
 	<small>
 	<!--#if badmin -->
-	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }')">{ subdirname_txt }</a>
+	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }','{ msg_renametree }')">{ subdirname_txt }</a>
 	<!--#else badmin -->
 	{ subdirname_txt }
 	<!--#endif badmin -->
@@ -382,7 +383,7 @@ function rename_popup(url)
 <tr><td align="center" nowrap>
 <small>
 	<!--#if badmin -->
-	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }')">{ imgname_txt }</a>
+	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }','{ msg_renamefile }')">{ imgname_txt }</a>
 	<!--#else badmin -->
 	{ imgname_txt }
 	<!--#endif badmin -->
