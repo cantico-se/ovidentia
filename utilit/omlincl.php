@@ -3036,23 +3036,47 @@ class bab_CalendarCategories extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$arrgrp = array();
-		for( $i = 0; $i < count($babBody->calendarids); $i++ )
+		$filter = $ctx->get_value('filter');
+		if (strtoupper($filter) == "NO") 
 			{
-			if($babBody->calendarids[$i]['type'] == 2 )
-				{
-				$arrgrp[] = $babBody->calendarids[$i]['owner'];
-				}
+			$filter = false;
 			}
-		if( count($arrgrp) > 0 )
+		else
+			{
+			$filter = true;
+			}
+
+		$req = '';
+		if( $filter )
 		{
-		$this->res = $babDB->db_query("select * from ".BAB_CATEGORIESCAL_TBL." where id_group IN (".implode(',', $arrgrp).") order by name asc");
-		$this->count = $babDB->db_num_rows($this->res);
+			$arrgrp = array();
+			for( $i = 0; $i < count($babBody->calendarids); $i++ )
+				{
+				if($babBody->calendarids[$i]['type'] == 2 )
+					{
+					$arrgrp[] = $babBody->calendarids[$i]['owner'];
+					}
+				}
+
+			if( count($arrgrp) > 0 )
+				{
+				$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group IN (".implode(',', $arrgrp).") order by name asc";
+				}
 		}
 		else
 		{
-			$this->count = 0;
+			$req = "select * from ".BAB_CATEGORIESCAL_TBL." order by name asc";
 		}
+
+		if( !empty($req) )
+			{
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+		else
+			{
+				$this->count = 0;
+			}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -3105,17 +3129,39 @@ class bab_CalendarUserEvents extends bab_handler
 			}
 		else
 			{
+			$filter = $ctx->get_value('filter');
+
+			if (strtoupper($filter) == "NO") 
+				{
+				$filter = false;
+				}
+			else
+				{
+				$filter = true;
+				}
+
 			$ar = array();
 			$rr = explode(',', $userid);
-			for($k=0; $k < count($rr); $k++ )
+			if( $filter )
 				{
-				for( $i = 0; $i < count($babBody->calendarids); $i++ )
+				for($k=0; $k < count($rr); $k++ )
 					{
-					if( $babBody->calendarids[$i]['type'] == '1' && $babBody->calendarids[$i]['owner'] == $rr[$k] )
+					for( $i = 0; $i < count($babBody->calendarids); $i++ )
 						{
-						$ar[] = $babBody->calendarids[$i]['id'];
-						break;
+						if( $babBody->calendarids[$i]['type'] == '1' && $babBody->calendarids[$i]['owner'] == $rr[$k] )
+							{
+							$ar[] = $babBody->calendarids[$i]['id'];
+							break;
+							}
 						}
+					}
+				}
+			elseif( !empty($userid))
+				{
+				$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner IN (".$userid.") and type='1' and actif='Y'");
+				while( $arr = $babDB->db_fetch_array($res) )
+					{
+					$ar[] = $arr['id'];
 					}
 				}
 
@@ -3269,13 +3315,10 @@ class bab_CalendarGroupEvents extends bab_handler
 				}
 			elseif( !empty($groupid))
 				{
-				for($k=0; $k < count($rr); $k++ )
+				$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner IN (".$groupid.") and type='2' and actif='Y'");
+				while( $arr = $babDB->db_fetch_array($res) )
 					{
-					$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner IN (".$groupid.") and type='2' and actif='Y'");
-					while( $arr = $babDB->db_fetch_array($res) )
-						{
-						$ar[] = $arr['id'];
-						}
+					$ar[] = $arr['id'];
 					}
 				}
 			}
@@ -3432,13 +3475,10 @@ class bab_CalendarResourceEvents extends bab_handler
 				}
 			elseif( !empty($resourceid))
 				{
-				for($k=0; $k < count($rr); $k++ )
+				$res = $babDB->db_query("select ct.id from ".BAB_CALENDAR_TBL." ct left join ".BAB_RESOURCESCAL_TBL." rt where rt.id_group IN (".$resourceid.") and ct.owner=rt.id and ct.type='3' and ct.actif='Y'");
+				while( $arr = $babDB->db_fetch_array($res) )
 					{
-					$res = $babDB->db_query("select ct.id from ".BAB_CALENDAR_TBL." ct left join ".BAB_RESOURCESCAL_TBL." rt where rt.id_group IN (".$resourceid.") and ct.owner=rt.id and ct.type='3' and ct.actif='Y'");
-					while( $arr = $babDB->db_fetch_array($res) )
-						{
-						$ar[] = $arr['id'];
-						}
+					$ar[] = $arr['id'];
 					}
 				}
 			}
