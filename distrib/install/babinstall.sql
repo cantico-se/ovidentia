@@ -368,6 +368,7 @@ CREATE TABLE bab_topics (
    notify enum('N','Y') NOT NULL default 'N',
    lang varchar(10) NOT NULL default '',
    article_tmpl varchar(255),
+   display_tmpl varchar(255),
    PRIMARY KEY (id),
    KEY id_approver (id_approver),
    KEY id_cat (id_cat),

@@ -25,7 +25,7 @@ include_once "base.php";
 include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid)
+function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
 	{
 	global $babBody;
 	class temp
@@ -58,8 +58,16 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 		var $atid;
 		var $arrarttmpl;
 		var $countarttmpl;
+		var $disptmpltxt;
+		var $disptmplval;
+		var $disptmplid;
+		var $disptmplselected;
+		var $disptmpl;
+		var $disptid;
+		var $arrdisptmpl;
+		var $countdisptmpl;
 
-		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid)
+		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
@@ -70,6 +78,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$this->modart = bab_translate("Approbation schema for articles");
 			$this->notiftxt = bab_translate("Notify group members by mail");
 			$this->arttmpltxt = bab_translate("Article's model");
+			$this->disptmpltxt = bab_translate("Display template");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -111,6 +120,11 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 				$this->atid = "";
 			else
 				$this->atid = $atid;
+
+			if(empty($disptid))
+				$this->disptid = "";
+			else
+				$this->disptid = $disptid;
 
 			if(empty($bnotif))
 				$bnotif = "N";
@@ -172,6 +186,28 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 				}
 			$this->countarttmpl = count($this->arrarttmpl);
 
+			$file = "topicsdisplay.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$arr = $tpl->getTemplates($filepath);
+				for( $i=0; $i < count($arr); $i++)
+					{
+					if( strpos($arr[$i], "head_") !== false ||  strpos($arr[$i], "body_") !== false )
+						if( count($this->arrdisptmpl) == 0  || !in_array(substr($arr[$i], 5), $this->arrdisptmpl ))
+							$this->arrdisptmpl[] = substr($arr[$i], 5);
+					}
+				}
+			$this->countdisptmpl = count($this->arrdisptmpl);
 			}
 
 		function getnextcat()
@@ -255,9 +291,25 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			return false;
 			}
 
+		function getnextdisptmpl()
+			{
+			static $i = 0;
+			if($i < $this->countdisptmpl)
+				{
+				$this->disptmplid = $this->arrdisptmpl[$i];
+				$this->disptmplval = $this->arrdisptmpl[$i];
+				if( $this->disptmplid == $this->disptid )
+					$this->disptmplselected = "selected";
+				else
+					$this->disptmplselected = "";
+				$i++;
+				return true;
+				}
+			return false;
+			}
 		}
 
-	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid);
+	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -340,7 +392,7 @@ function listCategories($cat)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $managerid, $bnotif, $lang, $atid)
+function saveCategory($category, $description, $cat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid)
 	{
 	global $babBody;
 	if( empty($category))
@@ -370,7 +422,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid,
 		return false;
 		}
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, notify, lang, article_tmpl) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, notify, lang, article_tmpl, display_tmpl) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "', '" .$disptid. "')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 
@@ -400,7 +452,7 @@ if(!isset($idx))
 
 if( isset($add) )
 	{
-	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif, $lang, $atid))
+	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid))
 		$idx = "addtopic";
 	else
 		{
@@ -417,7 +469,7 @@ switch($idx)
 	{
 	case "addtopic":
 		$babBody->title = bab_translate("Create new topic");
-		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid);
+		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);

@@ -29,7 +29,7 @@ define("MAX_ARTICLES", 10);
 
 function listSubmittedArticles($topics)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	class temp
 		{
@@ -42,14 +42,29 @@ function listSubmittedArticles($topics)
 		var $topics;
 		var $date;
 		var $topictitle;
+		var $barchive;
+		var $approver;
+		var $commentstxt;
+		var $bbody;
+		var $articleauthor;
+		var $articleauthor;
+		var $author;
+		var $printxt;
+		var $printurl;
 
 
 		function temp($topics)
 			{
 			$this->db = $GLOBALS['babDB'];
+			$this->barchive = false;
+			$this->approver = false;
+			$this->commentstxt = false;
+			$this->bbody = 0;
+
+			$this->printtxt = bab_translate("Print Friendly");
 			if( $GLOBALS['BAB_SESS_USERID'] != '' )
 				{
-				$req = "select id, id_topic, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
+				$req = "select id, id_topic, id_author, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
 				$this->res = $this->db->db_query($req);
 				$this->count = $this->db->db_num_rows($this->res);
 				}
@@ -67,10 +82,17 @@ function listSubmittedArticles($topics)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->date = bab_strftime(bab_mktime($this->arr['date']));
+				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
+				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
+
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
 				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
+				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$i++;
 				return true;
 				}
@@ -79,15 +101,26 @@ function listSubmittedArticles($topics)
 			}
 		}
 	
+	$template = "default";
+	if( !empty($topics) )
+		{
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$arr = $babDB->db_fetch_array($res);
+			if( $arr['display_tmpl'] != '' )
+				$template = $arr['display_tmpl'];
+			}
+		}
 	$temp = new temp($topics);
-	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlistsubmitted"));
+	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$template));
 	$arr = array($temp->count, $temp->nbarch);
 	return $arr;
 	}
 
 function listArticles($topics, $approver)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	class temp
 		{
@@ -101,22 +134,26 @@ function listArticles($topics, $approver)
 		var $topics;
 		var $com;
 		var $commentsurl;
-		var $commentsname;
+		var $commentstxt;
 		var $moreurl;
-		var $morename;
+		var $moretxt;
 		var $approver;
-		var $modify;
-		var $delete;
+		var $modifytxt;
+		var $deletetxt;
 		var $modifyurl;
 		var $delurl;
 		var $topictitle;
+		var $barchive;
+		var $printxt;
+		var $articleid;
 
 
 		function temp($topics, $approver)
 			{
-			$this->printable = bab_translate("Print Friendly");
-			$this->modify = bab_translate("Modify");
-			$this->delete = bab_translate("Delete");
+			$this->printtxt = bab_translate("Print Friendly");
+			$this->modifytxt = bab_translate("Modify");
+			$this->deletetxt = bab_translate("Delete");
+			$this->barchive = false;
 			$this->db = $GLOBALS['babDB'];
 			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
 			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N'";
@@ -131,7 +168,7 @@ function listArticles($topics, $approver)
 				$this->com = true;
 			else
 				$this->com = false;
-			$this->morename = bab_translate("Read More");
+			$this->moretxt = bab_translate("Read More");
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' and confirmed='N'");
@@ -145,6 +182,7 @@ function listArticles($topics, $approver)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->articleid = $this->arr['id'];
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
@@ -153,7 +191,7 @@ function listArticles($topics, $approver)
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
-				$this->blen = $this->arr['blen'];
+				$this->bbody = $this->arr['blen'];
 				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
@@ -174,21 +212,21 @@ function listArticles($topics, $approver)
 						{
 						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
 						if( $totalw > 0 )
-							$this->commentsname = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
+							$this->commentstxt = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
 						else
-							$this->commentsname = bab_translate("Comments")."&nbsp;(".$total.")";
+							$this->commentstxt = bab_translate("Comments")."&nbsp;(".$total.")";
 						}
 					else
 						{
 						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$this->topics."&article=".$this->arr['id'];
-						$this->commentsname = bab_translate("Add Comment");
+						$this->commentstxt = bab_translate("Add Comment");
 						}
 
 					}
 				else
 					{
 					$this->commentsurl = "";
-					$this->commentsname = "";
+					$this->commentstxt = "";
 					}
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
@@ -202,15 +240,26 @@ function listArticles($topics, $approver)
 			}
 		}
 	
+	$template = "default";
+	if( !empty($topics) )
+		{
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$arr = $babDB->db_fetch_array($res);
+			if( $arr['display_tmpl'] != '' )
+				$template = $arr['display_tmpl'];
+			}
+		}
 	$temp = new temp($topics, $approver);
-	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
+	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$template));
 	$arr = array($temp->count, $temp->nbarch, $temp->nbws);
 	return $arr;
 	}
 
 function listOldArticles($topics, $pos, $approver)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	class temp
 		{
@@ -225,12 +274,13 @@ function listOldArticles($topics, $pos, $approver)
 		var $topics;
 		var $com;
 		var $commentsurl;
-		var $commentsname;
+		var $commentstxt;
 		var $moreurl;
-		var $morename;
-		var $delete;
-		var $modify;
+		var $moretxt;
+		var $deletetxt;
+		var $modifytxt;
 		var $topictitle;
+		var $articleid;
 
 		function temp($topics, $pos, $approver)
 			{
@@ -243,9 +293,9 @@ function listOldArticles($topics, $pos, $approver)
 			$this->bottomname = "";
 			$this->nextname = "";
 			$this->prevname = "";
-			$this->printable = bab_translate("Print Friendly");
-			$this->delete = bab_translate("Delete");
-			$this->modify = bab_translate("Modify");
+			$this->printtxt = bab_translate("Print Friendly");
+			$this->deletetxt = bab_translate("Delete");
+			$this->modifytxt = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
 
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y'");
@@ -253,7 +303,7 @@ function listOldArticles($topics, $pos, $approver)
 
 			if( $total > MAX_ARTICLES)
 				{
-				$this->barch = true;
+				$this->barchive = true;
 				if( $pos > 0)
 					{
 					$this->topurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics;
@@ -283,7 +333,7 @@ function listOldArticles($topics, $pos, $approver)
 					}
 				}
 			else
-				$this->barch = false;
+				$this->barchive = false;
 
 
 			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
@@ -298,7 +348,7 @@ function listOldArticles($topics, $pos, $approver)
 				$this->com = true;
 			else
 				$this->com = false;
-			$this->morename = bab_translate("Read More");
+			$this->moretxt = bab_translate("Read More");
 			}
 
 		function getnext()
@@ -308,6 +358,7 @@ function listOldArticles($topics, $pos, $approver)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->articleid = $this->arr['id'];
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
@@ -316,7 +367,7 @@ function listOldArticles($topics, $pos, $approver)
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
-				$this->blen = $this->arr['blen'];
+				$this->bbody = $this->arr['blen'];
 				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 
@@ -335,14 +386,14 @@ function listOldArticles($topics, $pos, $approver)
 					$totalw = $ar['total'];
 					$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
 					if( $totalw > 0 )
-						$this->commentsname = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
+						$this->commentstxt = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
 					else
-						$this->commentsname = bab_translate("Comments")."&nbsp;(".$total.")";
+						$this->commentstxt = bab_translate("Comments")."&nbsp;(".$total.")";
 					}
 				else
 					{
 					$this->commentsurl = "";
-					$this->commentsname = "";
+					$this->commentstxt = "";
 					}
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
@@ -355,8 +406,19 @@ function listOldArticles($topics, $pos, $approver)
 			}
 		}
 	
+	$template = "default";
+	if( !empty($topics) )
+		{
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$arr = $babDB->db_fetch_array($res);
+			if( $arr['display_tmpl'] != '' )
+				$template = $arr['display_tmpl'];
+			}
+		}
 	$temp = new temp($topics, $pos, $approver);
-	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
+	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$template));
 	return $temp->count;
 	}
 
@@ -404,7 +466,7 @@ function viewArticle($article)
 
 function readMore($topics, $article)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	class temp
 		{
@@ -422,10 +484,13 @@ function readMore($topics, $article)
 		var $titleart;
 		var $titleurl;
 		var $topictxt;
+		var $title;
+		var $titlearticle;
+		var $printtxt;
 
 		function temp($topics, $article)
 			{
-			$this->printable = bab_translate("Print Friendly");
+			$this->printtxt = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
@@ -445,8 +510,9 @@ function readMore($topics, $article)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->title = bab_replace($this->arr['title']);
 				if( !empty($this->arr['body']))
-				$this->content = bab_replace($this->arr['body']);
+					$this->content = bab_replace($this->arr['body']);
 				else
 					$this->content = bab_replace($this->arr['head']);
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
@@ -469,9 +535,9 @@ function readMore($topics, $article)
 			if( $i < $this->countart)
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
-				$this->titleart = $arr['title']; 
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id'];
-				$this->titleurl2 = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id'];
+				$this->titlearticle = $arr['title']; 
+				$this->urlview = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id'];
+				$this->urlreadmore = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -480,8 +546,20 @@ function readMore($topics, $article)
 			}
 		}
 	
+	$template = "default";
+	if( !empty($topics) )
+		{
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$arr = $babDB->db_fetch_array($res);
+			if( $arr['display_tmpl'] != '' )
+				$template = $arr['display_tmpl'];
+			}
+		}
+
 	$temp = new temp($topics, $article);
-	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "readmore"));
+	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "body_".$template));
 	return $temp->nbarch;
 	}
 

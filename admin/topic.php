@@ -170,7 +170,7 @@ function deleteArticles($art, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid)
+function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -214,7 +214,16 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $arrarttmpl;
 		var $countarttmpl;
 
-		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid)
+		var $disptmpltxt;
+		var $disptmplval;
+		var $disptmplid;
+		var $disptmplselected;
+		var $disptmpl;
+		var $disptid;
+		var $arrdisptmpl;
+		var $countdisptmpl;
+
+		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
@@ -230,6 +239,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->none = bab_translate("None");
 			$this->delete = bab_translate("Delete");
 			$this->arttmpltxt = bab_translate("Article's model");
+			$this->disptmpltxt = bab_translate("Display template");
 			$this->tgval = "topic";
 			$this->item = $id;
 			$this->langLabel = bab_translate('Language');
@@ -292,6 +302,11 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			else
 				$this->atid = $atid;
 
+			if(empty($disptid))
+				$this->disptid = $this->arr['display_tmpl'];
+			else
+				$this->disptid = $disptid;
+
 			$this->bdel = true;
 			
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
@@ -334,6 +349,28 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				}
 			$this->countarttmpl = count($this->arrarttmpl);
 			
+			$file = "topicsdisplay.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$arr = $tpl->getTemplates($filepath);
+				for( $i=0; $i < count($arr); $i++)
+					{
+					if( strpos($arr[$i], "head_") !== false ||  strpos($arr[$i], "body_") !== false )
+						if( count($this->arrdisptmpl) == 0  || !in_array(substr($arr[$i], 5), $this->arrdisptmpl ))
+							$this->arrdisptmpl[] = substr($arr[$i], 5);
+					}
+				}
+			$this->countdisptmpl = count($this->arrdisptmpl);
 			}
 
 
@@ -429,9 +466,26 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			return false;
 			}
 
+		function getnextdisptmpl()
+			{
+			static $i = 0;
+			if($i < $this->countdisptmpl)
+				{
+				$this->disptmplid = $this->arrdisptmpl[$i];
+				$this->disptmplval = $this->arrdisptmpl[$i];
+				if( $this->disptmplid == $this->disptid )
+					$this->disptmplselected = "selected";
+				else
+					$this->disptmplselected = "";
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
 		}
 
-	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid);
+	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -503,7 +557,7 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"topics.html", "articleview");
 	}
 
-function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang, $atid)
+function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang, $atid, $disptid)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -573,7 +627,7 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 		$db->db_query($query);
 	}
 
-	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."' where id = '".$id."'";
 	$db->db_query($query);
 
 	if( $arr['id_cat'] != $cat )
@@ -649,7 +703,7 @@ if( isset($add) )
 	{
 	if( isset($Submit))
 		{
-		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid))
+		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid, $disptid))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -764,7 +818,7 @@ switch($idx)
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a topic");
-		modifyCategory($item, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid);
+		modifyCategory($item, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);

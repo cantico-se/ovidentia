@@ -52,6 +52,13 @@ else
                       }</option>
                       <!--#endin getnextlang -->
                     </select></td>
+                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ disptmpltxt }:&nbsp; 
+					<select name="disptid">
+                      <option value="">{ none }</option>
+                      <!--#in getnextdisptmpl -->
+                      <option value="{ disptmplid }" { disptmplselected }>{ disptmplval }</option>
+                      <!--#endin getnextdisptmpl -->
+                    </select> </td>
                   <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ arttmpltxt }:&nbsp; 
 					<select name="atid">
                       <option value="">{ none }</option>

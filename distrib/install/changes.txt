@@ -1,4 +1,15 @@
 /************************************************************************/
+Mai 2003: Version 4.0.4
+/************************************************************************/
+- New HTML editor ( HTMLArea )
+- Sections can be otptional
+- Now you can attach to one category topic a template to use for topics display
+- Now you can attach to one topic a template to use for articles display
+- Now you can attach to one topic an article's model for editing
+- Topics categories hierarchy
+- Fixed some minors bugs
+
+/************************************************************************/
 Mai 2003: Version 4.0.3
 /************************************************************************/
 - Delegation of administration
