@@ -27,7 +27,7 @@ function updateSchemaInstance($idschi)
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$idschi."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
-
+	$tabusers = array();
 	$arr = $db->db_fetch_array($res);
 	$tab = explode(",", $arr['formula']);
 	for( $i= 0; $i < count($tab); $i++)
@@ -41,36 +41,38 @@ function updateSchemaInstance($idschi)
 		$rr = explode($op, $tab[$i]);
 		for($k=0; $k < count($rr); $k++)
 			{
-			if(isset($tabusers) && count($tabusers) == 0 || (is_array($tabusers) && count($tabusers) > 0 && !in_array( $rr[$k], $tabusers )))
+			if( count($tabusers) == 0 || !in_array( $rr[$k], $tabusers ))
 				$tabusers[] = $rr[$k];
 			}
 		}
 
-	$tab = $tabusers;
-	$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."'");
-	while( $arr3 = $db->db_fetch_array($res))
-		{
-		if( !in_array($arr3['iduser'], $tab))
+	if( count($tabusers) > 0 )
+	{
+		$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."'");
+		while( $arr3 = $db->db_fetch_array($res))
 			{
-			$db->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where id='".$arr3['id']."'");
-			}
-		else 
-			{
-			for($j = 0; $j < count($tab); $j++)
+			if( !in_array($arr3['iduser'], $tabusers))
 				{
-					if ($tab[$j] == $arr3['iduser'])
+				$db->db_query("delete from ".BAB_FAR_INSTANCES_TBL." where id='".$arr3['id']."'");
+				}
+			else 
+				{
+				for($j = 0; $j < count($tabusers); $j++)
 					{
-						array_splice($tab, $j, 1);
-						break;
+						if ($tabusers[$j] == $arr3['iduser'])
+						{
+							array_splice($tabusers, $j, 1);
+							break;
+						}
 					}
 				}
 			}
-		}
 
-	for($j = 0; $j < count($tab); $j++)
-		{
-		$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser) VALUES ('".$idschi."', '".$tab[$j]."')");
-		}
+		for($j = 0; $j < count($tabusers); $j++)
+			{
+			$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser) VALUES ('".$idschi."', '".$tabusers[$j]."')");
+			}
+	}
 
 }
 
@@ -184,17 +186,21 @@ function updateFlowInstance($idschi, $iduser, $bool)
 		$roles = getApproversFlow($scinfo['formula']);
 		if( count($roles) > 0 )
 		{
-			$rr = bab_getSuperior($scinfo['iduser']);
-			if( count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
-				{
-				$idroles[] = 0;
-				}
 
+			if( in_array(0, $roles ))
+			{
+				$rr = bab_getSuperior($scinfo['iduser']);
+				if( count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
+					{
+					$idroles[] = 0;
+					}
+			}
+			$idnroles = array();
 			for( $i = 0; $i < count($roles); $i++ )
 			{
 				if( $roles[$i] != 0 )
 				{
-					$idnroles[] = 0;
+					$idnroles[] = $roles[$i];
 				}
 			}
 
@@ -316,14 +322,17 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 		for( $k = 0; $k < count($rr); $k++)
 			{
 			$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser='".$rr[$k]."'");
-			$arr2 = $db->db_fetch_array($res);
-			if( $arr2['result'] == "")
+			if( $res && $db->db_num_rows($res) > 0 )
 				{
-				$result[] = $rr[$k];
-				if( $notify && $arr2['notified'] == "N" )
+				$arr2 = $db->db_fetch_array($res);
+				if( $arr2['result'] == "")
 					{
-					$notifytab[] = $rr[$k];
-					$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set notified='Y' where id='".$arr2['id']."'");
+					$result[] = $rr[$k];
+					if( $notify && $arr2['notified'] == "N" )
+						{
+						$notifytab[] = $rr[$k];
+						$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set notified='Y' where id='".$arr2['id']."'");
+						}
 					}
 				}
 			}
@@ -355,6 +364,7 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 		$result = getWaitingIdsFlowInstance($arr, $idschi, $notify);
 		if( count($result) > 0 && $arr['satype'] == 1 )
 			{
+			$arroles = array();
 			if( in_array(0, $result))
 				{
 				for( $i = 0; $i < count($result); $i++ )
@@ -370,15 +380,17 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 				{
 				$arroles = $result;
 				}
+			$ret = array();
 			if( count($arroles) > 0 )
 				{
 				$rr =  bab_getOrgChartRoleUsers($arroles);
-				$result = $rr['iduser'];
+				$ret[] = $rr['iduser'][0];
 				}
-			if( count($rr1['iduser']) > 0 )
+			if( isset($rr1) && count($rr1['iduser']) > 0 )
 				{
-				$result[] = $rr1['iduser'][0];
+				$ret[] = $rr1['iduser'][0];
 				}
+			$result = $ret;
 			}
 		}
 

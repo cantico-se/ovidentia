@@ -27,12 +27,12 @@ include $babInstallPath."utilit/treeincl.php";
 
 define("ORG_MAX_REQUESTS_LIST", 100);
 
-function displayChart($ocid, $oeid, $update, $disp='')
+function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 	{
 	global $babBody;
 	class temp
 		{
-		function temp($ocid, $oeid, $update, $disp)
+		function temp($ocid, $oeid, $update, $iduser, $disp)
 			{
 			global $babDB, $ocinfo;
 			$this->ocid = $ocid;
@@ -80,7 +80,7 @@ function displayChart($ocid, $oeid, $update, $disp='')
 				$this->updateurlb = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
 				$this->updateurlt = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
 				}
-			$this->currentoe = $oeid;
+			$this->currentoe = $oeid."&iduser=".$iduser;
 			$this->maxlevel += 1;
 			
 			$this->res = $babDB->db_query("select ocet.*, ocet.id as identity, ocut.id_user, det.sn, det.givenname from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt on ocrt.id_oc=ocet.id_oc and ocrt.id_entity=ocet.id and ocrt.type='1' LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocut on ocut.id_role=ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocut.id_user where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
@@ -254,7 +254,7 @@ function displayChart($ocid, $oeid, $update, $disp='')
 				break;
 			}
 		}
-	$temp = new temp($ocid, $oeid, $update, $disp);
+	$temp = new temp($ocid, $oeid, $update, $iduser, $disp);
 	echo bab_printTemplate($temp, "frchart.html", $template);
 	}
 
@@ -411,12 +411,12 @@ function printChartNode(&$obj, $id)
 }
 
 
-function displayChartTree($ocid, $oeid, $update)
+function displayChartTree($ocid, $oeid, $update, $iduser)
 	{
 	global $babBody;
 	class temp
 		{
-		function temp($ocid, $oeid, $update)
+		function temp($ocid, $oeid, $update, $iduser)
 			{
 			global $babDB, $ocinfo;
 			$this->ocid = $ocid;
@@ -450,7 +450,7 @@ function displayChartTree($ocid, $oeid, $update)
 				$this->updateurlb = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
 				$this->updateurlt = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
 				}
-			$this->currentoe = $oeid;
+			$this->currentoe = $oeid."&iduser=".$iduser;
 			/* lire uniquement à partir du root XXXXXXXXXX*/
 			//$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
 			
@@ -469,7 +469,7 @@ function displayChartTree($ocid, $oeid, $update)
 
 		}
 
-	$temp = new temp($ocid, $oeid, $update);
+	$temp = new temp($ocid, $oeid, $update, $iduser);
 	echo bab_printTemplate($temp, "frchart.html", "oedirectorylist_disp3");
 	}
 
@@ -1111,6 +1111,7 @@ switch($idx)
 	case "list":
 		$babBody->title = $ocinfo['name'];
 		if( !isset($oeid)) { $oeid = 0;}
+		if( !isset($iduser)) { $iduser = 0;}
 		switch($disp)
 		{
 			case "disp4":
@@ -1127,10 +1128,10 @@ switch($idx)
 				displayUsersList($ocid, $oeid, $update, $pos, $xf, $q);
 				break;
 			case "disp3":
-				displayChartTree($ocid, $oeid, $update);
+				displayChartTree($ocid, $oeid, $update, $iduser);
 				break;
 			default:
-				displayChart($ocid, $oeid, $update,$disp);
+				displayChart($ocid, $oeid, $update, $iduser,$disp);
 				break;
 		}
 		break;

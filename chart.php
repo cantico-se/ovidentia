@@ -23,21 +23,20 @@
 ************************************************************************/
 include_once "base.php";
 
-function OrgChartPage($ocid)
+function OrgChartPage($ocid, $oeid, $iduser)
 	{
 	class temp
 		{
 
-		function temp($ocid)
+		function temp($ocid, $oeid, $iduser)
 			{
-			$this->flturl = '';//$GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$ocid;
-			$this->flburl = '';//$GLOBALS['babUrlScript']."?tg=flbchart&ocid=".$ocid;
-			$this->frurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid;
-			$this->frturl = $GLOBALS['babUrlScript']."?tg=frchart&idx=frt&ocid=".$ocid;
+			$this->frurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
+			$this->frturl = $GLOBALS['babUrlScript']."?tg=frchart&idx=frt&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
+			$this->flturl = $GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
 			}
 
 		}
-	$temp = new temp($ocid);
+	$temp = new temp($ocid, $oeid, $iduser);
 	die(bab_printTemplate($temp,"chart.html", "chartpage"));
 	}
 
@@ -48,7 +47,9 @@ if (isset($idx))
 switch($idx)
 	{
 	default:
-		OrgChartPage($ocid);
+		if( !isset($oeid)) { $oeid = 0; }
+		if( !isset($iduser)) { $iduser = 0; }
+		OrgChartPage($ocid, $oeid, $iduser);
 		exit;
 		break;
 	}

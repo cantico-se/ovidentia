@@ -441,10 +441,10 @@ xxxhier <br>
 <!--#if orgcount -->
 <script type="text/javascript">
 <!--
-function openWinOrg(idx)
+function openWinOrg(idx, oeid, idu)
 {
 var dummy;
-Start('{ vieworgurl }'+idx, 'OrgChartWin', 'status=no,resizable=yes,scrollbars=yes');
+Start('{ vieworgurl }'+idx+'&oeid='+oeid+'&iduser='+idu, 'OrgChartWin', 'status=no,resizable=yes,scrollbars=yes');
 this.close();
 }
 
@@ -456,7 +456,7 @@ this.close();
 <td class="BabLoginMenuBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td><a class="BabSiteAdminListLink" href="javascript:openWinOrg(document.ocstart.ocid.options[document.ocstart.ocid.selectedIndex].value) ;" nowrap>{ vieworg }</a></td>
+<td><a class="BabSiteAdminListLink" href="javascript:openWinOrg(document.ocstart.ocid.options[document.ocstart.ocid.selectedIndex].value, { oeid }, { idu } ) ;" nowrap>{ vieworg }</a></td>
 <td align="center">
 <select name="ocid">
 <!--#in getnextorg -->

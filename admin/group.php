@@ -394,7 +394,7 @@ function confirmDeleteMembers($item, $names)
 			if( $identity )
 				{
 				$res = $db->db_query("select ocrut.id FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrut.id_role = ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON ocrut.id_user = det.id WHERE ocrt.id_entity =  '".$identity."' AND det.id_directory =  '0' AND det.id_user =  '".$arr[$i]."'");
-				while( $row = $db->db_fetch_row($res))
+				while( $row = $db->db_fetch_array($res))
 					{
 					$db->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$row['id']."'");
 					}

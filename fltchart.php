@@ -24,7 +24,7 @@
 include_once "base.php";
 include $babInstallPath."utilit/orgincl.php";
 
-function listOrgChartRoles($ocid, $oeid)
+function listOrgChartRoles($ocid, $oeid, $iduser)
 	{
 	global $babLittleBody;
 
@@ -37,17 +37,19 @@ function listOrgChartRoles($ocid, $oeid)
 		var $res;
 		var $count;
 
-		function temp($ocid, $oeid)
+		function temp($ocid, $oeid, $iduser)
 			{
-			global $babDB;
+			global $babDB, $babBody;
 
 			$this->superiortxt = bab_translate("Superior");
 			$this->temporarytxt = bab_translate("Temporary employee");
 			$this->collaboratortxt = bab_translate("Collaborators");
 			$this->ocid = $ocid;
 			$this->oeid = $oeid;
+			$this->iduser = $iduser;
 			list($idrole, $rolename) = $babDB->db_fetch_row($babDB->db_query("select id, name from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and id_oc='".$this->ocid."' and type='1'"));
 			$res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$idrole."'");
+			$this->bsuperior = false;
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -56,6 +58,10 @@ function listOrgChartRoles($ocid, $oeid)
 					{
 					$this->superiortitle = bab_composeUserName($arr['givenname'],$arr['sn']) ;
 					$this->superiorurl = $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$arr['id_entry'];
+					if( $arr['id_entry'] == $iduser )
+						{
+						$this->bsuperior = true;
+						}
 					}
 				else
 					{
@@ -68,6 +74,7 @@ function listOrgChartRoles($ocid, $oeid)
 				}
 			list($idrole, $rolename) = $babDB->db_fetch_row($babDB->db_query("select id, name from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and id_oc='".$this->ocid."' and type='2'"));
 			$res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$idrole."'");
+			$this->btemporary = false;
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -76,6 +83,10 @@ function listOrgChartRoles($ocid, $oeid)
 					{
 					$this->temporarytitle = bab_composeUserName($arr['givenname'],$arr['sn']) ;
 					$this->temporaryurl = $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$arr['id_entry'];
+					if( $arr['id_entry'] == $iduser )
+						{
+						$this->btemporary = true;
+						}
 					}
 				else
 					{
@@ -90,6 +101,14 @@ function listOrgChartRoles($ocid, $oeid)
 			$this->resroles = $babDB->db_query("select id, name from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and type NOT IN (1,2)");
 			$this->countroles = $babDB->db_num_rows($this->resroles);
 			$this->altbg = false;
+			if( $babBody->nameorder[0] == 'F' )
+				{
+				$this->orderby = "order by det.givenname asc";
+				}
+			else
+				{
+				$this->orderby = "order by det.sn asc";
+				}
 			}
 
 		function getnextrole()
@@ -101,7 +120,7 @@ function listOrgChartRoles($ocid, $oeid)
 				$arr = $babDB->db_fetch_array($this->resroles);
 				$this->collaboratorentity = $arr['name'];
 				$this->altbg = !$this->altbg;
-				$this->res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$arr['id']."'");
+				$this->res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$arr['id']."' ".$this->orderby);
 				$this->count = $babDB->db_num_rows($this->res);
 				$i++;
 				return true;
@@ -121,9 +140,14 @@ function listOrgChartRoles($ocid, $oeid)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
+				$this->buser = false;
 				if( $arr['sn'] )
 					{
 					$this->collaboratortitle = bab_composeUserName($arr['givenname'],$arr['sn']);
+					if( $arr['id_entry'] == $this->iduser )
+						{
+						$this->buser = true;
+						}
 					}
 				else
 					{
@@ -143,8 +167,8 @@ function listOrgChartRoles($ocid, $oeid)
 		
 		}
 
-	$temp = new temp($ocid, $oeid);
-	$babLittleBody->babecho(	bab_printTemplate($temp,"fltchart.html", "roleslist"));
+	$temp = new temp($ocid, $oeid, $iduser);
+	$babLittleBody->babecho( bab_printTemplate($temp,"fltchart.html", "roleslist"));
 	}
 
 function viewOrgChartRoleMore($ocid, $oeid, $iduser, $update)
@@ -406,7 +430,8 @@ switch($idx)
 		$babLittleBody->setCurrentItemMenu($idx);
 		if( $oeid )
 		{
-		listOrgChartRoles($ocid, $oeid);
+		if( !isset($iduser)) { $iduser = 0;}
+		listOrgChartRoles($ocid, $oeid, $iduser);
 		}
 		break;
 	}

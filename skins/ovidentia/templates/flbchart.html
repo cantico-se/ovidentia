@@ -81,6 +81,11 @@ top.fr.document.location.reload();
 <!--#if count -->
 <script type="text/javascript">
 <!--
+function fulltext(el)
+	{
+	var obj = document.getElementById('parententityfulltext');
+	obj.innerHTML = el.options[el.selectedIndex].text;
+	}
 //-->
 </script>
 <!--#endif count -->
@@ -96,8 +101,9 @@ top.fr.document.location.reload();
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <!--#if count -->
 <tr> 
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ grouptxt }:<br>
-<select name="grpid" style="width:100%">
+<td class="BabSiteAdminTitleFontBackground" width="100%" align="center" valign="middle">{ grouptxt }:<br>
+<span id="parententityfulltext" style="width:100%"></span><br>
+<select name="grpid" style="width:100%" onchange="fulltext(this)">
 <option value="none" selected>{ nonetxt }</option>
 <option value="new">{ newgrouptxt }</option>
 <!--#in getnextgroup -->

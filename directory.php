@@ -549,7 +549,8 @@ function summaryDbContact($id, $idu)
 					$this->delurl = $GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu;
 					}
 
-				$this->resorg = $this->db->db_query("SELECT distinct oct.name, oct.id from ".BAB_ORG_CHARTS_TBL." oct left join ".BAB_OC_ROLES_TBL." ocrt on oct.id=ocrt.id_oc left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrt.id=ocrut.id_role where ocrut.id_user='".$idu."'");
+				$this->idu = $idu;
+				$this->resorg = $this->db->db_query("SELECT distinct oct.name, oct.id, oct.id_directory from ".BAB_ORG_CHARTS_TBL." oct left join ".BAB_OC_ROLES_TBL." ocrt on oct.id=ocrt.id_oc left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrt.id=ocrut.id_role where ocrut.id_user='".$idu."'");
 				$this->orgcount = $this->db->db_num_rows($this->resorg);
 				if( $this->orgcount > 0 )
 					{
@@ -598,6 +599,16 @@ function summaryDbContact($id, $idu)
 					}
 				$this->orgn = $arr['name'];
 				$this->orgid = $arr['id'];
+				$res = $this->db->db_query("SELECT  ocrt.id_entity FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role WHERE ocrut.id_user='".$this->idu."' and ocrt.id_oc='".$this->orgid."' and ocrut.isprimary='Y' ");
+				if( $res && $this->db->db_num_rows($res) > 0 )
+					{
+					$arr = $this->db->db_fetch_array($res);
+					$this->oeid = $arr['id_entity'];
+					}
+				else
+					{
+					$this->oeid = 0;
+					}
 				$i++;
 				return true;
 				}

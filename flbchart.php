@@ -407,7 +407,7 @@ function listOrgChartRoles($ocid, $oeid)
 		}
 
 	$temp = new temp($ocid, $oeid);
-	$babLittleBody->babecho(	bab_printTemplate($temp,"flbchart.html", "functionslist"));
+	$babLittleBody->babecho( bab_printTemplate($temp,"flbchart.html", "functionslist"));
 	}
 
 function usersOrgChartRole($ocid, $oeid, $orid)
@@ -1003,11 +1003,19 @@ function delOrgChartRoles($ocid, $oeid, $ocfid)
 	global $babBody, $babDB, $babLittleBody;
 	for($i= 0; $i < count($ocfid); $i++ )
 	{
-	$babDB->db_query("delete from ".BAB_OC_ROLES_TBL." where id='".$ocfid[$i]."'");
-	$res = $babDB->db_query("select id from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$ocfid[$i]."'");
-	while( $arr = $babDB->db_fetch_array($res))
+	$res1 = $babDB->db_query("select * from ".BAB_OC_ROLES_TBL." where id='".$ocfid[$i]."'");
+	if( $res1 && $babDB->db_num_rows($res1) > 0 )
 		{
-		delUserOrgChartRole($ocid, $oeid, array($arr['id']));
+		$row = $babDB->db_fetch_array($res1);
+		if( $row['type'] == 0 )
+			{
+			$babDB->db_query("delete from ".BAB_OC_ROLES_TBL." where id='".$ocfid[$i]."'");
+			$res = $babDB->db_query("select id from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$ocfid[$i]."'");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				delUserOrgChartRole($ocid, $oeid, array($arr['id']));
+				}
+			}
 		}
 	}
 }
