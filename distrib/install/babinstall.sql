@@ -409,7 +409,7 @@ CREATE TABLE bab_topcat_order (
   ordering smallint(2) unsigned NOT NULL default '0',
   id_parent int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
-  KEY id_topcat (id_topcat)
+  KEY id_topcat (id_topcat),
   KEY id_parent (id_parent)
 );
 
