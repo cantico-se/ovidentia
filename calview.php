@@ -476,6 +476,63 @@ function newEmails()
 	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "mailslist"));
 }
 
+function newFiles($nbdays)
+{
+	global $babBody;
+
+	class temp6
+		{
+
+		var $db;
+		var $count;
+		var $res;
+
+		function temp6($nbdays)
+			{
+			global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
+			$this->nbdays = $nbdays;
+			$this->db = $GLOBALS['babDB'];
+			$req = "select ".BAB_FILES_TBL.".id, ".BAB_FILES_TBL.".name, ".BAB_FILES_TBL.".description from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state='' and ".BAB_FILES_TBL.".created >=";
+			if( $this->nbdays > 0)
+				$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+			else
+				$req .= "'".$babBody->lastlog."'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			if( $nbdays > 0)
+				$this->newfiles = bab_translate("Last files ( Since seven days before your last visit )");
+			else
+				$this->newfiles = bab_translate("New files");
+			}
+
+		function getfile()
+			{
+			static $i=0;
+			if( $i < $this->count )
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->file = $arr['name'];
+				if( !empty($arr['description']))
+					$this->filedesc = $arr['description'];
+				else
+					$this->filedesc = "";
+				$this->fileurl = $GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new temp6($nbdays);
+	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "fileslist"));
+}
+
 /* main */
 if(!isset($idx))
 	{
@@ -492,6 +549,9 @@ switch($idx)
 		break;
 	case "for":
 		newThreads(0);
+		break;
+	case "fil":
+		newFiles(0);
 		break;
 	default:
 	case "view":
@@ -512,6 +572,7 @@ switch($idx)
 		newArticles(7);
 		newComments(7);
 		newThreads(7);
+		newFiles(7);
 		$bemail = bab_mailAccessLevel();
 		if( $bemail == 1 || $bemail == 2)
 			{
