@@ -286,13 +286,20 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 <td>
 <table cellspacing="0" cellpadding="0" border="0">
 <!--#endif alternate -->
-<tr>
-<td><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="21" border="0" 
-alt=""><!--#in gettrans --><!--#if vert "== 1" --><img src="{ babSkinPath }images/Puces/Puce-v.gif" width="12" height="21" border="0" alt=""><!--#else vert --><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="21" border="0" alt=""><!--#endif vert --><!--#endin gettrans --><!--#if first "== 1" --><!--#else first --><!--#if leaf "== 1" --><img 
-src="{ babSkinPath }images/Puces/Puce-l.gif" width="12" height="21" border="0" alt=""><!--#else leaf --><img src="{ babSkinPath }images/Puces/Puce-t.gif" width="12" height="21" border="0" 
-alt=""><!--#endif leaf --><!--#endif first --><!--#if parent "== 1" --><img 
-src="{ babSkinPath }images/Puces/Puce-m.gif" width="9" height="21" border="0" 
-alt=""><!--#else parent --><img src="{ babSkinPath }images/Puces/Puce-h.gif" width="9" height="21" border="0" alt=""><!--#endif parent --></td>
+<tr><!--#in gettrans --><!--#if vert "== 1" -->
+		<TD style="background-image: url({ babSkinPath }images/Puces/PostV.gif);background-repeat: no-repeat;background-position: center center"><img src="{ babSkinPath }images/Puces/Puce-v.gif" width="12" height="21" border="0" alt=""></TD>
+		<!--#else vert -->
+		<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="21" border="0" alt=""></TD>
+		<!--#endif vert --><!--#endin gettrans --><!--#if first "== 1" --><!--#else first --><!--#if leaf "== 1" -->
+		<TD style="background-image: url({ babSkinPath }images/Puces/PostL.gif);background-repeat: no-repeat;background-position: center center"><img src="{ babSkinPath }images/Puces/Puce-l.gif" width="12" height="21" border="0" alt=""></TD>
+		<!--#else leaf -->
+		<TD style="background-image: url({ babSkinPath }images/Puces/PostV.gif);background-repeat: no-repeat;background-position: center center"><img src="{ babSkinPath }images/Puces/Puce-t.gif" width="12" height="21" border="0" alt=""></TD>
+		<!--#endif leaf --><!--#endif first --><!--#if parent "== 1" -->
+		<TD style="background-image: url({ babSkinPath }images/Puces/PostM.gif);background-repeat: no-repeat;background-position: center center"><img src="{ babSkinPath }images/Puces/Puce-m.gif" width="9" height="21" border="0" alt=""></TD>
+		<!--#else parent -->
+		<TD><img src="{ babSkinPath }images/Puces/Puce-h.gif" width="9" height="21" border="0" alt=""></TD>
+		<!--#endif parent -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="21" border="0" alt=""></TD>
 <td class="BabForumTopicsNavTreeLive">&nbsp;&nbsp;
 <!--#if current "== 1" -->
 { replysubject }</td>
@@ -376,3 +383,4 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 <!--#endin  getnext -->
 <br>
 <!--#end postslistflat -->
+
