@@ -299,12 +299,14 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		return;
 		}
 
+	$content = bab_stripDomainName($content);
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$desc = addslashes($desc);
-		$content = addslashes(bab_stripDomainName($content));
+		$content = addslashes($content);
 		$title = addslashes($title);
 		}
+
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_SECTIONS_TBL." where title='$title'";	
 	$res = $db->db_query($query);

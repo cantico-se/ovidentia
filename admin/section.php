@@ -140,6 +140,7 @@ function sectionUpdate($id, $title, $desc, $content, $script)
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
 
+	$content = bab_stripDomainName($content);
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$desc = addslashes($desc);
