@@ -643,7 +643,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					}
 				}
 
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and disabled='N' order by id_field asc");
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and disabled='N' order by list_ordering asc");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
 				$this->count = $this->db->db_num_rows($this->res);
