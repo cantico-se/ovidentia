@@ -761,7 +761,11 @@ if( isset($update))
 	if( $update == "order" )
 		saveSectionsOrder($listleft, $listright);
 	else if( $update == "disable" )
+		{
+		if( !isset($sections)) { $sections= array();}
+		if( !isset($sectopt)) { $sectopt= array();}
 		disableSections($sections, $sectopt);
+		}
 	}
 
 if( !isset($idx))

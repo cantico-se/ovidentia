@@ -87,6 +87,7 @@ function sectionsList()
 				}
 
 			$this->countcat = count($this->arrcatid);
+			$this->altbg = false;
 			}
 
 		function getnextp()
