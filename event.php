@@ -186,7 +186,7 @@ function newEvent()
 			$descriptionval = isset($GLOBALS['evtdesc'])? $GLOBALS['evtdesc'] : "";
 			$this->editor = bab_editor($descriptionval, 'evtdesc', 'vacform',150);
 
-			$this->daytypechecked = $this->icalendar->allday == 'Y' && !isset($_GET['st']) ? "checked"  :'';
+			$this->daytypechecked = $this->icalendar->allday == 'Y' ? "checked"  :'';
 			$this->elapstime = $this->icalendar->elapstime;
 			$this->ampm = $GLOBALS['babBody']->ampm == 'Y' ? true : false;
 			$this->calendars = calendarchoice('vacform');
