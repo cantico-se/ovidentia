@@ -122,6 +122,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				$idxhour = $i;
 				$curhour = $this->startwtime * 60 + $i * $this->elapstime;
 				$endhour = $this->startwtime * 60 + ($i+1) * $this->elapstime;
+				
 				$this->h_start = sprintf("%02d:%02d", $curhour/60, $curhour%60);
 				$this->h_end = sprintf("%02d:%02d", $endhour/60, $endhour%60);
 				if( $babBody->ampm)
@@ -140,7 +141,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					{
 					$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
 					}
-				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".$this->h_start;
+				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->mday,$this->year);
 				if( $i % 2)
 					{
 					$this->altbgcolor = true;

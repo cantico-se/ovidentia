@@ -182,10 +182,10 @@ function newEvent()
 			$this->calendars = calendarchoice('vacform');
 			$this->totaldays = date("t",mktime(0,0,0,$this->curmonth,$this->curday,$this->curyear));
 
-			$this->daysel = $this->daybegin;
-			$this->monthsel = $this->monthbegin;
-			$this->yearsel = $this->yearbegin;
-			$this->timesel = $this->timebegin;
+			$this->daysel = !empty($_GET['st']) ? date('j',$_GET['st']) : $this->daybegin;
+			$this->monthsel = !empty($_GET['st']) ? date('n',$_GET['st']) : $this->monthbegin;
+			$this->yearsel = !empty($_GET['st']) ? date('Y',$_GET['st']) : $this->yearbegin;
+			$this->timesel = !empty($_GET['st']) ? date('H:i',$_GET['st']) : $this->timebegin;
 
 			$this->bprivate = true;
 			$this->block = true;
