@@ -520,7 +520,7 @@ function summaryDbContact($id, $idu)
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($res);
-				$this->name = $this->arr['givenname']. " ". $this->arr['sn'];
+				$this->name = stripslashes($this->arr['givenname']). " ". stripslashes($this->arr['sn']);
 				if( $this->arr['plen'] > 0 )
 					$this->showph = true;
 
@@ -566,7 +566,7 @@ function summaryDbContact($id, $idu)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldn = bab_translate($arr['description']);
-				$this->fieldv = $this->arr[$arr['name']];
+				$this->fieldv = stripslashes($this->arr[$arr['name']]);
 				if( strlen($this->arr[$arr['name']]) > 0 )
 					$this->bfieldv = true;
 				else
@@ -627,7 +627,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($res);
-				$this->name = $this->arr['givenname']. " ". $this->arr['sn'];
+				$this->name = stripslashes($this->arr['givenname']. " ". $this->arr['sn']);
 				if( $this->arr['plen'] > 0 )
 					{
 					$this->showph = true;
@@ -666,9 +666,9 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->fieldn = bab_translate($arr['description']);
 				$this->fieldv = $arr['name'];
 				if( isset($this->fields[$arr['name']]) )
-					$this->fvalue = $this->fields[$arr['name']];
+					$this->fvalue = stripslashes($this->fields[$arr['name']]);
 				else
-					$this->fvalue = $this->arr[$arr['name']];
+					$this->fvalue = stripslashes($this->arr[$arr['name']]);
 				$res = $this->db->db_query("select multilignes, required, modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field='".$arr['id']."'");
 
 				if( $res && $this->db->db_num_rows($res) > 0)
