@@ -51,14 +51,14 @@ class cal_dayCls extends cal_wmdbaseCls
 
 
 		$this->harray = array();
-		$this->hcols = 0;
+		$this->hcols[$i] = 0;
 		for( $i = 0; $i < count($this->idcals); $i++ )
 			{
 			$this->mcals->getHtmlArea($this->idcals[$i], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$i]);
-			$this->hcols += count($this->harray[$i]);
+			$this->hcols[$i]  += count($this->harray[$i]);
 			for( $k =0; $k < count($this->harray[$i][$k]); $k++ )
 				{
-				$this->hcols += count($this->harray[$i][$k]);
+				$this->hcols[$i] += count($this->harray[$i][$k]);
 				}
 			}
 		}
