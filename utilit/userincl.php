@@ -878,11 +878,11 @@ function bab_replace( $txt )
 				{
 				$arr = $db->db_fetch_array($res);
 				if (trim($m[2][$k]) == '')
-					$title = $arr['firstname']." ".$arr['lastname'];
+					$title = bab_composeUserName($arr['firstname'],$arr['lastname']);
 				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
 				}
 			else
-				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[1][$k]." ".$m[2][$k], $txt);
+				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[2][$k], $txt);
 			}
 		}
 
@@ -892,17 +892,22 @@ function bab_replace( $txt )
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
 			$title = $m[2][$k];
-			$req = "select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and id= '".trim($m[1][$k])."'";
+			$req = "select id,sn,givenname,id_directory from ".BAB_DBDIR_ENTRIES_TBL." where id= '".trim($m[1][$k])."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if (trim($m[2][$k]) == '')
-					$title = $arr['firstname']." ".$arr['lastname'];
-				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
+				if ( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id_directory']) || $arr['id_directory'] == 0 )
+					{
+					if (trim($m[2][$k]) == '')
+						$title = bab_composeUserName($arr['sn'],$arr['givenname']);
+					$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$arr['id_directory']."&idu=".$arr['id']."', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
+					}
+				else
+					$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[2][$k], $txt);
 				}
 			else
-				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[1][$k]." ".$m[2][$k], $txt);
+				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[2][$k], $txt);
 			}
 		}
 
