@@ -33,7 +33,14 @@ if( !is_readable($filepath))
 	}
 else
 	{
-	$tmp = new babOvTemplate();
-	$babBody->babecho ($tmp->printout(implode("", file($filepath))));
+	parse_str($QUERY_STRING, $arr);
+	$tmp = new babOvTemplate($arr);
+	if( isset($echo) && $echo == 1)
+		{
+		echo $tmp->printout(implode("", file($filepath)));
+		exit;
+		}
+	else
+		$babBody->babecho ($tmp->printout(implode("", file($filepath))));
 	}
 ?>
