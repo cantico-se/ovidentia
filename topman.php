@@ -185,6 +185,7 @@ function listArticles($id)
 			$this->archivehelp = bab_translate("Click on this image to archive selected articles");
 			$this->homepages = bab_translate("Customize home pages ( Registered and unregistered users )");
 			$this->datepublicationtxt = bab_translate("Publication date");
+			$this->datearchivingtxt = bab_translate("Archive date");
 			$this->previewtxt = bab_translate("Preview");
 			$this->badmin = bab_isUserAdministrator();
 
@@ -246,6 +247,14 @@ function listArticles($id)
 				else
 					{
 					$this->datepublication = '';
+					}
+				if( $arr['date_archiving'] != '0000-00-00 00:00:00' )
+					{
+					$this->datearchiving = bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_archiving']));
+					}
+				else
+					{
+					$this->datearchiving = '';
 					}
 				$i++;
 				return true;
@@ -542,7 +551,7 @@ function viewArticleProperties($item, $idart)
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid;
 			$this->access = false;
 
-			$req = "select at.id, at.title, at.id_topic, at.date_publication, at.restriction, count(aft.id) as totalf from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id='".$idart."' group by aft.id_article";
+			$req = "select at.id, at.title, at.id_topic, at.date_publication, at.date_archiving, at.restriction, count(aft.id) as totalf from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id='".$idart."' group by aft.id_article";
 			$res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($res);
 			if( $this->count > 0 )
@@ -595,13 +604,15 @@ function viewArticleProperties($item, $idart)
 				$this->datepubtitle = bab_translate("Date of publication");
 				$this->datepuburl = $GLOBALS['babUrlScript']."?tg=month&callback=datePub&ymin=0&ymax=2";
 				$this->datepubtxt = bab_translate("Publication date");
+				$this->dateendurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=2";
+				$this->dateendtxt = bab_translate("Archiving date");
 				$this->invaliddate = bab_translate("ERROR: End date must be older");
 				$this->invaliddate = str_replace("'", "\'", $this->invaliddate);
 				$this->invaliddate = str_replace('"', "'+String.fromCharCode(34)+'",$this->invaliddate);
 				$this->cdateecheck = '';
 				if( $arrart['date_publication'] != '0000-00-00 00:00:00' )
 					{
-					$this->cdatescheck = 'checked';
+					$this->cdatepcheck = 'checked';
 					$rr = explode(" ", $arrart['date_publication']);
 					$rr0 = explode("-", $rr[0]);
 					$rr1 = explode(":", $rr[1]);
@@ -617,6 +628,26 @@ function viewArticleProperties($item, $idart)
 					$this->monthpub = date("n");
 					$this->daypub = date("j");
 					$this->timepub = "00:00";
+					}
+
+				if( $arrart['date_archiving'] != '0000-00-00 00:00:00' )
+					{
+					$this->cdateecheck = 'checked';
+					$rr = explode(" ", $arrart['date_archiving']);
+					$rr0 = explode("-", $rr[0]);
+					$rr1 = explode(":", $rr[1]);
+					$this->yearend = $rr0[0];
+					$this->monthend = $rr0[1];
+					$this->dayend = $rr0[2];
+					$this->timeend = $rr1[0].":".$rr1[1];
+					}
+				else
+					{
+					$this->cdateecheck = '';
+					$this->yearend = date("Y");
+					$this->monthend = date("n");
+					$this->dayend = date("j");
+					$this->timeend = "00:00";
 					}
 
 				$this->daysel = $this->daypub;
@@ -711,9 +742,13 @@ function viewArticleProperties($item, $idart)
 				$this->grpid = $arr['id_group'];
 				$this->grpname = bab_getGroupName($arr['id_group']);
 				if( in_array($this->grpid, $this->arrrest))
+					{
 					$this->grpcheck = 'checked';
+					}
 				else
+					{
 					$this->grpcheck = '';
+					}
 				$i++;
 				return true;
 				}
@@ -738,13 +773,19 @@ function viewArticleProperties($item, $idart)
 					$this->selected = "selected";
 					}
 				else
+					{
 					$this->selected = "";
-				
+					}
 				$i++;
 				return true;
 				}
 			else
 				{
+				if( $p == 0 )
+					{
+					$this->daysel = $this->dayend;
+					$p++;
+					}
 				$i = 1;
 				return false;
 				}
@@ -765,13 +806,20 @@ function viewArticleProperties($item, $idart)
 					$this->selected = "selected";
 					}
 				else
+					{
 					$this->selected = "";
+					}
 
 				$i++;
 				return true;
 				}
 			else
 				{
+				if( $p == 0)
+					{
+					$this->monthsel = $this->monthend;
+					$p++;
+					}
 				$i = 1;
 				return false;
 				}
@@ -797,6 +845,11 @@ function viewArticleProperties($item, $idart)
 				}
 			else
 				{
+				if( $p == 0 )
+					{
+					$this->yearsel = $this->yearend - date("Y") + 1;
+					$p++;
+					}
 				$i = 0;
 				return false;
 				}
@@ -832,6 +885,11 @@ function viewArticleProperties($item, $idart)
 				}
 			else
 				{
+				if( $p == 0)
+					{
+					$this->timesel = $this->timeend;
+					$p++;
+					}
 				$i = 0;
 				return false;
 				}
@@ -917,9 +975,9 @@ function saveOrderArticles($id, $listarts)
 
 function saveArticleProperties()
 {
-	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $item, $topicid, $cdates, $yearbegin, $yearpub, $monthpub, $daypub, $timepub, $restriction;
+	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $item, $topicid, $cdatep, $yearbegin, $yearpub, $monthpub, $daypub, $timepub, $cdatee, $yearend, $yearend, $monthend, $dayend, $timeend, $restriction;
 
-	if( isset($cdates) || isset($topicid) || isset($restriction))
+	if( isset($cdatep) || isset($cdatee) || isset($topicid) || isset($restriction))
 	{
 	$res = $babDB->db_query("select at.id_topic, count(aft.id) as totalf from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id='".$idart."' group by aft.id_article");
 	if( $res && $babDB->db_num_rows($res) > 0 )
@@ -931,6 +989,12 @@ function saveArticleProperties()
 			{
 			$date_pub = sprintf("%04d-%02d-%02d %s:00", date("Y") + $yearpub - 1, $monthpub, $daypub, $timepub);
 			$arrreq[] = "date_publication='".$date_pub."'";
+			}
+
+		if( isset($cdatee)) 
+			{
+			$date_end = sprintf("%04d-%02d-%02d %s:00", date("Y") + $yearend - 1, $monthend, $dayend, $timeend);
+			$arrreq[] = "date_archiving='".$date_end."'";
 			}
 
 		if( isset($restriction))

@@ -79,6 +79,7 @@
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle">&nbsp;</td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><b>{ titlename }</b></td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><b>{ datepublicationtxt }</b></td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ datearchivingtxt }</b></td>
 <td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;</td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
@@ -94,6 +95,7 @@
 <td><a class="BabForumTopicsNavContribution" title="{ previewtxt }" href="javascript: Start('{ urltitle }', 'OvidentiaTopArt', 'width=750,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/preview.gif" alt="{ previewtxt }" border="0"></a></td>
 <td align="left" valign="middle"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ propurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
 <td align="left" valign="middle">&nbsp;{ datepublication }</td>
+<td align="left" valign="middle">&nbsp;{ datearchiving }</td>
 <td align="left" valign="middle">&nbsp;<!--#if bupdate -->&nbsp;&nbsp;{ status }<!--#endif bupdate --></td>
 <td align="center" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
@@ -106,6 +108,7 @@
 <tr> 
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png"  width="12" height="13" alt="{ art0alt }" border="0" align="absmiddle"></a></td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png"  width="12" height="13" alt="{ art1alt }" border="0" align="absmiddle"></a></td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
@@ -321,26 +324,6 @@ onClick="Javascript:selectAll(document.ordform.elements[4]); document.ordform.su
 <!--#if access -->
 <script type="text/javascript">
 <!--
-function stepSubmitForm(cmd, fmname) 
-{ 
-if( typeof document.forms[fmname] != "object" ) return;
-document.forms[fmname].updstep3.value = cmd;
-if(cmd == 'save' )
-{
-	if( validateForm(document.forms[fmname]))
-	{
-	return true;
-	}
-	else
-	{
-	return false;
-	}
-}
-else
-{
-return true;
-}
-}
 
 function updateDates(elemDay, elemMonth, elemYear)
 {
@@ -365,10 +348,64 @@ function updateDates(elemDay, elemMonth, elemYear)
 
 function datePub(day, month, year)
 {
-	document.propform.elements['daysub'].options[day-1].selected = true;
-	document.propform.elements['monthsub'].options[month-1].selected = true;
-	document.propform.elements['yearsub'].options[year-{ yearsub }].selected = true;
+	document.propform.elements['daypub'].options[day-1].selected = true;
+	document.propform.elements['monthpub'].options[month-1].selected = true;
+	document.propform.elements['yearpub'].options[year-{ yearpub }].selected = true;
 
+}
+
+function dateEnd(day, month, year)
+{
+	document.propform.elements['dayend'].options[day-1].selected = true;
+	document.propform.elements['monthend'].options[month-1].selected = true;
+	document.propform.elements['yearend'].options[year-{ yearend }].selected = true;
+
+}
+
+
+function validateForm(fr)
+{
+var ret = true;
+var checkp = document.getElementById('idcdp');
+var checke = document.getElementById('idcde');
+if (checkp.checked && checke.checked)
+{
+if( fr.yearpub.selectedIndex > fr.yearend.selectedIndex )
+	{
+	ret = false;
+	}
+else if( fr.yearpub.selectedIndex == fr.yearend.selectedIndex )
+	{
+		if( fr.monthpub.selectedIndex > fr.monthend.selectedIndex )
+		{
+		ret = false;
+		}
+		else if( fr.monthpub.selectedIndex == fr.monthend.selectedIndex ) 
+		{
+		if( fr.daypub.selectedIndex > fr.dayend.selectedIndex )
+			{
+			ret = false;
+			}
+		else if( fr.daypub.selectedIndex == fr.dayend.selectedIndex ) 
+		{
+		if( fr.timepub.selectedIndex > fr.timeend.selectedIndex )
+			{
+			ret = false;
+			}
+		}
+		}
+	}
+
+}
+
+if( ret == false)
+	{
+	var d1;
+	alert ('{ invaliddate }');
+	return false;
+	}
+
+return true;
 }
 //-->
 </script>
@@ -437,7 +474,7 @@ function datePub(day, month, year)
 <tr> 
 <td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datepuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datepubtxt }</a>: </td>
 <td valign="middle"> 
-<input type="checkbox" id="idcds" name="cdates" value="Y" { cdatescheck }></td>
+<input type="checkbox" id="idcdp" name="cdatep" value="Y" { cdatepcheck }></td>
 <td valign="middle"> 
 <select name="daypub">
   <!--#in getnextday -->
@@ -461,6 +498,39 @@ function datePub(day, month, year)
 </td>
 <td valign="middle"> 
 <select name="timepub">
+<!--#in getnexttime -->
+<option value="{ timeval }" { selected }>{ time }</option>
+<!--#endin getnexttime -->
+</select >
+</td>
+</tr>
+<tr> 
+<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
+<td valign="middle"> 
+<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
+<td valign="middle"> 
+<select name="dayend">
+  <!--#in getnextday -->
+  <option value="{ dayid }"  { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }"  { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }" { selected }>{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="timeend">
 <!--#in getnexttime -->
 <option value="{ timeval }" { selected }>{ time }</option>
 <!--#endin getnexttime -->
@@ -527,7 +597,7 @@ function datePub(day, month, year)
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
 <td colspan="4" align="right">
-<input type="submit" name="bupdate" value="{ submittxt }"></td>
+<input type="submit" name="bupdate" value="{ submittxt }" onclick="javascript:validateForm(document.forms['propform']);"></td>
 </tr>
 </table>
 </td>
