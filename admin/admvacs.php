@@ -45,12 +45,12 @@ function listVacationManagers()
 		function temp()
 			{
 			global $babDB;
-			$this->fullnametxt = bab_translate("Manager");
+			$this->fullnametxt = bab_translate("Vacation managers");
 			$this->delete = bab_translate("Delete");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->adduser = bab_translate("Add");
-			$this->managertext = bab_translate("Manager");
+			$this->managertext = bab_translate("New manager");
 			$this->managerval = "";
 			$this->managerid = "";
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
@@ -125,9 +125,9 @@ switch($idx)
 	{
 	default:
 	case "list":
-		$babBody->title = bab_translate("List of vacations administrators");
+		$babBody->title = bab_translate("List of vacations managers");
 		listVacationManagers();
-		$babBody->addItemMenu("list", bab_translate("Administrators"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
+		$babBody->addItemMenu("list", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
