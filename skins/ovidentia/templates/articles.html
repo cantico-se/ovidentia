@@ -222,7 +222,7 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <textarea id="headtext" name="headtext"  onfocus="savef(document.modarticle.headtext)" style="width:100%" rows="20">{ headval }</textarea>
 <!--#endif babOldEditor -->
 <!--#else msie -->
-<textarea id="headtext" name="headtext" onblur="this.focus()" onfocus="savef(document.modarticle.headtext)" style="width:100%" rows="20">{ headval }</textarea><!--#endif msie -->
+<textarea id="headtext" name="headtext" onfocus="savef(document.modarticle.headtext)" style="width:100%" rows="20">{ headval }</textarea><!--#endif msie -->
 </td>
 </tr>
 <tr> 
@@ -446,10 +446,10 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <!--#else babOldEditor -->
 <iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1','headtext')">
 </iframe>
-<textarea id="headtext" name="headtext"  onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea>
+<textarea id="headtext" name="headtext" onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea>
 <!--#endif babOldEditor -->
 <!--#else msie -->
-<textarea id="headtext" name="headtext" onblur="this.focus()" onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea>
+<textarea id="headtext" name="headtext" onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
