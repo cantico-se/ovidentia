@@ -461,7 +461,7 @@ function showVersionHistoricFile($idf, $pos)
 }
 
 
-function getFile( $idf, $vmajor, $vminor )
+function getFile( $idf, $vmajor, $vminor, $inl )
 	{
 	global $babBody, $babDB, $babFileActions, $arrfile, $arrfold, $lockauthor;
 
@@ -895,7 +895,8 @@ switch($idx)
 	case "get":
 		if( $bupdate || $bdownload)
 			{
-			getFile($idf, $vmaj, $vmin);
+			if(!isset($inl)) { $inl ='';}
+			getFile($idf, $vmaj, $vmin, $inl);
 			exit;
 			}
 		else
