@@ -113,7 +113,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
-			$this->week = bab_translate('Week').' '.date('W', $mktime);
+			$this->week = bab_translate("Week").' '.date('W', $mktime);
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 				{

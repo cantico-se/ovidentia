@@ -1503,6 +1503,6 @@
 <string id="Every">Every</string>
 <string id="Modify event category">Modify event category</string>
 <string id="Add event category">Add event category</string>
-<string id="date_from">Du</string>
-<string id="date_to">Au</string>
+<string id="date_from">From</string>
+<string id="date_to">To</string>
 </en>

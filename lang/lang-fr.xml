@@ -603,7 +603,7 @@
 <string id="Print Friendly">Impression</string>
 <string id="Print">Imprimer</string>
 <string id="Private home page articles">Liste des articles de la page d'accueil privée</string>
-<string id="Private">Privée</string>
+<string id="Private">Privé</string>
 <string id="Public home page articles">Liste des articles de la page d'accueil public</string>
 <string id="Public">Publique</string>
 <string id="Quantities">Quantités</string>
@@ -1441,7 +1441,6 @@
 <string id="Database">Base de donnés</string>
 <string id="date_from">Du</string>
 <string id="date_to">Au</string>
-<string id="Availability">Disponibilitées</string>
 <string id="View event">Voir l'évenement</string>
 <string id="Attendee">Invité</string>
 <string id="Declined">Refusé</string>
@@ -1452,7 +1451,7 @@
 <string id="Event Detail">Détail de l'évènement</string>
 <string id="Attendees">Invités</string>
 <string id="Availability">Disponibilité</string>
-<string id="No repeat">Pas de répetition</string>
+<string id="No repeat">Pas de répétition</string>
 <string id="Daily">Journalier</string>
 <string id="Weekly">Hebdomadaire</string>
 <string id="Monthly">Mensuel</string>
@@ -1507,4 +1506,14 @@
 <string id="Appointement accepted by ">Rendez-vous accepté par </string>
 <string id="Appointement declined by ">Rendez-vous refusé par </string>
 <string id="Waiting event">Rendez-vous en attente d'approbation</string>
+<string id="week">semaine</string>
+<string id="Calendars">Agendas</string>
+<string id="Next year">Année suivante</string>
+<string id="New event">Nouvel évènement</string>
+<string id="Day view">Vue journalière</string>
+<string id="Collectifs">Collectifs</string>
+<string id="Push right">Déplacer vers la droite</string>
+<string id="Push left">Déplacer vers la gauche</string>
+<string id="Record">Enregistrer</string>
+<string id="Successful recording">Enregistrement réussi</string>
 </fr>

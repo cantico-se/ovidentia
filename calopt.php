@@ -525,7 +525,7 @@ function pop_calendarchoice()
 			{
 			$this->backurl = $_GET['backurl'];
 			$this->calendars = calendarchoice('calendarchoice');
-			$this->t_record = bab_translate('Record');
+			$this->t_record = bab_translate("Record");
 			}
 		}
 	$temp = new temp();
@@ -542,7 +542,7 @@ function unload()
 			{
 			$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
 			$this->backurl = $_POST['backurl'].implode(',',$selected);
-			$this->message = bab_translate('Successful recording');
+			$this->message = bab_translate("Successful recording");
 			}
 		}
 	$temp = new temp();

@@ -1,4 +1,17 @@
 /************************************************************************/
+Mai 2004: Version 5.3.0
+/************************************************************************/
+- Possibility to dump Ovidentia database
+- Possibility to load add-on by using graphic interface
+- New structure of calendars:
+	* Events planning
+	* Notification
+	* Event approbation
+	* New graphic interface
+	* ...
+- Fixed some minors bugs
+
+/************************************************************************/
 April 2004: Version 5.2.0
 /************************************************************************/
 - Statistic gathering

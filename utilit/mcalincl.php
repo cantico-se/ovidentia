@@ -479,22 +479,22 @@ class cal_wmdbaseCls
 		$this->gotodayname = bab_translate("Go to Today");
 		$this->attendeestxt = bab_translate("Attendees");
 		$this->statustxt = bab_translate("Waiting event");
-		$this->t_calendarchoice = bab_translate('Calendars');
-		$this->t_date_from = bab_translate('date_from');
-		$this->t_date_to = bab_translate('date_to');
-		$this->t_category = bab_translate('Category');
-		$this->t_prev_day = bab_translate('Previous day');
-		$this->t_prev_month = bab_translate('Previous month');
-		$this->t_prev_year = bab_translate('Previous year');
-		$this->t_next_year = bab_translate('Next year');
-		$this->t_next_month = bab_translate('Next month');
-		$this->t_next_day = bab_translate('Next day');
-		$this->t_new_event = bab_translate('New event');
-		$this->t_day_view = bab_translate('Day view');
-		$this->t_creator = bab_translate('Author');
-		$this->t_print_friendly = bab_translate('Print Friendly');
-		$this->t_print = bab_translate('Print');
-		$this->t_view_event = bab_translate('View event');
+		$this->t_calendarchoice = bab_translate("Calendars");
+		$this->t_date_from = bab_translate("date_from");
+		$this->t_date_to = bab_translate("date_to");
+		$this->t_category = bab_translate("Category");
+		$this->t_prev_day = bab_translate("Previous day");
+		$this->t_prev_month = bab_translate("Previous month");
+		$this->t_prev_year = bab_translate("Previous year");
+		$this->t_next_year = bab_translate("Next year");
+		$this->t_next_month = bab_translate("Next month");
+		$this->t_next_day = bab_translate("Next day");
+		$this->t_new_event = bab_translate("New event");
+		$this->t_day_view = bab_translate("Day view");
+		$this->t_creator = bab_translate("Author");
+		$this->t_print_friendly = bab_translate("Print Friendly");
+		$this->t_print = bab_translate("Print");
+		$this->t_view_event = bab_translate("View event");
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
@@ -633,11 +633,11 @@ class calendarchoice
 		$icalendars->initializeCalendars();
 		$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
 
-		$this->usrcalendarstxt = bab_translate('Users');
-		$this->grpcalendarstxt = bab_translate('Collectifs');
-		$this->rescalendarstxt = bab_translate('Resources');
-		$this->t_goright = bab_translate('Push right');
-		$this->t_goleft = bab_translate('Push left');
+		$this->usrcalendarstxt = bab_translate("Users");
+		$this->grpcalendarstxt = bab_translate("Collectifs");
+		$this->rescalendarstxt = bab_translate("Resources");
+		$this->t_goright = bab_translate("Push right");
+		$this->t_goleft = bab_translate("Push left");
 
 		$this->resuser = $icalendars->usercal;
 		$this->respub = $icalendars->pubcal;
