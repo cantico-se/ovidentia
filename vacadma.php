@@ -499,6 +499,7 @@ function addModifyVacationRigths($id = false)
 			if (isset($_POST) && count($_POST) > 0)
 				{
 				$this->arr = $_POST;
+				$this->arr['use_rules'] = $_POST['use_rules'] == 'Y';
 				}
 			elseif ($id)
 				{
@@ -544,7 +545,6 @@ function addModifyVacationRigths($id = false)
 
 			$this->tpsel = 0;
 			
-
 			$this->restype = $this->db->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
 			$this->counttype = $this->db->db_num_rows($this->restype);
 			}
@@ -845,7 +845,24 @@ function updateVacationRight()
 		return false;
 		}
 
-	
+
+	if (isset($post['id_type']))
+		{
+		$res = $babDB->db_query("SELECT cbalance FROM ".BAB_VAC_TYPES_TBL." WHERE id='".$post['id_type']."'");
+		}
+	elseif(isset($post['idvr']))
+		{
+		$res = $babDB->db_query("SELECT t.cbalance FROM ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_RIGHTS_TBL." r WHERE t.id=r.id_type AND r.id='".$post['idvr']."'");
+		}
+
+	if (list($cbalance) = $babDB->db_fetch_array($res))
+		{
+		if ($cbalance == 'N' && $_POST['cbalance'] != 'N')
+			{
+			$babBody->msgerror = bab_translate("Negative balance are not allowed with this vacation type") ." !";
+			return false;
+			}
+		}
 
 	if( empty($post['idvr']) && empty($post['id_creditor']) && empty($post['collid']) )
 		{

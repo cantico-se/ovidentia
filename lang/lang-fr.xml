@@ -1677,6 +1677,7 @@
 <string id="ERROR: No members">ERREUR: Pas de membres</string>
 <string id="Fields with the same e-mail address are duplicates">Les lignes avec la même adresse e-mail qu'une entrée de l'annuaire sont des doublons</string>
 <string id="Period days">Jours dans la période sélectionnée</string>
+<string id="Negative balance are not allowed with this vacation type">Les soldes négatifs ne sont pas permis avec ce type de congé</string>
 <string id="Waiting appointments">Evénements en attente</string>
 <string id="Appointment">Evénement</string>
 <string id="Warning! This appointment is recurrent !">Attention! cet événement est répétitif !</string>
