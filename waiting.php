@@ -562,7 +562,7 @@ function notifyArticleAuthor($subject, $msg, $title, $to)
 		return;
 
     $mail->mailTo($to);
-    $mail->mailFrom($from, $GLOBALS['babAdminName']);
+    $mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
     $mail->mailSubject($subject);
 
 	$tempc = new tempc($msg, $title);
@@ -645,7 +645,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		$msg = nl2br($message);
 		if( bab_isMagicQuotesGpcOn())
 			$msg = stripslashes($msg);
-        notifyArticleAuthor($subject, $msg, $arrart['title'], bab_getUserEmail($GLOBALS['BAB_SESS_USERID']), bab_getUserEmail($author));
+        notifyArticleAuthor($subject, $msg, $arrart['title'], bab_getUserEmail($author), bab_getUserEmail($author));
 		}
 	}
 
