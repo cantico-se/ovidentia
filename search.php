@@ -204,7 +204,7 @@ function searchKeyword($item , $option = "OR")
 				}
 			$this->countdirs = $i;
 
-			$req = "select name,description from ".BAB_DBDIR_FIELDS_TBL." order by description";
+			$req = "select name,description from ".BAB_DBDIR_FIELDS_TBL." WHERE name != 'jpegphoto' order by description";
 			$this->resfields = $this->db->db_query($req);
 			$this->countfields = $this->db->db_num_rows($this->resfields);
 			$i = 0;
@@ -307,7 +307,7 @@ function searchKeyword($item , $option = "OR")
                 $arr = $this->dirarr[$l];
 				$this->topicid = $arr['id'];
 				$this->topictitle = put_text($arr['name'],30);
-				$req = "SELECT DISTINCT(f.name) name FROM ".BAB_DBDIR_FIELDSEXTRA_TBL." e LEFT JOIN ".BAB_DBDIR_FIELDS_TBL." f ON f.id = e.id_field WHERE e.ordering!=0 AND e.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)." GROUP BY f.name ORDER BY e.ordering'";
+				$req = "SELECT DISTINCT(f.name) name FROM ".BAB_DBDIR_FIELDSEXTRA_TBL." e LEFT JOIN ".BAB_DBDIR_FIELDS_TBL." f ON f.id = e.id_field AND f.name!='jpegphoto' WHERE e.ordering!=0  AND e.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)." GROUP BY f.name ORDER BY e.ordering'";
 				$this->resfieldsfromdir = $this->db->db_query($req);
 				$this->countfieldsfromdir = $this->db->db_num_rows($this->resfieldsfromdir);				
 				$l++;
