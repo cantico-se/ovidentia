@@ -299,7 +299,7 @@ function bab_isUserVacationApprover($groupid = 0)
 function bab_isUserUseVacation($iduser)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='$iduser' and isprimary='Y'";
+	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='$iduser' and isprimary='Y'";
 	$res = $db->db_query($query);
 
 	if( $res && $db->db_num_rows($res) > 0)

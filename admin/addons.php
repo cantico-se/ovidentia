@@ -76,7 +76,11 @@ function addonsList()
 			while($row = $this->db->db_fetch_array($res))
 				{
 				if (!is_dir($GLOBALS['babAddonsPath'].$row['title']) || !is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php"))
+					{
 					$this->db->db_query("delete from ".BAB_ADDONS_TBL." where id='".$row['id']."'");
+					$this->db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$row['id']."' and type='4'");
+					$this->db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$row['id']."' and type='4'");
+					}
 				}
 			$this->res = $this->db->db_query("select * from ".BAB_ADDONS_TBL."");
 			$this->count = $this->db->db_num_rows($this->res);
