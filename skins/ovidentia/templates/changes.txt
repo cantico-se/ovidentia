@@ -1,0 +1,76 @@
+/****************************/
+version 3.2 beta2 / 3.2
+/****************************/
+--------------------------------------------------------------------------------
+file			section			change 
+--------------------------------------------------------------------------------
+calview.html					Added commentslist section
+search.html		viewart			Added 'head' variable
+topics.html		articleview		Added 'head' variable
+topman.html		articleview		Added 'head' variable
+topusr.html		categorylist		Added 'urlsubmit', 'txtsubmit' variables
+mailinfo.html					Added sendpassword section
+sites.html		versions		Added 2002 in coypright
+page.html					2001-2002 in copyright
+
+/****************************/
+version 3.2 / 3.3.0 beta
+/****************************/
+--------------------------------------------------------------------------------
+file			section			change 
+--------------------------------------------------------------------------------
+acl.html					changed action="index.php" to action="{ babPhpSelf }"
+address.html					changed action="index.php" to action="{ babPhpSelf }"
+admcals.html					changed action="index.php" to action="{ babPhpSelf }"
+admfaqs.html					changed action="index.php" to action="{ babPhpSelf }"
+admfiles.html					changed action="index.php" to action="{ babPhpSelf }"
+adminsection.html
+admvacs.html					changed action="index.php" to action="{ babPhpSelf }"
+artcileprint.html
+articles.html					changed action="index.php" to action="{ babPhpSelf }"
+calendar.html					changed action="index.php" to action="{ babPhpSelf }"
+calopt.html					changed action="index.php" to action="{ babPhpSelf }"
+calview.html
+comments.html					changed action="index.php" to action="{ babPhpSelf }"
+confcals.html					changed action="index.php" to action="{ babPhpSelf }"
+config.html
+contact.html					changed action="index.php" to action="{ babPhpSelf }"
+contacts.html					changed action="index.php" to action="{ babPhpSelf }"
+entry.html
+event.html					changed action="index.php" to action="{ babPhpSelf }"
+faq.html					changed action="index.php" to action="{ babPhpSelf }"
+faqprint.html
+fileman.html					changed action="index.php" to action="{ babPhpSelf }"
+forums.html					changed action="index.php" to action="{ babPhpSelf }"
+forumssection.html
+groups.html					changed action="index.php" to action="{ babPhpSelf }"
+inbox.html					changed action="index.php" to action="{ babPhpSelf }"
+login.html					changed action="index.php" to action="{ babPhpSelf }"
+mail.html					changed action="index.php" to action="{ babPhpSelf }"
+maildoms.html					changed action="index.php" to action="{ babPhpSelf }"
+mailinfo.html
+mailopt.html					changed action="index.php" to action="{ babPhpSelf }"
+month.html
+montha.html
+notes.html					changed action="index.php" to action="{ babPhpSelf }"
+options.html					changed action="index.php" to action="{ babPhpSelf }"
+page.html
+posts.html					changed action="index.php" to action="{ babPhpSelf }"
+readme.txt
+search.html					changed action="index.php" to action="{ babPhpSelf }"
+sections.html					changed action="index.php" to action="{ babPhpSelf }"
+sectiontemplate.html
+sites.html					changed action="index.php" to action="{ babPhpSelf }"
+threads.html					changed action="index.php" to action="{ babPhpSelf }"
+topcats.html					changed action="index.php" to action="{ babPhpSelf }"
+topcatsection.html
+topics.html					changed action="index.php" to action="{ babPhpSelf }"
+topicssection.html
+topman.html					changed action="index.php" to action="{ babPhpSelf }"
+topusr.html
+users.html					changed action="index.php" to action="{ babPhpSelf }"
+usersection.html
+vacapp.html					changed action="index.php" to action="{ babPhpSelf }"
+vacation.html					changed action="index.php" to action="{ babPhpSelf }"
+waiting.html					changed action="index.php" to action="{ babPhpSelf }"
+warning.html
