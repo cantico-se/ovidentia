@@ -242,7 +242,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->disptmpltxt = bab_translate("Display template");
 			$this->tgval = "topic";
 			$this->item = $id;
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
@@ -313,7 +313,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->sares = $this->db->db_query($req);
 			if( !$this->sares )
 				$this->sacount = 0;
@@ -701,9 +701,9 @@ if(!isset($cat))
 
 if( isset($add) )
 	{
-	if( isset($Submit))
+	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid, $disptid))
+		if(!updateCategory($item, $category, $topdesc, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid, $disptid))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -818,7 +818,7 @@ switch($idx)
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a topic");
-		modifyCategory($item, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
+		modifyCategory($item, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);

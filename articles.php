@@ -592,7 +592,7 @@ function submitArticleByFile($topics)
 			$this->introtag = bab_translate("Introduction Tag");
 			$this->filename = bab_translate("Filename");
 			$this->add = bab_translate("Add article");
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->topics = $topics;
@@ -701,7 +701,7 @@ function modifyArticle($topics, $article)
 			$this->notifymembers = bab_translate("Notify group members by mail");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
@@ -851,7 +851,7 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			$this->files = bab_translate("Files");
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query("select lang, article_tmpl from ".BAB_TOPICS_TBL." where id='".$topics."'");

@@ -75,7 +75,7 @@ function modifyCategory($id)
 			$this->add = bab_translate("Update FAQ");
 			$this->delete = bab_translate("Delete");
 			$this->manager = bab_translate("Manager");
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];

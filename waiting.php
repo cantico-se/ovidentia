@@ -174,7 +174,7 @@ function modifyArticle($topics, $article)
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];

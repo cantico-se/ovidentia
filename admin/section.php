@@ -93,11 +93,11 @@ function sectionModify($id)
 			$this->script = bab_translate("PHP script");
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
-			$this->templatetxt = bab_translate('Template');
-			$this->optionaltxt = bab_translate('Optional');
-			$this->yes = bab_translate('Yes');
-			$this->no = bab_translate('No');
-			$this->langLabel = bab_translate('Language');
+			$this->templatetxt = bab_translate("Template");
+			$this->optionaltxt = bab_translate("Optional");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->id = $id;

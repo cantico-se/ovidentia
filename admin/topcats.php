@@ -60,10 +60,10 @@ function topcatCreate($idp)
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->add = bab_translate("Add");
-			$this->templatetxt = bab_translate('Section template');
-			$this->disptmpltxt = bab_translate('Display template');
-			$this->topcattxt = bab_translate('Topics category parent');
-			$this->nonetxt = "--- ".bab_translate('None')." ---";
+			$this->templatetxt = bab_translate("Section template");
+			$this->disptmpltxt = bab_translate("Display template");
+			$this->topcattxt = bab_translate("Topics category parent");
+			$this->nonetxt = "--- ".bab_translate("None")." ---";
 			$this->idp = $idp;
 			$file = "topicssection.html";
 			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;

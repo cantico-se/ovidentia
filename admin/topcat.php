@@ -70,10 +70,10 @@ function topcatModify($id)
 			$this->yes = bab_translate("Yes");
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
-			$this->templatetxt = bab_translate('Section template');
-			$this->disptmpltxt = bab_translate('Display template');
-			$this->topcattxt = bab_translate('Topics category parent');
-			$this->nonetxt = "--- ".bab_translate('None')." ---";
+			$this->templatetxt = bab_translate("Section template");
+			$this->disptmpltxt = bab_translate("Display template");
+			$this->topcattxt = bab_translate("Topics category parent");
+			$this->nonetxt = "--- ".bab_translate("None")." ---";
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);

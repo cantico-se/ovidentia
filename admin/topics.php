@@ -84,7 +84,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$this->add = bab_translate("Add");
 			$this->none = bab_translate("None");
 			$this->tgval = "topics";
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->item = "";
@@ -155,7 +155,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->sares = $this->db->db_query($req);
 			if( !$this->sares )
 				$this->sacount = 0;
@@ -452,7 +452,7 @@ if(!isset($idx))
 
 if( isset($add) )
 	{
-	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid))
+	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid))
 		$idx = "addtopic";
 	else
 		{
@@ -469,7 +469,7 @@ switch($idx)
 	{
 	case "addtopic":
 		$babBody->title = bab_translate("Create new topic");
-		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
+		addCategory($cat, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);

@@ -431,11 +431,11 @@ function sectionCreate($jscript)
 			$this->left = bab_translate("Left");
 			$this->right = bab_translate("Right");
 			$this->script = bab_translate("PHP script");
-			$this->templatetxt = bab_translate('Template');
-			$this->optionaltxt = bab_translate('Optional');
-			$this->yes = bab_translate('Yes');
-			$this->no = bab_translate('No');
-			$this->langLabel = bab_translate('Language');
+			$this->templatetxt = bab_translate("Template");
+			$this->optionaltxt = bab_translate("Optional");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->jscript = $jscript;

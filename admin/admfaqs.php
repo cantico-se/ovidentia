@@ -62,7 +62,7 @@ function addCategory()
 			$this->description = bab_translate("Description");
 			$this->manager = bab_translate("Manager");
 			$this->add = bab_translate("Add");
-			$this->langLabel = bab_translate('Language');
+			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 

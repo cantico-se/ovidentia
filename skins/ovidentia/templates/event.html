@@ -160,14 +160,6 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
 <script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
 
-
-<script type="text/javascript">
-var editor = null;
-function initEditor(ta) {
-	editor = new HTMLArea(ta,'{ babUrl }','{ babInstallPath }','{ babLanguage }');
-	editor.generate();
-}
-</script>
 <!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
@@ -181,7 +173,7 @@ function initEditor(ta) {
 	editor.InFrame(0, "evtdesc", "vacform", "100%", "160");
 </script>
 <!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('evtdesc')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','evtdesc','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
 </iframe>
 <textarea id="evtdesc" name="evtdesc" onfocus="savef(document.vacform.evtdesc)" style="width:100%" rows="10">{ descriptionval }</textarea>
 <!--#endif babOldEditor -->
@@ -369,7 +361,7 @@ dateendtxt }</a>:</td>
 <td colspan="4" valign="top">&nbsp;</td>
 </tr>
 <tr> 
-<td align="right" valign="top"><a class="BabEventFaqLink" href="javascript: Start('{ descurl }', 'Editor', 'width=600,height=400,status=no,resizable=yes,top=200,left=200');">{ description }</a></td>
+<td align="right" valign="top"><a class="BabEventFaqLink" href="javascript: Start('{ descurl }', 'Editor', 'width=750,height=450,status=no,resizable=yes,top=200,left=200');">{ description }</a></td>
 <td colspan="4" valign="top">{ evtarr[description] }</td>
 </tr>
 <tr> 
@@ -509,14 +501,6 @@ window.focus();
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
 <script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
 
-
-<script type="text/javascript">
-var editor = null;
-function initEditor(ta) {
-  editor = new HTMLArea(ta,'{ babUrl }','{ babInstallPath }','{ babLanguage }');
-  editor.generate();
-}
-</script>
 <!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
@@ -527,7 +511,7 @@ function initEditor(ta) {
 	editor.InFrame(0, "content", "descmod", "90%", "160");
 				</script>
 <!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('content')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
 </iframe>
 <textarea id="content" name="content"  onfocus="savef(document.descmod.content)" style="width:100%" rows="20">{ arr[description] }</textarea>
 <!--#endif babOldEditor -->

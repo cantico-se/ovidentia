@@ -27,5 +27,19 @@ HTMLArea.I18N = {
 		about:          "About this editor",
 		help:           "Help using editor",
 		textindicator:  "Current style"
+		babimage:		"Insert Ovidentia image",
+		bablink:		"Insert Web Link",
+		cleanhtml:		"Clean HTML code",
+		copy:			"Copy",
+		cut:			"Cut",
+		paste:			"Paste",
+		babfile:		"Insert Ovidentia file link ",
+		undo:			"Undo",
+		redo:			"Redo"
 	}
+};
+
+
+HTMLArea.messages = {
+		cleanHTML:     "Warrning : cleaning HTML can remove page-setting of the document"
 };
