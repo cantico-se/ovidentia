@@ -11,7 +11,7 @@ include_once $babInstallPath."utilit/vacincl.php";
 
 function addVacationType($vtid, $what, $tname, $description, $quantity)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 	class temp
 		{
 		var $name;
@@ -66,8 +66,10 @@ function addVacationType($vtid, $what, $tname, $description, $quantity)
 			}
 		}
 
+	list($count) = $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".BAB_VAC_TYPES_TBL));
 	$temp = new temp($vtid, $what, $tname, $description, $quantity);
 	$babBody->babecho(	bab_printTemplate($temp,"vacadm.html", "vtypecreate"));
+	return $count;
 	}
 
 function listVacationCollections()
@@ -302,6 +304,8 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 		var $deletealt;
 		var $altlrbu;
 		var $lrbuurl;
+		var $calurl;
+		var $altcal;
 
 		function temp($pos, $idcol, $idsa)
 			{
@@ -313,7 +317,8 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->appschema = bab_translate("Approbation schema");
 			$this->addpersonnel = bab_translate("Add");
 			$this->deletealt = bab_translate("Delete");
-			$this->altlrbu = bab_translate("List");
+			$this->altlrbu = bab_translate("Rights");
+			$this->altcal = bab_translate("Calendar");
 			$this->addpurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addp&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
 			$this->db = $GLOBALS['babDB'];
 
@@ -379,6 +384,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 
 				$this->userid = $this->arr['id'];
 				$this->lrbuurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lrbu&idu=".$this->userid;
+				$this->calurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=cal&idu=".$this->userid;
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_COLLECTIONS_TBL." where id='".$this->arr['id_coll']."'"));
 				$this->collname = $arr['name'];
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$this->arr['id_sa']."'"));
@@ -660,6 +666,8 @@ function listRightsByUser($id)
 		var $url;
 		var $descriptiontxt;
 		var $description;
+		var $fullname;
+		var $titletxt;
 				
 		var $arr = array();
 		var $db;
@@ -676,6 +684,8 @@ function listRightsByUser($id)
 			$this->dateetxt = bab_translate("End date");
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->datetxt = bab_translate("Entry date");
+			$this->titletxt = bab_translate("Vacation rights of:");
+			$this->fullname = bab_getUserName($id);
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query("select * from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$id."' order by id desc");
 			$this->count = $this->db->db_num_rows($this->res);
@@ -705,6 +715,140 @@ function listRightsByUser($id)
 
 	$temp = new temp($id);
 	echo bab_printTemplate($temp, "vacadm.html", "rlistbyuser");
+	}
+
+function viewCalendarByUser($id, $month, $year)
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $entries = array();
+		var $fullname;
+		var $vacwaitingtxt;
+		var $vacapprovedtxt;
+
+
+		function temp($id, $month, $year)
+			{
+			global $babMonths, $babDB;
+			$this->month = $month;
+			$this->year = $year;
+			$this->iduser = $id;
+			$this->fullname = bab_getUserName($id);
+			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
+			$this->vacapprovedtxt = bab_translate("Approved vacation request");
+
+			$urltmp = $GLOBALS['babUrlScript']."?tg=vacadm&idx=cal&idu=".$this->iduser;
+			$this->previousmonth = $urltmp."&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
+			$this->previousmonth .= "&year=".date("Y", mktime( 0,0,0, $month-1, 1, $year));
+			$this->nextmonth = $urltmp."&month=". date("n", mktime( 0,0,0, $month+1, 1, $year));
+			$this->nextmonth .= "&year=". date("Y", mktime( 0,0,0, $month+1, 1, $year));
+
+			$this->previousyear = $urltmp."&month=".date("n", mktime( 0,0,0, $month, 1, $year-1));
+			$this->previousyear .= "&year=".date("Y", mktime( 0,0,0, $month, 1, $year-1));
+			$this->nextyear = $urltmp."&month=". date("n", mktime( 0,0,0, $month, 1, $year+1));
+			$this->nextyear .= "&year=". date("Y", mktime( 0,0,0, $month, 1, $year+1));
+
+			if( $month != 1 )
+				{
+				$dateb = $year."-".$month."-01";
+				$datee = ($year+1)."-".date("n", mktime( 0,0,0, $month + 11, 1, $year))."-01";
+				$this->yearname = ($year)."-".($year+1);
+				}
+			else
+				{
+				$dateb = $year."-01-01";
+				$datee = $year."-12-01";
+				$this->yearname = $year;
+				}
+
+			$res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user='".$this->iduser."' and status!='N' and (date_end >= '".$dateb."' or date_begin <='".$datee."')");
+			while( $row = $babDB->db_fetch_array($res))
+				{
+				$this->entries[] = array('id'=> $row['id'], 'db'=> $row['date_begin'], 'de'=> $row['date_end'], 'st' => $row['status']);
+				}
+			}
+
+		function getdayname()
+			{
+			global $babDays;
+			static $i = 1;
+			if( $i <= 31)
+				{
+				$this->dayname = $i;
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getmonth()
+			{
+			static $i = 0;
+			if( $i < 12)
+				{
+				$this->curyear = date("Y", mktime( 0,0,0, $this->month + $i, 1, $this->year));
+				$this->curmonth = date("n", mktime( 0,0,0, $this->month + $i, 1, $this->year));
+				$this->monthname = $GLOBALS['babMonths'][$this->curmonth];
+				$this->totaldays = date("t", mktime(0,0,0,$this->month + $i,1,$this->year));
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getday()
+			{
+			static $d = 1;
+			static $total = 0;
+			if( $d <= 31)
+				{
+				if( $d <= $this->totaldays )
+					{
+					$this->daynumbername = $d;
+					$dayweek = date("w", mktime(0,0,0,$this->curmonth,$d,$this->curyear));
+					if( $dayweek == 0 || $dayweek == 6)
+						$this->weekend = true;
+					else
+						$this->weekend = false;
+					$this->bvac = false;
+					$this->bwait = false;
+					$day = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $d);
+					for( $k=0; $k < count($this->entries); $k++)
+						{
+						if( $day >= $this->entries[$k]['db'] && $day <= $this->entries[$k]['de'] )
+							{
+							if( $this->entries[$k]['st'] == "")
+								$this->bwait = true;
+							else
+								$this->bvac = true;
+							break;
+							}
+						}
+					$this->noday = false;
+					}
+				else
+					{
+					$this->noday = true;
+					$this->daynumbername = "";
+					}
+				$d++;
+				return true;
+				}
+			else
+				{
+				$d = 1;
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new temp($id, $month, $year);
+	echo bab_printTemplate($temp, "vacadm.html", "calendarbyuser");
 	}
 
 function saveVacationType($tname, $description, $quantity, $maxdays=0, $mindays=0, $default=0)
@@ -809,6 +953,12 @@ function saveVacationCollection($tname, $description, $vtypeids)
 		return false;
 		}
 
+	if( count($vtypeids) == 0)
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must check at least one vacation type")." !";
+		return false;
+		}
+
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$tname = addslashes($tname);
@@ -896,6 +1046,18 @@ function saveVacationPersonnel($userid, $groupid, $idcol, $idsa)
 	if( empty($userid) && empty($groupid) )
 		{
 		$babBody->msgerror = bab_translate("You must specify a user or group") ." !";
+		return false;
+		}
+
+	if( !isset($idcol) || empty($idcol) )
+		{
+		$babBody->msgerror = bab_translate("You must specify a vacation collection") ." !";
+		return false;
+		}
+
+	if( !isset($idsa) || empty($idsa) )
+		{
+		$babBody->msgerror = bab_translate("You must specify approbation schema") ." !";
 		return false;
 		}
 
@@ -1124,6 +1286,16 @@ switch($idx)
 		listRightsByUser($idu);
 		exit;
 		break;
+	case "cal":
+		if( !isset($month))
+			$month = Date("n");
+
+		if( !isset($year))
+			$year = Date("Y");
+
+		viewCalendarByUser($idu, $month, $year);
+		exit;
+		break;
 	case "delu":
 		$babBody->title = bab_translate("Delete users");
 		deleteVacationPersonnel($pos, $idcol, $idsa, $userids);
@@ -1252,25 +1424,29 @@ switch($idx)
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";
 		if( !isset($quantity)) $quantity ="";
-		addVacationType($vtid, $what, $tname, $description, $quantity);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
-		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
-		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
-		$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
-		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		if( addVacationType($vtid, $what, $tname, $description, $quantity) != 0 )
+		{
+			$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
+			$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
+			$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+			$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		}
 		break;
 
 	case "lvt":
 	default:
 		$babBody->title = bab_translate("Vacations types");
-		listVacationTypes();
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
-		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
-		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
-		$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
-		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		if( listVacationTypes() != 0 )
+		{
+			$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
+			$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
+			$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+			$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

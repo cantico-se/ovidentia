@@ -1318,6 +1318,178 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+$req = "CREATE TABLE ".BAB_VAC_COLL_TYPES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_coll int(11) unsigned NOT NULL default '0',";
+$req .= "id_type int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_coll (id_coll),";
+$req .= "KEY id_type (id_type)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_COLL_TYPES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_COLLECTIONS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(25) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_COLLECTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_ENTRIES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "date_begin date NOT NULL default '0000-00-00',";
+$req .= "date_end date NOT NULL default '0000-00-00',";
+$req .= "day_begin tinyint(3) unsigned NOT NULL default '0',";
+$req .= "day_end tinyint(3) unsigned NOT NULL default '0',";
+$req .= "idfai int(11) unsigned NOT NULL default '0',";
+$req .= "comment tinytext NOT NULL,";
+$req .= "date date NOT NULL default '0000-00-00',";
+$req .= "status char(1) NOT NULL default '',";
+$req .= "comment2 tinytext NOT NULL,";
+$req .= "id_approver int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY date (date),";
+$req .= "KEY id_user (id_user),";
+$req .= "KEY idfai (idfai),";
+$req .= "KEY date_begin (date_begin),";
+$req .= "KEY date_end (date_end)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_ENTRIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_ENTRIES_ELEM_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_entry int(11) unsigned NOT NULL default '0',";
+$req .= "id_type int(11) unsigned NOT NULL default '0',";
+$req .= "quantity decimal(3,1) NOT NULL default '0.0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_entry (id_entry),";
+$req .= "KEY id_type (id_type)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_ENTRIES_ELEM_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_MANAGERS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_user (id_user)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_MANAGERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_PERSONNEL_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "id_coll int(11) unsigned NOT NULL default '0',";
+$req .= "id_sa int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_user (id_user),";
+$req .= "KEY id_coll (id_coll),";
+$req .= "KEY id_sa (id_sa)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_PERSONNEL_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_RIGHTS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_creditor int(11) unsigned NOT NULL default '0',";
+$req .= "date_entry date NOT NULL default '0000-00-00',";
+$req .= "date_begin date NOT NULL default '0000-00-00',";
+$req .= "date_end date NOT NULL default '0000-00-00',";
+$req .= "quantity tinyint(3) unsigned NOT NULL default '0',";
+$req .= "id_type int(11) unsigned NOT NULL default '0',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "active enum('Y','N') NOT NULL default 'Y',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_type (id_type),";
+$req .= "KEY date_entry (date_entry)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_TYPES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(20) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "quantity decimal(3,1) NOT NULL default '0.0',";
+$req .= "maxdays decimal(3,1) NOT NULL default '0.0',";
+$req .= "mindays decimal(3,1) NOT NULL default '0.0',";
+$req .= "defaultdays decimal(3,1) NOT NULL default '0.0',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_TYPES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_VAC_USERS_RIGHTS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "id_right int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_user (id_user),";
+$req .= "KEY id_right (id_right)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_USERS_RIGHTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_GROUPS_TBL." DROP vacation";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 ?>

@@ -166,7 +166,6 @@ CREATE TABLE bab_groups (
    id int(11) unsigned NOT NULL auto_increment,
    name varchar(20) NOT NULL,
    description varchar(200) NOT NULL,
-   vacation enum('N','Y') DEFAULT 'N' NOT NULL,
    mail enum('N','Y') DEFAULT 'N' NOT NULL,
    manager int(11) unsigned  DEFAULT '0' NOT NULL,
    ustorage enum('N','Y') DEFAULT 'N' NOT NULL,
@@ -177,9 +176,9 @@ CREATE TABLE bab_groups (
    KEY manager (manager)
 );
 
-INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'Y', 'Y', 'N');
-INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N', 'N', 'N');
-INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'Y', 'Y', 'N');
+INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0', 'N', 'Y', 'Y', 'Y');
+INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0', 'N', 'N', 'N', 'N');
+INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0', 'N', 'Y', 'Y', 'N');
 
 
 # --------------------------------------------------------
@@ -480,93 +479,6 @@ CREATE TABLE bab_users_log (
    PRIMARY KEY (id),
    KEY id_user (id_user)
 );
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_vacations_types'
-#
-
-CREATE TABLE bab_vacations_types (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	name VARCHAR (30) not null,
-	description VARCHAR (224) not null,
-	defaultdays TINYINT (3) not null,
-	maxdays TINYINT (3) not null,
-	days TINYINT (3) not null,
-	PRIMARY KEY (id)
-);
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_vacationsview_groups'
-#
-
-CREATE TABLE bab_vacationsview_groups (
-	id int(11) unsigned NOT NULL auto_increment,
-	id_object int(11) unsigned DEFAULT '0' NOT NULL,
-	id_group int(11) unsigned DEFAULT '0' NOT NULL,
-	PRIMARY KEY (id),
-    KEY id_object (id_object),
-    KEY id_group (id_group)
-); 
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_vacations_states'
-#
-
-CREATE TABLE bab_vacations_states (
-	id TINYINT (2) not null AUTO_INCREMENT,
-	status VARCHAR (255) not null,
-	description text NOT NULL,
-	PRIMARY KEY (id)
-);
-
-INSERT INTO bab_vacations_states VALUES ( '1', 'Refused', 'Vacation refused');
-INSERT INTO bab_vacations_states VALUES ( '2', 'Accepted', 'Vacation accepted');
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_vacations'
-#
-
-CREATE TABLE bab_vacations (
-	id INT UNSIGNED not null AUTO_INCREMENT,
-	userid INT UNSIGNED not null,
-	datebegin DATETIME not null,
-	dateend DATETIME not null,
-	daybegin TINYINT (2) not null,
-	dayend TINYINT (2) not null,
-	type INT UNSIGNED not null,
-	status TINYINT (2) not null,
-	comment TINYTEXT not null,
-	comref TEXT not null,
-	date datetime DEFAULT '0000-00-00 00:00:00',
-	PRIMARY KEY (id),
-    KEY userid (userid),
-    KEY datebegin (datebegin),
-    KEY dateend (dateend),
-    KEY type (type)
-); 
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_vacationsman_groups'
-#
-
-CREATE TABLE bab_vacationsman_groups (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	id_object INT (11) not null,
-	id_group INT (11) not null,
-	ordering SMALLINT (4) UNSIGNED not null,
-	status TINYINT (2) not null,
-	supplier INT (11) UNSIGNED not null,
-	PRIMARY KEY (id),
-    KEY id_object (id_object),
-    KEY id_group (id_group)
-); 
-
-
 
 # --------------------------------------------------------
 #
@@ -1033,6 +945,8 @@ CREATE TABLE bab_db_directories (
   PRIMARY KEY  (id)
 );
 
+INSERT INTO bab_db_directories (name, description, id_group) values ('Ovidentia', 'Ovidentia directory', '1');
+
 #
 # Structure de la table `bab_dbdir_entries`
 #
@@ -1076,7 +990,7 @@ CREATE TABLE bab_dbdir_entries (
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_dbdir_entries (sn, id_directory, id_user) VALUES ('Administrator', '0', '1');
+INSERT INTO bab_dbdir_entries (sn, email, id_directory, id_user) VALUES ('Administrator', 'admin@admin.bab', '0', '1');
 
 
 #
@@ -1135,6 +1049,35 @@ CREATE TABLE bab_dbdir_fieldsextra (
   PRIMARY KEY  (id),
   KEY id_directory (id_directory)
 );
+
+
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 1, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 2, '', 'Y', 'Y', 'N', 1);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 3, '', 'Y', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 4, '', 'Y', 'Y', 'N', 2);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 5, '', 'Y', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 6, '', 'Y', 'Y', 'N', 3);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 7, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 8, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 9, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 10, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 11, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 12, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 13, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 14, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 15, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 16, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 17, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 18, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 19, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 20, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 21, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 22, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 23, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 24, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 25, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 26, '', 'N', 'N', 'N', 0);
+
 
 #
 # Structure de la table `bab_dbdiradd_groups`
@@ -1202,4 +1145,140 @@ CREATE TABLE bab_ldapdirview_groups (
   PRIMARY KEY  (id),
   KEY id_object (id_object),
   KEY id_group (id_group)
+);
+
+#
+# Structure de la table `bab_vac_coll_types`
+#
+
+CREATE TABLE bab_vac_coll_types (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_coll int(11) unsigned NOT NULL default '0',
+  id_type int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_coll (id_coll),
+  KEY id_type (id_type)
+);
+
+#
+# Structure de la table `bab_vac_collections`
+#
+
+CREATE TABLE bab_vac_collections (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(25) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_vac_entries`
+#
+
+CREATE TABLE bab_vac_entries (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_user int(11) unsigned NOT NULL default '0',
+  date_begin date NOT NULL default '0000-00-00',
+  date_end date NOT NULL default '0000-00-00',
+  day_begin tinyint(3) unsigned NOT NULL default '0',
+  day_end tinyint(3) unsigned NOT NULL default '0',
+  idfai int(11) unsigned NOT NULL default '0',
+  comment tinytext NOT NULL,
+  date date NOT NULL default '0000-00-00',
+  status char(1) NOT NULL default '',
+  comment2 tinytext NOT NULL,
+  id_approver int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY date (date),
+  KEY id_user (id_user),
+  KEY idfai (idfai),
+  KEY date_begin (date_begin),
+  KEY date_end (date_end)
+);
+
+#
+# Structure de la table `bab_vac_entries_elem`
+#
+
+CREATE TABLE bab_vac_entries_elem (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_entry int(11) unsigned NOT NULL default '0',
+  id_type int(11) unsigned NOT NULL default '0',
+  quantity decimal(3,1) NOT NULL default '0.0',
+  PRIMARY KEY  (id),
+  KEY id_entry (id_entry),
+  KEY id_type (id_type)
+);
+
+#
+# Structure de la table `bab_vac_managers`
+#
+
+CREATE TABLE bab_vac_managers (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_user int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_user (id_user)
+);
+
+#
+# Structure de la table `bab_vac_personnel`
+#
+
+CREATE TABLE bab_vac_personnel (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_user int(11) unsigned NOT NULL default '0',
+  id_coll int(11) unsigned NOT NULL default '0',
+  id_sa int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_user (id_user),
+  KEY id_coll (id_coll),
+  KEY id_sa (id_sa)
+);
+
+#
+# Structure de la table `bab_vac_rights`
+#
+
+CREATE TABLE bab_vac_rights (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_creditor int(11) unsigned NOT NULL default '0',
+  date_entry date NOT NULL default '0000-00-00',
+  date_begin date NOT NULL default '0000-00-00',
+  date_end date NOT NULL default '0000-00-00',
+  quantity tinyint(3) unsigned NOT NULL default '0',
+  id_type int(11) unsigned NOT NULL default '0',
+  description varchar(255) NOT NULL default '',
+  active enum('Y','N') NOT NULL default 'Y',
+  PRIMARY KEY  (id),
+  KEY id_type (id_type),
+  KEY date_entry (date_entry)
+);
+
+#
+# Structure de la table `bab_vac_types`
+#
+
+CREATE TABLE bab_vac_types (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(20) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  quantity decimal(3,1) NOT NULL default '0.0',
+  maxdays decimal(3,1) NOT NULL default '0.0',
+  mindays decimal(3,1) NOT NULL default '0.0',
+  defaultdays decimal(3,1) NOT NULL default '0.0',
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_vac_users_rights`
+#
+
+CREATE TABLE bab_vac_users_rights (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_user int(11) unsigned NOT NULL default '0',
+  id_right int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_user (id_user),
+  KEY id_right (id_right)
 );

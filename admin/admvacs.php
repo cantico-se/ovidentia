@@ -108,7 +108,7 @@ switch($idx)
 	{
 	default:
 	case "list":
-		$babBody->title = bab_translate("List of vacations adminsitrators");
+		$babBody->title = bab_translate("List of vacations administrators");
 		listVacationManagers();
 		$babBody->addItemMenu("list", bab_translate("Administrators"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
 		break;

@@ -9,6 +9,8 @@ include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
+define("VAC_MAX_REQUESTS_LIST", 20);
+
 function notifyVacationAuthor($id, $subject)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
@@ -400,7 +402,7 @@ function listWaitingVacation()
 			$this->confirm = bab_translate("Confirm");
 			$this->refuse = bab_translate("Refuse");
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select ".BAB_VAC_ENTRIES_TBL.".* from ".BAB_VAC_ENTRIES_TBL." join ".BAB_FAR_INSTANCES_TBL." where status='' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_VAC_ENTRIES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'");
+			$this->res = $this->db->db_query("select ".BAB_VAC_ENTRIES_TBL.".* from ".BAB_VAC_ENTRIES_TBL." join ".BAB_FAR_INSTANCES_TBL." where status='' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_VAC_ENTRIES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y' order by ".BAB_VAC_ENTRIES_TBL.".date desc");
 			$this->count = $this->db->db_num_rows($this->res);
 			}
 
@@ -549,7 +551,7 @@ function addNewVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $
 			$nbd = $GLOBALS[$tmp];
 			if( !is_numeric($nbd) || $nbd < 0 )
 				{
-				$babBody->msgerror = bab_translate("You must specify a correct nbdays") ." !";
+				$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
 				return false;
 				}
 			
@@ -636,7 +638,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 		}
 }
 
-function listVacationRequests()
+function listVacationRequests($pos)
 {
 	global $babBody;
 
@@ -666,10 +668,19 @@ function listVacationRequests()
 		var $checkall;
 		var $uncheckall;
 
+		var $topurl;
+		var $bottomurl;
+		var $nexturl;
+		var $prevurl;
+		var $topname;
+		var $bottomname;
+		var $nextname;
+		var $prevname;
+		var $pos;
 
 		var $entryid;
 
-		function temp($res)
+		function temp($pos)
 			{
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -678,8 +689,58 @@ function listVacationRequests()
 			$this->enddatetxt = bab_translate("End date");
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->statustxt = bab_translate("Status");
+			$this->topurl = "";
+			$this->bottomurl = "";
+			$this->nexturl = "";
+			$this->prevurl = "";
+			$this->topname = "";
+			$this->bottomname = "";
+			$this->nextname = "";
+			$this->prevname = "";
+			$this->pos = $pos;
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' order by date, id desc");
+			$req = "".BAB_VAC_ENTRIES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' order by date, id desc";
+
+			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
+			if( $total > VAC_MAX_REQUESTS_LIST )
+				{
+				$tmpurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq&pos=";
+				if( $pos > 0)
+					{
+					$this->topurl = $tmpurl."0";
+					$this->topname = "&lt;&lt;";
+					}
+
+				$next = $pos - VAC_MAX_REQUESTS_LIST;
+				if( $next >= 0)
+					{
+					$this->prevurl = $tmpurl.$next;
+					$this->prevname = "&lt;";
+					}
+
+				$next = $pos + VAC_MAX_REQUESTS_LIST;
+				if( $next < $total)
+					{
+					$this->nexturl = $tmpurl.$next;
+					$this->nextname = "&gt;";
+					if( $next + VAC_MAX_REQUESTS_LIST < $total)
+						{
+						$bottom = $total - VAC_MAX_REQUESTS_LIST;
+						}
+					else
+						$bottom = $next;
+					$this->bottomurl = $tmpurl.$bottom;
+					$this->bottomname = "&gt;&gt;";
+					}
+				}
+
+
+			if( $total > VAC_MAX_REQUESTS_LIST)
+				{
+				$req .= " limit ".$pos.",".VAC_MAX_REQUESTS_LIST;
+				}
+			
+			$this->res = $this->db->db_query("select * from ".$req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
 			}
@@ -721,7 +782,7 @@ function listVacationRequests()
 			}
 		}
 
-	$temp = new temp($res);
+	$temp = new temp($pos);
 	$babBody->babecho(	bab_printTemplate($temp, "vacuser.html", "vrequestslist"));
 	return $temp->count;
 }
@@ -938,7 +999,8 @@ switch($idx)
 		$babBody->title = bab_translate("Request vacation");
 		if( $acclevel['user'] == true )
 			{
-			listVacationRequests();
+			if( !isset($pos)) $pos = 0;
+			listVacationRequests($pos);
 			$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
 			$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
 			}
