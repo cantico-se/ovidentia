@@ -76,6 +76,8 @@ function replaceVar(&$class, $str)
 			{
 			if( isset($class->$m[1][$i]))
 				$str = preg_replace($reg, $class->$m[1][$i], $str);
+			else
+				$str = @preg_replace($reg, $GLOBALS[$m[1][$i]], $str);
 			}
 		}
 	return $str;

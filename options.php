@@ -122,7 +122,7 @@ function changeLanguage()
 
             $this->title .= " : ".$this->userlang;
 
-            $h = opendir('lang/'); 
+            $h = opendir($GLOBALS[babInstallPath]."lang/"); 
             while ( $file = readdir($h))
                 { 
                 if ($file != "." && $file != "..")

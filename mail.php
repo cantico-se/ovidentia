@@ -92,7 +92,7 @@ function addAddress( $val, $to, &$class)
 }
 
 
-function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
+function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error)
 	{
 	global $body;
 
@@ -134,15 +134,17 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $style;
 		var $sitename;
 		var $babUrl;
+		var $msgerror;
 
 
-		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
+		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error)
 			{
 			global $BAB_SESS_USERID,$BAB_SESS_USER,$BAB_SESS_EMAIL;
 			$this->style = $GLOBALS[babStyle];
 			$this->babUrl = $GLOBALS[babUrl];
 			$this->sitename = $GLOBALS[babSiteName];
 			$this->psigid = $psigid;
+			$this->msgerror = $error;
 			$this->toval = "";
 			if( !empty($pto))
 				$this->toval = $pto;
@@ -269,7 +271,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 
 		}
 	
-	$temp = new temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid);
+	$temp = new temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error);
 	//$body->babecho(	babPrintTemplate($temp,"mail.html", "mailcompose"));
 	echo babPrintTemplate($temp,"mail.html", "mailcompose");
 	}
@@ -455,7 +457,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 }
             }
         }
-    composeMail($accid, $criteria, $reverse, trim($toval), trim($ccval), "", $subjectval, array(), $format, $messageval, 0);
+    composeMail($accid, $criteria, $reverse, trim($toval), trim($ccval), "", $subjectval, array(), $format, $messageval, 0, "");
 	}
 
 function mailUnload()
@@ -517,7 +519,7 @@ switch($idx)
 		$body->title = babTranslate("Email");
 		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		$body->addItemMenu("compose", babTranslate("Compose"), $GLOBALS[babUrl]."index.php?tg=inbox&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-	    composeMail($accid, $criteria, $reverse, $to, $cc, $bcc, $subject, /*$files_name*/array(), $format, $message, $sigid);
+	    composeMail($accid, $criteria, $reverse, $to, $cc, $bcc, $subject, /*$files_name*/array(), $format, $message, $sigid, $body->msgerror);
 		break;
 	}
 

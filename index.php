@@ -17,11 +17,15 @@ include $babInstallPath."utilit/utilit.php";
 
 userIsloggedin();
 updateUserSettings();
+$babSkinPath = $babInstallPath."skins/".$babSkin."/";
+$babScriptPath = $babInstallPath."scripts/";
+$babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
 
 function printBody()
 	{
 	class tpl
 	{
+		var $babCss;
 		var $babLogoLT;
 		var $babLogoRT;
 		var $babBanner;
@@ -63,16 +67,18 @@ function printBody()
 			$this->babBanner = "";
 			$this->babMeta = "";
 
+			$this->sitename = $babSiteName;
+			$this->style = $babStyle;
+			$this->slogan = $babSlogan;
+
+			$this->babCss = babPrintTemplate($this, "config.html", "babCss");
 			$this->babLogoLT = babPrintTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = babPrintTemplate($this, "config.html", "babLogoRT");
 			$this->babLogoLB = babPrintTemplate($this, "config.html", "babLogoLB");
 			$this->babLogoRB = babPrintTemplate($this, "config.html", "babLogoRB");
 			$this->babBanner = babPrintTemplate($this, "config.html", "babBanner");
 			$this->babMeta = babPrintTemplate($this, "config.html", "babMeta");
-			$this->sitename = $babSiteName;
-			$this->style = $babStyle;
 			$this->script = $body->script;
-			$this->slogan = $babSlogan;
 			$this->home = babTranslate("Home");
 			$this->homeurl = $GLOBALS[babUrl]."index.php?tg=entry";
 			if( isset($LOGGED_IN) && $LOGGED_IN == true )

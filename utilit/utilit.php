@@ -46,11 +46,11 @@ function bab_strftime($time, $hour=true)
 
 function babPrintTemplate( &$class, $file, $section="")
 	{
-	global $babInstallPath;
+	global $babInstallPath, $babSkinPath;
 	$filepath = "templates/". $file;
 	if( !file_exists( $filepath ) )
 		{
-		$filepath = $babInstallPath.$filepath;
+		$filepath = $babSkinPath.$filepath;
 		}
 	$tpl = new Template();
 	return $tpl->printTemplate($class,$filepath, $section);
@@ -99,7 +99,7 @@ function babTranslate($str)
 {
 	if( empty($GLOBALS[babLanguage]) || empty($str))
 		return $str;
-	$filename = "lang/lang-".$GLOBALS[babLanguage].".xml";
+	$filename = $GLOBALS[babInstallPath]."lang/lang-".$GLOBALS[babLanguage].".xml";
 	if( !file_exists($filename))
 	{
 	$file = @fopen($filename, "w");
@@ -204,13 +204,13 @@ function open()
 
 function printout()
 {
-	global $babInstallPath;
+	global $babInstallPath, $babSkinPath;
 
 	$file = "sectiontemplate.html";
 	$filepath = "templates/". $file;
 	if( !file_exists( $filepath) )
 		{
-		$filepath = $babInstallPath."templates/".$file;
+		$filepath = $babSkinPath.$filepath;
 		}
 
 	$str = implode("", @file($filepath));
@@ -396,17 +396,17 @@ function getnextnew()
 			{
 			case 0:
 				$this->newcount = $body->newarticles;
-				$this->newtext = babTranslate("Article")."(s)";
+				$this->newtext = babTranslate("Articles");
 				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=art";
 				break;
 			case 1:
 				$this->newcount = $body->newcomments;
-				$this->newtext = babTranslate("Comment")."(s)";
+				$this->newtext = babTranslate("Comments");
 				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=com";
 				break;
 			case 2:
 				$this->newcount = $body->newposts;
-				$this->newtext = babTranslate("Post")."(s)";
+				$this->newtext = babTranslate("Replies");
 				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=for";
 				break;
 			}
