@@ -1075,6 +1075,43 @@ function bab_getGroupsMembers($ids)
 	}
 
 
+function bab_getActiveSessions()
+{
+	$db = &$GLOBALS['babDB'];
+	$output = array();
+	$res = $db->db_query("SELECT l.id_user,
+								l.sessid,
+								l.remote_addr,
+								l.forwarded_for,
+								UNIX_TIMESTAMP(l.dateact) dateact,
+								u.firstname,
+								u.lastname,
+								u.email,
+								UNIX_TIMESTAMP(u.lastlog) lastlog,
+								UNIX_TIMESTAMP(u.datelog) datelog,
+								UNIX_TIMESTAMP(u.date) registration  
+								FROM ".BAB_USERS_LOG_TBL." l 
+								LEFT JOIN ".BAB_USERS_TBL." u ON u.id=l.id_user");
+
+	while($arr = $db->db_fetch_array($res))
+		{
+		$output[] = array(
+						'id_user' => $arr['id_user'],
+						'user_name' => bab_composeUserName($arr['firstname'], $arr['lastname']),
+						'user_email' => $arr['email'],
+						'session_id' => $arr['sessid'],
+						'remote_addr' => $arr['remote_addr'] != 'unknown' ? $arr['remote_addr']  : '',
+						'forwarded_for' => $arr['forwarded_for'] != 'unknown' ? $arr['forwarded_for']  : '',
+						'registration_date' => $arr['registration'],
+						'previous_login_date' => $arr['lastlog'],
+						'login_date' => $arr['datelog'],
+						'last_hit_date' => $arr['dateact'],
+							);
+		}
+	return $output;
+}
+
+
 function bab_getOrgChartRoleUsers($idroles)
 {
 	global $babDB;
