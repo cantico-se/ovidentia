@@ -1909,7 +1909,7 @@ function updatePropertiesArticleDraft()
 
 	if( $topicid != 0 )
 	{
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$topicid."', restriction='".$restriction."', notify_members='".$notifm."', hpage_public='".$hpage1."', hpage_private='".$hpage0."', date_submission='".$date_sub."', date_publication='".$date_pub."', date_archiving='".$date_arch."', approbation='".$approbid."'  where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$topicid."', restriction='".$restriction."', notify_members='".$notifm."', hpage_public='".$hpage0."', hpage_private='".$hpage1."', date_submission='".$date_sub."', date_publication='".$date_pub."', date_archiving='".$date_arch."', approbation='".$approbid."'  where id='".$idart."' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
 	list($allowattach) = $babDB->db_fetch_array($babDB->db_query("select allow_attachments from ".BAB_TOPICS_TBL." where id='".$topicid."'"));
 	if( $allowattach == 'N' )
 		{
