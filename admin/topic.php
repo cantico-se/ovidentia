@@ -229,17 +229,13 @@ function viewArticle($article)
 		var $res;
 		var $more;
 		var $topics;
-		var $style;
-		var $babUrl;
-		var $sitename;
+		var $baCss;
 		var $close;
 
 
 		function temp($article)
 			{
-			$this->style = $GLOBALS[babStyle];
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			$this->close = babTranslate("Close");
 			$this->db = new db_mysql();
 			$req = "select * from articles where id='$article'";
