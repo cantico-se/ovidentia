@@ -4275,12 +4275,12 @@ if( !$res)
 
 
 $res = $db->db_query("CREATE TABLE `".BAB_SITES_NONWORKING_CONFIG_TBL."` (
-					`id` INT UNSIGNED NOT NULL ,
-					`id_site` INT UNSIGNED NOT NULL ,
-					`type_day` SMALLINT UNSIGNED NOT NULL ,
-					`nw_day` VARCHAR( 64 ) NOT NULL ,
-					PRIMARY KEY ( `id` ) ,
-					INDEX ( `id_site` , `type_day` )
+					  `id` int(10) unsigned NOT NULL auto_increment,
+					  `id_site` int(10) unsigned NOT NULL default '0',
+					  `nw_type` smallint(5) unsigned NOT NULL default '0',
+					  `nw_day` varchar(64) NOT NULL default '',
+					  PRIMARY KEY  (`id`),
+					  KEY `id_site` (`id_site`,`nw_type`)
 					)");
 
 if( !$res)
