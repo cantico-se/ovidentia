@@ -334,7 +334,7 @@ function deleteFieldsFolder($fid, $fields)
 
 		function temp($fid, $fields)
 			{
-			$this->message = bab_translate("Are you sure you want to delete slecetde fields");
+			$this->message = bab_translate("Are you sure you want to delete selected fields");
 			$this->title = bab_getFolderName($fid);
 			$this->warning = bab_translate("WARNING: This operation will delete those fields with their values"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid."&action=ffyes&fields=".implode(',', $fields);
