@@ -187,6 +187,31 @@ valign="middle">{ name }:</td>
 
 
 <!--#begin vpersonnellist -->
+<script type="text/javascript">
+<!--
+function view_calendar_checkbox()
+{
+var f = document.forms['listform'];
+var users = '';
+for (i = 0; i < f.elements.length; i++)
+	{
+		var objCtrl = f.elements[i];;
+		if (objCtrl.checked)
+			{
+			if (users != '')
+				users += ',';
+			users += objCtrl.value;
+			}
+	}
+if (users != '')
+	{
+	//}
+	bab_popup('{ babUrlScript }?tg=vacuser&idx=cal&idu='+users+'&popup=1');
+	}
+}
+-->
+</script>
+
 <form name="listform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="vacadm">
 <input type="hidden" name="idx" value="lper">
@@ -241,7 +266,9 @@ valign="middle">{ name }:</td>
 			<td align="center">
 				<a href="javascript:submitForm('delu','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
 			</td>
-			<td colspan="5">&nbsp;</td>
+			<td colspan="5">
+				<a href="javascript:view_calendar_checkbox()">{ t_view_calendar }</a>
+			</td>
 		</tr>
 	</table>
 	</td>

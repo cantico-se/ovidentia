@@ -367,6 +367,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->deletealt = bab_translate("Delete");
 			$this->altlrbu = bab_translate("Rights");
 			$this->altcal = bab_translate("Calendar");
+			$this->t_view_calendar = bab_translate("View calendars");
 			$this->addpurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addp&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
 			$this->addgurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addg&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
 
