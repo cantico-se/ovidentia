@@ -64,6 +64,7 @@ if (!empty($_FILES))
 			}
 	}
 
+$babSiteName = substr($babSiteName, 0, 30);
 include_once "base.php";
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
