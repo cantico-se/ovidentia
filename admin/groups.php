@@ -70,16 +70,16 @@ function groupCreate()
 			$this->managerval = "";
 			$this->managerid = "";
 			$this->bdel = false;
+			$this->bdggroup = false;
 			$this->tgval = "groups";
 			$this->selected = "";
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				{
 				$this->res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
 				$this->count = $babDB->db_num_rows($this->res);
-				$this->bdggroup = true;
+				if( $this->count > 0 )
+					$this->bdggroup = true;
 				}
-			else
-				$this->bdggroup = false;
 			}
 
 		function getnext()
@@ -114,6 +114,9 @@ function groupList()
 		var $urlname;
 		var $url;
 		var $description;
+		var $descval;
+		var $dgtxt;
+		var $dgval;
 				
 		var $arr = array();
 		var $db;
@@ -128,6 +131,7 @@ function groupList()
 			$this->mail = bab_translate("Mail");
 			$this->description = bab_translate("Description");
 			$this->manager = bab_translate("Manager");
+			$this->dgtxt = bab_translate("Delegation");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
 			$this->res = $this->db->db_query($req);
@@ -146,11 +150,18 @@ function groupList()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
+				$this->descval = $this->arr['description'];
 				$this->managername = bab_getUserName($this->arr['manager']);
 				if( $this->arr['mail'] == "Y")
 					$this->arr['mail'] = bab_translate("Yes");
 				else
 					$this->arr['mail'] = bab_translate("No");
+				if( $this->arr['id_dggroup'] != 0 )
+					{
+					list($this->dgval) = $this->db->db_fetch_row($this->db->db_query("select name from ".BAB_DG_GROUPS_TBL." where id='".$this->arr['id_dggroup']."'"));
+					}
+				else
+					$this->dgval = '';					
 				$i++;
 				return true;
 				}
