@@ -1686,4 +1686,11 @@ if( !$res)
 return $ret;
 }
 
+function upgrade400to410()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+return $ret;
+}
+
 ?>
