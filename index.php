@@ -330,6 +330,11 @@ switch($tg)
 		include $babInstallPath."$incl.php";
 		exit;
 		break;
+	case "version":
+		$incl = "version";
+		include $babInstallPath."$incl.php";
+		exit;
+		break;
 	default:
 		$incl = "entry";
 		break;
