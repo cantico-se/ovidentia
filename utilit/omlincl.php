@@ -1647,7 +1647,19 @@ class bab_RecentArticles extends bab_handler
 
 		if( count($this->topicid) > 0 )
 			{
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y'";
+			$archive = $ctx->get_value('archive');
+			if( $archive === false || $archive === '')
+				$archive = "no";
+
+			switch(strtoupper($archive))
+			{
+				case 'NO': $archive = " and archive='N' "; break;
+				case 'YES': $archive = " and archive='Y' "; break;
+				default: $archive = ""; break;
+
+			}
+
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y'".$archive;
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
