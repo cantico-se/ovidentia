@@ -1576,4 +1576,7 @@
 <string id="Total number of records">Nombre total d'enregistrements</string>
 <string id="Number of records processed">Nombre d'enregistrements traités</string>
 <string id="Ovidentia functions">Fonctions Ovidentia</string>
+<string id="Previous week">Semaine précédente</string>
+<string id="Next week">Semaine suivante</string>
+<string id="Days to display">Les jours de la semaine à afficher dans les calendriers</string>
 </fr>

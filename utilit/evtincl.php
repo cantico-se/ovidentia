@@ -72,7 +72,15 @@ function notifyPersonalEvent($title, $description, $startdate, $enddate, $idcals
 			{
 			$mail->mailBcc($arr['email']);
 			}
-		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+
+		if( empty($GLOBALS['BAB_SESS_USER']))
+			{
+			$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+			}
+		else
+			{
+			$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+			}
 
 		$tempc = new clsNotifyAttendees($title, $description, $startdate, $enddate);
 		$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
@@ -129,7 +137,14 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 		if( $mail == false )
 			return;
 
-		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+		if( empty($GLOBALS['BAB_SESS_USER']))
+			{
+			$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+			}
+		else
+			{
+			$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+			}
 		$tempc = new clsNotifyPublicEvent($title, $description, $startdate, $enddate);
 
 		for( $i = 0; $i < count($idcals); $i++ )
@@ -236,7 +251,14 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 		if( $mail == false )
 			return;
 
-		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+		if( empty($GLOBALS['BAB_SESS_USER']))
+			{
+			$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+			}
+		else
+			{
+			$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+			}
 		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate);
 		
 		$db = &$GLOBALS['babDB'];

@@ -412,7 +412,6 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				{
 				$this->brecevt = true;
 				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
-				$this->updaterec .= " ".bab_translate("If you choose to update all occurrences, dates are not be updated !");
 				$this->all = bab_translate("All");
 				$this->thisone = bab_translate("This occurence");
 				}
@@ -888,7 +887,6 @@ function addEvent(&$message)
 	return true;	
 	}
 
-//function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $category, $bupdrec)
 function updateEvent(&$message)
 {
 	global $babBody;
@@ -917,29 +915,50 @@ function updateEvent(&$message)
 	else
 		$catid = $_POST['category'];
 
-	if( isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
+	list($hash) = $db->db_fetch_row($db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'"));
+
+	$arrupdate = array();
+
+	if( !empty($hash) &&  $hash[0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
 	{
-		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'");
-		$arr = $db->db_fetch_array($res);
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."', color='".$_POST['color']."', bprivate='".$_POST['bprivate']."', block='".$_POST['block']."', bfree='".$_POST['free']."'  where hash='".$arr['hash']."'";
-		$db->db_query($req);
+		$res = $db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
+		while( $arr = $db->db_fetch_array($res))
+		{
+			$rr = explode(" ", $arr['start_date']);
+			$rr0 = explode("-", $rr[0]);
+			$rr1 = explode(":", $rr[1]);
+			$startdate = sprintf("%04d-%02d-%02d %s:00", $rr0[0], $rr0[1], $rr0[2], $_POST['timebegin']);
+
+			$rr = explode(" ", $arr['end_date']);
+			$rr0 = explode("-", $rr[0]);
+			$rr1 = explode(":", $rr[1]);
+			$enddate = sprintf("%04d-%02d-%02d %s:00", $rr0[0], $rr0[1], $rr0[2], $_POST['timeend']);
+
+			if( bab_mktime($startdate) > bab_mktime($enddate) )
+				{
+				$message = bab_translate("End date must be older")." !!";
+				return false;
+				}
+
+			$arrupdate[$arr['id']] = array('start'=>$startdate, 'end' => $enddate);
+		}
+
 	}
 	else
 	{
-		$begin = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
-		$end = mktime( 0,0,0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
-
-		if( $begin > $end )
-			{
-			$message = bab_translate("End date must be older")." !!";
-			return false;
-			}
 
 		$startdate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearbegin'], $_POST['monthbegin'], $_POST['daybegin'], $_POST['timebegin']);
 		$enddate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearend'], $_POST['monthend'], $_POST['dayend'], $_POST['timeend']);
 
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', start_date='".$startdate."', end_date='".$enddate."', id_cat='".$catid."', color='".$_POST['color']."', bprivate='".$_POST['bprivate']."', block='".$_POST['block']."', bfree='".$_POST['bfree']."' where id='".$_POST['evtid']."'";
-		$db->db_query($req);
+		$arrupdate[$_POST['evtid']] = array('start'=>$startdate, 'end' => $enddate);
+
+	}
+
+	reset($arrupdate);
+	$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."', color='".$_POST['color']."', bprivate='".$_POST['bprivate']."', block='".$_POST['block']."', bfree='".$_POST['bfree']."'";
+	foreach($arrupdate as $key => $val)
+	{
+		$db->db_query($req.", start_date='".$val['start']."', end_date='".$val['end']."' where id='".$key."'" );
 	}
 
 	return true;
@@ -965,7 +984,7 @@ function confirmDeleteEvent()
 	else
 		{
 		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$GLOBALS['evtid']."'");
-		$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arr['id']."'");
+		$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$GLOBALS['evtid']."'");
 		}
 
 }

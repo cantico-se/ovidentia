@@ -334,10 +334,12 @@ switch($idx)
 			cal_day_free($calid, $date, $start);
 			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date));
 			}
 		break;
-	case "view":
 	case "viewd":
+		$idx = 'view'; /* no break */
+	case "view":
 	default:
 		$calid = bab_isCalendarAccessValid($calid);
 		if( !$calid )
@@ -350,6 +352,7 @@ switch($idx)
 			cal_day($calid, $date, $start);
 			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date));
 			}
 		break;
 	}

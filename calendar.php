@@ -48,9 +48,10 @@ function displayAttendees($evtid, $idcal)
 				$this->fullnametxt = bab_translate("Attendee");
 				$this->statusdef = array(BAB_CAL_STATUS_ACCEPTED => bab_translate("Accepted"), BAB_CAL_STATUS_NONE => "", BAB_CAL_STATUS_DECLINED => bab_translate("Declined"));
 				$this->statustxt = bab_translate("Response");
-				list($this->idcreator) = $babDB->db_fetch_row($babDB->db_query("select id_creator from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+				list($this->idcreator, $this->hash) = $babDB->db_fetch_row($babDB->db_query("select id_creator, hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
 				$res = $babDB->db_query("select ceo.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$evtid."'");
 				$this->arrinfo = array();
+				$this->statusarray = array();
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					if( bab_isCalendarAccessValid($arr['id_cal']))
@@ -82,6 +83,17 @@ function displayAttendees($evtid, $idcal)
 					$this->commenttxt = bab_translate("Raison");
 					$this->accepttxt = bab_translate("Accept");
 					$this->declinetxt = bab_translate("Decline");
+					if( !empty($this->hash) && $this->hash[0] == 'R')
+						{
+						$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
+						$this->all = bab_translate("All");
+						$this->thisone = bab_translate("This occurence");
+						$this->brepetitive = true;
+						}
+					else
+						{
+						$this->brepetitive = false;
+						}
 					}
 				}
 			else
@@ -310,12 +322,14 @@ function confirmWaitingEvent($evtid, $idcal)
 }
 
 
-function confirmEvent($evtid, $idcal, $bconfirm, $comment)
+function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
 	$arr = $babBody->icalendars->getCalendarInfo($idcal);
 	if( $arr['type'] == BAB_CAL_USER_TYPE && $arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
 		{
+		list($creator, $hash) = $babDB->db_fetch_row($babDB->db_query("select id_creator, hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+
 		list($status) = $babDB->db_fetch_row($babDB->db_query("select status from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$evtid."' and id_cal='".$idcal."'"));
 		if( $status == BAB_CAL_STATUS_NONE )
 			{
@@ -327,7 +341,21 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment)
 				{
 				$bconfirm = BAB_CAL_STATUS_DECLINED;
 				}
-			$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$bconfirm."' where id_event='".$evtid."' and id_cal='".$idcal."'");
+
+			if( !empty($hash) &&  $hash[0] == 'R' && $bupdrec == 1)
+				{
+				$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
+				while($arr = $babDB->db_fetch_array($res))
+					{
+					$arrevtids[] = $arr['id']; 	
+					}
+				}
+			else
+				{
+				$arrevtids[] = $evtid; 	
+				}
+
+			$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$bconfirm."' where id_event IN (".implode(',', $arrevtids).") and id_cal='".$idcal."'");
 			notifyEventApprobation($evtid, $bconfirm, $comment);
 			}
 		}
@@ -336,7 +364,8 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment)
 /* main */
 if( isset($conf) && $conf == "event")
 {
-	confirmEvent($evtid, $idcal, $bconfirm, $comment);
+	if( !isset($bupdrec)) { $bupdrec = 2; }
+	confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec);
 }
 
 switch($idx)

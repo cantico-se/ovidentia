@@ -185,16 +185,17 @@ function browseUsers($pos, $cb, $idcal)
 	}
 
 
-function accessCalendar($calid)
+function accessCalendar($calid, $urla)
 {
 	global $babBody;
 	
 	class temp
 		{
-		function temp($calid)
+		function temp($calid, $urla)
 			{
 			$this->db = $GLOBALS['babDB'];
 			$this->calid = $calid;
+			$this->urla = $urla;
 			$this->fullname = bab_translate("Fullname");
 			$this->access0txt = bab_translate("Consultation");
 			$this->access1txt = bab_translate("Creation and modification");
@@ -246,11 +247,11 @@ function accessCalendar($calid)
 			}
 		}
 
-	$temp = new temp($calid);
+	$temp = new temp($calid, $urla);
 	$babBody->babecho(	bab_printTemplate($temp,"calopt.html", "access"));
 }
 
-function addAccessUsers( $nuserid, $calid)
+function addAccessUsers( $nuserid, $calid, $urla)
 {
 
 	$db = $GLOBALS['babDB'];
@@ -264,11 +265,11 @@ function addAccessUsers( $nuserid, $calid)
 			$res = $db->db_query($req);
 			}
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access&urla=".urlencode($urla));
 	exit;
 }
 
-function updateAccessUsers( $users, $calid)
+function updateAccessUsers( $users, $calid, $urla)
 {
 
 	$db = $GLOBALS['babDB'];
@@ -289,21 +290,22 @@ function updateAccessUsers( $users, $calid)
 		}
 
 	}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access&urla=".urlencode($urla));
 	exit;
 }
 
-function calendarOptions($calid)
+function calendarOptions($calid, $urla)
 	{
 	global $babBody;
 
 	class temp
 		{
-		function temp($calid)
+		function temp($calid, $urla)
 			{
 			global $BAB_SESS_USERID;
 			$this->calid = $calid;
-			$this->calweekworktxt = bab_translate("Calendar work week");
+			$this->urla = $urla;
+			$this->calweekworktxt = bab_translate("Days to display");
 			$this->caloptionstxt = bab_translate("Calendar options");
 			$this->startdaytxt = bab_translate("First day of week");
 			$this->starttimetxt = bab_translate("Start time");
@@ -511,7 +513,7 @@ function calendarOptions($calid)
 			}
 		}
 
-	$temp = new temp($calid);
+	$temp = new temp($calid, $urla);
 	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
 	}
 
@@ -594,11 +596,11 @@ if(!isset($idx))
 
 if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
-	addAccessUsers($nuserid, $idcal);
+	addAccessUsers($nuserid, $idcal, $urla);
 }elseif( isset($update) && $update == "access" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
 	if( !isset($users)) { $users = array();}
-	updateAccessUsers($users, $idcal);
+	updateAccessUsers($users, $idcal, $urla);
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	if( !isset($workdays)) { $workdays = array();}
@@ -640,9 +642,13 @@ switch($idx)
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( $idcal != 0 )
 		{
-			accessCalendar($idcal);
-			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+			accessCalendar($idcal, $urla);
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
 			$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
+			if( isset($urla) && !empty($urla) )
+				{
+				$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
+				}
 		}
 		else
 			$babBody->title = bab_translate("Access denied");
@@ -653,10 +659,16 @@ switch($idx)
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 		{
-			calendarOptions($idcal);
+			calendarOptions($idcal, $urla);
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 			if( $idcal != 0 )
-				$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal);
+				{
+				$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));
+				}
+			if( isset($urla) && !empty($urla) )
+				{
+				$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
+				}
 		}
 		break;
 	}

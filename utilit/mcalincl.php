@@ -503,10 +503,12 @@ class cal_wmdbaseCls
 		$this->t_date_to = bab_translate("date_to");
 		$this->t_category = bab_translate("Category");
 		$this->t_prev_day = bab_translate("Previous day");
+		$this->t_prev_week = bab_translate("Previous week");
 		$this->t_prev_month = bab_translate("Previous month");
 		$this->t_prev_year = bab_translate("Previous year");
 		$this->t_next_year = bab_translate("Next year");
 		$this->t_next_month = bab_translate("Next month");
+		$this->t_next_week = bab_translate("Next week");
 		$this->t_next_day = bab_translate("Next day");
 		$this->t_new_event = bab_translate("New event");
 		$this->t_day_view = bab_translate("Day view");
@@ -788,6 +790,11 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap)
 			$this->date = $date;
 			$this->date0 = $date0;
 			$this->date1 = $date1;
+			if( $this->date0 > $this->date1)
+				{
+				$babBodyPopup->msgerror = bab_translate("End date must be older")." !!";
+				}
+
 			$rr = explode(',', $date0);
 			$this->sdate = sprintf("%s-%02s-%02s 00:00:00", $rr[0], $rr[1], $rr[2]);
 			$this->date0val = $rr[2]."-".$rr[1]."-".$rr[0];
