@@ -304,6 +304,23 @@ function bab_getUserEmail($id)
 		}
 	}
 
+function bab_getUserIdByEmail($email)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select id from ".BAB_USERS_TBL." where email='$email'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['id'];
+		}
+	else
+		{
+		return 0;
+		}
+	}
+
+
 function bab_getUserNickname($id)
 	{
 	$db = $GLOBALS['babDB'];
