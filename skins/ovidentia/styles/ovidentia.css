@@ -142,6 +142,7 @@ a.BabSummaryLinkColor:Hover {COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-s
 .BabSummaryNbrMessage { COLOR: #FF3333;  font: 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
 /**************** CATEGORIES ****************************/
 .BabCategTitleNavigation {COLOR: white; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+.BabCategChildNavigation {COLOR: #DDDDDD; font-style:italic; font-family: Verdana,arial;font-size:10px }
 
 a.BabCategTitleNavigation:Link { COLOR: white; font : 12px Verdana, Arial, sans-serif; text-decoration: underline }
 a.BabCategTitleNavigation:Visited { COLOR: white; font : 12px Verdana, Arial, sans-serif; text-decoration: underline }
