@@ -116,16 +116,21 @@ function bab_translate($str, $folder = "")
 
 	if( empty($GLOBALS['babLanguage']) || empty($str))
 		return $str;
+
 	if( empty($folder))
 		$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
 	else
+		{
 		$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$GLOBALS['babLanguage'].".xml";
+		}
 
 	if( empty($tmp))
 		{
 		clearstatcache();
 		if( !file_exists($filename))
 			{
+			if( !empty($folder) && !is_dir($GLOBALS['babInstallPath']."lang/addons/".$folder))
+				mkdir($GLOBALS['babInstallPath']."lang/addons/".$folder, 0777);
 			$file = @fopen($filename, "w");
 			if( $file )
 				fclose($file);
@@ -188,6 +193,7 @@ function bab_getAddonsMenus($row, $what)
 			else if( $res && $db->db_num_rows($res) > 0 && !function_exists($func))
 				{
 				$db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$id."' and type='4'");	
+				$db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$id."' and type='4'");	
 				}
 			}
 		}
