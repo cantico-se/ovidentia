@@ -25,7 +25,7 @@
 define('BABINSTALL','install/babinstall.sql');
 define('FILETOTEST','utilit/dbutil.php');
 define('CONFIG','config.php');
-define('RENAMEFILE','install.old');
+//define('RENAMEFILE','install.old');
 define('LANG','en');
 
 class translate
@@ -152,6 +152,16 @@ class bab_dumpToDb
 			
 		return true;
 		}
+
+		
+	function dbConfig()
+		{
+		if (!empty($_POST['babUploadPath']))
+			{
+			$this->db_query("UPDATE bab_sites SET uploadpath='".mysql_escape_string ($_POST['babUploadPath'])."' WHERE id='1'");
+			}
+		return true;
+		}
 	}
 	
 	
@@ -164,7 +174,7 @@ function writeConfig()
 		ereg($var."[[:space:]]*=[[:space:]]*\"([^\"]*)\"", $txt, $match);
 		if ($match[1] != $value)
 			{
-			$out = ereg_replace($var."[[:space:]]*=[[:space:]]*\"".$match[1]."\"", $var." = \"".$value."\"", $txt);
+			$out = ereg_replace($var."[[:space:]]*=[[:space:]]*\"".preg_quote($match[1],"/")."\"", $var." = \"".$value."\"", $txt);
 			if ($out != $txt)
 				return $out;
 			else
@@ -197,7 +207,11 @@ function writeConfig()
 			$txt = $out;
 		}
 		
-	$succes[] = $trans->str('Config update successful');
+	$optional = replace($txt, 'babUploadPath', $_POST['babUploadPath']);
+	if ($optional !== false)
+		$out = $optional;
+		
+	$succes[] = $trans->str('config.php update successful');
 	
 	$file = fopen(CONFIG, "w");
 	if (!$file)
@@ -221,12 +235,37 @@ function renameFile()
 	else
 		{
 		$error = $trans->str('Failed to rename the file').' '.basename($_SERVER['PHP_SELF']).' '.$trans->str('You must remove it for security reasons');
-		return true;
+		return true; // return true because of a non-blocker error
 		}	
+	}
+	
+	
+function testVars()
+	{
+	global $error,$succes,$trans;
+	
+	if (!is_file($_POST['babInstallPath'].FILETOTEST))
+		{
+		$error = $trans->str('No acces to core, Relative path to ovidentia core is wrong');
+		return false;
+		}
+		
+	if (!empty($_POST['babUploadPath']) && !is_writable($_POST['babUploadPath']))
+		{
+		$error = $trans->str('Upload directory is not writable');
+		return false;
+		}
+		
+	$succes[] = $trans->str('Configuration test succesful');
+	return true;
 	}
 
 	
 /* main */
+
+if (get_magic_quotes_gpc()) {
+ foreach($_POST as $k=>$v) $_POST["$k"]=stripslashes($v);
+}
 
 $error = '';
 $succes = array();
@@ -234,9 +273,8 @@ $trans = new translate(LANG);
 	
 if (isset($_POST) && count($_POST) > 0)
 	{
-	if (is_file($_POST['babInstallPath'].FILETOTEST))
+	if (testVars())
 		{
-		$succes[] = $trans->str('Core acces test successful');	
 		$dump = new bab_dumpToDb();
 		if ($dump->db_connect())
 			{
@@ -244,20 +282,20 @@ if (isset($_POST) && count($_POST) > 0)
 				{
 				if ($dump->workOnQuery())
 					{
-					if (writeConfig())
+					if ($dump->dbConfig())
 						{
-						if (renameFile())
+						if (writeConfig())
 							{
-							$succes[] = $trans->str('Configuration done');
+							if (!defined(RENAMEFILE) || renameFile())
+								{
+								$succes[] = $trans->str('Configuration done');
+								$all_is_ok = true;
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	else
-		{
-		$error = $trans->str('There is an error into configuration of ovidentia path, can\'t see ovidentia files');
 		}
 	}
 	
@@ -328,11 +366,18 @@ h4 {
 	white-space:nowrap;
 	text-align:right;
 	padding-right:.3em;
+	font-weight:bold;
 	}
 	
-#form p {
-	margin:.4em 0 .4em 0;
-	text-align:left;
+#form dt {
+	margin:.8em 0 .1em 0;
+	}
+	
+#form dd {
+	font-style:italic;
+	text-align:center;
+	margin:0;
+	font-size:.9em;
 	}
 	
 fieldset {
@@ -340,6 +385,20 @@ fieldset {
 	margin-bottom:1em;
 	text-align:left;
 	padding:.8em;
+	}
+	
+ul {
+	list-style-type: none;
+	}
+	
+a, a:visited {
+	color:#000;
+	border-bottom:#000 1px solid;
+	text-decoration:none;
+	}
+	
+a:hover {
+	border-bottom:#00f 1px solid;
 	}
 </style>
 </head>
@@ -355,25 +414,48 @@ fieldset {
 	
 	
 	<div id="form">
-	<p><? echo $trans->str('Welcome to ovidentia') ?></p>
-	<form method="post" action="<? echo basename($_SERVER['PHP_SELF']) ?>">
-	<fieldset>
-		<legend><? echo $trans->str('database') ?></legend>
-		<p><label for="babDBHost"><? echo $trans->str('Database name') ?> :</label><input type="text" id="babDBHost" name="babDBHost" value="localhost" /></p>
-		<p><label for="babDBName"><? echo $trans->str('Database name') ?> :</label><input type="text" id="babDBName" name="babDBName" value="ovidentia" /></p>
-		<p><label for="babDBName"><? echo $trans->str('If database exists, clear it') ?> :</label><input type="checkbox" id="clearDb" name="clearDb" /></p>
-		<p><label for="babDBLogin"><? echo $trans->str('Login') ?> :</label><input type="text" id="babDBLogin" name="babDBLogin" value="root" /></p>
-		<p><label for="babDBPasswd"><? echo $trans->str('Password') ?> :</label><input type="password" id="babDBPasswd" name="babDBPasswd" /></p>
-	</fieldset>
-	
-	<fieldset>
-		<legend>Ovidentia</legend>
-		<p><label for="babInstallPath"><? echo $trans->str('Relative path to ovidentia core') ?> :</label><input type="text" id="babInstallPath" name="babInstallPath" value="ovidentia/" /></p>
-		<p><label for="babUrl"><? echo $trans->str('Base url') ?> :</label><input type="text" id="babUrl" name="babUrl" value="<? echo $babUrl ?>" /></p>
-	</fieldset>
-	
-	<input type="submit" value="<? echo $trans->str('Submit') ?>" />
-	</form>
+	<?
+	if (isset($all_is_ok) && $all_is_ok === true)
+		{
+		
+		?>
+		<p><? echo $trans->str('Congratulation, ovidentia is now configured, now you can log in with the default acount') ?></p>
+		<ul>
+			<li><? echo $trans->str('Login') ?> : <strong>admin@admin.bab</strong></li>
+			<li><? echo $trans->str('Password') ?> : <strong>012345678</strong></li>
+		</ul>
+		<p><a href="index.php?tg=login"><? echo $trans->str('Go to login page') ?></a></p>
+		<?
+		}
+	else
+		{
+		?>
+		<p><? echo $trans->str('Welcome to ovidentia setup') ?></p>
+		<form method="post" action="<? echo basename($_SERVER['PHP_SELF']) ?>">
+			<dl>
+				<fieldset>
+					<legend><? echo $trans->str('database') ?></legend>
+					<dt><label for="babDBHost"><? echo $trans->str('Database host') ?> :</label><input type="text" id="babDBHost" name="babDBHost" value="localhost" /></dt>
+					<dt><label for="babDBName"><? echo $trans->str('Database name') ?> :</label><input type="text" id="babDBName" name="babDBName" value="ovidentia" /></dt>
+					<dt><label for="babDBName"><? echo $trans->str('Drop database') ?> :</label><input type="checkbox" id="clearDb" name="clearDb" /></dt>
+						<dd><? echo $trans->str('If the database exist, it will be dropped and data will be lost') ?></dd>
+					<dt><label for="babDBLogin"><? echo $trans->str('Login') ?> :</label><input type="text" id="babDBLogin" name="babDBLogin" value="root" /></dt>
+					<dt><label for="babDBPasswd"><? echo $trans->str('Password') ?> :</label><input type="password" id="babDBPasswd" name="babDBPasswd" /></dt>
+				</fieldset>
+				
+				<fieldset>
+					<legend>Ovidentia</legend>
+					<dt><label for="babInstallPath"><? echo $trans->str('Relative path to ovidentia core') ?> :</label><input type="text" id="babInstallPath" name="babInstallPath" value="ovidentia/" /></dt>
+					<dt><label for="babUrl"><? echo $trans->str('Base url') ?> :</label><input type="text" id="babUrl" name="babUrl" value="<? echo $babUrl ?>" /></dt>
+					<dt><label for="babUploadPath"><? echo $trans->str('Upload directory') ?> :</label><input type="text" id="babUploadPath" name="babUploadPath" value="/home/upload" /></dt>
+						<dd><? echo $trans->str('Full path to upload the files (example : c:\\\\path-to\\\\upload-directory for Windows, /home/upload for linux)') ?></dd>
+				</fieldset>
+			</dl>
+			<input type="submit" value="<? echo $trans->str('Submit') ?>" />
+		</form>
+		<?
+		}
+		?>
 	</div>
 <a href="http://www.ovidentia.org/">www.ovidentia.org</a>
 </body>
