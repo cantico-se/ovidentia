@@ -20,7 +20,7 @@ function bab_array_search($str, $vars)
 
 function upgrade()
 {
-$bab_versions = array("310", "320", "330", "331", "332", "333");
+$bab_versions = array("310", "320", "330", "331", "332", "333", "340");
 
 $ret = "";
 $db = $GLOBALS['babDB'];

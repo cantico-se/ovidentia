@@ -22,7 +22,6 @@ function bab_isEmailValid ($email)
 		return false;
 	else
 		return true;
-	//return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
 	}
 
 function bab_getCssUrl()
@@ -533,6 +532,7 @@ function babUserSection()
 		{
 		$this->array_urls[bab_translate("Summary")] = $GLOBALS['babUrlScript']."?tg=calview";
 		$this->array_urls[bab_translate("Options")] = $GLOBALS['babUrlScript']."?tg=options";
+		if( bab_notesAccess())
 		$this->array_urls[bab_translate("Notes")] = $GLOBALS['babUrlScript']."?tg=notes";
 		}
 
@@ -547,7 +547,7 @@ function babUserSection()
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&calid=".$idcal;
 	if( $bemail )
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";
-	if( !empty($GLOBALS['BAB_SESS_USER']))
+	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
 		{
 		$this->array_urls[bab_translate("Contacts")] = $GLOBALS['babUrlScript']."?tg=contacts";
 		$babSearchUrl .= "f";
@@ -765,7 +765,7 @@ function babTopicsSection($cat)
 	$r = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
 	$this->head = $r['description'];
 	$this->title = $r['title'];
-	$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."'";
+	$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
@@ -860,7 +860,7 @@ function babForumsSection()
 	$this->waitingf = bab_translate("Waiting posts");
 	$this->bfooter = 0;
 	$this->db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_FORUMS_TBL."";
+	$req = "select * from ".BAB_FORUMS_TBL." order by ordering asc";
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{

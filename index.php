@@ -460,11 +460,11 @@ switch($tg)
 		$incl = "fileman";
 		break;
 	case "notes":
-		if( $BAB_SESS_LOGGED)
+		if( $BAB_SESS_LOGGED && bab_notesAccess())
 			$incl = "notes";
 		break;
 	case "note":
-		if( $BAB_SESS_LOGGED)
+		if( $BAB_SESS_LOGGED && bab_notesAccess())
 			$incl = "note";
 		break;
 	case "inbox":
@@ -472,11 +472,11 @@ switch($tg)
 			$incl = "inbox";
 		break;
 	case "contacts":
-		if( $BAB_SESS_LOGGED)
+		if( $BAB_SESS_LOGGED && bab_contactsAccess())
 			$incl = "contacts";
 		break;
 	case "contact":
-		if( $BAB_SESS_LOGGED)
+		if( $BAB_SESS_LOGGED && bab_contactsAccess())
 			{
 			$incl = "contact";
 			include $babInstallPath."$incl.php";

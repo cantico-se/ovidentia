@@ -131,7 +131,7 @@ function listArticles($id)
 			$this->db = $GLOBALS['babDB'];
 			$r = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$r['id'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' and archive='N' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' and archive='N' and confirmed='Y' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
