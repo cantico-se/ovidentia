@@ -277,6 +277,7 @@ function printout()
 class babAdminSection extends babSectionTemplate
 {
 var $array_urls = array();
+var $addon_urls = array();
 var $head;
 var $foot;
 var $key;
@@ -299,6 +300,22 @@ function babAdminSection()
 	$this->title = bab_translate("Administration");
 	$this->head = bab_translate("This section is for Administration");
 	$this->foot = bab_translate("");
+
+	$arr_keys = array_keys($GLOBALS['babAddons']);
+	for( $i = 0; $i < sizeof($arr_keys); $i++)
+		{
+		$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
+		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
+			{
+			include( $addonpath."/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_init_file'] );
+			$func = $GLOBALS['babAddons'][$arr_keys[$i]]['bab_user_section_load'];
+			if( !empty($func) /* && is_callable($func) */)
+				while( $func($url, $txt))
+					{
+					$this->addon_urls[$txt] = $url;
+					}
+			}
+		}
 	}
 
 function addUrl()
@@ -316,11 +333,29 @@ function addUrl()
 	else
 		return false;
 	}
+
+function addAddonUrl()
+	{
+	static $i = 0;
+	if( $i < count($this->addon_urls))
+		{
+		$array_keys = array_keys($this->addon_urls);
+		$array_vals = array_values($this->addon_urls);
+		$this->val = $array_vals[$i];
+		$this->key = $array_keys[$i];
+		$i++;
+		return true;
+		}
+	else
+		return false;
+	}
+
 }
 
 class babUserSection extends babSectionTemplate
 {
 var $array_urls = array();
+var $addon_urls = array();
 var $head;
 var $foot;
 var $key;
@@ -413,6 +448,22 @@ function babUserSection()
 		$this->head .= bab_translate("Anonymous");
 	$this->head .= "</b></center><br>";
 	$this->foot = "";
+
+	$arr_keys = array_keys($GLOBALS['babAddons']);
+	for( $i = 0; $i < sizeof($arr_keys); $i++)
+		{
+		$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
+		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
+			{
+			include( $addonpath."/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_init_file'] );
+			$func = $GLOBALS['babAddons'][$arr_keys[$i]]['bab_user_section_load'];
+			if( !empty($func) /* && is_callable($func) */)
+				while( $func($url, $txt))
+					{
+					$this->addon_urls[$txt] = $url;
+					}
+			}
+		}
 	}
 
 function addUrl()
@@ -422,6 +473,22 @@ function addUrl()
 		{
 		$array_keys = array_keys($this->array_urls);
 		$array_vals = array_values($this->array_urls);
+		$this->url = $array_vals[$i];
+		$this->text = $array_keys[$i];
+		$i++;
+		return true;
+		}
+	else
+		return false;
+	}
+
+function addAddonUrl()
+	{
+	static $i = 0;
+	if( $i < count($this->addon_urls))
+		{
+		$array_keys = array_keys($this->addon_urls);
+		$array_vals = array_values($this->addon_urls);
 		$this->url = $array_vals[$i];
 		$this->text = $array_keys[$i];
 		$i++;
