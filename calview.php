@@ -173,7 +173,7 @@ function newArticles($days)
 				{
 				$arr = $this->db->db_fetch_array($this->resarticles);
 				$this->title = $arr['title'];
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
+				$this->titleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id'];
 				$this->author = bab_getArticleAuthor($arr['id']);
 				$this->date = bab_getArticleDate($arr['id']);
 				$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$arr['id']."' and confirmed='Y' and date >= ";
