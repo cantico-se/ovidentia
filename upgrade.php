@@ -4692,4 +4692,80 @@ if ( $arr[0] != 'id_cat' )
 
 return $ret;
 }
+
+function upgrade554to555()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." date_begin_valid"));
+if ( $arr[0] != 'date_begin_valid' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." ADD date_begin_valid DATE NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." date_end_valid"));
+if ( $arr[0] != 'date_end_valid' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." ADD date_end_valid DATE NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." date_end_fixed"));
+if ( $arr[0] != 'date_end_fixed' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." ADD date_end_fixed DATE NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." date_begin_fixed"));
+if ( $arr[0] != 'date_begin_fixed' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." ADD date_begin_fixed DATE NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." day_begin_fixed"));
+if ( $arr[0] != 'day_begin_fixed' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." ADD day_begin_fixed tinyint(3) unsigned NOT NULL default '0'");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_RIGHTS_TBL." day_end_fixed"));
+if ( $arr[0] != 'day_end_fixed' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." ADD day_end_fixed tinyint(3) unsigned NOT NULL default '0'");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+$db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." CHANGE `quantity` `quantity` DECIMAL( 3, 1 ) UNSIGNED DEFAULT '0' NOT NULL"); 
+return $ret;
+}
+
 ?>

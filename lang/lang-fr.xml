@@ -1739,4 +1739,10 @@
 <string id="Manage">Gérer</string>
 <string id="Folder manager">Gestionnaire de répertoire</string>
 <string id="Category to use in calendar">Catégorie à utiliser dans l'agenda</string>
+<string id="Retention period">Période de validité</string>
+<string id="Right type">Type de droit</string>
+<string id="Fixed dates">A dates fixes</string>
+<string id="Vacation has been updated">La période de congé a été mise à jour</string>
+<string id="Vacation has been deleted">La période de congé a été annulée</string>
+<string id="Vacation has been scheduled">La période de congé suivante a été programmée</string>
 </fr>

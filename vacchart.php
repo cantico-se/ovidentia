@@ -156,7 +156,9 @@ function entity_members($ide)
 					}
 				}
 
-			if ($superior !== 0 )
+			$this->s_collection = '';
+			$this->s_schema = '';
+			if ($superior !== 0 && isset($this->more[$this->superior_id]))
 				{
 				list($this->s_collection, $this->s_schema ) = $this->more[$this->superior_id] ;
 				}

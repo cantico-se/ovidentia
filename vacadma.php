@@ -26,6 +26,62 @@ include_once $babInstallPath."utilit/vacincl.php";
 
 define("VAC_MAX_RIGHTS_LIST", 20);
 
+
+function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybegin, $halfdayend, $remarks, $total)
+{
+	global $babBody, $babDB;
+
+	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." (id_user, date_begin, date_end, day_begin, day_end, comment, date, idfai, status) values  ('" .$id_user. "', '" . $datebegin. "', '" . $dateend. "', '" . $halfdaybegin. "', '" . $halfdayend. "', '".$remarks."', curdate(), '0', 'Y')");
+	$identry = $babDB->db_insert_id();
+	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_ELEM_TBL." (id_entry, id_type, quantity) values  ('" .$identry. "', '" .$id_right. "', '" . $total. "')");
+	$idcal = bab_getCalendarId($id_user, 1);
+	if( $idcal != 0 )
+		{
+		list($idcat) = $babDB->db_fetch_row($babDB->db_query("select vct.id_cat from ".BAB_VAC_COLLECTIONS_TBL." vct left join ".BAB_VAC_PERSONNEL_TBL." vpt on vpt.id_coll=vct.id left join ".BAB_VAC_ENTRIES_TBL." vet on vet.id_user=vpt.id_user where vet.id='".$identry."'"));
+
+		$tbegin = $halfdaybegin == 3? '12:00:00': '00:00:00';
+		$tend = $halfdayend == 2? '12:00:00': '23:59:59';
+		$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, id_cat, start_date, end_date, id_creator, hash) values ";
+		$req .= "('".bab_translate("Vacation")."', '".$idcat."', '".$datebegin." ".$tbegin."', '".$dateend." ".$tend."', '0', 'V_".$identry."')";
+		$babDB->db_query($req);
+		$id_event = $babDB->db_insert_id();
+		$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$idcal."', '".BAB_CAL_STATUS_ACCEPTED."')");
+		}
+}
+
+function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybegin, $halfdayend, $total)
+{
+	global $babBody, $babDB;
+
+	$tbegin = $halfdaybegin == 3? '12:00:00': '00:00:00';
+	$tend = $halfdayend == 2? '12:00:00': '23:59:59';
+
+	$res = $babDB->db_query("select vet.id as entry, veet.id as entryelem from ".BAB_VAC_ENTRIES_ELEM_TBL." veet left join ".BAB_VAC_ENTRIES_TBL." vet on veet.id_entry=vet.id where veet.id_type='".$id_right."' and vet.id_user='".$id_user."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set date_begin='".$datebegin."', date_end='".$dateend."', day_begin='".$halfdaybegin."', day_end='".$halfdayend."' where id='".$arr['entry']."'");
+		$babDB->db_query("update ".BAB_VAC_ENTRIES_ELEM_TBL." set quantity='".$total."' where id='".$arr['entryelem']."'");
+		$babDB->db_query("update ".BAB_CAL_EVENTS_TBL." set start_date='".$datebegin." ".$tbegin."', end_date='".$dateend." ".$tend."' where hash='V_".$arr['entry']."'");	
+	}
+
+}
+
+function removeFixedVacation($id_entry)
+{
+	global $babBody, $babDB;
+	
+	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$id_entry."'");
+	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id_entry."'");
+	$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='V_".$id_entry."'");
+	while( $arr = $babDB->db_fetch_array($res) )
+		{
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arr['id']."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$arr['id']."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$arr['id']."'");
+		}
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where hash='V_".$id_entry."'");
+}
+
 function browsePersonnelByType($pos, $cb, $idtype)
 	{
 	global $babBody;
@@ -497,29 +553,43 @@ function addModifyVacationRigths($id = false)
 			$this->t_record = bab_translate("Record");
 			$this->t_trigger_type = bab_translate("Allow rule with type");
 			$this->t_all = bab_translate("All");
+			$this->t_periodvalid = bab_translate("Retention period"). " (".bab_translate("dd-mm-yyyy").")";
+			$this->t_right_type = bab_translate("Right type");
+
+			$this->t_datebegintxt = bab_translate("Begin date");
+			$this->t_dateendtxt = bab_translate("End date");
+			$this->invaliddate = bab_translate("ERROR: End date must be older");
+			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
+			$this->invalidentry3 = bab_translate("The number of days exceed the total allowed");
 		
 
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted or . !");
+			$this->invalidentry1 = str_replace("'", "\'", $this->invalidentry1);
+			$this->invalidentry1 = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidentry1);
+			$this->invalidtotal = bab_translate("Total days does'nt fit between dates");
+			$this->invalidtotal = str_replace("'", "\'", $this->invalidtotal);
+			$this->invalidtotal = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidtotal);
 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
 			$this->db = & $GLOBALS['babDB'];
-			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod', 'use_rules', 'trigger_type');
+			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod', 'righttype', 'trigger_type', 'date_begin_valid', 'date_end_valid');
 
-			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end');
+			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end', 'date_begin_valid', 'date_end_valid');
 			
+			
+			$this->arr['righttype'] = '0';
 			if (isset($_POST) && count($_POST) > 0)
 				{
 				$this->arr = $_POST;
-				$this->arr['use_rules'] = $_POST['use_rules'] == 'Y';
 				}
 			elseif ($id)
 				{
 				$this->arr = $this->db->db_fetch_array($this->db->db_query(
 					"SELECT 
 						t1.*,
-						t2.id use_rules,
+						t2.id righttype,
 						t2.period_start, 
 						t2.period_end, 
 						t2.trigger_nbdays_min, 
@@ -540,12 +610,28 @@ function addModifyVacationRigths($id = false)
 
 				$this->collid = "";
 
+				if( $this->arr['date_begin_fixed'] != '0000-00-00')
+					{
+					$this->arr['righttype'] =  2;
+					}
+				elseif( isset($this->arr['righttype']))
+					{
+					$this->arr['righttype'] =  1;
+					}
+				else
+					{
+					$this->arr['righttype'] =  0;
+					}
 				foreach($dates_to_init as $field)
 					{
-					if (!empty($this->arr[$field]))
+					if (!empty($this->arr[$field]) && $this->arr[$field] != '0000-00-00')
 						{
 						list($y,$m,$d) = explode('-',$this->arr[$field]);
 						$this->arr[$field] = $d.'-'.$m.'-'.$y;
+						}
+					else
+						{
+						$this->arr[$field] = '';
 						}
 					}
 				$this->arr['idvr'] = $id;
@@ -581,6 +667,79 @@ function addModifyVacationRigths($id = false)
 			
 			$this->restype = $this->db->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
 			$this->counttype = $this->db->db_num_rows($this->restype);
+
+
+			$this->year = isset($_POST['year']) ? $_POST['year'] : date('Y');
+
+			if (!empty($id) && !isset($_POST['daybeginfx']) && $this->arr['date_begin_fixed'] != '0000-00-00')
+				{
+				list($this->yearbegin, $this->monthbegin, $this->daybegin) = explode('-',$this->arr['date_begin_fixed']);
+				list($this->yearend, $this->monthend, $this->dayend) = explode('-',$this->arr['date_end_fixed']);
+				$this->halfdaybegin = $this->arr['day_begin_fixed'];
+				$this->halfdayend = $this->arr['day_end_fixed'];
+				}
+			elseif (isset($_POST['daybeginfx']))
+				{
+				$this->daybegin = $_POST['daybeginfx'];
+				$this->dayend = $_POST['dayendfx'];
+				$this->monthbegin = $_POST['monthbeginfx'];
+				$this->monthend = $_POST['monthendfx'];
+				$this->yearbegin = $this->year+ $_POST['yearbeginfx']-1;
+				$this->yearend = $this->year+ $_POST['yearendfx']-1;
+				$this->halfdaybegin = $_POST['halfdaybeginfx'];
+				$this->halfdayend = $_POST['halfdayendfx'];
+				}
+			else
+				{
+				$this->daybegin = date("j");
+				$this->dayend = date("j");
+				$this->monthbegin = date("n");
+				$this->monthend = date("n");
+				$this->yearbegin = $this->year;
+				$this->yearend = $this->year;
+				$this->halfdaybegin = 1;
+				$this->halfdayend = 1;
+				}
+
+			$this->halfdaysel = $this->halfdaybegin;
+			$this->daysel = $this->daybegin;
+			$this->monthsel = $this->monthbegin;
+			$this->yearsel = $this->yearbegin -$this->year +1;
+			
+			if( $id )
+				{
+				if( $this->arr['righttype'] == '2' )
+					$this->rightypes = array(2=>bab_translate("Fixed dates"));
+				else
+					$this->rightypes = array(0=>"", 1=>bab_translate("Use rules"));
+				}
+			else
+				{
+				$this->rightypes = array(0=>"", 1=>bab_translate("Use rules"), 2=>bab_translate("Fixed dates"));
+				}
+
+			}
+
+		function getnextrighttype()
+			{
+			if (list($valid,$valname) = each($this->rightypes))
+				{
+				$this->righttypeid = $valid;
+				$this->righttypeval = $valname;
+				if( $this->righttypeid == $this->arr['righttype'])
+    				{
+				    $this->selected = 'selected';
+                   }
+                else
+                   {
+                    $this->selected = '';
+                   }
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 		
 		function getnextcol()
@@ -639,6 +798,99 @@ function addModifyVacationRigths($id = false)
 				if( $this->counttype > 0 )
 					$this->db->db_data_seek($this->restype, 0 );
 				$i = 0;
+				return false;
+				}
+
+			}
+		function getnextday()
+			{
+			static $i = 1;
+
+			if( $i <= date("t"))
+				{
+				$this->t_dayid = $i;
+				if( (int)($this->daysel) == $this->t_dayid )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->daysel = $this->dayend;
+				$i = 1;
+				return false;
+				}
+
+			}
+
+		function getnextmonth()
+			{
+			global $babMonths;
+			static $i = 1;
+
+			if( $i < 13)
+				{
+				$this->monthid = $i;
+				$this->t_monthname = $babMonths[$i];
+				if( (int)($this->monthsel) == $this->monthid )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->monthsel = $this->monthend;
+				$i = 1;
+				return false;
+				}
+
+			}
+		function getnextyear()
+			{
+			static $i = 0;
+			if( $i < 3)
+				{
+				$this->yearid = $i+1;
+				$this->t_yearidval = $this->year + $i;
+				if( (int)($this->yearsel) == $this->yearid )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$i++;
+				return true;
+				}
+			else
+				{
+    			$this->yearsel = $this->yearend -$this->year +1;
+				$i = 0;
+				return false;
+				}
+
+			}
+		function getnexthalf()
+			{
+			global $babDayType;
+			static $i = 1;
+			static $count = 4;
+			if( $i < $count)
+				{
+				$this->t_halfname = $babDayType[$i];
+				$this->halfid = $i;
+				if( $this->halfdaysel == $this->halfid )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 1;
+				$this->halfdaysel = $this->halfdayend;
 				return false;
 				}
 
@@ -840,12 +1092,23 @@ function viewVacationRightPersonnel($idvr)
 			$this->typetxt = bab_translate("Vacation type");
 			$this->creditortxt = bab_translate("Author");
 			$this->statustxt = bab_translate("Status");
+			$this->validperiodtxt = bab_translate("Retention period");
 			$this->db = $GLOBALS['babDB'];
 
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'"));
 			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
 			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
 			$this->dateentry = bab_strftime(bab_mktime($row['date_entry']." 00:00:00"), false);
+			if( $row['date_begin_valid'] != '0000-00-00' && $row['date_end_valid'] != '0000-00-00' )
+				{
+				$this->bvalidperiod = true;
+				$this->datebeginvalid = bab_strftime(bab_mktime($row['date_begin_valid']." 00:00:00"), false);
+				$this->dateendvalid = bab_strftime(bab_mktime($row['date_end_valid']." 00:00:00"), false);
+				}
+			else
+				{
+				$this->bvalidperiod = false;
+				}
 			$this->description = $row['description'];
 			$this->creditor = bab_getUserName($row['id_creditor']);
 			$this->quantity = $row['quantity'];
@@ -904,7 +1167,20 @@ function updateVacationRight()
 		return false;
 		}
 
-	$dates_to_init = array('date_begin' => 1, 'date_end' =>1, 'period_start' => 0,'period_end' => 0);
+	$dates_to_init = array('date_begin' => 1, 'date_end' =>1, 'period_start' => 0,'period_end' => 0, 'date_begin_valid' => 0,'date_end_valid' => 0);
+	
+    if( $post['righttype'] == '2')
+        {
+        $post['date_begin_fixed'] = sprintf("%02d-%02d-%04d", $post['daybeginfx'], $post['monthbeginfx'], ($post['yearbeginfx'] + $post['year'] - 1 ));
+        $post['date_end_fixed'] = sprintf("%02d-%02d-%04d", $post['dayendfx'], $post['monthendfx'], ($post['yearendfx']+ $post['year'] - 1 ));
+        $dates_to_init['date_begin_fixed'] = 1;
+        $dates_to_init['date_end_fixed'] = 1;
+        }
+    else
+        {
+        $post['date_begin_fixed'] = '0000-00-00';
+        $post['date_end_fixed'] = '0000-00-00';
+        }
 
 	foreach ($dates_to_init as $date => $required)
 		{
@@ -914,28 +1190,133 @@ function updateVacationRight()
 			$babBody->msgerror = bab_translate("Invalid date") ." !";
 			return false;
 			}
+			
 		if (count($arr) == 3)
 			$post[$date] = sprintf("%04d-%02d-%02d", $arr[2], $arr[1], $arr[0]);
 		else
 			$post[$date] = '';
 		}
 
-	if( $post['date_begin'] > $post['date_end'] || $post['period_start'] > $post['period_end'])
+	if( $post['date_begin'] > $post['date_end'] || $post['period_start'] > $post['period_end'] || $post['date_begin_valid'] > $post['date_end_valid'])
 		{
 		$babBody->msgerror = bab_translate("Begin date must be less than end date") ." !";
 		return false;
 		}
 
+	if( $post['righttype'] == '2' && $post['date_begin_fixed'] > $post['date_end_fixed'] )
+		{
+		$babBody->msgerror = bab_translate("Begin date must be less than end date") ." !";
+		return false;
+		}
+
+	if( $post['active'] == 'Y' )
+		{
+		if( !empty($post['date_begin_valid']) && $post['date_begin_valid'] != '0000-00-00' && (bab_mktime($post['date_begin_valid']." 00:00:00") > mktime()))
+			{
+			$post['active'] = 'N';
+			}
+
+		if( !empty($post['date_end_valid']) && $post['date_end_valid'] != '0000-00-00' && (bab_mktime($post['date_end_valid']." 23:59:59") < mktime()))
+			{
+			$post['active'] = 'N';
+			}
+		}
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
-		$post['description'] = mysql_escape_string($post['description']);
-		}
+		$post['description'] = $babDB->db_escape_string($post['description']);
+  		}
 
+
+	$handlefx = 0;
 	if (!empty($post['idvr']))
 		{
+		list($dbfx) = $babDB->db_fetch_row($babDB->db_query("select date_begin_fixed from ".BAB_VAC_RIGHTS_TBL." where id='".$post['idvr']."'"));
 
-		$babDB->db_query("UPDATE ".BAB_VAC_RIGHTS_TBL." set description='".$post['description']."', id_creditor='".$GLOBALS['BAB_SESS_USERID']."', quantity='".$post['quantity']."', date_entry=curdate(), date_begin='".$post['date_begin']."', date_end='".$post['date_end']."', active='".$post['active']."', cbalance='".$post['cbalance']."' where id='".$post['idvr']."'");
+		if( $dbfx != '0000-00-00' && $post['righttype'] != '2')
+			{
+			// on ne doit pas passer ici, normallement
+			$babBody->msgerror = bab_translate("Ooops, something is wrong") ." !";
+			return false;
+			}
+
+		if( $post['righttype'] != '2')
+			{
+			$post['date_begin_fixed'] = '0000-00-00';
+			$post['date_end_fixed'] = '0000-00-00';
+			$post['day_begin_fixed'] = '0';
+			$post['day_end_fixed'] = '0';
+			}
+		else
+			{
+			$res = $babDB->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$post['idvr']."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arrright = $babDB->db_fetch_array($res);
+
+				$rightusers = array();
+				$res = $babDB->db_query("select id_user from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$post['idvr']."'");
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+					$rightusers[$arr['id_user']] = 1;
+					}
+
+				$entriesusers = array();
+				$res = $babDB->db_query("select vet.*, veet.quantity from ".BAB_VAC_ENTRIES_ELEM_TBL." veet left join ".BAB_VAC_ENTRIES_TBL." vet on veet.id_entry=vet.id where veet.id_type='".$post['idvr']."'");
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+					$entriesusers[$arr['id_user']] = $arr['id'];
+					if( !isset($rightusers[$arr['id_user']]) )
+						{
+						removeFixedVacation( $arr['id']);
+						$arrnotif[] = $arr['id_user'];
+						// remove vacation and notify
+						notifyOnVacationChange($arrnotif, $arr['quantity'], $arr['date_begin'], $arr['day_begin'], $arr['date_end'], $arr['day_end'], VAC_FIX_DELETE);
+						}
+					}
+
+				if( $arrright['date_begin_fixed'] != $post['date_begin_fixed']
+					|| $arrright['date_end_fixed'] != $post['date_end_fixed']
+					|| $arrright['day_begin_fixed'] != $post['halfdaybeginfx']
+					|| $arrright['day_end_fixed'] != $post['halfdayendfx'] )
+					{
+					$updatevac = true;
+					}
+				else
+					{
+					$updatevac = false;
+					}
+				
+				$uupd = array(); 
+				$uadd = array(); 
+				foreach($rightusers as $ukey => $uval )
+					{
+					if( isset($entriesusers[$ukey]) && $updatevac )
+						{
+						updateFixedVacation($ukey, $post['idvr'], $post['date_begin_fixed'] , $post['date_end_fixed'], $post['halfdaybeginfx'], $post['halfdayendfx'], $post['quantity']);
+						$uupd[] = $ukey;
+						// update
+						}
+					elseif( !isset($entriesusers[$ukey]))
+						{
+						// add 
+						addFixedVacation($ukey, $post['idvr'], $post['date_begin_fixed'] , $post['date_end_fixed'], $post['halfdaybeginfx'], $post['halfdayendfx'], '', $post['quantity']);
+						$uadd[] = $ukey;
+						}
+					}
+
+				if( count($uupd)> 0 )
+					{
+					notifyOnVacationChange($uupd, $post['quantity'], $post['date_begin_fixed'], $post['halfdaybeginfx'], $post['date_end_fixed'], $post['halfdayendfx'], VAC_FIX_UPDATE);
+					}
+				if( count($uadd)> 0 )
+					{
+					notifyOnVacationChange($uadd, $post['quantity'], $post['date_begin_fixed'], $post['halfdaybeginfx'], $post['date_end_fixed'], $post['halfdayendfx'], VAC_FIX_ADD);
+					}
+				}
+			}
+
+		$babDB->db_query("UPDATE ".BAB_VAC_RIGHTS_TBL." set description='".$post['description']."', id_creditor='".$GLOBALS['BAB_SESS_USERID']."', quantity='".$post['quantity']."', date_entry=curdate(), date_begin='".$post['date_begin']."', date_end='".$post['date_end']."', active='".$post['active']."', cbalance='".$post['cbalance']."', date_begin_valid='".$post['date_begin_valid']."', date_end_valid='".$post['date_end_valid']."', date_begin_fixed='".$post['date_begin_fixed']."', date_end_fixed='".$post['date_end_fixed']."', day_begin_fixed='".$post['halfdaybeginfx']."', day_end_fixed='".$post['halfdayendfx']."' where id='".$post['idvr']."'");
 
 		$id = $post['idvr'];
 		}
@@ -956,23 +1337,18 @@ function updateVacationRight()
 				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$post['collid']."'"));
 			else
 				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL));
-			/*
-			if( $total == 0 )
-				{
-				$babBody->msgerror = bab_translate("Users does'nt exist") ." !";
-				return false;
-				}
-			*/
 			}
 
-
-		$babDB->db_query("insert into ".BAB_VAC_RIGHTS_TBL." (description, id_creditor, id_type, quantity, date_entry, date_begin, date_end, active, cbalance) values ('".$post['description']."', '".$GLOBALS['BAB_SESS_USERID']."', '".$post['id_type']."', '".$post['quantity']."', curdate(), '".$post['date_begin']."', '".$post['date_end']."', '".$post['active']."', '".$post['cbalance']."')");
+    
+		$babDB->db_query("insert into ".BAB_VAC_RIGHTS_TBL." (description, id_creditor, id_type, quantity, date_entry, date_begin, date_end, active, cbalance, date_begin_valid, date_end_valid, date_begin_fixed, date_end_fixed, day_begin_fixed, day_end_fixed) values ('".$post['description']."', '".$GLOBALS['BAB_SESS_USERID']."', '".$post['id_type']."', '".$post['quantity']."', curdate(), '".$post['date_begin']."', '".$post['date_end']."', '".$post['active']."', '".$post['cbalance']."', '".$post['date_begin_valid']."', '".$post['date_end_valid']."', '".$post['date_begin_fixed']."', '".$post['date_end_fixed']."', '".$post['halfdaybeginfx']."', '".$post['halfdayendfx']."')");
 
 		$id = $babDB->db_insert_id();
 
+		$idusers = array();
 		if( $post['id_creditor'] != "" )
 			{
 			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$post['id_creditor']."', '".$id."')");
+			$idusers[] = $post['id_creditor'];
 			}
 		else if( $post['collid'] != "" )
 			{
@@ -984,17 +1360,27 @@ function updateVacationRight()
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$arr['id_user']."', '".$id."')");
+				$idusers[] = $arr['id_user'];
 				}
+			}
+
+		$nbidusers = count($idusers);
+		if( $post['righttype'] == '2' && $nbidusers > 0) // fixed dates
+			{
+			for($k=0; $k < $nbidusers; $k++ )
+				{
+				addFixedVacation($idusers[$k], $id, $post['date_begin_fixed'] , $post['date_end_fixed'], $post['halfdaybeginfx'], $post['halfdayendfx'], '', $post['quantity']);
+				}
+			notifyOnVacationChange($idusers, $post['quantity'], $post['date_begin_fixed'], $post['halfdaybeginfx'], $post['date_end_fixed'], $post['halfdayendfx'], VAC_FIX_ADD);
 			}
 		}
 
-		// rules record
 
-		if ($post['use_rules'] == 'N')
+		if ($post['righttype'] != '1')
 			{
 			$babDB->db_query("DELETE FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right='".$id."'");
 			}
-		else
+		else // rules
 			{
 			$res = $babDB->db_query("SELECT id FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right='".$id."'");
 			if ($babDB->db_num_rows($res) > 0)
@@ -1046,10 +1432,23 @@ function modifyVacationRightPersonnel($idvr, $userids, $nuserids)
 	global $babDB;
 	$count = sizeof($userids);
 
+	$arrright = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'"));
+
 	for( $i = 0; $i < sizeof($nuserids); $i++)
 		{
 		if( $nuserids[$i] != "" && ( $count == 0 || !in_array($nuserids[$i], $userids)))
+			{
+			if( $arrright['date_begin_fixed'] != '0000-00-00' )
+				{
+				$res = $babDB->db_query("select vet.*, veet.quantity from ".BAB_VAC_ENTRIES_ELEM_TBL." veet left join ".BAB_VAC_ENTRIES_TBL." vet on veet.id_entry=vet.id where veet.id_type='".$idvr."' and vet.id_user='".$nuserids[$i]."'");
+				$arr = $babDB->db_fetch_array($res);
+				removeFixedVacation( $arr['id']);
+				$arrnotif[] = $arr['id_user'];
+				notifyOnVacationChange($arrnotif, $arr['quantity'], $arr['date_begin'], $arr['day_begin'], $arr['date_end'], $arr['day_end'], VAC_FIX_DELETE);
+				}
+
 			$babDB->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$idvr."' and id_user='".$nuserids[$i]."'");
+			}
 		}
 
 	for( $i = 0; $i < $count; $i++)
@@ -1057,6 +1456,12 @@ function modifyVacationRightPersonnel($idvr, $userids, $nuserids)
 		if( !in_array($userids[$i], $nuserids) )
 			{
 			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$userids[$i]."', '".$idvr."')");
+			if( $arrright['date_begin_fixed'] != '0000-00-00' )
+				{
+				addFixedVacation($userids[$i], $idvr, $arrright['date_begin_fixed'] , $arrright['date_end_fixed'], $arrright['day_begin_fixed'], $arrright['day_end_fixed'], '', $arrright['quantity']);
+				$arrnotif[] = $userids[$i];
+				notifyOnVacationChange($arrnotif, $arrright['quantity'], $arrright['date_begin_fixed'], $arrright['day_begin_fixed'], $arrright['date_end_fixed'], $arrright['day_end_fixed'], VAC_FIX_ADD);
+				}
 			}
 		}
 	}

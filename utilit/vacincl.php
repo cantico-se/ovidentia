@@ -27,6 +27,10 @@ include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
 
 define("VAC_MAX_REQUESTS_LIST", 20);
 
+define("VAC_FIX_DELETE", 2);
+define("VAC_FIX_UPDATE", 1);
+define("VAC_FIX_ADD",    0);
+
 class vac_notifyVacationApprovers
 	{
 	var $message;
@@ -179,6 +183,23 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 	
 	while ( $arr = $db->db_fetch_array($res) )
 		{
+		$access = true;
+
+		if( $arr['date_begin_valid'] != '0000-00-00' && (bab_mktime($arr['date_begin_valid']." 00:00:00") > mktime()))
+			{
+			$access= false;
+			}
+
+		if( $arr['date_end_valid'] != '0000-00-00' && (bab_mktime($arr['date_end_valid']." 23:59:59") < mktime()))
+			{
+			$access= false;
+			}
+
+		if( !$access )
+			{
+			$db->db_query("update ".BAB_VAC_RIGHTS_TBL." set active='N' where id='".$arr['id']."'");
+			}
+
 		if (!$begin)
 			$begin = bab_mktime($arr['date_begin']);
 		if (!$end)
@@ -201,11 +222,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 		else
 			{
 			$quantitydays = $arr['quantity'] - $qdp;
-			}
-
-		$access = true;
-
-		
+			}	
 
 		if ( !empty($arr['id_right']) )
 			{
@@ -1422,5 +1439,60 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 	return true;
 	}
 
+function notifyOnVacationChange($idusers, $quantity, $date_begin, $day_begin, $date_end, $day_end, $what)
+	{
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 
+	if(!class_exists("notifyOnVacationChangeCls"))
+		{
+		class notifyOnVacationChangeCls
+			{
+
+			function notifyOnVacationChangeCls($quantity, $date_begin, $day_begin, $date_end, $day_end, $msg)
+				{
+				global $babDayType, $babDB;
+				$this->message = $msg;
+				$this->from = bab_translate("from");
+				$this->until = bab_translate("until");
+				$this->quantitytxt = bab_translate("Quantity");
+				$this->begindate = bab_strftime(bab_mktime($date_begin." 00:00:00"), false). " ". $babDayType[$day_begin];
+				$this->enddate = bab_strftime(bab_mktime($date_end." 00:00:00"), false). " ". $babDayType[$day_end];
+				$this->quantity = $quantity;
+				}
+			}
+
+		$cntusers = count($idusers);
+
+		if( $cntusers > 0 )
+			{
+			$mail = bab_mail();
+			if( $mail == false )
+				return;
+
+			$mail->mailFrom($BAB_SESS_EMAIL, $BAB_SESS_USER);
+			switch($what)
+				{
+				case VAC_FIX_UPDATE: $msg = bab_translate("Vacation has been updated");	break;
+				case VAC_FIX_DELETE: $msg = bab_translate("Vacation has been deleted");	break;
+				default: $msg = bab_translate("Vacation has been scheduled");	break;
+				}
+
+			$mail->mailSubject($msg);
+
+			$tempb = new notifyOnVacationChangeCls($quantity, $date_begin, $day_begin, $date_end, $day_end, $msg);
+			$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "newfixvacation"));
+			$mail->mailBody($message, "html");
+
+			$message = bab_printTemplate($tempb,"mailinfo.html", "newfixvacationtxt");
+			$mail->mailAltBody($message);
+			
+			for( $i=0; $i < $cntusers; $i++)
+				{
+				$mail->clearTo();
+				$mail->mailTo(bab_getUserEmail($idusers[$i]), bab_getUserName($idusers[$i]));
+				$mail->send();
+				}
+			}
+		}
+	}
 ?>

@@ -126,33 +126,113 @@ function dateEnd(day, month, year)
 <!--
 function use_rules_change(obj)
 {
-var tbody = document.getElementById('vac_use_rules');
+var tb_rules = document.getElementById('vac_right_rules');
+var tb_com = document.getElementById('vac_right_common');
+var tb_fixed = document.getElementById('vac_right_fixed');
+
 	switch (obj.value)
 	{
-		case 'Y':
-			tbody.style.display = '';
+		case '0':
+			tb_rules.style.display = 'none';
+			tb_com.style.display = '';
+			tb_fixed.style.display = 'none';
 		break;
-
-		case 'N':
-			tbody.style.display = 'none';
+		case '1':
+			tb_rules.style.display = '';
+			tb_com.style.display = '';
+			tb_fixed.style.display = 'none';
+		break;
+		case '2':
+			tb_rules.style.display = 'none';
+			tb_com.style.display = 'none';
+			tb_fixed.style.display = '';
 		break;
 	}
 }
 
 function calwin(callback)
 {
-//}
+    var dummy;
 	Start('{ babUrlScript }?tg=month&ymin=0&ymax=3&callback='+callback , 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');
 }
--->
+function validateForm(fr)
+{
+var ret = true;
+
+if( fr.righttype.options[fr.righttype.selectedIndex].value == 0 ||  fr.righttype.options[fr.righttype.selectedIndex].value == 1)
+{
+	return true;
+}
+if( fr.yearbeginfx.selectedIndex > fr.yearendfx.selectedIndex )
+	{
+	ret = false;
+	}
+else if( fr.yearbeginfx.selectedIndex == fr.yearendfx.selectedIndex )
+	{
+		if( fr.monthbeginfx.selectedIndex > fr.monthendfx.selectedIndex )
+		{
+		ret = false;
+		}
+		else if( fr.monthbeginfx.selectedIndex == fr.monthendfx.selectedIndex ) 
+		{
+		if( fr.daybeginfx.selectedIndex > fr.dayendfx.selectedIndex )
+			{
+			ret = false;
+			}
+		}
+	}
+
+if( ret == false)
+	{
+	var d1;
+	alert ('{ invaliddate }');
+	return false;
+	}
+
+dateA = new Date(fr.yearbeginfx.options[fr.yearbeginfx.selectedIndex].text, fr.monthbeginfx.options[fr.monthbeginfx.selectedIndex].value-1, fr.daybeginfx.options[fr.daybeginfx.selectedIndex].text );
+dateB = new Date(fr.yearendfx.options[fr.yearendfx.selectedIndex].text, fr.monthendfx.options[fr.monthendfx.selectedIndex].value-1, fr.dayendfx.options[fr.dayendfx.selectedIndex].text );
+
+dayb = fr.halfdaybeginfx.options[fr.halfdaybeginfx.selectedIndex].value;
+daye = fr.halfdayendfx.options[fr.halfdayendfx.selectedIndex].value;
+diff = ((dateB - dateA)/86400000)+1;
+if( diff == 1 )
+{
+	if( dayb != daye )
+	{
+	ret = false;
+	}
+	else if( dayb == 1 && fr.quantity.value != 1)
+	{
+	ret = false;
+	}
+	else if( dayb != 1 && fr.quantity.value != '0.5')
+	{
+	ret = false;
+	}
+}
+else
+{
+if( dayb == 2 || daye == 3 ) { ret = false; }
+else if( fr.quantity.value > diff ) { ret = false; }
+}
+
+if( ret == false) { 
+var d1; 
+alert ('{ invalidtotal }'); 
+return false;
+}
+return true;
+}
+//-->
 </script>
 
-<form name="rightsedit" method="post" action="{ babPhpSelf }">
+<form name="rightsedit" method="post" action="{ babPhpSelf }"  onSubmit="return validateForm(this);">
 	<input type="hidden" name="tg" value="vacadma">
 	<input type="hidden" name="idx" value="lrig">
 	<input type="hidden" name="action" value="rightsedit">
 	<input type="hidden" name="idvr" value="{ arr[idvr] }">
-	<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<input type="hidden" name="year" value="{ year }">
+	<table  border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 		<td class="BabLoginCadreBackground"> 
 			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
@@ -221,6 +301,79 @@ function calwin(callback)
 				</td>
 			</tr>
 			<tr> 
+				<td align="right">{ t_right_type }:</td>
+				<td > 
+					<select name="righttype" onchange="use_rules_change(this)">
+					<!--#in getnextrighttype -->
+					<option value="{ righttypeid }" { selected }>{ righttypeval }</option>
+					<!--#endin getnextrighttype -->
+					</select>
+				</td>
+			</tr>
+			<tbody id="vac_right_fixed">
+			<tr> 
+				<td align="right">{ t_datebegintxt }:</td>
+				<td> 
+				<select name="daybeginfx"">
+				<!--#in getnextday -->
+				<option value="{ t_dayid }" { selected }>{ t_dayid }</option>
+				<!--#endin getnextday -->
+				</select>&nbsp;
+				<select name="monthbeginfx" onChange="updateDates(this.form.daybeginfx, this.form.monthbeginfx, this.form.yearbeginfx);">
+				<!--#in getnextmonth -->
+				<option value="{ monthid }" { selected }>{ t_monthname }</option>
+				<!--#endin getnextmonth -->
+				</select>&nbsp;
+				<select name="yearbeginfx" onChange="updateDates(this.form.daybeginfx, this.form.monthbeginfx, this.form.yearbeginfx);">
+				<!--#in getnextyear -->
+				<option value="{ yearid }" { selected }>{ t_yearidval }</option>
+				<!--#endin getnextyear -->
+				</select>&nbsp;
+				<select name="halfdaybeginfx">
+				<!--#in getnexthalf -->
+				<option value="{ halfid }" { selected }>{ t_halfname }</option>
+				<!--#endin getnexthalf -->
+				</select>
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">{ t_dateendtxt }:</td>
+				<td> 
+				<select name="dayendfx">
+				<!--#in getnextday -->
+				<option value="{ t_dayid }" { selected }>{ t_dayid }</option>
+				<!--#endin getnextday -->
+				</select>&nbsp;
+				<select name="monthendfx" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+				<!--#in getnextmonth -->
+				<option value="{ monthid }" { selected }>{ t_monthname }</option>
+				<!--#endin getnextmonth -->
+				</select>&nbsp;
+				<select name="yearendfx" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+				<!--#in getnextyear -->
+				<option value="{ yearid }" { selected }>{ t_yearidval }</option>
+				<!--#endin getnextyear -->
+				</select>&nbsp;
+				<select name="halfdayendfx">
+				<!--#in getnexthalf -->
+				<option value="{ halfid }" { selected }>{ t_halfname }</option>
+				<!--#endin getnexthalf -->
+				</select>
+				</td>
+			</tr>
+			</tbody>
+			<tbody id="vac_right_common">
+			<tr> 
+				<td align="right">{ t_periodvalid }:</td>
+				<td> 
+					<a href="javascript:calwin('date_begin_valid')">{ t_date_begin }</a>
+					<input type="text" name="date_begin_valid" size="10" maxlength="10" value="{ arr[date_begin_valid] }" />
+
+					&nbsp;<a href="javascript:calwin('date_end_valid')">{ t_date_end }</a>
+					<input type="text" name="date_end_valid" size="10" maxlength="10" value="{ arr[date_end_valid] }" />
+				</td>
+			</tr>
+			<tr> 
 				<td align="right">{ t_active }:</td>
 				<td> 
 					<select name="active">
@@ -248,21 +401,8 @@ function calwin(callback)
 					</select>
 				</td>
 			</tr>
-			<tr> 
-				<td align="right">{ t_use_rules }:</td>
-				<td > 
-					<select name="use_rules" onchange="use_rules_change(this)">
-					<!--#if arr[use_rules] -->
-					<option value="N">{ no }</option>
-					<option value="Y" selected="selected">{ yes }</option>
-					<!--#else arr[use_rules] -->
-					<option value="N" selected="selected">{ no }</option>
-					<option value="Y">{ yes }</option>
-					<!--#endif arr[use_rules] -->
-					</select>
-				</td>
-			</tr>
-			<tbody id="vac_use_rules">
+			</tbody>
+			<tbody id="vac_right_rules">
 				<tr> 
 					<td align="right">{ t_period_rule }:</td>
 					<td> 
@@ -349,7 +489,7 @@ function calwin(callback)
 <script type="text/javascript">
 <!--
 
-use_rules_change(document.forms['rightsedit'].use_rules);
+use_rules_change(document.forms['rightsedit'].righttype);
 
 <!--#if arr[idvr] -->
 <!--#else arr[idvr] -->
@@ -399,6 +539,16 @@ function date_end(day, month, year)
 	document.forms['rightsedit'].elements['date_end'].value = day+'-'+month+'-'+year;
 }
 
+function date_begin_valid(day, month, year)
+{
+	document.forms['rightsedit'].elements['date_begin_valid'].value = day+'-'+month+'-'+year;
+}
+
+function date_end_valid(day, month, year)
+{
+	document.forms['rightsedit'].elements['date_end_valid'].value = day+'-'+month+'-'+year;
+}
+
 function period_start(day, month, year)
 {
 	document.forms['rightsedit'].elements['period_start'].value = day+'-'+month+'-'+year;
@@ -418,6 +568,7 @@ function validateNum(field) {
 	if (valid.indexOf(temp) == "-1") ok = "no";
 	}
 	if (ok == "no") {
+	var dd;
 	alert('{ invalidentry1 }');
 	field.focus();
 	field.select();
@@ -636,6 +787,13 @@ window.focus();
 </tr>
 <tr>
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ validperiodtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
+<!--#if bvalidperiod -->
+{ datebeginvalid }&nbsp;&nbsp;-&nbsp;&nbsp;{ dateendvalid }
+<!--#endif bvalidperiod -->&nbsp;
+</td>
 </tr>
 <tr>
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ statustxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ status }</td>
