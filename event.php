@@ -5,7 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 
-function newEvent($calendarid, $day, $month, $year, $view)
+function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 	{
 	global $body;
 	class temp
@@ -38,7 +38,10 @@ function newEvent($calendarid, $day, $month, $year, $view)
 		var $curview;
 		var $msie;
 
-		function temp($calendarid, $day, $month, $year, $view)
+		var $titleval;
+		var $descriptionval;
+
+		function temp($calendarid, $day, $month, $year, $view, $title, $description)
 			{
 			global $BAB_SESS_USERID, $body;
 			$this->curday = $day;
@@ -47,6 +50,8 @@ function newEvent($calendarid, $day, $month, $year, $view)
 			$this->curview = $view;
 			$this->calid = $calendarid;
 			$this->caltype = getCalendarType($calendarid);
+			$this->titleval = $title;
+			$this->descriptionval = $description;
 			$body->title = babTranslate("Calendar"). "  ". getCalendarOwnerName($this->calid, $this->caltype);
 			$this->ymin = 2;
 			$this->ymax = 5;
@@ -348,7 +353,7 @@ EOD;
 		
 		}
 
-	$temp = new temp($calendarid, $day, $month, $year, $view);
+	$temp = new temp($calendarid, $day, $month, $year, $view, $title, $description);
 	$body->babecho(	babPrintTemplate($temp,"event.html", "newevent"));
 	}
 
@@ -771,7 +776,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 	if( empty($title))
 		{
 		$body->msgerror = babTranslate("You must provide a title")." !!";
-		return;
+		return false;
 		}
 	
 	$db = new db_mysql();
@@ -787,10 +792,10 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		$begin = mktime( 0,0,0,$monthbegin, $daybegin, $yearbegin );
 		$end = mktime( 0,0,0,$monthend, $dayend, $yearend );
 
-		if( $begin > $end )
+		if( $begin > $end || ( $daytype != "y" && $timebegin > $timeend))
 			{
 			$body->msgerror = babTranslate("End date must be older")." !!";
-			return;
+			return false;
 			}
 
 		for( $i = 0; $i < 7; $i++)
@@ -879,6 +884,15 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 	}
 	else
 	{
+	$begin = mktime( 0,0,0,$monthbegin, $daybegin, $yearbegin );
+	$end = mktime( 0,0,0,$monthend, $dayend, $yearend );
+
+	if( $begin > $end || ( $daytype != "y" && $begin == $end && $timebegin > $timeend))
+		{
+		$body->msgerror = babTranslate("End date must be older")." !!";
+		return false;
+		}
+
 	if( $daytype == "y")
 		{
 		$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
@@ -896,6 +910,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 	$req = "insert into cal_events ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
 	$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
 	$db->db_query($req);
+	return true;
 	}
 
 	
@@ -963,8 +978,16 @@ if( isset($modifyevent) && $modifyevent == "modify")
 
 if( isset($addevent) && $addevent == "add")
 	{
-	addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category);
-	Header("Location: index.php?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+	if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category))
+		{
+		$day = $daybegin;
+		$month = $monthbegin;
+		$year = $yearbegin;
+		$view = $curview;
+		$idx = "newevent";
+		}
+	else
+		Header("Location: index.php?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
 	}
 
 switch($idx)
@@ -1023,7 +1046,7 @@ switch($idx)
 
 	case "newevent":
 	default:
-		newEvent($calid, $day, $month, $year, $view);
+		newEvent($calid, $day, $month, $year, $view, $title, $description);
 		if( isUserGroupManager())
 			{
 			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");

@@ -149,7 +149,7 @@ function dateEnd(day, month, year)
           <tr valign="middle"> 
             <td align="right">{ title }:</td>
             <td colspan="4"> 
-              <input type="text" name="title" size="60" maxlength="255"></td>
+              <input type="text" name="title" size="60" maxlength="255" value="{ titleval }"></td>
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
@@ -157,7 +157,7 @@ function dateEnd(day, month, year)
           <tr valign="middle"> 
             <td align="right" nowrap>&nbsp;</td>
             <td colspan="4"> 
-              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description"></textarea></td>
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description">{ descriptionval }</textarea></td>
 </tr>
           <tr valign="middle"> 
             <td align="right" nowrap>&nbsp;</td>
@@ -178,7 +178,7 @@ function dateEnd(day, month, year)
 	editor.InFrame(0, "description", "vacform", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
-<textarea cols="40" rows="5" name="description"></textarea>
+<textarea cols="40" rows="5" name="description">{ descriptionval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
