@@ -57,8 +57,9 @@ function displayAttendees($evtid, $idcal)
 					{
 					if( bab_isCalendarAccessValid($arr['id_cal']))
 						{
+					
 						$this->arrinfo[] = array('idcal' => $arr['id_cal'], 'status' => $arr['status']);
-						if( $babBody->icalendars->id_percal == $arr['id_cal'] )
+						if( $babBody->icalendars->id_percal == $arr['id_cal'] || ( isset($babBody->icalendars->usercal[$arr['id_cal']]) && $babBody->icalendars->usercal[$arr['id_cal']]['access'] == BAB_CAL_ACCESS_FULL ) )
 							{
 							$this->idcal = $arr['id_cal'];
 							switch($arr['status'] )
@@ -114,6 +115,7 @@ function displayAttendees($evtid, $idcal)
 				$arr = $babBody->icalendars->getCalendarInfo($this->arrinfo[$i]['idcal']);
 				$this->fullname = $arr['name'];
 				$this->bcreator = false;
+				
 				if( $GLOBALS['BAB_SESS_USERID'] ==  $this->idcreator )
 					{
 					$this->countstatus = 0;
@@ -397,7 +399,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
 	$arr = $babBody->icalendars->getCalendarInfo($idcal);
-	if( $arr['type'] == BAB_CAL_USER_TYPE && $arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+	if( $arr['type'] == BAB_CAL_USER_TYPE && ($arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || ( isset($babBody->icalendars->usercal[$idcal]) && $babBody->icalendars->usercal[$idcal]['access'] == BAB_CAL_ACCESS_FULL ) ) )
 		{
 		list($creator, $hash) = $babDB->db_fetch_row($babDB->db_query("select id_creator, hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
 
