@@ -404,7 +404,7 @@ mm(sksel);
 <tr class="BabForumBackground1">
 <!--#endif altbg --> 
 <td valign="middle" width="1%" align="right"> 
-<input type="checkbox" name="grpids-{ idprofile }[]" { grpcheck } value="{ grpid }">
+<input type="checkbox" name="grpids{ idprofile }[]" { grpcheck } value="{ grpid }">
 </td>
 <td valign="middle">{ grpdesc }</td>
 </tr>        
@@ -413,7 +413,7 @@ mm(sksel);
 <tr class="BabSiteAdminFontBackground">
 <td valign="middle" width="1%">&nbsp;</td>
 <td valign="middle">
-<select name="grpids-{ idprofile }[]">
+<select name="grpids{ idprofile }[]">
 <option value=""></option>
 <!--#in getnextgrp -->
 <option value="{ grpid }" { grpcheck }>{ grpdesc }</option>

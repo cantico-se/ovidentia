@@ -645,7 +645,7 @@ function changeProfiles()
 				$this->grpid = $arr['id'];
 				$this->grpname = $arr['name'];
 				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
-				if( (isset($GLOBALS["grpids-".$this->idprofile]) && count($GLOBALS["grpids-".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids-".$this->idprofile])) || (count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups)))
+				if( (isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile])) || (count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups)))
 					{
 					if( $this->bmultiplicity == true )
 						{
@@ -1006,9 +1006,9 @@ function updateProfiles()
 	{
 	if( bab_IsAccessValid(BAB_PROFILES_GROUPS_TBL, $arr['id']))
 		{
-		if( isset($GLOBALS["grpids-".$arr['id']]))
+		if( isset($GLOBALS["grpids".$arr['id']]))
 			{
-			$grpvar = $GLOBALS["grpids-".$arr['id']];
+			$grpvar = $GLOBALS["grpids".$arr['id']];
 			}
 		else
 			{
