@@ -607,3 +607,148 @@ window.focus();
 </body>
 </html>
 <!--#end confirmpost -->
+
+<!--#begin waitingevents --> 
+<!--#if weventscount -->
+<br>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="2">
+	<tr> 
+		<td class="BabLoginMenuBackground" width="90%" valign="middle">{ waitingeventstxt }</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table  border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabSiteAdminTitleFontBackground">
+	<td>{ eventdatetxt }&nbsp;</td>
+	<td>{ eventtitletxt }&nbsp;</td>
+	<td>{ eventauthortxt }&nbsp;</td>
+	<td>{ eventcalendartxt }&nbsp;</td>
+	<td align="right">{ validationtxt }&nbsp;</td>
+</tr>
+<!--#in getnextevent -->
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td width="120">{ eventdate }</td>
+<td align="left"><span style="font-Size:9"><strong>{ eventtitle }</strong></span>
+<td align="left">{ eventauthor }</td>
+<td align="left" colspan="2">{ eventcalendar }</td>
+</td>
+</tr>
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td>&nbsp;</td>
+<td align="left" colspan="3">{ eventdescription }
+&nbsp;
+</td>
+<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviPostConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+</tr>
+<!--#endin getnextevent -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endif weventscount -->
+<!--#end waitingevents --> 
+
+<!--#begin confirmevent -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<!--#if recurrent -->
+<br />
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center" >{ warningmsg }</td>
+</tr>
+</table>
+<!--#endif recurrent -->
+<br />
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" align="left"><strong>{ eventtitle }</strong></td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventstartdatetxt }:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">{ eventstartdate }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventenddatetxt }:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">{ eventenddate }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventdescriptiontxt 
+}:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">{ eventdescription }</td>
+</tr>
+<!--#if count -->
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ eventattendeestxt 
+}:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">
+<!--#in getnextattendee -->
+{ eventattendee }
+<!--#endin getnextattendee -->
+</td>
+</tr>
+<!--#endif count -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="approb">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="conf" value="evt">
+<input type="hidden" name="idevent" value="{ idevent }">
+<input type="hidden" name="idcal" value="{ idcal }">
+<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ commenttxt }: </td>
+</tr> 
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">
+<textarea cols="40" rows="10" name="remarks"></textarea>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">
+<div align="center"><input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+</BODY>
+</HTML>
+<!--#end confirmevent -->

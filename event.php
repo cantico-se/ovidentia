@@ -782,7 +782,7 @@ function addEvent(&$message)
 
 	$begin = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin, $yearbegin );
 	$end = mktime( $te[0],$te[1],0,$monthend, $dayend, $yearend );
-	$repeatdate = mktime( 23,59,0,$_POST['repeat_monthend'], $_POST['repeat_dayend'], $_POST['repeat_yearend'] );
+	$repeatdate = mktime( 23,59,59,$_POST['repeat_monthend'], $_POST['repeat_dayend'], $_POST['repeat_yearend'] );
 
 	if( $begin > $end)
 		{
@@ -799,7 +799,6 @@ function addEvent(&$message)
 		switch($_POST['repeat'] )
 			{
 			case '2': /* weekly */
-				echo 'weekly<br>';
 				if( empty($_POST['repeat_n_2']))
 					{
 					$_POST['repeat_n_2'] = 1;
@@ -815,23 +814,25 @@ function addEvent(&$message)
 
 				if( !isset($_POST['repeat_wd']) )
 					{
-					$time = $begin;
-					$daylightSavingTime = date('I',$time);
+					$day = $daybegin;
+					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 					do
 						{
 						$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
-						$time += $rtime;
-
-						if ($daylightSavingTime < date('I',$time))
-							$time -= 3600;
-						elseif ($daylightSavingTime > date('I',$time))
-							$time += 3600;
+						$day += 7;
+						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 						}
 					while( $time < $repeatdate );
 					}
 				else
 					{
+					if( $duration > 24*3600 )
+						{
+						$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
+						return false;					
+						}
+
 					for( $i = 0; $i < count($_POST['repeat_wd']); $i++ )
 						{
 						$delta = $_POST['repeat_wd'][$i] - Date("w", $begin);
@@ -840,18 +841,14 @@ function addEvent(&$message)
 							$delta = 7 - Abs($delta);
 							}
 
-						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin+$delta, $yearbegin );
-						$daylightSavingTime = date('I',$time);
+						$day = $daybegin+$delta;
+						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 						do
 							{
 							$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
-							$time += $rtime;
-							
-							if ($daylightSavingTime < date('I',$time))
-								$time -= 3600;
-							elseif ($daylightSavingTime > date('I',$time))
-								$time += 3600;
+							$day += 7;					
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
+							$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 							}
 						while( $time < $repeatdate );
 						}
@@ -863,7 +860,7 @@ function addEvent(&$message)
 					{
 					$_POST['repeat_n_3'] = 1;
 					}
-				if( $duration > 24*3600*28*$_POST['repeat_n_2'])
+				if( $duration > 24*3600*28*$_POST['repeat_n_3'])
 					{
 					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
 					return false;					
@@ -910,17 +907,14 @@ function addEvent(&$message)
 					return false;
 					}
 
-				$time = $begin;
-				$daylightSavingTime = date('I',$time);
+				$day = $daybegin;
+				$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 				do
 					{
 					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
-					$time += $rtime;
-					if ($daylightSavingTime < date('I',$time))
-						$time -= 3600;
-					elseif ($daylightSavingTime > date('I',$time))
-						$time += 3600;
+					$day += $_POST['repeat_n_1'];
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
+					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 					}
 				while( $time < $repeatdate );
 				break;
@@ -1003,13 +997,14 @@ function updateEvent(&$message)
 	else
 		$catid = $_POST['category'];
 
-	list($hash) = $db->db_fetch_row($db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'"));
+	$evtinfo = $db->db_fetch_array($db->db_query("select hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'"));
 
 	$arrupdate = array();
+	$bnotify = false;
 
-	if( !empty($hash) &&  $hash[0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
+	if( !empty($evtinfo['hash']) &&  $evtinfo['hash'][0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
 	{
-		$res = $db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
+		$res = $db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where hash='".$evtinfo['hash']."'");
 		while( $arr = $db->db_fetch_array($res))
 		{
 			$rr = explode(" ", $arr['start_date']);
@@ -1029,6 +1024,10 @@ function updateEvent(&$message)
 				}
 
 			$arrupdate[$arr['id']] = array('start'=>$startdate, 'end' => $enddate);
+			if( $evtinfo['start_date'] != $startdate || $evtinfo['end_date'] != $enddate )
+			{
+				$bnotify = true;
+			}
 		}
 
 	}
@@ -1040,6 +1039,10 @@ function updateEvent(&$message)
 
 		$arrupdate[$_POST['evtid']] = array('start'=>$startdate, 'end' => $enddate);
 
+		if( $evtinfo['start_date'] != $startdate || $evtinfo['end_date'] != $enddate )
+		{
+			$bnotify = true;
+		}
 	}
 
 	reset($arrupdate);
@@ -1049,11 +1052,16 @@ function updateEvent(&$message)
 		$db->db_query($req.", start_date='".$val['start']."', end_date='".$val['end']."' where id='".$key."'" );
 	}
 
+	if( $bnotify )
+	{
+		notifyEventUpdate($_POST['evtid'], false);
+	}
 	return true;
 }
 
 function confirmDeleteEvent()
 {
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	$db = $GLOBALS['babDB'];
 	if( $GLOBALS['bupdrec'] == "1" )
 		{
@@ -1065,6 +1073,14 @@ function confirmDeleteEvent()
 			while( $arr = $db->db_fetch_array($res) )
 				{
 				$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id']."'");
+				$res2 = $db->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arr['id']."'");
+				while( $rr = $db->db_fetch_array($res2) )
+					{
+					if( $rr['idfai'] != 0 )
+						{
+						deleteFlowInstance($rr['idfai']);
+						}
+					}
 				$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arr['id']."'");
 				}
 			}
@@ -1072,9 +1088,16 @@ function confirmDeleteEvent()
 	else
 		{
 		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$GLOBALS['evtid']."'");
+		$res2 = $db->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$GLOBALS['evtid']."'");
+		while( $rr = $db->db_fetch_array($res2) )
+			{
+			if( $rr['idfai'] != 0 )
+				{
+				deleteFlowInstance($rr['idfai']);
+				}
+			}
 		$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$GLOBALS['evtid']."'");
 		}
-
 }
 
 
@@ -1136,6 +1159,7 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	$res = $db->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$calid).") AND o.id_user = c.owner AND c.type='1'");
 
+	$calopt = array();
 	while ($arr = $db->db_fetch_array($res))
 		{
 		$calopt[$arr['id']] = empty($arr['workdays']) ? explode( ',', $GLOBALS['babBody']->babsite['workdays']) : explode( ',', $arr['workdays'] );

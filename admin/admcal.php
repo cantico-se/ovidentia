@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."utilit/calincl.php";
 
 function modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 	{
@@ -85,19 +86,21 @@ function modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 	}
 
 
-function modifyCalendarResource($idcal, $name, $desc)
+function modifyCalendarResource($idcal, $name, $desc, $idsa)
 	{
 	global $babBody;
 
 	class modifyCalendarResourceCls
 		{
 
-		function modifyCalendarResourceCls($idcal, $name, $desc)
+		function modifyCalendarResourceCls($idcal, $name, $desc, $idsa)
 			{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->addtxt = bab_translate("Modify");
+			$this->approbationtxt = bab_translate("Approbation schema");
+			$this->nonetxt = bab_translate("None");
 			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id='".$idcal."'"));
 			if( !empty($name))
 				{
@@ -115,29 +118,70 @@ function modifyCalendarResource($idcal, $name, $desc)
 				{
 				$this->caldesc = $arr['description'];
 				}
+			if( !empty($idsa))
+				{
+				$this->calidsa = $idsa;
+				}
+			else
+				{
+				$this->calidsa = $arr['idsa'];
+				}
 			$this->add = "modr";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			if( !$this->sares )
+				$this->sacount = 0;
+			else
+				$this->sacount = $babDB->db_num_rows($this->sares);
+			}
+
+		function getnextschapp()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				if( $this->said == $this->calidsa )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 		}
 
-	$temp = new modifyCalendarResourceCls($idcal, $name, $desc);
+	$temp = new modifyCalendarResourceCls($idcal, $name, $desc, $idsa);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
 	}
 
-function modifyCalendarPublic($idcal, $name, $desc)
+function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 	{
 	global $babBody;
 
 	class modifyCalendarPublicCls
 		{
 
-		function modifyCalendarPublicCls($idcal, $name, $desc)
+		function modifyCalendarPublicCls($idcal, $name, $desc, $idsa)
 			{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->addtxt = bab_translate("Modify");
+			$this->approbationtxt = bab_translate("Approbation schema");
+			$this->nonetxt = bab_translate("None");
 			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id='".$idcal."'"));
 			if( !empty($name))
 				{
@@ -155,18 +199,57 @@ function modifyCalendarPublic($idcal, $name, $desc)
 				{
 				$this->caldesc = $arr['description'];
 				}
+			if( !empty($idsa))
+				{
+				$this->calidsa = $idsa;
+				}
+			else
+				{
+				$this->calidsa = $arr['idsa'];
+				}
 			$this->add = "modp";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			if( !$this->sares )
+				$this->sacount = 0;
+			else
+				$this->sacount = $babDB->db_num_rows($this->sares);
+			}
+
+		function getnextschapp()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				if( $this->said == $this->calidsa )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 		}
 
-	$temp = new modifyCalendarPublicCls($idcal, $name, $desc);
+	$temp = new modifyCalendarPublicCls($idcal, $name, $desc, $idsa);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
 	}
 
 
-function updateResourceCalendar($idcal, $calname, $caldesc)
+function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 {
 	global $babDB, $babBody;
 
@@ -182,12 +265,39 @@ function updateResourceCalendar($idcal, $calname, $caldesc)
 		$caldesc = addslashes($caldesc);
 		}
 
-	$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set name='".$calname."', description='".$caldesc."' where id='".$idcal."'");
+	list($old_idsa) = $babDB->db_fetch_row($babDB->db_query("select idsa from ".BAB_CAL_RESOURCES_TBL." where id='".$idcal."'"));
+	if( $old_idsa != 0 && $old_idsa != $calidsa )
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."' and status='".BAB_CAL_STATUS_NONE."'");
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		if( $arr['idfai'] != 0 )
+			{
+			deleteFlowInstance($arr['idfai']);
+			}
+
+		if( $calidsa == 0 )
+			{
+			$idfai = 0;
+			}
+		else
+			{
+			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
+			$nfusers = getWaitingApproversFlowInstance($idfai, true);
+			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
+			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
+			}
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$idfai."' where id_cal='".$idcal."'and id_event='".$arr['id_event']."'");
+		}		
+	}
+
+	$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set name='".$calname."', description='".$caldesc."', idsa='".$calidsa."' where id='".$idcal."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
 }
 
-function updatePublicCalendar($idcal, $calname, $caldesc)
+function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 {
 	global $babDB, $babBody;
 
@@ -203,7 +313,34 @@ function updatePublicCalendar($idcal, $calname, $caldesc)
 		$caldesc = addslashes($caldesc);
 		}
 
-	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$calname."', description='".$caldesc."' where id='".$idcal."'");
+	list($old_idsa) = $babDB->db_fetch_row($babDB->db_query("select idsa from ".BAB_CAL_PUBLIC_TBL." where id='".$idcal."'"));
+	if( $old_idsa != 0 && $old_idsa != $calidsa )
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."' and status='".BAB_CAL_STATUS_NONE."'");
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		if( $arr['idfai'] != 0 )
+			{
+			deleteFlowInstance($arr['idfai']);
+			}
+
+		if( $calidsa == 0 )
+			{
+			$idfai = 0;
+			}
+		else
+			{
+			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
+			$nfusers = getWaitingApproversFlowInstance($idfai, true);
+			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
+			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
+			}
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$idfai."' where id_cal='".$idcal."'and id_event='".$arr['id_event']."'");
+		}		
+	}
+
+	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$calname."', description='".$caldesc."', idsa='".$calidsa."'  where id='".$idcal."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 }
@@ -241,7 +378,7 @@ if( isset($addc))
 {
 	if( $addc == "modp" )
 	{
-		if( updatePublicCalendar($idcal, $calname, $caldesc))
+		if( updatePublicCalendar($idcal, $calname, $caldesc, $calidsa))
 		{
 			$idx = "pub";
 		}
@@ -251,7 +388,7 @@ if( isset($addc))
 		}
 	}elseif( $addc == "modr" )
 	{
-		if( updateResourceCalendar($idcal, $calname, $caldesc))
+		if( updateResourceCalendar($idcal, $calname, $caldesc, $calidsa))
 		{
 			$idx = "res";
 		}
@@ -330,7 +467,8 @@ switch($idx)
 	case "modr":
 		if( !isset($calname)) {	$calname = ""; }
 		if( !isset($caldesc)) {	$caldesc = ""; }
-		modifyCalendarResource($idcal, $calname, $caldesc);
+		if( !isset($calidsa)) {	$calidsa = ""; }
+		modifyCalendarResource($idcal, $calname, $caldesc, $calidsa);
 		$babBody->title = bab_translate("Resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE);
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
@@ -341,7 +479,8 @@ switch($idx)
 	default:
 		if( !isset($calname)) {	$calname = ""; }
 		if( !isset($caldesc)) {	$caldesc = ""; }
-		modifyCalendarPublic($idcal, $calname, $caldesc);
+		if( !isset($calidsa)) {	$calidsa = ""; }
+		modifyCalendarPublic($idcal, $calname, $caldesc, $calidsa);
 		$babBody->title = bab_translate("Public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE);
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admcal&idx=modp");

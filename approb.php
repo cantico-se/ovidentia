@@ -27,6 +27,7 @@ include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/topincl.php";
 include_once $babInstallPath."utilit/artincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
+include_once $babInstallPath."utilit/evtincl.php";
 
 function notifyVacationAuthor($id, $subject)
 	{
@@ -473,6 +474,89 @@ function listWaitingVacations()
 	return $temp->wvacationscount;
 }
 
+function listWaitingEvents()
+{
+	global $babBody;
+
+	class listWaitingEventsCls
+		{
+		var $waitingpoststxt;
+		var $eventdatetxt;
+		var $eventtitletxt;
+		var $eventauthortxt;
+		var $validationtxt;
+		var $eventdate;
+		var $weventsres;
+		var $weventscount;
+		var $eventdescription;
+		var $eventauthor;
+		var $confirmurl;
+		var $eventviewurl;
+
+		function listWaitingEventsCls()
+			{
+			global $babDB;
+			$this->validationtxt = bab_translate("Validation");
+			$this->weventscount = 0;
+			$this->arrevts = array();
+			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+			if( count($arrschi) > 0 )
+				{
+				$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.idfai in (".implode(',', $arrschi).") order by cet.start_date asc");
+				while( $arr = $babDB->db_fetch_array($res) )
+					{
+					$tmp = array();
+					$tmp['title'] = $arr['title'];
+					$tmp['description'] = $arr['description'];
+					$tmp['startdate'] = bab_shortDate(bab_mktime($arr['start_date']), true);
+					$tmp['enddate'] = bab_shortDate(bab_mktime($arr['end_date']), true);
+					$tmp['author'] = bab_getUserName($arr['id_creator']);
+					$tmp['idevent'] = $arr['id'];
+					$tmp['idcal'] = $arr['id_cal'];
+					$tmp['calendar'] = bab_getCalendarOwnerName($arr['id_cal']);
+					$this->arrevts[] = $tmp;
+					}
+				}
+
+			$this->weventscount = count($this->arrevts);
+			if( $this->weventscount > 0 )
+				{
+				$this->waitingeventstxt = bab_translate("Waiting appointments");
+				$this->eventdatetxt = bab_translate("Date");
+				$this->eventtitletxt = bab_translate("Appointment");
+				$this->eventauthortxt = bab_translate("Author");
+				$this->eventcalendartxt = bab_translate("Calendar");
+				}
+			$this->altbg = true;
+			}
+
+		function getnextevent()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->weventscount)
+				{
+				$this->eventdate = $this->arrevts[$i]['startdate'];
+				$this->eventdescription = $this->arrevts[$i]['description'];
+				$this->eventtitle = $this->arrevts[$i]['title'];
+				$this->eventauthor = $this->arrevts[$i]['author'];
+				$this->eventcalendar = $this->arrevts[$i]['calendar'];
+				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confevt&idevent=".$this->arrevts[$i]['idevent']."&idcal=".$this->arrevts[$i]['idcal'];
+				$this->altbg = !$this->altbg;
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+
+			}
+		}
+
+	$temp = new listWaitingEventsCls();
+	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingevents"));
+}
 
 function listWaitingAddons()
 {
@@ -771,6 +855,70 @@ function confirmWaitingComment($idcom)
 	echo bab_printTemplate($temp,"approb.html", "confirmcomment");
 	}
 
+
+function confirmWaitingEvent($idevent, $idcal)
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $datebegintxt;
+
+		function temp($idevent, $idcal)
+			{
+			global $babDB;
+			$this->eventstartdatetxt = bab_translate("Begin date");
+			$this->eventenddatetxt = bab_translate("End date");
+			$this->eventdescriptiontxt = bab_translate("Description");
+			$this->eventattendeestxt = bab_translate("Attendees");
+			$this->confirm = bab_translate("Accept");
+			$this->refuse = bab_translate("Decline");
+			$this->commenttxt = bab_translate("Raison");
+			$this->idevent = $idevent;
+			$this->idcal = $idcal;
+			$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.id_cal='".$idcal."' and ceot.id_event='".$idevent."'");
+			$arr = $babDB->db_fetch_array($res);
+			$this->eventtitle = $arr['title'];
+			$this->eventstartdate = bab_shortDate(bab_mktime($arr['start_date']), true);
+			$this->eventenddate = bab_shortDate(bab_mktime($arr['end_date']), true);
+			$this->eventdescription = $arr['description'];
+
+			if( !empty($arr['hash']) &&  $arr['hash'][0] == 'R' )
+				{
+				$this->recurrent = true;
+				$this->warningmsg = bab_translate("Warning! This appointment is recurrent !");
+				}
+			else
+				{
+				$this->recurrent = false;
+				}
+
+			$this->resatt = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$idevent."' and id_cal!='".$idcal."'");
+			$this->count = $babDB->db_num_rows($this->resatt);
+			}
+
+		function getnextattendee()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->resatt);
+				$this->eventattendee = bab_getCalendarOwnerName($arr['id_cal']);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		}
+
+	$temp = new temp($idevent, $idcal);
+	echo bab_printTemplate($temp, "approb.html", "confirmevent");
+	return $temp->count;
+	}
+
 function previewWaitingArticle($idart)
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID;
@@ -1047,6 +1195,18 @@ if( isset($conf))
 		}
 		$idx = 'unload';
 	}
+	elseif( $conf == 'evt' )
+	{
+		if( isset($confirm))
+			{
+			confirmEvent($idevent, $idcal, 'Y', $remarks, 1);
+			}
+		elseif( isset($refuse))
+		{
+			confirmEvent($idevent, $idcal, 'N', $remarks, 1);
+		}
+		$idx = 'unload';
+	}
 }
 
 switch($idx)
@@ -1055,6 +1215,11 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		exit;
+	case "confevt":
+		confirmWaitingEvent($idevent, $idcal);
+		exit;
+		break;
+
 	case "confart":
 		confirmWaitingArticle($idart);
 		exit;
@@ -1096,8 +1261,8 @@ switch($idx)
 		listWaitingFiles();
 		listWaitingPosts();
 		listWaitingVacations();
-		listWaitingAddons();
-		
+		listWaitingEvents();
+		listWaitingAddons();		
 		}
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;

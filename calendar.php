@@ -53,13 +53,19 @@ function displayAttendees($evtid, $idcal)
 				$res = $babDB->db_query("select ceo.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$evtid."'");
 				$this->arrinfo = array();
 				$this->statusarray = array();
+				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					if( bab_isCalendarAccessValid($arr['id_cal']))
 						{
-					
-						$this->arrinfo[] = array('idcal' => $arr['id_cal'], 'status' => $arr['status']);
-						if( $babBody->icalendars->id_percal == $arr['id_cal'] || ( isset($babBody->icalendars->usercal[$arr['id_cal']]) && $babBody->icalendars->usercal[$arr['id_cal']]['access'] == BAB_CAL_ACCESS_FULL ) )
+						$icalinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+						$this->arrinfo[] = array('name' => $icalinfo['name'],'idcal' => $arr['id_cal'], 'idowner' => $icalinfo['idowner'],'status' => $arr['status']);
+						if( $idcal == $arr['id_cal'] )
+							{
+							switch($icalinfo['type'])
+								{
+								case BAB_CAL_USER_TYPE:
+									if( $icalinfo['access'] == BAB_CAL_ACCESS_FULL)
 							{
 							$this->idcal = $arr['id_cal'];
 							switch($arr['status'] )
@@ -75,6 +81,16 @@ function displayAttendees($evtid, $idcal)
 									break;
 								}
 							}
+									break;
+								case BAB_CAL_PUB_TYPE:
+								case BAB_CAL_RES_TYPE:
+									if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 && count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
+									{
+									$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED,BAB_CAL_STATUS_DECLINED);
+									}
+									break;
+						}
+					}
 						}
 					}
 				$this->count = count($this->arrinfo);
@@ -112,15 +128,9 @@ function displayAttendees($evtid, $idcal)
 			if( $i < $this->count)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$arr = $babBody->icalendars->getCalendarInfo($this->arrinfo[$i]['idcal']);
-				$this->fullname = $arr['name'];
+				$this->fullname = $this->arrinfo[$i]['name'];
 				$this->bcreator = false;
-				
-				if( $GLOBALS['BAB_SESS_USERID'] ==  $this->idcreator )
-					{
-					$this->countstatus = 0;
-					}
-				if( $arr['idowner'] ==  $this->idcreator )
+				if( $this->arrinfo[$i]['idowner'] ==  $this->idcreator )
 					{
 					$this->bcreator = true;
 					}
@@ -403,42 +413,6 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 }
 
-
-function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
-{
-	global $babDB, $babBody;
-	$arr = $babBody->icalendars->getCalendarInfo($idcal);
-	if( $arr['type'] == BAB_CAL_USER_TYPE && ($arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || ( isset($babBody->icalendars->usercal[$idcal]) && $babBody->icalendars->usercal[$idcal]['access'] == BAB_CAL_ACCESS_FULL ) ) )
-		{
-		list($creator, $hash) = $babDB->db_fetch_row($babDB->db_query("select id_creator, hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
-
-		list($status) = $babDB->db_fetch_row($babDB->db_query("select status from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$evtid."' and id_cal='".$idcal."'"));
-		if( $bconfirm == "Y" )
-			{
-			$bconfirm = BAB_CAL_STATUS_ACCEPTED;
-			}
-		else
-			{
-			$bconfirm = BAB_CAL_STATUS_DECLINED;
-			}
-
-		if( !empty($hash) &&  $hash[0] == 'R' && $bupdrec == 1)
-			{
-			$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
-			while($arr = $babDB->db_fetch_array($res))
-				{
-				$arrevtids[] = $arr['id']; 	
-				}
-			}
-		else
-			{
-			$arrevtids[] = $evtid; 	
-			}
-
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$bconfirm."' where id_event IN (".implode(',', $arrevtids).") and id_cal='".$idcal."'");
-		notifyEventApprobation($evtid, $bconfirm, $comment);
-		}
-}
 
 /* main */
 if( isset($conf) && $conf == "event")

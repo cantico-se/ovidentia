@@ -55,7 +55,7 @@ function bab_getCalendarOwner($idcal)
 		}
 }
 
-function bab_getCalendarOwnerName($idcal, $type)
+function bab_getCalendarOwnerName($idcal, $type='')
 {
 	$ret = "";
 	$db = $GLOBALS['babDB'];
@@ -237,17 +237,87 @@ function getAvailableResourcesCalendars($bwrite = false)
 	return $tab;
 }
 
+//function notifyArticleDraftApprovers($id, $users)
+
+function notifyEventApprovers($id_event, $users, $calinfo)
+	{
+	global $babDB, $babBody, $babAdminEmail;
+
+	if(!class_exists("notifyEventApproversCls"))
+		{
+		class notifyEventApproversCls
+			{
+			var $articletitle;
+			var $message;
+			var $from;
+			var $author;
+			var $category;
+			var $categoryname;
+			var $title;
+			var $site;
+			var $sitename;
+			var $date;
+			var $dateval;
+
+
+			function notifyEventApproversCls($id_event, $calinfo)
+				{
+				global $babDB;
+
+				$this->message = bab_translate("A new event has been scheduled");
+				$evtinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$id_event."'"));
+
+				$this->description = $evtinfo['description'];
+				$this->descriptiontxt = bab_translate("Description");
+				$this->startdate = bab_longDate(bab_mktime($evtinfo['start_date']));
+				$this->startdatetxt = bab_translate("Begin date");
+				$this->enddate = bab_longDate(bab_mktime($evtinfo['end_date']));
+				$this->enddatetxt = bab_translate("End date");
+				$this->titletxt = bab_translate("Title");
+				$this->title = $evtinfo['title'];
+				if( $calinfo['type'] == BAB_CAL_PUB_TYPE )
+					$this->calendartxt = bab_translate("Public calendar");
+				else
+					$this->calendartxt = bab_translate("Resource calendar");
+				$this->calendar = $calinfo['name'];
+				}
+			}
+		}
+
+	$mail = bab_mail();
+	if( $mail == false )
+		return;
+
+	if( count($users) > 0 )
+		{
+		$sql = "select email from ".BAB_USERS_TBL." where id IN (".implode(',', $users).")";
+		$result=$babDB->db_query($sql);
+		while( $arr = $babDB->db_fetch_array($result))
+			{
+			$mail->mailBcc($arr['email']);
+			}
+		}
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
+	$mail->mailSubject(bab_translate("New waiting event"));
+
+	$tempa = new notifyEventApproversCls($id_event, $calinfo);
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "eventwait"));
+	$mail->mailBody($message, "html");
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "eventwaittxt");
+	$mail->mailAltBody($message);
+
+	$mail->send();
+	}
+
 
 function createEvent($idcals, $title, $description, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash='')
 {
 
 	global $babBody, $babDB;
 
-	if( bab_isMagicQuotesGpcOn())
-		{
-		$title = stripslashes($title);
-		$description = stripslashes($description);
-		}
+	$title = stripslashes($title);
+	$description = stripslashes($description);
 
 	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) values ('".addslashes($title)."', '".addslashes($description)."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$GLOBALS['BAB_SESS_USERID']."', '".$color."', '".$private."', '".$lock."', '".$free."', '".$hash."')");
 	
@@ -279,14 +349,30 @@ function createEvent($idcals, $title, $description, $startdate, $enddate, $categ
 					}
 				break;
 			case BAB_CAL_PUB_TYPE:
-				$ustatus = BAB_CAL_STATUS_ACCEPTED;
+				if( $arr['idsa'] != 0 )
+					{
+					$ustatus = BAB_CAL_STATUS_NONE;			
+					}
+				else
+					{
+					$ustatus = BAB_CAL_STATUS_ACCEPTED;
+					}
+
 				if( $arr['manager'] )
 					{
 					$add = true;
 					}
 				break;
 			case BAB_CAL_RES_TYPE:
-				$ustatus = BAB_CAL_STATUS_ACCEPTED;
+				if( $arr['idsa'] != 0 )
+					{
+					$ustatus = BAB_CAL_STATUS_NONE;			
+					}
+				else
+					{
+					$ustatus = BAB_CAL_STATUS_ACCEPTED;
+					}
+
 				if( $arr['manager'] )
 					{
 					$add = true;
@@ -298,6 +384,14 @@ function createEvent($idcals, $title, $description, $startdate, $enddate, $categ
 			{
 			$arrcals[] = $id_cal;
 			$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$id_cal."', '".$ustatus."')");
+			if( ($arr['type'] == BAB_CAL_PUB_TYPE ||  $arr['type'] == BAB_CAL_RES_TYPE) && ($arr['idsa'] != 0) )
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+				$idfai = makeFlowInstance($arr['idsa'], "cal-".$id_cal."-".$id_event);
+				$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$idfai."' where id_event='".$id_event."' and id_cal='".$id_cal."'");
+				$nfusers = getWaitingApproversFlowInstance($idfai, true);
+				notifyEventApprovers($id_event, $nfusers, $arr);
+				}
 			}
 		}
 
@@ -402,6 +496,7 @@ class bab_icalendars
 				$this->pubcal[$arr['idcal']]['description'] = $arr['description'];
 				$this->pubcal[$arr['idcal']]['type'] = BAB_CAL_PUB_TYPE;
 				$this->pubcal[$arr['idcal']]['idowner'] = $arr['owner'];
+				$this->pubcal[$arr['idcal']]['idsa'] = $arr['idsa'];
 				
 				$this->pubcal[$arr['idcal']]['group'] = $bgroup;
 				$this->pubcal[$arr['idcal']]['view'] = $bview;
@@ -435,6 +530,7 @@ class bab_icalendars
 				$this->rescal[$arr['idcal']]['description'] = $arr['description'];
 				$this->rescal[$arr['idcal']]['type'] = BAB_CAL_RES_TYPE;
 				$this->rescal[$arr['idcal']]['idowner'] = $arr['owner'];
+				$this->rescal[$arr['idcal']]['idsa'] = $arr['idsa'];
 
 				$this->rescal[$arr['idcal']]['group'] = $bgroup;
 				$this->rescal[$arr['idcal']]['view'] = $bview;

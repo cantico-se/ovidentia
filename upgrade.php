@@ -4398,4 +4398,36 @@ while( $arr = $db->db_fetch_array($res))
 
 return $ret;
 }
+
+function upgrade545to546()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_CAL_PUBLIC_TBL." ADD `idsa` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CAL_PUBLIC_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD `idsa` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CAL_RESOURCES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+ 
+$req = "ALTER TABLE ".BAB_CAL_EVENTS_OWNERS_TBL." ADD `idfai` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CAL_EVENTS_OWNERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
+}
 ?>

@@ -339,12 +339,30 @@ class bab_icalendar
 						break;
 					}
 				}
+
+			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+
 			$this->events = array();
 			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."' order by ce.start_date asc");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				list($arr['nbowners']) = $babDB->db_fetch_row($babDB->db_query("select count(ceo.id_cal) from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$arr['id']."' and ceo.id_cal != '".$calid."'"));
-				$this->events[] = $arr;
+				if( $arr['nbowners'] == 0 && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && $this->access == BAB_CAL_ACCESS_FULL)
+					{
+					$arr['nbowners'] = 1;
+					}
+
+				if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 )
+					{
+					if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
+						{
+						$this->events[] = $arr;
+						}
+					}
+				else
+					{
+					$this->events[] = $arr;
+					}
 				}
 			}
 		}
@@ -541,20 +559,39 @@ class cal_wmdbaseCls
 		switch( $calinfo['type'] )
 			{
 			case BAB_CAL_USER_TYPE:
-				if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE )
+				if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+				{
+					if( $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] )
 					{
-					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
-						{
 						$this->allow_modify = true;
-						}
-					elseif( $calinfo['access'] == BAB_CAL_ACCESS_FULL && $evtarr['block'] == 'N')
+					}
+				}
+				else
+				{
+					if( $calinfo['access'] == BAB_CAL_ACCESS_FULL )
+					{
+						if( $evtarr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] || ($evtarr['id_creator'] ==  $calinfo['idowner'] && $evtarr['block'] == 'N') )
 						{
-						$this->allow_modify = true;
+							$this->allow_modify = true;
 						}
-					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE && $calinfo['idowner'] !=  $GLOBALS['BAB_SESS_USERID'] && ($evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] || ($evtarr['block'] == 'N' && $evtarr['bprivate'] == 'N')))
+
+					}
+					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE )
+					{
+						if( $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] )
 						{
-						$this->allow_modify = true;
+							$this->allow_modify = true;
 						}
+					}
+				}
+
+				if( $evtarr['bprivate'] == "Y" && $GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] )
+					{
+					$this->allow_viewtitle = false;
+					}
+				else
+					{
+					$this->allow_viewtitle = true;
 					}
 				break;
 			case BAB_CAL_PUB_TYPE:
@@ -563,29 +600,14 @@ class cal_wmdbaseCls
 					{
 					$this->allow_modify = true;
 					}
+				$this->allow_viewtitle = true;
 				break;
 			}
 
-		if( $evtarr['bprivate'] == "Y" && $calinfo['type'] ==  BAB_CAL_USER_TYPE && $GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] )
-			{
-			$this->allow_viewtitle = false;
-			}
-		else
-			{
-			$this->allow_viewtitle = true;
-			}
 	
 		if( $evtarr['status'] == BAB_CAL_STATUS_NONE )
 			{
 			$this->bstatus = true;
-			if( $calinfo['type'] == BAB_CAL_USER_TYPE && $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
-				{
-				$this->bstatuswc = true;
-				}
-			else
-				{
-				$this->bstatuswc = false;
-				}
 			}
 		else
 			{

@@ -147,7 +147,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
 					}
 				
-				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->mday,$this->year);
+				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewq&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->mday,$this->year);
 				if( $i % 2)
 					{
 					$this->altbgcolor = true;

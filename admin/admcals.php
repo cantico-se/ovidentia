@@ -307,53 +307,121 @@ function calendarsResource()
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendarslist"));
 	}
 
-function calendarsAddPublic($name, $desc)
+function calendarsAddPublic($name, $desc, $idsa)
 	{
 	global $babBody;
 
 	class calendarsAddPublicCls
 		{
 
-		function calendarsAddPublicCls($name, $desc)
+		function calendarsAddPublicCls($name, $desc, $idsa)
 			{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->addtxt = bab_translate("Add");
+			$this->approbationtxt = bab_translate("Approbation schema");
+			$this->nonetxt = bab_translate("None");
 			$this->calname = $name;
 			$this->caldesc = $desc;
+			$this->calidsa = $idsa;
 			$this->add = "addp";
 			$this->idcal = '';
 			$this->tgval = 'admcals';
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			if( !$this->sares )
+				$this->sacount = 0;
+			else
+				$this->sacount = $babDB->db_num_rows($this->sares);
+			}
+
+		function getnextschapp()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				if( $this->said == $this->calidsa )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 		}
 
-	$temp = new calendarsAddPublicCls($name, $desc);
+	$temp = new calendarsAddPublicCls($name, $desc, $idsa);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
 	}
 
-function calendarsAddResource($name, $desc)
+function calendarsAddResource($name, $desc, $idsa)
 	{
 	global $babBody;
 
 	class calendarsAddResourceCls
 		{
 
-		function calendarsAddResourceCls($name, $desc)
+		function calendarsAddResourceCls($name, $desc, $idsa)
 			{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->addtxt = bab_translate("Add");
+			$this->approbationtxt = bab_translate("Approbation schema");
+			$this->nonetxt = bab_translate("None");
 			$this->calname = $name;
 			$this->caldesc = $desc;
+			$this->calidsa = $idsa;
 			$this->add = "addr";
 			$this->idcal = '';
 			$this->tgval = 'admcals';
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			if( !$this->sares )
+				$this->sacount = 0;
+			else
+				$this->sacount = $babDB->db_num_rows($this->sares);
+			}
+
+		function getnextschapp()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				if( $this->said == $this->calidsa )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 		}
 
-	$temp = new calendarsAddResourceCls($name, $desc);
+	$temp = new calendarsAddResourceCls($name, $desc, $idsa);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
 	}
 
@@ -421,7 +489,7 @@ function calendarsDelPublic($idcal)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function addPublicCalendar($calname, $caldesc)
+function addPublicCalendar($calname, $caldesc, $calidsa)
 {
 	global $babDB, $babBody;
 
@@ -437,14 +505,14 @@ function addPublicCalendar($calname, $caldesc)
 		$caldesc = addslashes($caldesc);
 		}
 
-	$babDB->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description, id_dgowner) values ('" .$calname. "', '".$caldesc."', '".$babBody->currentAdmGroup."')");
+	$babDB->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description, id_dgowner, idsa) values ('" .$calname. "', '".$caldesc."', '".$babBody->currentAdmGroup."', '".$calidsa."')");
 	$idowner = $babDB->db_insert_id();
 	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$idowner. "', '".BAB_CAL_PUB_TYPE."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 }
 
-function addResourceCalendar($calname, $caldesc)
+function addResourceCalendar($calname, $caldesc, $calidsa)
 {
 	global $babDB, $babBody;
 
@@ -460,7 +528,7 @@ function addResourceCalendar($calname, $caldesc)
 		$caldesc = addslashes($caldesc);
 		}
 
-	$babDB->db_query("insert into ".BAB_CAL_RESOURCES_TBL." (name, description, id_dgowner) values ('" .$calname. "', '".$caldesc."', '".$babBody->currentAdmGroup."')");
+	$babDB->db_query("insert into ".BAB_CAL_RESOURCES_TBL." (name, description, id_dgowner, idsa) values ('" .$calname. "', '".$caldesc."', '".$babBody->currentAdmGroup."', '".$calidsa."')");
 	$idowner = $babDB->db_insert_id();
 	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$idowner. "', '".BAB_CAL_RES_TYPE."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
@@ -563,7 +631,7 @@ if( isset($addc))
 {
 	if( $addc == "addp" )
 	{
-		if( addPublicCalendar($calname, $caldesc))
+		if( addPublicCalendar($calname, $caldesc, $calidsa))
 		{
 			$idx = "pub";
 		}
@@ -573,7 +641,7 @@ if( isset($addc))
 		}
 	}elseif( $addc == "addr" )
 	{
-		if( addResourceCalendar($calname, $caldesc))
+		if( addResourceCalendar($calname, $caldesc, $calidsa))
 		{
 			$idx = "res";
 		}
@@ -686,7 +754,8 @@ switch($idx)
 	case "addr":
 		if( !isset($calname)) {	$calname = ""; }
 		if( !isset($caldesc)) {	$caldesc = ""; }
-		calendarsAddResource($calname, $caldesc);
+		if( !isset($calidsa)) {	$calidsa = ""; }
+		calendarsAddResource($calname, $caldesc, $calidsa);
 		$babBody->title = bab_translate("Add resource calendar");
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
@@ -700,7 +769,8 @@ switch($idx)
 	case "addp":
 		if( !isset($calname)) {	$calname = ""; }
 		if( !isset($caldesc)) {	$caldesc = ""; }
-		calendarsAddPublic($calname, $caldesc);
+		if( !isset($calidsa)) {	$calidsa = ""; }
+		calendarsAddPublic($calname, $caldesc, $calidsa);
 		$babBody->title = bab_translate("Add public calendar");
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");

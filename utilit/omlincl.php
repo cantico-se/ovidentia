@@ -3518,7 +3518,7 @@ class bab_CalendarGroupEvents extends bab_handler
 				reset($babBody->icalendars->pubcal);
 				while( $row=each($babBody->icalendars->pubcal) ) 
 					{
-					if( in_array($row['idowner'], $rr) )
+					if( in_array($row[1]['idowner'], $rr) )
 						{
 						$ar[] = $row[0];
 						}
@@ -3576,7 +3576,7 @@ class bab_CalendarGroupEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.status='".BAB_CAL_STATUS_ACCEPTED."' and ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
@@ -3683,7 +3683,7 @@ class bab_CalendarResourceEvents extends bab_handler
 				reset($babBody->icalendars->rescal);
 				while( $row=each($babBody->icalendars->rescal) ) 
 					{
-					if( in_array($row[0], $rr) )
+					if( in_array($row[1]['idowner'], $rr) )
 						{
 						$ar[] = $row[0];
 						}
@@ -3741,12 +3741,13 @@ class bab_CalendarResourceEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.status='".BAB_CAL_STATUS_ACCEPTED."' and ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
 			}
 		$req .= " order by start_date asc";
+		echo $req;
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);
 		}
