@@ -30,6 +30,7 @@ function modifyForum($id)
 		var $arr = array();
 		var $arr2 = array();
 		var $res;
+		var $notification;
 
 		function temp($id)
 			{
@@ -42,6 +43,7 @@ function modifyForum($id)
 			$this->active = bab_translate("Active");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->notification = bab_translate("Notify moderator");
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FORUMS_TBL." where id='$id'";
@@ -98,7 +100,7 @@ function deleteForum($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateForum($id, $name, $description, $moderator, $moderation, $nbmsgdisplay, $active)
+function updateForum($id, $name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody;
 	if( empty($name))
@@ -126,7 +128,13 @@ function updateForum($id, $name, $description, $moderator, $moderation, $nbmsgdi
 	else
 		$moderatorid = 0;
 
-	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', moderator='$moderatorid', display='$nbmsgdisplay', active='$active' where id = '$id'";
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$name = addslashes($name);
+		$description = addslashes($description);
+		}
+
+	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', moderator='$moderatorid', display='$nbmsgdisplay', active='$active' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 
@@ -159,7 +167,7 @@ if(!isset($idx))
 
 if( isset($update) && $update == "updateforum")
 	{
-	updateForum($item, $name, $description, $moderator, $moderation, $nbmsgdisplay, $active);
+	updateForum($item, $name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active);
 	}
 
 if( isset($aclview))

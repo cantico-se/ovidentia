@@ -90,4 +90,55 @@ function bab_isUserForumModerator($forum, $id)
 		}
 	return false;
 	}
+
+function notifyModerator($threadTitle, $email, $author, $forumname)
+	{
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+ 
+	class tempa
+		{
+		var $message;
+        var $from;
+        var $author;
+        var $thread;
+        var $threadname;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($threadTitle, $email, $author, $forumname)
+			{
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->message = bab_translate("A new post has been registered on forum") .": ".$forumname;
+            $this->from = bab_translate("Author");
+            $this->thread = bab_translate("Thread");
+            $this->threadname = $threadTitle;
+            $this->site = bab_translate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = bab_translate("Date");
+            $this->dateval = bab_strftime(mktime());
+
+            $this->author = $author;
+			}
+		}
+	
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
+
+	$mail->mailTo($email);
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject(bab_translate("New post"));
+
+	$tempa = new tempa($threadTitle, $email, $author, $forumname);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "newpost");
+    $mail->mailBody($message, "html");
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");
+    $mail->mailAltBody($message);
+
+	$mail->send();
+	}
 ?>

@@ -24,6 +24,7 @@ function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 		var $yes;
 		var $no;
 		var $add;
+		var $notification;
 
 		function temp($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 			{
@@ -32,6 +33,7 @@ function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 			$this->moderator = bab_translate("Moderator");
 			$this->nbmsgdisplay = bab_translate("Messages Per Page");
 			$this->moderation = bab_translate("Moderation");
+			$this->notification = bab_translate("Notify moderator");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -113,7 +115,7 @@ function listForums()
 	}
 
 
-function saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, $active)
+function saveForum($name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody;
 	if( empty($name))
@@ -128,6 +130,12 @@ function saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, 
 		return false;
 		}
 	
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$name = addslashes($name);
+		$description = addslashes($description);
+		}
+
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_FORUMS_TBL." where name='$name'";	
 	$res = $db->db_query($query);
@@ -148,8 +156,9 @@ function saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, 
 		}
 	else
 		$moderatorid = 0;	
-	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderator, moderation, active)";
-	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $moderatorid. "', '" . $moderation. "', '" . $active. "')";
+
+	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderator, moderation, notification, active)";
+	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $moderatorid. "', '" . $moderation. "', '" .$notification. "', '" . $active. "')";
 	$db->db_query($query);
 	return true;
 
@@ -163,7 +172,7 @@ if(!isset($idx))
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
-	if( !saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, $active))
+	if( !saveForum($name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
 
