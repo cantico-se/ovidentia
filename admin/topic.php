@@ -404,7 +404,7 @@ function addToHomePages($item, $homepage, $art)
 			}
 		else
 			{
-				$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."'";
+				$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$idsite."'";
 				$db->db_query($req);
 			}
 
