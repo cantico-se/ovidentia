@@ -24,7 +24,7 @@
 include_once "base.php";
 include $babInstallPath."admin/register.php";
 
-function displayLogin()
+function displayLogin($url)
 	{
 	global $babBody;
 	class temp
@@ -32,13 +32,12 @@ function displayLogin()
 		var $nickname;
 		var $password;
 
-		function temp()
+		function temp($url)
 			{
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");
 			$this->login = bab_translate("Login");
-
-			// ajout cookie
+			$this->referer = $url;
 			$this->life = bab_translate("Remmember my login");
 			$this->nolife = bab_translate("No");
 			$this->oneday = bab_translate("one day");
@@ -49,7 +48,7 @@ function displayLogin()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new temp($url);
 	$babBody->babecho(	bab_printTemplate($temp,"login.html", "login"));
 	}
 
@@ -388,7 +387,13 @@ if( isset($login) && $login == "login")
 	if(!signOn($nickname, $password, $lifetime))
 		$idx = 'signon';
 	else
-		Header("Location: ". $GLOBALS['babUrlScript']);
+		{
+		$url = urldecode($referer);
+		if (substr_count($url,$GLOBALS['babUrlScript']) == 1)
+			Header("Location: ". $url);
+		else
+			Header("Location: ". $GLOBALS['babUrlScript']);
+		}
 	}
 else if( isset($adduser) && $adduser == "register" && $r['registration'] == 'Y')
 	{
@@ -437,7 +442,8 @@ switch($cmd)
 		if( $r['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		displayLogin();
+		if (!$referer) $referer = urlencode($HTTP_REFERER);
+			displayLogin($referer);
 		break;
 	}
 $babBody->setCurrentItemMenu($cmd);
