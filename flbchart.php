@@ -1118,6 +1118,7 @@ if( isset($addoce) )
 	switch($addoce)
 	{
 		case "addoce":
+			if( !isset($grpid)) { $grpid ='';}
 			if( !saveOrgChartEntity($ocid, $fname, $description, $oeid, $hsel, $grpid))
 			{
 			$idx = "adde";
@@ -1150,6 +1151,7 @@ else if( isset($modocr) )
 	switch($modocr)
 	{
 		case "modocr":
+			if( !isset($cardinality)) {$cardinality='N';}
 			if( !updateOrgChartRole($ocid, $fname, $description, $oeid, $orid, $cardinality))
 			{
 			$idx = "modr";
