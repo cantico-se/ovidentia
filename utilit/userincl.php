@@ -863,6 +863,46 @@ function bab_replace( $txt )
 			}
 		}
 
+	$reg = "/\\\$CONTACTID\((.*?),(.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$title = $m[2][$k];
+			$req = "select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and id= '".trim($m[1][$k])."'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				if (trim($m[2][$k]) == '')
+					$title = $arr['firstname']." ".$arr['lastname'];
+				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
+				}
+			else
+				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[1][$k]." ".$m[2][$k], $txt);
+			}
+		}
+
+	$reg = "/\\\$DIRECTORYID\((.*?),(.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$title = $m[2][$k];
+			$req = "select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and id= '".trim($m[1][$k])."'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				if (trim($m[2][$k]) == '')
+					$title = $arr['firstname']." ".$arr['lastname'];
+				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
+				}
+			else
+				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[1][$k]." ".$m[2][$k], $txt);
+			}
+		}
+
 	$reg = "/\\\$FAQ\((.*?),(.*?)\)/";
 	if( preg_match_all($reg, $txt, $m))
 		{
