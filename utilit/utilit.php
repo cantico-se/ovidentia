@@ -248,9 +248,6 @@ function babSection($title = "Section", $content="<br>This is a sample of conten
 	$this->close = 0;
 	$this->boxurl = "";
 	$this->bbox = 0;
-	$this->babsectionpuce = bab_printTemplate($this, "config.html", "babSectionPuce");
-	$this->babsectionbullet = bab_printTemplate($this, "config.html", "babSectionBullet");
-
 }
 
 function getTitle() { return $this->title;}

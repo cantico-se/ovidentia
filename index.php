@@ -95,6 +95,11 @@ $babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
 $babSearchUrl = "";
 $babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts");  
 
+$babJs = $GLOBALS['babScriptPath']."ovidentia.js";
+$babCss = bab_printTemplate($this, "config.html", "babCss");
+$babMeta = bab_printTemplate($this, "config.html", "babMeta");
+$babsectionpuce = bab_printTemplate($this, "config.html", "babSectionPuce");
+$babsectionbullet = bab_printTemplate($this, "config.html", "babSectionBullet");
 
 function printBody()
 	{
@@ -142,14 +147,11 @@ function printBody()
 			$this->babBanner = "";
 			$this->babMeta = "";
 
-			$this->babJs = $GLOBALS['babScriptPath']."ovidentia.js";
-			$this->babCss = bab_printTemplate($this, "config.html", "babCss");
 			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = bab_printTemplate($this, "config.html", "babLogoRT");
 			$this->babLogoLB = bab_printTemplate($this, "config.html", "babLogoLB");
 			$this->babLogoRB = bab_printTemplate($this, "config.html", "babLogoRB");
 			$this->babBanner = bab_printTemplate($this, "config.html", "babBanner");
-			$this->babMeta = bab_printTemplate($this, "config.html", "babMeta");
 			$this->script = $babBody->script;
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript']."?tg=entry";
