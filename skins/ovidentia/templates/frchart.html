@@ -455,11 +455,26 @@ updateFltFrame('{ currentoe }&idx=listr');
 <!--
 function updateFrFrame(idx)
 {
-var dummy;
+//}
 top.fr.document.location.href='{ updatefrurl }&disp=' + idx;
 for( var i = 1 ; i <= 5 ; i++ )
 	document.images['disp'+i].src = '{ babSkinPath }images/Puces/chart_disp'+i+'.gif';
 document.images[idx].src = '{ babSkinPath }images/Puces/chart_'+idx+'_on.gif';
+}
+
+function showhideleft()
+{
+var obj = top.document.all ? top.document.all.leftpane : top.document.getElementById('leftpane');
+if (obj.cols != '0, *')
+	{
+	document.images['left'].src = '{ babSkinPath }images/Puces/chart_left_on.gif';
+	obj.cols = '0, *';
+	}
+else
+	{
+	document.images['left'].src = '{ babSkinPath }images/Puces/chart_left.gif';
+	obj.cols = '240, *';
+	}
 }
 
 //-->
@@ -473,14 +488,15 @@ document.images[idx].src = '{ babSkinPath }images/Puces/chart_'+idx+'_on.gif';
 	&nbsp;
 	</TD>
 	<TD class="BabLoginMenuBackground" align="left">
+	<a href="javascript:showhideleft()"><img alt="{ left_title }" src="{ babSkinPath }images/Puces/chart_left.gif" name="left" border="0"></a>&nbsp;
 	{ charttitle }
 	</TD>
 	<TD class="BabLoginMenuBackground" align="right" valign="middle">
-	&nbsp;<a href="javascript:updateFrFrame('disp1')"><img alt="{ chart_disp1_title }" src="{ babSkinPath }images/Puces/chart_disp1.gif" name="disp1" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp2')"><img alt="{ chart_disp2_title }" src="{ babSkinPath }images/Puces/chart_disp2.gif" name="disp2" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp3')"><img alt="{ chart_disp3_title }" src="{ babSkinPath }images/Puces/chart_disp3.gif" name="disp3" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp4')"><img alt="{ chart_disp4_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" name="disp4" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp5')"><img alt="{ chart_disp5_title }" src="{ babSkinPath }images/Puces/chart_disp5.gif" name="disp5" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp1')"><img alt="{ chart_disp1_title }" src="{ babSkinPath }images/Puces/chart_disp1.gif" name="disp1" border="0" /></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp2')"><img alt="{ chart_disp2_title }" src="{ babSkinPath }images/Puces/chart_disp2.gif" name="disp2" border="0" /></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp3')"><img alt="{ chart_disp3_title }" src="{ babSkinPath }images/Puces/chart_disp3.gif" name="disp3" border="0" /></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp4')"><img alt="{ chart_disp4_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" name="disp4" border="0" /></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp5')"><img alt="{ chart_disp5_title }" src="{ babSkinPath }images/Puces/chart_disp5.gif" name="disp5" border="0" /></a>
 	</TD>
 	<TD class="BabLoginMenuBackground" width="5" align="left">
 	&nbsp;

@@ -486,6 +486,7 @@ function displayFrtFrame($ocid, $oeid, $update)
 			$this->chart_disp3_title = bab_translate("Horizontal view");
 			$this->chart_disp4_title = bab_translate("Roles");
 			$this->chart_disp5_title = bab_translate("Directories");
+			$this->left_title = bab_translate("Show / hide left pane"); 
 			$this->updatefrurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid;
 			}
 
