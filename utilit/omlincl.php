@@ -1680,7 +1680,7 @@ class bab_RecentArticles extends bab_handler
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
-				$order = "asc";
+				$order = "desc";
 
 			switch(strtoupper($order))
 			{
