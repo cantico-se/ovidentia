@@ -470,6 +470,8 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 		var $restype;
 
 		var $invalidentry1;
+		var $tpsel;
+		var $colsel;
 
 		function temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose)
 			{
@@ -501,25 +503,22 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 				$this->userval = "";
 			$this->bdel = false;
 			$this->collid = $collid;
-			if( $collid != "" )
-				$this->collval = bab_getGroupName($collid);
-			else
-				$this->collval = "";
+			if( $collid  == "" || $collid  == "-1")
+				$this->colsel = 0;
+			else if( $collid  == "-1")
+				$this->colsel = 1;
+
 			$this->dateb = $dateb;
 			$this->datee = $datee;
 			$this->description = $description;
 			$this->idtype = $idtype;
+			$this->tpsel = 0;
 			$this->nbdays = $nbdays;
 
 			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3";
 			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3";
 
-			$arr = $this->db->db_fetch_array($this->db->db_query("select name, quantity from ".BAB_VAC_TYPES_TBL." where id='".$idtype."'"));
-			$this->typename = $arr['name'];
-			if( $nbdays == "")
-				$this->nbdays = $arr['quantity'];
-			else
-				$this->nbdays = $nbdays;
+			$this->nbdays = $nbdays;
 
 			if( $vclose == "" )
 				$vclose = "N";
@@ -535,9 +534,6 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 				$this->nselected = "selected";
 				}
 
-			$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$idtype."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
-			$this->countcol = $this->db->db_num_rows($this->colres);
-
 			$this->restype = $this->db->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
 			$this->counttype = $this->db->db_num_rows($this->restype);
 			}
@@ -548,13 +544,19 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 			if( $j < $this->countcol )
 				{
 				$arr = $this->db->db_fetch_array($this->colres);
-				$this->collval = $arr['name'];
+				$this->collval = str_replace("'", "\'", $arr['name']);
+				$this->collval = str_replace('"', "'+String.fromCharCode(34)+'",$this->collval);
 				$this->idcollection = $arr['id'];
+				if( $this->collid == $this->idcollection)
+					$this->colsel = $j+1;
 				$j++;
 				return true;
 				}
 			else
+				{
+				$j = 0;
 				return false;
+				}
 			}
 
 		function getnexttype()
@@ -562,11 +564,17 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 			static $i = 0;
 			if( $i < $this->counttype)
 				{
+				$this->iindex = $i;
 				$arr = $this->db->db_fetch_array($this->restype);
 				$this->typename = $arr['name'];
 				$this->typeid = $arr['id'];
+				$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$this->typeid."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
+				$this->countcol = $this->db->db_num_rows($this->colres);
 				if( $this->idtype == $this->typeid )
+					{
+					$this->tpsel = $i;
 					$this->selected = "selected";
+					}
 				else
 					$this->selected ="";
 				$i++;
@@ -574,6 +582,9 @@ function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $d
 				}
 			else
 				{
+				if( $this->counttype > 0 )
+					$this->db->db_data_seek($this->restype, 0 );
+				$i = 0;
 				return false;
 				}
 

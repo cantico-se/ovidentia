@@ -129,7 +129,7 @@ function dateEnd(day, month, year)
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ typetxt }:</td>
 <td class="BabLoginMenuBackground" valign="middle">
-<select name="idtype">
+<select name="idtype" onChange="mmvac(document.forms.gcreate.idtype.selectedIndex)">
 <!--#in getnexttype -->
 <option value="{ typeid }" { selected }>{ typename }</option>
 <!--#endin getnexttype -->
@@ -168,9 +168,6 @@ function dateEnd(day, month, year)
 <select name="collid" onchange='onCollection()'>
 <option value=""></option>
 <option value="-1">{ allcol }</option>
-<!--#in getnextcol -->
-<option value="{ idcollection }">{ collval }</option>
-<!--#endin getnextcol -->
 </select>
 </td>
 </tr>
@@ -207,6 +204,35 @@ function dateEnd(day, month, year)
 <br>
 <script type="text/javascript">
 <!--
+var tpsel = { tpsel };
+var colsel = { colsel };
+var tabvacn = new Array({ counttype });
+var tabvaci = new Array({ counttype });
+<!--#in getnexttype -->
+tabvacn[{ iindex }] = new Array();
+tabvaci[{ iindex }] = new Array();
+<!--#in getnextcol -->
+tabvacn[{ iindex }][tabvacn[{ iindex }].length] = "{ collval }";
+tabvaci[{ iindex }][tabvaci[{ iindex }].length] = "{ idcollection }";
+<!--#endin getnextcol -->
+<!--#endin getnexttype -->
+
+function mmvac(index)
+{
+	for (i = document.forms.gcreate.collid.length; i >= 2; i--) {
+		document.forms.gcreate.collid.options[i] = null; 
+	}
+	for (var i = 0; i < tabvacn[index].length; i++)
+	{
+	document.forms.gcreate.collid.options[i+2] = new Option(tabvacn[index][i],tabvaci[index][i]);
+	}
+	if( index == tpsel )
+		document.forms.gcreate.collid.options[colsel].selected = true;
+
+}
+mmvac(tpsel);
+
+
 function dateBegin(day, month, year)
 {
 	document.gcreate.elements['dateb'].value = day+'-'+month+'-'+year;
