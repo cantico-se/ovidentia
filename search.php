@@ -38,6 +38,7 @@ function highlightWord( $w, $text)
 	return bab_highlightWord( $w, $text);
 	}
 
+
 function put_text($txt, $limit = 60, $limitmot = 30 )
 	{
 	if (strlen($txt) > $limit)
@@ -52,6 +53,7 @@ function put_text($txt, $limit = 60, $limitmot = 30 )
 	return $txt;
 	}
 
+
 function finder($req2,$tablename,$option = "OR",$req1="")
 	{
 	return bab_sql_finder($req2,$tablename,$option,$req1);
@@ -64,6 +66,8 @@ function returnCategoriesHierarchy($topics)
 	$out = bab_printTemplate($article_path,"search.html", "article_path");
 	return $out;
 	}
+
+
 
 class bab_addonsSearch
 	{
@@ -196,6 +200,7 @@ function searchKeyword($item , $option = "OR")
 			{
 			$this->db = $GLOBALS['babDB'];
 			global  $babBody,$babSearchItems;
+			$this->item = $item;
 			$this->fields = $GLOBALS['HTTP_POST_VARS'];
 			$this->search = bab_translate("Search");
 			$this->all = bab_translate("All");
@@ -229,12 +234,8 @@ function searchKeyword($item , $option = "OR")
 				case "AND": $this->and_selected = "selected"; break;
 				case "NOT": $this->not_selected = "selected"; break;
 				}
-			foreach ($babSearchItems as $key => $value)
-					$this->arr[] = $key;
 
 			$this->addons = new bab_addonsSearch;
-
-			$this->count = count($this->arr);
 
 			$this->el_to_init = Array ( 'a_author','a_dd','a_mm','a_yyyy','before','after','before_display' ,'after_display','before_memo','after_memo','what2','what','advenced');
 
@@ -297,6 +298,7 @@ function searchKeyword($item , $option = "OR")
 			$this->acces['f'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_contactsAccess();
 			$this->acces['g'] = $this->countdirs;
 			$this->acces['h'] = bab_calendarAccess();
+
 			$res = $this->db->db_query("select id from ".BAB_FORUMS_TBL);
 			while( $row = $this->db->db_fetch_array($res))
 				{
@@ -339,7 +341,7 @@ function searchKeyword($item , $option = "OR")
 			$this->selected = $this->itemvalue == $this->item ? 'selected' : '';
 			return $flag;
 			}
-		
+
 		function getnexttopic() 
 			{
 			static $i = 0;
@@ -354,7 +356,7 @@ function searchKeyword($item , $option = "OR")
 				}
 			else
 				return false;
-			} 
+			}
 		
 		function getnextdir() 
 			{
@@ -589,6 +591,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->like2 = $what;
 				$this->like = $this->fields['what2'];
 				}
+
 			
 			$this->what = urlencode(addslashes($what." ".$this->fields['what2']));
 			$this->countart = 0;
@@ -1124,7 +1127,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 				}
 				
-				// --------------------------------------------- ADDONS
+				
+
+
+			// --------------------------------------------- ADDONS
 
 			$this->addons = new bab_addonsSearch;
 			$this->addonSearchArray = $this->addons->getsearcharray($item);
@@ -1159,6 +1165,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$babBody->msgerror = bab_translate("Search result empty");
 				}
+
 			}
 
 		function getnextart()
@@ -1486,7 +1493,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				} 
 			return isset($addon_searchresults) && is_array($addon_searchresults) ? true : false;
 			}
-
 		}
 
 	$temp = new temp($item, $what, $order, $option,$navitem,$navpos);
@@ -1946,6 +1952,7 @@ function viewDirectoryUser($id, $what)
 		echo bab_translate("Access denied");
 	}
 }
+ 
 
 function goto_addon()
 	{
@@ -1954,6 +1961,7 @@ function goto_addon()
 	if (!empty($id) && is_numeric($id) && isset($addons->tabLinkAddons[$id]))
 		header('location:'.$GLOBALS['babUrlScript']."?tg=addon/".$id."/".$addons->querystring[$id]);
 	}
+
 
 if( !isset($what))
 	$what = "";
@@ -1983,6 +1991,7 @@ if (isset($_POST['item']) && substr($_POST['item'],0,3) == 'al-')
 	{
 	goto_addon();
 	}
+
 
 
 switch($idx)
