@@ -124,7 +124,14 @@ function listImages($editor,$path="")
 			$db = $GLOBALS['babDB'];
 
 			$this->maximagessize = $babBody->babsite['imgsize'];
-			$this->maxsizetxt = bab_translate("Image size must not exceed")." ".$this->maximagessize. " ". bab_translate("Kb");
+			if( $this->maximagessize != 0 )
+				{
+				$this->maxsizetxt = bab_translate("Image size must not exceed")." ".$this->maximagessize. " ". bab_translate("Kb");
+				}
+			else
+				{
+				$this->maxsizetxt = '';
+				}
 			$this->maximagessize *= 1000 ;
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");

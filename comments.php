@@ -25,6 +25,7 @@ include_once "base.php";
 include_once $babInstallPath."utilit/uiutil.php";
 include_once $babInstallPath."utilit/mailincl.php";
 include_once $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/artincl.php";
 
 function listComments($topics, $article)
 	{
@@ -241,7 +242,7 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		if( !isset($popupmessage)) { $popupmessage ='';}
 		if( !isset($refreshurl)) { $refreshurl ='';}
-		popupUnload($popupmessage, $refreshurl);
+		popupUnload($popupmessage, $refreshurl, true);
 		exit;
 		break;
 

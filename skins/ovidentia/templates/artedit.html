@@ -1040,7 +1040,7 @@ return true;
 </tr>
 <tr> 
 <td align="right" valign="middle">{ filetxt }:</td>
-<td align="left" valign="middle"><input type="file" name="docf" size="50" maxlength="255" value="">
+<td align="left" valign="middle"><input type="file" name="docf" size="50" maxlength="255" value="">&nbsp;&nbsp;{ maxsizetxt }
 </td>
 <td align="right" valign="middle">&nbsp;
 </td>
@@ -1152,7 +1152,7 @@ return true;
 <option value="2" { noapprobsel }>{ noapprobtxt }</option>
 </select>&nbsp;&nbsp;
 <!--#endif bupprobchoice -->
-<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:return stepSubmitForm('cancel','propform');">&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:return stepSubmitForm('save','propform');"><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
+<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
 </tr>
 </table>
 </td>

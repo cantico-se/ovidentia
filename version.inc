@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 $bab_ver_prod = "E";
-$bab_ver_major = "4";
-$bab_ver_minor = "1";
-$bab_ver_build = "1";
+$bab_ver_major = "5";
+$bab_ver_minor = "0";
+$bab_ver_build = "0";
 $bab_ver_info = "";
 ?>

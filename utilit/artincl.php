@@ -532,13 +532,29 @@ function acceptWaitingArticle($idart)
 		if( $arr['id_article'] != 0 )
 			{
 			$articleid = $arr['id_article'];
-			$babDB->db_query("update ".BAB_ARTICLES_TBL." set date_modification=now(), id_modifiedby='".$arr['id_author']."', date_archiving='".$arr['date_archiving']."', restriction='".$arr['restriction']."', lang='".$arr['lang']."' where id='".$articleid."'");
+			$req = "update ".BAB_ARTICLES_TBL." set id_modifiedby='".$arr['id_author']."', date_archiving='".$arr['date_archiving']."', restriction='".$arr['restriction']."', lang='".$arr['lang']."'";
+			if( $arr['update_datemodif'] != 'N')
+				{
+				$req .= ", date_modification=now()";
+				}
+			$rq .= " where id='".$articleid."'";
+			$babDB->db_query($req);
 			bab_deleteArticleFiles($articleid);
 			}
 		else
 			{
 			$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang) values ";
-			$req .= "('" .$arr['id_topic']. "', '".$arr['id_author']. "', now(), '".$arr['date_publication']."', '".$arr['date_archiving']."', now(), '".$arr['restriction']."', '".$arr['lang']. "')";
+			$req .= "('" .$arr['id_topic']. "', '".$arr['id_author']. "', now()";
+
+			if( $arr['date_publication'] == '0000-00-00 00:00:00' )	
+				{
+				$req .= ", now()";
+				}
+			else
+				{
+				$req .= ", '".$arr['date_publication']."'";
+				}
+			$req .= ", '".$arr['date_archiving']."', now(), '".$arr['restriction']."', '".$arr['lang']. "')";
 			$babDB->db_query($req);
 			$articleid = $babDB->db_insert_id();
 			}

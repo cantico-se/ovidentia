@@ -883,6 +883,7 @@ switch($idx)
 		
 		$babBody->title = bab_translate("Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
+		if( !isset($nickname)) { $nickname = ""; }
 		changeNickname($nickname);
 		changeSkin($skin);
 		changeLanguage();

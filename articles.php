@@ -496,6 +496,7 @@ function readMore($topics, $article)
 					$this->bmodifyurl = false;
 					$this->modifybytxt = bab_translate("In modification by");
 					$this->modifyauthor	= bab_getUserName($rr['id_author']);
+					$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id'];
 					}
 				else
 					{
@@ -715,6 +716,7 @@ function modifyArticle($topics, $article)
 						$this->commenttxt = bab_translate("Comment");
 						$this->canceltxt = bab_translate("Cancel");
 						$this->updatetxt = bab_translate("Modify");
+						$this->updatemodtxt = bab_translate("Don't update article modification date");
 						$this->bmodify = true;
 						}
 					else
@@ -937,7 +939,7 @@ function viewArticle($article)
 			if( $i < $this->countf)
 				{
 				$arr = $this->db->db_fetch_array($this->resf);
-				$this->docurl = $GLOBALS['babUrlScript']."?tg=topman&idx=getf&item=".$this->arr['id_topic']."&idf=".$arr['id'];
+				$this->docurl = $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$this->arr['id_topic']."&article=".$this->arr['id']."&idf=".$arr['id'];
 				$this->docname = $arr['name'];
 				$i++;
 				return true;
@@ -977,7 +979,7 @@ function viewArticle($article)
 	}
 
 
-function confirmModifyArticle($topics, $article, $comment)
+function confirmModifyArticle($topics, $article, $comment, $bupdmod)
 {
 	global $babBody, $babDB, $arrtop, $rfurl;
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$article."'");
@@ -992,6 +994,11 @@ function confirmModifyArticle($topics, $article, $comment)
 			$idart = bab_newArticleDraft($topics, $article);
 			if( $idart != 0 )
 			{
+				if( $bupdmod == 'N')
+					{
+					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='N' where id='".$idart."'");		
+					}
+
 				if( bab_isMagicQuotesGpcOn())
 					{
 					$comment = stripslashes($comment);
@@ -1017,7 +1024,7 @@ function confirmModifyArticle($topics, $article, $comment)
 function submitArticle($topics)
 {
 	global $babBody, $babDB;
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&topicid=".$topics."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".$topics));
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&topicid=".$topics."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics));
 	exit;
 }
 
@@ -1029,6 +1036,25 @@ function articles_init($topics)
 	$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 	list($arrret['nbarchive']) = $babDB->db_fetch_row($res);
 	return $arrret;
+}
+
+function getDocumentArticle($idf, $topics)
+{
+	global $babDB;
+	$access = false;
+	if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics) )
+			{
+			$access = true;
+			}
+
+	if( !$access )
+	{
+		echo bab_translate("Access denied");
+	}
+	else
+	{
+		bab_getDocumentArticle($idf);
+	}
 }
 
 
@@ -1055,7 +1081,8 @@ if( isset($conf) && $conf == "mod" )
 {
 	if( isset($bupdate))
 		{
-		confirmModifyArticle($topics, $article, $comment);
+		if( !isset($bupdmod)) { $bupdmod ='N';}
+		confirmModifyArticle($topics, $article, $comment, $bupdmod);
 		}
 }
 
@@ -1071,7 +1098,7 @@ switch($idx)
 		break;
 
 	case "getf":
-		bab_getDocumentArticle($idf);
+		getDocumentArticle($idf, $topics);
 		exit;
 		break;
 
@@ -1085,6 +1112,7 @@ switch($idx)
 		readMore($topics, $article);
 		$arr = articles_init($topics);
 		$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+		$babBody->addItemMenu("More",bab_translate("Article"),$GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
 		if( $arr['nbarchive'] )
 			{
 			$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);

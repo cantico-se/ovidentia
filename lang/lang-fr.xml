@@ -1393,4 +1393,6 @@
 <string id="Articles management">Gestion des articles</string>
 <string id="Modify an existing article">Modifier un article existant</string>
 <string id="Choose the article">Séléctionner l'article</string>
+<string id="Don't update article modification date">Ne pas mettre à jour la date de modification de l'article</string>
+<string id="File size must not exceed">La taille du fichier ne doit pas excéder</string>
 </fr>

@@ -1199,6 +1199,15 @@ function showSetArticleProperties($idart)
 						$this->filetitle = bab_translate("Associated documents");
 						$this->deletetxt = bab_translate("Delete");
 						$this->resfiles = $babDB->db_query("select id, name, description from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$idart."'");
+						$this->maximagessize = $babBody->babsite['imgsize'];
+						if( $babBody->babsite['maxfilesize'] != 0 )
+							{
+							$this->maxsizetxt = bab_translate("File size must not exceed")." ".$babBody->babsite['maxfilesize']. " ". bab_translate("Mb");
+							}
+						else
+							{
+							$this->maxsizetxt = '';
+							}
 						$this->countfiles = $babDB->db_num_rows($this->resfiles);
 						if( $this->countfiles > 0 )
 							{
@@ -1782,7 +1791,7 @@ function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$mes
 				}
 			if( !move_uploaded_file($doc_f, $path.$osfname))
 				{
-				$babBody->msgerror = bab_translate("The file could not be uploaded");
+				$message = bab_translate("The file could not be uploaded");
 				return false;
 				}
 
@@ -1952,7 +1961,7 @@ function artedit_init()
 }
 /* main */
 $artedit = array();
-if( empty($GLOBALS['BAB_SESS_USERID']) || $GLOBALS['BAB_SESS_USERID'] == 0 || (count($babBody->topsub) == 0  && count($babBody->topmod) == 0))
+if( count($babBody->topsub) == 0  && count($babBody->topmod) == 0)
 {
 	$idx = 'denied';
 }

@@ -2776,7 +2776,7 @@ while( $arr = $db->db_fetch_array($res))
 return $ret;
 }
 
-function upgrade410to411()
+function upgrade410to500()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
@@ -2821,6 +2821,7 @@ $req .= "result smallint(5) unsigned NOT NULL default '0',";
 $req .= "id_article int(11) unsigned NOT NULL default '0',";
 $req .= "id_anonymous int(11) unsigned NOT NULL default '0',";
 $req .= "approbation enum('0','1','2') NOT NULL default '0',";
+$req .= "update_datemodif enum('Y','N') NOT NULL default 'Y',";
 $req .= "PRIMARY KEY  (id),";
 $req .= "KEY id_topic (id_topic),";
 $req .= "KEY id_author (id_author),";

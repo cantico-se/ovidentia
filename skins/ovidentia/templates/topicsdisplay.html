@@ -164,9 +164,12 @@
 <td class="BabTopicsButtonBackground" align="right" valign="middle" colspan="2">
 <!--#if bmodify -->
 <!--#if bmodifyurl -->
-<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }', 6)"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
-<!--#else bmodifyurl -->{ modifybytxt }:&nbsp;{ modifyauthor }<!--#endif bmodifyurl -->
+<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
+<!--#else bmodifyurl -->
+<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit_disabled.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
+<!--#endif bmodifyurl -->
 <!--#endif bmodify -->
+&nbsp;&nbsp;
 <a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a><!--#if commentstxt -->&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ commentsurl }', 6)"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a><!--#endif commentstxt --></td>
 </tr>
 

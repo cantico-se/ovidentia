@@ -936,9 +936,9 @@ CREATE TABLE bab_ini (
 	UNIQUE KEY foption (foption)
 );
 
-INSERT INTO bab_ini VALUES ('ver_major', '4');
-INSERT INTO bab_ini VALUES ('ver_minor', '1');
-INSERT INTO bab_ini VALUES ('ver_build', '1');
+INSERT INTO bab_ini VALUES ('ver_major', '5');
+INSERT INTO bab_ini VALUES ('ver_minor', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '0');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1704,6 +1704,7 @@ CREATE TABLE bab_art_drafts (
   id_article int(11) unsigned NOT NULL default '0',
   id_anonymous int(11) unsigned NOT NULL default '0',
   approbation enum('0','1','2') NOT NULL default '0',
+  update_datemodif enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (id),
   KEY id_topic (id_topic),
   KEY id_author (id_author),
@@ -1733,7 +1734,7 @@ CREATE TABLE bab_art_drafts_notes (
   id_draft int(11) unsigned NOT NULL default '0',
   content text NOT NULL,
   id_author int(11) unsigned NOT NULL default '0',
-  date datetime NOT NULL default '0000-00-00 00:00:00',
+  date_note datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (id),
   KEY id_draft (id_draft),
   KEY id_author (id_author)

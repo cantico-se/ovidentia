@@ -1159,7 +1159,7 @@ function bab_replace_ref( &$txt, $remove = '')
 								}
 							if(in_array($arr['id_topic'], $babBody->topview) && bab_articleAccessByRestriction($arr['restriction']))
 								{
-								$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
+								$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 								}
 							bab_replace_var($txt,$var,$title_object);
 							break;
@@ -1177,7 +1177,7 @@ function bab_replace_ref( &$txt, $remove = '')
 								if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
 									{
 									$title_object = empty($title_object) ? $arr['title'] : $title_object;
-									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 									}
 								}
 							bab_replace_var($txt,$var,$title_object);

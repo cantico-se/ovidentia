@@ -186,7 +186,7 @@ function listArticles($id)
 			$this->homepages = bab_translate("Customize home pages ( Registered and unregistered users )");
 			$this->datepublicationtxt = bab_translate("Publication date");
 			$this->datearchivingtxt = bab_translate("Archiving date");
-			$this->previewtxt = bab_translate("Preview");
+			$this->propertiestxt = bab_translate("Properties");
 			$this->badmin = bab_isUserAdministrator();
 
 			$this->item = $id;
