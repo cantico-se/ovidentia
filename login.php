@@ -119,7 +119,8 @@ function signOff()
 		session_destroy();
 		}
 
-	setcookie('c_nickname'," ");
+	if ( $GLOBALS['babCookieIdent'] != 'login' ) 
+		setcookie('c_nickname'," ");
 	setcookie('c_password'," ");
 
 	Header("Location: ". $GLOBALS['babPhpSelf']);

@@ -2255,14 +2255,17 @@ function bab_updateSiteSettings()
 	if( $arr['remember_login'] == "Y")
 		{
 		$GLOBALS['babCookieIdent'] = true;
+		$GLOBALS['c_nickname'] = '';
 		}
 	elseif ($arr['remember_login'] == "L")
 		{
 		$GLOBALS['babCookieIdent'] = 'login' ;
-		$GLOBALS['c_nickname'] = trim($_COOKIE['c_nickname']);
+		$GLOBALS['c_nickname'] = isset($_COOKIE['c_nickname']) ? trim($_COOKIE['c_nickname']) : '';
 		}
 	else {
-		$GLOBALS['babCookieIdent'] = false ; }
+		$GLOBALS['babCookieIdent'] = false ; 
+		$GLOBALS['c_nickname'] = '';
+		}
 	if( $arr['email_password'] == "Y") {
 		$GLOBALS['babEmailPassword'] = true ; }
 	else {
