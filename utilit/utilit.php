@@ -860,10 +860,12 @@ var $count;
 var $waiting;
 var $bfooter;
 var $waitingf;
+var $waitingpostsimg;
 
 function babForumsSection($close)
 	{
 	global $babDB, $babBody;
+	static $waitingpostsimg;
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = bab_translate("Forums");
 
@@ -880,6 +882,8 @@ function babForumsSection($close)
 			array_push($this->arrid, $row['id']);
 			}
 		}
+	if( empty($waitingpostsimg)) $waitingpostsimg = bab_printTemplate($this, "config.html", "babWaitingPosts");
+	$this->waitingpostsimg = &$waitingpostsimg;
 	$this->head = bab_translate("List of different forums");
 	$this->waitingf = bab_translate("Waiting posts");
 	$this->bfooter = 0;
