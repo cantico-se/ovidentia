@@ -99,6 +99,30 @@ function bab_printTemplate( &$class, $file, $section="")
 	return $tpl->printTemplate($class,$filepath, $section);
 	}
 
+function bab_printOvmlTemplate( $file, $args=array())
+	{
+	global $babInstallPath, $babSkinPath, $babOvmlPath;
+	if( strstr($file, "..") || strtolower(substr($file, 0, 4)) == 'http' )
+		return "<!-- ERROR filename: ".$file." -->";
+
+	$filepath = $babOvmlPath.$file;
+	if( !file_exists( $filepath ) )
+		{
+		$filepath = $babSkinPath."ovml/". $file;
+		if( !file_exists( $filepath ) )
+			{
+			$filepath = $babInstallPath."skins/ovidentia/ovml/". $file;
+			}
+		}
+
+	if( !file_exists( $filepath ) )
+		return "<!-- ERROR filename: ".$filepath." -->";
+
+	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
+	$tpl = new babOvTemplate($args);
+	return $tpl->printout(implode("", file($filepath)));
+	}
+
 function bab_composeUserName( $firstname, $lastname)
 	{
 	return trim($firstname . " " . $lastname);
@@ -762,22 +786,22 @@ function getnextnew()
 			case 0:
 				$this->newcount = $babBody->newarticles;
 				$this->newtext = bab_translate("Articles");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=calview&idx=art";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newarticles.html&nbdays=0";
 				break;
 			case 1:
 				$this->newcount = $babBody->newcomments;
 				$this->newtext = bab_translate("Comments");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=calview&idx=com";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newcomments.html&nbdays=0";
 				break;
 			case 2:
 				$this->newcount = $babBody->newposts;
 				$this->newtext = bab_translate("Replies");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=calview&idx=for";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newposts.html&nbdays=0";
 				break;
 			case 3:
 				$this->newcount = $babBody->newfiles;
 				$this->newtext = bab_translate("Files");
-				$this->newurl = $GLOBALS['babUrlScript']."?tg=calview&idx=fil";
+				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&file=newfiles.html&nbdays=0";
 				break;
 			}
 		$i++;
