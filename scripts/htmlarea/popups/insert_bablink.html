@@ -1,0 +1,202 @@
+<html style="width: 398; height: 218">
+
+<head>
+  <title>Insert Link</title>
+
+<script type="text/javascript" src="popup.js"></script>
+
+<script type="text/javascript">
+var preview_window = null;
+
+function _CloseOnEsc() {
+  if (event.keyCode == 27) { window.close(); return; }
+}
+
+
+function Init() {
+
+  __dlg_init();
+  //document.getElementById("url").focus();
+  document.body.onkeypress = _CloseOnEsc;
+
+// essayer de reprendre la balise a selectionnée
+var range = window.dialogArguments;
+
+var urlvalue;
+var targetvalue;
+
+try {with (range) {
+		a = range.parentElement();
+	}}
+	catch (e) {
+		//alert(e);
+		//break;
+	}
+	/*
+	if (a.tagName.toLowerCase() == "a") {
+		try {with (a.attributes) {
+			var attrib = a.attributes.getNamedItem('href');
+			urlvalue = attrib.value;
+			var url = document.getElementById('url');
+			//url.value = urlvalue;
+			
+			// FIXME
+			var attrib = a.attributes.getNamedItem('target');
+			targetvalue = attrib.value;
+			
+			var target = document.getElementById('target');
+			
+			for (var j in target.element) 
+				{
+				
+				if (target.element[j] == targetvalue)
+					{
+					target.element.selectedIndex = j;
+					}
+				}
+			
+			
+		}}
+		catch (e) {
+			//alert(e);
+			//break;
+		}
+
+	}
+*/
+
+};
+
+
+function onOK() {
+  var required = {
+    "url": "You must enter the URL"
+  };
+  for (var i in required) {
+    var el = document.getElementById(i);
+    if (!el.value) {
+      alert(required[i]);
+      el.focus();
+      return false;
+    }
+  }
+  // pass data back to the calling window
+  var fields = ["url", "target"];
+  var param = new Object();
+  for (var i in fields) {
+    var id = fields[i];
+    var el = document.getElementById(id);
+    param[id] = el.value;
+  }
+
+  __dlg_close(param);
+  return false;
+};
+
+function onCancel() {
+  __dlg_close(null);
+  return false;
+};
+
+function onTypeChange() 
+	{
+	var type = document.getElementById('type');
+	var url = document.getElementById('url');
+	if (url.value.indexOf(':') == -1){
+		url.value = type.value+url.value;
+		}
+	else
+		{
+		url.value = type.value;
+		}
+	}
+
+</script>
+
+<style type="text/css">
+html, body {
+  background: ButtonFace;
+  color: ButtonText;
+  font: 11px Tahoma,Verdana,sans-serif;
+  margin: 0px;
+  padding: 0px;
+}
+body { padding: 5px; }
+table {
+  font: 11px Tahoma,Verdana,sans-serif;
+}
+form p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.fl { width: 15em; float: left; padding: 2px 5px; text-align: right; }
+fieldset { padding: 0px 10px 5px 5px; }
+select, input, button { font: 11px Tahoma,Verdana,sans-serif; }
+button { width: 70px; }
+.space { padding: 2px; }
+
+.title { color: #000; font-weight: bold; font-size: 120%; padding: 3px 10px; margin-bottom: 10px;
+border-bottom: 1px solid black; letter-spacing: 2px;
+}
+form { padding: 0px; margin: 0px; }
+</style>
+
+</head>
+
+<body onload="Init()">
+
+<div class="title">Insert Link</div>
+
+<form action="" method="get">
+  <table border="0" width="100%" style="padding: 0px; margin: 0px" align="center">
+    <tbody> 
+    <tr> 
+      <td style="width: 3em; text-align: right">Url:</td>
+      <td>
+        <input type="text" name="url" id="url" style="width:100%" title="For browsers that don't support images" value="http://" />
+      </td>
+    </tr>
+    </tbody> 
+  </table>
+
+<p />
+
+<fieldset style="float: center; margin-left: 5px;">
+<legend>Options</legend>
+
+<div class="space"></div>
+
+<div class="fl">Type:</div>
+<select size="1" name="type" id="type" title="type" onchange="onTypeChange()">
+  <option value="">Not set</option>
+  <option value="http://" selected>http</option>
+  <option value="mailto:">mailto</option>
+  <option value="https://">https</option>
+  <option value="ftp://">ftp</option>
+</select>
+
+<p />
+
+<div class="fl">Target:</div>
+<select size="1" name="target" id="target" title="target">
+  <option value="">Not set</option>
+  <option value="_blank">blank</option>
+  <option value="_parent">parent</option>
+  <option value="_self">self</option>
+  <option value="_top">top</option>
+</select>
+
+</fieldset>
+<p />
+  <div style="margin-top: 20px; text-align: right;"> <button type="button" name="ok" onclick="return onOK();">OK</button> 
+    &nbsp;&nbsp;<button type="button" name="cancel" id="cancel" onclick="return onCancel();">Cancel</button> 
+  </div>
+
+</form>
+
+<script type="text/javascript">
+
+
+</script>
+</body>
+</html>
