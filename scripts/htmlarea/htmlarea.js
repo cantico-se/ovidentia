@@ -1136,7 +1136,7 @@ HTMLArea.prototype._insertTable = function() {
 				}
 			}
 		}
-		if (HTMLArea.is_ie) {
+		if (HTMLArea.is_ie && !HTMLArea.is_ie5_5) {
 			var htmltablo = HTMLArea.getHTML(table, true);
 			range.pasteHTML(htmltablo);
 		} else {
@@ -1419,7 +1419,10 @@ HTMLArea.prototype.getHTML = function() {
 HTMLArea.prototype.getHTML = function() {
 	switch (this._mode) {
 	    case "wysiwyg":
-		return HTMLArea.getHTML(this._doc.body, false);
+		if (HTMLArea.is_ie5_5)             
+			return this._doc.body.innerHTML; 
+		else           
+			return HTMLArea.getHTML(this._doc.body, false); 
 	    case "textmode":
 		return this._textArea2.value;
 	    default:
@@ -1471,6 +1474,7 @@ HTMLArea.is_mac    = (HTMLArea.agt.indexOf("mac") != -1);
 HTMLArea.is_mac_ie = (HTMLArea.is_ie && HTMLArea.is_mac);
 HTMLArea.is_win_ie = (HTMLArea.is_ie && !HTMLArea.is_mac);
 HTMLArea.is_gecko  = (navigator.product == "Gecko");
+HTMLArea.is_ie5_5  = ((HTMLArea.agt.indexOf("msie 5.5") !=-1));
 
 
 
@@ -1632,6 +1636,7 @@ HTMLArea.getHTML = function(root, outputRoot) {
 		str = str.replace(/\"/ig, "&quot;");
 		return str;
 	};
+
 	var html = "";
 	switch (root.nodeType) {
 	    case 1: // Node.ELEMENT_NODE
