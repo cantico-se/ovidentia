@@ -1964,8 +1964,17 @@ if(!isset($path))
 	{
 	$path = "";
 	}
-else if( bab_isMagicQuotesGpcOn())
-	$path = stripslashes($path);
+else
+	{
+	if( strstr($path, ".."))
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		return;
+		}
+
+	if( bab_isMagicQuotesGpcOn())
+		$path = stripslashes($path);
+	}
 
 
 if( !empty($BAB_SESS_USERID) && $babBody->ustorage)
