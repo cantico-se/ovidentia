@@ -435,15 +435,16 @@ function deleteAd($id, $table)
 			$this->warning = bab_translate("WARNING: This operation will delete directory and all references"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admdir&idx=list&id=".$id."&action=Yes&type=";
 			if( $table == BAB_DB_DIRECTORIES_TBL )
-				$this->urlyes .= "l";
-			else
+				{
 				$this->urlyes .= "d";
+				}
+			else if( $table == BAB_LDAP_DIRECTORIES_TBL )
+				$this->urlyes .= "l";
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=admdir&idx=list";
 			$this->no = bab_translate("No");
 			}
 		}
-
 	$temp = new temp($id, $table);
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
@@ -535,7 +536,17 @@ function addDbDirectory($name, $description, $fields, $rw, $rq, $ml)
 				$multilignes = "Y";
 			else
 				$multilignes = "N";
-			$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes) VALUES ('" .$id. "', '" . $arr['id']. "', '".$fields[$arr['name']]."', '".$modifiable."', '".$required."', '".$multilignes."')";
+			switch($arr['name'])
+				{
+				case 'givenname':
+					$ordering = 1; break;
+				case 'sn':
+					$ordering = 2; break;
+				default:
+					$ordering = 0; break;
+				}
+
+			$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES ('" .$id. "', '" . $arr['id']. "', '".$fields[$arr['name']]."', '".$modifiable."', '".$required."', '".$multilignes."', '".$ordering."')";
 			$db->db_query($req);
 			}
 		}
