@@ -3509,6 +3509,7 @@ class bab_CalendarUserEvents extends bab_handler
 			$this->ctx->curctx->push('EventTitle', $arr['title']);
 			bab_replace_ref($arr['description'],'OVML');
 			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventLocation', $arr['location']);
 			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']));
 			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']));
 			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
@@ -3673,6 +3674,7 @@ class bab_CalendarGroupEvents extends bab_handler
 			$this->ctx->curctx->push('EventTitle', $arr['title']);
 			bab_replace_ref($arr['description'],'OVML');
 			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventLocation', $arr['location']);
 			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']));
 			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']));
 			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
@@ -3839,6 +3841,7 @@ class bab_CalendarResourceEvents extends bab_handler
 			$this->ctx->curctx->push('EventTitle', $arr['title']);
 			bab_replace_ref($arr['description'],'OVML');
 			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventLocation', $arr['location']);
 			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']));
 			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']));
 			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);

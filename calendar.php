@@ -211,6 +211,7 @@ function displayEventDetail($evtid, $idcal)
 					$this->enddatetxt = bab_translate("End date");
 					$this->titletxt = bab_translate("Title");
 					$this->desctxt = bab_translate("Description");
+					$this->locationtxt = bab_translate("Location");
 					$this->cattxt = bab_translate("Category");
 					$this->begindate = bab_longDate(bab_mktime($arr['start_date']));
 					$this->enddate = bab_longDate(bab_mktime($arr['end_date']));
@@ -222,11 +223,13 @@ function displayEventDetail($evtid, $idcal)
 						{
 						$this->title= '';
 						$this->description = '';
+						$this->location = '';
 						}
 					else
 						{
 						$this->title= $arr['title'];
 						$this->description = bab_replace($arr['description']);
+						$this->location= $arr['location'];
 						}
 					if( $arr['id_cat'] != 0 )
 						{
@@ -251,6 +254,214 @@ function displayEventDetail($evtid, $idcal)
 
 	$temp = new displayEventDetailCls($evtid, $idcal);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "eventdetail"));
+}
+
+
+function displayEventNotes($evtid, $idcal)
+{
+	global $babBodyPopup;
+	class displayEventNotesCls
+		{
+
+		function displayEventNotesCls($evtid, $idcal)
+			{
+			global $babBodyPopup, $babBody, $babDB;
+			$this->access = false;
+			if( bab_isCalendarAccessValid($idcal))
+				{
+				$this->access = true;
+				$this->notetxt = bab_translate("Personal notes");
+				$this->updatetxt = bab_translate("Update");
+				$res = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$evtid."'");
+				if( $res && $babDB->db_num_rows($res) > 0 )
+					{
+					$arr = $babDB->db_fetch_array($res);
+					$this->noteval = htmlentities($arr['note']);
+					}
+				else
+					{
+					$this->noteval = '';
+					}
+				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+				if( !empty($hash) && $hash[0] == 'R')
+					{
+					$this->all = bab_translate("All");
+					$this->thisone = bab_translate("This occurence");
+					$this->brecevt = true;
+					}
+				else
+					{
+					$this->brecevt = false;
+					}
+				}
+			}
+		}
+
+	$temp = new displayEventNotesCls($evtid, $idcal);
+	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "eventnotes"));
+}
+
+
+function displayEventAlert($evtid, $idcal)
+{
+	global $babBodyPopup;
+	class displayEventAlertCls
+		{
+
+		function displayEventAlertCls($evtid, $idcal)
+			{
+			global $babBodyPopup, $babBody, $babDB;
+			$this->access = false;
+			if( bab_isCalendarAccessValid($idcal))
+				{
+				$this->access = true;
+				$this->alerttxt = bab_translate("Reminder");
+				$this->updatetxt = bab_translate("Update");
+				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$evtid."'");
+				if( $res && $babDB->db_num_rows($res) > 0 )
+					{
+					$this->arralert = $babDB->db_fetch_array($res);
+					$this->rcheckedval = 'checked';
+					}
+				else
+					{
+					$this->arralert = array();
+					$this->rcheckedval = '';
+					}
+
+				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+				if( !empty($hash) && $hash[0] == 'R')
+					{
+					$this->all = bab_translate("All");
+					$this->thisone = bab_translate("This occurence");
+					$this->brecevt = true;
+					}
+				else
+					{
+					$this->brecevt = false;
+					}
+				$this->days = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
+				$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
+				$this->minutes = array(0, 5, 10, 15, 30, 45);
+				$this->rmcheckedval = '';
+				if( isset($GLOBALS['babEmailReminder']) &&  $GLOBALS['babEmailReminder'])
+					{
+					$this->remailtxt = bab_translate("Use email reminder");
+					if( isset($this->arralert['bemail']) && $this->arralert['bemail'] ==  'Y' )
+						{
+						$this->rmcheckedval = 'checked';
+						}
+					}
+				else
+					{
+					$this->remailtxt = "";
+					}
+				}
+			}
+
+
+		function getnextday()
+			{
+			static $i=0;
+			if( $i < count($this->days))
+				{
+				$this->dval = $this->days[$i];
+				$this->dname = $this->dval." ";
+				if( $i < 2 )
+					{
+					$this->dname .= bab_translate("day");
+					}
+				else
+					{
+					$this->dname .= bab_translate("days");
+					}
+				if( isset($this->arralert['day']) && $this->dval == $this->arralert['day'])
+					{
+					$this->dselected = 'selected';
+					}
+				else
+					{
+					$this->dselected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnexthour()
+			{
+			static $i=0;
+			if( $i < count($this->hours))
+				{
+				$this->hval = $this->hours[$i];
+				$this->hname = $this->hval." ";
+				if( $i < 2 )
+					{
+					$this->hname .= bab_translate("hour");
+					}
+				else
+					{
+					$this->hname .= bab_translate("hours");
+					}
+				$i++;
+				if( isset($this->arralert['hour']) && $this->hval == $this->arralert['hour'])
+					{
+					$this->hselected = 'selected';
+					}
+				else
+					{
+					$this->hselected = '';
+					}
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnextminute()
+			{
+			static $i=0;
+			if( $i < count($this->minutes))
+				{
+				$this->mval = $this->minutes[$i];
+				$this->mname = $this->mval." ";
+				if( $i == 0 )
+					{
+					$this->mname .= bab_translate("minute");
+					}
+				else
+					{
+					$this->mname .= bab_translate("minutes");
+					}
+				if( isset($this->arralert['minute']) && $this->mval == $this->arralert['minute'])
+					{
+					$this->mselected = 'selected';
+					}
+				else
+					{
+					$this->mselected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+		}
+
+	$temp = new displayEventAlertCls($evtid, $idcal);
+	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "eventalert"));
 }
 
 function categoriesList()
@@ -413,13 +624,110 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 }
 
+function updateEventNotes($evtid, $note, $bupdrec)
+{
+	global $babDB;
+	if( !empty($GLOBALS['BAB_SESS_USERID']) )
+	{
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$note = addslashes($note);
+			}
+
+		$evtidarr = array();
+
+		if( $bupdrec == 1 )
+		{
+			list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+			if( !empty($hash) &&  $hash[0] == 'R')
+				{
+				$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$hash."'");
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+					$evtidarr[] = $arr['id'];
+					}
+				}
+		}
+
+		if( count($evtidarr) == 0 )
+			{
+			$evtidarr[] = $evtid;
+			}
+
+		$updevtarr = array();
+
+		$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".implode(',', $evtidarr).") and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$updevtarr[$arr['id_event']] = 1;
+		}
+
+		for( $i=0; $i < count($evtidarr); $i++ )
+		{
+
+		if( isset($updevtarr[$evtidarr[$i]] ) )
+			{
+			$babDB->db_query("update ".BAB_CAL_EVENTS_NOTES_TBL." set note='".$note."'  where id_event='".$evtidarr[$i]."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			}
+		else
+			{
+			$babDB->db_query("insert into ".BAB_CAL_EVENTS_NOTES_TBL." ( id_event, id_user, note ) values ('".$evtidarr[$i]."', '".$GLOBALS['BAB_SESS_USERID']."', '".$note."')");
+			}
+		}
+	}
+}
+
+function updateEventAlert($evtid, $creminder, $day, $hour, $minute, $remail, $bupdrec)
+{
+	global $babDB;
+	if( !empty($GLOBALS['BAB_SESS_USERID']) )
+	{
+		if( $creminder == 'Y')
+		{
+			$res= $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$evtid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+				$babDB->db_query("update ".BAB_CAL_EVENTS_REMINDERS_TBL." set day='".$day."', hour='".$hour."', minute='".$minute."', bemail='".$remail."', processed='N' where id_event='".$evtid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			}
+			else
+			{
+				$babDB->db_query("insert into ".BAB_CAL_EVENTS_REMINDERS_TBL." (id_event, id_user, day, hour, minute, bemail) values ('".$evtid."', '".$GLOBALS['BAB_SESS_USERID']."', '".$day."', '".$hour."', '".$minute."', '".$remail."')");
+			}
+		}
+		else
+		{
+			$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$evtid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		}
+	}
+}
+
 
 /* main */
-if( isset($conf) && $conf == "event")
+if( isset($conf) )
 {
-	if( !isset($bupdrec)) { $bupdrec = 2; }
-	confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec);
-	$reload = true;
+	if( $conf == "event" )
+		{
+		if( !isset($bupdrec)) { $bupdrec = 2; }
+		confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec);
+		$reload = true;
+		}
+	elseif( $conf == "note" )
+		{
+		if( !isset($bupdrec)) { $bupdrec = 2;}
+		updateEventNotes($evtid, $note, $bupdrec);
+		$reload = true;
+		}
+	elseif( $conf == "alert" )
+		{
+		if( !isset($bupdrec)) { $bupdrec = 2;}
+		if( !isset($creminder)) { $creminder = 'N';}
+		if( !isset($day)) { $day = '';}
+		if( !isset($hour)) { $hour = '';}
+		if( !isset($minute)) { $minute = '';}
+		if( !isset($remail)) { $remail = 'N';}
+		updateEventAlert($evtid, $creminder, $day, $hour, $minute, $remail, $bupdrec);
+		$reload = true;
+		}
 }
 
 switch($idx)
@@ -431,6 +739,15 @@ switch($idx)
 		popupUnload($popupmessage, '', $reload);
 		exit;
 		break;
+	case "evtnote":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$babBodyPopup = new babBodyPopup();
+		$babBodyPopup->title = bab_translate("Personal notes");
+		displayEventDetail($evtid, $idcal);
+		displayEventNotes($evtid, $idcal);
+		printBabBodyPopup();
+		exit;
+		break;
 	case "viewc":
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
@@ -439,6 +756,7 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+	case "veventupd":
 	case "vevent":
 	case "attendees":
 		include_once $babInstallPath."utilit/uiutil.php";
@@ -449,6 +767,11 @@ switch($idx)
 			{
 			$babBodyPopup->title = bab_translate("Attendees");
 			displayAttendees($evtid, $idcal);
+			}
+		if ($idx == "veventupd")
+			{
+			displayEventNotes($evtid, $idcal);
+			displayEventAlert($evtid, $idcal);
 			}
 		printBabBodyPopup();
 		exit;

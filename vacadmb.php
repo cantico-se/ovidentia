@@ -1178,6 +1178,8 @@ function doDeleteVacationRequest($vrid)
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id']."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$arr['id']."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$arr['id']."'");
 		}
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where hash='V_".$vrid."'");
 	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$vrid."'");

@@ -125,6 +125,8 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 			{
 			$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arrevtids[$i]."'");
 			$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arrevtids[$i]."'");
+			$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$arrevtids[$i]."'");
+			$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$arrevtids[$i]."'");
 			}
 		}
 	}

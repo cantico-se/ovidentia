@@ -4527,6 +4527,46 @@ function upgrade553to554()
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
+$req = "ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD location VARCHAR(255) NOT NULL AFTER description";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CAL_EVENTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_NOTES_TBL." (
+					id_event int(10) unsigned NOT NULL default '0',
+					id_user int(10) unsigned NOT NULL default '0',
+					note text NOT NULL,
+					UNIQUE KEY id_event (id_event,id_user)
+					)");
+
+
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_EVENTS_NOTES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$res = $db->db_query("CREATE TABLE ".BAB_CAL_EVENTS_REMINDERS_TBL." (
+						  id_event int(11) unsigned NOT NULL default '0',
+						  id_user int(11) unsigned NOT NULL default '0',
+						  day smallint(3) NOT NULL default '0',
+						  hour smallint(2) NOT NULL default '0',
+						  minute smallint(2) NOT NULL default '0',
+						  bemail enum('N','Y') NOT NULL default 'N',
+						  processed enum('N','Y') NOT NULL default 'N',
+						  KEY id_event (id_event,id_user)
+						)");
+
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_CAL_EVENTS_REMINDERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 

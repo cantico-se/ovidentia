@@ -906,6 +906,10 @@ switch($tg)
 	case "statproc":
 		include $babInstallPath."utilit/statproc.php";
 		break;
+	case "calnotif":
+		include $babInstallPath."utilit/calnotif.php";
+		exit;
+		break;
 	case "htmlarea":
 		include $babInstallPath."htmlarea.php";
 		exit;

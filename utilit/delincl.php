@@ -458,6 +458,8 @@ function bab_deleteUser($id)
 
 	include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
 	bab_deleteCalendar($arr['id']);
+	$db->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$id."'");	
+	$db->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_user='".$id."'");	
 
 	// delete user from BAB_USERS_LOG_TBL
 	$res = $db->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='$id'");	

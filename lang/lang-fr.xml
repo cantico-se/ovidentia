@@ -1028,7 +1028,7 @@
 <string id="Initials">Initiales</string>
 <string id="Internet Free Busy">Disponibilité Internet</string>
 <string id="Language">Langue</string>
-<string id="Location">Emplacement</string>
+<string id="Location">Lieu</string>
 <string id="Manager's Name">Responsable</string>
 <string id="Mileage">Kilométrage</string>
 <string id="Office Location">Bureau</string>
@@ -1722,6 +1722,18 @@
 <string id="In">Dans</string>
 <string id="Restrict to">Restreindre à</string>
 <string id="Roles and entities">Fonctions et entités</string>
-<string id="Event owner">Propriétaire de l'évenement</string>
+<string id="Event owner">Propriétaire de l'événement</string>
 <string id="No article in this topic !">Aucun article dans ce thème</string>
+<string id="Add personal note">Ajouter une annotation personnelle</string>
+<string id="Personal notes">Annotations personnelles</string>
+<string id="Event reminder">Rappel d'un événement</string>
+<string id="Dismiss">Cacher</string>
+<string id="Event notifier">Rappel d'événements</string>
+<string id="Open notifier">Ouvrir le Notifier</string>
+<string id="Reminder">Rappel</string>
+<string id="Use email reminder">Par email</string>
+<string id="day">jour</string>
+<string id="hour">heure</string>
+<string id="hours">heures</string>
+<string id="minute">minute</string>
 </fr>

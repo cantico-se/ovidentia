@@ -39,6 +39,16 @@ class bab_WebStatEvent
 		{
 			return;
 		}
+
+		switch($GLOBALS['tg'])
+		{
+			case 'calnotif':
+			case 'statproc':
+				return;
+			default:
+				break;
+		}
+
 		register_shutdown_function(array(&$this, 'updateInfo'));
 		$this->idevt = 0;
 		$this->info = array();

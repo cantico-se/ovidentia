@@ -289,6 +289,12 @@ a img {
 	background-image:url('../skins/ovidentia/images/Puces/PuceCalendar.gif');
 	}
 
+.bab_cal_buttons a.notifier {
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	background-image:url('../skins/ovidentia/images/Puces/bell.gif');
+	}
+
 .BabTodayEvent .HeaderDayCalendar {
    border-bottom:#f00 2px solid;
 	}

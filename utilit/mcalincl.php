@@ -344,6 +344,7 @@ class bab_icalendar
 
 			$this->events = array();
 			$res = $babDB->db_query("select ceo.*, ce.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id where ceo.id_cal='".$calid."' and ceo.status != '".BAB_CAL_STATUS_DECLINED."' and ce.start_date <= '".$enddate."' and  ce.end_date >= '".$startdate."' order by ce.start_date asc");
+			$idevtarr = array();
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				list($arr['nbowners']) = $babDB->db_fetch_row($babDB->db_query("select count(ceo.id_cal) from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$arr['id']."' and ceo.id_cal != '".$calid."'"));
@@ -357,11 +358,47 @@ class bab_icalendar
 					if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
 						{
 						$this->events[] = $arr;
+						$idevtarr[] = $arr['id'];
 						}
 					}
 				else
 					{
 					$this->events[] = $arr;
+					$idevtarr[] = $arr['id'];
+					}
+				}
+
+			if( !empty($GLOBALS['BAB_SESS_USERID']) && count($idevtarr) > 0 )
+				{
+				$eventsnotes = array();
+				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".implode(',', $idevtarr).") and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+					$eventsnotes[$arr['id_event']] = $arr['note'];
+					}
+				$eventsalerts = array();
+				$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event in (".implode(',', $idevtarr).") and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+					$eventsalerts[$arr['id_event']] = 1;
+					}
+				if( count($eventsnotes) > 0 || count($eventsalerts) > 0)
+					{
+					for($i=0; $i < count($this->events); $i++)
+						{
+						if( isset($eventsnotes[$this->events[$i]['id']]))
+							{
+							$this->events[$i]['note'] = $eventsnotes[$this->events[$i]['id']];
+							}
+						if( isset($eventsalerts[$this->events[$i]['id']]))
+							{
+							$this->events[$i]['alert'] = true;
+							}
+						else
+							{
+							$this->events[$i]['alert'] = false;
+							}
+						}
 					}
 				}
 			}
@@ -518,6 +555,7 @@ class cal_wmdbaseCls
 		$this->gotodatename = bab_translate("Go to date");
 		$this->attendeestxt = bab_translate("Attendees");
 		$this->statustxt = bab_translate("Waiting event");
+		$this->notestxt = bab_translate("Notes");
 		$this->t_calendarchoice = bab_translate("Calendars");
 		$this->t_date_from = bab_translate("date_from");
 		$this->t_date_to = bab_translate("date_to");
@@ -540,12 +578,16 @@ class cal_wmdbaseCls
 		$this->t_search = bab_translate("Search");
 		$this->t_eventlist = bab_translate("Detailed sight");
 		$this->t_catlist = bab_translate("Categories");
+		$this->t_note = bab_translate("Personal note");
+		$this->t_location = bab_translate("Location");
+		$this->t_alert = bab_translate("Reminder");
+		$this->t_notifier = bab_translate("Open notifier");
 		
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."|date=".$date."|calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
 		$this->searcheventurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=rfree&date=".$date."&calid=".$this->currentidcals;
-
+		$this->calnotifierurl = $GLOBALS['babUrlScript']."?tg=calnotif&idx=popup";
 	}
 
 	function updateAccess($evtarr, $calinfo)

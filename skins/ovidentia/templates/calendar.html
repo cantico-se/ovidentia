@@ -100,6 +100,10 @@
 	<td>{ title }</td>
 	</tr>
 	<tr> 
+	<td align="right"><b>{ locationtxt }</b></td>
+	<td>{ location }</td>
+	</tr>
+	<tr> 
 	<td align="right"><b>{ desctxt }</b></td>
 	<td>{ description }</td>
 	</tr>
@@ -118,7 +122,7 @@
 </tr>
 </table>
 <!--#endif access -->
-<br /><br /><br />
+<br />
 <!--#end eventdetail -->
 
 <!--#begin calendarchoice -->
@@ -547,3 +551,150 @@ function showhidebefore(id)
 <a class="events" href="javascript:showhidebefore('event{ last_id }')">{ t_show_hide }</a>
 </div>
 <!--#end eventlist -->
+
+<!--#begin eventnotes -->
+<!--#if access -->
+<br />
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="calendar">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="conf" value="note">
+<input type="hidden" name="evtid" value="{ evtid }">
+<input type="hidden" name="idcal" value="{ idcal }">
+<br>
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+<tr>
+<td align="center"><b>{ notetxt }:</b></td>
+</tr>
+<!--#if brecevt -->
+<tr>
+<td align="center">
+<select name="bupdrec">
+<option value="1">{ all }</option>
+<option value="2" selected>{ thisone }</option>
+</select>
+</td>
+</tr>
+<!--#endif brecevt -->
+<tr>
+<td align="center"><textarea cols="40" rows="10" name="note">{ noteval }</textarea>
+</td>
+</tr>
+<tr>
+<td align="center"><input type="submit" name="block" value="{ updatetxt }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#endif access -->
+<br />
+<!--#end eventnotes -->
+
+<!--#begin eventalert -->
+<!--#if access -->
+<br />
+<SCRIPT language="JavaScript">
+<!--
+function ed()
+{
+var f = document.forms.freminder;
+if (!f.creminder.checked)
+	{
+	f.day.disabled = true;
+	f.hour.disabled = true;
+	f.minute.disabled = true;
+<!--#if remailtxt -->
+	f.remail.disabled = true;
+<!--#endif remailtxt -->
+	}
+else
+	{
+	f.day.disabled = false;
+	f.hour.disabled = false;
+	f.minute.disabled = false;
+<!--#if remailtxt -->
+	f.remail.disabled = false;
+<!--#endif remailtxt -->
+	}
+}
+//-->
+</SCRIPT>
+<form name="freminder" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="calendar">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="conf" value="alert">
+<input type="hidden" name="evtid" value="{ evtid }">
+<input type="hidden" name="idcal" value="{ idcal }">
+<br>
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+<tr>
+<td align="center"><input type="checkbox" name="creminder" value="Y" { rcheckedval }  OnClick="ed()" />&nbsp;<b>{ alerttxt }</b></td>
+</tr>
+<!--#if brecevt -->
+<tr>
+<td align="center">
+<select name="bupdrec">
+<option value="1">{ all }</option>
+<option value="2" selected>{ thisone }</option>
+</select>
+</td>
+</tr>
+<!--#endif brecevt -->
+<tr>
+<td align="center">
+&nbsp;
+<select name="day">
+<!--#in getnextday -->
+<option value="{ dval }" { dselected }>{ dname }</option>
+<!--#endin getnextday -->
+</select>
+&nbsp;
+<select name="hour">
+<!--#in getnexthour -->
+<option value="{ hval }" { hselected }>{ hname }</option>
+<!--#endin getnexthour -->
+</select>
+&nbsp;
+<select name="minute">
+<!--#in getnextminute -->
+<option value="{ mval }" { mselected }>{ mname }</option>
+<!--#endin getnextminute -->
+</select>
+<!--#if remailtxt -->
+&nbsp;
+<input type="checkbox" name="remail" value="Y" { rmcheckedval } />&nbsp;{ remailtxt } 
+<!--#endif remailtxt -->
+</td>
+</tr>
+<tr>
+<td align="center"><input type="submit" name="block" value="{ updatetxt }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<script type="text/javascript">
+<!--
+ed();
+//-->
+</script>
+<!--#endif access -->
+<br />
+<!--#end eventalert -->

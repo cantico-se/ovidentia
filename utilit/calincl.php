@@ -311,7 +311,7 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 	}
 
 
-function createEvent($idcals,$id_owner, $title, $description, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash='')
+function createEvent($idcals,$id_owner, $title, $description, $location, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash, $arralert)
 {
 
 	global $babBody, $babDB;
@@ -319,7 +319,7 @@ function createEvent($idcals,$id_owner, $title, $description, $startdate, $endda
 	$title = stripslashes($title);
 	$description = stripslashes($description);
 
-	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) values ('".addslashes($title)."', '".addslashes($description)."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$id_owner."', '".$color."', '".$private."', '".$lock."', '".$free."', '".$hash."')");
+	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) values ('".addslashes($title)."', '".addslashes($description)."', '".addslashes($location)."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$id_owner."', '".$color."', '".$private."', '".$lock."', '".$free."', '".$hash."')");
 	
 	$id_event = $babDB->db_insert_id();
 
@@ -398,6 +398,11 @@ function createEvent($idcals,$id_owner, $title, $description, $startdate, $endda
 	if( count($arrcals) == 0 )
 		{
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$id_event."'");
+		}
+	elseif( !empty($GLOBALS['BAB_SESS_USERID']) && $arralert !== false )
+		{
+		$babDB->db_query("insert into ".BAB_CAL_EVENTS_REMINDERS_TBL." (id_event, id_user, day, hour, minute, bemail) values ('".$id_event."', '".$GLOBALS['BAB_SESS_USERID']."', '".$arralert['day']."', '".$arralert['hour']."', '".$arralert['minute']."', '".$arralert['email']."')");
+
 		}
 	return $arrcals;
 }
@@ -852,6 +857,8 @@ function bab_deleteCalendar($idcal)
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id_event']."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id='".$arr['id_event']."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id='".$arr['id_event']."'");	
 		}
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$idcal."'");	
 	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$idcal."'");	

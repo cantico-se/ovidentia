@@ -584,6 +584,7 @@ CREATE TABLE bab_cal_events (
   id int(11) unsigned NOT NULL auto_increment,
   title varchar(255) NOT NULL default '',
   description text NOT NULL,
+  location varchar(255) NOT NULL default '',
   start_date datetime NOT NULL default '0000-00-00 00:00:00',
   end_date datetime NOT NULL default '0000-00-00 00:00:00',
   id_cat int(11) unsigned NOT NULL default '0',
@@ -2466,4 +2467,22 @@ CREATE TABLE bab_users_unavailability (
   end_date date NOT NULL default '0000-00-00',
   id_substitute int(11) NOT NULL default '0',
   KEY id_user (id_user,id_substitute)
+);
+
+CREATE TABLE bab_cal_events_notes (
+  id_event int(10) unsigned NOT NULL default '0',
+  id_user int(10) unsigned NOT NULL default '0',
+  note text NOT NULL,
+  UNIQUE KEY id_event (id_event,id_user)
+);
+
+CREATE TABLE bab_cal_events_reminders (
+  id_event int(11) unsigned NOT NULL default '0',
+  id_user int(11) unsigned NOT NULL default '0',
+  day smallint(3) NOT NULL default '0',
+  hour smallint(2) NOT NULL default '0',
+  minute smallint(2) NOT NULL default '0',
+  bemail enum('N','Y') NOT NULL default 'N',
+  processed enum('N','Y') NOT NULL default 'N',
+  KEY id_event (id_event,id_user)
 );

@@ -71,6 +71,7 @@ class bab_event
 		$this->everyday = bab_translate("Everyday");
 		$this->title = bab_translate("Title");
 		$this->description = bab_translate("Description");
+		$this->location = bab_translate("Location");
 		$this->category = bab_translate("Category");
 		$this->usrcalendarstxt = bab_translate("Users calendars");
 		$this->grpcalendarstxt = bab_translate("Groups calendars");
@@ -160,6 +161,7 @@ function newEvent()
 			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 1;
 			$this->repeat_cb_checked = isset($_POST['repeat_cb']) ? 'checked' : '';
 			$this->titleval = isset($GLOBALS['title'])? $GLOBALS['title']: '';
+			$this->locationval = isset($GLOBALS['location'])? $GLOBALS['location']: '';
 				
 			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
 			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
@@ -203,6 +205,19 @@ function newEvent()
 
 			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
 
+			$this->days = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
+			$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
+			$this->minutes = array(0, 5, 10, 15, 30, 45);
+			$this->alerttxt = bab_translate("Reminder");
+			if( isset($GLOBALS['babEmailReminder']) &&  $GLOBALS['babEmailReminder'])
+				{
+				$this->remailtxt = bab_translate("Use email reminder");
+				}
+			else
+				{
+				$this->remailtxt = "";
+				}
+
 			if (isset($_POST) && count($_POST) > 0)
 				{
 				$this->arr = $_POST;
@@ -217,6 +232,11 @@ function newEvent()
 					{
 					$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
 					}
+				$this->rcheckedval = isset($this->arr['creminder']) ? 'checked' : '';
+				$this->rmcheckedval = isset($this->arr['remail']) ? 'checked' : '';
+				$this->arralert['day'] = isset($this->arr['rday']) ? $this->arr['rday'] : '';
+				$this->arralert['hour'] = isset($this->arr['rhour']) ? $this->arr['rhour'] : '';
+				$this->arralert['minute'] = isset($this->arr['rminute']) ? $this->arr['rminute'] : '';
 				}
 			else
 				{
@@ -224,7 +244,14 @@ function newEvent()
 				$this->arr['repeat_n_2'] = '';
 				$this->arr['repeat_n_3'] = '';
 				$this->arr['repeat_n_4'] = '';
+				$this->rcheckedval = '';
+				$this->rmcheckedval = '';
+				$this->arralert['day'] = '';
+				$this->arralert['hour'] = '';
+				$this->arralert['minute'] = '';
 				}
+
+			
 			}
 
 		function getnextday()
@@ -364,6 +391,106 @@ function newEvent()
 				return false;
 			return list(,$this->conflict) = each($GLOBALS['avariability']);
 			}
+
+		function getnextreminderday()
+			{
+			static $i=0;
+			if( $i < count($this->days))
+				{
+				$this->dval = $this->days[$i];
+				$this->dname = $this->dval." ";
+				if( $i < 2 )
+					{
+					$this->dname .= bab_translate("day");
+					}
+				else
+					{
+					$this->dname .= bab_translate("days");
+					}
+				if( isset($this->arralert['day']) && $this->dval == $this->arralert['day'])
+					{
+					$this->dselected = 'selected';
+					}
+				else
+					{
+					$this->dselected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnextreminderhour()
+			{
+			static $i=0;
+			if( $i < count($this->hours))
+				{
+				$this->hval = $this->hours[$i];
+				$this->hname = $this->hval." ";
+				if( $i < 2 )
+					{
+					$this->hname .= bab_translate("hour");
+					}
+				else
+					{
+					$this->hname .= bab_translate("hours");
+					}
+				$i++;
+				if( isset($this->arralert['hour']) && $this->hval == $this->arralert['hour'])
+					{
+					$this->hselected = 'selected';
+					}
+				else
+					{
+					$this->hselected = '';
+					}
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnextreminderminute()
+			{
+			static $i=0;
+			if( $i < count($this->minutes))
+				{
+				$this->mval = $this->minutes[$i];
+				$this->mname = $this->mval." ";
+				if( $i == 0 )
+					{
+					$this->mname .= bab_translate("minute");
+					}
+				else
+					{
+					$this->mname .= bab_translate("minutes");
+					}
+				if( isset($this->arralert['minute']) && $this->mval == $this->arralert['minute'])
+					{
+					$this->mselected = 'selected';
+					}
+				else
+					{
+					$this->mselected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+		
 		}
 
 	$temp = new temp();
@@ -472,6 +599,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				$this->evtarr = $_POST;
 				$this->evtarr['id_cat'] = $_POST['category'];
 				$this->evtarr['description'] = $_POST['evtdesc'];
+				$this->evtarr['location'] = $_POST['location'];
 
 				$this->yearbegin = $this->evtarr['yearbegin'];
 				$this->daybegin =$this->evtarr['daybegin'];
@@ -509,6 +637,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->endtime = bab_translate("endtime");
 			$this->title = bab_translate("Title");
 			$this->description = bab_translate("Description");
+			$this->location = bab_translate("Location");
 			$this->category = bab_translate("Category");
 			$this->descurl = $GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid;
 
@@ -760,8 +889,21 @@ function addEvent(&$message)
 		return false;
 		}
 
+	if( !empty($GLOBALS['BAB_SESS_USERID']) && isset($_POST['creminder']) && $_POST['creminder'] == 'Y')
+		{
+		$arralert['day'] = $_POST['rday'];
+		$arralert['hour'] = $_POST['rhour'];
+		$arralert['minute'] = $_POST['rminute'];
+		$arralert['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
+		}
+	else
+		{
+		$arralert = false;
+		}
+
 	$description = post_string('evtdesc');
 	$title = post_string('title');
+	$location = post_string('location');
 		
 	$category = empty($_POST['category']) ? '0' : $_POST['category'];
 	$color = empty($_POST['color']) ? '' : $_POST['color'];
@@ -830,7 +972,7 @@ function addEvent(&$message)
 					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 					do
 						{
-						$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+						$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
 						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 						$day += 7;
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
@@ -857,7 +999,7 @@ function addEvent(&$message)
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 						do
 							{
-							$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+							$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
 							$day += 7;					
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
@@ -880,7 +1022,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -899,7 +1041,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -923,7 +1065,7 @@ function addEvent(&$message)
 				$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash, $arralert);
 					$day += $_POST['repeat_n_1'];
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
@@ -935,7 +1077,7 @@ function addEvent(&$message)
 		}
 	else
 		{
-		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $begin, $end, $category, $color, $bprivate, $block, $bfree, '');
+		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $begin, $end, $category, $color, $bprivate, $block, $bfree, '', $arralert);
 		}
 
 	if( count($arrnotify) > 0 )
@@ -995,11 +1137,13 @@ function updateEvent(&$message)
 		{
 		$title = addslashes($_POST['title']);
 		$description = addslashes($_POST['evtdesc']);
+		$location = addslashes($_POST['location']);
 		}
 	else
 		{
 		$title = $_POST['title'];
 		$description = $_POST['evtdesc'];
+		$location = addslashes($_POST['location']);
 		}
 		
 	$db = $GLOBALS['babDB'];
@@ -1058,7 +1202,7 @@ function updateEvent(&$message)
 	}
 
 	reset($arrupdate);
-	$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."', color='".$_POST['color']."', bprivate='".$_POST['bprivate']."', block='".$_POST['block']."', bfree='".$_POST['bfree']."'";
+	$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', location='".$location."', id_cat='".$catid."', color='".$_POST['color']."', bprivate='".$_POST['bprivate']."', block='".$_POST['block']."', bfree='".$_POST['bfree']."'";
 	foreach($arrupdate as $key => $val)
 	{
 		$db->db_query($req.", start_date='".$val['start']."', end_date='".$val['end']."' where id='".$key."'" );
@@ -1094,6 +1238,8 @@ function confirmDeleteEvent()
 						}
 					}
 				$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arr['id']."'");
+				$db->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$arr['id']."'");
+				$db->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$arr['id']."'");
 				}
 			}
 		}
@@ -1109,6 +1255,8 @@ function confirmDeleteEvent()
 				}
 			}
 		$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$GLOBALS['evtid']."'");
+		$db->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$GLOBALS['evtid']."'");
+		$db->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$GLOBALS['evtid']."'");
 		}
 }
 

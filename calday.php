@@ -188,12 +188,14 @@ class cal_dayCls extends cal_wmdbaseCls
 							$this->title = bab_translate("Private");
 							$this->titleten = $this->title;
 							$this->description = "";
+							$this->location = "";
 							}
 						else
 							{
 							$this->title = $arr['title'];
 							$this->titleten = $this->calstr($arr['title']);
 							$this->description = bab_replace($arr['description']);
+							$this->location = htmlentities($arr['location']);
 							}
 
 						$this->nbowners = $arr['nbowners'];
@@ -204,14 +206,21 @@ class cal_dayCls extends cal_wmdbaseCls
 							}
 						elseif( $this->allow_view )
 							{
-							$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+							$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 							}
 						else
 							{
 							$this->titletenurl = "";
 							}
 						$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-						$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+						$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+						$this->bnote = false;
+						if( isset($arr['note']) && !empty($arr['note']))
+							{
+							$this->bnote = true;
+							$this->noteval = $arr['note'];
+							}
+						$this->balert = $arr['alert'];
 						break;
 						}
 					$i++;

@@ -184,6 +184,12 @@
 		<input type="text" name="title" size="45" maxlength="100" value="{ titleval }">
 		</td>
 	</tr>
+	<tr> 
+		<td align="right" valign="middle">{ location }:</td>
+		<td> 
+		<input type="text" name="location" size="45" maxlength="255" value="{ locationval }">
+		</td>
+	</tr>
 	<!--#if rescat -->
 	<tr> 
 		<td align="right">{ category }:</td>
@@ -248,6 +254,59 @@
 			<!--#endif bfree -->
 		</td>
 	</tr>
+	<tr> 
+<SCRIPT language="JavaScript">
+<!--
+function ed()
+{
+var f = document.forms.vacform;
+if (!f.creminder.checked)
+	{
+	f.rday.disabled = true;
+	f.rhour.disabled = true;
+	f.rminute.disabled = true;
+<!--#if remailtxt -->
+	f.remail.disabled = true;
+<!--#endif remailtxt -->
+	}
+else
+	{
+	f.rday.disabled = false;
+	f.rhour.disabled = false;
+	f.rminute.disabled = false;
+<!--#if remailtxt -->
+	f.remail.disabled = false;
+<!--#endif remailtxt -->
+	}
+}
+//-->
+</SCRIPT>
+		<td colspan="2" align="center">
+		<input type="checkbox" name="creminder" value="Y" { rcheckedval }  OnClick="ed()" />&nbsp;<b>{ alerttxt }</b>&nbsp;<select name="rday">
+<!--#in getnextreminderday -->
+<option value="{ dval }" { dselected }>{ dname }</option>
+<!--#endin getnextreminderday -->
+</select>
+&nbsp;
+<select name="rhour">
+<!--#in getnextreminderhour -->
+<option value="{ hval }" { hselected }>{ hname }</option>
+<!--#endin getnextreminderhour -->
+</select>
+&nbsp;
+<select name="rminute">
+<!--#in getnextreminderminute -->
+<option value="{ mval }" { mselected }>{ mname }</option>
+<!--#endin getnextreminderminute -->
+</select>
+<!--#if remailtxt -->
+&nbsp;
+<input type="checkbox" name="remail" value="Y" { rmcheckedval } />&nbsp;{ remailtxt } 
+<!--#endif remailtxt -->
+
+
+		</td>
+	</tr>
 	
 
 	<tr>
@@ -278,6 +337,7 @@
 <script type="text/javascript">
 <!--
 check_avariability();
+ed();
 -->
 </script>
 <!--#end newevent -->
@@ -401,6 +461,10 @@ check_avariability();
 	<tr> 
 		<td align="right">{ title }:</td>
 		<td><input type="text" name="title" size="50" maxlength="255" value="{ evtarr[title] }" /></td>
+	</tr>
+	<tr> 
+		<td align="right">{ location }:</td>
+		<td><input type="text" name="location" size="50" maxlength="255" value="{ evtarr[location] }" /></td>
 	</tr>
 	<tr>
 	<tr> 

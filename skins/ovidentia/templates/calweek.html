@@ -16,6 +16,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
 	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
+	<a class="notifier" href="javascript:bab_popup('{ calnotifierurl }', 2)">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
 
@@ -126,6 +127,12 @@ document.onmousemove = bab_tooltipPosition;
 									<!--#endif properties -->
 								</h5>
 								<div class="description">{ description }</div>
+									<!--#if bnote -->
+								<h5>
+									<p><center>{ notestxt }</center></p>
+								</h5>
+								<div class="description">{ noteval }</div>
+									<!--#endif bnote -->
 							</div>
 							<span>
 								<!--#if allow_modify -->
@@ -140,6 +147,12 @@ document.onmousemove = bab_tooltipPosition;
 								<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 								</a>
 								<!--#endif bstatus -->
+								<!--#if bnote -->
+								<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
+								<!--#endif bnote -->
+								<!--#if balert -->
+								<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
+								<!--#endif balert -->
 							</span>
 							<!--#else first -->
 							&nbsp;
@@ -172,6 +185,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
 	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
+	<a class="notifier" href="javascript:bab_popup('{ calnotifierurl }', 2)">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
 <!--#end calweek -->

@@ -15,6 +15,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
 	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
+	<a class="notifier" href="javascript:bab_popup('{ calnotifierurl }', 2)">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
@@ -111,6 +112,12 @@ document.onmousemove = bab_tooltipPosition;
 							<!--#endif properties -->
 						</h5>
 						<div class="description">{ description }</div>
+							<!--#if bnote -->
+						<h5>
+							<p><center>{ notestxt }</center></p>
+						</h5>
+						<div class="description">{ noteval }</div>
+							<!--#endif bnote -->
 					</div>
 					<!--#if nbowners -->
 					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
@@ -120,6 +127,12 @@ document.onmousemove = bab_tooltipPosition;
 					</a>
 					<!--#endif bstatus -->
 					<!--#endif nbowners -->
+					<!--#if bnote -->
+					<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
+					<!--#endif bnote -->
+					<!--#if balert -->
+					<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
+					<!--#endif balert -->
 					<!--#else first -->
 					&nbsp;
 					<!--#endif first -->
@@ -154,6 +167,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
 	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
+	<a class="notifier" href="javascript:bab_popup('{ calnotifierurl }', 2)">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
 <!--#end calday -->
