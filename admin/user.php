@@ -482,6 +482,8 @@ if( isset($updategroups) && $updategroups == "update")
 switch($idx)
 	{
 	case "Delete":
+		if( !isset($pos)) {$pos='';}
+		if( !isset($grp)) {$grp='';}
 		$babBody->title = bab_translate("Delete a user");
 		deleteUser($item);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
@@ -491,6 +493,8 @@ switch($idx)
 		break;
 	case "Groups":
 		$babBody->title = bab_getUserName($item) . bab_translate(" is member of");
+		if( !isset($pos)) {$pos='';}
+		if( !isset($grp)) {$grp='';}
 		listGroups($item, $pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("User"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
@@ -498,6 +502,8 @@ switch($idx)
 		break;
 	case "Modify":
 		$babBody->title = bab_getUserName($item);
+		if( !isset($pos)) {$pos='';}
+		if( !isset($grp)) {$grp='';}
 		modifyUser($item, $pos, $grp);
 		changePassword($item, $pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);

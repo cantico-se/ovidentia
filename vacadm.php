@@ -1233,6 +1233,7 @@ switch($idx)
 	{
 	case "browu":
 		include_once $babInstallPath."utilit/lusersincl.php";
+		if( !isset($pos)) { $pos ='';}
 		browseUsers($pos, $cb);
 		exit;
 		break;
@@ -1299,8 +1300,8 @@ switch($idx)
 		if( !isset($idsa)) $idsa ="";
 		if( isset($chg))
 		{
-			if( $pos[0] == "-")
-				$pos = $pos[1];
+			if( strlen($pos) > 0 && $pos[0] == "-" )
+				$pos = strlen($pos)>1? $pos[1]: '';
 			else
 				$pos = "-" .$pos;
 		}
@@ -1351,7 +1352,7 @@ switch($idx)
 		if( !isset($pos)) $pos ="";
 		if( !isset($idcol)) $idcol ="";
 		if( !isset($idsa)) $idsa ="";
-		if( !isset($vcid)) $vcid =$id;
+		if( !isset($vcid)) $vcid =isset($id)?$id:"";
 		if( !isset($what)) $what ="addvc";
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";

@@ -595,10 +595,14 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $idx)
 				$this->nbevent = 0;
 				$this->mday = $this->day - $this->delta + $i;
 				if( $this->month == date("n", mktime(0,0,0,$this->month, $this->mday,$this->year)))
+					{
 					$this->currentmonth = 1;
+					}
 				else
+					{
 					$this->currentmonth = 0;
-				if( $day == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
+					}
+				if( $this->mday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 					{
 					$this->currentday = 1;
 					}
@@ -685,8 +689,6 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $idx)
 		$tpl = "calweekcols";
 	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", $tpl));
 	calendarForm($calid, $day, $month, $year, $idx);
-	return $temp->count;
-
 }
 
 function calendarDay($calid, $day, $month, $year, $starttime)
@@ -1025,8 +1027,6 @@ function calendarDay($calid, $day, $month, $year, $starttime)
 	$temp = new temp($calid, $day, $month, $year, $starttime);
 	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", "calday"));
 	calendarForm($calid, $day, $month, $year, "viewd");
-	return $temp->count;
-
 }
 
 
@@ -1160,6 +1160,7 @@ switch($idx)
 		else
 			{
 			$babBody->title = bab_translate("Calendar");
+			if( !isset($start)) { $start='';}
 			calendarDay($calid, $day, $month, $year, $start);
 			$babBody->addItemMenu("viewd", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd");
 			}

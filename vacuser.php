@@ -1005,9 +1005,9 @@ function viewVacationRequestDetail($id)
 			$this->remarktxt = bab_translate("Comment");
 			$this->db = $GLOBALS['babDB'];
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']), false);
+			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
 			$this->halfnamebegin = $babDayType[$row['day_begin']];
-			$this->dateend = bab_strftime(bab_mktime($row['date_end']), false);
+			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
 			$this->halfnameend = $babDayType[$row['day_end']];
 			$this->fullname = bab_getUserName($row['id_user']);
 			$this->statarr = array(bab_translate("Waiting to be valiadte by"), bab_translate("Accepted"), bab_translate("Refused"));

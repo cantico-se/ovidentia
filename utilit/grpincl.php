@@ -61,7 +61,7 @@ function browseGroups($cb)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->groupid = $arr['id'];
-				if( $this->arr['id'] < 3 )
+				if( $arr['id'] < 3 )
 					{
 					$this->groupname = bab_getGroupName($arr['id']);
 					}

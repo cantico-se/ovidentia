@@ -271,6 +271,7 @@ function groupsOptions()
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			$this->altbg = false;
 			}
 
 		function getnext()

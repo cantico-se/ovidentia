@@ -70,6 +70,7 @@ function browseUsers($pos, $cb, $idcal)
 
 		function temp($pos, $cb, $idcal)
 			{
+			global $babBody;
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->allname = bab_translate("All");
@@ -113,9 +114,9 @@ function browseUsers($pos, $cb, $idcal)
 					$this->namesearch2 = "firstname";
 				break; }
 
-			if( $pos[0] == "-" )
+			if( strlen($pos) > 0 && $pos[0] == "-"  )
 				{
-				$this->pos = $pos[1];
+				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				$reqa .= " and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
@@ -533,6 +534,8 @@ switch($idx)
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( $idcal != 0 )
 			{
+			if( !isset($pos)) { $pos = '';}
+			if( !isset($cb)) { $cb = '';}
 			browseUsers($pos, $cb, $idcal);
 			}
 		exit;
@@ -561,7 +564,7 @@ switch($idx)
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 		{
-			calendarOptions($calid);
+			calendarOptions($idcal);
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 			if( $idcal != 0 )
 				$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal);

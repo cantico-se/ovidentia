@@ -1349,6 +1349,8 @@ if( isset($modify) && $approver)
 	$idx = "Articles";
 	}
 
+$uaapp = false;
+$ucapp = false;
 if( isset($topics ) && $BAB_SESS_USERID != "")
 	{
 	$uaapp = bab_isUserArticleApprover($topics);

@@ -84,9 +84,9 @@ function listUsers($pos, $grp)
 					$this->namesearch2 = "lastname";
 				break; }
 
-			if( isset($pos[0]) && $pos[0] == "-" )
+			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0)
 					$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
@@ -334,8 +334,8 @@ if( isset($adduser) && $babBody->isSuperAdmin )
 
 if( $idx == "chg")
 {
-	if( $pos[0] == "-")
-		$pos = $pos[1];
+	if( strlen($pos) > 0 && $pos[0] == "-" )
+		$pos = strlen($pos)>1? $pos[1]: '';
 	else
 		$pos = "-" .$pos;
 	$idx = "List";

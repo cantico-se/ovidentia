@@ -649,7 +649,7 @@ function bab_articleAccessById($id, $iduser ='')
 	{
 	$db = $GLOBALS['babDB'];
 
-	list($restriction) = $db->db_fetch_row($db->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".id."'"));
+	list($restriction) = $db->db_fetch_row($db->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".$id."'"));
 	if( empty($restriction))
 		return true;
 	return bab_articleAccessByRestriction($restriction, $iduser);

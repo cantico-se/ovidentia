@@ -68,9 +68,9 @@ function browseUsers($pos, $cb)
 					$this->namesearch2 = "lastname";
 				break; }
 
-			if( $pos[0] == "-" )
+			if( strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0)
 					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";

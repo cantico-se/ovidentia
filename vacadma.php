@@ -60,9 +60,9 @@ function browsePersonnelByType($pos, $cb, $idtype)
 			$this->cb = $cb;
 			$this->idtype = $idtype;
 
-			if( $pos[0] == "-" )
+			if( strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
@@ -446,7 +446,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 }
 
 
-function addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $dateb, $datee, $vclose)
+function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose)
 	{
 	global $babBody;
 	class temp
@@ -920,9 +920,9 @@ function viewVacationRightPersonnel($idvr)
 			$this->db = $GLOBALS['babDB'];
 
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'"));
-			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']), false);
-			$this->dateend = bab_strftime(bab_mktime($row['date_end']), false);
-			$this->dateentry = bab_strftime(bab_mktime($row['date_entry']), false);
+			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
+			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
+			$this->dateentry = bab_strftime(bab_mktime($row['date_entry']." 00:00:00"), false);
 			$this->description = $row['description'];
 			$this->creditor = bab_getUserName($row['id_creditor']);
 			$this->quantity = $row['quantity'];
@@ -1213,13 +1213,13 @@ switch($idx)
 		$babBody->title = bab_translate("Allocate vacation rights");
 		if( !isset($description)) $description ="";
 		if( !isset($userid)) $userid ="";
-		if( !isset($groupid)) $groupid ="";
+		if( !isset($collid)) $collid ="";
 		if( !isset($datee)) $datee ="";
 		if( !isset($dateb)) $dateb ="";
 		if( !isset($nbdays)) $nbdays ="";
 		if( !isset($vclose)) $vclose ="";
 		if( !isset($idtype)) $idtype ="";
-		addVacationRigths($description, $userid, $groupid, $idtype, $nbdays, $dateb, $datee, $vclose);
+		addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");

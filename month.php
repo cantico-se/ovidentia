@@ -226,6 +226,8 @@ function printout()
 		}
 }
 
+if( !isset($month)) { $month ='';}
+if( !isset($year)) { $year ='';}
 $m = new babMonthX($month, $year, $callback);
 $m->setMaxYear($ymax);
 $m->setMinYear($ymin);
