@@ -48,7 +48,7 @@ function browseGroups($cb)
 			$this->cb = $cb;
 
 			$this->fullname = bab_translate("Group");
-			$this->res = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."'");
+			$this->res = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' order name asc");
 			$this->count = $this->db->db_num_rows($this->res);
 			}
 

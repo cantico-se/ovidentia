@@ -133,7 +133,7 @@ function groupList()
 			$this->manager = bab_translate("Manager");
 			$this->dgtxt = bab_translate("Delegation");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -261,7 +261,7 @@ function groupsOptions()
 				else
 					$this->bdgpds = false;
 				}
-			$req = "select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);

@@ -47,7 +47,7 @@ function notesCreate()
 	$babBody->babecho(	bab_printTemplate($temp,"notes.html", "notescreate"));
 	}
 
-function notesList()
+function notesList($id)
 	{
 	global $babBody;
 	class temp
@@ -64,8 +64,9 @@ function notesList()
 		var $db;
 		var $count;
 		var $res;
+		var $reqid;
 
-		function temp()
+		function temp($id)
 			{
 			global $BAB_SESS_USERID;
 			$this->editname = bab_translate("Edit");
@@ -73,7 +74,12 @@ function notesList()
 			$this->date = bab_translate("Date");
 			$this->content = bab_translate("Content");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$BAB_SESS_USERID."' order by date desc";
+			if( $id != '' )
+				$reqid = " and id='".$id."' ";
+			else
+				$reqid = '';
+
+			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$BAB_SESS_USERID."'".$reqid." order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -96,7 +102,7 @@ function notesList()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new temp($id);
 	$babBody->babecho(	bab_printTemplate($temp, "notes.html", "noteslist"));
 	return $temp->count;
 	}
@@ -124,6 +130,10 @@ if( !isset($idx))
 	{
 	$idx="List";
 	}
+if( !isset($id))
+	{
+	$id='';
+	}
 
 if( isset($create))
 	saveNotes($content);
@@ -137,10 +147,19 @@ switch($idx)
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=notes&idx=Create");
 		break;
 
+	case "View":
+		$babBody->title = bab_translate("Note");
+		if( notesList($id) > 0 )
+			{
+			$babBody->addItemMenu("List", bab_translate("Notes"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+			}
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=notes&idx=Create");
+		break;
+
 	default:
 	case "List":
 		$babBody->title = bab_translate("Notes list");
-		if( notesList() > 0 )
+		if( notesList($id) > 0 )
 			{
 			$babBody->addItemMenu("List", bab_translate("Notes"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 			}
