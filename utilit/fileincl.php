@@ -79,4 +79,30 @@ function bab_deleteUploadUserFiles($gr, $id)
 	$db->db_query("delete from files where id_owner='".$id."' and bgroup='".$gr."'");
 	@bab_deleteUploadDir($pathx);
 	}
+
+function bab_isAccessFileValid($gr, $id)
+	{
+	$aclfm = bab_fileManagerAccessLevel();
+	$access = false;
+	if( $gr == "Y")
+		{
+		for( $i = 0; $i < count($aclfm['id']); $i++)
+			{
+			if( $aclfm['id'][$i] == $id && $aclfm['pu'][$i] == 1)
+				{
+				$access = true;
+				break;
+				}
+			}
+		}
+	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
+		{
+		if( in_array(1, $aclfm['pr']))
+			{
+			$access = true;
+			}
+		}
+	return $access;
+	}
+
 ?>
