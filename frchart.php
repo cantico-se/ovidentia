@@ -1125,6 +1125,10 @@ switch($idx)
 				browseRoles($ocid, $eid, $role, $type, $vpos, $update);
 				break;
 			case "disp5":
+				if( isset($submit))
+				{
+					$pos ='';
+				}
 				if( !isset($pos )){	$pos = "A"; }
 				if( !isset($q )){	$q = ""; }
 				if( !isset($xf )){	$xf = ""; }

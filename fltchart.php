@@ -317,6 +317,10 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 				{
 				$this->bab_viewDirectoryUser($iduser);
 				}
+			else
+				{
+				$this->access = false;
+				}
 			$this->iduser = $iduser;
 			$this->altbg = false;
 			if( !$this->access )
