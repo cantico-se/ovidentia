@@ -131,7 +131,7 @@ function listCategories()
 			$this->access = bab_translate("Access");
 			$this->db = $GLOBALS['babDB'];
 			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
-			if(($GLOBALS['babApplyLanguageFilter'] == 'loose') and bab_isUserAdministrator()) $langFilterValue = 0;
+			if((isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') and bab_isUserAdministrator()) $langFilterValue = 0;
 			switch($langFilterValue)
 			{
 				case 2:
