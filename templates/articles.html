@@ -24,24 +24,24 @@
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
 <tr>
-<td width="107" align="right" nowrap>{ title }</td>
-<td width="103"><input type="text" name="title" size="60"></td>
+<td align="right" nowrap>{ title }</td>
+<td><input type="text" name="title" size="60"></td>
 </tr>
 <tr>
-<td width="107" align="right" nowrap>{ doctag }</td>
-<td width="103"><input type="text" name="doctag" size="30"></td>
+<td align="right" nowrap>{ doctag }</td>
+<td><input type="text" name="doctag" size="30"></td>
 </tr>
 <tr>
-<td width="107" align="right" nowrap>{ introtag }</td>
-<td width="103"><input type="text" name="introtag" size="30"></td>
+<td align="right" nowrap>{ introtag }</td>
+<td><input type="text" name="introtag" size="30"></td>
 </tr>
 <tr>
-<td width="107" align="right" nowrap>{ filename }</td>
-<td width="103"><input type="file" name="filename" size="60"></td>
+<td align="right" nowrap>{ filename }</td>
+<td><input type="file" name="filename" size="60"></td>
 </tr>
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ add }"></td>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ add }"></td>
 </tr>
 </table>
 </center>
@@ -109,13 +109,12 @@
 <!--#if msie "== 1" -->
 <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
 <tr>
-<input type="text" name="title" style="VISIBILITY: hidden" size="0" value="{ titleval }">
 <textarea cols="0" rows="0" style="VISIBILITY: hidden" name="headtext">{ headval }</textarea>
 <textarea cols="0" rows="0" style="VISIBILITY: hidden" name="bodytext">{ bodyval }</textarea>
 </tr>
 <tr>
-<td width="107" align="right" nowrap>&nbsp;</td>
-<td width="103">
+<td align="right" nowrap>&nbsp;</td>
+<td>
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
@@ -124,60 +123,52 @@
 </td>
 </tr>
 <!--#endif msie -->
-<!-- -->
 <tr>
-<td width="107" align="right" nowrap>{ title }</td>
-<td width="103">
+<td align="right" nowrap>{ title }</td>
+<td >
+<input type="text" name="title" size="60" value="{ titleval }">
+</td>
+</tr>
+<tr>
+<td align="right">{ head }</td>
+<td >
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "title", "0", "80%", "20");
+	editor.InFrame(0, "headtext", "0", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
-	<input type="text" name="title" size="60" value="{ titleval }"></td>
+<textarea cols="70" rows="10" name="headtext">{ headval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
 <tr>
-<td width="107" align="right">{ head }</td>
-<td width="103">
+<td align="right">{ body }</td>
+<td>
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(1, "headtext", "0", "100%", "160");
+	editor.InFrame(1, "bodytext", "0", "100%", "200");
 </SCRIPT>
 <!--#else msie -->
-<textarea cols="70" rows="10" name="headtext">{ headval }</textarea></td>
-<!--#endif msie -->
-</td>
-</tr>
-<tr>
-<td width="107" align="right">{ body }</td>
-<td width="103">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(2, "bodytext", "0", "100%", "200");
-</SCRIPT>
-<!--#else msie -->
-<textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea></td>
+<textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
 <!--#if msie "== 1" -->
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
 
 </tr>
 
 <SCRIPT LANGUAGE="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.FinalInstantiate(1);
-	editor.FinalInstantiate(2);
 	editor.CloseInitSection();
 </SCRIPT>
 <!--#else msie -->
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ modify }"></td>
 </tr>
 <!--#endif msie -->
 </table>
@@ -204,7 +195,6 @@
 <!--#if msie "== 1" -->
 <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
 <tr>
-<input type="text" name="title" style="VISIBILITY: hidden" size="0">
 <textarea cols="0" rows="0" style="VISIBILITY: hidden" name="headtext"></textarea>
 <textarea cols="0" rows="0" style="VISIBILITY: hidden" name="bodytext"></textarea>
 </tr>
@@ -222,13 +212,7 @@
 <tr>
 <td width="107" align="right" nowrap>{ title }</td>
 <td width="103">
-<!--#if msie "== 1" -->
-<SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "title", "0", "80%", "20");
-</SCRIPT>
-<!--#else msie -->
 <input type="text" name="title" size="60">
-<!--#endif msie -->
 </td>
 </tr>
 <tr>
@@ -236,7 +220,7 @@
 <td width="103">
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(1, "headtext", "0", "100%", "160");
+	editor.InFrame(0, "headtext", "0", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
 <textarea cols="70" rows="10" name="headtext"></textarea>
@@ -248,7 +232,7 @@
 <td width="103">
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(2, "bodytext", "0", "100%", "200");
+	editor.InFrame(1, "bodytext", "0", "100%", "200");
 </SCRIPT>
 <!--#else msie -->
 <textarea cols="70" rows="20" name="bodytext"></textarea>
@@ -264,7 +248,6 @@
 <SCRIPT LANGUAGE="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.FinalInstantiate(1);
-	editor.FinalInstantiate(2);
 	editor.CloseInitSection();
 </SCRIPT>
 <!--#else msie -->
