@@ -106,17 +106,18 @@ function viewCategoriesHierarchy($topics)
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "categorieshierarchy"));
 	}
 
+class tempvch_txt extends categoriesHierarchy
+	{
+
+	function tempvch_txt($topics)
+		{
+		$this->categoriesHierarchy($topics);
+		}
+	}
+
 function viewCategoriesHierarchy_txt($topics)
 	{
 	global $babBody;
-	class tempvch_txt extends categoriesHierarchy
-		{
-
-		function tempvch_txt($topics)
-			{
-			$this->categoriesHierarchy($topics);
-			}
-		}
 
 	$temp = new tempvch_txt($topics);
 	return bab_printTemplate($temp,"articles.html", "categorieshierarchy_txt");

@@ -56,10 +56,25 @@ function listCategories()
 			$this->comments = bab_translate("Comment(s)");
 			$this->waiting = bab_translate("Waiting");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$BAB_SESS_USERID."' ORDER BY ".BAB_TOPICS_TBL.".category";
+			$this->rescat = $this->db->db_query("SELECT DISTINCT(o.id_topcat) id, c.title title FROM ".BAB_TOPCAT_ORDER_TBL." o , ".BAB_TOPICS_CATEGORIES_TBL." c, ".BAB_TOPICS_TBL." t WHERE c.id=o.id_topcat AND t.id_cat=c.id AND t.id_approver='".$GLOBALS['BAB_SESS_USERID']."' GROUP BY o.id_topcat ORDER BY o.ordering");
+			$this->countcat = $this->db->db_num_rows($this->rescat);
+			}
 
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+		function getnextcat()
+			{
+			static $j = 0;
+			if( $j < $this->countcat)
+				{
+				$arr = $this->db->db_fetch_array($this->rescat);
+				$this->catname = $arr['title'];
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$arr['id']." and id_approver='".$GLOBALS['BAB_SESS_USERID']."' ORDER BY category";
+				$this->res = $this->db->db_query($req);
+				$this->count = $this->db->db_num_rows($this->res);
+				$j++;
+				return true;
+				}
+			else
+				return false;
 			}
 
 		function getnext()
@@ -68,8 +83,7 @@ function listCategories()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr['description'] = $this->arr['description'];
-				$this->namecategory = $this->arr['category'];
+				$this->namecategory = viewCategoriesHierarchy_txt($this->arr['id']);
 				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='Y'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
@@ -99,19 +113,20 @@ function listCategories()
 				$this->newac = $this->newa + $this->newc;
 
 				$this->urlwaitinga = $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$this->arr['id']."&new=".$this->new."&newc=".$this->newc;
-
 				$this->urlwaitingc = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id'];
-
 				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
 				$i++;
 				return true;
 				}
 			else
+				{
+				$i=0;
 				return false;
+				}
 			}
 		}
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "categorylist"));
+	$babBody->babecho(bab_printTemplate($temp,"topman.html", "categorylist"));
 	return $temp->count;
 	}
 
