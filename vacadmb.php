@@ -712,7 +712,7 @@ function viewVacationRequestDetail($id)
 			$this->halfnamebegin = $babDayType[$row['day_begin']];
 			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
 			$this->halfnameend = $babDayType[$row['day_end']];
-			$this->fullname = bab_getUserName($row['id_user']);
+			$this->fullname1 = bab_getUserName($row['id_user']);
 			$this->statarr = array(bab_translate("Waiting to be valiadte by"), bab_translate("Accepted"), bab_translate("Refused"));
 			$this->commenttxt = bab_translate("Description");
 			$this->remarktxt = bab_translate("Additional detailed information ");
