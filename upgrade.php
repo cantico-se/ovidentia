@@ -3316,7 +3316,7 @@ return $ret;
 
 function upgrade500to501()
 {
-$ret = true;
+$ret = "";
 $req = "ALTER TABLE `".BAB_SITES_TBL."` CHANGE `remember_login` `remember_login` ENUM( 'Y', 'N', 'L' ) DEFAULT 'N' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
