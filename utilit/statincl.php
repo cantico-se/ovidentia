@@ -197,7 +197,15 @@ class bab_WebStatEvent
 	}
 }
 
+if( isset($tg) && $tg == "version" )
+{
+	$babStatOnOff = 'N';
+}
+else
+{
 list($babStatOnOff) = $babDB->db_fetch_row($babDB->db_query("select stat_log from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+}
+
 if( $babStatOnOff != 'Y' )
 	{
 	return;

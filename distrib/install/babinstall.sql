@@ -798,6 +798,7 @@ CREATE TABLE `bab_sites` (
   `stat_update_time` datetime NOT NULL default '0000-00-00 00:00:00',
   `workdays` varchar(20) NOT NULL default '',
   `user_workdays` enum('Y','N') NOT NULL default 'Y',
+  `stat_log` enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );

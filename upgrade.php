@@ -4470,7 +4470,7 @@ if ( $arr[0] != 'trigger_type' )
 		}
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `stat_log` ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `stat_log` ENUM('N','Y') DEFAULT 'N' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -4478,6 +4478,7 @@ if( !$res)
 	return $ret;
 	}
 
+$db->db_query("update ".BAB_SITES_TBL." set stat_log='Y'");
 
 $db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (19, 'Login / Registration')");
 $db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (20, 'User options')");
