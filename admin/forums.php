@@ -63,12 +63,23 @@ function listForums()
 		var $db;
 		var $count;
 		var $res;
+		var $groups;
+		var $reply;
+		var $posts;
+		var $groupsurl;
+		var $replyurl;
+		var $postsurl;
+		var $access;
 
 		function temp()
 			{
 			$this->name = babTranslate("Name");
 			$this->moderator = babTranslate("Moderator Email");
 			$this->description = babTranslate("Description");
+			$this->access = babTranslate("Access");
+			$this->groups = babTranslate("Groups");
+			$this->reply = babTranslate("Reply");
+			$this->posts = babTranslate("Posts");
 			$this->db = new db_mysql();
 			$req = "select * from forums order by name asc";
 			$this->res = $this->db->db_query($req);
@@ -83,6 +94,9 @@ function listForums()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->moderatorname = getUserName($this->arr['moderator']);
 				$this->url = $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$this->arr['id'];
+				$this->groupsurl = $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$this->arr['id'];
+				$this->postsurl = $GLOBALS['babUrl']."index.php?tg=forum&idx=Post&item=".$this->arr['id'];
+				$this->replyurl = $GLOBALS['babUrl']."index.php?tg=forum&idx=Reply&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
