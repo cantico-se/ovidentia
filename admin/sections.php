@@ -454,9 +454,12 @@ function sectionCreate($jscript)
 			$this->countLangFiles = count($this->langFiles);
 			$this->jscript = $jscript;
 			if(( $jscript == 0 && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
-				$this->msie = 1;
+				{
+				$this->editor = bab_editor('', 'content', 'secmod');
+				}
 			else
-				$this->msie = 0;	
+				$this->editor = false;
+			
 			$this->nselected = 'selected';
 			$this->yselected = '';
 

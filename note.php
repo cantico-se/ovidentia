@@ -49,10 +49,7 @@ function notesModify($id)
 			$req = "select * from ".BAB_NOTES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;	
+			$this->editor = bab_editor($this->arr['content'], 'content', 'notemod');	
 			}
 		}
 

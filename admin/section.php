@@ -110,7 +110,7 @@ function sectionModify($id)
 				$this->titleval = htmlentities($this->arr['title']);
 				$this->pos = $this->arr['position'];
 				$this->descval = htmlentities($this->arr['description']);
-				$this->contentval = $this->arr['content'];
+
 				if( $this->arr['script'] == "Y")
 					$this->ischecked = "checked";
 				else
@@ -126,10 +126,10 @@ function sectionModify($id)
 					$this->yselected = "";
 					}
 				}
-			if(( $this->arr['jscript'] == "N" && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
-				$this->msie = 1;
+			if ($this->arr['script'] == 'N')
+				$this->editor = bab_editor($this->arr['content'], 'content', 'secmod');
 			else
-				$this->msie = 0;	
+				$this->editor = false;
 
 			$file = "sectiontemplate.html";
 			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
