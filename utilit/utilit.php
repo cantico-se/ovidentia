@@ -691,7 +691,7 @@ function loadSection($title, $pos=-1)
 	global $body;
 	$add = false;
 	$db = new db_mysql();
-	$req = "select * from sections where title='$title'";
+	$req = "select * from sections where title='$title' and enabled='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -767,7 +767,7 @@ function loadSections()
 			$add = isAccessValid("sections_groups", $arr['id_section']);
 			if( $add )
 				{
-				$req = "select * from sections where id='".$arr['id_section']."'";
+				$req = "select * from sections where id='".$arr['id_section']."' and enabled='Y'";
 				$res2 = $db->db_query($req);
 				if( $res2 && $db->db_num_rows($res2) > 0)
 					{
