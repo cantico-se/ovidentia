@@ -15,6 +15,8 @@ CREATE TABLE ow_configuration (
   UNIQUE KEY foption (foption)
 );
 
+INSERT INTO ow_configuration VALUES ( 'owurl', '');
+
 #
 # Structure de la table `ow_users`
 #
