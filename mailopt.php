@@ -656,7 +656,7 @@ function addAccount($account_name,$fullname, $email, $login, $password1, $passwo
 		return;
 		}
 
-	if( $prefered == "Y" )
+	if( $prefacc == "Y" )
 		{
 		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set prefered='N' where owner='".$BAB_SESS_USERID."'";	
 		$res = $db->db_query($req);
@@ -668,7 +668,8 @@ function addAccount($account_name,$fullname, $email, $login, $password1, $passwo
 		}
 
 	$req = "insert into ".BAB_MAIL_ACCOUNTS_TBL." (account_name, name, email, password, login, domain, owner, maxrows, prefered, format) values ";	
-	$req .= "('".$account_name."','".$fullname."', '".$email."', ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\"), '".$login."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefered."', '".$prefformat."')";	
+	$req .= "('".$account_name."','".$fullname."', '".$email."', ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\"), '".$login."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefacc."', '".$prefformat."')";	
+
 	$res = $db->db_query($req);
 
 }

@@ -8,47 +8,48 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ account_name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<td align="right">{ account_name }:</td>
+<td>
 <input type="text" name="account_name" size="30" maxlength="100" value="">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ fullname }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<td align="right">{ fullname }:</td>
+<td>
 <input type="text" name="fullname" size="30" maxlength="100" value="{ username }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ email }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ email }:</td>
+<td>
 <input type="text" name="email" size="30" maxlength="100" value="{ useremail }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ login }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ login }:</td>
+<td>
 <input type="text" name="login" size="30" maxlength="100">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ password }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ password }:</td>
+<td>
 <input type="password" name="password1" size="20" maxlength="100">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ repassword }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ repassword }:</td>
+<td>
 <input type="password" name="password2" size="20" maxlength="100">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle" height="30">{ domain }:</td>
-<td class="BabLoginMenuBackground" valign="middle" height="30"> 
+<td align="right">{ domain }:</td>
+<td> 
 <select name="domain">
+  <option value="0"></option>
   <!--#in getnextadm -->
   <option value="{ domid }">{ domname }</option>
   <!--#endin getnextadm -->
@@ -62,8 +63,8 @@
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ prefaccount }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ prefaccount }:</td>
+<td>
 <select name="prefacc">
   <option value="N" selected>{ no }</option>
   <option value="Y" >{ yes }</option>
@@ -71,8 +72,8 @@
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ prefformat }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ prefformat }:</td>
+<td>
 <select name="prefformat">
   <option value="plain">{ plain }</option>
   <option value="html">{ html }</option>
@@ -80,14 +81,14 @@
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ maxrows }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ maxrows }:</td>
+<td>
 <input type="text" name="maxrows" size="3" maxlength="2" value="15">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td>&nbsp;</td>
+<td>
 <input type="submit" name="Submit" value="{ addacc }">
 </td>
 </tr>
@@ -99,7 +100,7 @@
 <br>
 <!--#end accountcreate -->
 
-<br><br><br><br>
+
 
 <!--#begin accountmodify -->
 
@@ -111,47 +112,48 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ account_name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<td align="right">{ account_name }:</td>
+<td>
 <input type="text" name="account_name" size="30" maxlength="100" value="{ arr[account_name] }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ fullname }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<td align="right">{ fullname }:</td>
+<td>
 <input type="text" name="fullname" size="30" maxlength="100" value="{ arr[name] }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ email }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ email }:</td>
+<td>
 <input type="text" name="email" size="30" maxlength="100" value="{ arr[email] }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ login }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ login }:</td>
+<td>
 <input type="text" name="login" size="30" maxlength="100" value="{ arr[login] }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ password }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ password }:</td>
+<td>
 <input type="password" name="password1" size="20" maxlength="100">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ repassword }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ repassword }:</td>
+<td>
 <input type="password" name="password2" size="20" maxlength="100">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ domain }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ domain }:</td>
+<td>
 <select name="domain">
+	<option value="0"></option>
   <!--#in getnextadm -->
   <option value="{ domid }" { domselect }>{ domname }</option>
   <!--#endin getnextadm -->
@@ -165,17 +167,17 @@
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ prefaccount }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ prefaccount }:</td>
+<td>
 <select name="prefacc">
-  <option value="N" { accselect }>{ no }</option>
+  <option value="N">{ no }</option>
   <option value="Y" { accselect }>{ yes }</option>
 </select>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ prefformat }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ prefformat }:</td>
+<td>
 <select name="prefformat">
   <option value="plain" { plainselect }>{ plain }</option>
   <option value="html" { htmlselect }>{ html }</option>
@@ -183,14 +185,14 @@
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground"align="right" nowrap valign="middle">{ maxrows }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td align="right">{ maxrows }:</td>
+<td>
 <input type="text" name="maxrows" size="3" maxlength="2" value="{ arr[maxrows] }">
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
+<td>&nbsp;</td>
+<td>
 <input type="submit" name="Submit" value="{ modacc }">
 </td>
 </tr>
@@ -211,38 +213,37 @@
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="1" align="center" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle"><b>{ account_name }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle"><b>{ name }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="30%" valign="middle"><b>{ email }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="30%" valign="middle"><b>{ login }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle"><b>{ domname }</b></td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+	<td width="1%">&nbsp;</td>
+	<td>{ account_name }</td>
+	<td>{ name }</td>
+	<td>{ email }</td>
+	<td>{ login }</td>
+	<td>{ domname }</td>
 </tr>
 <!--#in getnext -->
-<tr valign="middle"> 
-<td class="BabSiteAdminFontBackground" align="center"> 
-<!--#if prefered "== P" -->
-<IMG src="{ babSkinPath }images/Puces/PuceMailDefault.gif" width="11" height="11" border=0 alt="{ prefered }"> 
-<!--#else prefered -->
-&nbsp; 
-<!--#endif prefered -->
-</td>
-<td class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ url }">{ arr[account_name] }</a></td>
-<td class="BabSiteAdminFontBackground">{ arr[name] } </td>
-<td class="BabSiteAdminFontBackground">{ arr[email] }</td>
-<td class="BabSiteAdminFontBackground">{ arr[login] }</td>
-<td class="BabSiteAdminFontBackground">{ domnameval }</td>
+<tr class="BabSiteAdminFontBackground"> 
+	<td align="center"> 
+	<!--#if prefered "== P" -->
+	<img src="{ babSkinPath }images/Puces/PuceMailDefault.gif" alt="{ prefered }" /> 
+	<!--#else prefered -->
+	&nbsp; 
+	<!--#endif prefered -->
+	</td>
+	<td><a class="BabSiteAdminListLink" href="{ url }">{ arr[account_name] }</a></td>
+	<td>{ arr[name] } </td>
+	<td>{ arr[email] }</td>
+	<td>{ arr[login] }</td>
+	<td>{ domnameval }</td>
 </tr>
 <!--#endin getnext -->
 </table>
 </td>
 </tr>
 </table>
-<br>
+<br />
 <!--#end accountslist -->
 
-<br><br><br><br><br>
 
 <!--#begin signatureslist -->
 
