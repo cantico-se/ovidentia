@@ -1,11 +1,12 @@
 /************************************************************************/
-Decembre 2002: Version 3.4.3
+Janvier 2003: Version 3.4.3
 /************************************************************************/
+- Possibilty to view forums in flat or hierachically mode
 - Added support for update and delete reccurrent events
 - Calendar week view can be viewed by colums or rows
 - Add default view for calendar and for week in calendar options
 - Removed primary group notion from Calendar
-- New vacation system
+- New vacation system and link with Calendar when vacation request is approved
 - Added smtp authentification
 - Fixed bug when site name is longer than 30 characters
 - Fixed bug: bab_mail function always send plain text mails
@@ -35,7 +36,7 @@ Septembre 2002: Version 3.4.1b
 - Administrator can notify user when they create user and send him nickname and password
 - Improved performance
 - Improved security
-- Improved Calendar access: user can specify multiple users to access his calendar
+- Improved Calendar access: user can specify multiple users to access his calendar simultaneously
 - Fixed some minors bugs
 
 /************************************************************************/
