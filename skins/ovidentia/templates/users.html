@@ -1,20 +1,10 @@
 
 <!--#begin userslist -->
-<script language="javascript">
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-</script>
-
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="users">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="pos" value="{ pos }">
 <input type="hidden" name="grp" value="{ grp }">
-
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabMailBackground" align="center" valign="middle"> 
@@ -63,14 +53,13 @@ arr[email] }</a></td>
 </tr>
 </table>
 <input type="hidden" name="userst" value="{ userst }">
+<br><center><input type="submit" name="Updateg" value="{ update }"></center>
 </form>
 <br>
 <!--#end userslist -->
     <br>
     <br><br><br><br>
 <!--#begin usercreate -->
-
-
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="users">
 <input type="hidden" name="idx" value="List">
@@ -134,12 +123,13 @@ valign="middle">{ email }:</td>
 
 <br><br><br><br>
 <!--#begin usersmodify -->
-
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
 <input type="hidden" name="modify" value="modify">
+<input type="hidden" name="pos" value="{ pos }">
+<input type="hidden" name="grp" value="{ grp }">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -216,7 +206,7 @@ valign="middle">{ primarygroup } </td>
 <tr> 
 <td>&nbsp; </td>
 <td> 
-<input type="submit" name="submit2" value="{ modify }">
+<input type="submit" name="bupdate" value="{ modify }">&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ delete }">
 <br>
 </td>
 </tr>
@@ -230,18 +220,12 @@ valign="middle">{ primarygroup } </td>
 
 <br><br><br><br>
 <!--#begin usersgroups -->
-<script language="javascript">
-function submitForm(cmd) 
-{ 
-if( typeof document.forms.listform != "object" ) return;
-document.forms.listform.idx.value = cmd;
-document.forms.listform.submit();
-}
-</script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="pos" value="{ pos }">
+<input type="hidden" name="grp" value="{ grp }">
 <input type="hidden" name="updategroups" value="update">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -271,6 +255,7 @@ groupname }</a> </td>
 </tr>
 </table>
 <input type="hidden" name="groupst" value="{ groupst }">
+<br><center><input type="submit" name="Updateg" value="{ updategroups }"></center>
 </form>
 <!--#end usersgroups -->
 

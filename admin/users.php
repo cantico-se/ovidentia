@@ -43,6 +43,7 @@ function listUsers($pos, $grp)
 			{
 			$this->email = bab_translate("Email");
 			$this->allname = bab_translate("All");
+			$this->update = bab_translate("Update");
 			$this->db = $GLOBALS['babDB'];
 			$this->group = bab_getGroupName($grp);
 			$this->grp = $grp;
@@ -247,6 +248,12 @@ if( $idx == "chg")
 	$idx = "List";
 }
 
+if( isset($Updateg))
+{
+	updateGroup($grp, $users, $userst);
+	$idx = "List";
+}
+
 switch($idx)
 	{	
 	case "Create":
@@ -255,16 +262,10 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
 		break;
-	case "Updateg":
-		updateGroup($grp, $users, $userst);
-		$idx = "List";
-		/* no break */
 	case "List":
 		$babBody->title = bab_translate("Users list");
 		$cnt = listUsers($pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-		if( $cnt > 0 )
-			$babBody->addItemMenu("Upadteg", bab_translate("Update"), "javascript:(submitForm('Updateg'))");
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 		break;
 	default:

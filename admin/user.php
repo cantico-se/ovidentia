@@ -9,7 +9,7 @@ include $babInstallPath."utilit/grpincl.php";
 include $babInstallPath."utilit/fileincl.php";
 
 
-function modifyUser($id)
+function modifyUser($id, $pos, $grp)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -38,7 +38,7 @@ function modifyUser($id)
 		var $res;
 		var $id;
 
-		function temp($id)
+		function temp($id, $pos, $grp)
 			{
 			$this->changepassword = bab_translate("Can user change password ?");
 			$this->isconfirmed = bab_translate("Account confirmed ?");
@@ -46,6 +46,7 @@ function modifyUser($id)
 			$this->primarygroup = bab_translate("Primary group");
 			$this->none = bab_translate("None");
 			$this->modify = bab_translate("Modify");
+			$this->delete = bab_translate("Delete");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->db = $GLOBALS['babDB'];
@@ -53,6 +54,8 @@ function modifyUser($id)
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->id = $id;
+			$this->pos = $pos;
+			$this->grp = $grp;
 
 			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$id'";
 			$this->res = $this->db->db_query($req);
@@ -78,11 +81,11 @@ function modifyUser($id)
 			}
 		}
 
-	$temp = new temp($id);
+	$temp = new temp($id, $pos, $grp);
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "usersmodify"));
 	}
 
-function listGroups($id)
+function listGroups($id, $pos, $grp)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -110,11 +113,13 @@ function listGroups($id)
 		var $groupurl;
 		var $groupname;
 
-		function temp($id)
+		function temp($id, $pos, $grp)
 			{
 			$this->name = bab_translate("Groups Names");
 			$this->group = bab_translate("Group");
 			$this->updategroups = bab_translate("Update Groups");
+			$this->pos = $pos;
+			$this->grp = $grp;
 			$this->groupst = "";
 			$this->id = $id;
 			$this->db = $GLOBALS['babDB'];
@@ -171,7 +176,7 @@ function listGroups($id)
 
 			}
 		}
-	$temp = new temp($id);
+	$temp = new temp($id, $pos, $grp);
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "usersgroups"));
 	}
 
@@ -368,11 +373,22 @@ if( !isset($idx))
 	$idx = "Modify";
 
 if( isset($modify))
-	updateUser($item, $changepwd, $is_confirmed, $disabled, $group);
+	{
+	if(isset($bupdate))
+		updateUser($item, $changepwd, $is_confirmed, $disabled, $group);
+	else if(isset($bdelete))
+		$idx = "Delete";
+	}
 
 if( isset($action) && $action == "Yes")
 	{
 	confirmDeleteUser($user);
+	}
+
+if( isset($updategroups) && $updategroups == "update")
+	{
+	updateGroups($item, $groups, $groupst);
+	$idx = "Groups";
 	}
 
 switch($idx)
@@ -386,24 +402,19 @@ switch($idx)
 		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
 		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create");
 		break;
-	case "Updateu";
-		updateGroups($item, $groups, $groupst);
-		/* no break */
 	case "Groups":
 		$babBody->title = bab_getUserName($item) . bab_translate(" is member of");
-		listGroups($item);
+		listGroups($item, $pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("User"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu("Upadteu", bab_translate("Update"), "javascript:(submitForm('Updateu'))");
 		break;
 	case "Modify":
 		$babBody->title = /* bab_translate("Modify a user") . ": " . */bab_getUserName($item);
-		modifyUser($item);
+		modifyUser($item, $pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
 		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create");
 		break;
 	default:
