@@ -3807,6 +3807,67 @@ class bab_CalendarResourceEvents extends bab_handler
 }
 
 
+class bab_IsUserMemberOfGroups extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_IsUserMemberOfGroups( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->count = 0;
+		
+		if( $GLOBALS['BAB_SESS_USERID'] != "" )
+			{
+			$all = $ctx->get_value('all');
+
+			if ( $all !== false && strtoupper($all) == "YES") 
+				$all = true;
+			else
+				$all = false;
+
+			$groupid = $ctx->get_value('groupid');
+			if( $groupid !== false && $groupid !== '' )
+				{
+				list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group IN (".$groupid.")"));
+				if( $all == false)
+					{
+					if( $total )
+						{
+						$this->count = 1;
+						}
+					}
+				else
+					{
+					$rr = explode(',', $groupid);
+					if( $total >= count($rr))
+						{
+						$this->count = 1;
+						}
+					}
+				}
+			}
+
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count)
+		{
+			$this->idx++;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
 
 class bab_context
 {
