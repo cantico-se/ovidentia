@@ -1,37 +1,56 @@
-
 <!--#begin categorylist -->
 <!--#in getnext -->
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap>{ namecategory }</td>
-<td class="BabTopicsAdminListTitle" align="right"> 
-<!--#if nbarticles "== 0" -->
-{ nbarticles }&nbsp;{ articles }&nbsp;|&nbsp;{ waiting }: 
-<!--#else nbarticles -->
-<a class="BabTopicsAdminNumberLink" href="{ urlarticles }">{ nbarticles }&nbsp;{ 
-articles }</a>&nbsp;|&nbsp;{ waiting }: 
-<!--#endif nbarticles -->
-<!--#if newa "> 0" -->
-&nbsp;<a class="BabTopicsAdminNumberLink" href="{ urlnewa }">{ newa }&nbsp;{ articles 
+        <tr> 
+          <td width="97%" rowspan="2" align="left" valign="top" nowrap class="BabTopicsAdminListTitle">
+            <!--#if nbarticles "== 0" -->
+            { namecategory }
+            <!--#else nbarticles -->
+            <a class="BabTopicsAdminTitleLink" href="{ urlarticles }">{ namecategory }</a>
+            <!--#endif nbarticles -->
+             <br>
+{ nbarticles }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles }</td>
+          <td width="1%" rowspan="2" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>
+            { waiting }
+:          </strong></td>
+          <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
+            
+            <!--#if newa "> 0" -->
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlnewa }"><img src="{ babSkinPath }images/Puces/PuceSectionContribArticle.png" alt="" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></a>
+            <!--#endif newa -->
+            <br>
+            </td>
+          <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
+            <!--#if newa "> 0" -->
+            <a class="BabTopicsAdminNumberLink" href="{ urlnewa }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newa }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles }</a> 
+            <!--#else newa -->
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newa }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles } 
+            <!--#endif newa -->
+            <br>
+            </td>
+        </tr>
+        <tr>
+          <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
+            <!--#if newc "> 0" -->
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlnewc }"><img src="{ babSkinPath }images/Puces/PuceSectionContribComment.png" alt="" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></a> 
+            <!--#endif newc -->
+          </td>
+          <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
+            <!--#if newc "> 0" -->
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlnewc }">{ newc }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ comments 
 }</a> 
-<!--#else newa -->
-&nbsp;{ newa }&nbsp;{ articles } 
-<!--#endif newa -->
-<!--#if newc "> 0" -->
-&nbsp;<a class="BabTopicsAdminNumberLink" href="{ urlnewc }">{ newc }&nbsp;{ comments 
-}</a> 
-<!--#else newc -->
-&nbsp;{ newc }&nbsp;{ comments } 
-<!--#endif newc -->
-</td>
-</tr>
-<tr> 
-<td colspan="2"> { arr[description] } </td>
-</tr>
-</table>
+            <!--#else newc -->
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newc }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ comments } 
+            <!--#endif newc -->
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="4"> { arr[description] } </td>
+        </tr>
+      </table>
 </td>
 </tr>
 </table>
@@ -49,37 +68,37 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
 <tr> 
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('hart0', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart0', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('hart1', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart1', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('hart0', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart0', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('hart1', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart1', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><b>{ titlename }</b></td>
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </tr>
 <!--#in getnext -->
 <tr> 
-<td align="left" valign="middle" width="1%">
+<td align="center" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="hart0[]" value="{ articleid }" { checked0 }>
 </td>
-<td align="left" valign="middle" width="1%">
+<td align="center" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 }>
 </td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
-<td align="left" valign="middle" width="1%">
+<td width="90%" align="left" valign="middle"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
+<td align="center" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
-<td align="left" valign="middle" width="1%">
+<td align="center" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="art[]" value="{ articleid }">
 </td>
 <!--#endin getnext -->
 </tr>
 <tr> 
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" width="20" height="20" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" width="20" height="20" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;</td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('archive', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="{ archivealt }" width="20" height="20" border="0"></a></td>
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" border="0" align="absmiddle"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" border="0" align="absmiddle"></a></td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('archive', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0" align="absmiddle"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0" align="absmiddle"></a></td>
 </tr>
 </table>
 </td>
@@ -90,11 +109,11 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="" width="20" height="20" border="0"></td><td class="BabTopicsAdminListTitle">{ art0help }</td></tr>
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="" width="20" height="20" border="0"></td><td class="BabTopicsAdminListTitle">{ art1help }</td></tr>
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="" width="20" height="20" border="0"></td><td class="BabTopicsAdminListTitle">{ archivehelp }</td></tr>
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="" width="20" height="20" border="0"></td><td class="BabTopicsAdminListTitle">{ deletehelp }</td></tr>
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr><td class="BabTopicsAdminListTitle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="" border="0" align="absmiddle"></td><td class="BabTopicsAdminListTitle">{ art0help }</td></tr>
+<tr><td class="BabTopicsAdminListTitle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="" border="0" align="absmiddle"></td><td class="BabTopicsAdminListTitle">{ art1help }</td></tr>
+<tr><td class="BabTopicsAdminListTitle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="" border="0" align="absmiddle"></td><td class="BabTopicsAdminListTitle">{ archivehelp }</td></tr>
+<tr><td class="BabTopicsAdminListTitle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></td><td class="BabTopicsAdminListTitle">{ deletehelp }</td></tr>
 </table>
 </td></tr></table>
 <br>
@@ -103,6 +122,7 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 <!--#endif badmin -->
 <br>
 <!--#end articleslist -->
+
 
 <!--#begin articleview -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -147,6 +167,7 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 </HTML>
 <!--#end articleview -->
 
+
 <!--#begin oldarticleslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topman">
@@ -158,18 +179,21 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 <td> 
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr> 
-<td class="BabTopicsAdminListTitle" width="1%"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+            <td class="BabTopicsAdminListTitle" width="90%" align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 </tr>
 <!--#in getnext -->
-<tr> 
-<td align="left" valign="middle" width="1%">
+<tr align="center" valign="middle"> 
+<td width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
+<td width="90%" align="left"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
 <!--#endin getnext -->
 </tr>
 <tr> 
-<td class="BabTopicsAdminListTitle" width="1%" align="center"><a href="javascript:submitForm('unarch', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="{ archivealt }" width="20" height="20" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('unarch', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0" align="absmiddle"></a></td>
+            <td  class="BabTopicsAdminListTitle" width="90%" align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+
 </tr>
 </table>
 </td>
@@ -180,8 +204,8 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceArchive.gif" alt="{ archivealt }" width="20" height="20" border="0"></a></td><td class="BabTopicsAdminListTitle">{ archivehelp }</td></tr>
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr><td class="BabTopicsAdminListTitle">&nbsp;<img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0"></a></td><td class="BabTopicsAdminListTitle">{ archivehelp }</td></tr>
 </table>
 </td></tr></table>
 <!--#end oldarticleslist -->
