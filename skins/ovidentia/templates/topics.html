@@ -96,7 +96,10 @@ else
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
+<script language="JavaScript">
+initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
+</script>
 <!--#endif babOldEditor -->
           <!--#endif msie -->
           <tr> 
@@ -107,7 +110,7 @@ else
 	editor.InFrame(0, "topdesc", "catcr", "90%", "160");
 		</script> 
 		<!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','topdesc','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','topdesc')">
 </iframe>
 <textarea id="topdesc" name="topdesc"  onfocus="savef(document.catcr.topdesc)" style="width:100%" rows="20">{ description }</textarea>
 <!--#endif babOldEditor -->
@@ -290,8 +293,10 @@ editor.ToolBar();
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
-
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
+<script language="JavaScript">
+initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
+</script>
 <!--#endif babOldEditor -->
 <!--#endif msie --> 
 <tr>
@@ -302,7 +307,7 @@ editor.ToolBar();
 	editor.InFrame(0, "topdesc", "catmod", "90%", "160");
 </script>
 <!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','topdesc','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','topdesc')">
 </iframe>
 <textarea id="topdesc" name="topdesc"  onfocus="savef(document.catmod.topdesc)" style="width:100%" rows="20">{ headval }</textarea>
 <!--#endif babOldEditor -->

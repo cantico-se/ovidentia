@@ -612,11 +612,13 @@ function dd(id, idf, txt)
 self.opener.EditorOnInsertFile(id, idf, txt);
 window.close();
 }
+
 function dd2(idf, txt)
 {
 self.opener.onInsertFile(idf,txt);
 window.close();
 }
+
 window.focus();
 //-->
 </script>
@@ -679,7 +681,7 @@ href="{ url }">{ name }</a></td>
 </td>          
 <td class="BabSiteAdminFontBackground">&nbsp;
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd2('{ idf }', '{ jname }')">{ name }</a>
+<a class="BabSiteAdminListLink" href="#" onclick="dd2('{ editor }', '{ idf }', '{ jname }')">{ name }</a>
 <!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ idf }', '{ jname }')">{ name }</a>
 <!--#endif editor -->

@@ -311,7 +311,7 @@ class bab_ArticleTopics extends bab_handler
 
 		if( count($catid) > 0 )
 		{
-		$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_TBL." t where tco.type='2' and tco.id_topcat=t.id and t.id_cat IN (".implode(',', $catid).") order by tco.ordering asc";
+		$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where type='2' and id_parent IN (".implode(',', $catid).") order by ordering asc";
 
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))

@@ -217,8 +217,8 @@ function saveFolder($fname, $managerid, $active, $said, $notification, $version)
 
 function updateFolders($notifies, $actives, $versions)
 {
-	global $babDB;
-	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL."");
+	global $babBody, $babDB;
+	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		if( count($notifies) > 0 && in_array($row['id'], $notifies))

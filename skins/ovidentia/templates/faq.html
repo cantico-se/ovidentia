@@ -104,8 +104,10 @@ editname }</a></td>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
-
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
+<script language="JavaScript">
+initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
+</script>
 <!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
@@ -119,7 +121,7 @@ editname }</a></td>
 	editor.InFrame(0, "response", "qcreate", "100%", "160");
 </script>
 <!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1','response','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1','response')">
 </iframe>
 <textarea id="response" name="response"  onfocus="savef(document.qcreate.response)" style="width:100%" rows="20">{ response }</textarea>
 <!--#endif babOldEditor -->
@@ -236,8 +238,10 @@ savef(document.qcreate.response);
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
-
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
+<script language="JavaScript">
+initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
+</script>
 <!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
@@ -251,7 +255,7 @@ savef(document.qcreate.response);
 	editor.InFrame(0, "response", "qmod", "100%", "160");
 </script>
 <!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1','response','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1','response')">
 </iframe>
 <textarea id="response" name="response"  onfocus="savef(document.qmod.response)" style="width:100%" rows="20">{ arr[response] }</textarea>
 <!--#endif babOldEditor -->

@@ -712,6 +712,9 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 		{
 	    notifyModerator(stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
 		}
+
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
+	exit;
 	}
 
 function confirm($forum, $thread, $post)

@@ -39,8 +39,10 @@
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
-
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
+<script language="JavaScript">
+initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
+</script>
 <!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
@@ -51,7 +53,7 @@
 	editor.InFrame(0, "content", "notcreate", "90%", "160");
 			</script>
 <!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content')">
 </iframe>
 <textarea id="content" name="content"  onfocus="savef(document.notcreate.content)" style="width:100%" rows="20"></textarea>
 <!--#endif babOldEditor -->
@@ -177,8 +179,10 @@ width="10%"><a class="BabFaqLink" href="{ editurl }">{ editname }</a>&nbsp;|&nbs
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
 <script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrl }index.php?tg=htmlarea&idx=js"></script>
-
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
+<script language="JavaScript">
+initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
+</script>
 <!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
@@ -189,7 +193,7 @@ width="10%"><a class="BabFaqLink" href="{ editurl }">{ editname }</a>&nbsp;|&nbs
 	editor.InFrame(0, "content", "notemod", "90%", "160");
 	</script>
 <!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content')">
 </iframe>
 <textarea id="content" name="content" onfocus="savef(document.notemod.content)" style="width:100%" rows="20">{ arr[content] }</textarea>
 <!--#endif babOldEditor -->

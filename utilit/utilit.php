@@ -805,18 +805,18 @@ function babTopcatSection($close)
 	$this->babSectionTemplate("topcatsection.html", "template");
 	$this->title = bab_translate("Topics categories");
 
-	$res = $babDB->db_query("select distinct t.* from ".BAB_TOPICS_TBL." t, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPCAT_ORDER_TBL." toc where t.id_cat=tc.id and tc.id_parent='0' and toc.id_topcat=t.id_cat order by toc.ordering asc");
+	$res = $babDB->db_query("select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='0' and type='1' order by ordering asc");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if( in_array($row['id'], $babBody->topview) )
+		if( in_array($row['id_topcat'], $babBody->topcatview) )
 			{
 			if( $close )
 				{
 				$this->count = 1;
 				return;
 				}
-			if( !in_array($row['id_cat'], $this->arrid))
-				array_push($this->arrid, $row['id_cat']);
+			if( !in_array($row['id_topcat'], $this->arrid))
+				array_push($this->arrid, $row['id_topcat']);
 			}
 		}
 	$this->head = bab_translate("List of different topics categories");
@@ -870,7 +870,7 @@ function babTopicsSection($cat, $close)
 	$this->title = $r['title'];
 	$this->head = $r['description'];
 
-	$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$cat."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$cat."') order by tco.ordering asc";
+	$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$cat."' order by ordering asc";
 	$res = $babDB->db_query($req);
 	while( $arr = $babDB->db_fetch_array($res))
 		{
@@ -1571,7 +1571,19 @@ function bab_updateUserSettings()
 			{
 			$babBody->topview[] = $row['id'];
 			if( count($babBody->topcatview) == 0 || !in_array($row['id_cat'], $babBody->topcatview))
+				{
 				$babBody->topcatview[] = $row['id_cat'];
+				$idcat = $row['id_cat'];
+				do
+					{
+					list($parent) = $babDB->db_fetch_row($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$idcat."'"));
+
+					if( $parent != 0 && !in_array($parent, $babBody->topcatview))
+						$babBody->topcatview[] = $parent;
+					$idcat = $parent;
+					}
+				while( $parent != 0 );
+				}
 			}
 		}
 

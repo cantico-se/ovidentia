@@ -632,13 +632,13 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 
 	if( $arr['id_cat'] != $cat )
 		{
-		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$cat."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$cat."')");
+		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$cat."'");
 		$arr = $db->db_fetch_array($res);
 		if( isset($arr[0]))
 			$ord = $arr[0] + 1;
 		else
 			$ord = 1;
-		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set ordering='".$ord."' where id_topcat='".$id."' and type='2'");
+		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set id_parent='".$cat."', ordering='".$ord."' where id_topcat='".$id."' and type='2'");
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}

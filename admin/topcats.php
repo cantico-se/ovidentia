@@ -205,7 +205,6 @@ function topcatsList($idp)
 
 			if( $idp != 0)
 				{
-				$this->arrparents[] = 0;
 				$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id='".$idp."'");
 				while($arr = $this->db->db_fetch_array($res))
 					{
@@ -214,9 +213,9 @@ function topcatsList($idp)
 					$this->arrparents[] = $arr['id_parent'];
 					$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id='".$arr['id_parent']."'");
 					}
-
+				$this->arrparents[] = 0;
+				$this->arrparents = array_reverse($this->arrparents);	
 				$this->arrparents[] = $idp;
-				//$this->arrparents = array_reverse($this->arrparents);	
 				}
 			$this->countparents = count($this->arrparents);
 			}
@@ -300,9 +299,9 @@ function orderTopcat($idp)
 			$this->create = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
 			if( $idp == 0 && $babBody->isSuperAdmin )
-				$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$idp."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$idp."') order by tco.ordering asc";
+				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." id_parent='0' order by ordering asc";
 			else
-				$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tc.id_dgowner='".$babBody->currentAdmGroup."' and tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$idp."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$idp."') order by tco.ordering asc";
+				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$idp."' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->idcat = $cat;
@@ -380,13 +379,13 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '0', '3', '" . ($arr[0]+1). "')";
 		$db->db_query($req);
 
-		$res = $db->db_query("select max(tco.ordering) from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$topcatid."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$topcatid."')");
+		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$topcatid."'");
 		$arr = $db->db_fetch_array($res);
 		if( isset($arr[0]))
 			$ord = $arr[0] + 1;
 		else
 			$ord = 1;
-		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) VALUES ('" .$id. "', '1', '" . $ord. "')");
+		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$id. "', '1', '" . $ord. "', '".$topcatid."')");
 		}
 	}
 

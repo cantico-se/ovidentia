@@ -2080,12 +2080,45 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_PRIVATE_SECTIONS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+$req = "ALTER TABLE ".BAB_PRIVATE_SECTIONS_TBL." ADD optional ENUM('N','Y') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_PRIVATE_SECTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 
 $req = "ALTER TABLE ".BAB_TOPICS_CATEGORIES_TBL." ADD optional ENUM('N','Y') DEFAULT 'N' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
 	$ret = "Alteration of <b>".BAB_TOPICS_CATEGORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SECTIONS_STATES_TBL." ADD hidden ENUM('N','Y') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SECTIONS_STATES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_TOPCAT_ORDER_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_topcat int(11) unsigned NOT NULL default '0',";
+$req .= "type smallint(2) unsigned NOT NULL default '0',";
+$req .= "id_parent int(11) unsigned NOT NULL default '0',";
+$req .= "ordering smallint(2) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_topcat (id_topcat),";
+$req .= "KEY id_parent (id_parent)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_TOPCAT_ORDER_TBL."</b> table failed !<br>";
 	return $ret;
 	}
 
@@ -2110,7 +2143,7 @@ $pos = 1;
 $res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='0'");
 while( $arr = $db->db_fetch_array($res))
 	{
-	$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) values ('".$arr['id']."', '1', '".$pos."')");
+	$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, id_parent, ordering) values ('".$arr['id']."', '1', '0', '".$pos."')");
 	$pos++;
 	}
 
@@ -2121,14 +2154,14 @@ while( $arr = $db->db_fetch_array($res))
 	$res2 = $db->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$arr['id']."'");
 	while( $rr = $db->db_fetch_array($res2))
 		{
-		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) values ('".$rr['id']."', '1', '".$pos."')");
+		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, id_parent, ordering) values ('".$rr['id']."', '1', '".$arr['id']."', '".$pos."')");
 		$pos++;
 		}
 
 	$res2 = $db->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$arr['id']."' order by ordering asc");
 	while( $rr = $db->db_fetch_array($res2))
 		{
-		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) values ('".$rr['id']."', '2', '".$pos."')");
+		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, id_parent, ordering) values ('".$rr['id']."', '2', '".$arr['id']."', '".$pos."')");
 		$pos++;
 		}
 	}

@@ -347,7 +347,7 @@ function listCategories($cat)
 			$this->submit = bab_translate("Submit");
 			$this->articles = bab_translate("Article") ."(s)";
 			$this->db = $GLOBALS['babDB'];
-			$req = "select distinct tco.id_topcat from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_TBL." t where tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$cat."' order by tco.ordering asc";
+			$req = "select id_topcat from ".BAB_TOPCAT_ORDER_TBL." where type='2' and id_parent='".$cat."' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->idcat = $cat;
@@ -426,13 +426,13 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid,
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 
-	$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$category."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$category."')");
+	$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$cat."'");
 	$arr = $db->db_fetch_array($res);
 	if( isset($arr[0]))
 		$ord = $arr[0] + 1;
 	else
 		$ord = 1;
-	$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) VALUES ('" .$id. "', '2', '" . $ord. "')");
+	$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering, id_parent) VALUES ('" .$id. "', '2', '" . $ord. "', '".$cat."')");
 	
 	return true;
 	}

@@ -338,6 +338,9 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 
 	if( $arr['notification'] == "Y" && ($email = bab_getUserEmail($arr['moderator'])) != "")
 	    notifyModerator(stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
+
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
+	exit;
 	}
 
 function getClosedThreads($forum)

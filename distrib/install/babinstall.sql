@@ -307,6 +307,7 @@ CREATE TABLE bab_sections_states (
    closed enum('N','Y') DEFAULT 'N' NOT NULL,
    type smallint(2) unsigned NOT NULL,
    id_user int(11) unsigned NOT NULL,
+   hidden enum('N','Y') DEFAULT 'N' NOT NULL,
    PRIMARY KEY (id),
    KEY id_section (id_section),
    KEY type (type),
@@ -395,6 +396,24 @@ CREATE TABLE bab_topics_categories (
 );
 
 INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '', '0', 'N', '0', '');
+
+# --------------------------------------------------------
+#
+# Structure de la table `bab_topcat_order`
+#
+
+CREATE TABLE bab_topcat_order (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_topcat int(11) unsigned NOT NULL default '0',
+  type smallint(2) unsigned NOT NULL default '0',
+  ordering smallint(2) unsigned NOT NULL default '0',
+  id_parent int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_topcat (id_topcat)
+  KEY id_parent (id_parent)
+);
+
+INSERT INTO bab_topcat_order (id_topcat, type, ordering) VALUES ('1', '1', '1');
 
 # --------------------------------------------------------
 #

@@ -125,7 +125,7 @@ function topcatModify($id)
 				}
 			$this->countdisptmpl = count($this->arrdisptmpl);
 
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id != '".$id."'");
+			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id != '".$id."' order by title asc");
 			$this->count = $babDB->db_num_rows($this->res);
 
 			}
@@ -250,25 +250,25 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."' and id!='".$id."'";
 	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
+	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This topic category doesn't exist");
 		return false;
 		}
 	else
 		{
-		$arr = $db->db_fetch_array($res);
+		$arr = $db->db_fetch_array($db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$id."'"));
 		$query = "update ".BAB_TOPICS_CATEGORIES_TBL." set title='".$name."', description='".$description."', enabled='".$benabled."', template='".$template."', display_tmpl='".$disptmpl."', id_parent='".$topcatid."' where id='".$id."'";
 		$db->db_query($query);
 		if( $arr['id_parent'] != $topcatid )
 			{
-			$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$topcatid."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$topcatid."')");
+			$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$topcatid."'");
 			$arr = $db->db_fetch_array($res);
 			if( isset($arr[0]))
 				$ord = $arr[0] + 1;
 			else
 				$ord = 1;
-			$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set ordering='".$ord."' where id_topcat='".$id."' and type='1'");
+			$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set id_parent='".$topcatid."', ordering='".$ord."' where id_topcat='".$id."' and type='1'");
 			}
 
 		}
