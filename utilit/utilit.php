@@ -1501,7 +1501,7 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 
-	$req="select skin, style, lang from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select skin, style, adminemail, lang from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
 
 	if( $res && $babDB->db_num_rows($res) > 0 )
@@ -1518,6 +1518,10 @@ function bab_updateSiteSettings()
 		if( $arr['lang'] != "")
 			{
 			$GLOBALS['babLanguage'] = $arr['lang'];
+			}
+        if( $arr['adminemail'] != "")
+			{
+			$GLOBALS['babAdminEmail'] = $arr['adminemail'];
 			}
 		}
 	else
