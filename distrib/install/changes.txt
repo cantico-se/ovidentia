@@ -1,7 +1,9 @@
 /************************************************************************/
 January 2005: Version 5.5.3
 /************************************************************************/
-- Bug #456: When an article is modified date archive is reset
+- Bug #459 Publication date is not updated when topic manager update it
+- Bug #458 Publication and archive date are not correctly displayed
+- Bug #456 When an article is modified date archive is reset
 - Fixed some minors bugs
 
 /************************************************************************/
