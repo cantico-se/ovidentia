@@ -515,9 +515,6 @@ function confirmDeleteGroup($id)
 	$req = "delete from ".BAB_MAIL_DOMAINS_TBL." where owner='$id' and bgroup='Y'";
 	$res = $db->db_query($req);	
 
-	// delete files owned by this group
-	bab_deleteUploadUserFiles("Y", $id);
-
     // delete group
 	$req = "delete from ".BAB_GROUPS_TBL." where id='$id'";
 	$res = $db->db_query($req);
