@@ -67,6 +67,7 @@ HTMLArea.I18N = {
 	msg: {
 		"Path":         "Chemin",
 		"TEXT_MODE":    "Vous êtes en MODE TEXTE.  Appuyez sur le bouton [<>] pour retourner au mode tel-tel.",
+		"Link" : "Vous devez sélectionner du texte avant de créer un lien",
 
 		"IE-sucks-full-screen" :
 		// translate here
@@ -93,5 +94,6 @@ HTMLArea.I18N = {
 		"Top frame (_top)"                                  : "Cadre du haut (_top)",
 		"URL:"                                              : "Adresse Web:",
 		"You must enter the URL where this link points to"  : "Vous devez entrer l'adresse Web du lien"
+		
 	}
 };
