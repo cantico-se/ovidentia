@@ -1,5 +1,5 @@
 /************************************************************************/
-Juillet 2003: Version 4.0.8
+August 2003: Version 4.0.8
 /************************************************************************/
 - Bug: Administrateur can register user with blank nickname
 - Bug: Modified date is not updated when a file is commited without approbation
@@ -8,7 +8,7 @@ Juillet 2003: Version 4.0.8
 - Fixed some minors bugs
 
 /************************************************************************/
-Juillet 2003: Version 4.0.7
+July 2003: Version 4.0.7
 /************************************************************************/
 - Enhanced OvML : It is possible to imbricate the containers  
 - An improved add-ons management
@@ -17,7 +17,7 @@ Juillet 2003: Version 4.0.7
 - Fixed some minors bugs
 
 /************************************************************************/
-Juillet 2003: Version 4.0.6
+July 2003: Version 4.0.6
 /************************************************************************/
 - Enhanced OvML ( See documentation )
 - Now it's possible for an article's author to restrict access to his article
@@ -34,7 +34,7 @@ Juillet 2003: Version 4.0.6
 - Fixed some minors bugs
 
 /************************************************************************/
-Juin 2003: Version 4.0.5
+June 2003: Version 4.0.5
 /************************************************************************/
 - Enhanced OvML ( See documentation )
 - Users can update their personnal information stored in Ovidentia directory
@@ -42,7 +42,7 @@ Juin 2003: Version 4.0.5
 - Fixed some minors bugs
 
 /************************************************************************/
-Juin 2003: Version 4.0.4
+June 2003: Version 4.0.4
 /************************************************************************/
 - Enhanced OvML ( See documentation )
 - New HTML editor ( HTMLArea )
@@ -54,20 +54,20 @@ Juin 2003: Version 4.0.4
 - Fixed some minors bugs
 
 /************************************************************************/
-Mai 2003: Version 4.0.3
+May 2003: Version 4.0.3
 /************************************************************************/
 - Delegation of administration
 - Fixed some minors bugs
 
 /************************************************************************/
-Avril 2003: Version 4.0.2
+April 2003: Version 4.0.2
 /************************************************************************/
 - Possibily to add customized fields to files in File Manager
 - Possibily to handle multiple versions of files
 - Fixed some minors bugs
 
 /************************************************************************/
-Avril 2003: Version 4.0.1
+April 2003: Version 4.0.1
 /************************************************************************/
 - An "experimental" version (one that you can experiment with) of 
     OvML (Ovidentia Markup Language);  
@@ -75,7 +75,7 @@ Avril 2003: Version 4.0.1
 - Fixed some minors bugs
 
 /************************************************************************/
-Mars 2003: Version 4.0.0
+March 2003: Version 4.0.0
 /************************************************************************/
 - Fixed some minors bugs
 
