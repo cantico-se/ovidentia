@@ -398,6 +398,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
+			$this->ctx->curctx->push('ArticleTopicId', $this->arr['id_topic']);
 			$i++;
 			return true;
 		}
@@ -445,6 +446,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->arr['id_topic']."&article=".$this->arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $this->arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($this->arr['date']));
+			$this->ctx->curctx->push('ArticleTopicId', $this->arr['id_topic']);
 			$i++;
 			return true;
 		}
@@ -598,6 +600,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$k++;
 			return true;
 			}
