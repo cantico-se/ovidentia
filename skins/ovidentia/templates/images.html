@@ -1,16 +1,71 @@
-<!--#begin imageslist -->
+<!--#begin imageslisteditor -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
+<script type="text/javascript" src="{ babScriptPath }htmlarea/popups/popup.js"></script>
 <script type="text/javascript">
 <!--
-function dd(id, url)
-{
-self.opener.EditorOnCreateImage(id, url,document.forms.fdummy.align.value);
-window.close();
+function Init() {
+if (!document.all) {
+		// init dialogArguments, as IE gets it
+		window.dialogArguments = opener.Dialog._arguments;
+		window.addEventListener("unload", __dlg_onclose, true);
+		// center on parent
+		var px1 = opener.screenX;
+		var px2 = opener.screenX + opener.outerWidth;
+		var py1 = opener.screenY;
+		var py2 = opener.screenY + opener.outerHeight;
+		var x = (px2 - px1 - window.outerWidth) / 2;
+		var y = (py2 - py1 - window.outerHeight) / 2;
+		window.moveTo(x, y);
+	}
+};
+
+function onOK(id, url) {
+	var alt = document.getElementById('f_alt');
+
+	if (!alt.value) {
+	  alt.value ='Ovidentia image';
+    }
+
+	var ali = document.getElementById('align');
+	var border = document.getElementById('f_border');
+	var horiz = document.getElementById('f_horiz');
+	var vert = document.getElementById('f_vert');
+	var param = new Object();
+
+    param['f_id'] = id;
+    param['f_url'] = url;
+	param['f_alt'] = alt.value;
+	param['f_align'] = ali.value;
+	param['f_border'] = border.value;
+	param['f_horiz'] = horiz.value;
+	param['f_vert'] = vert.value;
+
+	self.opener.EditorOnCreateImage(param);
+	window.close();
+    return false;
+};
+
+function validateNum(field) {
+var valid = "0123456789"
+var ok = "yes";
+var temp;
+for (var i=0; i<field.value.length; i++) {
+temp = "" + field.value.substring(i, i+1);
+if (valid.indexOf(temp) == "-1") ok = "no";
+}
+if (ok == "no") {
+var d2;
+alert("{ invalidentry }");
+field.value = field.value.substring(0, i-1);
+field.focus();
+return false;
+   }
+return true;
 }
 
 function validateImage(fmname, msg)
@@ -36,8 +91,9 @@ else
 window.focus();
 //-->
 </script>
+
 </HEAD>
-<BODY>
+<BODY onload="Init()">
 <br>
 <center><table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
 <tr>
@@ -56,6 +112,7 @@ window.focus();
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td  colspan="2" class="BabLoginMenuBackground" width="100%" align="center" nowrap valign="middle">{ maxsizetxt }</td>
+</td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
@@ -87,11 +144,15 @@ window.focus();
 </form>
 <br>
 <form name="fdummy">
-<center><table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabLoginMenuBackground" ><a class="BabSiteAdminListLink" href="{ refurl }">{ refresh }</a></td>
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ aligntxt }:</td>
-<td class="BabLoginMenuBackground" align="left" valign="middle">
-<select name="align">
+<center>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" ><a class="BabSiteAdminListLink" href="{ refurl }">{ 
+refresh }</a></td>
+<td class="BabLoginMenuBackground" align="right" valign="middle">{ aligntxt 
+}:</td>
+<td class="BabLoginMenuBackground" align="left" valign="middle"> 
+<select name="align" id="align">
 <option value="">none</option>
 <option value="left">left</option>
 <option value="right">right</option>
@@ -101,6 +162,34 @@ window.focus();
 <option value="bottom">bottom</option>
 <option value="center">center</option>
 </select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" align="right"> { alt } : </td>
+<td class="BabLoginMenuBackground" align="left"> 
+<input type="text" id="f_alt" name="f_alt">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" align="right">{ hspacing } : </td>
+<td class="BabLoginMenuBackground" align="left"> 
+<input onKeyup="validateNum(this)" type="text" id="f_horiz" name="f_horiz">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" align="right">{ vspacing } : </td>
+<td class="BabLoginMenuBackground" align="left"> 
+<input onKeyup="validateNum(this)" type="text" id="f_vert" name="f_vert">
+</td>
+</tr>
+<tr>
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" align="right">{ border } : </td>
+<td class="BabLoginMenuBackground" align="left">
+<input onKeyup="validateNum(this)" type="text" id="f_border" name="f_border">
 </td>
 </tr>
 </table>
@@ -129,14 +218,14 @@ window.focus();
 <!--#if editor "== none" -->
 <a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<a class="BabSiteAdminListLink" href="javascript:opener.onInsertImage('{ imgurl }')">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
 <!--#endif gd -->
@@ -173,14 +262,14 @@ window.focus();
 <!--#if editor "== none" -->
 <a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
 <!--#if editor "== none" -->
 <a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
 <!--#endif gd -->
@@ -194,4 +283,4 @@ window.focus();
 </table>
 </BODY>
 </HTML>
-<!--#end imageslist -->
+<!--#end imageslisteditor -->

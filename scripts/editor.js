@@ -1230,15 +1230,23 @@
 		range.select();
 	}
 
-	function EditorOnCreateImage(id, text, palign)
+	function EditorOnCreateImage(param)
 	{
-		if (!EditorValidateMode(id)) {
+		if (!EditorValidateMode(param['f_id'])) {
 			return;
 		}
-		var range = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
-		var url = '<img src="' + text + '" border=0  hspace=5 vspace=5';
-		if( palign != '')
-			url = url + ' align=' + palign;
+		var range = eval(EDITOR_COMPOSITION_PREFIX + param['f_id']).document.selection.createRange();
+		var url = '<img src="' + param['f_url'] + '"';
+		if( param['f_align'] != '')
+			url = url + ' align=\"' + param['f_align']+'\"';
+		if( param['f_border'] != '')
+			url = url + ' border=\"' + param['f_border']+'\"';
+		if( param['f_horiz'] != '')
+			url = url + ' hspace=\"' + param['f_horiz']+'\"';
+		if( param['f_vert'] != '')
+			url = url + ' vspace=\"' + param['f_vert']+'\"';
+		if( param['f_alt'] != '')
+			url = url + ' alt=\"' + param['f_alt']+'\"';
 		url = url + '>';
 
 		range.pasteHTML(url);

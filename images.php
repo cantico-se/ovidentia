@@ -151,6 +151,12 @@ function listImages($editor)
 			$this->delete = bab_translate("Delete");
 			$this->invalidimg = bab_translate("Invalid image extension");
 			$this->aligntxt = bab_translate("Alignment");
+			$this->alt = bab_translate("Alt");
+			$this->hspacing = bab_translate("Horizontal spacing");
+			$this->vspacing = bab_translate("Vertical spacing");
+			$this->border = bab_translate("Border");
+			$this->invalidentry = bab_translate("You must specify a number");
+
 			$this->badmin = bab_isUserAdministrator();
 			$this->comnum = 0;
 			$this->editor = $editor;
@@ -296,8 +302,9 @@ function listImages($editor)
 			}
 		}
 	$temp = new temp($editor);
-	echo bab_printTemplate($temp,"images.html", "imageslist");
+	echo bab_printTemplate($temp,"images.html", "imageslisteditor");
 	}
+
 
 $msgerror = "";
 function saveImage($file, $size, $tmpfile, $share)
