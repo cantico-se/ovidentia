@@ -1865,6 +1865,8 @@ CREATE TABLE bab_sites_disclaimers (
 	KEY id_site (id_site)
 );
 
+INSERT INTO bab_sites_disclaimers (id_site, disclaimer_text ) VALUES (1, '');
+
 #
 # Structure de la table `bab_profiles`
 #
