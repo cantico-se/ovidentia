@@ -1136,21 +1136,35 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$plus = finder($this->like,"field_value",$option,$this->like2);
 					if ($plus != "") $plus .= " and";
 
-					$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id_group<'2'";
+					$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL."";
 					$res = $this->db->db_query($req);
 					while ($row = $this->db->db_fetch_array($res))
 						{
 						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 							{
-
 							$dirname = mysql_escape_string($row['name']);
 							
-							if( $row['id_group'] == 1 )
+							if( $row['id_group'] >= 1 )
 								{
 								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 								if( $bdir == 'Y' )
 									{
-									$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where";
+									$existing = array();
+									$res_existing = $this->db->db_query("SELECT id FROM dirresults");
+									while(list($existing_id) = $this->db->db_fetch_array($res_existing))
+										{
+										$existing[] = $existing_id;
+										}
+
+									if ($row['id_group'] == 1)
+										{
+										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where";
+										}
+									else
+										{
+										$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det, ".BAB_USERS_GROUPS_TBL." grp where grp.id_object=det.id_user AND grp.id_group='".$row['id_group']."' AND";
+										}
+
 									if( !empty($likedir))
 										{
 										$req .= " ".$likedir." and";
@@ -1159,6 +1173,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 									if( !empty($crit_fields) )
 										{
 										$req .= " and ".$crit_fields;
+										}
+									if (count($existing) > 0)
+										{
+										$req .= " and det.id NOT IN(".implode(',',$existing).")";
 										}
 									$req .= " group by det.id order by sn asc,givenname asc";
 									$this->db->db_query($req);
