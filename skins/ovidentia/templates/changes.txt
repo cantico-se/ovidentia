@@ -5,14 +5,18 @@ version 3.3.2 / 3.4.0 beta
 file			        section		        change 
 --------------------------------------------------------------------------------
 search.html             viewfil             Added { pathtxt } and { path }
-articles.html           modifyarticle       Added { images }
+articles.html           modifyarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
+                                            Added editor.ListFilesUrl('{ urlfiles }') javascript
 
-                        createarticle       Added { images }
+                        createarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
+                                            Added editor.ListFilesUrl('{ urlfiles }') javascript
 
-waiting.html            modifyarticle       Added { images }
+waiting.html            modifyarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
+                                            Added editor.ListFilesUrl('{ urlfiles }') javascript
+fileman.html                                Added template 'browsefiles'                                           
 
 
 /****************************/

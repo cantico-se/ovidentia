@@ -125,12 +125,19 @@ else
 <tr align=center>
 <td valign=middle>
 <!--#if gd -->
-<!--#if gd -->
+<!--#if editor "== none" -->
+<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
-<!--#endif gd -->
+<!--#if editor "== none" -->
+<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<!--#else editor -->
+<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<!--#endif editor -->
+<img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
 <!--#endif gd -->
 </td>
 </tr>
@@ -162,10 +169,19 @@ else
 <tr align=center>
 <td valign=middle>
 <!--#if gd -->
+<!--#if editor "== none" -->
+<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<!--#else editor -->
 <a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<!--#endif editor -->
 <img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
-<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
+<!--#if editor "== none" -->
+<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank">
+<!--#else editor -->
+<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<!--#endif editor -->
+<img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
 <!--#endif gd -->
 </td>
 </tr>

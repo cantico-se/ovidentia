@@ -317,6 +317,9 @@ function delImage($com, $f)
 if( !isset($idx))
 	$idx = "list";
 
+if( !isset($editor))
+	$editor = "none";
+
 if( isset($addf) && $addf == "add")
 	{
 	saveImage($uploadf_name, $uploadf_size,$uploadf, $share);
