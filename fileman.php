@@ -78,7 +78,6 @@ class listFiles
 	var $arrmgrp = array();
 	var $bdownload;
 	var $reswf;
-	var $countwf;
 	var $arrdir = array();
 	var $buaf;
 

@@ -340,7 +340,6 @@ function listAdmQuestions($idcat)
 		var $checked;
 		var $editurl;
 		var $editname;
-		var $idcat;
 
 		function temp($id)
 			{

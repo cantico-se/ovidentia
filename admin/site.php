@@ -80,7 +80,6 @@ function siteModify($id)
 		var $smtp;
 		var $sendmail;
 		var $mail;
-		var $mailfunction;
 		var $server;
 		var $serverval;
 		var $serverport;
@@ -91,7 +90,6 @@ function siteModify($id)
 		var $disabledselected;
 
 		var $group;
-		var $db;
 		var $grpcount;
 		var $grpres;
 

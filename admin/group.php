@@ -50,8 +50,6 @@ function groupModify($id)
 
 		var $usersbrowurl;
 		var $grpid;
-		var $noselected;
-		var $yesselected;
 
 		var $grpdgtxt;
 		var $grpdgid;
@@ -158,7 +156,6 @@ function groupMembers($id)
 		var $primary;
 		var $deletealt;
 			
-		var $arr = array();
 		var $arr = array();
 		var $db;
 		var $count;

@@ -117,7 +117,6 @@ function listFolders()
 		var $urluploname;
 		var $urldownname;
 		var $urlupdaname;
-		var $access;
 		var $version;
 
 		function temp()

@@ -455,48 +455,6 @@ class bab_ParentsArticleCategory extends bab_handler
 	}
 }
 
-
-class bab_ArticleCategoryPrevious extends bab_ArticleCategory
-{
-	var $handler;
-
-	function bab_ArticleCategoryPrevious( &$ctx)
-	{
-		$this->handler = $ctx->get_handler('bab_ArticleCategories');
-		if( $this->handler !== false && $this->handler !== '' )
-			{
-			if( $this->handler->index > 1)
-				{
-				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
-				$ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index-2]);
-				}
-			}
-		$this->bab_ArticleCategory($ctx);
-	}
-
-}
-
-class bab_ArticleCategoryNext extends bab_ArticleCategory
-{
-	var $handler;
-
-	function bab_ArticleCategoryNext( &$ctx)
-	{
-		$this->handler = $ctx->get_handler('bab_ArticleCategories');
-		if( $this->handler !== false && $this->handler !== '' )
-			{
-			if( $this->handler->index < $this->handler->count)
-				{
-				$this->count = 1;
-				$ctx->curctx->push('IndexEntry', $this->handler->index);
-				$ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index]);
-				}
-			}
-		$this->bab_ArticleCategory($ctx);
-	}
-
-}
-
 class bab_ArticleCategory extends bab_handler
 {
 	var $arrid = array();
@@ -547,6 +505,49 @@ class bab_ArticleCategory extends bab_handler
 		}
 	}
 }
+
+class bab_ArticleCategoryPrevious extends bab_ArticleCategory
+{
+	var $handler;
+
+	function bab_ArticleCategoryPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_ArticleCategory($ctx);
+	}
+
+}
+
+class bab_ArticleCategoryNext extends bab_ArticleCategory
+{
+	var $handler;
+
+	function bab_ArticleCategoryNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_ArticleCategory($ctx);
+	}
+
+}
+
+
 
 
 class bab_ArticleTopics extends bab_handler
@@ -612,47 +613,6 @@ class bab_ArticleTopics extends bab_handler
 	}
 }
 
-class bab_ArticleTopicPrevious extends bab_ArticleTopic
-{
-	var $handler;
-
-	function bab_ArticleTopicPrevious( &$ctx)
-	{
-		$this->handler = $ctx->get_handler('bab_ArticleTopics');
-		if( $this->handler !== false && $this->handler !== '' )
-			{
-			if( $this->handler->index > 1)
-				{
-				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
-				$ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index-2]);
-				}
-			}
-		$this->bab_ArticleTopic($ctx);
-	}
-
-}
-
-class bab_ArticleTopicNext extends bab_ArticleTopic
-{
-	var $handler;
-
-	function bab_ArticleTopicNext( &$ctx)
-	{
-		$this->handler = $ctx->get_handler('bab_ArticleCategories');
-		if( $this->handler !== false && $this->handler !== '' )
-			{
-			if( $this->handler->index < $this->handler->count)
-				{
-				$this->count = 1;
-				$ctx->curctx->push('IndexEntry', $this->handler->index);
-				$ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index]);
-				}
-			}
-		$this->bab_ArticleTopic($ctx);
-	}
-
-}
-
 class bab_ArticleTopic extends bab_handler
 {
 	var $IdEntries = array();
@@ -701,6 +661,49 @@ class bab_ArticleTopic extends bab_handler
 		}
 	}
 }
+
+
+class bab_ArticleTopicPrevious extends bab_ArticleTopic
+{
+	var $handler;
+
+	function bab_ArticleTopicPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleTopics');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_ArticleTopic($ctx);
+	}
+
+}
+
+class bab_ArticleTopicNext extends bab_ArticleTopic
+{
+	var $handler;
+
+	function bab_ArticleTopicNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_ArticleTopic($ctx);
+	}
+
+}
+
 
 
 class bab_Articles extends bab_handler
@@ -804,48 +807,6 @@ class bab_Articles extends bab_handler
 	}
 }
 
-class bab_ArticlePrevious extends bab_Article
-{
-	var $handler;
-
-	function bab_ArticlePrevious( &$ctx)
-	{
-		$this->handler = $ctx->get_handler('bab_Articles');
-		if( $this->handler !== false && $this->handler !== '' )
-			{
-			if( $this->handler->index > 1)
-				{
-				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
-				$ctx->curctx->push('articleid', $this->handler->IdEntries[$this->handler->index-2]);
-				}
-			}
-		$this->bab_Article($ctx);
-	}
-
-}
-
-class bab_ArticleNext extends bab_Article
-{
-	var $handler;
-
-	function bab_ArticleNext( &$ctx)
-	{
-		$this->handler = $ctx->get_handler('bab_Articles');
-		if( $this->handler !== false && $this->handler !== '' )
-			{
-			if( $this->handler->index < $this->handler->count)
-				{
-				$this->count = 1;
-				$ctx->curctx->push('IndexEntry', $this->handler->index);
-				$ctx->curctx->push('articleid', $this->handler->IdEntries[$this->handler->index]);
-				}
-			}
-		$this->bab_Article($ctx);
-	}
-
-}
-
-
 class bab_Article extends bab_handler
 {
 	var $IdEntries = array();
@@ -909,6 +870,50 @@ class bab_Article extends bab_handler
 }
 
 
+class bab_ArticlePrevious extends bab_Article
+{
+	var $handler;
+
+	function bab_ArticlePrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Articles');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('articleid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_Article($ctx);
+	}
+
+}
+
+class bab_ArticleNext extends bab_Article
+{
+	var $handler;
+
+	function bab_ArticleNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Articles');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('articleid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_Article($ctx);
+	}
+
+}
+
+
+
+
 class bab_Forums extends bab_handler
 {
 	var $index;
@@ -947,6 +952,47 @@ class bab_Forums extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('ForumName', $arr['name']);
+			$this->ctx->curctx->push('ForumDescription', $arr['description']);
+			$this->ctx->curctx->push('ForumId', $arr['id']);
+			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+class bab_Forum extends bab_handler
+{
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_Forum( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$ctx->get_value('forumid')."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		else
+			$this->count = 0;
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ForumName', $arr['name']);
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
@@ -1006,46 +1052,7 @@ class bab_ForumNext extends bab_Forum
 }
 
 
-class bab_Forum extends bab_handler
-{
-	var $index;
-	var $count;
-	var $res;
 
-	function bab_Forum( &$ctx)
-	{
-		global $babBody, $babDB;
-		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$ctx->get_value('forumid')."'");
-		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
-			$this->count = 1;
-		else
-			$this->count = 0;
-		$this->ctx->curctx->push('CCount', $this->count);
-	}
-
-	function getnext()
-	{
-		global $babDB;
-		if( $this->idx < $this->count)
-		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('ForumName', $arr['name']);
-			$this->ctx->curctx->push('ForumDescription', $arr['description']);
-			$this->ctx->curctx->push('ForumId', $arr['id']);
-			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
-			$this->idx++;
-			$this->index = $this->idx;
-			return true;
-		}
-		else
-		{
-			$this->idx=0;
-			return false;
-		}
-	}
-}
 
 class bab_Post extends bab_handler
 {
@@ -1259,6 +1266,48 @@ class bab_Folders extends bab_handler
 	}
 }
 
+class bab_Folder extends bab_handler
+{
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_Folder( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$folderid = $ctx->get_value('folderid');
+		$this->count = 0;
+		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		{
+		$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$folderid."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('FolderName', $arr['folder']);
+			$this->ctx->curctx->push('FolderId', $arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
 class bab_FolderPrevious extends bab_Folder
 {
 	var $handler;
@@ -1301,47 +1350,7 @@ class bab_FolderNext extends bab_Folder
 }
 
 
-class bab_Folder extends bab_handler
-{
-	var $index;
-	var $count;
-	var $res;
 
-	function bab_Folder( &$ctx)
-	{
-		global $babBody, $babDB;
-		$this->bab_handler($ctx);
-		$folderid = $ctx->get_value('folderid');
-		$this->count = 0;
-		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
-		{
-		$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$folderid."'");
-		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
-			$this->count = 1;
-		}
-		$this->ctx->curctx->push('CCount', $this->count);
-	}
-
-	function getnext()
-	{
-		global $babDB;
-		if( $this->idx < $this->count)
-		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('FolderName', $arr['folder']);
-			$this->ctx->curctx->push('FolderId', $arr['id']);
-			$this->idx++;
-			$this->index = $this->idx;
-			return true;
-		}
-		else
-		{
-			$this->idx=0;
-			return false;
-		}
-	}
-}
 
 class bab_SubFolders extends bab_handler
 {
@@ -2460,6 +2469,49 @@ class bab_Faqs extends bab_handler
 	}
 }
 
+class bab_Faq extends bab_handler
+{
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_Faq( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$ctx->get_value('faqid')."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		else
+			$this->count = 0;
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('FaqName', $arr['category']);
+			$this->ctx->curctx->push('FaqDescription', $arr['description']);
+			$this->ctx->curctx->push('FaqId', $arr['id']);
+			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
+			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
 
 class bab_FaqPrevious extends bab_Faq
 {
@@ -2504,48 +2556,6 @@ class bab_FaqNext extends bab_Faq
 
 
 
-class bab_Faq extends bab_handler
-{
-	var $index;
-	var $count;
-	var $res;
-
-	function bab_Faq( &$ctx)
-	{
-		global $babBody, $babDB;
-		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$ctx->get_value('faqid')."'");
-		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
-			$this->count = 1;
-		else
-			$this->count = 0;
-		$this->ctx->curctx->push('CCount', $this->count);
-	}
-
-	function getnext()
-	{
-		global $babDB;
-		if( $this->idx < $this->count)
-		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('FaqName', $arr['category']);
-			$this->ctx->curctx->push('FaqDescription', $arr['description']);
-			$this->ctx->curctx->push('FaqId', $arr['id']);
-			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
-			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
-			$this->idx++;
-			$this->index = $this->idx;
-			return true;
-		}
-		else
-		{
-			$this->idx=0;
-			return false;
-		}
-	}
-}
-
 
 class bab_FaqQuestions extends bab_handler
 {
@@ -2581,6 +2591,49 @@ class bab_FaqQuestions extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
+			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
+			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_FaqQuestion extends bab_handler
+{
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_FaqQuestion( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$ctx->get_value('questionid')."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		else
+			$this->count = 0;
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
@@ -2643,47 +2696,6 @@ class bab_FaqQuestionNext extends bab_FaqQuestion
 
 
 
-class bab_FaqQuestion extends bab_handler
-{
-	var $index;
-	var $count;
-	var $res;
-
-	function bab_FaqQuestion( &$ctx)
-	{
-		global $babBody, $babDB;
-		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$ctx->get_value('questionid')."'");
-		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
-			$this->count = 1;
-		else
-			$this->count = 0;
-		$this->ctx->curctx->push('CCount', $this->count);
-	}
-
-	function getnext()
-	{
-		global $babDB;
-		if( $this->idx < $this->count)
-		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
-			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
-			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
-			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
-			$this->idx++;
-			$this->index = $this->idx;
-			return true;
-		}
-		else
-		{
-			$this->idx=0;
-			return false;
-		}
-	}
-}
 
 
 

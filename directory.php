@@ -148,7 +148,6 @@ function browseLdapDirectory($id, $pos)
 		var $pos;
 		var $allselected;
 		var $allurl;
-		var $count;
 		var $ldap;
 		var $entries;
 		var $db;

@@ -119,7 +119,6 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
         var $arrfiles = array();
 
         var $count;
-        var $langval;
 
         var $arrskins = array();
 		var $skin;
@@ -137,7 +136,6 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 		var $smtp;
 		var $sendmail;
 		var $mail;
-		var $mailfunction;
 		var $server;
 		var $serverval;
 		var $serverport;
