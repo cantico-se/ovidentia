@@ -1,3 +1,6 @@
+#--------------------------------------------
+#			2.2 to 2.3 
+#--------------------------------------------
 
 ALTER TABLE groups ADD manager INT (11) UNSIGNED not null AFTER vacation;
 ALTER TABLE users_log ADD lastlog DATETIME not null AFTER datelog;
@@ -18,12 +21,6 @@ CREATE TABLE resourcescal (
 	id_group INT (11) UNSIGNED not null,
 	PRIMARY KEY (id)
 ); 
-
-
-# --------------------------------------------------------
-#
-# database dev
-#
 
 CREATE TABLE cal_events (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,

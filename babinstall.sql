@@ -406,20 +406,6 @@ CREATE TABLE vacations (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'vacationsmana_groups'
-#
-
-CREATE TABLE vacationsmana_groups (
-	id int(11) unsigned NOT NULL auto_increment,
-	id_object int(11) unsigned DEFAULT '0' NOT NULL,
-	id_group int(11) unsigned DEFAULT '0' NOT NULL,
-	approver enum('Y','N') DEFAULT 'N' NOT NULL,
-	manager enum('Y','N') DEFAULT 'N' NOT NULL,
-	PRIMARY KEY (id)
-);
-
-# --------------------------------------------------------
-#
 # Structure de la table 'vacationsman_groups'
 #
 
