@@ -1285,6 +1285,7 @@ class bab_Files extends bab_handler
 			$this->ctx->curctx->push('FileDescription', $arr['description']);
 			$this->ctx->curctx->push('FileKeywords', $arr['keyword']);
 			$this->ctx->curctx->push('FileId', $arr['id']);
+			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1334,6 +1335,7 @@ class bab_File extends bab_handler
 			$this->ctx->curctx->push('FileDescription', $this->arr['description']);
 			$this->ctx->curctx->push('FileKeywords', $this->arr['keyword']);
 			$this->ctx->curctx->push('FileId', $this->arr['id']);
+			$this->ctx->curctx->push('FileFolderId', $this->arr['id_owner']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1788,14 +1790,7 @@ class bab_RecentFiles extends bab_handler
 		
 		if( count($arr) == 0 )
 			{
-			$req = "select distinct fo.* from ".BAB_FM_FOLDERS_TBL." fo, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg, ".BAB_USERS_GROUPS_TBL." ug where fo.active='Y' and fmg.id_object=fo.id and fmg.id_group='0'";
-			if( $BAB_SESS_USERID != "" )
-				{
-				$req.= "or fmg.id_group='1'";
-				$req.= "or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
-				}
-			else
-				$req.= "or fmg.id_group='2'";
+			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y'";
 			}
 		else
 			{
@@ -1805,7 +1800,10 @@ class bab_RecentFiles extends bab_handler
 		$arrid = array();
 		$res = $babDB->db_query($req);
 		while( $arr = $babDB->db_fetch_array($res))
-			$arrid[] = $arr['id'];
+			{
+			if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arr['id']))
+				$arrid[] = $arr['id'];
+			}
 
 		if( count($arrid) > 0 )
 			{
@@ -1838,12 +1836,13 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FilePath', $arr['path']);
-			$this->ctx->curctx->push('FileDesc', $arr['description']);
+			$this->ctx->curctx->push('FileDescription', $arr['description']);
 			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
 			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
+			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -2038,12 +2037,13 @@ class bab_WaitingFiles extends bab_handler
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FilePath', $arr['path']);
-			$this->ctx->curctx->push('FileDesc', $arr['description']);
+			$this->ctx->curctx->push('FileDescription', $arr['description']);
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
 			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
+			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
 			$i++;
 			$this->index = $i;
 			return true;
