@@ -97,5 +97,6 @@ Mai 2002: Version 3.3.1
 - Now Ovidentia version is in the form 'major'.'minor'.'build'
 - We can upgrade from 3.1 to the last version in one step
 - Fixed missing Meta Keywords in Ovidentia page
-- Fiexd bug: $ARTICLE does'nt work correctly
+- Fixed bug: $ARTICLE does'nt work correctly
+- Addde $ARTICLEPOPUP: view article in popup window
 - Fixed some minors bugs
