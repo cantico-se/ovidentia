@@ -162,7 +162,7 @@ class babMail
 		$this->mail->Body = $babBody;
 		$this->mail->AltBody = $babAltBody;
 		if( $format == "plain" )
-			$this->mail->IsHTML(true);
+			$this->mail->IsHTML(false);
 		else
 			$this->mail->IsHTML(true);
 	}
