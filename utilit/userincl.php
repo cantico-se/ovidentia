@@ -4,6 +4,27 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+function bab_toAmPm($str)
+{
+	$arr = explode(":", $str);
+	$arr[0] = intval($arr[0]);
+	$arr[1] = intval($arr[1]);
+
+	if( $arr[0] < 12 )
+	{
+		if( $arr[0] == 0)
+			$arr[0] = 12;
+		return sprintf("%02d:%02d AM", $arr[0], $arr[1]);
+	}
+	else
+	{
+		if( $arr[0] > 12)
+			$arr[0] -= 12;
+		return sprintf("%02d:%02d PM", $arr[0], $arr[1]);
+	}
+		
+}
+
 function bab_isUserApprover($topics)
 	{
 	global $BAB_SESS_USERID;
@@ -381,6 +402,36 @@ function bab_mailAccessLevel()
 			$bemail = 3;
 		}
 	return $bemail;
+	}
+
+function bab_notesAccess()
+	{
+	$db = $GLOBALS['babDB'];
+
+	$arr = $db->db_fetch_array($db->db_query("select notes from ".BAB_GROUPS_TBL." where id='1'"));
+	if( $arr['notes'] == "Y" )
+		return true;
+
+	$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and notes='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group");
+	if( $res && $db->db_num_rows($res) > 0 )
+		return true;
+
+	return false;
+	}
+
+function bab_contactsAccess()
+	{
+	$db = $GLOBALS['babDB'];
+
+	$arr = $db->db_fetch_array($db->db_query("select contacts from ".BAB_GROUPS_TBL." where id='1'"));
+	if( $arr['notes'] == "Y" )
+		return true;
+
+	$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and contacts='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group");
+	if( $res && $db->db_num_rows($res) > 0 )
+		return true;
+
+	return false;
 	}
 
 function bab_fileManagerAccessLevel()
