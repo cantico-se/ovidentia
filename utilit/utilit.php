@@ -172,23 +172,32 @@ function bab_translate($str, $folder = "")
 
 function bab_callAddonsFunction($func)
 {
-	$arr_keys = array_keys($GLOBALS['babAddons']);
-	for( $i = 0; $i < sizeof($arr_keys); $i++)
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
+	while( $row = $db->db_fetch_array($res))
 		{
-		$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
-		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
+		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']))
 			{
-			require_once( $addonpath."/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_init_file'] );
-			$call = $GLOBALS['babAddons'][$arr_keys[$i]][$func];
-			if( !empty($call)  && function_exists($call) )
+			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+			if( is_file($addonpath."/init.php" ))
 				{
-				$args = func_get_args();
-				$call .= "(";
-				for($k=1; $k < sizeof($args); $k++)
-					eval ( "\$call .= \"$args[$k],\";");
-				$call = substr($call, 0, -1);
-				$call .= ")";
-				eval ( "\$retval = $call;");
+				require_once( $addonpath."/init.php" );
+				$call = $row['title']."_".$func;
+				if( !empty($call)  && function_exists($call) )
+					{
+					$GLOBALS['babAddonFolder'] = $row['title'];
+					$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
+					$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+					$args = func_get_args();
+					$call .= "(";
+					for($k=1; $k < sizeof($args); $k++)
+						eval ( "\$call .= \"$args[$k],\";");
+					$call = substr($call, 0, -1);
+					$call .= ")";
+					eval ( "\$retval = $call;");
+					}
 				}
 			}
 		}
