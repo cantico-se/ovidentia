@@ -1899,6 +1899,10 @@ function initEditor(what,ta)
 	{
 		editor.config.toolbar[3] = [ "space", "textindicator","linebreak" ];
 	}
+	if (HTMLArea.is_ie5_5)
+	{
+		editor.config.toolbar[7] = [ "horizontalrule", "htmlmode", "separator" ];
+	}
 	
 	editor.generate();
 	}
