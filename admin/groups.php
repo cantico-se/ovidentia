@@ -44,6 +44,7 @@ function groupList()
 			{
 			$this->name = babTranslate("Name");
 			$this->description = babTranslate("Description");
+			$this->manager = babTranslate("Manager");
 			$this->db = new db_mysql();
 			$req = "select * from groups where id > 2 order by id asc";
 			$this->res = $this->db->db_query($req);
@@ -62,6 +63,7 @@ function groupList()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$this->arr[id];
 				$this->urlname = $this->arr[name];
+				$this->managername = getUserName($this->arr[manager]);
 				$i++;
 				return true;
 				}
