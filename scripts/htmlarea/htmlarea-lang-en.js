@@ -54,7 +54,7 @@ HTMLArea.I18N = {
 		"Formatted": "pre"
 		},
 	babstyle : {
-		"Normal": "Font style",
+		"Normal": "Font styles",
 		"Remove format": "Remove style"
 		}
 };

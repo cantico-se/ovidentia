@@ -176,10 +176,10 @@ HTMLArea.Config = function (babLanguage) {
 		undo:			["undo",				 "undo",			   "ed_undo.gif",							false],
 		redo:			["redo",				 "Redo",			   "ed_redo.gif",							false],
 		babfile:		["babfile",				 "Insert Ovidentia File","ed_bab_file.gif",						false],
-		babarticle:		["babarticle",			"Ovidentia Article link","ed_bab_articleid.gif",				false],	
-		babfaq:			["babfaq",				"Ovidentia FAQ link",	"ed_bab_faqid.gif",						false],
-		babovml:		["babovml",				"Ovidentia OVML link",	"ed_bab_ovml.gif",						false],
-		babcontdir:		["babcontdir",			"Ovidentia Contacts, directory","ed_bab_contdir.gif",			false]
+		babarticle:		["babarticle",			 "Ovidentia Article link","ed_bab_articleid.gif",				false],	
+		babfaq:			["babfaq",				 "Ovidentia FAQ link",	"ed_bab_faqid.gif",						false],
+		babovml:		["babovml",				 "Ovidentia OVML link",	"ed_bab_ovml.gif",						false],
+		babcontdir:		["babcontdir",			 "Ovidentia Contacts, directory","ed_bab_contdir.gif",			false]
 	};
 
 	// initialize tooltips from the I18N module

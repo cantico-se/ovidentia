@@ -54,7 +54,7 @@ HTMLArea.I18N = {
 		"Formaté": "pre"
 		},
 	babstyle : {
-		"Normal": "Style de police",
+		"Normal": "Styles de police",
 		"Remove format": "Enlever le style"
 		}
 };
