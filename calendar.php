@@ -327,7 +327,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->title = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title'];
 				//$this->titleten = substr($arr['start_time'], 0 ,5). " ". substr($arr['title'], 0, 20) ;
 				$this->hourten = substr($arr['start_time'], 0 ,5);
-				$this->titleten = substr($arr['title'], 0, 10) ;
+				$this->titleten = htmlentities(substr($arr['title'], 0, 10)) ;
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$this->calid. "&evtid=".$arr['id']. "&view=viewm";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
@@ -366,7 +366,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 					$this->title = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title'];
 					//$this->titleten = substr($arr['start_time'], 0 ,5). " ". substr($arr['title'], 0, 20) ;
 					$this->hourten = substr($arr['start_time'], 0 ,5);
-					$this->titleten = substr($arr['title'], 0, 10) ;
+					$this->titleten = htmlentities(substr($arr['title'], 0, 10)) ;
 					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewm";
 					if( $this->babCalendarUsebgColor == "Y")
 						{
@@ -603,7 +603,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->titleten = "";
 				$arr = $this->db->db_fetch_array($this->resevent);
 				$this->title = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title'];
-				$this->titleten = $this->title ;
+				$this->titleten = htmlentities($this->title) ;
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
@@ -635,7 +635,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->titleten = "";
 				$arr = $this->db->db_fetch_array($this->resgrpevent);
 				$this->title = substr($arr['start_time'], 0, 5). " " . substr($arr['end_time'], 0, 5). " " .$arr['title'];
-				$this->titleten = $this->title;
+				$this->titleten = htmlentities($this->title);
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
@@ -933,7 +933,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 						$tab[$k] = "";
 						}
 
-					$this->titleten = $tab[$k];
+					$this->titleten = htmlentities($tab[$k]);
 					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewd";
 
 					if( $this->babCalendarUsebgColor == "Y")
@@ -988,7 +988,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 						}
 
 					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewd";
-					$this->titleten = $tab[$k];
+					$this->titleten = htmlentities($tab[$k]);
 					if( $this->babCalendarUsebgColor == "Y")
 						{
 						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
