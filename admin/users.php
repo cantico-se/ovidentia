@@ -309,7 +309,14 @@ if( isset($adduser) && $babBody->isSuperAdmin )
 		$idx = "Create";
 	else
 		{
-		$pos = substr($firstname,0,1);
+		switch ($babBody->nameorder[0]){
+			case "L":
+				$pos = substr($lastname,0,1);
+			case "F":
+			default:
+				$pos = substr($firstname,0,1);
+			break;
+		}
 		$idx = "List";
 		if( $notifyuser == "Y" )
 			{
