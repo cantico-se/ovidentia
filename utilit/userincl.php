@@ -1226,7 +1226,7 @@ function bab_replace( $txt, $remove = '' )
 						}
 					else
 						{
-						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".trim($m[1][$k])."\">".$message."</a>", $txt);
+						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".trim($m[1][$k])."#".trim($m[1][$k])."\">".$message."</a>", $txt);
 						}
 					}
 				$repl = true;

@@ -72,14 +72,22 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 <input type="hidden" name="tg" value="faq">
 <input type="hidden" name="idx" value="questions">
 <input type="hidden" name="item" value="{ idcat }">
-<input type="hidden" name="idscat" value="{ idscat }">
 <input type="hidden" name="addquestion" value="addquestion">
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td>&nbsp; </td>
+<td align="center" valign="middle">{ subcattxt }</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<select name="newidscat">
+<!--#in getnextsubcat -->
+<option value="{ idsubcat }" { selected }>{ subcatname }</option>
+<!--#endin getnextsubcat -->
+</select>
+</td>
 </tr>
 <tr> 
 <td align="center" valign="middle"> { question }</td>
@@ -212,7 +220,13 @@ savef(document.qcreate.response);
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td>&nbsp; </td>
+<td align="center" valign="middle">
+<select name="newidscat">
+<!--#in getnextsubcat -->
+<option value="{ idsubcat }" { selected }>{ subcatname }</option>
+<!--#endin getnextsubcat -->
+</select>
+</td>
 </tr>
 <tr> 
 <td align="center" valign="middle"> { subcat }</td>
@@ -469,3 +483,85 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end popupquestion -->
+
+<!--#begin tableofcontents -->
+<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr class="BabForumBackground1"> 
+<td valign="top"><b>{ contentsname }:</b></td>
+</tr>
+</table>
+<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<!--#in getnextchild -->
+<tr>
+<td>
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<!--#in getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<!--#endin getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
+<td>
+<!--#if update -->
+<!--#if burl -->
+<a class="BabTopicsFooterLink" href="{ modifycurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>
+<!--#else burl -->
+&nbsp
+<!--#endif burl -->
+<!--#else update -->
+<!--#endif update -->
+- <a href="{ subcaturl }"><b>{ subcatname }</b></a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!--#in getnextquestion -->
+<tr>
+<td>
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<!--#in getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<!--#endin getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
+<td>
+<!--#if update -->
+<a class="BabTopicsFooterLink" href="{ modifyqurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>
+<!--#else update -->
+<!--#endif update -->
+<a href="{ questionurl }#{ idq }">{ questionname }</a>&nbsp
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!--#endin getnextquestion -->
+<!--#endin getnextchild -->
+</table>
+<!--#end tableofcontents -->
+
+
+<!--#begin subcatquestions -->
+<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td>
+<A name="top"></A>
+<H5>{ subcatname }</H4>
+<UL>
+<!--#in getnext -->
+<LI><A href="#{ idq }">{ question }</A></LI> 
+<!--#endin getnext -->
+</UL>
+<hr>
+<br>
+<!--#in getnextbis -->
+<DL><A name="{ idq }"></A></DL>
+<DT><strong><font size="3">{ question }</font></strong></DT>
+<DD><BR>{ response }</DD>
+<BR>
+<P align="right"><A href="#top">{ return }</A></P>
+<!--#endin getnextbis -->
+</tr>
+</table>
+<!--#end subcatquestions -->
