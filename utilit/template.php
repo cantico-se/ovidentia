@@ -32,6 +32,8 @@ function printTemplate(&$class, $file, $section="")
 		$res = preg_match($reg, $str, $m);
 		if( $res )
 			$str = $m[1];
+		else
+			return "";
 		}
 	
 	return $this->processTemplate($class, $str);
