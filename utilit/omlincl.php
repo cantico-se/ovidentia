@@ -738,7 +738,7 @@ class bab_Articles extends bab_handler
 				if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
 					$this->IdEntries[] = $arr['id'];
 
-			$this->count = $babDB->db_num_rows($this->res);
+			$this->count = count($this->IdEntries);
 		}
 		else
 			$this->count = 0;
