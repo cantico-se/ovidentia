@@ -1036,10 +1036,10 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			$this->duphand0 = bab_translate("Allow duplicates to be created");
 			$this->duphand1 = bab_translate("Replace duplicates with items imported");
 			$this->duphand2 = bab_translate("Do not import duplicates");
-			$this->t_dupinfo = bab_translate("Fields with the same e-mail address are duplicates");
 			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			if( $this->idgroup >= 1 )
 				{
+				$this->t_dupinfo = bab_translate("Entries with the same nickname are duplicates");
 				$this->buserinfo = true;
 				$this->nickname = bab_translate("Nickname");
 				$this->password = bab_translate("Default password");
@@ -1050,7 +1050,10 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 				$this->no = bab_translate("No");
 				}
 			else
+				{
+				$this->t_dupinfo = bab_translate("Entries with the same e-mail address are duplicates");
 				$this->buserinfo = false;
+				}
 
 			$this->id = $id;
 			$this->pfile = $pfile;
