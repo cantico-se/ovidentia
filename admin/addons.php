@@ -531,6 +531,12 @@ function import()
 			$zip->Extract($ul,$path.$subdir,$arr[1],false );
 			}
 
+		foreach ($GLOBALS['babBody']->babaddons as $id => $arr)
+			{
+			if ($arr['title'] == $addon_name)
+				unset($GLOBALS['babBody']->babaddons[$id]);
+			}
+
 		}
 	}
 
