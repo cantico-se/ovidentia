@@ -281,7 +281,7 @@ switch($idx)
 	case "delcat":
 		categoryCalDelete($userid, $item);
 		$babBody->title = bab_translate("Delete calendar category");
-		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("modifycat", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=confcal&idx=modifycat&item=".$item);
 		$babBody->addItemMenu("delcat", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=confcal&idx=delcat&item=".$item."&userid=".$userid);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
@@ -289,7 +289,7 @@ switch($idx)
 	case "delres":
 		resourceCalDelete($userid, $item);
 		$babBody->title = bab_translate("Delete calendar resource");
-		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 		$babBody->addItemMenu("modifyres", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=confcal&idx=modifyres&item=".$item);
 		$babBody->addItemMenu("delres", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=confcal&idx=delres&item=".$item."&userid=".$userid);
@@ -297,7 +297,7 @@ switch($idx)
 	case "modifyres":
 		resourceCalModify($userid, $item);
 		$babBody->title = bab_getResourceCalName($item) . " ". bab_translate("resource");
-		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 		$babBody->addItemMenu("modifyres", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=confcal&idx=modifyres&item=".$item);
 		break;
@@ -305,7 +305,7 @@ switch($idx)
 	default:
 		categoryCalModify($userid, $item);
 		$babBody->title = bab_getCategoryCalName($item) . " ". bab_translate("category");
-		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("modifycat", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=confcal&idx=modifycat&item=".$item);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 		break;

@@ -1771,12 +1771,15 @@ function fileUnload($id, $gr, $path)
 		{
 		var $message;
 		var $close;
+		var $redirecturl;
 
 		function temp($id, $gr, $path)
 			{
 			$this->message = bab_translate("Your file list has been updated");
 			$this->close = bab_translate("Close");
-			$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
+			$path = str_replace("'", "\'", $path);
+			$path = str_replace('"', "'+String.fromCharCode(34)+'",$path);
+			$this->redirecturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
 			}
 		}
 
