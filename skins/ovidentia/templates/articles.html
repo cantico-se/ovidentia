@@ -55,42 +55,59 @@
 <br>
 <!--#begin introlist -->
 <!--#if barch -->
-<table width="95%" border="0" cellspacing="1" cellpadding="0" align="center">
-<tr> 
-<td><table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td width="1%"><a class="BabForumNavigation" href="{ topurl }">{ topname }</a>&nbsp</td>
-<td width="1%"><a class="BabForumNavigation" href="{ prevurl }">{ prevname }</a>&nbsp </td>
-<td width="1%"><a class="BabForumNavigation" href="{ nexturl }">{ nextname }</a>&nbsp </td>
-<td width="1%"><a class="BabForumNavigation" href="{ bottomurl }">{ bottomname }</a>&nbsp </td>
-<td width="96%">&nbsp;</td>
+<table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
+  <tr> 
+    <td nowrap align="center"> 
+      <table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="2" cellspacing="0" align="center">
+        <tr> 
+          <td width="1%" nowrap><a class="BabForumNavigation" href="{ topurl }">{ topname 
+            }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+          <td width="1%" nowrap><a class="BabForumNavigation" href="{ prevurl }">{ prevname 
+            }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+          <td width="1%" nowrap><a class="BabForumNavigation" href="{ nexturl }">{ nextname 
+            }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
+          </td>
+          <td width="1%" nowrap><a class="BabForumNavigation" href="{ bottomurl }">{ bottomname 
+            }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+<td width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 </tr>
 </table>
 </td></tr>
-</table><br>
+</table>
 <!--#endif barch -->
 <!--#in getnext -->
-<table   border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td colspan="2" class="BabTopicsTitleBackground"><a name="art{ arr[id] }"></a>{ title }</td>
-</tr>
-<tr>
-<td class="BabTopicsBackground" colspan="2">{ content }</td>
-</tr>
-<tr> 
-<td class="BabTopicsAuthorBackground" nowrap width="80%">{ author }</td>
-<td class="BabTopicsAuthorBackground" align="right" nowrap width="20%">
-<!--#if approver -->
-<a href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modify }"></a>&nbsp;&nbsp;&nbsp;<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif"  border="0" alt="{ delete }"></a>&nbsp;&nbsp;&nbsp;
-<!--#endif approver -->
-<a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>&nbsp;&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ commentsurl }">{ commentsname }</a>&nbsp;&nbsp;&nbsp;
-<!--#if blen "> 0" -->
-<a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a>
-<!--#endif blen -->
-</td>
-</tr>
+<table   border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td colspan="2" class="BabTopicsTitleBackground"><a name="art{ arr[id] }"></a>{ 
+      title }</td>
+  </tr>
+  <tr> 
+    <td class="BabTopicsBackground" colspan="2">{ content }</td>
+  </tr>
+  <tr>
+    <td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
+      <!--#if approver -->
+      <a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modify }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
+      modify }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabTopicsFooterLink" href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif"  border="0" alt="{ delete }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
+      delete }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
+      <!--#endif approver -->
+      <a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
+      printable }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabTopicsFooterLink" href="{ commentsurl }"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentsname }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
+      commentsname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
+    </td>
+  </tr>
+  <tr valign="middle"> 
+    <td class="BabTopicsAuthorBackground" nowrap width="80%" align="left">{ author 
+      }</td>
+    <td class="BabTopicsAuthorBackground" align="right" nowrap width="20%"> 
+
+      <!--#if blen "> 0" -->
+      <a class="BabTopicsFooterMoreLink" href="{ moreurl }">{ morename }</a> 
+      <!--#endif blen -->
+    </td>
+  </tr>
 </table>
-<br>
+<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="4" border="0">
 <!--#endin getnext -->
 <!--#end introlist -->
 <br>
@@ -101,17 +118,17 @@
 <!--#begin readmore -->
 <!--#in getnext -->
 <table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabTopicsTitleBackground" valign="middle"><a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>&nbsp;&nbsp;{ arr[title] }</td>
+  <tr> 
+    <td class="BabTopicsTitleBackground" valign="middle">{ arr[title] }</td>
 </tr>
 <tr>
 <td class="BabTopicsBackground" >{ content }</td>
 </tr>
 <tr>
-<td colspan="2">&nbsp;</td>
+    <td class="BabTopicsButtonBackground" align="right" valign="middle"><a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ printable }</a></td>
 </tr>
 </table>
-<br>
+<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="3" border="0">
 <!--#endin getnext -->
 <!--#end readmore -->
 <br>
