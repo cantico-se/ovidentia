@@ -30,6 +30,8 @@ function listGroups()
 			$this->public = bab_translate("Public");
 			$this->private = bab_translate("Private");
 			$this->modify = bab_translate("Update");
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
 			$req = "select * from ".BAB_GROUPS_TBL." order by id asc";
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
