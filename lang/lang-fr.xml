@@ -166,8 +166,8 @@
 <string id="Please select at least one item">SVP, veuillez sélectionner au moins un élément</string>
 <string id="ERROR: You must choose a valid category !!">ERREUR: Vous devez choisir une catégorie valide !!</string>
 <string id="Update Topic">Mettre à jour un thème d'article</string>
-<string id="Are you sure you want to delete this topic">Etes-vous certain de vouloir supprimer ce thème</string>
-<string id="WARNING: This operation will delete the topic, articles and comments">ATTENTION: Cette opération supprimera le thème ainsi que tous les articles et commentaires associés</string>
+<string id="Are you sure you want to delete this topic">Etes-vous certain de vouloir supprimer ce thème d'articles</string>
+<string id="WARNING: This operation will delete the topic, articles and comments">ATTENTION: Cette opération supprimera le thème d'articles ainsi que tous les articles et commentaires associés</string>
 <string id="List of articles">Liste des articles</string>
 <string id="Delete a topic">Effacer un thème d'articles</string>
 <string id="Modify a topic">Modifier un thème d'article</string>
