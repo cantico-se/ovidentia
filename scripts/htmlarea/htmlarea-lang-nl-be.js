@@ -35,7 +35,8 @@ HTMLArea.I18N = {
 		paste:			"Plak",
 		babfile:		"Ovidentia file link tussenvoegen",
 		undo:			"Ongedaan maken",
-		redo:			"Terug uitvoeren"
+		redo:			"Terug uitvoeren",
+		babarticle:		"Ovidentia Article link"
 	}
 };
 

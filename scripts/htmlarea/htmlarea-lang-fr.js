@@ -35,7 +35,8 @@ HTMLArea.I18N = {
 		paste:			"Coller",
 		babfile:		"Insérer un fichier Ovidentia",
 		undo:			"Annuler",
-		redo:			"Rétablir"
+		redo:			"Rétablir",
+		babarticle:		"Lien d'article Ovidentia"
 	}
 };
 

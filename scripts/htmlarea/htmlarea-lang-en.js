@@ -35,7 +35,8 @@ HTMLArea.I18N = {
 		paste:			"Paste",
 		babfile:		"Insert Ovidentia file link ",
 		undo:			"Undo",
-		redo:			"Redo"
+		redo:			"Redo",
+		babarticle:		"Ovidentia Article link"
 	}
 };
 
