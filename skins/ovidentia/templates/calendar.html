@@ -315,9 +315,6 @@ href="{ titletenurl }">{ title }</a>
 
 <!--#begin calform -->
 <br>
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <form name="fmcal" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="calendar">
 <input type="hidden" name="idx" value="{ view }">
@@ -326,9 +323,10 @@ href="{ titletenurl }">{ title }</a>
 <input type="hidden" name="year" value="{ year }">
 <input type="hidden" name="start" value="">
 <input type="hidden" name="viewcal" value="view">
-
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2">
-
 <tr> 
 <td colspan="6" align="center" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ viewcurl }', 'categories', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ viewctxt }</a> 
 </td>
@@ -373,11 +371,10 @@ href="{ titletenurl }">{ title }</a>
 <!--#endif bweek -->
 </td>
 </table>
-
-</form>
 </td>
 </tr> 
 </table>
+</form>
 <!--#end calform -->
 
 
