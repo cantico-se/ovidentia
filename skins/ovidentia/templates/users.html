@@ -17,20 +17,22 @@
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ nickname }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ email }</td>
 <td class="BabSiteAdminTitleFontBackground" align="center" valign="middle"><a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a></td>
-</tr><!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="1%" align="right" valign="middle" nowrap><!--#if status "== *" --><img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt="" align="absmiddle"><!--#endif status --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td class="BabSiteAdminFontBackground" valign="middle">
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+<td width="1%" align="right" valign="middle" nowrap><!--#if status "== *" --><img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt="" align="absmiddle"><!--#endif status --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td valign="middle">
 <!--#if bmodname -->
 <a class="BabNameEmailLink" href="{ url }">{ urlname }</a>
 <!--#else bmodname -->
 { urlname }
 <!--#endif bmodname -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ arr[nickname] }</td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a></td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle"><input type="checkbox" name="users[]" value="{ userid }"{ checked }></td>
-</tr><!--#endin getnext -->
+<td valign="middle">{ arr[nickname] }</td>
+<td valign="middle"><a class="BabNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a></td>
+<td align="center" valign="middle"><input type="checkbox" name="users[]" value="{ userid }"{ checked }></td>
+</tr>
+<!--#endin getnext -->
 </table>
 </td>
 </tr>

@@ -114,15 +114,15 @@ valign="middle">{  name }:</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ version } </td>
 </tr>
 <!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ managername }</td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ urldown }">{ urldownname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ urluplo }">{ urluploname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ urlupda }">{ urlupdaname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }"></td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }"></td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="versions[]" { fversion } value="{ fid }"></td>
+<!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
+<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+<td>{ managername }</td>
+<td><a class="BabSiteAdminListLink" href="{ urldown }">{ urldownname }</a></td>
+<td><a class="BabSiteAdminListLink" href="{ urluplo }">{ urluploname }</a></td>
+<td><a class="BabSiteAdminListLink" href="{ urlupda }">{ urlupdaname }</a></td>
+<td width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }"></td>
+<td width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }"></td>
+<td width="0%" align="center"><input type="checkbox" name="versions[]" { fversion } value="{ fid }"></td>
 </tr>        
 <!--#endin getnext -->
 <tr> 

@@ -173,6 +173,7 @@ function categoriesList($grpid, $userid)
 			static $i = 0;
 			if( $i < $this->countcal)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->groupname = bab_getGroupName($this->arr['id_group']);
 				$this->burl = 0;
@@ -250,6 +251,7 @@ function resourcesList($grpid, $userid)
 			static $i = 0;
 			if( $i < $this->countcal)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)

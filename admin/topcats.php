@@ -225,6 +225,7 @@ function topcatsList($idp)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$this->arr['id']."&idp=".$this->idp;
 				$r = $this->db->db_fetch_array($this->db->db_query("select count(*) as total from ".BAB_TOPICS_TBL." where id_cat='".$this->arr['id']."'"));

@@ -191,6 +191,7 @@ function groupMembers($id)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				if( $this->arr['isprimary'] == "Y")
 					$this->primary = "Y";

@@ -105,6 +105,7 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->counta)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->resa);
 				$this->arr['title'] = bab_translate($this->arr['title']);
 				$this->arr['description'] = bab_translate($this->arr['description']);
@@ -130,6 +131,7 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->countcat)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->rescat);
 				$this->arr['title'] = $this->arr['title'];
 				$this->arr['description'] = $this->arr['description'];
@@ -155,6 +157,7 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$this->arr['id'];
 				$this->accessurl = $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id'];

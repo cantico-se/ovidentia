@@ -121,12 +121,11 @@
 </tr>
 
 <!--#in getnext --> 
-<tr valign="middle"> 
-<td class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
-<td class="BabSiteAdminFontBackground">{ arr[description] }</td>
-<td align="center" class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ topcatcounturl }">{ topcatcount }</a></td>
-<td align="center" class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ topcounturl }">{ topcount }</a></td>
-<td class="BabSiteAdminFontBackground" width="0%" align="center"> 
+<!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg --><td><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
+<td>{ arr[description] }</td>
+<td align="center"><a class="BabSiteAdminListLink" href="{ topcatcounturl }">{ topcatcount }</a></td>
+<td align="center"><a class="BabSiteAdminListLink" href="{ topcounturl }">{ topcount }</a></td>
+<td width="0%" align="center"> 
 <input type="checkbox" name="topcats[]" { catchecked } value="{ arr[id] }">
 </td>
 </tr>

@@ -68,16 +68,16 @@
 <td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"><b>{ bgcolor }</b></td>
 </tr>
 <!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle" nowrap> 
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+<td valign="middle" nowrap> 
 <!--#if burl "== 1" -->
 <a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
 <!--#else burl -->
 { urlname } 
 <!--#endif burl -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" nowrap>{ groupname }</td>
+<td valign="middle">{ arr[description] }</td>
+<td valign="middle" nowrap>{ groupname }</td>
 <td valign="middle" bgcolor="#{ arr[bgcolor] }"><span class="BabSiteAdminFont">{ arr[bgcolor] }</span></td>
 </tr>
 <!--#endin getnext -->
@@ -151,17 +151,17 @@ nowrap ><b>{ name }</b></td>
 <td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle"><b>{ disabled }</b></td>
 </tr>
 <!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle" nowrap> 
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td valign="middle" nowrap> 
 <!--#if burl "== 1" -->
 <a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
 <!--#else burl -->
 { urlname } 
 <!--#endif burl -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" nowrap>{ groupname }</td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle" nowrap> 
+<td valign="middle">{ arr[description] }</td>
+<td valign="middle" nowrap>{ groupname }</td>
+<td align="center" valign="middle" nowrap> 
 <!--#if burl "== 1" -->
 <input type="checkbox" name="resids[]" { calrescheck } value="{ resid }">
 <!--#else burl -->

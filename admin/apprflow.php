@@ -257,6 +257,7 @@ function listSchemas()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->urltxt = $arr['name'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=apprflow&idx=mod&idsch=".$arr['id'];

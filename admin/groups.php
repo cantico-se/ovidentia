@@ -146,6 +146,7 @@ function groupList()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				if( $i == 0)
 					$this->checked = "checked";
 				else
@@ -275,6 +276,7 @@ function groupsOptions()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->burl = true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->grpid = $this->arr['id'];

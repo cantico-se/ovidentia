@@ -110,11 +110,11 @@ function closepop()
 <!--#endif debugfa -->
 </tr>
 <!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground">&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ urltxt }</a></td>
-<td class="BabSiteAdminFontBackground">&nbsp;{ schdescval }</td>
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td>&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ urltxt }</a></td>
+<td>&nbsp;{ schdescval }</td>
 <!--#if debugfa -->
-<td class="BabSiteAdminFontBackground">&nbsp;<a class="BabSiteAdminListLink" href="{ testurl }">{ testurltxt }</a></td>
+<td>&nbsp;<a class="BabSiteAdminListLink" href="{ testurl }">{ testurltxt }</a></td>
 <!--#endif debugfa -->
 </tr>
 <!--#endin getnext -->

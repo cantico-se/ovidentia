@@ -98,11 +98,11 @@ else
 </tr>
 
 <!--#in getnext --> 
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="top"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="top" nowrap>{ managername } </td>
-<td class="BabSiteAdminFontBackground" valign="top">{ descval }</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ dgval }</td>
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td valign="top"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+<td valign="top" nowrap>{ managername } </td>
+<td valign="top">{ descval }</td>
+<td valign="top">{ dgval }</td>
 </tr>
 
 <!--#endin getnext -->
@@ -141,16 +141,16 @@ alt="{ uncheckall }" width="10" height="10" border="0"></a> </td>
             <td class="BabTitleSmallFontBg" valign="middle">{ fullname } </td>
           </tr>
           <!--#in getnext -->
-          <tr> 
-            <td class="BabSiteAdminFontBackground" valign="middle" width="1%"> <input type="checkbox" name="users[]" value="{ arr[id] }"> 
+          <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+            <td valign="middle" width="1%"> <input type="checkbox" name="users[]" value="{ arr[id] }"> 
             </td>
-            <td class="BabSiteAdminFontBackground" valign="middle" width="1%">&nbsp;</td>
-            <td class="BabSiteAdminFontBackground" valign="middle" nowrap> 
+            <td valign="middle" width="1%">&nbsp;</td>
+            <td valign="middle" nowrap> 
               <!--#if primary "== Y" -->
               <img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }" border="0"> 
               <!--#endif primary -->
               &nbsp;</td>
-            <td class="BabSiteAdminFontBackground" valign="middle">
+            <td valign="middle">
 			<!--#if bmodname -->
 			<a class="BabAdminMembersList" href="{ url }">{ urlname }</a>
 			<!--#else bmodname -->
@@ -182,33 +182,33 @@ alt="{ uncheckall }" width="10" height="10" border="0"></a> </td>
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ fullname } </td>
+<tr class="BabSiteAdminTitleFontBackground">
+<td valign="middle">{ fullname } </td>
 <!--#if bdgmail -->
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ mail } </td>
+<td valign="middle" align="center">{ mail } </td>
 <!--#endif bdgmail -->
 <!--#if bdgcalendar -->
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ calendar } </td>
+<td valign="middle" align="center">{ calendar } </td>
 <!--#endif bdgcalendar -->
 <!--#if bpcalendar -->
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ pcalendar } </td>
+<td valign="middle" align="center">{ pcalendar } </td>
 <!--#endif bpcalendar -->
 <!--#if bdgnotes -->
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notes } </td>
+<td valign="middle" align="center">{ notes } </td>
 <!--#endif bdgnotes -->
 <!--#if bdgcontacts -->
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ contacts } </td>
+<td valign="middle" align="center">{ contacts } </td>
 <!--#endif bdgcontacts -->
 <!--#if bdgdirectories -->
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ directory } </td>
+<td valign="middle" align="center">{ directory } </td>
 <!--#endif bdgdirectories -->
 <!--#if bdgpds -->
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ persdiskspace } </td>
+<td valign="middle" align="center">{ persdiskspace } </td>
 <!--#endif bdgpds -->
 </tr>
 <!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground"valign="middle"> 
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+<td valign="middle"> 
 { urlname } 
 </td>
 <!--#if bdgmail -->

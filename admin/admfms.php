@@ -143,6 +143,7 @@ function listFolders()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$arr = $babDB->db_fetch_array($this->res);
 				if( $arr['filenotify'] == "Y")
 					$this->fnotify = "checked";
