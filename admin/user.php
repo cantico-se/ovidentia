@@ -382,6 +382,12 @@ function confirmDeleteUser($id)
 	// delete user's access
 	$req = "delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$id."'";
 	$res = $db->db_query($req);	
+	$req = "delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$arr['id']."'";
+	$res = $db->db_query($req);	
+
+	// delete user's calendar options
+	$req = "delete from ".BAB_CALOPTIONS_TBL." where id_user='".$id."'";
+	$res = $db->db_query($req);	
 
 	// delete user from calendar
 	$req = "delete from ".BAB_CALENDAR_TBL." where owner='$id' and type='1'";
