@@ -450,7 +450,7 @@ function confirmComment($article, $topics, $com)
 	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "confirmcomment"));
 	}
 
-function notifyArticleAuthor($subject, $msg, $title, $from, $to)
+function notifyArticleAuthor($subject, $msg, $title, $to)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
@@ -468,7 +468,7 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
         var $dateval;
 
 
-		function tempc($subject, $msg, $title, $from, $to)
+		function tempc($msg, $title)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->about = bab_translate("About your article");
@@ -490,7 +490,7 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
     $mail->mailFrom($from, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject($subject);
 
-	$tempc = new tempc($subject, $msg, $title, $from, $to);
+	$tempc = new tempc($msg, $title);
 	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmarticle");
     $mail->mailBody($message, "html");
 
