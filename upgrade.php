@@ -4176,15 +4176,16 @@ if( !$res)
 $res = $db->db_query("SELECT * FROM ".BAB_ADDONS_TBL."");
 while($arr = $db->db_fetch_array($res))
 	{
-	$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title']."/addonini.php");
-	if( !empty($arr_ini['version']) && $arr_ini['version'] == $arr['version'])
+	$arr_ini = @parse_ini_file( 'addons/'.$arr['title'].'/addonini.php');
+	if( !empty($arr_ini['version']) && $arr_ini['version'] != $arr['version'])
 		{
-		$db->db_query("UPDATE `".BAB_ADDONS_TBL."` SET installed='Y' WHERE id='".$arr['id']."'");
+		$yesno = 'N';
 		}
 	else
 		{
-		$db->db_query("UPDATE `".BAB_ADDONS_TBL."` SET installed='N' WHERE id='".$arr['id']."'");
+		$yesno = 'Y';
 		}
+	$db->db_query("UPDATE `".BAB_ADDONS_TBL."` SET installed='".$yesno."' WHERE id='".$arr['id']."'");
 	}
 
 if( !$res)
