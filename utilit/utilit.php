@@ -455,7 +455,7 @@ function topicsSection()
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
-		if(isAccessValid("topicsview_groups", $row[id]) || isUserApprover($row[id]))
+		if(isAccessValid("topicsview_groups", $row[id]) )
 			{
 			array_push($this->arrid, $row[id]);
 
@@ -470,6 +470,10 @@ function topicsSection()
 			$arr = $this->db->db_fetch_array($res2);
 			if( $arr[total] > 0)
 				$body->newcomments += $arr[total];
+			}
+		else if( isUserApprover($row[id]) )
+			{
+			array_push($this->arrid, $row[id]);
 			}
 		}
 	$this->count = count($this->arrid);
