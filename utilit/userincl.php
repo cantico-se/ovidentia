@@ -291,7 +291,7 @@ function bab_mailAccessLevel()
 	$db = $GLOBALS['babDB'];
 
 	$bemail = 0;
-	$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
+	$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		$bemail = 1;
