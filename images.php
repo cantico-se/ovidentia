@@ -163,7 +163,7 @@ function listImages($editor)
 
 			$this->uifiles = 0;
 			$this->cifiles = 0;
-			$this->gd = extension_loaded('gd');
+			$this->gdi = extension_loaded('gd');
 			$this->refurl = $GLOBALS['babUrlScript']."?tg=images&editor=".$this->editor;
 			}
 
@@ -175,6 +175,11 @@ function listImages($editor)
 			$this->imgurl = $GLOBALS['babUrl'].$filename;
 			if( $imgsize[0] > 50 || $imgsize[1] > 50)
 				{
+				if( $imgsize[2] == 1 && !(imagetypes() & IMG_GIF) )
+					$this->gd = false;
+				else
+					$this->gd = $this->gdi;
+
 				if( $this->gd && ($imgsize[2] == 1 || $imgsize[2] == 2 || $imgsize[2] == 3))
 					{
 					$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->name."&w=50&h=50&com=".$com;
