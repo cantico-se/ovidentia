@@ -256,7 +256,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->bfieldphoto = false;
 				if( isset($this->fields[$this->fieldv]))
 					{
-					$this->fieldval = isset($this->fields[$arr['name']]) ? $this->fields[$arr['name']] : '';
+					$this->fieldval = isset($this->fields[$this->fieldv]) ? $this->fields[$this->fieldv] : '';
 					}
 				else
 					{
