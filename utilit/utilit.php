@@ -35,8 +35,9 @@ function bab_mkdir($path, $mode)
 		$path = substr($path, 0, -1);
 		}
 	$umask = umask($GLOBALS['babUmaskMode']);
-	mkdir($path, $mode);
+	$res = mkdir($path, $mode);
 	umask($umask);
+	return $res;
 }
 
 function bab_formatDate($format, $time)
