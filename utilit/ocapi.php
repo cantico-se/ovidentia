@@ -291,7 +291,7 @@ function bab_OCGetCollaborators($identity)
 	
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."' AND ocrt.type != '1' and ocrt.type != '2' and ocrut.isprimary='Y'");
+	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."' AND ocrt.type != '1' and ocrut.isprimary='Y'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		while( $arr = $babDB->db_fetch_array($res))

@@ -278,7 +278,7 @@ function period($id_user, $id = 0)
 
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user;
 
-			$this->rights = bab_getRightsOnPeriod();
+			$this->rights = bab_getRightsOnPeriod(false, false, $id_user);
 			$this->total = 0;
 			$this->total_waiting = 0;
 			}
