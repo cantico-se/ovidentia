@@ -444,7 +444,7 @@ function startSearch($pat, $item, $what, $pos)
 					$this->counttot = true;
 				}
 
-			if( !$counttot)
+			if( !$this->counttot)
 				{
 				$babBody->msgerror = bab_translate("Search result empty");
 				}
