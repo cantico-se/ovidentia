@@ -890,23 +890,25 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($dirfield !="") 
 						$crit_fields .= " and ".finder($dirfield,$dirselect);
 					}
-				if ($this->like || $this->like2)
+
+				$dir_fields = array('name'=>array(),'description'=>array());
+				
+				$likedir = "(";
+				
+				$res = $this->db->db_query("SELECT * FROM ".BAB_DBDIR_FIELDS_TBL." WHERE name != 'jpegphoto'");
+				while ($arr = $this->db->db_fetch_array($res))
 					{
-					$likedir = "(";
-					
-					$res = $this->db->db_query("SELECT * FROM ".BAB_DBDIR_FIELDS_TBL." WHERE name != 'jpegphoto'");
-					while ($arr = $this->db->db_fetch_array($res))
-						{
-						$dir_fields['name'][$arr['id']] = $arr['name'];
-						$dir_fields['description'][$arr['id']] = $arr['description'];
-						if ($likedir != "(")
+					$dir_fields['name'][$arr['id']] = $arr['name'];
+					$dir_fields['description'][$arr['id']] = $arr['description'];
+					if ($likedir != "(")
 						$likedir .= " or ";
-						$likedir .= finder($this->like,$arr['name'],$option,$this->like2);
-						}
-					$likedir .= ") and ";
+					$likedir .= $this->like || $this->like2 ? finder($this->like,$arr['name'],$option,$this->like2) : '';
 					}
-				else
+				$likedir .= ") and ";
+
+				if (!$this->like && !$this->like2)
 					$likedir = '';
+
 				$req = "create temporary table dirresults select *,sn name from ".BAB_DBDIR_ENTRIES_TBL." where 0";
 				$this->db->db_query($req);
 				$req = "alter table dirresults add unique (id)";
@@ -942,6 +944,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 						}
 					$req = "SELECT f.name,f.description FROM ".BAB_DBDIR_FIELDSEXTRA_TBL." e,".BAB_DBDIR_FIELDS_TBL." f WHERE f.id=e.id_field AND e.id_directory='".($row['id_group'] != 0? 0: $row['id'])."' AND e.ordering > 0 ORDER BY e.ordering";
+
+					$this->dirfields = array('name'=>array(),'description'=>array());
 					
 					$resfields = $this->db->db_query($req);
 					while($arr = $this->db->db_fetch_array($resfields))

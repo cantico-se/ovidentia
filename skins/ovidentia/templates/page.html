@@ -4,11 +4,36 @@
 <TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
+<script type="text/javascript" src="{ babOvidentiaJs }"></script>
+<script type="text/javascript">
 <!--
 { script }
+<!--#if BAB_SESS_LOGGED -->
+var SessTimeoutCounter = 0;
+
+function SessTimeoutCtrl()
+	{
+	//{}
+	var babSessTimeout = { babSessTimeout };
+	window.status = '{ babSessTimeoutMsg } '+(babSessTimeout - SessTimeoutCounter)/60+' { babSessTimeoutUnit }';
+	if (babSessTimeout - SessTimeoutCounter == 180)
+		alert('{ babSessTimeoutMsg } 3 { babSessTimeoutUnit }');
+	else if (babSessTimeout - SessTimeoutCounter == 0)
+		{
+		//{}
+		alert('{ babSessTimeoutMsgLast }');
+		window.status = '';
+		}
+	SessTimeoutCounter += 60;
+	if (babSessTimeout - (SessTimeoutCounter - 60) > 0)
+		setTimeout('SessTimeoutCtrl()',60000);
+	}
+
+setTimeout('SessTimeoutCtrl()',60000);
+<!--#endif BAB_SESS_LOGGED -->
 //-->
-</script></HEAD>
+</script>
+</HEAD>
 <BODY>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="BabHeaderBackground"> 
