@@ -604,6 +604,7 @@ function readMore($topics, $article)
 				$this->title = bab_replace($this->arr['title']);
 				if( !empty($this->arr['body']))
 					{
+					$this->head = bab_replace($this->arr['head']);
 					$this->content = bab_replace($this->arr['body']);
 					}
 				else
