@@ -1508,6 +1508,7 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
+			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$i++;
 			$this->index = $i;
 			return true;
@@ -1589,6 +1590,7 @@ class bab_RecentPosts extends bab_handler
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			$i++;
 			$this->index = $i;
 			return true;
