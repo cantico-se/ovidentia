@@ -238,7 +238,11 @@
 <td class="BabSiteAdminFontBackground">{ fieldn }</td>
 <td class="BabSiteAdminFontBackground"><input type="text" name="fields[{ fieldv }]" size="40" value=""></td>
 <td class="BabSiteAdminFontBackground"><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+<!--#if disabled -->
+<td class="BabSiteAdminFontBackground"><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+<!--#else disabled -->
 <td class="BabSiteAdminFontBackground"><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+<!--#endif disabled -->
 <td class="BabSiteAdminFontBackground"><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
 </tr>
 <!--#endin getnextfield -->
@@ -309,7 +313,11 @@
 <td class="BabSiteAdminFontBackground">{ fieldn }</td>
 <td class="BabSiteAdminFontBackground"><input type="text" name="fields[{ fieldv }]" size="40" value="{ defvalue }"></td>
 <td class="BabSiteAdminFontBackground"><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+<!--#if disabled -->
+<td class="BabSiteAdminFontBackground"><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+<!--#else disabled -->
 <td class="BabSiteAdminFontBackground"><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+<!--#endif disabled -->
 <td class="BabSiteAdminFontBackground"><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
 </tr>
 <!--#endin getnextfield -->

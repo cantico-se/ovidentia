@@ -293,6 +293,10 @@ function addAdDb($adname, $description)
 				$this->reqchecked = "";
 				$this->rwchecked = "";
 				$this->mlchecked = "";
+				if (in_array( $this->fieldid, array(2, 4)) )
+					$this->disabled = true;
+				else 
+					$this->disabled = false;
 				$i++;
 				return true;
 				}
@@ -400,6 +404,11 @@ function modifyDb($id)
 					$this->mlchecked = "checked";
 				else
 					$this->mlchecked = "";
+				if ((!$this->bdel && in_array( $this->fieldid, array(1, 2, 4, 6) )) || ($this->bdel && in_array( $this->fieldid, array(2, 4) )) )
+					$this->disabled = true;
+				else 
+					$this->disabled = false;
+
 				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
 				$this->fieldn = bab_translate($arr['description']);
 				$this->fieldv = $arr['name'];
