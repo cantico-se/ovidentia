@@ -94,3 +94,63 @@ function bab_popup(url,divisor)
 	}
 
 
+var bab_tooltip_obj = false;
+
+function bab_showOnMouse(id,on)
+	{
+	var ie=document.all;
+	var ns6=document.getElementById && !document.all;
+	if (ie||ns6)
+		bab_tooltip_obj = document.all? document.all[id] : document.getElementById? document.getElementById(id) : "";
+	else
+		return false;
+
+	if (!on)
+		{
+		bab_tooltip_obj.style.visibility = 'hidden';
+		bab_tooltip_obj = false;
+		return true;
+		}
+
+	}
+
+
+function bab_tooltipPosition(e)
+	{
+	if (!bab_tooltip_obj)
+		return;
+	var obj = bab_tooltip_obj;
+	var offsetxpoint=-60;
+	var offsetypoint=20;
+	var ie=document.all;
+	var ns6=document.getElementById && !document.all;
+
+	var ietypebody = (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+	var curX=(ns6)? e.pageX : event.x + ietypebody.scrollLeft;
+	var curY=(ns6)? e.pageY : event.y + ietypebody.scrollTop;
+	var rightedge=ie&&!window.opera ? ietypebody.clientWidth-event.clientX-offsetxpoint : window.innerWidth-e.clientX-offsetxpoint-20
+	var bottomedge=ie&&!window.opera ? ietypebody.clientHeight-event.clientY-offsetypoint : window.innerHeight-e.clientY-offsetypoint-20
+	var leftedge=(offsetxpoint<0)? offsetxpoint*(-1) : -1000;
+
+	if (rightedge<obj.offsetWidth)
+		{
+		obj.style.left=ie? ietypebody.scrollLeft + event.clientX-obj.offsetWidth+'px' : window.pageXOffset+e.clientX-obj.offsetWidth+'px';
+		}
+	else if (curX<leftedge)
+		{
+		obj.style.left='5px';
+		}
+	else
+		{
+		obj.style.left=curX+offsetxpoint+'px';
+		}
+
+	if (bottomedge < obj.offsetHeight)
+		obj.style.top=ie? ietypebody.scrollTop+event.clientY-obj.offsetHeight-offsetypoint+"px" : window.pageYOffset+e.clientY-obj.offsetHeight-offsetypoint+"px";
+	else
+		{
+		obj.style.top=curY+offsetypoint+"px"
+		}
+	obj.style.visibility="visible";
+	return true;
+	}

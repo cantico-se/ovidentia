@@ -240,7 +240,8 @@ function getAvailableResourcesCalendars($bwrite = false)
 
 function createEvent($idcals, $title, $description, $startdate, $enddate, $category, $color, $hash='')
 {
-	global $babDB, $babBody;
+
+	global $babBody, $babDB;
 
 	if( bab_isMagicQuotesGpcOn())
 		{

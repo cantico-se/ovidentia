@@ -475,6 +475,13 @@ class cal_wmdbaseCls
 		$this->t_calendarchoice = bab_translate('Calendars');
 		$this->t_date_from = bab_translate('From');
 		$this->t_date_to = bab_translate('To');
+		$this->t_category = bab_translate('Category');
+		$this->t_prev_day = bab_translate('Previous day');
+		$this->t_prev_month = bab_translate('Previous month');
+		$this->t_prev_year = bab_translate('Previous year');
+		$this->t_next_year = bab_translate('Next year');
+		$this->t_next_month = bab_translate('Next month');
+		$this->t_next_day = bab_translate('Next day');
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$calids."&date=".$date."&backurl=".$backurl;

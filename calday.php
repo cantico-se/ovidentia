@@ -44,6 +44,7 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
 		$this->dayname = bab_longDate($time1, false);
+		$this->week = bab_translate('week').' '.date('W',$time1);
 
 		$this->alternate = false;
 		$this->cindex = 0;
@@ -155,9 +156,11 @@ class cal_dayCls extends cal_wmdbaseCls
 					if( $arr['id_cat'] == 0 )
 						{
 						$this->bgcolor = $arr['color'];
+						$this->category = '';
 						}
 					else
 						{
+						$this->category = $this->mcals->getCategoryName($arr['id_cat']);
 						$this->bgcolor = $this->mcals->getCategoryColor($arr['id_cat']);
 						}
 					$this->idevent = $arr['id'];
@@ -167,7 +170,6 @@ class cal_dayCls extends cal_wmdbaseCls
 					$time = bab_mktime($arr['end_date']);
 					$this->endtime = bab_time($time);
 					$this->enddate = bab_shortDate($time, false);
-					$this->id_cat = $arr['id_cat'];
 					$this->id_creator = $arr['id_creator'];
 					$this->hash = $arr['hash'];
 					$this->bprivate = $arr['bprivate'];
@@ -178,7 +180,8 @@ class cal_dayCls extends cal_wmdbaseCls
 					$this->titleten = htmlentities(substr($arr['title'], 0, 10));
 					$this->nbowners = $arr['nbowners'];
 					$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-					$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+					$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
+					$this->newurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&st=".$this->starttime."&view=viewd";
 					break;
 					}
 				else
