@@ -238,7 +238,7 @@ class bab_mcalendars
 		}
 
 
-	function getNextFreeEvent($startdate, $enddate, &$arr)
+	function getNextFreeEvent($startdate, $enddate, &$arr, $gap=0)
 		{
 		static $i =0;
 		while( $i < count($this->freeevents) )
@@ -249,7 +249,23 @@ class bab_mcalendars
 				}
 			else
 				{
-				break;
+				if( $gap != 0 && $this->freeevents[$i][2] == 0)
+					{
+					$max = bab_mktime($this->freeevents[$i][1] > $enddate ? $enddate: $this->freeevents[$i][1]);
+					$min = bab_mktime($this->freeevents[$i][0] < $startdate ? $startdate: $this->freeevents[$i][0]);
+					if( $gap <= $max - $min )
+						{
+						break;
+						}
+					else
+						{
+						$i++;
+						}
+					}
+				else
+					{
+					break;
+					}
 				}
 			}
 
@@ -456,17 +472,17 @@ class cal_wmdbaseCls
 		{
 			case "calmonth":
 				$this->monthurl = "";
-				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$this->currentidcals."&date=".$date;
-				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$this->currentidcals."&date=".$date;
+				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
+				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
 				break;
 			case "calday":
-				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$this->currentidcals."&date=".$date;
+				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
 				$this->dayurl = "";
-				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$this->currentidcals."&date=".$date;
+				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
 				break;
 			case "calweek":
-				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$this->currentidcals."&date=".$date;
-				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$this->currentidcals."&date=".$date;
+				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
+				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&idx=".$idx."&calid=".$this->currentidcals."&date=".$date;
 				$this->weekurl = "";
 				break;
 		}

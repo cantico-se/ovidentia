@@ -241,13 +241,13 @@ class cal_monthCls  extends cal_wmdbaseCls
 		if( $this->mcals->getNextFreeEvent($this->cdate." 00:00:00", $this->cdate." 23:59:00", $arr))
 			{
 			$this->free = $arr[2] == 0;
-			$time = bab_mktime($arr[0]);
-			$this->starttime = bab_time($time);
-			$this->startdate = bab_shortDate($time, false);
-			$time = bab_mktime($arr[1]);
-			$this->endtime = bab_time($time);
-			$this->enddate = bab_shortDate($time, false);
-			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $time).",".date("m", $time).",".date("d", $time)."&calid=".implode(',',$this->idcals)."&view=viewm&st=".$this->starttime;
+			$time0 = bab_mktime($arr[0]);
+			$this->starttime = bab_time($time0);
+			$this->startdate = bab_shortDate($time0, false);
+			$time1 = bab_mktime($arr[1]);
+			$this->endtime = bab_time($time1);
+			$this->enddate = bab_shortDate($time1, false);
+			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1;
 			return true;
 			}
 		else

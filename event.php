@@ -149,31 +149,31 @@ function newEvent()
 			global $babBodyPopup;
 
 			$this->mcals = explode(",", $this->calid);
-			$this->repeat = isset($_POST['repeat'])? $_POST['repeat']: 0;
-			$this->titleval = isset($_POST['title'])? $_POST['title']: '';
+			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 0;
+			$this->titleval = isset($GLOBALS['title'])? $GLOBALS['title']: '';
 				
 			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
 			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
 			$this->yearmin = $this->curyear - $this->ymin;
 
-			$this->yearbegin = !isset($_POST['yearbegin'])? $this->curyear: $_POST['yearbegin'];
-			$this->monthbegin = !isset($_POST['monthbegin'])? $this->curmonth: $_POST['monthbegin'];
-			$this->daybegin = !isset($_POST['daybegin'])? $this->curday: $_POST['daybegin'];
+			$this->yearbegin = !isset($GLOBALS['date0'])? $this->curyear: date("Y", (int)$GLOBALS['date0']);
+			$this->monthbegin = !isset($GLOBALS['date0'])? $this->curmonth: date("m", (int)$GLOBALS['date0']);
+			$this->daybegin = !isset($GLOBALS['date0'])? $this->curday: date("d", (int)$GLOBALS['date0']);
+			$this->timebegin = !isset($GLOBALS['date0'])? substr($babBody->icalendars->starttime, 0, 5): date("H:i", (int)$GLOBALS['date0']);
 
-			$this->yearend = !isset($_POST['yearend'])? $this->curyear: $_POST['yearend'];
-			$this->monthend = !isset($_POST['monthend'])? $this->curmonth: $_POST['monthend'];
-			$this->dayend = !isset($_POST['dayend'])? $this->curday: $_POST['dayend'];
+			$this->yearend = !isset($GLOBALS['date1'])? $this->curyear: date("Y", (int)$GLOBALS['date1']);
+			$this->monthend = !isset($GLOBALS['date1'])? $this->curmonth: date("m", (int)$GLOBALS['date1']);
+			$this->dayend = !isset($GLOBALS['date1'])? $this->curday: date("d", (int)$GLOBALS['date1']);
+			$this->timeend = !isset($GLOBALS['date1'])? substr($babBody->icalendars->endtime, 0, 5): date("H:i", (int)$GLOBALS['date1']);
 
-			$this->repeat_yearend = !isset($_POST['repeat_yearend'])? $this->curyear: $_POST['repeat_yearend'];
-			$this->repeat_monthend = !isset($_POST['repeat_monthend'])? $this->curmonth: $_POST['repeat_monthend'];
-			$this->repeat_dayend = !isset($_POST['repeat_dayend'])? $this->curday: $_POST['repeat_dayend'];
+			$this->repeat_yearend = !isset($GLOBALS['repeat_yearend'])? $this->curyear: $GLOBALS['repeat_yearend'];
+			$this->repeat_monthend = !isset($GLOBALS['repeat_monthend'])? $this->curmonth: $GLOBALS['repeat_monthend'];
+			$this->repeat_dayend = !isset($GLOBALS['repeat_dayend'])? $this->curday: $GLOBALS['repeat_dayend'];
 
-			$this->timebegin = !isset($_POST['timebegin'])? substr($babBody->icalendars->starttime, 0, 5): $_POST['timebegin'];
-			$this->timeend = !isset($_POST['timeend'])? substr($babBody->icalendars->endtime, 0, 5): $_POST['timeend'];
 
-			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : '' ;
+			$this->colorvalue = isset($GLOBALS['color']) ? $GLOBALS['color'] : '' ;
 
-			$descriptionval = isset($_POST['evtdesc'])? $_POST['evtdesc'] : "";
+			$descriptionval = isset($GLOBALS['evtdesc'])? $GLOBALS['evtdesc'] : "";
 			$this->editor = bab_editor($descriptionval, 'evtdesc', 'vacform',150);
 
 			$this->daytypechecked = $this->icalendar->allday == 'Y' ? "checked"  :'';
@@ -185,7 +185,7 @@ function newEvent()
 			$this->daysel = $this->daybegin;
 			$this->monthsel = $this->monthbegin;
 			$this->yearsel = $this->yearbegin;
-			$this->timesel = isset($_GET['st']) ? $_GET['st'] : $this->timebegin;
+			$this->timesel = $this->timebegin;
 
 			$this->bprivate = true;
 			$this->block = true;
