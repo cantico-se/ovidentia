@@ -20,6 +20,7 @@ CREATE TABLE bab_articles (
    body longtext NOT NULL,
    archive enum('N','Y') NOT NULL default 'N',
    idfai int(11) unsigned NOT NULL default '0',
+   lang varchar(10) NOT NULL default '',
    PRIMARY KEY (id),
    KEY id_topic (id_topic),
    KEY date (date)
@@ -43,6 +44,7 @@ CREATE TABLE bab_comments (
    name varchar(60) NOT NULL,
    email tinytext NOT NULL,
    idfai int(11) unsigned NOT NULL default '0',
+   lang varchar(10) NOT NULL default '',
    PRIMARY KEY (id),
    KEY id_article (id_article),
    KEY id_topic (id_topic),
@@ -60,6 +62,7 @@ CREATE TABLE bab_faqcat (
    id_manager int(11) unsigned DEFAULT '0' NOT NULL,
    category varchar(60) NOT NULL,
    description text NOT NULL,
+   lang varchar(10) NOT NULL default '',
    PRIMARY KEY (id)
 );
 
@@ -233,6 +236,7 @@ CREATE TABLE bab_sections (
    jscript enum('N','Y') DEFAULT 'N' NOT NULL,
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
    template varchar(255),
+   lang varchar(10) NOT NULL default '',
    PRIMARY KEY (id)
 );
 
@@ -350,6 +354,7 @@ CREATE TABLE bab_topics (
    idsaart int(11) unsigned NOT NULL default '0',
    idsacom int(11) unsigned NOT NULL default '0',
    notify enum('N','Y') NOT NULL default 'N',
+   lang varchar(10) NOT NULL default '',
    PRIMARY KEY (id),
    KEY id_approver (id_approver),
    KEY id_cat (id_cat),
@@ -440,6 +445,7 @@ CREATE TABLE bab_users (
    style text,
    lastlog datetime DEFAULT '0000-00-00 00:00:00',
    datelog datetime DEFAULT '0000-00-00 00:00:00',
+   langfilter INTEGER DEFAULT 0,
    PRIMARY KEY (id),
    KEY nickname (nickname),
    KEY firstname (firstname),
@@ -447,7 +453,7 @@ CREATE TABLE bab_users (
    KEY hashname (hashname)
 );
 
-INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '', '');
+INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '', '', '');
 
 # --------------------------------------------------------
 #
@@ -699,6 +705,7 @@ CREATE TABLE bab_sites (
    idgroup int(11) unsigned NOT NULL default '0',
    smtpuser varchar(20) NOT NULL default '',
    smtppassword tinyblob NOT NULL,
+   langfilter INTEGER DEFAULT 0,
    PRIMARY KEY (id),
    KEY name (name)
 );
