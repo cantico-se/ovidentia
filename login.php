@@ -63,11 +63,10 @@ function signOn( $nickname, $password)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$req="update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id_user='".$BAB_SESS_USERID."'";
+		$db->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id='".$BAB_SESS_USERID."'");
 		}
 
-	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'";
-	$res=$db->db_query($req);
+	$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
