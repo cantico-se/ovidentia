@@ -1,7 +1,7 @@
 
 <!--#begin newevent -->
 
-<form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this))" >
+<form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this,'vacform'))" >
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="addevent" />
 <input type="hidden" name="date" value="{ curdate }" />
@@ -708,11 +708,11 @@ function evtSetColor(color)
 	document.getElementById('evtColor').style.backgroundColor = '#'+color;
 	}
 
-function submitCtrl(form)
+function submitCtrl(form, name)
 	{
 	if (typeof calendarChoice_selectAll == 'function')
 		{
-		return calendarChoice_selectAll(form.name);
+		return calendarChoice_selectAll(name);
 		}
 	}
 
