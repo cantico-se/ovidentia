@@ -33,7 +33,7 @@ class babLDAP
 	var $bindpw;
 
 
-	function babLDAP($host, $port = "", $basedn = "" , $binddn = "", $binpw = "", $die = false)
+	function babLDAP($host, $port = "", $basedn = "" , $binddn = "", $bindpw = "", $die = false)
 	{
 		$this->ldap_die_on_fail = $die;
 		$this->host = $host;
