@@ -97,7 +97,7 @@ function testSchema($idsch, $idschi, $resf)
 			if( $i < $this->count)
 				{
 				$this->username = "[".$this->arrusers[$i]."] ".bab_getUserName($this->arrusers[$i]);
-				if( in_array($this->arrusers[$i], $this->arrnfusers))
+				if( count($this->arrnfusers) > 0 && in_array($this->arrusers[$i], $this->arrnfusers))
 					{
 					$this->username .= " *";
 					}
