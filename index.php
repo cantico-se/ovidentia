@@ -461,13 +461,18 @@ switch($tg)
 					{
 					$row = $db->db_fetch_array($res);
 					$incl = "addons/".$row['title'];
-					for($i = 2; $i < sizeof($arr); $i++)
-						$incl .= "/".$arr[$i];
-					$GLOBALS['babAddonFolder'] = $row['title'];
-					$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
-					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
-					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-					$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+					if( is_dir( $GLOBALS['babInstallPath'].$incl))
+						{
+						for($i = 2; $i < sizeof($arr); $i++)
+							$incl .= "/".$arr[$i];
+						$GLOBALS['babAddonFolder'] = $row['title'];
+						$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
+						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
+						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+						$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+						}
+					else
+						$incl = "entry";
 					}
 				}
 			else
