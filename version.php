@@ -52,15 +52,23 @@ function echoLang($path)
 				}
 			else
 				{
-				$file = @fopen($path.$filename, "r");
-				$txt = fread($file, filesize($path.$filename));
-				fclose($file);
-				$reg = "/babTranslate[[:space:]]*\([[:space:]]*\"([^\"]*)/s";
-				preg_match_all($reg, $txt, $m1);
-				for ($i = 0; $i < count($m1[1]); $i++ )
+				if( substr($filename,-4) == ".php")
 					{
-					if( !empty($m1[1][$i]) && !in_array($m1[1][$i], $arr) )
-						$arr[] = $m1[1][$i];
+					$file = fopen($path.$filename, "r");
+					if( $file )
+						{
+						$txt = fread($file, filesize($path.$filename));
+						fclose($file);
+						$reg = "/babTranslate[[:space:]]*\([[:space:]]*\"([^\"]*)/s";
+						preg_match_all($reg, $txt, $m1);
+						for ($i = 0; $i < count($m1[1]); $i++ )
+							{
+							if( !empty($m1[1][$i]) && !in_array($m1[1][$i], $arr) )
+								{
+								$arr[] = $m1[1][$i];
+								}
+							}
+						}
 					}
 				}
 			} 
@@ -91,7 +99,13 @@ switch($idx)
 		break;
 
 	case "lang":
-		$tab = array_unique(echoLang($GLOBALS['babInstallPath']));
+		$ar = echoLang($GLOBALS['babInstallPath']);
+		$tab = array();
+		for( $i = 0; $i < count($ar); $i++)
+			{
+			if( in_array($ar[$i], $tab) == false )
+				$tab[] = $ar[$i];
+			}
 		$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
 		if( !file_exists($filename))
 			{
@@ -107,7 +121,7 @@ switch($idx)
 		$new = "";
 		for( $i = 0; $i < count($tab); $i++)
 			{
-			$reg = "<string[[:space:]]*id=\"$tab[$i]\">([^<]*)<\/string>";
+			$reg = "<string[[:space:]]*id=\"".preg_quote($tab[$i])."\">([^<]*)<\/string>";
 			if( !empty($tab[$i]))
 				{
 				if( !ereg($reg, $txt, $m))
