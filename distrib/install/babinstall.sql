@@ -2450,3 +2450,11 @@ CREATE TABLE `bab_vac_rights_rules` (
   PRIMARY KEY  (`id`),
   KEY `id_right` (`id_right`,`period_start`,`period_end`)
 );
+
+CREATE TABLE bab_users_unavailability (
+  id_user int(11) unsigned NOT NULL default '0',
+  start_date date NOT NULL default '0000-00-00',
+  end_date date NOT NULL default '0000-00-00',
+  id_substitute int(11) NOT NULL default '0',
+  KEY id_user (id_user,id_substitute)
+);

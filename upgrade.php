@@ -4320,12 +4320,27 @@ $res = $db->db_query("CREATE TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` (
 					  KEY `id_right` (`id_right`,`period_start`,`period_end`)
 					) ");
 
-
 if( !$res)
 	{
 	$ret = "Creation of <b>".BAB_VAC_RIGHTS_RULES_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+
+$res = $db->db_query("CREATE TABLE ".BAB_USERS_UNAVAILABILITY_TBL." (
+					id_user int(11) unsigned NOT NULL default '0',
+					  start_date date NOT NULL default '0000-00-00',
+					  end_date date NOT NULL default '0000-00-00',
+					  id_substitute int(11) NOT NULL default '0',
+					  KEY id_user (id_user,id_substitute)
+					)");
+
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_USERS_UNAVAILABILITY_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 
 return $ret;
 }
