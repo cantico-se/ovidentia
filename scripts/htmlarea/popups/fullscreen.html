@@ -222,6 +222,16 @@ function EditorOnInsertFile(id, idf, txt)
 editor.insertHTML('$FILE('+idf+','+txt+')');
 }
 
+function EditorOnInsertArticle(id, txt, target)
+{
+editor.insertHTML('$ARTICLEID('+id+','+txt+','+target+')');
+}
+
+function EditorOnInsertFaq(id, txt, target)
+{
+editor.insertHTML('$FAQID('+id+','+txt+','+target+')');
+}
+
 </script>
 </head>
 <body scroll="no" onload="init()" onunload="update_parent()">
