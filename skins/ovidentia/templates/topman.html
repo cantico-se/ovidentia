@@ -13,7 +13,8 @@
             <!--#endif nbarticles -->
              <br>
 { nbarticles }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles }</td>
-          <td width="1%" rowspan="2" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>
+        <!--#if newac "> 0" -->
+		<td width="1%" rowspan="2" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>
             { waiting }
 :          </strong></td>
           <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
@@ -25,7 +26,7 @@
             </td>
           <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
             <!--#if newa "> 0" -->
-            <a class="BabTopicsAdminNumberLink" href="{ urlnewa }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newa }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles }</a> 
+            <a class="BabTopicsAdminNumberLink" href="{ urlwaitinga }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newa }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles }</a> 
             <!--#else newa -->
             <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newa }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles } 
             <!--#endif newa -->
@@ -40,13 +41,15 @@
           </td>
           <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
             <!--#if newc "> 0" -->
-            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlnewc }">{ newc }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ comments 
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlwaitingc }">{ newc }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ comments 
 }</a> 
             <!--#else newc -->
             <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newc }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ comments } 
             <!--#endif newc -->
           </td>
-        </tr>
+       <!--#endif newac -->
+</tr></table>
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
         <tr> 
           <td colspan="4"> { arr[description] } </td>
         </tr>
@@ -123,7 +126,6 @@
 <br>
 <!--#end articleslist -->
 
-
 <!--#begin articleview -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -160,7 +162,6 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end articleview -->
-
 
 <!--#begin oldarticleslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
