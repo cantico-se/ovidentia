@@ -318,6 +318,7 @@ function listFiles($id, $gr, $path, $bmanager)
 		var $deltxt;
 		var $urldiskspace;
 		var $diskspace;
+		var $hits;
 		var $arrext = array();
 
 		var $arrdir = array();
@@ -520,6 +521,7 @@ function listFiles($id, $gr, $path, $bmanager)
 					$this->bconfirmed = 1;
 				else
 					$this->bconfirmed = 0;
+				$this->hits = $arr['hits'];
 				$i++;
 				return true;
 				}
@@ -1054,15 +1056,8 @@ function getFile( $file, $id, $gr, $path)
 		{
 		if( !in_array(1, $aclfm['pr']))
 			$access = false;
-
-		$db = new db_mysql();
-		$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 )
-			{
-			$arr = $db->db_fetch_array($res);
+		else
 			$access = true;
-			}
 		}
 
 	if( $gr == "Y" )
@@ -1073,15 +1068,21 @@ function getFile( $file, $id, $gr, $path)
 				$access = true;
 				break;
 			}
+		}
 
-		$db = new db_mysql();
+	$db = new db_mysql();
+	if( $access )
+		{
 		$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
 			{
 			$arr = $db->db_fetch_array($res);
+			$db->db_query("update files set hits='".($arr['hits'] + 1)."' where id='".$arr['id']."'");
 			$access = true;
 			}
+		else
+			$access = false;
 		}
 
 	if( !$access )
