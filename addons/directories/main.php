@@ -1098,7 +1098,7 @@ if( isset($modify))
 		if( $modify == "dbc" )
 			{
 			$idx = "dbmod";
-			if(updateDbContact($id, $idu, $fields, $HTTP_POST_FILES['photof']['name'],$HTTP_POST_FILES['photof']['tmp_name']))
+			if(updateDbContact($id, $idu, $fields, $photof_name,$photof))
 				{
 				$msg = ad_translate("Your contact has been updated");
 				$idx = "dbcunload";
@@ -1107,7 +1107,7 @@ if( isset($modify))
 			}
 		else if( $modify == "dbac" )
 			{
-			if(!confirmAddDbContact($id, $idu, $fields, $HTTP_POST_FILES['photof']['name'],$HTTP_POST_FILES['photof']['tmp_name']))
+			if(!confirmAddDbContact($id, $idu, $fields, $photof_name,$photof))
 				$idx = "adbc";
 			else
 				{
@@ -1189,7 +1189,7 @@ switch($idx)
 		$babBody->addItemMenu("sdb", "Browse", $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)
 			{
-			mapDbFile($id, $HTTP_POST_FILES['uploadf']['name'], $HTTP_POST_FILES['uploadf']['tmp_name'], $wsepar, $separ);
+			mapDbFile($id, $uploadf_name, $uploadf, $wsepar, $separ);
 			$babBody->addItemMenu("dbimp", "Import", $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
 			}
 		break;

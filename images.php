@@ -211,7 +211,7 @@ if( !isset($idx))
 
 if( isset($Submit))
 	{
-	saveImage($HTTP_POST_FILES['uploadf']['name'], $HTTP_POST_FILES['uploadf']['size'],$HTTP_POST_FILES['uploadf']['tmp_name']);
+	saveImage($uploadf_name, $uploadf_size,$uploadf);
 	}
 
 switch($idx)

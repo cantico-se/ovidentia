@@ -10,39 +10,60 @@ if (!session_is_registered('BAB_SESS_USER')) { session_register("BAB_SESS_USER")
 if (!session_is_registered('BAB_SESS_EMAIL')) { session_register("BAB_SESS_EMAIL"); $BAB_SESS_EMAIL = ""; }
 if (!session_is_registered('BAB_SESS_USERID')) { session_register("BAB_SESS_USERID"); $BAB_SESS_USERID = ""; }
 if (!session_is_registered('BAB_SESS_HASHID')) { session_register("BAB_SESS_HASHID"); $BAB_SESS_HASHID = ""; }
-if (!empty($_GET)) {
-        extract($_GET);
-} else if (!empty($HTTP_GET_VARS)) {
-	extract($HTTP_GET_VARS);
-} // end if
+if (!empty($_GET))
+	$babTmp =& $_GET;
+else  if (!empty($HTTP_GET_VARS)) 
+	$babTmp =& $HTTP_GET_VARS;
+if( !empty($babTmp)) extract($babTmp);
+unset($babTmp);
+if (!empty($_POST))
+	$babTmp =& $_POST;
+else  if (!empty($HTTP_POST_VARS)) 
+	$babTmp =& $HTTP_POST_VARS;
+if( !empty($babTmp)) extract($babTmp);
+unset($babTmp);
 
-if (!empty($_POST)) {
-	extract($_POST);
-} else if (!empty($HTTP_POST_VARS)) {
-	extract($HTTP_POST_VARS);
-} // end if
+if (!empty($_SESSION))
+	$babTmp =& $_SESSION;
+else  if (!empty($HTTP_SESSION_VARS)) 
+	$babTmp =& $HTTP_SESSION_VARS;
+if( !empty($babTmp)) extract($babTmp);
+unset($babTmp);
 
-if (!empty($_SESSION)) {
-	extract($_SESSION);
-} else if (!empty($HTTP_SESSION_VARS)) {
-	extract($HTTP_SESSION_VARS);
-} // end if
+if (!empty($_SERVER))
+	$babTmp =& $_SERVER;
+else  if (!empty($HTTP_SERVER_VARS)) 
+	$babTmp =& $HTTP_SERVER_VARS;
+if( !empty($babTmp)) extract($babTmp);
+unset($babTmp);
 
-if (!empty($_SERVER)) {
-	extract($_SERVER);
-} else if (!empty($HTTP_SERVER_VARS)) {
-	extract($HTTP_SERVER_VARS);
-} // end if
-
-if (!empty($_FILES)) {
-	while (list($name, $value) = each($_FILES)) {
+if (!empty($_FILES))
+	{
+	while (list($name, $value) = each($_FILES))
+		{
 		$$name = $value['tmp_name'];
+		$file = $name."_size";
+		$$file = $value['size'];
+		$file = $name."_name";
+		$$file = $value['name'];
+		$file = $name."_type";
+		$$file = $value['type'];
+		}
 	}
-} else if (!empty($HTTP_POST_FILES)) {
-	while (list($name, $value) = each($HTTP_POST_FILES)) {
-		$$name = $value['tmp_name'];
+	else if (!empty($HTTP_POST_FILES))
+		{
+		while (list($name, $value) = each($HTTP_POST_FILES))
+			{
+			$$name = $value['tmp_name'];
+			$file = $name."_size";
+			$$file = $value['size'];
+			$file = $name."_name";
+			$$file = $value['name'];
+			$file = $name."_type";
+			$$file = $value['type'];
+			}
 	}
-} // end if
+
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
 

@@ -1396,7 +1396,7 @@ if( !$access)
 
 if( isset($addf) && $addf == "add")
 	{
-	if( !saveFile($id, $gr, $path, $HTTP_POST_FILES['uploadf']['name'], $HTTP_POST_FILES['uploadf']['size'],$HTTP_POST_FILES['uploadf']['tmp_name'], $description, $keywords, $readonly))
+	if( !saveFile($id, $gr, $path, $uploadf_name, $uploadf_size,$uploadf , $description, $keywords, $readonly))
 		$idx = "add";	
 	}
 
