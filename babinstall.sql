@@ -17,7 +17,7 @@ CREATE TABLE articles (
    date_pub varchar(30),
    title tinytext NOT NULL,
    head text NOT NULL,
-   body text NOT NULL,
+   body longtext NOT NULL,
    PRIMARY KEY (id)
 );
 
