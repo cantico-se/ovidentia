@@ -111,7 +111,7 @@ if( !isset($tg))
 if( $tg != "version" || $idx != "upgrade")
 	{
 	bab_updateSiteSettings();
-	if (isset($babNTauth) && $babNTauth ) include $babInstallPath."utilit/ntident.php";
+	if ( isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth ) include $babInstallPath."utilit/ntident.php";
 	if ($GLOBALS['babCookieIdent'] === true) include $babInstallPath."utilit/cookieident.php";
 	bab_isUserLogged();
 	bab_updateUserSettings();
@@ -892,16 +892,14 @@ switch($tg)
 						$incl = "addons/".$row['title'];
 						if( is_dir( $GLOBALS['babInstallPath'].$incl))
 							{
-							$module = "";
 							for($i = 2; $i < sizeof($arr); $i++)
-								$module .= "/".$arr[$i];
+								$incl .= "/".$arr[$i];
 							$GLOBALS['babAddonFolder'] = $row['title'];
 							$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
 							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
 							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 							$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
-							$incl .= $module;
 							}
 						else
 							$incl = "entry";
@@ -916,22 +914,13 @@ switch($tg)
 		else
 		{
 			if( $BAB_SESS_LOGGED)
-				{
 				$file = "private.html";
-				}
 			else
-				{
 				$file = "public.html";
-				}
-
 			if( file_exists($GLOBALS['babOvmlPath'].$file))
-				{
 				$incl = "oml";
-				}
 			else
-				{
 				$incl = "entry";
-				}
 		}
 		break;
 	}
