@@ -1,49 +1,52 @@
-<!--#begin draftslist --> 
+<!--#begin draftslist -->
+<script type="text/javascript">
+<!--
+function confirm_submit(url)
+	{
+	//{}
+	if (confirm('{ js_confirm_submit }'))
+		document.location.href=url;
+	}
+//-->
+</script>
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" > 
-<table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap >&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ nametxt }</b> </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ datesubtxt }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ statustxt }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" align="center" valign="middle" width="1%">
-<table class="BabSiteAdminTitleFontBackground" border="0" cellspacing="0" cellpadding="2" >
-<tr>
-<td><a class="BabForumTopicsNavContribution" title="{ proptxt }" href="javascript: Start('{ propurl }', 'OvidentiaEditS0', 'width=750,height=650,status=no,resizable=yes,top=100,left=100,scrollbars=yes')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ proptxt }" border="0"></a></td>
-<td><a class="BabForumTopicsNavContribution" title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a></td>
-<td><a class="BabForumTopicsNavContribution" title="{ previewtxt }" href="javascript: Start('{ previewurl }', 'OvidentiaEditArt', 'width=750,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/preview.gif" alt="{ previewtxt }" border="0"></a></td>
-</tr>
-</table>
-</td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ urlname }', 'OvidentiaEditS0', 'width=750,height=650,status=no,resizable=yes,top=100,left=100,scrollbars=yes')">{ name }</a>
-<!--#if attachment -->
-&nbsp;<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
-<!--#endif attachment -->
-</td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ datesub }</td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ status }</td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">
-<!--#if bsubmit -->
-<a class="BabSiteAdminListLink" href="{ bsubmiturl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0"></a>
-<!--#else bsubmit -->&nbsp;
-<!--#endif bsubmit -->
-</td>
-</tr>
-<!--#endin getnext -->
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b><a class="BabSiteAdminListLink" href="javascript: Start('{ urladd }', 'OvidentiaEditS0', 'width=750,height=650,status=no,resizable=yes,top=100,left=100,scrollbars=yes')">{ addtxt }</a></b>&nbsp;|&nbsp;<b><a class="BabSiteAdminListLink" href="javascript: Start('{ urlmod }', 'OvidentiaEditS0', 'width=750,height=650,status=no,resizable=yes,top=100,left=100,scrollbars=yes')">{ modtxt }</a></b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-</tr>
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="2">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>&nbsp;</td>
+		<td>{ nametxt }</td>
+		<td>{ datesubtxt }</td>
+		<td>{ statustxt }</td>
+		<td>&nbsp;</td>
+	</tr>
+	<!--#in getnext -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td align="center" width="1%" nowrap>
+			<a title="{ t_modify }" href="javascript:bab_popup('{ urlname }',6)"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0"></a>&nbsp;<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;<a title="{ proptxt }" href="javascript:bab_popup('{ propurl }')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;
+		</td>
+		<td>
+			<a class="BabSiteAdminListLink" href="javascript:bab_popup('{ previewurl }')" title="{ previewtxt }">{ name }</a>
+			<!--#if attachment -->
+			&nbsp;<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
+			<!--#endif attachment -->
+		</td>
+		<td align="center">&nbsp;{ datesub }</td>
+		<td align="center">&nbsp;{ status }</td>
+		<td align="center">
+		<!--#if bsubmit -->
+		<a class="BabSiteAdminListLink" href="javascript:confirm_submit('{ bsubmiturl }');" title="{ submittxt }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0"></a>
+		<!--#else bsubmit -->&nbsp;
+		<!--#endif bsubmit -->
+		</td>
+	</tr>
+	<!--#endin getnext -->
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>&nbsp;</td>
+		<td nowrap><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ urladd }',6)">{ addtxt }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ urlmod }',6)">{ modtxt }</a></td>
+		<td colspan="3">&nbsp;</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -53,35 +56,29 @@
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" > 
-<table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap >&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ nametxt }</b> </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ datecreatetxt }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ datemodifytxt }</b></td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" align="center" valign="middle" width="1%">
-<table class="BabSiteAdminTitleFontBackground" border="0" cellspacing="0" cellpadding="2" >
-<tr>
-<td><a class="BabForumTopicsNavContribution" title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a></td>
-<td><a class="BabForumTopicsNavContribution" title="{ previewtxt }" href="javascript: Start('{ previewurl }', 'OvidentiaEditArt', 'width=750,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/preview.gif" alt="{ previewtxt }" border="0"></a></td>
-</tr>
-</table>
-</td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ urlname }', 'OvidentiaEditArt', 'width=750,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes')">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ datecreate }</td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ datemodify }</td>
-</tr>
-<!--#endin getnext -->
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b><a class="BabSiteAdminListLink" href="{ urladd }">{ addtxt }</a></b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-</tr>
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="2">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+	<td >&nbsp;</td>
+	<td nowrap>{ nametxt }</td>
+	<td align="center">{ datecreatetxt }</td>
+	<td align="center">{ datemodifytxt }</td>
+	</tr>
+	<!--#in getnext -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td  align="center" valign="middle" width="1%">
+			<a class="BabForumTopicsNavContribution" title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;<a class="BabForumTopicsNavContribution" title="{ name }" href="javascript: bab_popup('{ urlname }')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ name }" border="0"></a>
+		</td>
+		<td><a class="BabSiteAdminListLink" title="{ previewtxt }" href="javascript: bab_popup('{ previewurl }',6)">{ name }</a></td>
+		<td align="center">&nbsp;{ datecreate }</td>
+		<td align="center">&nbsp;{ datemodify }</td>
+	</tr>
+	<!--#endin getnext -->
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>&nbsp;</td>
+		<td><a class="BabSiteAdminListLink" href="{ urladd }">{ addtxt }</a></td>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -90,8 +87,8 @@
 <!--#begin editdraft --> 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<head>
+<title>{ babSiteName }</title>
 { babMeta }
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }"></script>
@@ -100,8 +97,8 @@
 window.focus();
 //-->
 </script>
-</HEAD>
-<BODY class="BabBackground">
+</head>
+<body class="BabBackground">
 <center>
 <!--#if message -->
 { message }

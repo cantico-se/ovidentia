@@ -67,6 +67,8 @@ function listDrafts()
 			$this->modtxt = bab_translate("Modify an existing article");
 			$this->attachmenttxt = bab_translate("Attachments");
 			$this->submittxt = bab_translate("Submit");
+			$this->t_modify = bab_translate("Modify");
+			$this->js_confirm_submit = bab_translate("Do you really want to submit")."?";
 			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=s0";
 			$this->urlmod = $GLOBALS['babUrlScript']."?tg=artedit&idx=s00";
 			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
