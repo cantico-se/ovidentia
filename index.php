@@ -148,6 +148,11 @@ function printBody()
 			$this->babLogoRB = "";
 			$this->babBanner = "";
 
+			$this->babNewArticles = $babBody->newarticles;
+			$this->babNewComments = $babBody->newcomments;
+			$this->babNewPosts = $babBody->newposts;
+			$this->babNewFiles = $babBody->newfiles;
+
 			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = bab_printTemplate($this, "config.html", "babLogoRT");
 			$this->babLogoLB = bab_printTemplate($this, "config.html", "babLogoLB");
