@@ -1079,8 +1079,14 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 						}
 					else
 						{
-						$babBody->msgerror = bab_translate("Access denied");
-						return false;
+						$res = $db->db_query("select ".BAB_FILES_TBL.".id from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where ".BAB_FILES_TBL.".id='".$arr['id']."' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'");
+						if( $res && $db->db_num_rows($res) > 0 )
+							break;
+						else
+							{
+							$babBody->msgerror = bab_translate("Access denied");
+							return false;
+							}
 						}
 					}
 				}
@@ -1166,6 +1172,11 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			$req .= ", readonly='".$readonly."'";
 		$req .= " where id='".$idf."'";
 		$res = $db->db_query($req);
+		if( empty($bnotify))
+			{
+			$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
+			$bnotify = $rr['filenotify'];
+			}
 		if( $arr['bgroup'] == "Y" )
 			{
 			if( $arr['confirmed'] == "N")
@@ -1175,7 +1186,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				switch($res)
 					{
 					case 0:
-						$db->db_query("delete from ".BAB_FILES_TBL." where id='".$arr['id']."''");
+						$db->db_query("delete from ".BAB_FILES_TBL." where id='".$arr['id']."'");
 						unlink($pathx.$arr['name']);
 						break;
 					case 1:
@@ -1579,6 +1590,10 @@ function viewFile( $idf)
 				$this->bmanager = $bmanager;
 				$this->bconfirm = $bconfirm;
 				$this->bupdate = $bupdate;
+				if( $bconfirm || $bmanager || $bupdate)
+					$this->bsubmit = true;
+				else
+					$this->bsubmit = false;
 				$this->idf = $idf;
 
 				$this->description = bab_translate("Description");
@@ -1716,7 +1731,6 @@ function viewFile( $idf)
 			}
 		}
 
-
 	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate);
 	echo bab_printTemplate($temp,"fileman.html", "viewfile");
 	}
@@ -1826,7 +1840,10 @@ if( $gr == "Y")
 		if( $babBody->aclfm['id'][$i] == $id )
 			{
 			if( $babBody->aclfm['ma'][$i] == 1 )
+				{
 				$bmanager = true;
+				$upload = true;
+				}
 
 			if( $babBody->aclfm['uplo'][$i] )
 				$upload = true;
