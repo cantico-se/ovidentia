@@ -613,7 +613,6 @@ function modifyArticle($topics, $article)
 			$this->no = bab_translate("No");
 			$this->langLabel = bab_translate('Language');
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
-//2003-02-28 start
 			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
 				$this->db = $GLOBALS['babDB'];
@@ -625,7 +624,6 @@ function modifyArticle($topics, $article)
 					$this->langFiles[] = '*';
 				}
 			}
-//2003-02-28 end
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
@@ -728,11 +726,9 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 		var $langSelected;
 		var $langFiles;	
 		var $countLangFiles;
-//2003-02-28 start
 		var $db;
 		var $res;
 		var $arr;
-//2003-02-28 end
 
 		function temp($title, $headtext, $bodytext, $topics)
 			{
@@ -748,6 +744,14 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 				$this->bodyval = "";
 			else
 				$this->bodyval = $bodytext;
+			if( bab_isMagicQuotesGpcOn())
+				{
+				$this->titleval = stripslashes($this->titleval);
+				$this->headval = stripslashes($this->headval);
+				$this->bodyval = stripslashes($this->bodyval);
+				}
+
+
 			$this->topics = $topics;
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");
@@ -759,7 +763,6 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->files = bab_translate("Files");
 			$this->langLabel = bab_translate('Language');
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
-//2003-02-28 start
 			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
 				$this->db = $GLOBALS['babDB'];
@@ -771,7 +774,6 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 					$this->langFiles[] = '*';
 				}
 			}
-//2003-02-28 end
 			$this->countLangFiles = count($this->langFiles);
 			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
