@@ -330,124 +330,20 @@ class cal_weekCls extends cal_wmdbaseCls
 			}
 		}
 
-	function getnextevent()
-		{
-		global $babBody;
-		static $i =0;
-		if( $i < count($this->harray[$this->cindex-1][$this->icols-1]))
-			{
-			$arr = & $this->harray[$this->cindex-1][$this->icols-1][$i];
-			if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
-				{
-				$ts1 = bab_mktime($arr['start_date']);
-				$ts2 = bab_mktime($this->startdt);
-				$ts3 = bab_mktime($this->startdt)+($this->elapstime*60);
-				if ($ts1 >= $ts2 && $ts1 <= $ts3)
-					$this->first=1;
-				else
-					$this->first=0;
-				$this->bevent = true;
-				$this->idcal = $arr['id_cal'];
-				$this->status = $arr['status'];
-				if( $arr['id_cat'] == 0 )
-					{
-					$this->bgcolor = $arr['color'];
-					}
-				else
-					{
-					$this->bgcolor = $this->mcals->getCategoryColor($arr['id_cat']);
-					}
-				$this->idevent = $arr['id'];
-				$time = bab_mktime($arr['start_date']);
-				$this->starttime = bab_time($time);
-				$this->startdate = bab_shortDate($time, false);
-				$time = bab_mktime($arr['end_date']);
-				$this->endtime = bab_time($time);
-				$this->enddate = bab_shortDate($time, false);
-				$this->id_cat = $arr['id_cat'];
-				$this->id_creator = $arr['id_creator'];
-				$this->hash = $arr['hash'];
-				$this->bprivate = $arr['bprivate'];
-				$this->block = $arr['block'];
-				$this->bfree = $arr['bfree'];
-				$this->description = $arr['description'];
-				$this->title = $this->startdate." ".$this->starttime. " - ".$this->enddate." ".$this->endtime." ".$arr['title'];
-				$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH));
-				$this->nbowners = $arr['nbowners'];
-				$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-				$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-				}
-			else
-				{
-				$this->bevent = false;
-				}
-			$i++;
-			return true;
-			}
-		else
-			{
-			$i = 0;
-			return false;
-			}
-		}
-
-	function geteventOld()
-		{
-		global $babBody;
-		$arr = array();
-		if( $this->mcals->getNextEvent($this->idcals[$this->cindex], $this->cdate." ".$this->h_start.":00", $this->cdate." ".$this->h_end.":59", $arr))
-			{
-			$this->idcal = $arr['id_cal'];
-			$this->status = $arr['status'];
-			$this->bgcolor = $arr['color'];
-			$this->idevent = $arr['id'];
-			$time = bab_mktime($arr['start_date']);
-			$this->starttime = bab_time($time);
-			$this->startdate = bab_shortDate($time, false);
-			$time = bab_mktime($arr['end_date']);
-			$this->endtime = bab_time($time);
-			$this->enddate = bab_shortDate($time, false);
-			$this->id_cat = $arr['id_cat'];
-			$this->id_creator = $arr['id_creator'];
-			$this->hash = $arr['hash'];
-			$this->bprivate = $arr['bprivate'];
-			$this->block = $arr['block'];
-			$this->bfree = $arr['bfree'];
-			$this->description = $arr['description'];
-			$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
-			$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH));
-			return true;
-			}
-		else
-			{
-			$this->cindex++;
-			return false;
-			}
-		}
-
 	function getfreeevent()
 		{
 		global $babBody;
 		$arr = array();
-		if( $this->mcals->getNextFreeEvent($this->cdate, 0, $arr))
+		if( $this->mcals->getNextFreeEvent($this->startdt, $this->enddt, $arr))
 			{
-			if( $arr[2] == 0 )
-				{
-				$this->bgcolor = "00FF00";
-				}
-			else
-				{
-				$this->bgcolor = "0000FF";
-				}
-			//$this->bgcolor = $this->icals[$this->cindex]->getCategoryColor($arr['id_cat']);
+			$this->free = $arr[2] == 0;
 			$time = bab_mktime($arr[0]);
 			$this->starttime = bab_time($time);
 			$this->startdate = bab_shortDate($time, false);
 			$time = bab_mktime($arr[1]);
 			$this->endtime = bab_time($time);
 			$this->enddate = bab_shortDate($time, false);
-			$this->title = $this->startdate." ".$this->starttime. "<br>".$this->enddate." ".$this->endtime;
-			$this->titleten = "";
+			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $time).",".date("m", $time).",".date("d", $time)."&calid=".implode(',',$this->idcals)."&view=viewm&st=".$this->starttime;
 			return true;
 			}
 		else

@@ -47,8 +47,7 @@ class bab_mcalendars
 					{
 					$this->updateFreeEvents($this->objcals[$this->idcals[$i]]->events[$k]['start_date'], $this->objcals[$this->idcals[$i]]->events[$k]['end_date']);
 					}
-				}
-			
+				}			
 			}
 		}
 
@@ -239,25 +238,18 @@ class bab_mcalendars
 		}
 
 
-	function getNextFreeEvent($date, $gap, &$arr) /* YYYY-MM-DD */
+	function getNextFreeEvent($startdate, $enddate, &$arr) /* YYYY-MM-DD */
 		{
 		static $i =0;
 		while( $i < count($this->freeevents) )
 			{			
-			if( $date." 23:59:59" <= $this->freeevents[$i][0] || $date." 00:00:00" >= $this->freeevents[$i][1] )
+			if( $enddate <= $this->freeevents[$i][0] || $startdate >= $this->freeevents[$i][1] )
 				{
 				$i++;
 				}
 			else
 				{
-				if( $gap == 0 || $this->freeevents[$i][2] == 1 || ( $this->freeevents[$i][2] == 0 && (bab_mktime($this->freeevents[$i][1]) - bab_mktime($this->freeevents[$i][0]) >= $gap )))
-					{
-					break;
-					}
-				else
-					{
-					$i++;
-					}
+				break;
 				}
 			}
 
