@@ -13,6 +13,7 @@
 	- Upload/Download
 	- Search contacts
 	- Search in Files
+	- Customize skin by user
 ************************************************************************/
 include "config.php";
 
@@ -24,6 +25,7 @@ function updateConfig()
 	if( $file )
 	{
 		$txt = fread($file, filesize($filename));
+		$txt .= "\r\n\$babSkin = \"ovidentia\";";
 		$txt .= "\r\n\$babMaxFileSize = 1000000;";
 		$txt .= "\r\n\$babMaxUserSize = 2000000;";
 		$txt .= "\r\n\$babMaxGroupSize = 5000000;";
