@@ -2043,4 +2043,53 @@ if( !$res)
 
 return $ret;
 }
+
+function upgrade403to404()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_SECTIONS_TBL." ADD optional ENUM('N','Y') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SECTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_PRIVATE_SECTIONS_TBL." ADD optional ENUM('N','Y') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_PRIVATE_SECTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_CATEGORIES_TBL." ADD optional ENUM('N','Y') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_CATEGORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_CATEGORIES_TBL." ADD id_parent INT( 11 ) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_CATEGORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_CATEGORIES_TBL." ADD display_tmpl varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_CATEGORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
+}
+
 ?>

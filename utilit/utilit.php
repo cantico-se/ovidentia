@@ -805,7 +805,7 @@ function babTopcatSection($close)
 	$this->babSectionTemplate("topcatsection.html", "template");
 	$this->title = bab_translate("Topics categories");
 
-	$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id");
+	$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_CATEGORIES_TBL.".id_parent='0'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		if( in_array($row['id'], $babBody->topview) )

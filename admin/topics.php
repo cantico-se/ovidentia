@@ -392,6 +392,7 @@ if(!isset($idx))
 	$idx = "list";
 	}
 
+
 if( isset($add) )
 	{
 	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif, $lang))
@@ -407,12 +408,17 @@ if( isset($update) && $update == "order" )
 	saveOrderTopics($cat, $listtopics);
 	}
 
+if( !isset($idp))
+{
+	list($idp) = $babDB->db_fetch_row($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
+}
+
 switch($idx)
 	{
 	case "addtopic":
 		$babBody->title = bab_translate("Create new topic");
 		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif);
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		break;
@@ -420,7 +426,7 @@ switch($idx)
 	case "ord":
 		$catname = bab_getTopicCategoryTitle($cat);
 		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		if( orderCategories($cat, $catname) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
@@ -436,7 +442,7 @@ switch($idx)
 	case "list":
 		$catname = bab_getTopicCategoryTitle($cat);
 		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		if( listCategories($cat) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
@@ -446,7 +452,6 @@ switch($idx)
 			{
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 			exit;
-			//$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
 			}
 
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);

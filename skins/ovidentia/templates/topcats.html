@@ -34,10 +34,30 @@
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ templatetxt }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <select name="template">
-<option value=""></option>
 <!--#in getnexttemplate -->
 <option value="{ templateid }">{ templateval }</option>
 <!--#endin getnexttemplate -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ disptmpltxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="disptmpl">
+<!--#in getnextdisptemplate -->
+<option value="{ templateid }">{ templateval }</option>
+<!--#endin getnextdisptemplate -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ topcattxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="topcatid">
+<option value="0">{ nonetxt }</option>
+<!--#in getnexttopcat -->
+<option value="{ topcatid }" { selected }>{ topcatval }</option>
+<!--#endin getnexttopcat -->
 </select>
 </td>
 </tr>
@@ -59,9 +79,33 @@
 
 <br><br><br><br>
 <!--#begin topcatslist -->
+<!--#if countparents -->
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr valign="middle"> 
+<td class="BabSiteAdminFontBackground">
+<!--#in getnextcat --> 
+&nbsp;
+<!--#if burl -->
+<a class="BabSiteAdminListLink" href="{ parenturl }">{ parentval }</a>
+<!--#else burl -->
+&nbsp;{ parentval }
+<!--#endif burl -->
+&nbsp;/&nbsp;
+<!--#endin getnextcat --> 
+</td></tr>
+</table>
+</td></tr>
+</table>
+<br>
+<!--#endif countparents -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topcats">
 <input type="hidden" name="idx" value="List">
+<input type="hidden" name="idp" value="{ idp }">
 <input type="hidden" name="update" value="disable">
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -71,6 +115,7 @@
 <tr valign="middle"> 
 <td class="BabSiteAdminTitleFontBackground">{ name } </td>
 <td class="BabSiteAdminTitleFontBackground">{ description } </td>
+<td align="center" class="BabSiteAdminTitleFontBackground">{ topcats } </td>
 <td align="center" class="BabSiteAdminTitleFontBackground">{ topics } </td>
 <td width="1%" align="center" class="BabSiteAdminTitleFontBackground">{ disabled }</td>
 </tr>
@@ -79,6 +124,7 @@
 <tr valign="middle"> 
 <td class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
 <td class="BabSiteAdminFontBackground">{ arr[description] }</td>
+<td align="center" class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ topcatcounturl }">{ topcatcount }</a></td>
 <td align="center" class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ topcounturl }">{ topcount }</a></td>
 <td class="BabSiteAdminFontBackground" width="0%" align="center"> 
 <input type="checkbox" name="topcats[]" { catchecked } value="{ arr[id] }">
@@ -87,6 +133,8 @@
 <!--#endin getnext -->
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" nowrap 
+valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminTitleFontBackground" 
 valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td class="BabSiteAdminTitleFontBackground" 
 valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
@@ -147,6 +195,27 @@ valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" 
 <!--#in getnexttemplate -->
 <option value="{ templateid }" { tmplselected }>{ templateval }</option>
 <!--#endin getnexttemplate -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ disptmpltxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="disptmpl">
+<!--#in getnextdisptemplate -->
+<option value="{ templateid }" { tmplselected }>{ templateval }</option>
+<!--#endin getnextdisptemplate -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ topcattxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="topcatid">
+<option value="0">{ nonetxt }</option>
+<!--#in getnexttopcat -->
+<option value="{ topcatid }" { tmplselected }>{ topcatval }</option>
+<!--#endin getnexttopcat -->
 </select>
 </td>
 </tr>

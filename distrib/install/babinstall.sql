@@ -246,6 +246,7 @@ CREATE TABLE bab_sections (
    template varchar(255),
    lang varchar(10) NOT NULL default '',
    id_dgowner int(11) unsigned NOT NULL default '0',
+   optional enum('N','Y') NOT NULL default 'N',
    PRIMARY KEY (id),
    KEY id_dgowner (id_dgowner)
 );
@@ -261,14 +262,15 @@ CREATE TABLE bab_private_sections (
    title varchar(60),
    description varchar(200),
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
+   optional enum('N','Y') NOT NULL default 'N',
    PRIMARY KEY (id)
 );
 
-INSERT INTO bab_private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration', 'Y');
-INSERT INTO bab_private_sections VALUES ('2', '1', 'Month', 'This section shows calendar month', 'Y');
-INSERT INTO bab_private_sections VALUES ('3', '0', 'Topics categories', 'This section lists topics', 'Y');
-INSERT INTO bab_private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'Y');
-INSERT INTO bab_private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'Y');
+INSERT INTO bab_private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration', 'Y', 'N');
+INSERT INTO bab_private_sections VALUES ('2', '1', 'Month', 'This section shows calendar month', 'Y', 'N');
+INSERT INTO bab_private_sections VALUES ('3', '0', 'Topics categories', 'This section lists topics', 'Y', 'N');
+INSERT INTO bab_private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'Y', 'N');
+INSERT INTO bab_private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'Y', 'N');
 
 # --------------------------------------------------------
 #
@@ -383,11 +385,14 @@ CREATE TABLE bab_topics_categories (
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
    template varchar(255),
    id_dgowner int(11) unsigned NOT NULL default '0',
+   optional enum('N','Y') NOT NULL default 'N',
+   id_parent int(11) unsigned NOT NULL default '0',
+   display_tmpl varchar(255),
    PRIMARY KEY (id),
    KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '', '0');
+INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '', '0', 'N', '0', '');
 
 # --------------------------------------------------------
 #

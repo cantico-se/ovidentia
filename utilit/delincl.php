@@ -61,9 +61,14 @@ function bab_deleteTopicCategory($id)
 	while( $arr = $db->db_fetch_array($res))
 		bab_confirmDeleteTopic($arr['id']);
 
+	list($idparent) = $db->db_fetch_array($db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$id."'"));
+	$db->db_query("update ".BAB_TOPICS_CATEGORIES_TBL."  set id_parent='".$idparent."' where id_parent='".$id."'");
+
 	// delete topic category
 	$req = "delete from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$id."'";
 	$res = $db->db_query($req);
+
+	return $idparent;
 }
 
 function bab_confirmDeleteTopic($id)

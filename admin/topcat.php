@@ -53,9 +53,16 @@ function topcatModify($id)
 		var $templateval;
 		var $templateid;
 		var $tmplselected;
+		var $templateid;
+		var $disptmpltxt;
+		var $topcattxt;
+		var $topcatid;
+		var $topcatval;
+		var $nonetxt;
 
 		function tempa($id)
 			{
+			global $babBody, $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->enabled = bab_translate("Enabled");
@@ -63,11 +70,16 @@ function topcatModify($id)
 			$this->yes = bab_translate("Yes");
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
-			$this->templatetxt = bab_translate('Template');
+			$this->templatetxt = bab_translate('Section template');
+			$this->disptmpltxt = bab_translate('Display template');
+			$this->topcattxt = bab_translate('Topics category parent');
+			$this->nonetxt = "--- ".bab_translate('None')." ---";
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->arr['title'] = htmlentities($this->arr['title']);
+			$this->arr['description'] = htmlentities($this->arr['description']);
 			if( $this->arr['enabled'] == "Y")
 				{
 				$this->noselected = "";
@@ -95,6 +107,27 @@ function topcatModify($id)
 				$this->arrtmpl = $tpl->getTemplates($filepath);
 				}
 			$this->counttmpl = count($this->arrtmpl);
+
+			$file = "topcatdisplay.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$this->arrdisptmpl = $tpl->getTemplates($filepath);
+				}
+			$this->countdisptmpl = count($this->arrdisptmpl);
+
+			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id != '".$id."'");
+			$this->count = $babDB->db_num_rows($this->res);
+
 			}
 
 		function getnexttemplate()
@@ -112,6 +145,44 @@ function topcatModify($id)
 				return true;
 				}
 			return false;
+			}
+
+		function getnextdisptemplate()
+			{
+			static $i = 0;
+			if($i < $this->countdisptmpl)
+				{
+				$this->templateid = $this->arrdisptmpl[$i];
+				$this->templateval = $this->arrdisptmpl[$i];
+				if( $this->templateid == $this->arr['display_tmpl'])
+					$this->tmplselected = "selected";
+				else
+					$this->tmplselected = "";
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
+		function getnexttopcat()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->topcatid = $arr['id'];
+				$this->topcatval = $arr['title'];
+				if( $this->topcatid == $this->arr['id_parent'])
+					$this->tmplselected = "selected";
+				else
+					$this->tmplselected = "";
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
 			}
 		}
 
@@ -159,7 +230,7 @@ function topcatDelete($id)
 	return true;
 	}
 
-function modifyTopcat($oldname, $name, $description, $benabled, $id, $template)
+function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, $disptmpl, $topcatid)
 	{
 	global $babBody;
 
@@ -183,21 +254,22 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template)
 	if( $db->db_num_rows($res) < 1)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This topic category doesn't exist");
+		return false;
 		}
 	else
 		{
-		$query = "update ".BAB_TOPICS_CATEGORIES_TBL." set title='".$name."', description='".$description."', enabled='".$benabled."', template='".$template."' where id='".$id."'";
+		$query = "update ".BAB_TOPICS_CATEGORIES_TBL." set title='".$name."', description='".$description."', enabled='".$benabled."', template='".$template."', display_tmpl='".$disptmpl."', id_parent='".$topcatid."' where id='".$id."'";
 		$db->db_query($query);
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$topcatid);
 	}
 
 
 function confirmDeleteTopcat($id)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-	bab_deleteTopicCategory($id);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+	$idp = bab_deleteTopicCategory($id);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 	}
 
 /* main */
@@ -213,7 +285,7 @@ if( !isset($idx))
 if( isset($modify))
 	{
 	if( isset($submit))
-		modifyTopcat($oldname, $title, $description, $benabled, $item, $template);
+		modifyTopcat($oldname, $title, $description, $benabled, $item, $template, $disptmpl, $topcatid);
 	else if( isset($catdel))
 		$idx = "Delete";
 	}
@@ -244,8 +316,8 @@ switch($idx)
 	default:
 		topcatModify($item);
 		$babBody->title = bab_translate("Modify topic category");
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item);
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item."&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$item);
 		break;
 	}

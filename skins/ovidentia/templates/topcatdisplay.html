@@ -1,0 +1,63 @@
+<!--#begin default -->
+<!--#if parentscount -->
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabBodyTitleBackground">
+<!--#in getnextparent -->
+<a class="BabTopicsAdminNumberLink" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
+
+<!--#if childscount -->
+<table  border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
+<tr>
+<td class="BabTopicsTitleNavigation" valign="top">
+<!--#in getnextchild -->
+<a class="BabTopicsTitleNavigationLink" href="{ childurl }">{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ childname }</a>
+<br>
+<!--#endin getnextchild -->
+</td>
+</tr>
+</table>
+<!--#endif childscount -->
+
+<!--#in getnexttopic -->
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabTopicsAdminListTitle" nowrap>{ topicname }</td>
+<td align="right" nowrap class="BabTopicsAdminListTitle"> 
+<!--#if articlescount "== 0" -->
+{ articlescount }&nbsp;{ articlestxt }&nbsp;<a class="BabTopicsAdminNumberLink" href="{ submiturl }">{ submittxt }</a>  
+<!--#else articlescount -->
+<a class="BabTopicsAdminNumberLink" 
+href="{ articlesurl }">{ articlescount }&nbsp;{ articlestxt }&nbsp;{ waitingarticlescount }&nbsp;{ waitingtxt }</a> 
+<!--#endif articlescount -->
+</td>
+</tr>
+<tr colspan="2">
+<td colspan="2">{ topicdescription }
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endin getnexttopic -->
+<!--#end default -->
