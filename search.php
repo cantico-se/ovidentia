@@ -135,19 +135,10 @@ function startSearch($pat, $item, $what, $pos)
 					{
 					if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
 						{
-						$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where title ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
+						$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where (title ".$this->like." or head ".$this->like." or body ".$this->like.") and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
 
-						$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where head ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
-						$this->db->db_query($req);
-
-						$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where body ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
-						$this->db->db_query($req);
-
-						$req = "insert into comresults select id, id_article, id_topic, subject from ".BAB_COMMENTS_TBL." where subject ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
-						$this->db->db_query($req);
-
-						$req = "insert into comresults select id, id_article, id_topic, subject from ".BAB_COMMENTS_TBL." where message ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
+						$req = "insert into comresults select id, id_article, id_topic, subject from ".BAB_COMMENTS_TBL." where (subject ".$this->like." or message ".$this->like.") and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
 						}
 					}
@@ -207,10 +198,7 @@ function startSearch($pat, $item, $what, $pos)
 						$res2 = $this->db->db_query($req);
 						while( $r = $this->db->db_fetch_array($res2))
 							{
-							$req = "insert into forresults select id, id_thread, subject from ".BAB_POSTS_TBL." where subject ".$this->like." and confirmed='Y' and id_thread='".$r['id']."'";
-							$this->db->db_query($req);
-
-							$req = "insert into forresults select id, id_thread, subject from ".BAB_POSTS_TBL." where message ".$this->like." and confirmed='Y' and id_thread='".$r['id']."'";
+							$req = "insert into forresults select id, id_thread, subject from ".BAB_POSTS_TBL." where (subject ".$this->like." or message ".$this->like.") and confirmed='Y' and id_thread='".$r['id']."'";
 							$this->db->db_query($req);
 							}
 						}
@@ -248,10 +236,7 @@ function startSearch($pat, $item, $what, $pos)
 					{
 					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
 						{
-						$req = "insert into faqresults select * from ".BAB_FAQQR_TBL." where question ".$this->like." and idcat='".$row['id']."'";
-						$this->db->db_query($req);
-
-						$req = "insert into faqresults select * from ".BAB_FAQQR_TBL." where response ".$this->like." and idcat='".$row['id']."'";
+						$req = "insert into faqresults select * from ".BAB_FAQQR_TBL." where (question ".$this->like." or response ".$this->like.") and idcat='".$row['id']."'";
 						$this->db->db_query($req);
 						}
 					}
@@ -288,13 +273,7 @@ function startSearch($pat, $item, $what, $pos)
 					{
 					if( $aclfm['pu'][$i] == 1)
 						{
-						$req = "insert into filresults select * from ".BAB_FILES_TBL." where name ".$this->like." and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
-						$this->db->db_query($req);						
-
-						$req = "insert into filresults select * from ".BAB_FILES_TBL." where description ".$this->like." and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
-						$this->db->db_query($req);						
-
-						$req = "insert into filresults select * from ".BAB_FILES_TBL." where keywords ".$this->like." and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
+						$req = "insert into filresults select * from ".BAB_FILES_TBL." where (name ".$this->like." or description ".$this->like." or keywords ".$this->like.") and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
 						$this->db->db_query($req);						
 						}
 					if( $aclfm['pr'][$i] == 1)
@@ -303,11 +282,7 @@ function startSearch($pat, $item, $what, $pos)
 
 				if( $private)
 					{
-					$req = "insert into filresults select * from ".BAB_FILES_TBL." where name ".$this->like." and id_owner='".$BAB_SESS_USERID."' and bgroup='N' and state='' and confirmed='Y'";
-					$this->db->db_query($req);						
-					$req = "insert into filresults select * from ".BAB_FILES_TBL." where description ".$this->like." and id_owner='".$BAB_SESS_USERID."' and bgroup='N' and state='' and confirmed='Y'";
-					$this->db->db_query($req);						
-					$req = "insert into filresults select * from ".BAB_FILES_TBL." where keywords ".$this->like." and id_owner='".$BAB_SESS_USERID."' and bgroup='N' and state='' and confirmed='Y'";
+					$req = "insert into filresults select * from ".BAB_FILES_TBL." where (name ".$this->like." or description ".$this->like." or keywords ".$this->like.") and id_owner='".$BAB_SESS_USERID."' and bgroup='N' and state='' and confirmed='Y'";
 					$this->db->db_query($req);						
 					}
 
@@ -359,25 +334,7 @@ function startSearch($pat, $item, $what, $pos)
 				$this->db->db_query($req);
 				$req = "alter table conresults add unique (id)";
 				$this->db->db_query($req);
-				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and firstname ".$this->like." order by lastname, firstname asc";
-				$this->db->db_query($req);
-
-				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and lastname ".$this->like." order by lastname, firstname asc";
-				$this->db->db_query($req);
-
-				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and email ".$this->like." order by lastname, firstname asc";
-				$this->db->db_query($req);
-
-				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and compagny ".$this->like." order by lastname, firstname asc";
-				$this->db->db_query($req);
-
-				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and jobtitle ".$this->like." order by lastname, firstname asc";
-				$this->db->db_query($req);
-
-				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and businessaddress ".$this->like." order by lastname, firstname asc";
-				$this->db->db_query($req);
-
-				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and homeaddress ".$this->like." order by lastname, firstname asc";
+				$req = "insert into conresults select * from ".BAB_CONTACTS_TBL." where (firstname ".$this->like." or lastname ".$this->like." or email ".$this->like." or compagny ".$this->like." or jobtitle ".$this->like." or businessaddress ".$this->like." or homeaddress ".$this->like.") and owner='".$BAB_SESS_USERID."' order by lastname, firstname asc";
 				$this->db->db_query($req);
 
 				$req = "select count(*) from conresults";
