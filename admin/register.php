@@ -298,6 +298,38 @@ function userChangePassword($oldpwd, $newpwd)
 		}
 	}
 
+function notifyUserPassword($passw, $email)
+	{
+	global $body, $babAdminEmail, $babInstallPath;
+
+	class tempa
+		{
+        var $sitename;
+        var $linkurl;
+        var $linkname;
+		var $username;
+		var $message;
+
+
+		function tempa($passw)
+			{
+            global $babSiteName;
+			$this->sitename = babTranslate("On site").": ". $babSiteName."( <a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babUrl']."</a> )";
+			$this->message = babTranslate("Your password has been reset to").": ". $passw;
+			}
+		}
+	
+	$tempa = new tempa($passw);
+	$message = babPrintTemplate($tempa,"mailinfo.html", "sendpassword");
+
+    $mail = new babMail();
+    $mail->mailTo($email);
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject("Ovidentia: ". babTranslate("Password Reset"));
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
+
 function sendPassword ($nickname)
 	{
 	global $body, $BAB_HASH_VAR, $babAdminEmail;
@@ -322,9 +354,7 @@ function sendPassword ($nickname)
 			$res=$db->db_query($req);
 
 			//send a simple email with the new password
-			$message = babTranslate("On site")." : ". $GLOBALS['babSiteName']."( <a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babUrl']."</a> )<br>";
-			$message .= babTranslate("Your password has been reset to")." : ". $new_pass;
-			mail ($arr['email'], babTranslate("Password Reset"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+			notifyUserPassword($new_pass, $arr['email']);
 			$body->msgerror = babTranslate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
 			return true;
 			}
