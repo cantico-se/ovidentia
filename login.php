@@ -1114,13 +1114,17 @@ switch($cmd)
 
 	case "signon":
 	default:
+		if (!empty($_SERVER['SERVER_NAME']) && !isset($_GET['redirected'] && substr_count($GLOBALS['babUrl'],$_SERVER['SERVER_NAME']) == 0)
+			{
+			header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
+			}
 		$babBody->title = bab_translate("Login");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if ($GLOBALS['babEmailPassword'] ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		if (!isset($referer)) $referer = urlencode($GLOBALS['HTTP_REFERER']);
+		if (!isset($referer)) $referer = !empty($GLOBALS['HTTP_REFERER']) ? urlencode($GLOBALS['HTTP_REFERER']) : '';
 			displayLogin($referer);
 		break;
 	}
