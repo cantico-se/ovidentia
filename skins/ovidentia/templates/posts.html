@@ -198,26 +198,38 @@
     <td valign="middle"> 
       <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
         <tr> 
-          <td colspan="2" valign="middle" class="BabForumTopicsNavTitle">{ postsubject 
+          <td valign="middle" class="BabForumTopicsNavTitle">{ postsubject 
             }
           
           </td>
+          <td align="right" valign="middle" class="BabForumTopicsNavTitle"><a 
+class="BabForumTopicsConfirm" href="{ flaturl }"><img src="{ babSkinPath }images/Puces/PuceForumFlat.gif" border=0 alt="{ altflattxt }" align="absmiddle"></a></td>
         </tr>
         
-          <!--#if what "== N" --><tr> 
+          
+        <!--#if what "== N" -->
+        <tr> 
 		  <td colspan="2" align="right" valign="middle" class="BabForumBackground">  
                       <img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
 class="BabForumTopicsConfirm" href="{ confirmurl }">{ 
             confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
 class="BabForumTopicsConfirm" href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
 class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
-                  </td></tr>
-		  	     <!--#else what --><!--#if more --><tr>
+                  </td>
+        </tr>
+		  	     
+        <!--#else what -->
+        <!--#if more -->
+        <tr>
 		  <td colspan="2" align="right" valign="middle" class="BabForumBackground">  
        <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
             more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
-      </td>   </tr><!--#else more --><!--#endif more -->
-		   <!--#endif what -->
+      </td>
+        </tr>
+        <!--#else more -->
+        <!--#endif more -->
+		   
+        <!--#endif what -->
 		  
 		  
 		  
@@ -310,18 +322,17 @@ alt=""><!--#else parent --><img src="{ babSkinPath }images/Puces/Puce-h.gif" wid
 <!--#end newpostslist -->
 
 <!--#begin postslistflat -->
+<A HREF="TOP"></A>
 <!--#in getnext -->
 <table border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
   <tr>
     <td valign="middle"> 
       <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-        <tr> 
-          <td colspan="2" valign="middle" class="BabForumTopicsNavTitle">
+        <tr valign="middle"> 
+          <td class="BabForumTopicsNavTitle">
 <a class="BabForumTopicsNavContribution" href="{ replysubjecturl }">{ postsubject }</a>
 </td>
-
-          
-          </td>
+<td align="right" class="BabForumTopicsNavTitle"><a class="BabForumTopicsConfirm" href="{ noflaturl }"><img src="{ babSkinPath }images/Puces/PuceForumHierar.gif" border=0 alt="{ altnoflattxt }" align="absmiddle"></a></td>
         </tr>
         
           <!--#if what "== N" --><tr> 
@@ -349,7 +360,7 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
         </tr>
         <tr> 
           <td class="BabForumTopicsNavDate" nowrap width="100%" valign="middle">{ 
-            postdate }</td>
+            postdate }<br><A HREF="#TOP">{ backtotoptxt }</A></td>
           <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="middle" ><!--#if replymail "!= 0" -->
 <a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ postauthor }</a>
 <!--#else replymail -->
