@@ -27,7 +27,7 @@ include $babInstallPath."utilit/forumincl.php";
 include $babInstallPath."utilit/fileincl.php";
 include $babInstallPath."utilit/calincl.php";
 
-$babLimit = 20;
+$babLimit = 5;
 $navbaritems = 10;
 define ("FIELDS_TO_SEARCH", 3);
 
@@ -458,14 +458,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->search = bab_translate("Search");
 			$this->arttitle = bab_translate("Articles");
 			$this->comtitle = bab_translate("Comments");
-			$this->fortitle = bab_translate("Posts");
+			$this->fortitle = bab_translate("Forums");
 			$this->faqtitle = bab_translate("Faq");
 			$this->nottitle = bab_translate("Notes");
 			$this->filtitle = bab_translate("Files");
 			$this->contitle = bab_translate("Contacts");
 			$this->dirtitle = bab_translate("Directories");
 			$this->agebigtitle = bab_translate("Calendar");
-			$this->total = bab_translate("Total");
+			$this->total = bab_translate("Number of results in research");
 			$this->popup = bab_translate("Popup");
 			$this->lastname= bab_translate("Lastname");
 			$this->firstname= bab_translate("Firstname");
