@@ -182,19 +182,19 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 						$mail->clearBcc();
 						$mail->clearTo();
 						$count = 0;
-						}
+					}
 					}
 
 				if( $count > 0 )
 					{
-					$mail->send();
-					$mail->clearBcc();
-					$mail->clearTo();
-					$count = 0;
-					}
+				$mail->send();
+				$mail->clearBcc();
+				$mail->clearTo();
+				$count = 0;
 				}	
 			}
 		}
+	}
 	}
 
 function notifyThreadAuthor($threadTitle, $email, $author)

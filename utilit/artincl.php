@@ -429,13 +429,13 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 
 					if( $count > 25 )
 						{
-						$mail->send();
-						$mail->clearBcc();
-						$mail->clearTo();
-						$count = 0;
+				$mail->send();
+				$mail->clearBcc();
+				$mail->clearTo();
+				$count = 0;
 						}
 
-					}
+				}	
 
 				if( $count > 0 )
 					{
