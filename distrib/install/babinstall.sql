@@ -568,6 +568,7 @@ CREATE TABLE bab_cal_resources (
   name varchar(60) NOT NULL default '',
   description varchar(255) NOT NULL default '',
   id_dgowner int(11) unsigned NOT NULL default '0',
+  idsa int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );
@@ -606,6 +607,7 @@ CREATE TABLE bab_cal_events_owners (
   id_event int(10) unsigned NOT NULL default '0',
   id_cal int(10) unsigned NOT NULL default '0',
   status tinyint(3) unsigned NOT NULL default '0',
+  idfai int(11) unsigned NOT NULL default '0',
   KEY id_event (id_event,id_cal,status)
 );
 
@@ -625,9 +627,6 @@ CREATE TABLE bab_calendar (
 );
 
 INSERT INTO bab_calendar VALUES ( '1', '1', 'Y', '1');
-INSERT INTO bab_calendar VALUES ( '2', '1', 'Y', '2');
-INSERT INTO bab_calendar VALUES ( '3', '2', 'N', '2');
-INSERT INTO bab_calendar VALUES ( '4', '3', 'Y', '2');
 
 
 # --------------------------------------------------------
@@ -2049,6 +2048,7 @@ CREATE TABLE bab_cal_public (
   name varchar(60) NOT NULL default '',
   description varchar(255) NOT NULL default '',
   id_dgowner int(11) unsigned NOT NULL default '0',
+  idsa int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );
