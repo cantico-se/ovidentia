@@ -1011,7 +1011,7 @@ function modifyVacationRightPersonnel($idvr, $userids, $nuserids)
 function deleteVacationRight($idvr)
 	{
 	global $babBody, $babDB;
-	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$idvr."'"));
+	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_type='".$idvr."'"));
 	if( $total > 0 )
 		{
 		$babBody->msgerror = bab_translate("Can't delete this vacation right. It's used elsewhere");

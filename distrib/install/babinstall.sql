@@ -916,6 +916,7 @@ INSERT INTO bab_mime_types VALUES ('wav', 'audio/x-wav');
 INSERT INTO bab_mime_types VALUES ('xls', 'application/vnd.ms-excel');
 INSERT INTO bab_mime_types VALUES ('xml', 'text/xml');
 INSERT INTO bab_mime_types VALUES ('zip', 'application/zip');
+INSERT INTO bab_mime_types VALUES ('pdf', 'application/pdf');
 
 # --------------------------------------------------------
 #
