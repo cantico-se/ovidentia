@@ -6,6 +6,7 @@
  ***********************************************************************/
 include $babInstallPath."utilit/topincl.php";
 include $babInstallPath."utilit/forumincl.php";
+include $babInstallPath."utilit/fileincl.php";
 
 $babLimit = 20;
 
@@ -705,30 +706,9 @@ function viewFile($id, $w)
 			$req = "select * from files where id='$id' and state='' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$aclfm = bab_fileManagerAccessLevel();
-			$access = false;
-			if( $this->arr['bgroup'] == "Y")
-				{
-				for( $i = 0; $i < count($aclfm['id']); $i++)
-					{
-					if( $aclfm['id'][$i] == $this->arr['id_owner'] && $aclfm['pu'][$i] == 1)
-						{
-						$access = true;
-						break;
-						}
-					}
-				}
-			else if( !empty($GLOBALS['BAB_SESS_USERID']) && $this->arr['id_owner'] == $GLOBALS['BAB_SESS_USERID'])
-				{
-				if( in_array(1, $aclfm['pr']))
-					{
-					$access = true;
-					}
-				}
-
+			$access = bab_isAccessFileValid($this->arr['bgroup'], $this->arr['id_owner']);
 			if( $access )
 				{
-				include $GLOBALS['babInstallPath']."utilit/fileincl.php";
 				$this->title = $this->arr['name'];
 				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
 				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
