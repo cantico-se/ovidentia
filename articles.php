@@ -1117,7 +1117,7 @@ switch($idx)
 		if( $approver)
 			{
 			modifyArticle($topics, $article);
-			$babBody->addItemMenu("Cancel", bab_translate("Cancel"), $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
+			$babBody->addItemMenu("Cancel", bab_translate("Cancel"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article);
 			}
 		break;
