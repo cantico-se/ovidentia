@@ -133,7 +133,7 @@ function confirmDeleteTopcat($id)
 	$res = $db->db_query($req);	
 
 	// delete from sections_states
-	$req = "delete from sections_states where id_section='$id' and private='3'";
+	$req = "delete from sections_states where id_section='$id' and type='3'";
 	$res = $db->db_query($req);	
 
 	// delete all topics/articles/comments
