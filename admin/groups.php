@@ -131,7 +131,10 @@ function groupList()
 			$this->mail = bab_translate("Mail");
 			$this->description = bab_translate("Description");
 			$this->manager = bab_translate("Manager");
-			$this->dgtxt = bab_translate("Delegation");
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+				$this->dgtxt = bab_translate("Delegation");
+			else
+				$this->dgtxt = "";
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->res = $this->db->db_query($req);
