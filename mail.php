@@ -391,7 +391,6 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
             $mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
             if(!$mbox)
                 {
-				echo imap_last_error();
                 $babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
                 }
             else
