@@ -60,7 +60,7 @@ function bab_formatSizeFile($size, $roundoff = true)
 	else
 		{
 		if( $roundoff)
-			$size = (int)($size / 1024);
+			$size = floor($size / 1024);
 		if( ($l = strlen($size)) > 3)
 			{
 			if( $l % 3 > 0 )
