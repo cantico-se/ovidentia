@@ -43,7 +43,8 @@ function cookieUserLogin($nickname,$password)
 	
 	if ($db->db_num_rows($result) < 1)
 		{
-		$babBody->msgerror = bab_translate("User not found or password incorrect");
+		setcookie ("c_nickname", "", time() - 3600);
+		setcookie ("c_password", "", time() - 3600);
 		return false;
 		} 
 	else 
