@@ -187,7 +187,7 @@ function listArticles($topics, $approver)
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 
-				$this->morename = bab_translate("Read more")."...";
+				$this->morename = bab_translate("Read more");
 				$i++;
 				return true;
 				}
@@ -340,7 +340,7 @@ function listOldArticles($topics, $pos, $approver)
 					}
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
-				$this->morename = bab_translate("Read more")."...";
+				$this->morename = bab_translate("Read more");
 				$i++;
 				return true;
 				}
