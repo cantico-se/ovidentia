@@ -195,7 +195,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 
 function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals)
 	{
-	global $babBody, $babDB, $babAdminEmail;
+	global $babBody, $babAdminEmail;
 
 	if(!class_exists("clsNotifyResourceEvent"))
 		{
@@ -238,6 +238,8 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 
 		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
 		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate);
+		
+		$db = &$GLOBALS['babDB'];
 
 		for( $i = 0; $i < count($idcals); $i++ )
 			{

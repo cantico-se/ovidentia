@@ -33,10 +33,9 @@ class cal_monthCls  extends cal_wmdbaseCls
 		global $babBody, $babMonths;
 
 		$this->cal_wmdbaseCls("calmonth", $idx, $calids, $date);
-
+		
 		$this->w = 0;
-
-		$this->allow_insert = count($babBody->icalendars->usercal) > 0 || count($babBody->icalendars->pubcal) > 0 || count($babBody->icalendars->rescal) > 0;
+		$this->allow_insert = !empty($babBody->icalendars->id_percal) || count($babBody->icalendars->usercal) > 0 || count($babBody->icalendars->pubcal) > 0 || count($babBody->icalendars->rescal) > 0;
 
 		$workdays = explode(',', $babBody->icalendars->workdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
@@ -115,6 +114,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
+			$this->week = bab_translate('Week').' '.date('W', $mktime);
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 				{
@@ -126,6 +126,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 				}
 			$this->daynumbername = $dday;
 			$this->daynumberurl = $this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
+			$this->dayviewurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".implode(',',$this->idcals)."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
 			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm";
 			$d++;
 			return true;

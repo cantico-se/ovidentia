@@ -38,7 +38,6 @@ class cal_weekCls extends cal_wmdbaseCls
 		$workdays = explode(',', $babBody->icalendars->workdays);
 		$time = mktime(0,0,0,$this->month,$this->day,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
-		$this->weekname = bab_translate('Week').' '.date('W',$time);
 		$this->totaldays = date("t", $time);
 
 		$this->elapstime = $babBody->icalendars->elapstime;
@@ -94,6 +93,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				}
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
+			$this->week = bab_translate('Week').' '.date('W',$mktime);
 			$this->daynumbername = $dday;
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
@@ -237,7 +237,7 @@ class cal_weekCls extends cal_wmdbaseCls
 	function getnexteventcol()
 		{
 		global $babBody;
-		if( $this->icols < $this->cols)
+		if( $this->icols < $this->cols  || ($this->cols == 0 && $this->icols == 0))
 			{
 			$i = 0;
 			$this->bevent = false;
@@ -280,11 +280,12 @@ class cal_weekCls extends cal_wmdbaseCls
 					$this->block = $arr['block'];
 					$this->bfree = $arr['bfree'];
 					$this->description = $arr['description'];
-					$this->title = $this->startdate." ".$this->starttime. " - ".$this->enddate." ".$this->endtime." ".$arr['title'];
+					$this->title = $arr['title'];
 					$this->titleten = htmlentities(substr($arr['title'], 0, 10));
 					$this->nbowners = $arr['nbowners'];
 					$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 					$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+					$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
 					break;
 					}
 				$i++;
