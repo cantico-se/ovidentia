@@ -647,7 +647,13 @@ if (disp)
           <td align="center" valign="middle" width="1%" >&nbsp;</td>
           <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <!--#in getnextcolval -->
-          <td align="left" valign="middle">{ coltxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <td align="left" valign="middle">
+			<!--#if bmail -->
+			<a href="mailto:{ coltxt }">{ coltxt }</a>
+			<!--#else bmail -->
+			{ coltxt }
+			<!--#endif bmail -->
+		  </td>
           <!--#endin getnextcolval -->
         </tr>
         <!--#endin getnext -->

@@ -730,6 +730,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 				$this->altbg = $this->altbg ? false : true;
 				$this->arrf = $this->db->db_fetch_array($this->res);
 				$this->userid = $this->arrf['id'];
+				$this->mailaddr = isset($this->arrf['email']) ? $this->arrf['email'] : false;
 				if( isset($this->arrf['id_entity']))
 					{
 					$this->uoeid = $this->arrf['id_entity'];
@@ -760,6 +761,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			static $i = 0;
 			if( $i < $this->countcol)
 				{
+				$this->bmail = $this->mailaddr == $this->arrf[$i];
 				$this->coltxt = stripslashes(bab_translate($this->arrf[$i]));
 				$i++;
 				return true;
