@@ -72,14 +72,7 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 				$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 				$this->files = bab_translate("Files");
 				$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
-				if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-					{
-					$this->msie = 1;
-					}
-				else
-					{
-					$this->msie = 0;
-					}
+				
 				}	
 			}
 		}

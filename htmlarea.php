@@ -24,54 +24,68 @@
 include "base.php";
 function get_js_style_list()
 	{
-	if ($GLOBALS['babSkin'] == "ovidentia")
-
-		$filename = $GLOBALS['babInstallPath']."skins/".$GLOBALS['babSkin']."/styles/".$GLOBALS['babStyle'];
-	else
-		$filename = "skins/".$GLOBALS['babSkin']."/styles/".$GLOBALS['babStyle'];
-	if (is_file($filename))
+	class temp
 		{
-		$fcontents = file($filename);
-		$fcontents2 = $fcontents;
-		$get=false;
-
-		$jsligne[0] = "\t\"Normal\" : \"Normal\"";
-
-		while(list( $numero_ligne, $ligne ) = each( $fcontents))
+		function temp()
 			{
-			if (trim($ligne) == "/*BAB_EDITOR_CSS_BEGIN*/") $get=true;
-			if (trim($ligne) == "/*BAB_EDITOR_CSS_END*/") $get=false;
-
-			$tmp = explode("{", $ligne);
-			$tmp = explode(":", $tmp[0]);
-			if (substr($tmp[0],0,1) == "." ) $tmp[0] = substr($tmp[0],1,(strlen($tmp[0])-1));
-			$tmp = explode(".", $tmp[0]);
-			if (isset($tmp[1])) $tmp[0]=$tmp[1];
-			$tmp = trim($tmp[0]);
-			if ($tmp != "" && substr($tmp,-2)!="*/" && substr($tmp,0,2)!="/*" && $tmp!="{" && $tmp!="}" && $get)
+			$this->t_css = bab_translate("CSS styles");
+			$this->t_bab_image = bab_translate("Insert image");
+			$this->t_bab_file = bab_translate("Insert file link");
+			$this->t_bab_article = bab_translate("Insert article link");
+			$this->t_bab_faq = bab_translate("Insert FAQ link");
+			$this->t_bab_ovml = bab_translate("Insert OVML file");
+			$this->t_bab_contdir = bab_translate("Insert OVML file");
+	
+			$this->linebreak = "\n";
+			if ($GLOBALS['babSkin'] == "ovidentia")
 				{
-				//echo $tmp."<br>";
-				$affichage = str_replace('_',' ',$tmp);
-				$jsligne[] = "\t\"".$affichage."\" : \"".$tmp."\"";
+				$filename = $GLOBALS['babInstallPath']."skins/".$GLOBALS['babSkin']."/styles/".$GLOBALS['babStyle'];
+				}
+			else
+				{
+				$filename = "skins/".$GLOBALS['babSkin']."/styles/".$GLOBALS['babStyle'];
+				}
+
+			$this->arr_classname = false;
+			$this->css_styles = '';
+
+			if (is_file($filename))
+				{
+				$arr = file( $filename );
+				$arr = array_map('trim',$arr);
+				$fcontents = implode(' ',$arr );
+
+				$values = array();
+
+				preg_match("/\/\*BAB_EDITOR_PAGE_BEGIN\*\/.*\{(.*)\}\s+\/\*BAB_EDITOR_PAGE_END\*\//s",  $fcontents, $m);
+
+				if (isset($m[1]))
+					$this->css_styles = "body {".$m[1]."}";
+
+				preg_match("/\/\*BAB_EDITOR_CSS_BEGIN\*\/(.*)\/\*BAB_EDITOR_CSS_END\*\//s",  $fcontents, $m);
+				if (isset($m[1]))
+					{
+					$this->css_styles .= $m[1];
+					if (preg_match_all("/\.([a-zA-Z0-9\_\-]*?)\s*\{/", $m[1], $m2))
+						{
+						$values = array_merge($values,$m2[1]);
+						}
+					}
+				if (count($values) > 0)
+					$this->arr_classname = $values;
 				}
 			}
 
-		while(list( $numero_ligne, $ligne ) = each( $fcontents2))
+		function getnextbodyclass()
 			{
-			if (trim($ligne) == "/*BAB_EDITOR_PAGE_BEGIN*/") $get=true;
-			if (trim($ligne) == "/*BAB_EDITOR_PAGE_END*/") $get=false;
-
-			$tmp = explode("{", $ligne);
-			$tmp1 = isset($tmp[1]) ? explode("}", $tmp[1]) : '';
-			$tmp = explode(":", $tmp[0]);
-			if (substr($tmp[0],0,1) == "." ) $tmp[0] = substr($tmp[0],1,(strlen($tmp[0])-1));
-			$tmp = explode(".", $tmp[0]);
-			if (isset($tmp[1])) $tmp[0]=$tmp[1];
-			$tmp = trim($tmp[0]);
-			if ($tmp != "" && substr($tmp,-2)!="*/" && substr($tmp,0,2)!="/*" && $tmp!="{" && $tmp!="}" && $get)
+				
+			if ($this->arr_classname !== false && list(,$this->classname) = each($this->arr_classname))
 				{
-				$style = $tmp1[0];
+				$this->text = str_replace('_',' ',$this->classname);
+				return true;
 				}
+			else
+				return false;
 			}
 		}
 
@@ -79,29 +93,9 @@ function get_js_style_list()
 	header("Content-type: application/x-javascript");
 	//header("Content-type: text/plain");
 	
-	if (count($jsligne) > 1)
-		{
-		echo "HTMLArea.babstyle = {\n";
+	$temp = & new temp();
+	die(bab_printTemplate($temp, 'editor.js'));
 
-		for ($i = 0 ; $i<(count($jsligne)-1) ; $i++ )
-			{
-			echo $jsligne[$i].",\n";
-			}
-		// ajouter la derniere ligne
-		echo $jsligne[count($jsligne)-1]."\n";
-
-		echo "};\n";
-		}
-	else
-		{
-		echo "HTMLArea.babstyle = {};\n";
-		}
-	echo "\n\n";
-	if (isset($style))
-		echo "HTMLArea.bodyStyle = \"".trim($style)."\";\n";
-	else
-		echo "HTMLArea.bodyStyle = \"background-color: #fff; font-family: Verdana, Arial, sans-serif ; font-size:11px\";\n";
-	die();
 	}
 
 
@@ -112,23 +106,27 @@ function get_css_style_list()
 		$filename = $GLOBALS['babInstallPath']."skins/".$GLOBALS['babSkin']."/styles/".$GLOBALS['babStyle'];
 	else
 		$filename = "skins/".$GLOBALS['babSkin']."/styles/".$GLOBALS['babStyle'];
-	$fcontents = file($filename);
+
+	$str = implode('',file($filename));
 
 	$get=false;
 	$counter = 0;
+
 	header("Content-type: text/css");
 
-	while(list( $numero_ligne, $ligne ) = each( $fcontents))
-		{
-		if (trim($ligne) == "/*BAB_EDITOR_CSS_BEGIN*/") $get=true;
-		if (trim($ligne) == "/*BAB_EDITOR_CSS_END*/") $get=false;
+	preg_match("/\/\*BAB_EDITOR_CSS_BEGIN\*\/(.*)\/\*BAB_EDITOR_CSS_END\*\//s",  $str, $m);
+	preg_match("/\/\*BAB_EDITOR_PAGE_BEGIN\*\/.*\{(.*)\}\s+\/\*BAB_EDITOR_PAGE_END\*\//s",  $str, $n);
 
-		if ($get)
-			{
-			if ($counter!=0) echo $ligne;
-			$counter++;
-			}
+	if (isset($n[1]))
+		{
+		echo "body {".$n[1]."}\n";
 		}
+		
+	if (isset($m[1]))
+		{
+		echo $m[1];
+		}
+
 
 	die();
 	}
