@@ -1768,6 +1768,11 @@ function EditorOnInsertDir(id,txt)
 editor.insertHTML('$DIRECTORYID('+id+','+txt+')');
 }
 
+function EditorOnInsertFolder(id,path,txt)
+{
+editor.insertHTML('$FOLDER('+id+','+path+','+txt+')');
+}
+
 // bug ie 5.0
 function savef(obj) {}
 

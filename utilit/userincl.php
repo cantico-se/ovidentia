@@ -1284,13 +1284,13 @@ function bab_replace_ref( &$txt, $remove = '')
 							$path_object = isset($param[1]) ? $param[1] : '';
 							$title_object = isset($param[2]) ? $param[2] : '';
 							include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
-							$res = $db->db_query("select id,name from ".BAB_FM_FOLDERS_TBL." where id='".$id_object."' and active='Y'");
+							$res = $db->db_query("select id,folder from ".BAB_FM_FOLDERS_TBL." where id='".$id_object."' and active='Y'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
 								if (bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arr['id']))
 									{
-									$title_object = empty($title_object) ? $arr['name'] : $title_object;
+									$title_object = empty($title_object) ? $arr['folder'] : $title_object;
 									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id']."&gr=Y&path=".urlencode($path_object),$title_object);
 									}
 								}

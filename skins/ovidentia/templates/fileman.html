@@ -602,6 +602,14 @@ self.opener.onInsertFile(idf,txt);
 window.close();
 }
 
+function folder(idf,path,text)
+{
+if (typeof self.opener.EditorOnInsertFolder != 'undefined')
+	{
+	self.opener.EditorOnInsertFolder(idf,path,text);
+	window.close();
+	}
+}
 window.focus();
 //-->
 </script>
@@ -630,20 +638,21 @@ window.focus();
 		</tr>
 		<!--#in getnextdir -->
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-			<td width="1%" valign="top" align="center"> 
-			<!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name --></td>          
+			<td width="1%" valign="top" align="center">
+			<!--#if name "!= . ." -->
+			<a href="javascript:folder({ folderid },'{ folderpath }','{ name }')"><img src="{ babSkinPath }images/Puces/folder.gif" border="0"></a>
+			<!--#else name -->
+			&nbsp;
+			<!--#endif name -->
+			</td>          
 			<td>&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ name }</a></td>
 			<td>&nbsp;</td>
 		</tr>
 		<!--#endin getnextdir -->
 		<!--#in getnextgrpdir --> 
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-			<td width="1%"> 
-			<!--#if ma -->
-			{ manfolderimg }
-			<!--#else ma -->
-			{ grpfolderimg }
-			<!--#endif ma -->
+			<td width="1%">
+			<a href="javascript:folder({ folderid },'{ folderpath }','{ name }')"><img src="{ babSkinPath }images/Puces/folder.gif" border="0"></a>
 			</td>          
 			<td>&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ name }</a></td>
 			<td>&nbsp;</td>
