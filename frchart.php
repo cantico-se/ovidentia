@@ -82,7 +82,6 @@ function displayChart($ocid, $oeid, $update, $disp='')
 				}
 			$this->currentoe = $oeid;
 			$this->maxlevel += 1;
-			//$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
 			
 			$this->res = $babDB->db_query("select ocet.*, ocet.id as identity, ocut.id_user, det.sn, det.givenname from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt on ocrt.id_oc=ocet.id_oc and ocrt.id_entity=ocet.id and ocrt.type='1' LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocut on ocut.id_role=ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocut.id_user where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
 			
@@ -689,10 +688,10 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 					{
 					$this->uoeid = 0;
 					}
-				if( $i == 0 )
+				if( empty($this->cuoeid) && isset($this->arrf['id_entity']))
 					{
-					$this->cuserid = $this->arrf['id']? $this->arrf['id']: 0;
-					$this->cuoeid = isset($this->arrf['id_entity'])?$this->arrf['id_entity']: 0;
+					$this->cuserid = $this->arrf['id'];
+					$this->cuoeid = $this->arrf['id_entity'];
 					}
 				$this->firstlast = bab_composeUserName($this->arrf['givenname'],$this->arrf['sn']);
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);

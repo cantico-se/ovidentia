@@ -255,7 +255,19 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 		function temp($ocid, $oeid, $iduser)
 			{
 			global $babDB;
-			$this->bab_viewDirectoryUser($iduser);
+			if( empty($iduser))
+				{
+				$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
+				if( $res )
+					{
+					$arr = $babDB->db_fetch_array($res);
+					$iduser = $arr['id_user'];
+					}
+				}
+			if( !empty($iduser))
+				{
+				$this->bab_viewDirectoryUser($iduser);
+				}
 			$this->altbg = false;
 			}
 
@@ -367,9 +379,6 @@ switch($idx)
 		if( $oeid )
 		{
 		$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
-		}
-		if( $iduser )
-		{
 		viewOrgChartRoleDetail($ocid, $oeid, $iduser);
 		}
 		$babLittleBody->setCurrentItemMenu($idx);
@@ -395,7 +404,10 @@ switch($idx)
 		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']: '';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
+		if( $oeid )
+		{
 		listOrgChartRoles($ocid, $oeid);
+		}
 		break;
 	}
 printFlbChartPage();

@@ -1223,9 +1223,9 @@
 <string id="Note">Note</string>
 <string id="Organization chart">Organigramme</string>
 <string id="Sub categories">Sous catégories</string>
-<string id="CONTENTS">CONTENU</string>
+<string id="CONTENTS">SOMMAIRE</string>
 <string id="Sub category">Sous catégorie</string>
-<string id="Contents">Contenu</string>
+<string id="Contents">Sommaire</string>
 <string id="Add sub category">Ajouter une sous catégorie</string>
 <string id="Modify subcategory">Modifier une sous catégorie </string>
 <string id="View this organizational chart">Voir l'organigramme</string>
@@ -1254,7 +1254,7 @@
 <string id="Temporary employee">Intérimaire</string>
 <string id="ERROR: More than one user are associated with this role">ERREUR: Plus d'un utilisateur est associé à cette fonction</string>
 <string id="User already exist!">L'utilisateur existe déjà!</string>
-<string id="Detail">Détail</string>
+<string id="Detail">Détails</string>
 <string id="More">Plus</string>
 <string id="Move">Déplacer</string>
 <string id="Principal role">Fonction principale</string>
