@@ -45,7 +45,7 @@ function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 
 		function temp($ocid, $oeid, $nameval, $descriptionval)
 			{
-			global $babDB, $ocinfo;
+			global $babDB, $ocinfo, $babBody;
 			$this->ocid = $ocid;
 			$this->oeid = $oeid;
 			$this->name = bab_translate("Entity");
@@ -448,7 +448,7 @@ function usersOrgChartRole($ocid, $oeid, $orid)
 				{
 				case '1':
 				case '2':
-					if( $this->count > 0  || $orinfo['cardinality'] ==  'N')
+					if( $this->count > 0  && $orinfo['cardinality'] ==  'N')
 						{
 						$this->noadd = true;
 						}
@@ -499,6 +499,7 @@ function viewOrgChartRoleUpdate($ocid, $oeid, $iduser)
 			$this->oeid = $oeid;
 			$this->iduser = $iduser;
 			$this->updatename = bab_translate("Update");
+			$this->altbg = false;
 
 			$this->username = bab_getDbUserName($iduser);
 			$this->res = $babDB->db_query("select ocrt.*, ocet.name as e_name, ocet.id as e_id from ".BAB_OC_ROLES_TBL." ocrt left join ".BAB_OC_ENTITIES_TBL." ocet on ocrt.id_entity=ocet.id where ocrt.id_oc='".$ocid."'");
@@ -1052,7 +1053,7 @@ function updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles)
 
 /* main */
 $babLittleBody = new babLittleBody();
-$babLittleBody->frrefresh = $rf;
+$babLittleBody->frrefresh = isset($rf)? $rf: false;
 $access = false;
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 {
@@ -1192,7 +1193,7 @@ switch($idx)
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
 		/* no break */
 	case "users":
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->addItemMenu("modr", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=modr&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
 		$babLittleBody->addItemMenu("users", bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
@@ -1200,29 +1201,33 @@ switch($idx)
 		usersOrgChartRole($ocid, $oeid, $orid);
 		break;
 	case "modr":
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->addItemMenu("modr", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=modr&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
 		$babLittleBody->addItemMenu("users", bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
 		$babLittleBody->setCurrentItemMenu($idx);
+		if(!isset($fname)) { $fname ='';}  
+		if(!isset($description)) { $description ='';}  
 		modifyOrgChartRole($ocid, $oeid, $fname, $description, $orid);
 		break;
 	case "addr":
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=addr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
+		if(!isset($fname)) { $fname ='';}  
+		if(!isset($description)) { $description ='';}  
 		addOrgChartRole($ocid, $oeid, $fname, $description);
 		break;
 	case "listr":
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=addr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
 		listOrgChartRoles($ocid, $oeid);
 		break;
 	case "move":
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		if( $oeid != 0 )
 			{
 			$babLittleBody->addItemMenu("mode", bab_translate("Entity"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=mode&ocid=".$ocid."&oeid=".$oeid);
@@ -1233,13 +1238,13 @@ switch($idx)
 		moveOrgChartEntity($ocid, $oeid);
 		break;
 	case "dele":
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		$babLittleBody->addItemMenu("dele", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=dele&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
 		deleteOrgChartEntity($ocid, $oeid);
 		break;
 	case "mode":
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		if( $oeid != 0 )
 			{
 			$babLittleBody->addItemMenu("mode", bab_translate("Entity"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=mode&ocid=".$ocid."&oeid=".$oeid);
@@ -1251,7 +1256,7 @@ switch($idx)
 		break;
 	case "adde":
 	default:
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		if( $oeid != 0 )
 			{
 			$babLittleBody->addItemMenu("mode", bab_translate("Entity"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=mode&ocid=".$ocid."&oeid=".$oeid);

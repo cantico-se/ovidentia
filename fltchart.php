@@ -89,6 +89,7 @@ function listOrgChartRoles($ocid, $oeid)
 
 			$this->resroles = $babDB->db_query("select id, name from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and type NOT IN (1,2)");
 			$this->countroles = $babDB->db_num_rows($this->resroles);
+			$this->altbg = false;
 			}
 
 		function getnextrole()
@@ -160,6 +161,7 @@ function viewOrgChartRoleMore($ocid, $oeid, $iduser, $update)
 			$this->oeid = $oeid;
 			$this->iduser = $iduser;
 			$this->primaryrole = bab_translate("Principal role");
+			$this->altbg = false;
 			if( $update)
 				{
 				$this->update = true;
@@ -254,6 +256,7 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 			{
 			global $babDB;
 			$this->bab_viewDirectoryUser($iduser);
+			$this->altbg = false;
 			}
 
 		function getnextfield()
@@ -305,7 +308,7 @@ function updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole)
 
 /* main */
 $babLittleBody = new babLittleBody();
-$babLittleBody->frrefresh = $rf;
+$babLittleBody->frrefresh = isset($rf)?$rf: false;
 $access = false;
 $update = false;
 
@@ -388,7 +391,7 @@ switch($idx)
 
 	case "listr":
 	default:
-		$babLittleBody->title = $oeinfo['name'];
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']: '';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
 		listOrgChartRoles($ocid, $oeid);

@@ -163,11 +163,10 @@ function chart_session_oeid($ocid)
 	session_register("BAB_SESS_CHARTOEID-".$ocid);
 	$GLOBALS['BAB_SESS_CHARTOEID-'.$ocid] = $oeid;
 	}
-	else
+	elseif( isset($GLOBALS['BAB_SESS_CHARTOEID-'.$ocid]))
 		{
 		$oeid = $GLOBALS['BAB_SESS_CHARTOEID-'.$ocid];
 		}
-
 	}
 
 

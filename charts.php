@@ -123,6 +123,11 @@ function listOrgCharts()
 	}
 
 /* main */
+if(!isset($idx))
+	{
+	$idx = "list";
+	}
+
 $access = false;
 if( count($babBody->ocids) > 0)
 {
@@ -163,11 +168,6 @@ if( count($babBody->ocids) > 0)
 	}
 }
 
-
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
 
 switch($idx)
 	{

@@ -25,6 +25,8 @@ include_once "base.php";
 include $babInstallPath."utilit/orgincl.php";
 include $babInstallPath."utilit/treeincl.php";
 
+define("ORG_MAX_REQUESTS_LIST", 100);
+
 function displayChart($ocid, $oeid, $update, $template='')
 	{
 	global $babBody;
@@ -42,6 +44,7 @@ function displayChart($ocid, $oeid, $update, $template='')
 
 			$this->babTree  = new bab_arraytree(BAB_OC_TREES_TBL, $ocid, "", $ocinfo['id_first_node']);
 
+			$this->closednodes = array();
 			$arr= explode(',', $ocinfo['id_closed_nodes'] );
 			for( $i=0; $i < count($arr); $i++ )
 				{
@@ -80,6 +83,7 @@ function displayChart($ocid, $oeid, $update, $template='')
 			$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->javascript = bab_printTemplate($this, "frchart.html", "orgjavascript");
+			$this->padarr = array();
 			}
 
 		function getnext(&$skip)
@@ -246,6 +250,7 @@ class orgtemp
 		$this->updateurlb = $this->obj->updateurlb;
 		$this->updateurlt = $this->obj->updateurlt;
 		$this->currentoe = $this->obj->currentoe;
+
 		if( !empty($row['description']))
 			{
 			$this->description = "( ".$row['description']." )";
@@ -256,6 +261,7 @@ class orgtemp
 			}
 		$this->oeid = $id;
 		$fid = $this->obj->babTree->getFirstChild($id);
+		$this->childs = array();
 		if( $fid )
 			{
 			$this->childs[] = $fid;
@@ -383,6 +389,7 @@ function displayChartTree($ocid, $oeid, $update)
 			$this->delete = bab_translate("Delete");
 			$this->startnode = bab_translate("Start");
 			$this->closenode = bab_translate("Close");
+			$this->closednodes = array();
 
 
 			$this->babTree  = new bab_arraytree(BAB_OC_TREES_TBL, $ocid, "", $ocinfo['id_first_node']);
@@ -408,7 +415,6 @@ function displayChartTree($ocid, $oeid, $update)
 				$this->updateurlt = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
 				}
 			$this->currentoe = $oeid;
-			$this->maxlevel += 1;
 			/* lire uniquement à partir du root XXXXXXXXXX*/
 			$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
 			while($row = $babDB->db_fetch_array($this->res))
@@ -472,6 +478,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			$this->xf = $xf;
 			$this->q = $q;
 			$this->iddir = $ocinfo['id_directory'];
+			$this->altbg = false;
 			if( $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
@@ -634,11 +641,18 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 				$this->altbg = $this->altbg ? false : true;
 				$this->arrf = $this->db->db_fetch_array($this->res);
 				$this->userid = $this->arrf['id'];
-				$this->uoeid = $this->arrf['id_entity'];
+				if( isset($this->arrf['id_entity']))
+					{
+					$this->uoeid = $this->arrf['id_entity'];
+					}
+				else
+					{
+					$this->uoeid = 0;
+					}
 				if( $i == 0 )
 					{
 					$this->cuserid = $this->arrf['id']? $this->arrf['id']: 0;
-					$this->cuoeid = $this->arrf['id_entity']?$this->arrf['id_entity']: 0;
+					$this->cuoeid = isset($this->arrf['id_entity'])?$this->arrf['id_entity']: 0;
 					}
 				$this->firstlast = bab_composeUserName($this->arrf['givenname'],$this->arrf['sn']);
 				$this->firstlast = str_replace("'", "\'", $this->firstlast);
@@ -704,10 +718,8 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos)
 			{
 			global $babBody, $babDB;
 			$this->ocid = $ocid;
-			$this->cb = $cb;
 			$this->oeid = $oeid;
 			$this->role = $role;
-			$this->echo = $echo;
 			$this->type = $type;
 			$this->vpos = $vpos;
 
@@ -808,6 +820,7 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos)
 			$this->javascript = bab_printTemplate($this, "frchart.html", "orgjavascript");
 			$this->cuserid = 0;
 			$this->cuoeid = 0;
+			$this->altbg = false;
 			}
 
 		function getnextrow()
@@ -827,8 +840,7 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos)
 				$this->jrole = str_replace("'", "\'", $arr['r_name']);
 				$this->jrole = str_replace('"', "'+String.fromCharCode(34)+'",$this->jrole);
 				$this->roleid = $arr['id_role'];
-				$this->username = bab_composeUserName($arr['sn'], $arr['givenname']);
-				if( $arr['iduser'] )
+				if( isset($arr['iduser']) && $arr['iduser'] )
 					{
 					$this->userid = $arr['iduser'];
 					$this->username = bab_composeUserName($arr['sn'], $arr['givenname']);
@@ -1006,14 +1018,18 @@ if( !$update && !bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $ocid))
 }
 if (!$update)
 {
-$ocinfo['id_closed_nodes'] = $GLOBALS['BAB_SESS_CHARTCN'];
-$ocinfo['id_first_node'] = $GLOBALS['BAB_SESS_CHARTRN'];
+$ocinfo['id_closed_nodes'] = isset($GLOBALS['BAB_SESS_CHARTCN'])? $GLOBALS['BAB_SESS_CHARTCN']: '';
+$ocinfo['id_first_node'] = isset($GLOBALS['BAB_SESS_CHARTRN'])?$GLOBALS['BAB_SESS_CHARTRN']:0;
 }
 if(!isset($idx))
 	{
 	$idx = "list";
 	}
 
+if(!isset($disp))
+	{
+	$disp = "";
+	}
 if( $idx == "startn" )
 {
 	changeRootNode($ocid, $oeid);
@@ -1041,7 +1057,7 @@ if (isset($disp))
 session_register("BAB_SESS_CHARTDISP-".$ocid);
 $$sess = $disp;
 }
-else
+elseif( isset($$sess))
 {
 	$disp = $$sess;
 }
@@ -1068,6 +1084,7 @@ switch($idx)
 			case "disp5":
 				if( !isset($pos )){	$pos = "A"; }
 				if( !isset($q )){	$q = ""; }
+				if( !isset($xf )){	$xf = ""; }
 				displayUsersList($ocid, $oeid, $update, $pos, $xf, $q);
 				break;
 			case "disp3":
