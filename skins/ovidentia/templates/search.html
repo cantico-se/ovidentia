@@ -1,34 +1,297 @@
-
 <!--#begin search -->
-<form method="post" action="{ babPhpSelf }">
+<script language="javascript">
+<!--#if item "== a" --><!-- ARTICLES -->
+function validateNum(field) 
+	{
+	var valid = "0123456789"
+	var temp;
+	for (var i=0; i<field.value.length; i++) {
+		temp = "" + field.value.substring(i, i+1);
+		if (valid.indexOf(temp) == "-1") 
+			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+		}
+	}
+
+<!--#endif item -->
+function prepareSQL() 
+	{
+	var sf = document.forms.searchForm;
+	<!--#if item "!= a" -->
+	<!--#if item "!= g" -->
+	<!--#if item "!= h" -->
+	if (sf.what.value.length < 1 && sf.what2.value.length < 1) return false;
+	<!--#endif item -->
+	<!--#endif item -->
+	<!--#endif item -->
+	}
+
+function cleanFields() 
+	{
+	var sf = document.forms.searchForm;
+	for (i = 0; i < sf.elements.length; i++)
+		{
+		objCtrl = sf.elements[i];
+		if (objCtrl.type == "text")
+			objCtrl.value = "";
+		}
+	}
+
+function orderSearch(type, field) 
+	{
+	var sf = document.forms.searchForm;
+	sf.item.value = type;
+	sf.field.value = field;
+	<!--#if order "== ASC" -->
+		sf.order.value = "DESC";
+	<!--#else order -->
+		sf.order.value = "ASC";
+	<!--#endif order -->
+	sf.submit();
+	}
+	
+function resetOrder() 
+	{
+	var sf = document.forms.searchForm;
+	sf.order.value = "";
+	sf.field.value = "";
+	sf.idx.value = "";
+	sf.submit();
+	}
+
+function navsearch(pos,item) 
+	{
+	var sf = document.forms.searchForm;
+	sf.navpos.value = pos;
+	sf.navitem.value = item;
+	sf.submit();
+	}
+
+function advswitch() 
+	{
+	var sf = document.forms.searchForm;
+	if (sf.what2.style.display != "none")
+		{ sf.what2.style.display = "none";
+		sf.option.style.display = "none";
+		sf.advenced.value = 0}
+	else
+		{sf.what2.style.display = "";
+		sf.option.style.display = "";
+		sf.advenced.value = 1}
+	}
+
+function beforeJs(day, month, year)
+	{
+	var sf = document.forms.searchForm;
+	eval("sf.before.value='"+year+"-"+month+"-"+day+"'");
+	eval("sf.before_display.value='"+day+"/"+month+"/"+year+"'");
+	eval("sf.before_memo.value='"+day+"/"+month+"/"+year+"'");
+	}
+
+function afterJs(day, month, year)
+	{
+	var sf = document.forms.searchForm;
+	eval("sf.after.value='"+year+"-"+month+"-"+day+"'");
+	eval("sf.after_display.value='"+day+"/"+month+"/"+year+"'");
+	eval("sf.after_memo.value='"+day+"/"+month+"/"+year+"'");
+	}
+
+</script>
+
+<form name="searchForm" method="post" action="{ babPhpSelf }" onSubmit="return (prepareSQL())">
 <input type="hidden" name="tg" value="search">
 <input type="hidden" name="pat" value="{ pat }">
 <input type="hidden" name="idx" value="find">
+<input type="hidden" name="navpos" value="0">
+<input type="hidden" name="navitem" value="">
+<input type="hidden" name="field" value="{ field }">
+<input type="hidden" name="order" value="{ order }">
+<input type="hidden" name="advenced" value="{ fields[advenced] }">
+<table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabTopicsBackground" align="center">
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+	<td align="right">
+	&nbsp;&nbsp;{ search }:&nbsp;</td><td><input type="text" name="what" size="35" value="{ fields[what] }">&nbsp;
+	</td>
+	<td align="left" nowrap valign="middle">&nbsp;
+	</td>
+	<td align="left" nowrap valign="middle">
+	&nbsp;&nbsp;{ in }:&nbsp;<select name="item" onChange="resetOrder()">
+	  <option value="" >{ all }</option>
+	  <!--#in getnextitem -->
+		<!--#if perm -->
+		<!--#if item "!= itemvalue" -->
+			  <option value="{ itemvalue }">{ itemname }</option>
+		<!--#else item -->
+			  <option selected value="{ itemvalue }">{ itemname }</option>
+		<!--#endif item -->
+		<!--#endif perm -->
+	  <!--#endin getnextitem -->
+	</select>
+	&nbsp;&nbsp;
+	</td>
 
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ search }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="what" size="20" value="{ what }">
+</tr>
+<tr height="30">
+	<td align="right" width="5%" nowrap valign="middle">&nbsp;&nbsp;
+	<a href="javascript:advswitch()" class="copy">{ switch }&nbsp;:</a>&nbsp;</td><td valign="middle" nowrap>
+	<select name="option" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] -->>
+			  <option value="OR" { or_selected }>{ option_or }</option>
+			  <option value="AND" { and_selected }>{ option_and }</option>
+			  <option value="NOT" { not_selected }>{ option_not }</option>
+	</select>
+	<input type="text" name="what2" size="23" value="{ fields[what2] }" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] -->>
+	</td>
+	<td align="center" width="1" nowrap valign="middle">
+	&nbsp;
+	</td>
+	<td>&nbsp;</td>
+</tr>
+</table>
+<br>
+<!--#if item "== a" --><!-- ARTICLES -->
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td>
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td>{ Topic }</td>
+<td>
+	<select name="a_topic">
+		<option value="">{ all }</option>
+	  <!--#in getnexttopic -->
+		<!--#if selected -->
+			<!--#if fields[a_topic] "== topicid" -->
+				<option selected value="{ topicid }">{ topictitle }</option>
+			<!--#else fields[a_topic] -->
+				<option value="{ topicid }">{ topictitle }</option>
+			<!--#endif fields[a_topic] -->
+		<!--#endif selected -->
+	  <!--#endin getnexttopic -->
+	</select>
+</td></tr>
+<tr>
+<td>{ Author }</td>
+<td><input name="a_author" value="{ fields[a_author] }"></td>
+</tr>
+</table>
 </td>
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ in }:</td>
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle">
-<select name="item">
-  <option value="" selected>{ all }</option>
-  <!--#in getnextitem -->
-  <option value="{ itemvalue }">{ itemname }</option>
-  <!--#endin getnextitem -->
+<td>
+
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+	<td align="right" nowrap>
+	<a class="BabFaqLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
+	</td>
+	<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+	<input type="hidden" name="after" value="{ fields[after] }">
+	<input type="hidden" name="after_memo" value="{ fields[after_memo] }">
+	</td>
+</tr>
+<tr>
+	<td align="right" nowrap>
+	<a class="BabFaqLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
+	</td>
+	<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="#" onclick="before_display.value='';before_memo.value='';before.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+	<input type="hidden" name="before" value="{ fields[before] }">
+	<input type="hidden" name="before_memo" value="{ fields[before_memo] }">
+	</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+<!--#endif item -->
+<!--#if item "== g" --><!-- ANNUAIRES -->
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td>
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+ <!--#in getnextfieldtosearch -->
+	<tr>
+	<td align="right" width="5">
+	<select name="dirselect_{ fieldcounter }">
+	<!--#in selectname -->
+		<option { selected } value="{ name }">{ description }</option>
+	<!--#endin selectname -->
+	</select>
+	</td><td align="left"><input type="text" name="dirfield_{ fieldcounter }" value="{ fields[dirfield_{ fieldcounter }] }"></td>
+	</tr>
+ <!--#endin getnextfieldtosearch -->
+</table>
+</td>
+<td valign="top"><select name="g_directory">
+	<option value="">{ all }</option>
+  <!--#in getnextdir -->
+		<!--#if fields[g_directory] "== topicid" -->
+			<option selected value="{ topicid }">{ topictitle }</option>
+		<!--#else fields[g_directory] -->
+			<option value="{ topicid }">{ topictitle }</option>
+		<!--#endif fields[g_directory] -->
+  <!--#endin getnextdir -->
+</select></td>
+</tr>
+</table>
+<!--#endif item -->
+<!--#if item "== h" --><!-- CALENDAR -->
+<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td align="left">
+	<select name="h_calendar">
+	<option value="">{ all }</option>
+  <!--#in getnextcal -->
+		<!--#if fields[h_calendar] "== calendarid" -->
+			<option selected value="{ calendarid }">{ caltitle }</option>
+		<!--#else fields[h_calendar] -->
+			<option value="{ calendarid }">{ caltitle }</option>
+		<!--#endif fields[h_calendar] -->
+  <!--#endin getnextcal -->
 </select>
 </td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" colspan=4> 
-<input type="submit" name="go" value="{ search }">
+<td align="right">
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="right">
+	<tr>
+		<td align="right">
+		<a class="BabFaqLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
+		</td>
+		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<input type="hidden" name="after" value="{ fields[after] }">
+		<input type="hidden" name="after_memo" value="{ fields[after_memo] }">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+		<a class="BabFaqLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
+		</td>
+		<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="#" onclick="before_display.value='';before_memo.value='';before.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<input type="hidden" name="before" value="{ fields[before] }">
+		<input type="hidden" name="before_memo" value="{ fields[before_memo] }">
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
+</table>
+<!--#endif item -->
+</td>
+</tr>
+	<tr><td>
+		<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr>
+		<td align="left">
+		<input type="button" name="res" value="{ reset }" onclick="cleanFields()">
+		</td>
+		<td align="right">
+		<input type="submit" name="go" value="{ search }">
+		</td>
+		</tr>
+		</table>
+	</td><tr>
 </table>
 </td>
 </tr>
@@ -36,7 +299,33 @@
 </form>
 <!--#end search -->
 
+<!--#begin navbar -->
+<!--#if previous -->
+<a href="{ urlprev }" class="BabFaqLink">{ previous }</a>&nbsp;&nbsp;
+<!--#endif previous -->
+	<!--#in getnext -->
+	<!--#if selected -->
+	 &nbsp;<span class="BabSummaryNbrMessage">{ page }</span>&nbsp; 
+	 <!--#else selected -->
+	 &nbsp;<a href="{ urlpage }" class="BabFaqLink">{ page }</a>&nbsp; 
+	 <!--#endif selected -->
+	<!--#endin getnext -->
+<!--#if next -->
+&nbsp;&nbsp;<a href="{ urlnext }" class="BabFaqLink">{ next }</a>
+<!--#endif next --><br><br>
+{ results } { from } { navpos } { to } { navposend } ({ nbrows } { results } / { countpages } { pages })
+<!--#end navbar -->
+
 <!--#begin searchresult -->
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabTopicsBackground" align="center"> 
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="right">{ total } : { nbresult }</td></tr>
+</table>
+</td></tr></table>
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
@@ -48,17 +337,24 @@
 <td class="BabBodyTitleBackground" >{ arttitle }</td></tr>
 </table>
 <table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
 <!--#in getnextart -->
-<td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ articleurl }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ article }</a></td>
+<tr>
+<td class="BabTopicsBackground" valign="top">
+<a class="BabSummaryLinkColor" href="{ topicurl }">{ arttopic }</a> &gt; 
+<a class="BabFaqLink" href="{ articleurl }">{ article }</a> 
+[ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
+ <br>
+ { intro }
+ <br>
+<!--#if BAB_SESS_LOGGED -->
+ <a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <span class="BabForumTopicsNavTreeDate"><i>{ artdate }</i></span>
+ <br><br>
+</td>
 </tr>
 <!--#endin getnextart -->
 </table>
 <br>
-{ artpage } 
-<!--#if artnext "!= 0" -->
-<a class="BabFaqLink" href="{ artnext }">{ next }</a> 
-<!--#endif artnext -->
+{ navbar_a }
 <!--#endif countart -->
 <!--#if countcom "!= 0" -->
 <br>
@@ -66,17 +362,24 @@
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ comtitle }</td></tr></table>
 <table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
 <!--#in getnextcom -->
-    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ comurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ com }</a></td>
-  </tr>
+<tr>
+<td class="BabTopicsBackground" valign="top">
+<a class="BabSummaryLinkColor" href="{ topicurl }">{ arttopic }</a> &gt; 
+<a class="BabSummaryLinkColor" href="{ articleurl }">{ article }</a> [ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ] &gt; 
+<a class="BabFaqLink" href="{ comurl }">{ com }</a> 
+[ <a href="javascript: Start('{ comurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
+ <br>
+ { intro }
+ <br>
+ <!--#if BAB_SESS_LOGGED --><a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <span class="BabForumTopicsNavTreeDate"><i>{ artdate }</i></span>
+ <br><br>
+</td>
+</tr>
 <!--#endin getnextcom -->
 </table>
 <br>
-{ compage } 
-<!--#if comnext "!= 0" -->
-<a class="BabFaqLink" href="{ comnext }">{ next }</a> 
-<!--#endif comnext -->
+{ navbar_ac }
 <!--#endif countcom -->
 <!--#if countfor "!= 0" -->
 <br>
@@ -84,17 +387,23 @@
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ fortitle }</td></tr></table>
 <table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
 <!--#in getnextfor -->
-    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ posturl }', 'OviSearchC', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ post }</a></td>
-  </tr>
+  <tr>
+<td class="BabTopicsBackground" valign="top">
+<a class="BabSummaryLinkColor" href="{ forumurl }">{ forum }</a> &gt; 
+<a class="BabFaqLink" href="{ posturl }">{ post }</a> 
+[ <a href="javascript: Start('{ posturlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
+ <br>
+ { intro }
+ <br>
+ { postauthor } - <span class="BabForumTopicsNavTreeDate"><i>{ postdate }</i></span>
+ <br><br>
+</td>
+</tr>
 <!--#endin getnextfor -->
 </table>
 <br>
-{ forpage } 
-<!--#if fornext "!= 0" -->
-<a class="BabFaqLink" href="{ fornext }">{ next }</a> 
-<!--#endif fornext -->
+{ navbar_b }
 <!--#endif countfor -->
 <!--#if countfaq "!= 0" -->
 <br>
@@ -102,90 +411,145 @@
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ faqtitle }</td></tr></table>
 <table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
 <!--#in getnextfaq -->
-    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ questionurl }', 'OviSearchD', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ question }</a></td>
-  </tr>
+<tr>
+<td class="BabTopicsBackground" valign="top">
+<a class="BabSummaryLinkColor" href="{ topicurl }">{ faqtopic }</a> &gt; 
+<a class="BabFaqLink" href="{ questionurl }">{ question }</a> 
+[ <a href="javascript: Start('{ questionurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
+ <br>
+ { intro }
+ <br>
+ <!--#if BAB_SESS_LOGGED --><a class="BabDayCalendarEventLink" href="mailto:{ faqauthormail }"><!--#endif BAB_SESS_LOGGED -->{ faqauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED -->
+ <br><br>
+</td>
+</tr>
 <!--#endin getnextfaq -->
 </table>
 <br>
-{ faqpage } 
-<!--#if faqnext "!= 0" -->
-<a class="BabFaqLink" href="{ faqnext }">{ next }</a> 
-<!--#endif faqnext -->
+{ navbar_c } 
 <!--#endif countfaq -->
-<!--#if countfil "!= 0" -->
-<br>
-<br>
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabBodyTitleBackground" >{ filtitle }</td></tr></table>
-<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
-<!--#in getnextfil -->
-    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ fileurl }', 'OviSearchE', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ file }</a>&nbsp;{ filedesc }</td>
-  </tr>
-<!--#endin getnextfil -->
-</table>
-<br>
-{ filpage } 
-<!--#if filnext "!= 0" -->
-<a class="BabFaqLink" href="{ filnext }">{ next }</a> 
-<!--#endif filnext -->
-<!--#endif countfil -->
-<!--#if countcon "!= 0" -->
-<br>
-<br>
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabBodyTitleBackground" >{ contitle }</td></tr></table>
-<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
-<!--#in getnextcon -->
-    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ fullnameurl }', 'OviSearchF', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ fullname }</a></td>
-  </tr>
-<!--#endin getnextcon -->
-</table>
-<br>
-{ conpage } 
-<!--#if connext "!= 0" -->
-<a class="BabFaqLink" href="{ connext }">{ next }</a> 
-<!--#endif connext -->
-<!--#endif countcon -->
 <!--#if countnot "!= 0" -->
 <br>
 <br>
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ nottitle }</td></tr></table>
 <table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
 <!--#in getnextnot -->
-    <td class="BabTopicsBackground" valign="top">{ content }</td>
-  </tr>
+<tr>
+<td class="BabTopicsBackground" valign="top">
+ { content }<br>
+ [ <a href="{ noteurl }">{ read_more }</a> ] <!--#if BAB_SESS_LOGGED --> <a class="BabDayCalendarEventLink" href="mailto:{ notauthormail }"><!--#endif BAB_SESS_LOGGED -->{ notauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --><br>
+ <br>
+</td>
+</tr>
 <!--#endin getnextnot -->
 </table>
 <br>
-{ notpage } 
-<!--#if notnext "!= 0" -->
-<a class="BabFaqLink" href="{ notnext }">{ next }</a> 
-<!--#endif notnext -->
+{ navbar_d }
 <!--#endif countnot -->
+<!--#if countfil "!= 0" -->
+<br>
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ filtitle }</td></tr></table>
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr class="BabTopicsBackground">
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('e','title')">{ filename }</a></td>
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('e','description')">{ description }</a></td>
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('e','folder, path')">{ folder }</a></td>
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('e','author')">{ author }</a></td>
+        <td class="BabCalendarDaySection" nowrap><a class="BabTitleSmall" href="javascript:orderSearch('e','datem')">{ datem }</a></td>
+</tr>
+<!--#in getnextfil -->
+  <tr> 
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ fileurl }', 'OviSearchE', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ file }</a></td>
+    <td class="BabTopicsBackground" valign="top">{ filedesc }</td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="{ babUrl }index.php?tg=fileman&idx=list&id={ arttopicid }&gr={ bgroup }&path={ path }">{ arttopic }</A></td>
+    <td class="BabTopicsBackground" valign="top" nowrap>{ artauthor }</td>
+    <td class="BabTopicsBackground" valign="top" nowrap>{ update }</td>
+  </tr>
+<!--#endin getnextfil -->
+
+</table>
+<br>
+{ navbar_e } 
+<!--#endif countfil -->
+<!--#if countcon "!= 0" -->
+<br>
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ contitle }</td></tr></table>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr class="BabTopicsBackground">
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('f','firstname')">{ firstname }</a></td>
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('f','title')">{ lastname }</a></td>
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('f','email')">{ email }</a></td>
+        <td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('f','compagny')">{ company }</a></td>
+</tr>
+<!--#in getnextcon -->
+  <tr> 
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ fullnameurl }', 'OviSearchF', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ confirstname }</a></td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ fullnameurl }', 'OviSearchF', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ conlastname }</a></td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ fullnameurl }', 'OviSearchF', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ conemail }</a></td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ fullnameurl }', 'OviSearchF', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ concompany }</a></td>
+  </tr>
+<!--#endin getnextcon -->
+</table>
+<br>
+{ navbar_f } 
+<!--#endif countcon -->
 <!--#if countdir "!= 0" -->
 <br>
 <br>
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ dirtitle }</td></tr></table>
 <table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
+<tr class="BabTopicsBackground">
+	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','sn, givenname')">{ lastname }</a></td>
+	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','organisationname')">{ company }</a></td>
+	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','departmentnumber')">{ department }</a></td>
+	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','mfunction')">{ email }</a></td>
+	<td class="BabCalendarDaySection"><a class="BabTitleSmall" href="javascript:orderSearch('g','name')">{ directory }</A></td>
+</tr>
 <!--#in getnextdir -->
-    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ dirurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ dir }</a></td>
+  <tr> 
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="javascript: Start('{ dirurl }', 'OviSearchB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ dir[sn] } { dir[givenname] }</a></td>
+    <td class="BabTopicsBackground" valign="top">{ dir[organisationname] }</td>
+    <td class="BabTopicsBackground" valign="top">{ dir[departmentnumber] }</td>
+    <td class="BabTopicsBackground" valign="top"><!--#if BAB_SESS_LOGGED --><a href="mailto:{ dir[email] }"><!--#endif BAB_SESS_LOGGED -->{ dir[email] }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --></td>
+    <td class="BabTopicsBackground" valign="top">{ dir[name] }</td>
   </tr>
 <!--#endin getnextdir -->
 </table>
 <br>
-{ dirpage } 
-<!--#if dirnext "!= 0" -->
-<a class="BabFaqLink" href="{ dirnext }">{ next }</a> 
-<!--#endif dirnext -->
+{ navbar_g }
 <!--#endif countdir -->
+<!--#if countage "!= 0" -->
+<br>
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ agebigtitle }</td></tr></table>
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<!--#in getnextage -->
+<tr>
+<td class="BabTopicsBackground" valign="top">
+{ agecat } &gt; 
+<a class="BabFaqLink" href="{ ageurl }" title="{ agecatdesc }">{ agetitle }</a> 
+ <br>
+ { agedescription }
+ <!--#if agedescription -->
+ <br>
+ <!--#endif agedescription -->
+ <!--#if agecreator --><!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --><a class="BabDayCalendarEventLink" href="mailto:{ agecreatormail }"><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED -->{ agecreator }<!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --></a><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED --> -  <!--#endif agecreator --><span class="BabForumTopicsNavTreeDate"><i>{ agestart_date }</i></span> <span class="BabErrorMessage">&gt;</span> <span class="BabForumTopicsNavTreeDate"><i>{ ageend_date }</i></span>
+ <br><br>
+</td>
+</tr>
+<!--#endin getnextage -->
+</table>
+<br>
+{ navbar_h }
+<!--#endif countage -->
 <br>
 <br>
 </td>
