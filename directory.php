@@ -329,6 +329,8 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 						$this->xf = $tmp[0];
 					for( $i=0; $i < count($tmp); $i++)
 						$tmp[$i] = BAB_DBDIR_ENTRIES_TBL.".".$tmp[$i];
+					if( !in_array('email', $tmp))
+						$tmp[] = 'email';
 					$this->select = implode($tmp, ",");
 					if( $this->idgroup > 1 )
 						{
