@@ -1116,7 +1116,7 @@ function bab_UrlContent($args)
 function printout($txt)
 	{
 	global $babBody;
-	$babBody->babecho( $out = $this->handle_tag($txt));
+	$babBody->babecho( $this->handle_tag($txt));
 	}
 
 }
@@ -1151,10 +1151,6 @@ function bab_rel2abs($relative, $url)
     return sprintf('%s://%s%s/%s', $url['scheme'], $url['host'], $dir, $relative);
 }
 
-/*
-$tmp = new babOvTemplate();
-$tmp->printout(implode("", file($file)));
-*/
 $filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
 if( !is_readable($filepath))
 	{
