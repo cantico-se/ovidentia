@@ -1930,10 +1930,10 @@ function updatePropertiesArticleDraft()
 }
 
 
-function submitArticleDraft( $idart, $message)
+function submitArticleDraft( $idart, $message, $force=false)
 {
 	global $babBody, $babDB;
-	$res = $babDB->db_query("select id_article,id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+	$res = $babDB->db_query("select id_article,id_topic, date_submission from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
@@ -1970,6 +1970,10 @@ function submitArticleDraft( $idart, $message)
 				}			
 			}
 
+		if( !$force && $arr['date_submission'] != "0000-00-00 00:00:00" && bab_mktime($arr['date_submission']) > mktime())
+			{
+			return true;
+			}
 		return bab_submitArticleDraft( $idart);
 		}
 	else
@@ -2456,7 +2460,7 @@ switch($idx)
 		$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
 		break;
 	case "sub":
-		if( submitArticleDraft( $idart, $babBody->msgerror) )
+		if( submitArticleDraft( $idart, $babBody->msgerror, true) )
 			{
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 			exit;
