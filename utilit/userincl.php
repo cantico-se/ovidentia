@@ -28,7 +28,8 @@ define("BAB_ART_STATUS_WAIT", 1);
 define("BAB_ART_STATUS_OK"	, 2);
 define("BAB_ART_STATUS_NOK"	, 3);
 
-function bab_editor($content, $editname, $formname, $heightpx=160)
+
+function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 	{
 	global $babBody;
 
@@ -38,10 +39,12 @@ function bab_editor($content, $editname, $formname, $heightpx=160)
 		var $formname;
 		var $contentval;
 
-		function babEditorCls($content, $editname, $formname, $heightpx)
+		function babEditorCls($content, $editname, $formname, $heightpx,$what)
 			{
 			$this->editname = $editname;
 			$this->formname = $formname;
+			$this->heightpx = $heightpx;
+			$this->what = $what;
 
 			if( empty($content))
 				{
@@ -72,9 +75,10 @@ function bab_editor($content, $editname, $formname, $heightpx=160)
 			}	
 		}
 	
-	$temp = new babEditorCls($content, $editname, $formname, $heightpx);
+	$temp = new babEditorCls($content, $editname, $formname, $heightpx,$what);
 	return bab_printTemplate($temp,"uiutil.html", "babeditortemplate");
 	}
+
 
 
 function bab_array_search($str, $vars)
