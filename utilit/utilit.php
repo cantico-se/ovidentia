@@ -169,6 +169,7 @@ function babSection($title = "Section", $content="<br>This is a sample of conten
 	$this->boxurl = "";
 	$this->bbox = 0;
 	$this->babsectionpuce = babPrintTemplate($this, "config.html", "babSectionPuce");
+	$this->babsectionbullet = babPrintTemplate($this, "config.html", "babSectionBullet");
 
 }
 
