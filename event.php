@@ -50,8 +50,8 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 			$this->curview = $view;
 			$this->calid = $calendarid;
 			$this->caltype = getCalendarType($calendarid);
-			$this->titleval = $title;
-			$this->descriptionval = $description;
+			$this->titleval = isset($title)? $title: "";
+			$this->descriptionval = isset($description)? $description: "";
 			$body->title = babTranslate("Calendar"). "  ". getCalendarOwnerName($this->calid, $this->caltype);
 			$this->ymin = 2;
 			$this->ymax = 5;
