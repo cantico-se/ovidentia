@@ -95,6 +95,10 @@ window.focus();
 </td>
 <td class="BabToChoiceMailPopupBodyFontBackground" valign="middle" width="1%"><IMG src="{ babSkinPath }images/Puces/PuceCardPerso.gif" width="21" height="21" border=0 alt="Perso"></td>
 <td class="BabToChoiceMailPopupBodyFontBackground" valign="middle" nowrap>{ nameval }</td>
+<!--#if accid "!= 0" -->
+<!--#else accid -->
+&nbsp;<a href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a> 
+<!--#endif accid -->
 <td class="BabToChoiceMailPopupBodyFontBackground" valign="middle">{ emailval }&nbsp;</td>
 </tr>
 <!--#endin getnextcontact --><!--#in getnextgroupmember -->
