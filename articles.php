@@ -5,6 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include "base.php";
+include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);
@@ -451,6 +452,9 @@ function modifyArticle($topics, $article)
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
 			$this->topicstxt = bab_translate("Topic");
+			$this->notifymembers = bab_translate("Notify group members by mail");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
@@ -474,6 +478,18 @@ function modifyArticle($topics, $article)
 			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$GLOBALS['BAB_SESS_USERID']."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+
+			$arr = $this->db->db_fetch_array($this->db->db_query("select notify from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			if( $arr['notify'] == "N" )
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
+			else
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
 			}
 
 		function getnexttopic()
@@ -685,7 +701,7 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	}
 
 //@@: warn this function is duplicated in waiting.php file 
-function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid)
+function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif)
 	{
 	global $babBody;
 
@@ -710,6 +726,11 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."' where id='".$article."'";
 	$res = $db->db_query($req);
 
+	if( $bnotif == "Y" )
+		{
+		$arr = $db->db_fetch_array($db->db_query("select category from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+		notifyArticleGroupMembers($arr['category'], $topics, $title, bab_getArticleAuthor($article), 'mod');
+	}
 	}
 
 
@@ -742,7 +763,7 @@ if( isset($action) && $action == "Yes" && bab_isUserTopicManager($topics))
 
 if( isset($modify))
 	{
-	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid);
+	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif);
 	$idx = "Articles";
 	}
 

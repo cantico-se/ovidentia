@@ -264,7 +264,6 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 function notifyArticleApprovers($id, $users)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include_once $babInstallPath."utilit/mailincl.php";
 
 	if(!class_exists("tempa"))
 		{
@@ -403,5 +402,107 @@ function notifyCommentApprovers($idcom, $nfusers)
 		$mail->mailAltBody($message);
 		$mail->send();
 		}
+	}
+function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what = 'add')
+	{
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+
+	if(!class_exists("tempcc"))
+		{
+		class tempcc
+			{
+			var $message;
+			var $from;
+			var $author;
+			var $about;
+			var $title;
+			var $titlename;
+			var $site;
+			var $sitename;
+			var $date;
+			var $dateval;
+
+
+			function tempcc($topicname, $title, $author, $msg)
+				{
+				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+				$this->topic = bab_translate("Topic");
+				$this->topicname = $topicname;
+				$this->title = bab_translate("Title");
+				$this->authorname = $author;
+				$this->author = bab_translate("Author");
+				$this->titlename = $title;
+				$this->site = bab_translate("Web site");
+				$this->sitename = $babSiteName;
+				$this->date = bab_translate("Date");
+				$this->dateval = bab_strftime(mktime());
+				$this->message = $msg;
+				}
+			}
+		}	
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
+
+	if( $what == 'mod' )
+		$msg = bab_translate("An article has been modified");
+	else
+		$msg = bab_translate("An article has been published");
+
+
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailSubject($msg);
+
+	$tempc = new tempcc($topicname, $title, $author, $msg);
+	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticle");
+    $mail->mailBody($message, "html");
+
+	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
+    $mail->mailAltBody($message);
+
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select id_group from ".BAB_TOPICSVIEW_GROUPS_TBL." where  id_object='".$topics."'");
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		while( $row = $db->db_fetch_array($res))
+			{
+			switch($row['id_group'])
+				{
+				case 0:
+				case 1:
+					$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+					break;
+				case 2:
+					return;
+				default:
+					$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
+					break;
+				}
+
+			if( $res2 && $db->db_num_rows($res2) > 0 )
+				{
+				$count = 0;
+				while($arr = $db->db_fetch_array($res2))
+					{
+					$mail->mailTo($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+
+					while(($arr = $db->db_fetch_array($res2)) && $count < 25)
+						{
+						$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+						$count++;
+						}
+
+					if( $count > 0 )
+						{
+						$mail->send();
+						$mail->clearBcc();
+						$mail->clearTo();
+						$count = 0;
+						}
+					}
+
+				}	
+			}
+		}	
 	}
 ?>

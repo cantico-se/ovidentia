@@ -205,6 +205,9 @@ function confirmArticle($article, $topics)
 			$this->refuse = bab_translate("Refuse");
 			$this->homepage0 = bab_translate("Add to unregistered users home page");
 			$this->homepage1 = bab_translate("Add to registered users home page");
+			$this->notifymembers = bab_translate("Notify group members by mail");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
 			$this->what = bab_translate("Send an email to author");
 			$this->message = bab_translate("Message");
 			$this->confval = "article";
@@ -222,6 +225,17 @@ function confirmArticle($article, $topics)
 				$arr2 = $this->db->db_fetch_array($this->res);
 				$this->fullname = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
 				$this->author = $arr['id_author'];
+				}
+			$arr = $this->db->db_fetch_array($this->db->db_query("select notify from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			if( $arr['notify'] == "N" )
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
+			else
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
 				}
 			}
 		}
@@ -426,7 +440,7 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 	$mail->send();
 	}
 
-function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1)
+function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1, $bnotify)
 	{
 	global $babBody;
 	$db = $GLOBALS['babDB'];
@@ -476,6 +490,9 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 						}
 					}
 				}
+
+		if( $bnotify == "Y" )
+			notifyArticleGroupMembers($topicname, $topics, $title, bab_getArticleAuthor($article), 'add');
 			break;
 		default:
 			$subject = bab_translate("About your article");

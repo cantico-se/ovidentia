@@ -8,7 +8,7 @@ include_once "base.php";
 include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom)
+function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif)
 	{
 	global $babBody;
 	class temp
@@ -25,10 +25,11 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 		var $selected;
 		var $topcat;
 		var $modcom;
+		var $notiftxt;
 		var $yes;
 		var $no;
 
-		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom)
+		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif)
 			{
 			$this->topcat = bab_translate("Topic category");
 			$this->title = bab_translate("Topic");
@@ -36,6 +37,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$this->approver = bab_translate("Topic manager");
 			$this->modcom = bab_translate("Approbation schema for comments");
 			$this->modart = bab_translate("Approbation schema for articles");
+			$this->notiftxt = bab_translate("Notify group members by mail");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -69,6 +71,21 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 				$this->saart = 0;
 			else
 				$this->saart = $saart;
+
+			if(empty($bnotif))
+				$bnotif = "N";
+
+			if( $bnotif == "N")
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
+			else
+				{
+				$this->notifnsel = "";
+				$this->notifysel = "selected";
+				}
+
 			if(empty($ncat))
 				$this->ncat = $cat;
 			else
@@ -138,7 +155,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			}
 		}
 
-	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom);
+	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -271,7 +288,7 @@ function orderCategories($cat, $adminid, $catname)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $managerid)
+function saveCategory($category, $description, $cat, $sacom, $saart, $managerid, $bnotif)
 	{
 	global $babBody;
 	if( empty($category))
@@ -303,7 +320,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid)
 		}
 	$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_TOPICS_TBL." where id_cat='".$cat."'"));
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering, notify) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "', '" . $bnotify. "')";
 	$db->db_query($query);
 	return true;
 	}
@@ -333,7 +350,7 @@ if(!isset($idx))
 
 if( isset($add) && $adminid > 0)
 	{
-	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid))
+	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif))
 		$idx = "addtopic";
 	else
 		{
@@ -352,7 +369,7 @@ switch($idx)
 		$babBody->title = bab_translate("Create new topic");
 		if( $adminid > 0)
 		{
-		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom);
+		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
