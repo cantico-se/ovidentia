@@ -93,7 +93,7 @@ function newEvent($calendarid, $day, $month, $year)
 					$req = "select * from calendar where id='".$calendarid."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from categoriescal where id_group='".$arr[owner]."'";
+					$req = "select * from categoriescal where id_group='1' or id_group='".$arr[owner]."'";
 					$this->rescat = $this->db->db_query($req);
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
@@ -417,7 +417,7 @@ function modifyEvent($calendarid, $evtid)
 					$req = "select * from calendar where id='".$calendarid."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from categoriescal where id_group='".$arr[owner]."'";
+					$req = "select * from categoriescal where id_group='1' or id_group='".$arr[owner]."'";
 					$this->rescat = $this->db->db_query($req);
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
