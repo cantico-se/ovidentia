@@ -1,4 +1,87 @@
 <?php
+include $babInstallPath."utilit/mailincl.php";
+function notifyUserRegistration($link, $name, $email)
+	{
+	global $body, $babAdminEmail, $babInstallPath;
+
+	class tempa
+		{
+        var $sitename;
+        var $linkurl;
+        var $linkname;
+		var $username;
+		var $message;
+
+
+		function tempa($link, $name)
+			{
+            global $babSiteName;
+            $this->linkurl = $link;
+            $this->linkname = babTranslate("link");
+            $this->username = $name;
+			$this->sitename = $babSiteName;
+			$this->message = babTranslate("Thank You For Registering at our site");
+			$this->message .= "<br>". babTranslate("To confirm your registration");
+			$this->message .= ", ". babTranslate("simply follow this").": ";
+			}
+		}
+	
+	$tempa = new tempa($link, $name);
+	$message = babPrintTemplate($tempa,"mailinfo.html", "userregistration");
+
+    $mail = new babMail();
+    $mail->mailTo($email);
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject(babTranslate("Registration Confirmation"));
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
+
+function notifyAdminRegistration($name, $useremail)
+	{
+	global $body, $babAdminEmail, $babInstallPath;
+
+	class tempb
+		{
+        var $sitename;
+		var $username;
+		var $message;
+		var $email;
+
+
+		function tempb($name, $useremail)
+			{
+            global $babSiteName;
+            $this->email = $useremail;
+            $this->username = $name;
+			$this->sitename = $babSiteName;
+			$this->message = babTranslate("Your site recorded a new registration on behalf of");
+			}
+		}
+	
+	$tempb = new tempb($name, $useremail);
+	$message = babPrintTemplate($tempb,"mailinfo.html", "adminregistration");
+
+    $mail = new babMail();
+	$db = new db_mysql();
+	$sql = "select * from users_groups where id_group='3'";
+	$result=$db->db_query($sql);
+	if( $result && $db->db_num_rows($result) > 0 )
+		{
+		while( $arr = $db->db_fetch_array($result))
+			{
+			$sql = "select * from users where id='".$arr[id_object]."'";
+			$res=$db->db_query($sql);
+			$r = $db->db_fetch_array($res);
+			$mail->mailTo($r[email]);
+			}
+		}
+
+    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailSubject(babTranslate("Registration Confirmation"));
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
 
 /* generate a random password given a len */
 function random_password($length)
@@ -35,26 +118,10 @@ function registerUser( $fullname, $email, $password1, $password2)
 
 		$body->msgerror = babTranslate("Thank You For Registering at our site") ."<br>";
 		$body->msgerror .= babTranslate("You will receive an email which let you confirm your registration.");
-		$message = babTranslate("Thank You For Registering at our site")."\n". babTranslate("Simply follow this")." <a href=\"".$babUrl."index.php?tg=register&cmd=confirm&hash=$hash&email=". urlencode($email)."\">link</a> ".babTranslate("to confirm your registration").": ".
-			"\n\n".babTranslate("Once you confirm, you can use the services on ").$babSiteName.".";
-		mail ($email,babTranslate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
-
-		$sql = "select * from users_groups where id_group='3'";
-		$result=$db->db_query($sql);
-		if( $result && $db->db_num_rows($result) > 0 )
-			{
-			$message = $babSiteName . "\n"; 
-			$message .= babTranslate("New registration"). ": ". $fullname . " <". $email .">"; 
-			while( $arr = $db->db_fetch_array($result))
-				{
-				$sql = "select * from users where id='".$arr[id_object]."'";
-				$res=$db->db_query($sql);
-				$r = $db->db_fetch_array($res);
-
-				mail ($r[email],babTranslate("New registration"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
-				}
-			}
-
+		$link = $babUrl."index.php?tg=register&cmd=confirm&hash=$hash&email=". urlencode($email);
+		//mail ($email,babTranslate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+		notifyUserRegistration($link, $fullname, $email);
+		notifyAdminRegistration($fullname, $email);
 		//$body->msgerror = $msg;
 		return true;
 		}
