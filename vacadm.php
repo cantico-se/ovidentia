@@ -1652,7 +1652,7 @@ switch($idx)
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
 		$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
-		$babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+		
 		break;
 
 	case "lcol":

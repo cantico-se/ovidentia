@@ -1638,4 +1638,6 @@
 <string id="Firstname is required">Le prénom est obligatoire</string>
 <string id="Lastname is required">Le nom est obligatoire</string>
 <string id="Date type">Type de date</string>
+<string id="Rule">Règle</string>
+<string id="Remain">Reste</string>
 </fr>

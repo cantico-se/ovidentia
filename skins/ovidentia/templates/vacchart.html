@@ -6,12 +6,14 @@
 	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ t_name }</td>
+			<td>{ t_description }</td>
 			<td>{ t_members }</td>
 			<td>{ t_calendar }</td>
 		</tr>
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
 			<td>{ arr[name] }</td>
+			<td>{ arr[description] }</td>
 			<td>
 				
 				<a href="{ babUrlScript }?tg=vacchart&idx=entity_members&ide={ arr[id] }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_members }" border="0" /></a>
@@ -38,15 +40,36 @@
 	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ t_name }</td>
+			<td>{ t_asks }</td>
+			<td>{ t_rights }</td>
+			<td>{ t_calendar }</td>
 		</tr>
 		<!--#if superior_id -->
 		<tr class="BabSiteAdminFontBackground"> 
 			<td><strong>{ superior_name }</strong></td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacchart&idx=asks&id_user={ superior_id }&ide={ ide }">{ t_asks }</a>
+			</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacchart&idx=rights&id_user={ superior_id }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ t_rights }" border="0" /></a>
+			</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacuser&idx=cal&idu={ superior_id }&popup=1&emptylines=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
+			</td>
 		</tr>
 		<!--#endif superior_id -->
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
 			<td>{ name }</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacchart&idx=asks&id_user={ id_user }&ide={ ide }">{ t_asks }</a>
+			</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacchart&idx=rights&id_user={ id_user }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ t_rights }" border="0" /></a>
+			</td>
+			<td>
+				<a href="{ babUrlScript }?tg=vacuser&idx=cal&idu={ id_user }&popup=1&emptylines=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
+			</td>
 		</tr>
 		<!--#endin getnext -->
 	</table>
@@ -55,3 +78,34 @@
 </table>
 
 <!--#end entity_members -->
+
+<!--#begin user_rights -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ t_description }</td>
+			<td>{ t_date_begin }</td>
+			<td>{ t_date_end }</td>
+			<td>{ t_quantity }</td>
+			<td>{ t_used }</td>
+			<td>{ t_remain }</td>
+			<td>{ t_rule }</td>
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td>{ arr[description] }</td>
+			<td>{ arr[date_begin] }</td>
+			<td>{ arr[date_end] }</td>
+			<td>{ arr[quantity] }</td>
+			<td>{ arr[used] }</td>
+			<td>{ arr[remain] }</td>
+			<td><!--#if arr[rule] -->{ t_yes }<!--#else arr[rule] -->{ t_no }<!--#endif arr[rule] --></td>
+		</tr>
+		<!--#endin getnext -->
+	</table>
+</td>
+</tr>
+</table>
+<!--#end user_rights -->

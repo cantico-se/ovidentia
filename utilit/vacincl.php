@@ -23,6 +23,9 @@
 ************************************************************************/
 include_once "base.php";
 
+
+define("VAC_MAX_REQUESTS_LIST", 20);
+
 function notifyVacationApprovers($id, $users)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
@@ -229,6 +232,7 @@ function viewVacationCalendar($users, $period = false )
 
 			$this->idusers = $users;
 			$this->nbusers = count($this->idusers);
+			$this->firstuser = bab_getUserName($this->idusers[0]);
 			
 			$this->period = $period;
 			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
@@ -429,7 +433,7 @@ function viewVacationCalendar($users, $period = false )
 					$this->date = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $d);
 					$this->weekend = !in_array($dayweek, $this->workdays);
 					$this->nonworking = isset($this->nonWorkingDays[$this->date]);
-					$this->t_nonworking = $this->nonworking ? $this->nonWorkingDays[$this->date] : '';
+					$this->nonworking_text = $this->nonworking ? $this->nonWorkingDays[$this->date] : '';
 					$this->bvac = false;
 					$this->bwait = false;
 
@@ -511,5 +515,153 @@ function viewVacationCalendar($users, $period = false )
 	}
 
 
+function listVacationRequests($id_user)
+{
+	global $babBody;
 
+	class temp
+		{
+		var $nametxt;
+		var $urlname;
+		var $url;
+		var $editurl;
+		var $begindatetxt;
+		var $enddatetxt;
+		var $quantitytxt;
+		var $statustxt;
+		var $begindate;
+		var $enddate;
+		var $quantity;
+		var $status;
+				
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+
+		var $statarr;
+		var $total;
+		var $checkall;
+		var $uncheckall;
+
+		var $topurl;
+		var $bottomurl;
+		var $nexturl;
+		var $prevurl;
+		var $topname;
+		var $bottomname;
+		var $nextname;
+		var $prevname;
+		var $pos;
+
+		var $entryid;
+
+		function temp($id_user)
+			{
+
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
+			$this->nametxt = bab_translate("Fullname");
+			$this->begindatetxt = bab_translate("Begin date");
+			$this->enddatetxt = bab_translate("End date");
+			$this->quantitytxt = bab_translate("Quantity");
+			$this->statustxt = bab_translate("Status");
+			$this->calendar = bab_translate("Planning");
+			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1";
+			$this->topurl = "";
+			$this->bottomurl = "";
+			$this->nexturl = "";
+			$this->prevurl = "";
+			$this->topname = "";
+			$this->bottomname = "";
+			$this->nextname = "";
+			$this->prevname = "";
+			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
+			$this->db = $GLOBALS['babDB'];
+			$req = "".BAB_VAC_ENTRIES_TBL." where id_user='".$id_user."'";
+
+			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
+			if( $total > VAC_MAX_REQUESTS_LIST )
+				{
+				$tmpurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq&pos=";
+				if( $this->pos > 0)
+					{
+					$this->topurl = $tmpurl."0";
+					$this->topname = "&lt;&lt;";
+					}
+
+				$next = $this->pos - VAC_MAX_REQUESTS_LIST;
+				if( $next >= 0)
+					{
+					$this->prevurl = $tmpurl.$next;
+					$this->prevname = "&lt;";
+					}
+
+				$next = $this->pos + VAC_MAX_REQUESTS_LIST;
+				if( $next < $total)
+					{
+					$this->nexturl = $tmpurl.$next;
+					$this->nextname = "&gt;";
+					if( $next + VAC_MAX_REQUESTS_LIST < $total)
+						{
+						$bottom = $total - VAC_MAX_REQUESTS_LIST;
+						}
+					else
+						$bottom = $next;
+					$this->bottomurl = $tmpurl.$bottom;
+					$this->bottomname = "&gt;&gt;";
+					}
+				}
+
+			$req .= " order by date desc";
+			if( $total > VAC_MAX_REQUESTS_LIST)
+				{
+				$req .= " limit ".$this->pos.",".VAC_MAX_REQUESTS_LIST;
+				}
+			$this->res = $this->db->db_query("select * from ".$req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
+			}
+
+		function getnext()
+			{
+			global $babDayType;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->url = $GLOBALS['babUrlScript']."?tg=vacuser&idx=morve&id=".$arr['id'];
+				list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
+				$this->urlname = bab_getUserName($arr['id_user']);
+				$this->begindate = bab_shortDate(bab_mktime($arr['date_begin']." 00:00:00"), false);
+				if( $arr['day_begin'] != 1)
+					$this->begindate .= " ". $babDayType[$arr['day_begin']];
+				$this->enddate = bab_shortDate(bab_mktime($arr['date_end']." 00:00:00"), false);
+				if( $arr['day_begin'] != 1)
+					$this->enddate .= " ". $babDayType[$arr['day_end']];
+				switch($arr['status'])
+					{
+					case 'Y':
+						$this->status = $this->statarr[1];
+						break;
+					case 'N':
+						$this->status = $this->statarr[2];
+						break;
+					default:
+						$this->status = $this->statarr[0];
+						break;
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		}
+
+	$temp = new temp($id_user);
+	$babBody->babecho(	bab_printTemplate($temp, "vacuser.html", "vrequestslist"));
+	return $temp->count;
+}
 ?>

@@ -448,7 +448,7 @@ window.focus();
 			<a href="{ previousmonth }" title="{ t_previousmonth }" class="prev2"><strong>&lt;</strong></a> 
 			<a href="{ previousyear }" title="{ t_previousyear }" class="prev1"><strong>&lt;&lt;</strong></a>
 		</td>
-		<td align="center">{ yearname }</td>
+		<td align="center">{ yearname } <!--#if nbusers "== 1" --> - { firstuser }<!--#endif nbusers --></td>
 		<td align="right" class="next">
 			<a href="{ nextmonth }" title="{ t_nextmonth }" class="next2"><strong>&gt;</strong></a>
 			<a href="{ nextyear }" title="{ t_nextyear }" class="next1"><strong>&gt;&gt;</strong></a>
@@ -490,7 +490,7 @@ window.focus();
 		<td class="noday">
 		<!--#else noday -->
 			<!--#if nonworking -->
-			<td class="nonworking" title="{ titledate } : { t_nonworking }">
+			<td class="nonworking" title="{ titledate } : { nonworking_text }">
 			<!--#else nonworking -->
 				<!--#if weekend -->
 				<td  class="weekend" title="{ titledate } : { t_weekend }">

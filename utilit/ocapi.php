@@ -164,7 +164,7 @@ function bab_OCGetChildsEntities($idroot='', $idoc='')
 	$ret = array();
 	if( count($arr) > 0 )
 	{
-		$res = $babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id_oc='".$idoc."' and id_node in (".implode(',', $arr).")");
+		$res = $babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id_oc='".$idoc."' and id_node in (".implode(',', $arr).")  ORDER BY name");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 			while ($arr = $babDB->db_fetch_array($res))
@@ -333,8 +333,8 @@ function bab_OCGetUserEntities($iduser, $idoc='')
 		}
 	}
 
-	$res = $babDB->db_query("SELECT ocrt.id_entity, ocet.name as entity_name, ocet.description as entity_description, type  FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role  left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity WHERE ocrut.id_user='".$iduser."' and ocrt.id_oc='".$idoc."'");
-	if( $res && $babDB->db_num_rows($res) > 1 )
+	$res = $babDB->db_query("SELECT ocrt.id_entity, ocet.name as entity_name, ocet.description as entity_description, type  FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role  left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON det.id=ocrut.id_user WHERE det.id_user='".$iduser."' and ocrt.id_oc='".$idoc."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		while( $arr = $babDB->db_fetch_array($res))
 			{
@@ -357,5 +357,9 @@ function bab_OCGetUserEntities($iduser, $idoc='')
 	return $ret;
 
 }
+
+
+
+
 
 ?>

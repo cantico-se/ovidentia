@@ -25,6 +25,35 @@ include_once "base.php";
 include_once $babInstallPath."utilit/ocapi.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
+function bab_IsUserUnderSuperior($id_user)
+{
+	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
+		return true;
+
+	$user_entities = & bab_OCGetUserEntities($id_user);
+	$user_entities = array_merge($user_entities['superior'], $user_entities['temporary'], $user_entities['members']);
+	foreach($user_entities as $entity)
+		{
+		$user_entities_id[$entity['id']] = $entity['id'];
+		}
+
+	$arr = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+	$childs = array();
+	foreach ($arr['superior'] as $entity)
+		{
+		$childs[] = $entity;
+		$tmp = & bab_OCGetChildsEntities($entity['id']);
+		$childs = array_merge($childs, $tmp);
+		}
+
+	foreach($childs as $entity)
+		{
+		if (isset($user_entities_id[$entity['id']]))
+			return true;
+		}
+	return false;
+}
+
 
 
 function entities()
@@ -36,6 +65,22 @@ global $babBody;
 
 		function temp()
 			{
+			function _array_sort($array, $key)
+				{
+				   foreach($array as $k => $val) {
+					   $sort_values[$k] = $val[$key];
+				   }
+
+				   natcasesort($sort_values);
+				   reset($sort_values);
+
+				    foreach($sort_values as $k => $val) {
+						 $sorted_arr[] = $array[$k];
+				   }
+
+				   return $sorted_arr;
+				}
+
 			$entities = bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
 
 			$this->entities = array();
@@ -50,6 +95,8 @@ global $babBody;
 				if (!isset($this->entities[$arr['id']]))
 				$this->entities[$arr['id']] = $arr;
 				}
+
+			$this->entities = & _array_sort($this->entities, 'name');
 
 			$this->t_name = bab_translate('Name');
 			$this->t_description = bab_translate('Description');
@@ -84,6 +131,7 @@ function entity_members($ide)
 		{
 		function temp($ide)
 			{
+			$this->ide = $ide;
 			$users = bab_OCGetCollaborators($ide);
 			$superior = bab_OCGetSuperior($ide);
 			$this->superior_id = 0;
@@ -93,6 +141,11 @@ function entity_members($ide)
 				$this->superior_name = bab_composeUserName($superior['firstname'], $superior['lastname']);
 				}
 			$this->t_name = bab_translate('Name');
+			$this->t_calendar = bab_translate('Calendar');
+			$this->t_rights = bab_translate('Rights');
+			$this->t_asks = bab_translate('Requests');
+			
+			$this->users = array();
 
 			while (list(,$arr) = each($users))
 				{
@@ -141,12 +194,88 @@ function entity_cal($ide )
 		die('error, no collaborators');
 }
 
+function user_rights($id_user)
+{	
+	class temp
+		{
+		function temp($id_user)
+			{
+			$db = & $GLOBALS['babDB'];
+			
+			$this->t_description = bab_translate('Name');
+			$this->t_date_begin = bab_translate('Begin date');
+			$this->t_date_end = bab_translate('End date');
+			$this->t_quantity = bab_translate('Quantity');
+			$this->t_used = bab_translate('Used');
+			$this->t_rule = bab_translate('Rule');
+			$this->t_remain = bab_translate('Remain');
+			$this->t_yes = bab_translate('Yes');
+			$this->t_no = bab_translate('No');
+
+			$this->rights = array();
+			
+
+			$res = $db->db_query("select r.*, rules.id id_rule, ur.quantity ur_quantity from ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." c, ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_USERS_RIGHTS_TBL." ur, ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_RIGHTS_RULES_TBL." rules ON rules.id_right = r.id where t.id = c.id_type and c.id_coll=p.id_coll AND p.id_user='".$id_user."' AND r.active='Y' and ur.id_user='".$id_user."' and ur.id_right=r.id and r.id_type=t.id GROUP BY r.id  ORDER BY r.description");
+			
+			while ( $arr = $db->db_fetch_array($res) )
+				{
+				$row = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id']."' and el.id_entry=e.id"));
+
+				$quantity = $arr['ur_quantity'] != '' ? $arr['ur_quantity'] : $arr['quantity'];
+				$total = isset($row['total'])? $row['total'] : 0;
+
+				$this->rights[] = array(
+										'id' => $arr['id'],
+										'description' => $arr['description'],
+										'date_begin' => bab_shortdate(bab_mktime($arr['date_begin']),false),
+										'date_end' => bab_shortdate(bab_mktime($arr['date_end']),false),
+										'quantity' => $quantity,
+										'used' => $total,
+										'remain' => $quantity - $total,
+										'rule' => !empty($arr['id_rule'])
+										);
+				}
+
+			}
+
+		function getnext()
+			{
+			return list(,$this->arr) = each($this->rights);
+			}
+
+		function printhtml()
+			{
+			$html = & bab_printTemplate($this,"vacchart.html", "user_rights");
+
+			if (isset($_GET['popup']) && $_GET['popup'] == 1)
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+				$GLOBALS['babBodyPopup'] = new babBodyPopup();
+				$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
+				$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
+				$GLOBALS['babBodyPopup']->babecho($html);
+				printBabBodyPopup();
+				die();
+				}
+			else
+				{
+				$GLOBALS['babBody']->babecho($html);
+				}
+			}
+		}
+
+	$temp = new temp($id_user);
+	$temp->printhtml();
+}
+
+
+
+
 
 // main
 
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 
-$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
 $babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 
 switch($idx)
@@ -159,6 +288,32 @@ switch($idx)
 
 	case 'entity_cal':
 		entity_cal($_REQUEST['ide']);
+		break;
+
+	case 'rights':
+		$babBody->title = bab_getUserName($_GET['id_user']);
+		if (bab_IsUserUnderSuperior($_GET['id_user']))
+			{
+			user_rights($_GET['id_user']);
+			}
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
+		break;
+
+	case 'asks':
+		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
+		if (bab_IsUserUnderSuperior($_GET['id_user']))
+			{
+			$babBody->title = bab_translate("Vacation requests list");
+			$babBody->addItemMenu("asks", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=asks");
+			listVacationRequests($_GET['id_user']);
+			}
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
 		break;
 
 	default:
