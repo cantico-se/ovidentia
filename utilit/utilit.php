@@ -645,6 +645,8 @@ var $db;
 var $arrid = array();
 var $count;
 var $waiting;
+var $bfooter;
+var $waitingf;
 
 function forumsSection()
 	{
@@ -652,6 +654,8 @@ function forumsSection()
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = babTranslate("Forums");
 	$this->head = babTranslate("List of different forums");
+	$this->waitingf = babTranslate("Waiting posts");
+	$this->bfooter = 0;
 	$this->db = new db_mysql();
 	$req = "select * from forums";
 	$res = $this->db->db_query($req);
@@ -689,6 +693,7 @@ function forumsGetNext()
 			$this->waiting = "";
 			if( $BAB_SESS_USERID == $this->arr["moderator"])
 				{
+				$this->bfooter = 1;
 				$req = "select count(posts.id) as total from posts join threads where threads.active='Y' and threads.forum='".$this->arr['id'];
 				$req .= "' and posts.confirmed='N' and threads.id=posts.id_thread";
 				$res = $this->db->db_query($req);
