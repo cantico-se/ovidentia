@@ -3741,6 +3741,21 @@ function format_output($val, $matches)
 				$varname = $matches[3][$j];
 				$saveas = true;
 				break;
+			case 'strtr':
+				if( !empty($matches[3][$j]))
+				{
+				$trans = array();
+				for( $i =0; $i < strlen($matches[3][$j]); $i +=2 )
+					{
+					$trans[substr($matches[3][$j], $i, 1)] = substr($matches[3][$j], $i+1, 1);
+					}
+				if( count($trans)> 0 )
+					{
+					print_r($trans);
+					$val = strtr($val, $trans);
+					}
+				}
+				break;
 			}
 		}
 
