@@ -27,7 +27,22 @@
             <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
               lang }</td>
             <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="lang" size="10" maxlength="10" value="{ langval }">
+                <select name="lang">
+                  <!--#in getnextlang -->
+                  <option value="{ langval }">{ langval }</option>
+                  <!--#endin getnextlang -->
+                </select>
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              skin }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <select name="skin">
+                  <!--#in getnextskin -->
+                  <option value="{ skinval }">{ skinval }</option>
+                  <!--#endin getnextskin -->
+                </select>
             </td>
           </tr>
           <tr> 
@@ -186,7 +201,23 @@ function selectAll(list)
             <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
               lang }</td>
             <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="lang" size="10" maxlength="10" value="{ langval }">
+                <select name="lang">
+                  <!--#in getnextlang -->
+                  <option value="{ langval }" { langselected }>{ langval }</option>
+                  <!--#endin getnextlang -->
+                </select>
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              skin }</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <select name="skin">
+                  <option value=""></option>
+                  <!--#in getnextskin -->
+                  <option value="{ skinval }" { skinselected }>{ skinval }</option>
+                  <!--#endin getnextskin -->
+                </select>
             </td>
           </tr>
           <tr> 

@@ -1067,7 +1067,23 @@ function updateUserSettings()
 		}
 }
 
+function updateSiteSettings()
+{
+	global $body;
+	$db = new db_mysql();
 
+	$req="select * from sites where name='".$GLOBALS[babSiteName]."'";
+	$res=$db->db_query($req);
+
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		$arr = $db->db_fetch_array($res);
+		if( $arr[skin] != "")
+			{
+			$GLOBALS[babSkin] = $arr[skin];
+			}
+		}
+}
 
 function getSections()
 	{

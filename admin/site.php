@@ -33,7 +33,9 @@ function siteModify($id)
 		var $nameval;
 		var $descriptionval;
 		var $lang;
-		var $langval;
+		var $skin;
+		var $langsite;
+		var $skinsite;
 		var $siteemail;
 		var $siteemailval;
 		var $create;
@@ -43,11 +45,17 @@ function siteModify($id)
 		var $db;
 		var $res;
 
+        var $langselected;
+        var $siteselected;
+        var $arrfiles = array();
+        var $arrdir = array();
+
 		function temp($id)
 			{
 			$this->name = babTranslate("Site name");
 			$this->description = babTranslate("Description");
 			$this->lang = babTranslate("Lang");
+			$this->skin = babTranslate("Skin");
 			$this->siteemail = babTranslate("Email site");
 			$this->create = babTranslate("Modify");
 			$this->id = $id;
@@ -60,9 +68,70 @@ function siteModify($id)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->nameval = $arr[name];
 				$this->descriptionval = $arr[description];
-				$this->langval = $arr[lang];
+				$this->langsite = $arr[lang];
+				$this->skinsite = $arr[skin];
 				$this->siteemailval = $arr[adminemail];
 				}
+			$h = opendir($GLOBALS[babInstallPath]."lang/"); 
+            while ( $file = readdir($h))
+                { 
+                if ($file != "." && $file != "..")
+                    {
+                    if( eregi("lang-([^.]*)", $file, $regs))
+                        {
+                        if( $file == "lang-".$regs[1].".xml")
+                            $this->arrfiles[] = $regs[1]; 
+                        }
+                    } 
+                }
+            closedir($h);
+			$this->count = count($this->arrfiles);
+
+			$h = opendir($GLOBALS[babInstallPath]."skins/"); 
+            while ( $file = readdir($h))
+                { 
+                if ($file != "." && $file != "..")
+                    {
+					if( is_dir($GLOBALS[babInstallPath]."skins/".$file))
+						$this->arrdir[] = $file; 
+                    } 
+                }
+            closedir($h);
+            $this->scount = count($this->arrdir);
+			}
+		
+		function getnextlang()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+                $this->langval = $this->arrfiles[$i];
+                if( $this->langsite == $this->langval )
+                    $this->langselected = "selected";
+                else
+                    $this->langselected = "";
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextskin()
+			{
+			static $i = 0;
+			if( $i < $this->scount)
+				{
+                $this->skinval = $this->arrdir[$i];
+                if( $this->skinsite == $this->skinval )
+                    $this->skinselected = "selected";
+                else
+                    $this->skinselected = "";
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 
@@ -262,7 +331,7 @@ function sectionDelete($id)
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $siteemail)
+function siteUpdate($id, $name, $description, $lang, $siteemail, $skin)
 	{
 	global $body;
 	if( empty($name))
@@ -281,7 +350,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail)
 		}
 	else
 		{
-		$query = "update sites set name='$name', description='$description', lang='$lang', adminemail='$siteemail' where id='$id'";
+		$query = "update sites set name='$name', description='$description', lang='$lang', adminemail='$siteemail', skin='$skin' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: index.php?tg=sites&idx=list");
@@ -328,7 +397,7 @@ function siteUpdateHomePage1($item, $listpage1)
 /* main */
 if( isset($modify))
 	{
-	if(!siteUpdate($item, $name, $description, $lang, $siteemail))
+	if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin))
 		$idx = "modify";
 	}
 

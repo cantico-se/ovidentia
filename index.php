@@ -17,6 +17,7 @@ include $babInstallPath."utilit/utilit.php";
 
 userIsloggedin();
 updateUserSettings();
+updateSiteSettings();
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";

@@ -74,7 +74,7 @@ function sitesList()
 	}
 
 
-function siteCreate($name, $description, $lang, $siteemail)
+function siteCreate($name, $description, $siteemail)
 	{
 	global $body;
 	class temp
@@ -88,13 +88,24 @@ function siteCreate($name, $description, $lang, $siteemail)
 		var $siteemail;
 		var $siteemailval;
 		var $create;
+        var $arrfiles = array();
 
-		function temp($name, $description, $lang, $siteemail)
+        var $count;
+        var $langval;
+
+        var $arrdir = array();
+		var $skin;
+
+        var $scount;
+        var $siteval;
+
+		function temp($name, $description, $siteemail)
 			{
 
 			$this->name = babTranslate("Site name");
 			$this->description = babTranslate("Description");
 			$this->lang = babTranslate("Lang");
+			$this->skin = babTranslate("Skin");
 			$this->siteemail = babTranslate("Email site");
 			$this->create = babTranslate("Create");
 
@@ -102,16 +113,68 @@ function siteCreate($name, $description, $lang, $siteemail)
 			$this->descriptionval = $description == ""? "": $description;
 			$this->langval = $lang == ""? $GLOBALS[babLanguage]: $lang;
 			$this->siteemailval = $siteemail == ""? $GLOBALS[babAdminEmail]: $siteemail;
+
+			$h = opendir($GLOBALS[babInstallPath]."lang/"); 
+            while ( $file = readdir($h))
+                { 
+                if ($file != "." && $file != "..")
+                    {
+                    if( eregi("lang-([^.]*)", $file, $regs))
+                        {
+                        if( $file == "lang-".$regs[1].".xml")
+                            $this->arrfiles[] = $regs[1]; 
+                        }
+                    } 
+                }
+            closedir($h);
+            $this->count = count($this->arrfiles);
+
+			$h = opendir($GLOBALS[babInstallPath]."skins/"); 
+            while ( $file = readdir($h))
+                { 
+                if ($file != "." && $file != "..")
+                    {
+					if( is_dir($GLOBALS[babInstallPath]."skins/".$file))
+						$this->arrdir[] = $file; 
+                    } 
+                }
+            closedir($h);
+            $this->scount = count($this->arrdir);
+			}
+		function getnextlang()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+                $this->langval = $this->arrfiles[$i];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextskin()
+			{
+			static $i = 0;
+			if( $i < $this->scount)
+				{
+                $this->skinval = $this->arrdir[$i];
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 
-	$temp = new temp($name, $description, $lang, $siteemail);
+	$temp = new temp($name, $description, $siteemail);
 	$body->babecho(	babPrintTemplate($temp,"sites.html", "sitecreate"));
 	}
 
 
 
-function siteSave($name, $description, $lang, $siteemail)
+function siteSave($name, $description, $lang, $siteemail, $skin)
 	{
 	global $body;
 	if( empty($name))
@@ -130,7 +193,7 @@ function siteSave($name, $description, $lang, $siteemail)
 		}
 	else
 		{
-		$query = "insert into sites (name, description, lang, adminemail) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail."')";
+		$query = "insert into sites (name, description, lang, adminemail, skin) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin."')";
 		$db->db_query($query);
 		}
 	return true;
@@ -140,7 +203,7 @@ function siteSave($name, $description, $lang, $siteemail)
 /* main */
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail))
+	if(!siteSave($name, $description, $lang, $siteemail, $skin))
 		$idx = "create";
 	}
 
@@ -152,7 +215,7 @@ switch($idx)
 	{
 	case "create":
 		$body->title = babTranslate("Create site");
-		siteCreate($name, $description, $lang, $siteemail);
+		siteCreate($name, $description, $siteemail);
 		$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS[babUrl]."index.php?tg=sites&idx=list");
 		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sites&idx=create");
 		break;
