@@ -442,6 +442,12 @@ function import()
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin )
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( !isset($idx))
 	$idx = "list";
 
