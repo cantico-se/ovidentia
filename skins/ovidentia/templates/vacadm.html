@@ -246,7 +246,7 @@ if (users != '')
 				<!--#endif selected -->
 				<!--#endin getnextselect -->
 			</td>
-			<td align="right" class="BabLetterlists" colspan="2">
+			<td align="right" class="BabLetterlists" colspan="3">
 				<a href="{ addpurl }">{ addpersonnel }</a>&nbsp|&nbsp
 				<a href="{ addgurl }">{ g_addpersonnel }</a>
 			</td>
@@ -263,6 +263,7 @@ if (users != '')
 			<td align="center">
 				<a href="javascript:onCheckAll('calendar', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('calendar', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0" /></a>
 			</td>
+			<td>&nbsp;</td>
 		</tr>
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
@@ -274,6 +275,7 @@ if (users != '')
 			<td>{ saname }</td>
 			<td><a href="{ lrbuurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
 			<td align="center"><input type="checkbox" name="calendar[]" value="{ userid }" /></td>
+			<td><a href="{ vunewurl }"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ altvunew }" border="0" align="middle"></a></td>
 		</tr> 
 		<!--#endin getnext -->
 		<tr class="BabSiteAdminTitleFontBackground"> 
@@ -285,6 +287,9 @@ if (users != '')
 			</td>
 			<td align="center">
 				<a href="javascript:view_calendar_checkbox()">{ t_view_calendar }</a>
+			</td>
+			<td>
+				&nbsp;
 			</td>
 		</tr>
 	</table>

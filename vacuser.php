@@ -124,7 +124,8 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$this->halfdaybegin = $halfdaybegin;
 			$this->halfdayend = $halfdayend;
 
-			$this->rights = bab_getRightsOnPeriod($this->begin, $this->end, $this->id_user);
+			$this->rfrom = isset($_POST['rfrom'])? $_POST['rfrom'] : 0;
+			$this->rights = bab_getRightsOnPeriod($this->begin, $this->end, $this->id_user, $this->rfrom);
 
 			$this->recorded = array();
 			if (!empty($this->id))
@@ -259,6 +260,7 @@ function period($id_user, $id = 0)
 			$this->id_user = $id_user;
 
 			$this->year = isset($_REQUEST['year']) ? $_REQUEST['year'] : date('Y');
+			$this->rfrom = isset($_REQUEST['rfrom']) ? $_REQUEST['rfrom'] : 0;
 
 			if (!empty($this->id) && !isset($_POST['daybegin']))
 				{
@@ -296,7 +298,7 @@ function period($id_user, $id = 0)
 
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user;
 
-			$this->rights = bab_getRightsOnPeriod(false, false, $id_user);
+			$this->rights = bab_getRightsOnPeriod(false, false, $id_user, $this->rfrom);
 			$this->total = 0;
 			$this->total_waiting = 0;
 			}
@@ -421,7 +423,7 @@ function vedUnload()
 	echo bab_printTemplate($temp,"vacuser.html", "vedunload");
 	}
 
-function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $halfdayend, $remarks, $total)
+function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $halfdayend, $remarks, $total, $rfrom)
 {
 	global $babBody, $babDB;
 	$nbdays = array();
@@ -439,7 +441,16 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 
 	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id_user."'"));
 
-	$rights = bab_getRightsOnPeriod($begin, $end, $id_user);
+	if( $rfrom == 1 )
+		{
+		$acclevel = bab_vacationsAccess();
+		if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
+			{
+			$rfrom = 0;
+			}
+		}
+
+	$rights = bab_getRightsOnPeriod($begin, $end, $id_user, $rfrom);
 
 	$ntotal = 0;
 	foreach($rights as $arr)
@@ -511,7 +522,7 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 		$babDB->db_query("insert into ".BAB_VAC_ENTRIES_ELEM_TBL." (id_entry, id_type, quantity) values  ('" .$id. "', '" .$nbdays['id'][$i]. "', '" . $nbdays['val'][$i]. "')");
 		}
 
-	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
+	if ($id_user == $GLOBALS['BAB_SESS_USERID'] || $rfrom == 1)
 		{
 		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id);
 		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai='".$idfai."',status='' where id='".$id."'");
@@ -748,7 +759,8 @@ switch ($_POST['action'])
 	case 'vacation_request':
 		if (bab_isRequestEditable($_POST['id']))
 		{
-		if(!addNewVacation($_POST['id_user'], $_POST['id'], $begin, $end, $halfdaybegin, $halfdayend, $remarks, $total))
+		if( !isset($rfrom) ) { $rfrom = 0; }
+		if(!addNewVacation($_POST['id_user'], $_POST['id'], $begin, $end, $halfdaybegin, $halfdayend, $remarks, $total, $rfrom))
 			$idx = "vunew";
 		elseif ($_POST['id_user'] == $GLOBALS['BAB_SESS_USERID'])
 			{
@@ -820,8 +832,9 @@ switch($idx)
 			}
 		else
 			{
-			viewVacationCalendar(array($GLOBALS['BAB_SESS_USERID']), true);
-			period($GLOBALS['BAB_SESS_USERID']);
+			if( !isset($id_user)) { $id_user = $GLOBALS['BAB_SESS_USERID']; }
+			viewVacationCalendar(array($id_user), true);
+			period($id_user);
 			}
 		if ($entities_access > 0)
 			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");

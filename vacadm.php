@@ -397,6 +397,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->deletealt = bab_translate("Delete");
 			$this->altlrbu = bab_translate("Rights");
 			$this->altcal = bab_translate("Calendar");
+			$this->altvunew = bab_translate("Request");
 			$this->t_view_calendar = bab_translate("View calendars");
 			$this->addpurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addp&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
 			$this->addgurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addg&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
@@ -466,6 +467,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				$this->userid = $this->arr['id'];
 				$this->lrbuurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lrbu&idu=".$this->userid;
 				$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->userid;
+				$this->vunewurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=period&rfrom=1&id_user=".$this->userid;
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_COLLECTIONS_TBL." where id='".$this->arr['id_coll']."'"));
 				$this->collname = $arr['name'];
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$this->arr['id_sa']."'"));

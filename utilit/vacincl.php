@@ -147,7 +147,7 @@ function notifyOnRequestChange($id, $delete = false)
 
 
 
-function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
+function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $rfrom=0)
 	{
 	$return = array();
 	$begin = $begin ? bab_mktime( $begin ) : $begin;
@@ -157,7 +157,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 
 	$db = & $GLOBALS['babDB'];
 
-	$res = $db->db_query("SELECT 
+	$req = "SELECT 
 				rules.*, 
 				r.*, 
 				ur.quantity ur_quantity 
@@ -172,14 +172,23 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 					ON rules.id_right = r.id 
 				WHERE t.id = c.id_type 
 					AND c.id_coll=p.id_coll 
-					AND p.id_user='".$id_user."' 
-					AND r.active='Y' 
-					AND ur.id_user='".$id_user."' 
-					AND ur.id_right=r.id 
-					AND r.id_type=t.id 
-				GROUP BY r.id 
-				ORDER BY r.description
-					");
+					AND p.id_user='".$id_user."' ";
+	
+	if( $rfrom == 1 )
+		{
+		$acclevel = bab_vacationsAccess();
+		if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
+			{
+			$req .= " AND r.active='Y' ";
+			}
+		}
+	else
+		{
+		$req .= " AND r.active='Y' ";
+		}
+
+	$req .= " AND ur.id_user='".$id_user."' AND ur.id_right=r.id 	AND r.id_type=t.id 	GROUP BY r.id ORDER BY r.description";
+	$res = $db->db_query($req);
 	
 	while ( $arr = $db->db_fetch_array($res) )
 		{
