@@ -88,11 +88,13 @@ top.flt.document.location.href='{ updateurlt }' + more;
 <td class="BabForumTopicsNavTreeLive">
 <!--#if update -->
 <a id="ENT{ oeid }" name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');javascript:updateFlbFrame('{ oeid }&idx=mode'); updateFltFrame('{ oeid }&idx=listr')" class="BabForumTopicsNavContribution" >
-{ entity }</a>
 <!--#else update -->
 <a id="ENT{ oeid }" name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');javascript:updateFltFrame('{ oeid }&idx=listr')" class="BabForumTopicsNavContribution" >
-{ entity }</a>
 <!--#endif update -->
+{ entity }</a>
+<!--#if superior -->
+&nbsp;&nbsp;<b>[<a class="BabSiteAdminListLink" href="#" onclick="top.flb.document.location.href='{ superiorurl }'">{ superior }</a>]</b>
+<!--#endif superior -->
 <!--#if current -->
 <script type="text/javascript">
 <!--
@@ -146,7 +148,9 @@ updateFltFrame('{ currentoe }&idx=listr');
 <!--#else update -->
 <a id="ENT{ oeid }" name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFltFrame('{ oeid }&idx=listr');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');">{ entity }</a>
 <!--#endif update -->
-<br>{ description }</TD>
+<br>{ description }
+<br><b><a class="BabSiteAdminListLink" href="#" onclick="top.flb.document.location.href='{ superiorurl }'">{ superior }</a></b>
+</TD>
 </TR>
 <TR nowrap>
 <TD align="center" width="100%"  valign="bottom">
@@ -283,10 +287,14 @@ updateFltFrame('{ currentoe }&idx=listr');
 
 
 <!--#begin display_node -->
-<table width="100%" border="0" cellspacing="0" cellpadding="1">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
 	<!--#if firstchild -->
-	<td width="50%">
+	<!--#if first -->
+	<td width="50%" align="right"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" name="left_to_center" width="100%" height="1px"></td>
+	<!--#else first -->
+	<td width="50%">&nbsp;</td>
+	<!--#endif first -->
 	<!--#else firstchild -->
 	<td style="border-top:#000000 1px solid; " width="50%">&nbsp;</td>
 	<!--#endif firstchild -->
@@ -302,11 +310,19 @@ updateFltFrame('{ currentoe }&idx=listr');
   </tr>
   <tr align="center"> 
     <td colspan="2"> 
+	<table width="184" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+		<td width="2">&nbsp;</td>
+		 <td width="180">
       <table width="180" border="0" cellspacing="0" cellpadding="1"  style="border:#000000 1px solid;">
         <tr  id="ENT{ oeid }"  class="BabForumNavigationBackground"> 
           <td width="100%">{ nodecell }</td>
         </tr>
       </table>
+    </td>
+		  <td width="2">&nbsp;</td>
+  </tr>
+	  </table>
     </td>
   </tr>
   <tr> 
@@ -336,6 +352,27 @@ changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackgro
 //-->
 </script>
 <!--#endif current -->
+<!--#if first -->
+<script type="text/javascript">
+<!--
+var w = 0;
+function center_chart()
+{
+var left_to_center = document.getElementById('left_to_center');
+if (w == 0) 
+	{
+	w = document.images['left_to_center'].width;
+	var lfw = document.all ? parent.document.all.flt.width : 240;
+	var d = (screen.width - lfw)/2;
+	scroll(w-d,0);
+	setTimeout('center_chart()',50);
+	}
+	
+}
+center_chart();
+//-->
+</script>
+<!--#endif first -->
 <!--#end display_node -->
 
 <!--#begin oedirectorylist_disp3 -->
@@ -381,6 +418,9 @@ function updateFrFrame(idx)
 {
 var dummy;
 top.fr.document.location.href='{ updatefrurl }&disp=' + idx;
+for( var i = 1 ; i <= 5 ; i++ )
+	document.images['disp'+i].src = '{ babSkinPath }images/Puces/chart_disp'+i+'.gif';
+document.images[idx].src = '{ babSkinPath }images/Puces/chart_'+idx+'_on.gif';
 }
 
 //-->
@@ -397,17 +437,22 @@ top.fr.document.location.href='{ updatefrurl }&disp=' + idx;
 	{ charttitle }
 	</TD>
 	<TD class="BabLoginMenuBackground" align="right" valign="middle">
-	&nbsp;<a href="javascript:updateFrFrame('disp1')"><img alt="{ chart_disp1_title }" src="{ babSkinPath }images/Puces/chart_disp1.gif" alt="" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp2')"><img alt="{ chart_disp2_title }" src="{ babSkinPath }images/Puces/chart_disp2.gif" alt="" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp3')"><img alt="{ chart_disp3_title }" src="{ babSkinPath }images/Puces/chart_disp3.gif" alt="" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp4')"><img alt="{ chart_disp4_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" alt="" border="0"></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp5')"><img alt="{ chart_disp5_title }" src="{ babSkinPath }images/Puces/chart_disp5.gif" alt="" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp1')"><img alt="{ chart_disp1_title }" src="{ babSkinPath }images/Puces/chart_disp1.gif" name="disp1" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp2')"><img alt="{ chart_disp2_title }" src="{ babSkinPath }images/Puces/chart_disp2.gif" name="disp2" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp3')"><img alt="{ chart_disp3_title }" src="{ babSkinPath }images/Puces/chart_disp3.gif" name="disp3" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp4')"><img alt="{ chart_disp4_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" name="disp4" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp5')"><img alt="{ chart_disp5_title }" src="{ babSkinPath }images/Puces/chart_disp5.gif" name="disp5" border="0"></a>
 	</TD>
 	<TD class="BabLoginMenuBackground" width="5" align="left">
 	&nbsp;
 	</TD>
 	</TR>
 </TABLE>
+<script type="text/javascript">
+<!--
+document.images['disp1'].src = '{ babSkinPath }images/Puces/chart_disp1_on.gif';
+//-->
+</script>
 </BODY>
 </HTML>
 <!--#end frtframe -->

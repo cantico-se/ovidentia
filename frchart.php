@@ -82,7 +82,10 @@ function displayChart($ocid, $oeid, $update, $disp='')
 				}
 			$this->currentoe = $oeid;
 			$this->maxlevel += 1;
-			$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
+			//$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
+			
+			$this->res = $babDB->db_query("select ocet.*, ocet.id as identity, ocut.id_user, det.sn, det.givenname from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt on ocrt.id_oc=ocet.id_oc and ocrt.id_entity=ocet.id and ocrt.type='1' LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocut on ocut.id_role=ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocut.id_user where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
+			
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->javascript = bab_printTemplate($this, "frchart.html", "orgjavascript");
 			$this->padarr = array();
@@ -95,6 +98,15 @@ function displayChart($ocid, $oeid, $update, $disp='')
 			if( $i < $this->count)
 				{
 				$row = $babDB->db_fetch_array($this->res);
+				if( isset($row['sn'] ))
+					{
+					$this->superior = bab_composeUserName($row['givenname'],$row['sn']);
+					$this->superiorurl = $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$this->ocid."&oeid=".$row['identity']."&iduser=".$row['id_user'];
+					}
+				else
+					{
+					$this->superior = '';
+					}
 				if( !in_array($row['id_node'], $this->arr))
 					{
 					$skip = true;
@@ -109,7 +121,7 @@ function displayChart($ocid, $oeid, $update, $disp='')
 					   } 
 					} 
 				//$this->entity = $row['name']."(".$row['id'].")";
-				$this->entity = $row['name']."(".$row['id'].")";
+				$this->entity = $row['name'];
 				if( !empty($row['description']))
 					{
 					$this->description = "( ".$row['description']." )";
@@ -231,15 +243,15 @@ function displayChart($ocid, $oeid, $update, $disp='')
 		{
 		switch ($disp)
 			{
-			case "disp1":
-				$template = "oedirectorylist_disp1";
+			case "disp2":
+				$template = "oedirectorylist_disp2";
 				break;
 			case "disp3":
 				$template = "oedirectorylist_disp2";
 				break;
-			case "disp2":
+			case "disp1":
 			default:
-				$template = "oedirectorylist_disp2";
+				$template = "oedirectorylist_disp1";
 				break;
 			}
 		}
@@ -265,14 +277,25 @@ class orgtemp
 		$this->updateurlt = $this->obj->updateurlt;
 		$this->currentoe = $this->obj->currentoe;
 
-		if( !empty($row['description']))
+		if( !empty($this->obj->babTree->nodes[$id]['datas']['description']))
 			{
-			$this->description = "( ".$row['description']." )";
+			$this->description = "( ".$this->obj->babTree->nodes[$id]['datas']['description']." )";
 			}
 		else
 			{
 			$this->description = "";
 			}
+
+		if( isset($this->obj->babTree->nodes[$id]['datas']['sn'] ))
+			{
+			$this->superior = bab_composeUserName($this->obj->babTree->nodes[$id]['datas']['givenname'],$this->obj->babTree->nodes[$id]['datas']['sn']);
+			$this->superiorurl = $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$this->ocid."&oeid=".$this->obj->babTree->nodes[$id]['datas']['identity']."&iduser=".$this->obj->babTree->nodes[$id]['datas']['id_user'];
+			}
+		else
+			{
+			$this->superior = '';
+			}
+
 		$this->oeid = $this->obj->babTree->nodes[$id]['datas']['id'];
 		$fid = $this->obj->babTree->getFirstChild($id);
 		$this->childs = array();
@@ -287,7 +310,7 @@ class orgtemp
 		$this->count = count($this->childs);
 		if( $this->obj->babTree->hasChildren($id))
 			{
-			$this->closenodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=disp3".$this->ocid."&idx=closen&ocid=".$this->ocid."&oeid=".$this->oeid;
+			$this->closenodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=disp3&idx=closen&ocid=".$this->ocid."&oeid=".$this->oeid;
 			$this->parent = 1;
 			$this->leaf = 0;
 			}
@@ -430,7 +453,10 @@ function displayChartTree($ocid, $oeid, $update)
 				}
 			$this->currentoe = $oeid;
 			/* lire uniquement à partir du root XXXXXXXXXX*/
-			$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
+			//$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
+			
+			$this->res = $babDB->db_query("select ocet.*, ocet.id as identity, ocut.id_user, det.sn, det.givenname from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt on ocrt.id_oc=ocet.id_oc and ocrt.id_entity=ocet.id and ocrt.type='1' LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocut on ocut.id_role=ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocut.id_user where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
+
 			while($row = $babDB->db_fetch_array($this->res))
 				{
 				if( isset($this->babTree->nodes[$row['id_node']]))
@@ -460,11 +486,11 @@ function displayFrtFrame($ocid, $oeid, $update)
 			global $ocinfo;
 			$this->javascript = bab_printTemplate($this, "frchart.html", "orgjavascript");
 			$this->charttitle = $ocinfo['name'];
-			$this->chart_disp1_title = bab_translate("");
-			$this->chart_disp2_title = bab_translate("");
-			$this->chart_disp3_title = bab_translate("");
-			$this->chart_disp4_title = bab_translate("");
-			$this->chart_disp5_title = bab_translate("");
+			$this->chart_disp1_title = bab_translate("Text view");
+			$this->chart_disp2_title = bab_translate("Vertical view");
+			$this->chart_disp3_title = bab_translate("Horizontal view");
+			$this->chart_disp4_title = bab_translate("Roles");
+			$this->chart_disp5_title = bab_translate("Directory");
 			$this->updatefrurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid;
 			}
 
@@ -1042,7 +1068,7 @@ if(!isset($idx))
 
 if(!isset($disp))
 	{
-	$disp = "";
+	$disp = "disp1";
 	}
 if( $idx == "startn" )
 {
@@ -1077,7 +1103,6 @@ elseif( isset($$sess))
 }
 
 chart_session_oeid($ocid);
-//echo "oeid=".$oeid."hhh";
 switch($idx)
 	{
 	case "frt":
