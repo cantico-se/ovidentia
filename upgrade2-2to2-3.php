@@ -1,6 +1,39 @@
 <?php
 /* upgrade from 2.2 to 2.3 */
 
+function updateCSS()
+{
+	$filename = "config.php";
+
+	$file = @fopen($filename, "r");
+	$txt = fread($file, filesize($filename));
+	fclose($file);
+	$reg = "/babStyle\s*=\s*\"([^ ]*)\"/s";
+	$res = preg_match($reg, $txt, $match);
+
+	if( $res)
+	{
+	$filecss = "styles/".$match[1];
+	$file = fopen($filecss, "a");
+
+$out = <<<EOD
+.BabMonthDayBgnd {
+	BACKGROUND-COLOR: #BBBBBB; COLOR: black
+}
+
+.BabActifMonthDayBgnd {
+	BACKGROUND-COLOR: #FFCC99; COLOR: black
+}
+
+.BabCurrentMonthDayBgnd {
+	BACKGROUND-COLOR: #FFFFFF; COLOR: black
+}
+EOD;
+	fputs($file, $out);
+	fclose($file);
+	}
+}
+
 function upgrade()
 {
 $ret = "";
@@ -127,6 +160,8 @@ while( $arr = $db->db_fetch_array($res1))
 		$req = "insert into calendar (owner, actif, type) values ('".$arr[id]."', 'Y', '2')";
 	$res = $db->db_query($req);
 	}
+
+updateCSS();
 return $ret;
 }
 
