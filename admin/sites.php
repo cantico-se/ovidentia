@@ -208,10 +208,10 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			if (!isset($this->dbvalue['change_password'])) $this->dbvalue['change_password'] = "Y";
 			if (!isset($this->dbvalue['change_nickname'])) $this->dbvalue['change_nickname'] = "Y";
 			if (!isset($this->dbvalue['name_order'])) $this->dbvalue['name_order'] = "F L";
-			if (!isset($this->dbvalue['total_diskspace'])) $this->dbvalue['total_diskspace'] = "200000000";
-			if (!isset($this->dbvalue['user_diskspace'])) $this->dbvalue['user_diskspace'] = "30000000";
-			if (!isset($this->dbvalue['folder_diskspace'])) $this->dbvalue['folder_diskspace'] = "50000000";
-			if (!isset($this->dbvalue[ 'maxfilesize'])) $this->dbvalue[ 'maxfilesize'] = "30000000";
+			if (!isset($this->dbvalue['total_diskspace'])) $this->dbvalue['total_diskspace'] = "200";
+			if (!isset($this->dbvalue['user_diskspace'])) $this->dbvalue['user_diskspace'] = "50";
+			if (!isset($this->dbvalue['folder_diskspace'])) $this->dbvalue['folder_diskspace'] = "100";
+			if (!isset($this->dbvalue[ 'maxfilesize'])) $this->dbvalue[ 'maxfilesize'] = "50";
 
 			$this->nameval = $name == ""? $GLOBALS['babSiteName']: $name;
 			$this->descriptionval = $description == ""? "": $description;
@@ -489,11 +489,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		$uploadpath = addslashes($uploadpath);
 		}
 
-	function str_is_int($str) {
-		 return 0 === strcmp($str , (int)$str);
-		}
-
-	if( !str_is_int($total_diskspace) || !str_is_int($user_diskspace) || !str_is_int($folder_diskspace) || !str_is_int($maxfilesize))
+	if( !is_numeric($total_diskspace) || !is_numeric($user_diskspace) || !is_numeric($folder_diskspace) || !is_numeric($maxfilesize))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide all file manager size limits !!");
 		return false;
@@ -510,7 +506,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 	else
 		{
 		if( !is_numeric($imgsize))
-			$imgsize = 25;
+			$imgsize = 50;
 		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group. "', '" . $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."')";
 		$db->db_query($query);
 		}

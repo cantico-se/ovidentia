@@ -1810,25 +1810,25 @@ function bab_updateSiteSettings()
 		$GLOBALS['babMaxTotalSize'] = "200000000";
 	if( $arr['user_diskspace'] != "")
 		{
-		$GLOBALS['babMaxUserSize'] = $arr['user_diskspace'];
+		$GLOBALS['babMaxUserSize'] = $arr['user_diskspace']*1048576;
 		}
 	else
 		$GLOBALS['babMaxUserSize'] = "30000000";
 	if( $arr['folder_diskspace'] != "")
 		{
-		$GLOBALS['babMaxGroupSize'] = $arr['folder_diskspace'];
+		$GLOBALS['babMaxGroupSize'] = $arr['folder_diskspace']*1048576;
 		}
 	else
 		$GLOBALS['babMaxGroupSize'] = "50000000";
 	if( $arr['maxfilesize'] != "")
 		{
-		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize'];
+		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize']*1048576;
 		}
 	else
 		$GLOBALS['babMaxFileSize'] = "30000000";
 	if( $arr['uploadpath'] != "")
 		{
-		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
+		$GLOBALS['babUploadPath'] = $arr['uploadpath']*1048576;
 		}
 	else
 		$GLOBALS['babUploadPath'] = "";

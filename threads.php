@@ -250,6 +250,7 @@ function newThread($forum)
 			$this->notifyme = bab_translate("Notify me whenever someone replies ( only valid for registered users )");
 			$this->message = bab_translate("Message");
 			$this->add = bab_translate("New thread");
+			$this->post = bab_translate("Post");
 			$this->forum = $forum;
 			if( empty($BAB_SESS_USER))
 				$this->anonyme = 1;

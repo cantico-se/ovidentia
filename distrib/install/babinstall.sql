@@ -731,27 +731,38 @@ CREATE TABLE bab_contacts (
 # Structure de la table 'bab_sites'
 #
 
-CREATE TABLE bab_sites (
-   id int(11) unsigned NOT NULL auto_increment,
-   name char(30) NOT NULL,
-   description char(100) NOT NULL,
-   lang char(10) NOT NULL,
-   adminemail char(255) NOT NULL,
-   skin char(255) NOT NULL,
-   style char(255) NOT NULL,
-   registration enum('Y','N') DEFAULT 'Y' NOT NULL,
-   email_confirm enum('Y','N') DEFAULT 'Y' NOT NULL,
-   mailfunc char(255) NOT NULL DEFAULT 'mail',
-   smtpserver char(255) NOT NULL DEFAULT '',
-   smtpport char(20) NOT NULL DEFAULT '25',
-   imgsize int(11) unsigned NOT NULL default '25',
-   idgroup int(11) unsigned NOT NULL default '0',
-   smtpuser varchar(20) NOT NULL default '',
-   smtppassword tinyblob NOT NULL,
-   langfilter INTEGER DEFAULT 0,
-   PRIMARY KEY (id),
-   KEY name (name)
-);
+CREATE TABLE `bab_sites` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(30) NOT NULL default '',
+  `description` varchar(100) NOT NULL default '',
+  `lang` varchar(10) NOT NULL default '',
+  `adminemail` varchar(255) NOT NULL default '',
+  `skin` varchar(255) NOT NULL default '',
+  `style` varchar(255) NOT NULL default '',
+  `registration` enum('Y','N') NOT NULL default 'Y',
+  `email_confirm` enum('Y','N') NOT NULL default 'Y',
+  `mailfunc` varchar(20) NOT NULL default 'mail',
+  `smtpserver` varchar(255) NOT NULL default '',
+  `smtpport` varchar(20) NOT NULL default '25',
+  `imgsize` int(11) unsigned NOT NULL default '0',
+  `idgroup` int(11) unsigned NOT NULL default '0',
+  `smtpuser` varchar(255) NOT NULL default '',
+  `smtppassword` tinyblob NOT NULL,
+  `langfilter` int(11) default '0',
+  `total_diskspace` int(11) unsigned NOT NULL default '190',
+  `user_diskspace` int(11) unsigned NOT NULL default '50',
+  `folder_diskspace` int(11) unsigned NOT NULL default '100',
+  `maxfilesize` int(11) unsigned NOT NULL default '50',
+  `uploadpath` varchar(255) NOT NULL default '',
+  `babslogan` varchar(255) NOT NULL default '',
+  `remember_login` enum('Y','N') NOT NULL default 'N',
+  `change_password` enum('Y','N') NOT NULL default 'Y',
+  `change_nickname` enum('Y','N') NOT NULL default 'Y',
+  `name_order` enum('F L','L F') NOT NULL default 'F L',
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`)
+) TYPE=MyISAM AUTO_INCREMENT=16 ;
+
 
 INSERT INTO bab_sites (name, description, lang, adminemail, skin, style) values ('Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'ovidentia', 'ovidentia.css');
 

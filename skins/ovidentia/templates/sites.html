@@ -1,4 +1,17 @@
 <!--#begin sitecreate -->
+<script language="javascript">
+function validateNum(field) 
+	{
+	var valid = "0123456789"
+	var temp;
+	for (var i=0; i<field.value.length; i++) {
+		temp = "" + field.value.substring(i, i+1);
+		if (valid.indexOf(temp) == "-1") 
+			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+		}
+	}
+</script>
+
 <form name="formsite" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="sites">
 <input type="hidden" name="idx" value="0">
@@ -119,7 +132,7 @@
             <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
               serverport }</td>
             <td> 
-              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
+              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)">
 </td>
           <tr valign="middle"> 
             <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ smtpuser }</td>
@@ -144,7 +157,7 @@
             <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
               imagessize }</td>
             <td> 
-              <input type="text" name="imgsize" size="5" maxlength="10" value="25">
+              <input type="text" name="imgsize" size="5" maxlength="10" value="50" onKeyUp="validateNum(this)">
 </td>
 </tr>
           <tr valign="middle"> 
@@ -225,26 +238,26 @@
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
-            <td width="70%"> 
-				<input type="text" name="maxfilesize" size="20" maxlength="255" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
-            <td width="70%"> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="255" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
-            <td width="70%"> 
-				<input type="text" name="user_diskspace" size="20" maxlength="255" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
-            <td width="70%"> 
-				<input type="text" name="total_diskspace" size="20" maxlength="255" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>
@@ -561,26 +574,26 @@ function validateNum(field)
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
-            <td width="70%"> 
-				<input type="text" name="maxfilesize" size="20" maxlength="255" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
-            <td width="70%"> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="255" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
-            <td width="70%"> 
-				<input type="text" name="user_diskspace" size="20" maxlength="255" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>
 			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
-            <td width="70%"> 
-				<input type="text" name="total_diskspace" size="20" maxlength="255" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> Mo
 			</td>
 		</tr>
 		<tr>

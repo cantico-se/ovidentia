@@ -681,12 +681,7 @@ function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspa
 		$uploadpath = addslashes($uploadpath);
 		}
 
-
-	function str_is_int($str) {
-		 return 0 === strcmp($str , (int)$str);
-		}
-
-	if( !str_is_int($total_diskspace) || !str_is_int($user_diskspace) || !str_is_int($folder_diskspace) || !str_is_int($maxfilesize))
+	if( !is_numeric($total_diskspace) || !is_numeric($user_diskspace) || !is_numeric($folder_diskspace) || !is_numeric($maxfilesize))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide all file manager size limits !!");
 		return false;
