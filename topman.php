@@ -1435,10 +1435,17 @@ switch($idx)
 		/* no break; */
 	case "Articles":
 		$arrinit = topman_init($item);
-		if( $manager && $arrinit['nbonline'] > 0)
+		if( $manager )
 		{
 		$babBody->title = bab_translate("List of articles").": ".bab_getCategoryTitle($item);
-		listArticles($item);
+		if( $arrinit['nbonline'] > 0 )
+			{
+			listArticles($item);
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("No article in this topic !");
+			}
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
 		$babBody->addItemMenu("ord", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topman&idx=ord&item=".$item);
