@@ -49,6 +49,8 @@ function bab_sql_finder_he($tbl,$str,$not="")
 
 function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
 {
+	$like = '';
+
 if( !bab_isMagicQuotesGpcOn())
 	{
 	$req2 = mysql_escape_string($req2);
