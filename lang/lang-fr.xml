@@ -1136,5 +1136,8 @@
 <string id="Results">Résultats</string>
 <string id="or">ou</string>
 <string id="and">et</string>
-<string id="not">non</string>
+<string id="exclude">exclure</string>
+<string id="Please check your date format">Vérifier le format de la date</string>
+<string id="after date">après la date</string>
+<string id="before date">avant la date</string>
 </fr>
