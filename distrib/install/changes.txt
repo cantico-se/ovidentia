@@ -1,8 +1,11 @@
 /************************************************************************/
-Janvier 2003: Version 4.1.1
+February 2004: Version 4.1.1
 /************************************************************************/
 - New articles publication system 
 - Forums are now managed with groups of users
+- Groups profiles
+- Now Administrators can fileds to add in registration form
+- Home pages are managed by groups
 - Fixed some minors bugs
 
 /************************************************************************/
