@@ -88,7 +88,7 @@ if ( substr($GLOBALS['babPhpSelf'],0,1) == '/' )
 	
 if (!session_is_registered('BAB_SESS_NTREGISTER'))
 	{
-	if (!isset($ntident)) setcookie("ntident","connexion");
+	if (!isset($_COOKIE['ntident'])) setcookie("ntident","connexion");
 	session_register("BAB_SESS_NTREGISTER");
 	session_register("BAB_SESS_NTREGISTER2");
 	$GLOBALS['BAB_SESS_NTREGISTER2'] = false;
@@ -96,7 +96,7 @@ if (!session_is_registered('BAB_SESS_NTREGISTER'))
 	header("location:".$GLOBALS['babUrl'].$babPhpSelf);
 	}
 
-if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && $ntident == "connexion")
+if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntident']) && $_COOKIE['ntident'] == "connexion")
 	{
 	if (NTuserLogin($NTidUser))
 		{
@@ -121,7 +121,7 @@ if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && $ntident == "connexi
 	}
 
 
-if( $GLOBALS['BAB_SESS_NTREGISTER'] && $ntident == "connexion" )
+if( $GLOBALS['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntident']) && $_COOKIE['ntident'] == "connexion")
 	{
 	$babBody->script .= 
 		'//-->
