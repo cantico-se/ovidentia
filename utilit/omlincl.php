@@ -3490,6 +3490,7 @@ class bab_CalendarGroupEvents extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
+		$babBody->icalendars->initializeCalendars();
 		$groupid = $ctx->get_value('groupid');
 		$ar = array();
 		if( $groupid === false || $groupid === '' )
@@ -3655,6 +3656,7 @@ class bab_CalendarResourceEvents extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
+		$babBody->icalendars->initializeCalendars();
 		$resourceid = $ctx->get_value('resourceid');
 		$ar = array();
 		if( $resourceid === false || $resourceid === '' )
