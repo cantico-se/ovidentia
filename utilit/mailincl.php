@@ -85,6 +85,7 @@ class babMail
 	function babMail()
 	{
 		$this->mail = new phpmailer();
+		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
 		$this->mail->From = $GLOBALS['babAdminEmail'];
 		$this->mail->FromName = bab_translate("Ovidentia Administrator");
 	}
