@@ -3992,7 +3992,13 @@ $db->db_query("INSERT INTO bab_stats_imodules VALUES (8, 'Agenda')");
 $db->db_query("INSERT INTO bab_stats_imodules VALUES (9, 'Summary page')");
 $db->db_query("INSERT INTO bab_stats_imodules VALUES (10, 'Directories')");
 $db->db_query("INSERT INTO bab_stats_imodules VALUES (11, 'Search')");
-
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (12, 'Charts')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (13, 'Notes')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (14, 'Contacts')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (15, 'Administration')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (16, 'Vacation')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (17, 'Mail')");
+$db->db_query("INSERT INTO bab_stats_imodules VALUES (18, 'Add-ons')");
 
 $req = "CREATE TABLE ".BAB_STATS_IPAGES_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";

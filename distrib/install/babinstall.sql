@@ -2273,6 +2273,13 @@ INSERT INTO bab_stats_imodules VALUES (8, 'Agenda');
 INSERT INTO bab_stats_imodules VALUES (9, 'Summary page');
 INSERT INTO bab_stats_imodules VALUES (10, 'Directories');
 INSERT INTO bab_stats_imodules VALUES (11, 'Search');
+INSERT INTO bab_stats_imodules VALUES (12, 'Charts');
+INSERT INTO bab_stats_imodules VALUES (13, 'Notes');
+INSERT INTO bab_stats_imodules VALUES (14, 'Contacts');
+INSERT INTO bab_stats_imodules VALUES (15, 'Administration');
+INSERT INTO bab_stats_imodules VALUES (16, 'Vacation');
+INSERT INTO bab_stats_imodules VALUES (17, 'Mail');
+INSERT INTO bab_stats_imodules VALUES (18, 'Add-ons');
 
 #
 # Table structure for table `bab_stats_ipages`

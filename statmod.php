@@ -41,7 +41,7 @@ function summaryModules($col, $order, $startday, $endday)
 			{
 			global $babBody, $babDB;
 			$this->summaryBaseCls();
-			$this->fullname = bab_translate("Modules");
+			$this->fullname = bab_translate("Ovidentia functions");
 			$this->hitstxt = bab_translate("Hits");
 			$req = "SELECT  stip.module_name, sum( stp.st_hits ) hits FROM  ".BAB_STATS_MODULES_TBL." stp left join ".BAB_STATS_IMODULES_TBL." stip  on stp.st_module_id=stip.id";
 			if( !empty($startday) && !empty($endday))
@@ -119,7 +119,7 @@ function summaryModules($col, $order, $startday, $endday)
 	$temp = new summaryModulesCls($col, $order, $startday, $endday);
 	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
 		{
-		$output = bab_translate("Modules");
+		$output = bab_translate("Ovidentia functions");
 		if( !empty($startday) && !empty($endday))
 			{
 			$output .= " (".bab_strftime(bab_mktime($startday." 00:00:00"), false)." - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";

@@ -40,7 +40,7 @@ function summaryAddons($col, $order, $pos, $startday, $endday)
 		function summaryAddonsCls($col, $order, $pos, $startday, $endday)
 			{
 			global $babBody, $babDB;
-			$this->fullname = bab_translate("Addons");
+			$this->fullname = bab_translate("Add-ons");
 			$this->hitstxt = bab_translate("Hits");
 			$req = "SELECT  sat.st_addon, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ADDONS_TBL." sat";
 			if( !empty($startday) && !empty($endday))
@@ -159,7 +159,7 @@ function summaryAddons($col, $order, $pos, $startday, $endday)
 	$temp = new summaryAddonsCls($col, $order, $pos, $startday, $endday);
 	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
 		{
-		$output = bab_translate("Addons");
+		$output = bab_translate("Add-ons");
 		if( !empty($startday) && !empty($endday))
 			{
 			$output .= " (".bab_strftime(bab_mktime($startday." 00:00:00"), false)." - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";

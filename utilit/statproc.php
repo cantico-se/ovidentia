@@ -78,42 +78,32 @@ class bab_stats_pages extends bab_stats_base
 		bab_stat_debug("Pages start...<br>");	
 	}
 
-	function compare($url)
-	{
-		foreach ($this->pages as $key => $val)
-		{
-			if (preg_match("/".preg_quote($val, '/')."/", $url))
-			{
-				return $key;
-			}
-		}
-	return false;
-	}
-
 	function process($datas)
 	{
 		global $babDB;
 
 		bab_stat_debug("Pages process...<br>");	
-		$id = $this->compare($datas['url']);
-		if( $id )
+		foreach ($this->pages as $key => $val)
 		{
-			if(!isset($this->results[$datas['date']][$datas['hour']][$id]))
-				{
-				$res = $babDB->db_query("select * from ".BAB_STATS_PAGES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_page_id='".$id."'");
-				if( $res && $babDB->db_num_rows($res) > 0 )
+			if (preg_match("/".preg_quote($val, '/')."/", $datas['url']))
+			{
+				if(!isset($this->results[$datas['date']][$datas['hour']][$key]))
 					{
-					$arr = $babDB->db_fetch_array($res);
-					$this->results[$datas['date']][$datas['hour']][$id] = $arr['st_hits'];
+					$res = $babDB->db_query("select * from ".BAB_STATS_PAGES_TBL." where st_date='".$datas['date']."' and st_hour='".$datas['hour']."' and st_page_id='".$key."'");
+					if( $res && $babDB->db_num_rows($res) > 0 )
+						{
+						$arr = $babDB->db_fetch_array($res);
+						$this->results[$datas['date']][$datas['hour']][$key] = $arr['st_hits'];
+						}
+					else
+						{
+						$babDB->db_query("insert into ".BAB_STATS_PAGES_TBL." (st_date, st_hour, st_hits, st_page_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$key."')");
+						$this->results[$datas['date']][$datas['hour']][$key] = 0;
+						}				
 					}
-				else
-					{
-					$babDB->db_query("insert into ".BAB_STATS_PAGES_TBL." (st_date, st_hour, st_hits, st_page_id) values ('".$datas['date']."','".$datas['hour']."', '0', '".$id."')");
-					$this->results[$datas['date']][$datas['hour']][$id] = 0;
-					}				
-				}
 
-			$this->results[$datas['date']][$datas['hour']][$id]++;		
+				$this->results[$datas['date']][$datas['hour']][$key]++;		
+			}
 		}
 	}
 
@@ -160,6 +150,9 @@ class bab_stats_modules extends bab_stats_base
 			case 'articles': // articles
 			case 'topman':
 			case 'topusr':
+			case "artedit":
+			case "comments":
+			case "editorarticle":
 				$id = 2;
 				break;
 			case 'threads': // forums
@@ -171,10 +164,14 @@ class bab_stats_modules extends bab_stats_base
 				$id = 4;
 				break;
 			case 'faq': // Faqs
+			case "editorfaq":
 				$id = 5;
 				break;
 			case 'calendar': // Calendar
-			case 'event':
+			case "calmonth":
+			case "calweek":
+			case "calday":
+			case "event":
 				$id = 8;
 				break;
 			case 'calview': // Summary page
@@ -185,6 +182,75 @@ class bab_stats_modules extends bab_stats_base
 				break;
 			case 'search': // Search
 				$id = 11;
+				break;
+			case 'chart': // Charts
+			case "charts":
+			case 'flbchart':
+			case 'frchart':
+			case 'fltchart':
+				$id = 12;
+				break;
+			case 'notes': // Notes
+			case "note":
+				$id = 13;
+				break;
+			case 'contacts': // Contacts
+			case 'contact':
+				$id = 14;
+				break;
+			case 'admcals': // Administration
+			case 'admcal':
+			case "sections":
+			case "section":
+			case "register":
+			case "users":
+			case "user":
+			case "groups":
+			case "group":
+			case "profiles":
+			case "admfaqs":
+			case "admfaq":
+			case "topcat":
+			case "topcats":
+			case "apprflow":
+			case "admfms":
+			case "admfm":
+			case "topman":
+			case "topics":
+			case "topic":
+			case "forums":
+			case "forum":
+			case "admvacs":
+			case "admvac":
+			case "admcals":
+			case "admcal":
+			case "admocs":
+			case "admoc":
+			case "sites":
+			case "site":
+			case "addons":
+			case "admdir":
+			case "delegat":
+			case "admstats":
+			case "aclug":
+			case "delegusr":
+			case "maildoms":
+			case "maildom":
+			case "confcals":
+			case "confcal":
+				$id = 15;
+				break;
+
+			case "vacadm":
+			case "vacadma":
+			case "vacadmb":
+				$id = 16;  // Vacation 
+				break;
+			case "mail":
+			case "mailopt":
+			case "inbox":
+			case "address":
+				$id = 17;  // Mail 
 				break;
 
 			default:
@@ -201,7 +267,15 @@ class bab_stats_modules extends bab_stats_base
 				}
 				else  // others
 				{
-					$id = 1;
+					$arr = explode("/", $datas['tg']);
+					if( sizeof($arr) >= 3 && $arr[0] == "addon")
+						{
+						$id = 18; // addons
+						}
+					else
+						{
+						$id = 1;
+						}
 				}
 				break;
 			}

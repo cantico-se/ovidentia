@@ -210,7 +210,7 @@ function showReferentsArticle($col, $order, $pos, $item, $date)
 		function showReferentsArticleCls($col, $order, $pos, $item, $date)
 			{
 			global $babBody, $babDB, $babBodyPopup;
-			$this->fullname = bab_translate("Modules");
+			$this->fullname = bab_translate("Ovidentia functions");
 			$this->hitstxt = bab_translate("Hits");
 
 			list($babBodyPopup->title) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$item."'"));
@@ -577,14 +577,14 @@ function summaryTopicCategoryArticles($col, $order, $pos, $startday, $endday)
 			usort($this->arrinfo, array($this, 'compare'));
 			$this->count = count($this->arrinfo);
 
-			$this->urlordmod = "idx=topart&order=".($col == 'article'? $this->sortord: $order)."&col=article&pos=".$pos;
-			$this->urlordhits = "idx=topart&order=".($col == 'hits'? $this->sortord: $order)."&col=hits&pos=".$pos;
+			$this->urlordmod = "idx=topcat&order=".($col == 'article'? $this->sortord: $order)."&col=article&pos=".$pos;
+			$this->urlordhits = "idx=topcat&order=".($col == 'hits'? $this->sortord: $order)."&col=hits&pos=".$pos;
 			if( $this->bnavigation )
 				{
-				$this->prevpageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$prev;
-				$this->nextpageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$next;
-				$this->toppageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$top;
-				$this->bottompageurl = "idx=topart&order=".$order."&col=".$col."&pos=".$bottom;
+				$this->prevpageurl = "idx=topcat&order=".$order."&col=".$col."&pos=".$prev;
+				$this->nextpageurl = "idx=topcat&order=".$order."&col=".$col."&pos=".$next;
+				$this->toppageurl = "idx=topcat&order=".$order."&col=".$col."&pos=".$top;
+				$this->bottompageurl = "idx=topcat&order=".$order."&col=".$col."&pos=".$bottom;
 				}
 			$this->summaryBaseCls();
 			}
