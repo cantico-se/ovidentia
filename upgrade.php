@@ -3783,6 +3783,34 @@ while( $arr = $db->db_fetch_array($res))
 
 $db->db_query("DROP table ".BAB_CALOPTIONS_TBL."");
 
+
+$db->db_query("CREATE TABLE `bab_cal_events_owners` (
+  `id_event` int(10) unsigned NOT NULL default '0',
+  `id_cal` int(10) unsigned NOT NULL default '0',
+  `status` tinyint(3) unsigned NOT NULL default '0',
+  KEY `id_event` (`id_event`,`id_cal`,`status`)
+) TYPE=MyISAM");
+
+
+$db->db_query("ALTER TABLE `bab_cal_events` CHANGE `start_date` `start_date` DATETIME DEFAULT '0000-00-00' NOT NULL , CHANGE `end_date` `end_date` DATETIME DEFAULT '0000-00-00' NOT NULL");
+
+$db->db_query("ALTER TABLE `bab_cal_events` ADD `color` VARCHAR( 8 ) DEFAULT 'FFFFFF' NOT NULL");
+
+$db->db_query("ALTER TABLE `bab_cal_events` ADD `bprivate` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL , ADD `block` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL , ADD `bfree` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL");
+
+$res = $db->db_query("SELECT id, id_cal, CONCAT(start_date,' ',start_time) start_date, CONCAT(end_date,' ',end_time) end_date FROM bab_cal_events");
+
+while( $arr = $db->db_fetch_array($res))
+	{
+	$db->db_query("UPDATE bab_cal_events SET start_date='".$arr['start_date']."', end_date='".$arr['end_date']."' WHERE id='".$arr['id']."'");
+
+	$db->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal) VALUES ('".$arr['id']."','".$arr['id_cal']."')");
+	}
+
+$db->db_query("ALTER TABLE `bab_cal_events` DROP `start_time` ,DROP `end_time`");
+
+$db->db_query("ALTER TABLE `bab_cal_events` DROP `id_cal`");
+
 return $ret;
 }
 ?>
