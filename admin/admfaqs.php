@@ -146,7 +146,7 @@ switch($idx)
 	case "Add Category":
 		$body->title = babTranslate("Add a new categorie");
 		addCategory();
-		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Add Category");
 		break;
 
@@ -155,7 +155,7 @@ switch($idx)
 		$body->title = babTranslate("List of all categories");
 		if( listCategories() > 0 )
 			{
-			$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
+			$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 			}
 		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Add Category");
 

@@ -19,7 +19,7 @@ function addCategory()
 
 		function temp()
 			{
-			$this->category = babTranslate("Category");
+			$this->category = babTranslate("Topic");
 			$this->description = babTranslate("Description");
 			$this->approver = babTranslate("Approver");
 			$this->add = babTranslate("Add");
@@ -104,7 +104,7 @@ function saveCategory($category, $description, $approver)
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This category already exists");
+		$body->msgerror = babTranslate("ERROR: This topic already exists");
 		}
 
 	$approverid = getUserId($approver);	
@@ -122,7 +122,7 @@ function saveCategory($category, $description, $approver)
 /* main */
 if(!isset($idx))
 	{
-	$idx = "Categories";
+	$idx = "list";
 	}
 
 if( isset($add))
@@ -132,24 +132,24 @@ if( isset($add))
 
 switch($idx)
 	{
-	case "Add Category":
-		$body->title = babTranslate("Add a new categorie");
+	case "addtopic":
+		$body->title = babTranslate("Add a new topic");
 		addCategory();
-		$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
-		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Add Category");
+		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=topics&idx=list");
+		$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=topics&idx=addtopic");
 		break;
 
 	default:
-	case "Categories":
-		$body->title = babTranslate("List of all categories");
+	case "list":
+		$body->title = babTranslate("List of all topics");
 		if( listCategories() > 0 )
 			{
-			$body->addItemMenu("Categories", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Categories");
+			$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=topics&idx=list");
 			}
 		else
-			$body->title = babTranslate("There is no category");
+			$body->title = babTranslate("There is no topic");
 
-		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=topics&idx=Add Category");
+		$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=topics&idx=addtopic");
 		break;
 	}
 $body->setCurrentItemMenu($idx);

@@ -151,14 +151,14 @@ switch($idx)
 	case "Create":
 		groupCreate();
 		$body->title = babTranslate("Create a group");
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
 		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=groups&idx=Create");
 		break;
 	case "List":
 	default:
 		groupList();
 		$body->title = babTranslate("Groups list");
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
 		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=groups&idx=Create");
 		break;
 	}

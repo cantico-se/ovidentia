@@ -168,6 +168,7 @@ switch($idx)
 	case "Modify":
 		$body->title = babTranslate("Modify a category");
 		modifyCategory($item);
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);
@@ -176,6 +177,7 @@ switch($idx)
 	case "Groups":
 		$body->title = babTranslate("Liste of groups");
 		aclGroups("admfaq", "Modify", "faqcat_groups", $item, "aclfaq");
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);
@@ -184,6 +186,7 @@ switch($idx)
 	case "Delete":
 		$body->title = babTranslate("Delete a category");
 		deleteCategory($item);
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);
@@ -193,6 +196,7 @@ switch($idx)
 	case "Modify":
 		$body->title = babTranslate("Modify a category");
 		modifyCategory($item);
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
 		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);

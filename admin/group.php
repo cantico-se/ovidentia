@@ -459,6 +459,7 @@ switch($idx)
 	case "Members":
 		groupMembers($item);
 		$body->title = babTranslate("Group's members");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
 		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
 		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
@@ -468,6 +469,7 @@ switch($idx)
 	case "Vacation":
 		groupVacation($item);
 		$body->title = babTranslate("Vacation");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
 		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
 		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
@@ -478,6 +480,7 @@ switch($idx)
 		if( $item > 3 )
 			groupDelete($item);
 		$body->title = babTranslate("Delete group");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
 		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
 		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
@@ -488,6 +491,7 @@ switch($idx)
 	default:
 		groupModify($item);
 		$body->title = getGroupName($item) . " ". babTranslate("group");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
 		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
 		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
