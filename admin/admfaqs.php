@@ -149,7 +149,7 @@ if( isset($add))
 switch($idx)
 	{
 	case "Add Category":
-		$body->title = babTranslate("Add a new categorie");
+		$body->title = babTranslate("Add a new category");
 		addCategory();
 		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Add Category");

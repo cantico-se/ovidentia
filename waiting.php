@@ -190,9 +190,9 @@ function confirmArticle($article, $topics)
 			$this->action = babTranslate("Action");
 			$this->confirm = babTranslate("Confirm");
 			$this->refuse = babTranslate("Refuse");
-			$this->homepage0 = babTranslate("Add to unregistered users's home page");
-			$this->homepage1 = babTranslate("Add to registered users's home page");
-			$this->what = babTranslate("Send an email to submiter");
+			$this->homepage0 = babTranslate("Add to unregistered users home page");
+			$this->homepage1 = babTranslate("Add to registered users home page");
+			$this->what = babTranslate("Send an email to author");
 			$this->message = babTranslate("Message");
 			$this->confval = "article";
 			$this->idxval = "Waiting";
@@ -345,7 +345,7 @@ function confirmComment($article, $topics, $com, $newc)
 			$this->action = babTranslate("Action");
 			$this->confirm = babTranslate("Confirm");
 			$this->refuse = babTranslate("Refuse");
-			$this->what = babTranslate("Send an email to submiter");
+			$this->what = babTranslate("Send an email to author");
 			$this->message = babTranslate("Message");
 			$this->confval = "comment";
 			$this->idxval = "WaitingC";

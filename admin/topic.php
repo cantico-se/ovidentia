@@ -36,8 +36,8 @@ function listArticles($id)
 			$this->titlename = babTranslate("Title");
 			$this->uncheckall = babTranslate("Uncheck all");
 			$this->checkall = babTranslate("Check all");
-			$this->homepage0 = babTranslate("Unregistered users's home page");
-			$this->homepage1 = babTranslate("Registered users's home page");
+			$this->homepage0 = babTranslate("Unregistered users home page");
+			$this->homepage1 = babTranslate("Registered users home page");
 			$this->addtohome = babTranslate("Add");
 
 			$this->item = $id;

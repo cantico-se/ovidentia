@@ -271,7 +271,7 @@ switch($idx)
 	{
 
 	case "groups":
-		$body->title = babTranslate("Liste of groups");
+		$body->title = babTranslate("List of groups");
 		aclGroups("vacation", "modify", "vacationsview_groups", $item, "aclview");
 		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=modify&item=".$item);
 		//$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=delete&item=".$item);

@@ -21,7 +21,7 @@ function notesModify($id)
 		function temp($id)
 			{
 			$this->notes = babTranslate("Content");
-			$this->modify = babTranslate("Update Notes");
+			$this->modify = babTranslate("Update Note");
 			$this->db = new db_mysql();
 			$req = "select * from notes where id='$id'";
 			$this->res = $this->db->db_query($req);
@@ -69,7 +69,7 @@ switch($idx)
 
 	default:
 	case "Modify":
-		$body->title = babTranslate("Modify a notes");
+		$body->title = babTranslate("Modify a note");
 		notesModify($item);
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=note&idx=Modify&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=note&idx=Delete&item=".$item);

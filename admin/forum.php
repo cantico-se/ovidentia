@@ -177,7 +177,7 @@ switch($idx)
 	{
 
 	case "Groups":
-		$body->title = babTranslate("Liste of groups");
+		$body->title = babTranslate("List of groups");
 		aclGroups("forum", "Modify", "forumsview_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);
@@ -188,7 +188,7 @@ switch($idx)
 		break;
 
 	case "Reply":
-		$body->title = babTranslate("Liste of groups");
+		$body->title = babTranslate("List of groups");
 		aclGroups("forum", "Modify", "forumsreply_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);
@@ -199,7 +199,7 @@ switch($idx)
 		break;
 
 	case "Post":
-		$body->title = babTranslate("Liste of groups");
+		$body->title = babTranslate("List of groups");
 		aclGroups("forum", "Modify", "forumspost_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$item);

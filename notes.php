@@ -100,7 +100,7 @@ if( isset($create))
 switch($idx)
 	{
 	case "Create":
-		$body->title = babTranslate("Create a notes");
+		$body->title = babTranslate("Create a note");
 		notesCreate();
 		$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=notes&idx=List");
 		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=notes&idx=Create");

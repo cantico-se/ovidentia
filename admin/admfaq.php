@@ -180,7 +180,7 @@ switch($idx)
 		break;
 
 	case "Groups":
-		$body->title = babTranslate("Liste of groups");
+		$body->title = babTranslate("List of groups");
 		aclGroups("admfaq", "Modify", "faqcat_groups", $item, "aclfaq");
 		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
