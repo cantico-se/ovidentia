@@ -1533,7 +1533,15 @@ function bab_updateUserSettings()
 					}
 				}
 
-			$req = "select count(".BAB_FILES_TBL.".id) from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state='' and ".BAB_FILES_TBL.".modified >= '".$babBody->lastlog."'";
+			$req = "select count(distinct f.id) from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y' and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
+			if( $BAB_SESS_USERID != "" )
+			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
+			$req .= ")";
+			
+			if( $this->nbdays !== false)
+				$req .= " and f.modified >= '".$babBody->lastlog."'";
+
+			//$req = "select count(".BAB_FILES_TBL.".id) from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state='' and ".BAB_FILES_TBL.".modified >= '".$babBody->lastlog."'";
 
 			list($babBody->newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
 			}

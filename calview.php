@@ -518,11 +518,16 @@ function newFiles($nbdays)
 			global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->nbdays = $nbdays;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select ".BAB_FILES_TBL.".id, ".BAB_FILES_TBL.".name, ".BAB_FILES_TBL.".description from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state='' and ".BAB_FILES_TBL.".modified >=";
+			$req = "select distinct f.* from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y' and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
+			if( $BAB_SESS_USERID != "" )
+			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
+			$req .= ")";
+			
 			if( $this->nbdays > 0)
-				$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 			else
-				$req .= "'".$babBody->lastlog."'";
+				$req .= " and f.modified >= '".$babBody->lastlog."'";
+		
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( $nbdays > 0)
