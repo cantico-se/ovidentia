@@ -1,4 +1,15 @@
 /************************************************************************/
+Mars 2005: Version 5.5.4
+/************************************************************************/
+- Added possibility to specify which calendar category will be used with a vacation event is 
+- Changed folder manager from one user to groups
+- Changed faq manager from one user to groups
+- Possibility to add parameters to $OVML tag
+- Added event notifier, email notifier, event location and event notes
+- Bug #483 When we export a group directory, additional fields are not correctly handled
+- Fixed some minors bugs
+
+/************************************************************************/
 January 2005: Version 5.5.3
 /************************************************************************/
 - Bug #474 Error SQL when trying to attach file to a draft with simple quote in its name
