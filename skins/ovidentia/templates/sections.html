@@ -137,14 +137,24 @@ valign="middle"><b>{ title }</b></td>
 valign="middle"><b>{ description }</b> </td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ disabled }</td>
 </tr>
-<!--#in getnext --> 
+<!--#in getnextp --> 
 <tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ 
-urltitle }</a></td>
+<td class="BabSiteAdminFontBackground" nowrap valign="middle"><b>{ arr[title] }</b></td>
 <td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ arr[description] 
 } </td>
 <td valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="sections[]" { secchecked } value="{ arr[id] }">
+<input type="checkbox" name="sections[]" { secchecked } value="{ arr[id] }Y">
+</td>
+</tr>
+<!--#endin getnextp --> 
+<!--#in getnext --> 
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ 
+arr[title] }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ arr[description] 
+} </td>
+<td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="sections[]" { secchecked } value="{ arr[id] }N">
 </td>
 </tr>
 <!--#endin getnext --> 

@@ -723,6 +723,10 @@ function loadSections()
 		$add = false;
 		if( $arr['private'] == "Y")
 			{
+			$r = $db->db_fetch_array($db->db_query("select * from private_sections where id='".$arr['id_section']."'"));
+			if( $r['enabled'] != "Y" )
+				$add = false;
+			else
 			switch( $arr['id_section'] )
 				{
 				case 1: // admin

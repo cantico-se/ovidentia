@@ -37,6 +37,8 @@ function sectionsList()
 		var $db;
 		var $count;
 		var $res;
+		var $counta;
+		var $resa;
 		var $secchecked;
 		var $disabled;
 		var $checkall;
@@ -55,6 +57,30 @@ function sectionsList()
 			$req = "select * from sections";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+
+			/* don't get Administrator section */
+			$this->resa = $this->db->db_query("select * from private_sections where id > '1'");
+			$this->counta = $this->db->db_num_rows($this->resa);
+			}
+
+		function getnextp()
+			{
+			static $i = 0;
+			if( $i < $this->counta)
+				{
+				$this->arr = $this->db->db_fetch_array($this->resa);
+				$this->arr['title'] = babTranslate($this->arr['title']);
+				$this->arr['description'] = babTranslate($this->arr['description']);
+				if( $this->arr['enabled'] == "N")
+					$this->secchecked = "checked";
+				else
+					$this->secchecked = "";
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
 			}
 
 		function getnext()
@@ -64,7 +90,6 @@ function sectionsList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$this->arr['id'];
-				$this->urltitle = $this->arr['title'];
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
 				else
@@ -272,12 +297,25 @@ function disableSections($sections)
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if( count($sections) > 0 && in_array($row['id'], $sections))
+		if( count($sections) > 0 && in_array($row['id']."N", $sections))
 			$enabled = "N";
 		else
 			$enabled = "Y";
 
 		$req = "update sections set enabled='".$enabled."' where id='".$row['id']."'";
+		$db->db_query($req);
+		}
+
+	$req = "select id from private_sections";
+	$res = $db->db_query($req);
+	while( $row = $db->db_fetch_array($res))
+		{
+		if( count($sections) > 0 && in_array($row['id']."Y", $sections))
+			$enabled = "N";
+		else
+			$enabled = "Y";
+
+		$req = "update private_sections set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}
