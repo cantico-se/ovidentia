@@ -828,9 +828,6 @@ function loadSections()
 			{
 			case "1": // private_sections
 				$r = $db->db_fetch_array($db->db_query("select * from private_sections where id='".$arr['id_section']."'"));
-				if( $r['enabled'] != "Y" )
-					$add = false;
-				else
 				switch( $arr['id_section'] )
 					{
 					case 1: // admin
@@ -841,14 +838,18 @@ function loadSections()
 							}
 						break;
 					case 2: // month
-						$add = true;
-						$sec = new babMonthA();
+						if( $r['enabled'] == "Y" )
+							{
+							$add = true;
+							$sec = new babMonthA();
+							}
 						break;
 					case 3: // topics
 						$sec = new topcatSection();
 						if( $sec->count > 0 )
 							{
-							$add = true;
+							if( $r['enabled'] == "Y" )
+								$add = true;
 							$babSearchUrl .= "a";
 							}
 						break;
@@ -856,12 +857,14 @@ function loadSections()
 						$sec = new forumsSection();
 						if( $sec->count > 0 )
 							{
-							$add = true;
+							if( $r['enabled'] == "Y" )
+								$add = true;
 							$babSearchUrl .= "b";
 							}
 						break;
 					case 5: // user's section
-						$add = true;
+						if( $r['enabled'] == "Y" )
+							$add = true;
 						$sec = new userSection();
 						if( isset($LOGGED_IN) && $LOGGED_IN)
 							{
