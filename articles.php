@@ -30,10 +30,17 @@ function listArticles($topics, $newc, $approver)
 		var $moreurl;
 		var $morename;
 		var $approver;
+		var $modify;
+		var $delete;
+		var $modifyurl;
+		var $delurl;
+
 
 		function temp($topics, $newc, $approver)
 			{
 			$this->printable = bab_translate("Print Friendly");
+			$this->modify = bab_translate("Modify");
+			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select id, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
 			$this->res = $this->db->db_query($req);
@@ -66,6 +73,8 @@ function listArticles($topics, $newc, $approver)
 				else
 					$this->blen = $this->arr['blen'];
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
+				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id']."&new=".$new."&newc=".$this->newc;
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id']."&new=".$new."&newc=".$this->newc;
 
 				if( $this->com)
 					{
@@ -124,7 +133,7 @@ function listArticles($topics, $newc, $approver)
 	return $arr;
 	}
 
-function listOldArticles($topics, $pos)
+function listOldArticles($topics, $pos, $approver)
 	{
 	global $babBody;
 
@@ -146,8 +155,9 @@ function listOldArticles($topics, $pos)
 		var $moreurl;
 		var $morename;
 
-		function temp($topics, $pos)
+		function temp($topics, $pos, $approver)
 			{
+			$this->approver = $approver;
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -261,7 +271,7 @@ function listOldArticles($topics, $pos)
 			}
 		}
 	
-	$temp = new temp($topics, $pos);
+	$temp = new temp($topics, $pos, $approver);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
 	return $temp->count;
 	}
@@ -840,7 +850,7 @@ switch($idx)
 		$babBody->title = bab_translate("List of old articles");
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
-			$nbarch = listOldArticles($topics, $pos);
+			$nbarch = listOldArticles($topics, $pos, $approver);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
