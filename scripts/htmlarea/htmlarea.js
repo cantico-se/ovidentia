@@ -1143,11 +1143,9 @@ HTMLArea.prototype._insertTable = function() {
 				}
 			}
 		}
-		if (HTMLArea.is_ie && !HTMLArea.is_ie5_5) {
-			var htmltablo = HTMLArea.getHTML(table, true);
-			range.pasteHTML(htmltablo);
+		if (HTMLArea.is_ie) { 
+			range.pasteHTML(table.outerHTML);
 		} else {
-			// insert the table
 			editor.insertNodeAtSelection(table);
 		}
 		return true;
@@ -1324,38 +1322,22 @@ HTMLArea.prototype._editorEvent = function(ev) {
 
 			// simple key commands follow
 
-		    case 'b':	// KEY bold
-			(!HTMLArea.is_ie) && (cmd = "bold");
-			break;
-		    case 'i':	// KEY italic
-			(!HTMLArea.is_ie) && (cmd = "italic");
-			break;
-		    case 'u':	// KEY underline
-			(!HTMLArea.is_ie) && (cmd = "underline");
-			break;
-		    case 's':	// KEY justify full
-			cmd = "strikethrough";
-			break;
-		    case 'l':	// KEY justify left
-			cmd = "justifyleft";
-			break;
-		    case 'e':	// KEY justify center
-			cmd = "justifycenter";
-			break;
-		    case 'r':	// KEY justify right
-			cmd = "justifyright";
-			break;
-		    case 'j':	// KEY justify full
-			cmd = "justifyfull";
-			break;
+		    case 'b': cmd = "bold"; break;
+		    case 'i': cmd = "italic"; break;
+		    case 'u': cmd = "underline"; break;
+		    case 's': cmd = "strikethrough"; break;
+		    case 'l': cmd = "justifyleft"; break;
+		    case 'e': cmd = "justifycenter"; break;
+		    case 'r': cmd = "justifyright"; break;
+		    case 'j': cmd = "justifyfull"; break;
 
 			// headings
-		    case '1':	// KEY heading 1
-		    case '2':	// KEY heading 2
-		    case '3':	// KEY heading 3
-		    case '4':	// KEY heading 4
-		    case '5':	// KEY heading 5
-		    case '6':	// KEY heading 6
+		    case '1':
+		    case '2':
+		    case '3':
+		    case '4':
+		    case '5':
+		    case '6':
 			cmd = "formatblock";
 			value = "h" + key;
 			if (HTMLArea.is_ie) {
@@ -1371,17 +1353,6 @@ HTMLArea.prototype._editorEvent = function(ev) {
 	}
 	
 	else if (keyEvent) {
-		// other keys here
-		/*
-		switch (ev.keyCode) {
-		    case 13: // KEY enter
-			// if (HTMLArea.is_ie) {
-			this.insertHTML("<br />");
-			HTMLArea._stopEvent(ev);
-			// }
-			break;
-		}
-		*/
 	try {
 		if ( (typeof fullview == 'object') && (fullview.focus()) )
 			{
@@ -1405,47 +1376,16 @@ HTMLArea.prototype._formSubmit = function(ev) {
 	// retrieve the HTML
 	this._textArea.value = this.getHTML();
 };
-/*
+
 // retrieve the HTML
 HTMLArea.prototype.getHTML = function() {
- 	switch (this._mode) {
-	    // regex to make html more realable (tung)
- 	    case "wysiwyg":
-		return HTMLArea.getHTML(this._doc.body, false);
-		return HTMLArea.getHTML(this._doc.body, false)
-	               .replace(/<(div|p|table|tbody|tr|li|ol|ul|br|hr)/ig, "\n<$1")
-	               .replace(/<[\/](div|p|table|tbody|tr|li|ol|ul)>/ig, "</$1>\n")
-	               .replace(/\n\n+/g, "\n\n")
-	               .replace(/<[\/](tbody|tr|li)>\n\n+/ig, "</$1>\n");
- 	    case "textmode":
-		return this._textArea2.value;
-		return this._textArea2.value
-	               .replace(/<(div|p|table|tbody|tr|li|ol|ul|br|hr)/ig, "\n<$1")
-	               .replace(/<[\/](div|p|table|tbody|tr|li|ol|ul)>/ig, "</$1>\n")
-	               .replace(/\n\n+/g, "\n\n")
-	               .replace(/<[\/](tbody|tr|li)>\n\n+/ig, "</$1>\n");
- 	    default:
- 		alert("Mode <" + mode + "> not defined!");
- 		return false;
-	}
-};
-*/
-
-HTMLArea.prototype.getHTML = function() {
 	switch (this._mode) {
-	    case "wysiwyg":
-		if (HTMLArea.is_ie5_5)             
-			return this._doc.body.innerHTML; 
-		else           
-			return HTMLArea.getHTML(this._doc.body, false); 
-	    case "textmode":
-		return this._textArea2.value;
-	    default:
-		alert("Mode <" + mode + "> not defined!");
-		return false;
+	    case "wysiwyg"  : return HTMLArea.getHTML(this._doc.body, false);
+	    case "textmode" : return this._textArea.value;
+	    default	    : alert("Mode <" + mode + "> not defined!");
 	}
+	return false;
 };
-
 
 
 // retrieve the HTML (fastest version, but uses innerHTML)
@@ -1464,14 +1404,9 @@ HTMLArea.prototype.getInnerHTML = function() {
 // completely change the HTML inside
 HTMLArea.prototype.setHTML = function(html) {
 	switch (this._mode) {
-	    case "wysiwyg":
-		this._doc.body.innerHTML = html;
-		break;
-	    case "textmode":
-		this._textArea2.value = html;
-		break;
-	    default:
-		alert("Mode <" + mode + "> not defined!");
+	    case "wysiwyg"  : this._doc.body.innerHTML = html; break;
+	    case "textmode" : this._textArea.value = html; break;
+	    default	    : alert("Mode <" + mode + "> not defined!");
 	}
 	return false;
 };
@@ -1489,9 +1424,6 @@ HTMLArea.is_mac    = (HTMLArea.agt.indexOf("mac") != -1);
 HTMLArea.is_mac_ie = (HTMLArea.is_ie && HTMLArea.is_mac);
 HTMLArea.is_win_ie = (HTMLArea.is_ie && !HTMLArea.is_mac);
 HTMLArea.is_gecko  = (navigator.product == "Gecko");
-HTMLArea.is_ie5_5  = ((HTMLArea.agt.indexOf("msie 5.5") !=-1));
-
-
 
 // variable used to pass the object to the popup editor window.
 HTMLArea._object = null;
@@ -1541,7 +1473,7 @@ HTMLArea.prototype._createRange = function(sel) {
 		return sel.createRange();
 	} else {
 		this.focusEditor();
-		if (sel) {
+		if (typeof sel != "undefined") {
 			return sel.getRangeAt(0);
 		} else {
 			return this._doc.createRange();
@@ -1622,30 +1554,33 @@ HTMLArea._hasClass = function(el, className) {
 	return false;
 };
 
-HTMLArea._isBlockElement = function(el) {
+HTMLArea.isBlockElement = function(el) {
 	var blockTags = " body form textarea fieldset ul ol dl li div " +
 		"p h1 h2 h3 h4 h5 h6 quote pre table thead " +
-		"tbody tfoot tr td iframe ";
+		"tbody tfoot tr td iframe address ";
 	return (blockTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
 };
 
-HTMLArea._needsClosingTag = function(el) {
+HTMLArea.needsClosingTag = function(el) {
 	var closingTags = " script style div span ";
 	return (closingTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
+};
+
+// performs HTML encoding of some given string
+HTMLArea.htmlEncode = function(str) {
+	// we don't need regexp for that, but.. so be it for now.
+	str = str.replace(/&/ig, "&amp;");
+	str = str.replace(/</ig, "&lt;");
+	str = str.replace(/>/ig, "&gt;");
+	str = str.replace(/\x22/ig, "&quot;");
+	// \x22 means '"' -- we use hex reprezentation so that we don't disturb
+	// JS compressors (well, at least mine fails.. ;)
+	return str;
 };
 
 // Retrieves the HTML code from the given node.  This is a replacement for
 // getting innerHTML, using standard DOM calls.
 HTMLArea.getHTML = function(root, outputRoot) {
-	function encode(str) {
-		// we don't need regexp for that, but.. so be it for now.
-		str = str.replace(/&/ig, "&amp;");
-		str = str.replace(/</ig, "&lt;");
-		str = str.replace(/>/ig, "&gt;");
-		str = str.replace(/\"/ig, "&quot;");
-		return str;
-	};
-
 	var html = "";
 	switch (root.nodeType) {
 	    case 1: // Node.ELEMENT_NODE
@@ -1653,7 +1588,7 @@ HTMLArea.getHTML = function(root, outputRoot) {
 		var closed;
 		var i;
 		if (outputRoot) {
-			closed = (!(root.hasChildNodes() || HTMLArea._needsClosingTag(root)));
+			closed = (!(root.hasChildNodes() || HTMLArea.needsClosingTag(root)));
 			html = "<" + root.tagName.toLowerCase();
 			var attrs = root.attributes;
 			for (i = 0; i < attrs.length; ++i) {
@@ -1661,19 +1596,28 @@ HTMLArea.getHTML = function(root, outputRoot) {
 				if (!a.specified) {
 					continue;
 				}
-				var name = a.name.toLowerCase();
-				if (name.substr(0, 4) == "_moz") {
+				var name = a.nodeName.toLowerCase();
+				if (/_moz/.test(name)) {
 					// Mozilla reports some special tags
 					// here; we don't need them.
 					continue;
 				}
 				var value;
-				if (name != 'style') {
-					value = a.value;
+				if (name != "style") {
+					// IE5.5 reports 25 when cellSpacing is
+					// 1; other values might be doomed too.
+					// For this reason we extract the
+					// values directly from the root node.
+					if (typeof root[a.nodeName] != "undefined") {
+						value = root[a.nodeName];
+					} else {
+						value = a.nodeValue;
+					}
 				} else { // IE fails to put style in attributes list
-					value = root.style.cssText.toLowerCase();
+					// FIXME: cssText reported by IE is UPPERCASE
+					value = root.style.cssText;
 				}
-				if (value.substr(0, 4) == "_moz") {
+				if (/_moz/.test(value)) {
 					// Mozilla reports some special tags
 					// here; we don't need them.
 					continue;
@@ -1690,7 +1634,7 @@ HTMLArea.getHTML = function(root, outputRoot) {
 		}
 		break;
 	    case 3: // Node.TEXT_NODE
-		html = encode(root.data);
+		html = HTMLArea.htmlEncode(root.data);
 		break;
 	    case 8: // Node.COMMENT_NODE
 		html = "<!--" + root.data + "-->";
@@ -1698,6 +1642,7 @@ HTMLArea.getHTML = function(root, outputRoot) {
 	}
 	return html;
 };
+
 
 // creates a rgb-style color from a number
 HTMLArea._makeColor = function(v) {
@@ -1920,10 +1865,5 @@ function initEditor(what,ta)
 	{
 		editor.config.toolbar[3] = [ "space", "textindicator","linebreak" ];
 	}
-	if (HTMLArea.is_ie5_5)
-	{
-		editor.config.toolbar[7] = [ "horizontalrule", "htmlmode", "separator" ];
-	}
-	
 	editor.generate();
 	}
