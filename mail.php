@@ -361,7 +361,6 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 			else
 				{
 				return true;
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 				}
 			}
 		else
