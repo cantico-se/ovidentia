@@ -1097,10 +1097,10 @@
 <string id="Your list has been updated">Votre liste a été mise à jour</string>
 <string id="All site">Tout le site</string>
 <string id="Change administration group">Changer de groupe d'Administration</string>
-<string id="Article's model">Modèle d'artcle</string>
+<string id="Article's model">Modèle d'article</string>
 <string id="Display template">Patron d'affichage</string>
 <string id="Optional">Optionnel</string>
-<string id="Number of topics categories">Nombre de catégories de sujets</string>
+<string id="Number of topics categories">Nombre de catégories de thèmes</string>
 <string id="Top">Début</string>
 <string id="Order a topic category">Ordonner les catégories de sujets</string>
 <string id="Nickname contains blanc characters">L'identifiant contient des caractères blancs</string>
@@ -1120,4 +1120,5 @@
 <string id="Event categories list">Liste des catégories d'évènements</string>
 <string id="Update personnal informations">Mettre à jour les informations personnelles</string>
 <string id="Update nickname">Mettre à jour le pseudonyme</string>
+<string id="The maximum number of authorized optional sections was reached">Le nombre maximum de sections optionnelles autorisées a été atteint</string>
 </fr>

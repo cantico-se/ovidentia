@@ -190,7 +190,7 @@ if( isset($aclview))
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
 	else if( $table == BAB_FORUMSREPLY_GROUPS_TBL )
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-	else if( $table == BAB_FORUMSREPLY_GROUPS_TBL )
+	else if( $table == BAB_FORUMSPOST_GROUPS_TBL )
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 	exit;
 	}
