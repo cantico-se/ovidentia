@@ -868,10 +868,10 @@ function hideShowCnx()
 	</tr>
 	<tr> 
 		<td align="right">&nbsp;</td>
-		<td><span class="Babhighlight">*</span>&nbsp;{ fieldrequiredtxt }</td>
+		<td><span style="color:red">*</span>&nbsp;{ fieldrequiredtxt }</td>
 	</tr>
 	<tr> 
-		<td align="right" nowrap>{ hosttxt }&nbsp;<span class="Babhighlight">*</span></td>
+		<td align="right" nowrap>{ hosttxt }&nbsp;<span style="color:red">*</span></td>
 		<td>
 		<input type="text" name="host" size="50" value="{ ldaphost }" />
 		</td>
@@ -926,7 +926,7 @@ function hideShowCnx()
 	<!--#endif 0 -->
 	<!--#in getnextfield -->
 	<tr> 
-		<td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span class="Babhighlight">*</span><!--#endif required -->&nbsp;&nbsp;</td>
+		<td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span style="color:red">*</span><!--#endif required -->&nbsp;&nbsp;</td>
 		<td>
 		<select name="{ ofieldv }">
 		<option value=""></option>
