@@ -843,7 +843,7 @@ function modifyArticle($topics, $article)
 						{
 						$this->commenttxt = bab_translate("Reason of the modification");
 						$this->canceltxt = bab_translate("Cancel");
-						$this->updatetxt = bab_translate("Update");
+						$this->updatetxt = bab_translate("Next");
 						$this->updatemodtxt = bab_translate("Don't update article modification date");
 						$this->bmodify = true;
 						}
