@@ -124,6 +124,30 @@
 <!--#end groupsmodify -->
 <br><br><br><br>
 <!--#begin memberslist -->
+<script language="javascript">
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		objCtrl = document.forms.listform.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="group">
+<input type="hidden" name="idx" value="Deletem">
+<input type="hidden" name="item" value="{ grpid }">
 <center>
 <table border="0" width="50%" cellpadding="1" cellspacing="0">
 <tr>
@@ -131,20 +155,28 @@
 </tr>
 </table>
 <br>
-<table border="0" width="90%" cellpadding="" cellspacing="0">
-<tr><td>
-<center>
-<table border="1" width="90%" cellpadding="2" cellspacing="0">
-<TBODY><tr><td class="BabListTitleBgnd" align=center nowrap>{ fullname }</td></tr>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<tr>
+<td class="BabListTitleBgnd" width="2%"><a href="javascript:onCheckAll('users', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a></td>
+<td class="BabListTitleBgnd" width="2%" align="center" nowrap>&nbsp;</td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ fullname }</b></td></tr>
 <!--#in getnext -->
-<tr><td class="BabListContentBgnd" nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td>
+<tr>
+<td><input type="checkbox" name="users[]" value="{ arr[id] }"></td>
+<td class="BabListContentBgnd" align="center" nowrap>&nbsp;{ primary }</td>
+<td class="BabListContentBgnd" nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td>
 </tr>
 <!--#endin getnext -->
-</TBODY>
+<tr>
+<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('users', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
+<td class="BabListTitleBgnd">&nbsp;</td>
+<td class="BabListTitleBgnd">&nbsp;</td>
+</tr>
 </table>
-</center>
 </td></tr>
 </table>
+</form>
 </center>
 <!--#end memberslist -->
 <!--#begin groupvacation -->

@@ -80,6 +80,8 @@ function groupMembers($id)
 		var $urlname;
 		var $idgroup;
 		var $group;
+		var $grpid;
+		var $primary;
 			
 		var $arr = array();
 		var $arr = array();
@@ -89,6 +91,7 @@ function groupMembers($id)
 
 		function temp($id)
 			{
+			$this->grpid = $id;
 			$this->fullname = babTranslate("Full Name");
 			$this->idgroup = $id;
 			$this->group = getGroupName($id);
@@ -104,6 +107,10 @@ function groupMembers($id)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				if( $this->arr[isprimary] == "Y")
+					$this->primary = "Y";
+				else
+					$this->primary = "";
 				$db = new db_mysql();
 				$req = "select * from users where id='".$this->arr[id_object]."'";
 				$result = $db->db_query($req);
@@ -240,6 +247,58 @@ function groupVacation($id)
 	$body->babecho(	babPrintTemplate($temp,"groups.html", "groupvacation"));
 	}
 
+function deleteMembers($users, $item)
+	{
+	global $body, $idx;
+
+	class tempa
+		{
+		var $warning;
+		var $message;
+		var $title;
+		var $urlyes;
+		var $urlno;
+		var $yes;
+		var $no;
+
+		function tempa($users, $item)
+			{
+			global $BAB_SESS_USERID;
+			$this->message = babTranslate("Are you sure you want to delete those members");
+			$this->title = "";
+			$names = "";
+			$db = new db_mysql();
+			for($i = 0; $i < count($users); $i++)
+				{
+				$req = "select * from users where id='".$users[$i]."'";	
+				$res = $db->db_query($req);
+				if( $db->db_num_rows($res) > 0)
+					{
+					$arr = $db->db_fetch_array($res);
+					$this->title .= "<br>". composeName($arr[firstname], $arr[lastname]);
+					$names .= $arr[id];
+					}
+				if( $i < count($users) -1)
+					$names .= ",";
+				}
+			$this->warning = babTranslate("WARNING: This operation will delete members and their references"). "!";
+			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=group&idx=Deletem&item=".$item."&action=Yes&names=".$names;
+			$this->yes = babTranslate("Yes");
+			$this->urlno = $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item;
+			$this->no = babTranslate("No");
+			}
+		}
+
+	if( count($item) <= 0)
+		{
+		$body->msgerror = babTranslate("Please select at least one item");
+		groupMembers($pos);
+		$idx = "Members";
+		return;
+		}
+	$tempa = new tempa($users, $item);
+	$body->babecho(	babPrintTemplate($tempa,"warning.html", "warningyesno"));
+	}
 
 function modifyGroup($oldname, $name, $description, $manager, $bemail, $id)
 	{
@@ -357,6 +416,17 @@ function vacationGroup($usevacation, $approver, $item)
 	$res = $db->db_query($req);
 	}
 
+function confirmDeleteMembers($item, $names)
+{
+	$arr = explode(",", $names);
+	$cnt = count($arr);
+	$db = new db_mysql();
+	for($i = 0; $i < $cnt; $i++)
+		{
+		$req = "delete from users_groups where id_object='".$arr[$i]."' and id_group='".$item."'";	
+		$res = $db->db_query($req);
+		}
+}
 
 function confirmDeleteGroup($id)
 	{
@@ -451,20 +521,36 @@ if( isset($vacation) && $vacation == "update")
 
 if( isset($action) && $action == "Yes")
 	{
-	confirmDeleteGroup($group);
+	if($idx == "Delete")
+		{
+		confirmDeleteGroup($group);
+		}
+	if($idx == "Deletem")
+		{
+		confirmDeleteMembers($item, $names);
+		$idx = "Members";
+		}
 	}
 
 switch($idx)
 	{
+	case "Deletem":
+		deleteMembers($users, $item);
+		$body->title = babTranslate("Delete group's members");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
+		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
+		$body->addItemMenu("Deletem", babTranslate("Delete"), "javascript:(submitForm('Deletem'))");
+		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
+		break;
 	case "Members":
 		groupMembers($item);
 		$body->title = babTranslate("Group's members");
 		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
 		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
+		$body->addItemMenu("Deletem", babTranslate("Delete"), "javascript:(submitForm('Deletem'))");
 		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
-		if( $item > 3 )
-			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=group&idx=Delete&item=".$item);
 		break;
 	case "Vacation":
 		groupVacation($item);
@@ -473,8 +559,6 @@ switch($idx)
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
 		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
 		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
-		if( $item > 3 )
-			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=group&idx=Delete&item=".$item);
 		break;
 	case "Delete":
 		if( $item > 3 )
