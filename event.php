@@ -1187,7 +1187,7 @@ function updateEvent(&$message)
 			$rr1 = explode(":", $rr[1]);
 			$enddate = sprintf("%04d-%02d-%02d %s:00", $rr0[0], $rr0[1], $rr0[2], $_POST['timeend']);
 
-			if( bab_mktime($startdate) > bab_mktime($enddate) )
+			if( bab_mktime($startdate) >= bab_mktime($enddate) )
 				{
 				$message = bab_translate("End date must be older")." !!";
 				return false;
@@ -1206,6 +1206,12 @@ function updateEvent(&$message)
 
 		$startdate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearbegin'], $_POST['monthbegin'], $_POST['daybegin'], $_POST['timebegin']);
 		$enddate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearend'], $_POST['monthend'], $_POST['dayend'], $_POST['timeend']);
+
+		if( bab_mktime($startdate) >= bab_mktime($enddate) )
+			{
+			$message = bab_translate("End date must be older")." !!";
+			return false;
+			}
 
 		$arrupdate[$_POST['evtid']] = array('start'=>$startdate, 'end' => $enddate);
 
