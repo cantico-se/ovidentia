@@ -40,7 +40,7 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
 
 		$time1 = mktime( 0,0,0, $this->month, $this->day, $this->year);
-		$time2 = $time1 + 41*24*3600;
+		$time2 = $time1 + 24*3600;
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
 		$this->dayname = bab_longDate($time1, false);

@@ -280,7 +280,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$idcals = explode(',',$idcals);
 
 			$this->from = sprintf("%04s-%02s-%02s 00:00:00", $fyear, $fmonth, $fday);
-			$this->to = sprintf("%04s-%02s-%02s 23:59:59", $tyear, $tmonth, $tday);
+			$this->to = sprintf("%04s-%02s-%02s 00:00:00", $tyear, $tmonth, $tday);
 
 			$this->mcals = & new bab_mcalendars($this->from, $this->to, $idcals);
 			$this->mcals->loadCategories();
@@ -330,7 +330,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 		function getnextevent()
 			{
-			return list($this->id,$this->evt) = each($this->resevent);
+			return list($this->idevent,$this->evt) = each($this->resevent);
 			}
 
 		function getnextcalendar()

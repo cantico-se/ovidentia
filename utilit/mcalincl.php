@@ -667,6 +667,8 @@ class calendarchoice
 		$this->rescalendarstxt = bab_translate("Resources");
 		$this->t_goright = bab_translate("Push right");
 		$this->t_goleft = bab_translate("Push left");
+		$this->t_calendars1 = bab_translate("Available calendars");
+		$this->t_calendars2 = bab_translate("Selected calendars");
 
 		$this->resuser = $icalendars->usercal;
 		$this->respub = $icalendars->pubcal;
@@ -688,17 +690,19 @@ class calendarchoice
 		$this->respub_sort = array();
 		foreach($this->respub as $k => $v)
 			{
-			$this->respub_sort[$k] = $v['name'];
+			if ($_GET['tg'] != 'event' || $v['manager'] == 1)
+				$this->respub_sort[$k] = $v['name'];
 			}
 		asort($this->respub_sort);
 
 		$this->resres_sort = array();
+
 		foreach($this->resres as $k => $v)
 			{
-			$this->resres_sort[$k] = $v['name'];
+			if ($_GET['tg'] != 'event' || $v['manager'] == 1)
+				$this->resres_sort[$k] = $v['name'];
 			}
 		asort($this->resres_sort);
-
 
 		}
 
@@ -752,7 +756,7 @@ global $babBody;
 
 $selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
 
-if ($GLOBALS['BAB_SESS_LOGGED'])
+if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 	{
 	$babBody->icalendars->user_calendarids = implode(',',$selected);
 	
