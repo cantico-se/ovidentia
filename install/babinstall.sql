@@ -660,6 +660,7 @@ CREATE TABLE sites (
    description char(100) NOT NULL,
    lang char(10) NOT NULL,
    adminemail char(255) NOT NULL,
+   skin char(255) NOT NULL,
    PRIMARY KEY (id)
 );
 

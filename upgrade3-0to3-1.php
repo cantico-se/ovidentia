@@ -26,6 +26,14 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE sites ADD skin CHAR(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>sites</b> table failed !<br>";
+	return $ret;
+	}
+
 $req = "CREATE TABLE private_sections (";
 $req .= "id smallint(6) unsigned NOT NULL auto_increment,";
 $req .= "position enum('0','1') DEFAULT '0' NOT NULL,";
