@@ -181,9 +181,15 @@ function updateFlowInstance($idschi, $iduser, $bool)
 	$db = $GLOBALS['babDB'];
 
 	$idusers = array($iduser);
-	for( $k=0; $k < count($babBody->substitutes); $k++)
+	for( $j=0; $j < 2; $j++)
 	{
-		$idusers[] = $babBody->substitutes[$k];
+		for( $k=0; $k < count($babBody->substitutes[$j]); $k++)
+		{
+			if( !in_array($babBody->substitutes[$j][$k], $idusers))
+				{
+				$idusers[] = $babBody->substitutes[$j][$k];
+				}
+		}
 	}
 
 	$scinfo = $db->db_fetch_array($db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." fat left join ".BAB_FA_INSTANCES_TBL." fait on fait.idsch=fat.id where fait.id='".$idschi."'"));
@@ -226,7 +232,28 @@ function updateFlowInstance($idschi, $iduser, $bool)
 
 		}
 		$idusers = $idroles;
+	}
+	elseif( $scinfo['satype'] == 2 )
+	{
+		$idgroups = array();
+		$groups = getApproversFlow($scinfo['formula']);
+		if( count($groups) > 0 )
+		{
+			if( in_array(1, $groups))
+			{
+				$idgroups[] = 1;
+			}
 
+			$res = $db->db_query("select ugt.id_group from ".BAB_USERS_GROUPS_TBL." ugt where ugt.id_object='".$iduser."'");
+			while( $rr = $db->db_fetch_array($res))
+			{
+				if( in_array($rr['id_group'], $groups))
+				{
+					$idgroups[] = $rr['id_group'];
+				}
+			}
+		}
+		$idusers = $idgroups;
 	}
 
 	if( count($idusers) > 0 )
@@ -368,35 +395,59 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 		{
 		$arr = $db->db_fetch_array($res);
 		$result = getWaitingIdsFlowInstance($arr, $idschi, $notify);
-		if( count($result) > 0 && $arr['satype'] == 1 )
+		if( count($result) > 0 )
 			{
-			$arroles = array();
-			if( in_array(0, $result))
+			switch($arr['satype'])
 				{
-				for( $i = 0; $i < count($result); $i++ )
-					{
-					if( $result[$i] != 0 )
+				case 1:
+					$arroles = array();
+					if( in_array(0, $result))
 						{
-						$arroles[] = $result[$i];
+						for( $i = 0; $i < count($result); $i++ )
+							{
+							if( $result[$i] != 0 )
+								{
+								$arroles[] = $result[$i];
+								}
+							}
+						$rr1 = bab_getSuperior($arr['iduser']);
 						}
-					}
-				$rr1 = bab_getSuperior($arr['iduser']);
+					else
+						{
+						$arroles = $result;
+						}
+					$ret = array();
+					if( count($arroles) > 0 )
+						{
+						$rr =  bab_getOrgChartRoleUsers($arroles);
+						$ret[] = $rr['iduser'][0];
+						}
+					if( isset($rr1) && count($rr1['iduser']) > 0 )
+						{
+						$ret[] = $rr1['iduser'][0];
+						}
+					$result = $ret;
+					break;
+				case 2:
+					if( in_array(1, $result)) // registered users
+						{
+						$res2 = $db->db_query("select id from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+						}
+					else
+						{
+						$res2 = $db->db_query("select distinct ut.id from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=ut.id where ut.is_confirmed='1' and ut.disabled='0' and ugt.id_group in (".implode(',', $result).")");
+						}
+
+					$ret = array();
+					while( $rr = $db->db_fetch_array($res2))
+						{
+						$ret[] = $rr['id'];
+						}
+					$result = $ret;
+					break;
+				default:
+					break;
 				}
-			else
-				{
-				$arroles = $result;
-				}
-			$ret = array();
-			if( count($arroles) > 0 )
-				{
-				$rr =  bab_getOrgChartRoleUsers($arroles);
-				$ret[] = $rr['iduser'][0];
-				}
-			if( isset($rr1) && count($rr1['iduser']) > 0 )
-				{
-				$ret[] = $rr1['iduser'][0];
-				}
-			$result = $ret;
 			}
 		}
 
@@ -414,7 +465,7 @@ function getWaitingApprobations($iduser, $update=false)
 	}
 
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where (frit.iduser='".$iduser."' or frit.iduser='0') and frit.result='' and frit.notified='Y'");
+	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
 	$result['idsch'] = array();
 	$result['idschi'] = array();
 	while( $row = $db->db_fetch_array($res))
@@ -422,7 +473,7 @@ function getWaitingApprobations($iduser, $update=false)
 		switch($row['satype'])
 			{
 			case 0:
-				if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
+				if( $row['iduser'] == $iduser && (count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi'])))
 					{
 					$result['idsch'][] = $row['idsch'];
 					$result['idschi'][] = $row['idschi'];
@@ -459,7 +510,28 @@ function getWaitingApprobations($iduser, $update=false)
 						}
 					}
 				}
-				
+				break;
+			case 2:
+				if( $row['iduser'] == 1 )
+				{
+					if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
+						{
+						$result['idsch'][] = $row['idsch'];
+						$result['idschi'][] = $row['idschi'];
+						}
+				}
+				else
+				{
+					$groups = bab_getUserGroups($iduser);
+					if( count($groups) > 0 && in_array($row['iduser'],$groups['id']))
+					{
+						if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
+							{
+							$result['idsch'][] = $row['idsch'];
+							$result['idschi'][] = $row['idschi'];
+							}
+					}
+				}
 				break;
 			default:
 				break;
@@ -468,24 +540,37 @@ function getWaitingApprobations($iduser, $update=false)
 /**/
 	if( $iduser == $GLOBALS['BAB_SESS_USERID'] )
 	{
-		for($i = 0; $i < count($babBody->substitutes); $i++ )
+		$arrsub = array_unique(array_merge($babBody->substitutes[0], $babBody->substitutes[1]));
+
+		for($i = 0; $i < count($arrsub); $i++ )
 		{
-			$rr = getWaitingApprobations($babBody->substitutes[$i], $update);
+			$rr = getWaitingApprobations($arrsub[$i], $update);
 			for( $k=0; $k < count($rr['idsch']); $k++ )
 			{
-				if( count($result['idsch']) == 0 || !in_array($rr['idsch'][$k], $result['idsch']))
-					{
-					$result['idsch'][] = $rr['idsch'][$k];
-					}
-			}
-			for( $k=0; $k < count($rr['idschi']); $k++ )
-			{
-				if( count($result['idschi']) == 0 || !in_array($rr['idschi'][$k], $result['idschi']))
-					{
-					$result['idschi'][] = $rr['idschi'][$k];
-					}
-			}
-			
+				$add = false;
+
+				list($type) = $db->db_fetch_row($db->db_query("select satype from ".BAB_FLOW_APPROVERS_TBL." where id='".$rr['idsch'][$k]."'"));
+				if( $type != 1 && in_array($arrsub[$i], $babBody->substitutes[0]))
+				{
+					$add = true;
+				}
+				elseif( in_array($arrsub[$i], $babBody->substitutes[1]) )
+				{
+					$add = true;
+				}
+
+				if( $add )
+				{
+					if( count($result['idsch']) == 0 || !in_array($rr['idsch'][$k], $result['idsch']))
+						{
+						$result['idsch'][] = $rr['idsch'][$k];
+						}
+					if( count($result['idschi']) == 0 || !in_array($rr['idschi'][$k], $result['idschi']))
+						{
+						$result['idschi'][] = $rr['idschi'][$k];
+						}
+				}
+			}		
 		}
 	}
 /**/

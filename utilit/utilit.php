@@ -2233,6 +2233,8 @@ function bab_updateUserSettings()
 			
 			}
 
+		$babBody->substitutes[0] = array(); /* nominatif */
+		$babBody->substitutes[1] = array(); /* fonctionnel */
 		$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
@@ -2243,10 +2245,10 @@ function bab_updateUserSettings()
 				{
 				for( $i=0; $i < count($entities['temporary']); $i++ )
 					{
-					$idsup = bab_OCGetSuperior($entities['temporary'][$i]);
+					$idsup = bab_OCGetSuperior($entities['temporary'][$i]['id']);
 					if( $idsup )
 						{
-						$superiors[] =  $idsup;
+						$superiors[] =  $idsup['id_user'];
 						}
 					}
 				}		
@@ -2256,45 +2258,41 @@ function bab_updateUserSettings()
 				$idsup = 0;
 				if( count($superiors) && in_array($arr['id_user'], $superiors))
 					{
-					$idsup = $arr['id_user'];
+					if( count($babBody->substitutes[1]) == 0 ||  !in_array($arr['id_user'], $babBody->substitutes[1]) )
+						{
+						$babBody->substitutes[1][] = $arr['id_user'];
+						}
 					}
-				elseif( $arr['id_substitute'] == $BAB_SESS_USERID && (count($babBody->substitutes) == 0 || !in_array($arr['id_user'], $babBody->substitutes)))
+
+				if( $arr['id_substitute'] == $BAB_SESS_USERID && (count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0])))
 					{
+					$add = true;
 					$entities = bab_OCGetUserEntities($arr['id_user']);
 					if( count($entities['superior']) > 0 )
 						{
-						$add = true;
 						for( $i=0; $i < count($entities['superior']); $i++ )
 							{
-							$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]);
-							if( $idte && $idte != $BAB_SESS_USERID)
+							$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]['id']);
+							if( $idte && $idte['id_user'] != $BAB_SESS_USERID)
 								{
-								$res2 = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date and id_user='".$idte."'");
-								if( !$res2 || $babDB->db_num_rows($res2) == 0 )
-									{
-									$add = false;
-									break;
-									}
+								$add = false;
+								break;
 								}
 							}
+						}
 
-						if( $add )
-							{
-							$idsup = $arr['id_user'];
-							}
-						}
-					else
+					if( count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0]) )
 						{
-						$idsup = $arr['id_user'];
+						$babBody->substitutes[0][] = $arr['id_user'];
 						}
-					}
-				if( $idsup && (count($babBody->substitutes) == 0 || !in_array($idsup, $babBody->substitutes) ))
-					{
-					$babBody->substitutes[] = $idsup;
+
+					if( $add && (count($babBody->substitutes[1]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[1]) ))
+						{
+						$babBody->substitutes[1][] = $arr['id_user'];
+						}
 					}
 				}
 			}
-
 		}
 	
 	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
