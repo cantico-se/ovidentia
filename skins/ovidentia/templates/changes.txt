@@ -29,7 +29,9 @@ admfiles.html           admfileslist        Added column for 'moderation'
 calview.html            articleslist        Changed href="{ titleurl }" to popup window
 users.html                                  Added template 'changepassword'
                         userslist           Added column 'nickname'
-topman.html             articleslist        Added test <!--#if badmin --> ... <!--#endif badmin -->                       
+topman.html             articleslist        Added test <!--#if badmin --> ... <!--#endif badmin -->
+maildoms.html           domaincreate        Added test <!--#if dummy -->
+                        domainmodify        Added test <!--#if dummy -->
 /****************************/
 version 3.3.0 / 3.3.1
 /****************************/

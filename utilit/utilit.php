@@ -540,11 +540,15 @@ function babUserSection()
 		$babSearchUrl .= "e";
 		}
 	$this->title = bab_translate("User's section");
-	$this->head = bab_translate("You are logged on as").":<br><center><b>";
 	if( !empty($GLOBALS['BAB_SESS_USER']))
+		{
+		$this->head = bab_translate("You are logged on as").":<br><center><b>";
 		$this->head .= $GLOBALS['BAB_SESS_USER'];
+		}
 	else
-		$this->head .= bab_translate("Anonymous");
+		{
+		$this->head = bab_translate("You are not yet logged in")."<br><center><b>";
+		}
 	$this->head .= "</b></center><br>";
 	$this->foot = "";
 

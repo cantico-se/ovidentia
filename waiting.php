@@ -185,7 +185,7 @@ function confirmArticle($article, $topics)
 			$this->article = $article;
 			$this->topics = $topics;
 			$this->new = $new;
-			$this->name = bab_translate("Submiter");
+			$this->name = bab_translate("Author");
 			$this->modify = bab_translate("Update");
 			$this->action = bab_translate("Action");
 			$this->confirm = bab_translate("Confirm");
