@@ -44,6 +44,7 @@ function listFolders()
 			$this->fullname = bab_translate("Folders");
 			$this->manager = bab_translate("Manager");
 			$this->notify = bab_translate("Notify");
+			$this->access = bab_translate("Access");
 			$this->active = bab_translate("Enabled");
 			$this->notify = bab_translate("Notify");
 			$this->modify = bab_translate("Update");
