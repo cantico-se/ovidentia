@@ -320,7 +320,7 @@ function updateOrgChart($id, $name, $description)
 		$description = addslashes($description);
 		}
 
-	$query = "update ".BAB_FORUMS_TBL." set name='".$name."', description='".$description."' where id = '$id'";
+	$query = "update ".BAB_ORG_CHARTS_TBL." set name='".$name."', description='".$description."' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 	}
