@@ -21,38 +21,6 @@ function displayLogin()
 	$body->babecho(	babPrintTemplate($temp,"login.html", "login"));
 	}
 
-function changePassword()
-	{
-	global $body,$BAB_SESS_USERID;
-	class temp
-		{
-		var $oldpwd;
-		var $newpwd;
-		var $renewpwd;
-		var $update;
-
-		function temp()
-			{
-			$this->oldpwd = babTranslate("Old Password");
-			$this->newpwd = babTranslate("New Password");
-			$this->renewpwd = babTranslate("Retype New Password");
-			$this->update = babTranslate("Update Password");
-			}
-		}
-
-	$db = new db_mysql();
-	$req = "select * from users where id='$BAB_SESS_USERID'";
-	$res = $db->db_query($req);
-	$arr = $db->db_fetch_array($res);
-
-	if( $arr[changepwd] != 0)
-		{
-		$temp = new temp();
-		$body->babecho(	babPrintTemplate($temp,"login.html", "changepassword"));
-		}
-	else
-		$body->msgerror = babTranslate("Sorry, You cannot change your password. Please contact administrator");
-	}
 
 function emailPassword()
 	{
@@ -130,29 +98,6 @@ function signOff()
 	Header("Location: index.php");
 	}
 
-function updatePassword($oldpwd, $newpwd1, $newpwd2)
-	{
-	global $body;
-	if( empty($oldpwd) || empty($newpwd1) || empty($newpwd2))
-		{
-		echo $oldpwd ."   ". $newpwd1."     ". $newpwd2;
-		$body->msgerror = babTranslate("You must complete all fields !!");
-		return;
-		}
-	if( $newpwd1 != $newpwd2)
-		{
-		$body->msgerror = babTranslate("Passwords not match !!");
-		return;
-		}
-	if ( strlen($newpwd1) < 6 )
-		{
-		$body->msgerror = babTranslate("Password must be at least 6 characters !!");
-		return;
-		}
-
-	userChangePassword( $oldpwd, $newpwd1);
-	}
-
 function userCreate()
 	{
 	global $body;
@@ -222,10 +167,6 @@ if( isset($login) && $login == "login")
 	Header("Location: index.php?tg=calview");
 	}
 
-if( isset($update) && $update == "update")
-	{
-	updatePassword($oldpwd, $newpwd1, $newpwd2);
-	}
 
 if( isset($adduser) && $adduser == "register")
 	{
@@ -246,19 +187,16 @@ switch($cmd)
 	case "register":
 		$body->title = babTranslate("Please provide a valid email.") . "<br>";
 		$body->title .= babTranslate("We will send you an email for confirmation before you can use our services") . "<br>";
+		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
 		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
 		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
 		$body->setCurrentItemMenu($cmd);
 		userCreate();
 		break;
 
-	case "newpwd":
-		$body->title = babTranslate("Change password");
-		changePassword();
-		break;
-
 	case "emailpwd":
 		$body->title = babTranslate("Email a new password");
+		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
 		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
 		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
 		$body->setCurrentItemMenu($cmd);
