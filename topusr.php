@@ -167,10 +167,10 @@ function listTopicCategory($cat)
 					{
 					$this->istopcat = false;
 					if( $this->arrid[$i]['confirmed'] == 0 )
-						$this->submiturl = $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arr['id'];
+						$this->submiturl = $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arrid[$i][0];
 					$this->waitingarticlescount = 0;
 					$this->waitingcommentscount = 0;
-					$this->articlesurl = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id']."&new=".$this->waitingarticlescount."&newc=".$this->waitingcommentscount;
+					$this->articlesurl = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arrid[$i][0]."&new=".$this->waitingarticlescount."&newc=".$this->waitingcommentscount;
 					$this->childurl = $this->articlesurl;
 					}
 
