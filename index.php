@@ -97,6 +97,8 @@ if( !isset($GLOBALS['babUmaskMode']))
 	}
 
 $babSiteName = substr($babSiteName, 0, 30);
+require("webanalyse/include/stats_main.inc");
+$stats = new init(true, 'webanalyse/'); // 2 params. true/false for activate or not, and the path of webanalyse.
 include_once "base.php";
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);

@@ -38,7 +38,7 @@
 <!--#endin getnext -->
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b><a class="BabSiteAdminListLink" href="javascript: Start('{ urladd }', 'OvidentiaEditS0', 'width=750,height=650,status=no,resizable=yes,top=100,left=100,scrollbars=yes')">{ addtxt }</a></b></td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b><a class="BabSiteAdminListLink" href="javascript: Start('{ urladd }', 'OvidentiaEditS0', 'width=750,height=650,status=no,resizable=yes,top=100,left=100,scrollbars=yes')">{ addtxt }</a></b>&nbsp;|&nbsp;<b><a class="BabSiteAdminListLink" href="javascript: Start('{ urlmod }', 'OvidentiaEditS0', 'width=750,height=650,status=no,resizable=yes,top=100,left=100,scrollbars=yes')">{ modtxt }</a></b></td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
@@ -235,6 +235,133 @@ window.focus();
 </HTML>
 <!--#end propertiesarticles -->
 
+
+<!--#begin modtopicchoicestep -->
+<script type="text/javascript">
+<!--
+function stepSubmitForm(cmd, fmname) 
+{ 
+if( typeof document.forms[fmname] != "object" ) return;
+document.forms[fmname].updstep01.value = cmd;
+}
+//-->
+</script>
+<form name="step01form" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="artedit">
+<input type="hidden" name="idx" value="s01">
+<input type="hidden" name="rfurl" value="{ rfurl }">
+<input type="hidden" name="updstep01" value="">
+<br>
+<table width="95%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td> 
+<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
+</td>
+</tr>
+</table>
+<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td><br>
+<!--#in getnexttopic -->
+<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td width="97%" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>{ topicpath }</strong></td>
+<td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle"><input type="radio" name="topicid" value="{ idtopic }" { topicchecked }>
+</td>
+</tr>
+</table>
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td colspan="4">{ description } </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endin getnexttopic -->
+<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td colspan="4" align="right"><input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step01form');">&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step01form');"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+</td>
+</tr>
+</table>
+</form>
+<!--#end modtopicchoicestep -->
+
+
+<!--#begin modarticlechoicestep -->
+<script type="text/javascript">
+<!--
+function stepSubmitForm(cmd, fmname) 
+{ 
+if( typeof document.forms[fmname] != "object" ) return;
+document.forms[fmname].updstep02.value = cmd;
+}
+//-->
+</script>
+<form name="step02form" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="artedit">
+<input type="hidden" name="idx" value="s02">
+<input type="hidden" name="rfurl" value="{ rfurl }">
+<input type="hidden" name="topicid" value="{ topicid }">
+<input type="hidden" name="updstep02" value="">
+<br>
+<table width="95%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td> 
+<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
+</td>
+</tr>
+</table>
+<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td><br>
+<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<!--#in getnextarticle -->
+<tr> 
+<td width="97%" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>{ articletitle }</strong></td>
+<td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle"><input type="radio" name="articleid" value="{ articleid }" { articlechecked }>
+</tr>
+<!--#endin getnextarticle -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td colspan="4" align="right"><input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','step02form');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','step02form');"><!--#if count -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step02form');"><!--#endif count --></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</td>
+</tr>
+</table>
+</form>
+<!--#end modarticlechoicestep -->
 
 <!--#begin topicchoicestep -->
 <script type="text/javascript">

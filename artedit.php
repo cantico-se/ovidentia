@@ -64,9 +64,11 @@ function listDrafts()
 			$this->deletetxt = bab_translate("Delete");
 			$this->previewtxt = bab_translate("Preview");
 			$this->addtxt = bab_translate("Publish");
+			$this->modtxt = bab_translate("Modify an existing article");
 			$this->attachmenttxt = bab_translate("Attachments");
 			$this->submittxt = bab_translate("Submit");
 			$this->urladd = $GLOBALS['babUrlScript']."?tg=artedit&idx=s0";
+			$this->urlmod = $GLOBALS['babUrlScript']."?tg=artedit&idx=s00";
 			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -449,6 +451,176 @@ function showChoiceTopic()
 		}
 	$temp = new temp();
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "topicchoicestep"));
+}
+
+
+function showChoiceTopicModify()
+{
+	global $babBodyPopup;
+	class temp
+		{
+		var $res;
+		var $count;
+		var $topicname;
+		var $topicpath;
+		var $description;
+		var $idtopic;
+		var $topicchecked;
+		var $idtopicsel;
+		var $articleid;
+		var $title; 
+		var $headtext;
+		var $bodytext;
+		var $lang;
+
+		function temp()
+			{
+			global $babBodyPopup, $babBody, $babDB, $topicid, $rfurl;
+			$this->res = $babDB->db_query("select id, description, category from ".BAB_TOPICS_TBL." where (id IN (".implode(',', $babBody->topsub).") and allow_update != '0' ) or (id IN (".implode(',', $babBody->topman).") and allow_manupdate != '0' ) or (id IN (".implode(',', $babBody->topmod).")) order by id_cat");		
+			$this->count = $babDB->db_num_rows($this->res);
+
+			if( $this->count > 0 )
+				{
+				if(!isset($topicid)) { $topicid = 0;}
+				$this->rfurl = $rfurl;
+				$this->idtopicsel = isset($topicid)? $topicid: '';
+				$babBodyPopup->title = bab_translate("Choose the topic");
+				$this->steptitle = bab_translate("list of topics");
+				$this->nexttxt = bab_translate("Next");
+				$this->canceltxt = bab_translate("Cancel");
+				}
+
+			if( $this->count == 0 )
+				{
+				$babBodyPopup->msgerror = bab_translate("Access denied");
+				}
+			}
+
+		function getnexttopic()
+			{
+			global $babDB, $babBody;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->idtopic = $arr['id'];
+				$this->topicname = $arr['category'];
+				$this->topicpath = viewCategoriesHierarchy_txt($arr['id']);
+				$this->description = $arr['description'];
+				$this->topicchecked = '';
+				if( $this->idtopicsel == '' )
+					{
+					if( $i == 0 )
+						{
+						$this->topicchecked = 'checked';
+						}
+					}
+				else if( $this->idtopicsel == $this->idtopic )
+					{
+					$this->topicchecked = 'checked';
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+
+		}
+	$temp = new temp();
+	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "modtopicchoicestep"));
+}
+
+
+function showChoiceArticleModify($topicid)
+{
+	global $babBodyPopup;
+	class temp
+		{
+		var $res;
+		var $count;
+		var $topicname;
+		var $topicpath;
+		var $description;
+		var $idtopic;
+		var $topicchecked;
+		var $idtopicsel;
+		var $articleid;
+		var $title; 
+		var $headtext;
+		var $bodytext;
+		var $lang;
+
+		function temp($topicid)
+			{
+			global $babBodyPopup, $babBody, $babDB, $topicid, $articleid, $rfurl;
+			$this->count = 0;
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topicid."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arr = $babDB->db_fetch_array($res);
+				if( (count($babBody->topmod) && in_array($topicid, $babBody->topmod)) || ($arr['allow_manupdate'] && count($babBody->topman) && in_array($topicid, $babBody->topman)) )
+					{
+					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and adt.id is null";
+					}
+				elseif( $arr['allow_update'] && count($babBody->topsub) && in_array($topicid, $babBody->topsub))
+					{
+					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.id is null";
+					}
+				else
+					{
+					$req = '';
+					}
+
+				if( $req != '' )
+					{
+					$this->res = $babDB->db_query($req);
+					$this->count = $babDB->db_num_rows($this->res);
+					$this->rfurl = $rfurl;
+					$this->topicid = $topicid;
+					$babBodyPopup->title = bab_translate("Choose the article");
+					$this->steptitle = viewCategoriesHierarchy_txt($topicid);
+					$this->nexttxt = bab_translate("Next");
+					$this->canceltxt = bab_translate("Cancel");
+					$this->previoustxt = bab_translate("Previous");
+					}
+				}
+			
+			if( $req == '' )
+				{
+				$babBodyPopup->msgerror = bab_translate("Access denied");
+				}
+			}
+
+		function getnextarticle()
+			{
+			global $babDB, $babBody;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->articleid = $arr['id'];
+				$this->articletitle = $arr['title'];
+				if( $i == 0 )
+					{
+					$this->articlechecked = 'checked';
+					}
+				else
+					{
+					$this->articlechecked = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+
+		}
+	$temp = new temp($topicid);
+	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "modarticlechoicestep"));
 }
 
 function showEditArticle()
@@ -1795,7 +1967,38 @@ if(!isset($rfurl))
 	$rfurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
 	}
 
-if( isset($updstep0))
+if( isset($updstep01))
+{
+	if( $updstep01 == 'cancel')
+	{
+		$idx='unload';
+		$refreshurl = $rfurl;
+		$popupmessage = "";
+	}
+	elseif( $updstep01 == 'next')
+	{
+		$idx = 's01';
+	}
+}
+elseif( isset($updstep02))
+{
+	if( $updstep02 == 'cancel' )
+	{
+		$idx='unload';
+		$refreshurl = $rfurl;
+		$popupmessage = "";
+	}
+	elseif( $updstep02 == 'prev' )
+	{
+		$idx = 's00';
+	}
+	elseif( $updstep02 == 'next' )
+	{
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topicid."&article=".$articleid."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=artedit&idx=list"));
+		exit;
+	}
+}
+elseif( isset($updstep0))
 {
 	if( $updstep0 == 'cancel' )
 	{
@@ -2078,6 +2281,20 @@ switch($idx)
 	{
 	case "denied":
 		$babBody->msgerror = bab_translate("Access denied");
+		break;
+	case "s00":
+		$babBodyPopup = new babBodyPopup();
+		$babBodyPopup->title = bab_translate("Choose the topic");
+		showChoiceTopicModify();
+		printBabBodyPopup();
+		exit;
+		break;
+	case "s01":
+		$babBodyPopup = new babBodyPopup();
+		$babBodyPopup->title = bab_translate("Choose the article");
+		showChoiceArticleModify($topicid);
+		printBabBodyPopup();
+		exit;
 		break;
 	case "s0":
 		$babBodyPopup = new babBodyPopup();

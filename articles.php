@@ -679,7 +679,7 @@ function modifyArticle($topics, $article)
 
 		function temp($topics, $article)
 			{
-			global $babBodyPopup, $babBody, $babDB, $arrtop;
+			global $babBodyPopup, $babBody, $babDB, $arrtop, $rfurl;
 
 			$access = false;
 			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics)))
@@ -687,6 +687,14 @@ function modifyArticle($topics, $article)
 				$access = true;
 				}
 
+			if(!isset($rfurl))
+				{
+				$rfurl = $GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".$topics;
+				}
+			else
+				{
+				$this->rfurl = $rfurl;
+				}
 			if( $access )
 				{
 				list($this->blog) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$article."'"));
@@ -971,7 +979,7 @@ function viewArticle($article)
 
 function confirmModifyArticle($topics, $article, $comment)
 {
-	global $babBody, $babDB, $arrtop;
+	global $babBody, $babDB, $arrtop, $rfurl;
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$article."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
@@ -989,7 +997,7 @@ function confirmModifyArticle($topics, $article, $comment)
 					$comment = stripslashes($comment);
 					}
 				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$article."', '".$GLOBALS['BAB_SESS_USERID']."', now(), 'lock', '".addslashes($comment)."')");		
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".$topics));
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($rfurl));
 				exit;
 			}
 			else
