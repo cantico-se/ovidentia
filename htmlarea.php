@@ -62,7 +62,7 @@ function get_js_style_list()
 			if (trim($ligne) == "/*BAB_EDITOR_PAGE_END*/") $get=false;
 
 			$tmp = explode("{", $ligne);
-			$tmp1 = explode("}", $tmp[1]);
+			$tmp1 = isset($tmp[1]) ? explode("}", $tmp[1]) : '';
 			$tmp = explode(":", $tmp[0]);
 			if (substr($tmp[0],0,1) == "." ) $tmp[0] = substr($tmp[0],1,(strlen($tmp[0])-1));
 			$tmp = explode(".", $tmp[0]);
