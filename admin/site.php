@@ -78,6 +78,11 @@ function siteModify($id)
 		var $grpcount;
 		var $grpres;
 
+		var $smtpuser;
+		var $smtpuserval;
+		var $smtppass;
+		var $smtppass2;
+
 		function temp($id)
 			{
 			$this->name = bab_translate("Site name");
@@ -99,6 +104,9 @@ function siteModify($id)
 			$this->imagessize = bab_translate("Max image size ( Kb )");
 			$this->group = bab_translate("Default group for confirmed users");
 			$this->none = bab_translate("None");
+			$this->smtpuser = bab_translate("SMTP username");
+			$this->smtppass = bab_translate("SMTP password");
+			$this->smtppass2 = bab_translate("Re-type SMTP password");
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
@@ -124,6 +132,7 @@ function siteModify($id)
 				$this->serverportval = $arr['smtpport'];
 				$this->imgsizeval = $arr['imgsize'];
 				$this->grpidsel = $arr['idgroup'];
+				$this->smtpuserval = $arr['smtpuser'];
 				if( $arr['registration'] == "Y")
 					{
 					$this->nregister = "";
@@ -522,7 +531,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group)
+function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2)
 	{
 	global $babBody;
 	if( empty($name))
@@ -535,6 +544,15 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide server address !!");
 		return false;
+		}
+
+	if( !empty($smtppass) || !empty($smtppass2))
+		{
+		if( $smtppass != $smtppass2 )
+			{
+			$babBody->msgerror = bab_translate("ERROR: Passwords not match !!");
+			return false;
+			}
 		}
 
 	if( empty($serverport))
@@ -558,7 +576,7 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 		{
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."' where id='".$id."'";
+		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\") where id='".$id."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -613,7 +631,7 @@ if( isset($modify))
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group))
+		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2))
 			$idx = "modify";
 		}
 	else if( !empty($delete))

@@ -1298,5 +1298,22 @@ while($arr = $db->db_fetch_array($res))
 	$db->db_query($req);
 	}
 return $ret;
+
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `smtpuser` varchar(20) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `smtppassword` tinyblob NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 }
 ?>

@@ -198,7 +198,7 @@ class babMailSmtp extends babMail
 function bab_mail()
 {
 	$db = $GLOBALS['babDB'];
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+	$arr = $db->db_fetch_array($db->db_query("select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 	if( empty($arr['mailfunc']))
 		return false;
 
@@ -219,6 +219,12 @@ function bab_mail()
 			$mail->mail->IsSMTP();
 			$mail->mail->Host = $arr['smtpserver'];
 			$mail->mail->Port = $arr['smtpport'];
+			if( $arr['smtpuser'] != "" ||  $arr['smtppass'] != "")
+				{
+				$mail->mail->SMTPAuth = true;;
+				$mail->mail->Username = $arr['smtpuser'];
+				$mail->mail->Password = $arr['smtppass'];
+				}
 			break;
 	}
 	return $mail;
