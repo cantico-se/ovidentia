@@ -81,12 +81,17 @@ function NTuserLogin($nickname)
 		}
 	}
 
+if ( substr($GLOBALS['babPhpSelf'],0,1) == '/' )
+		$babPhpSelf = substr($GLOBALS['babPhpSelf'],1);
+	else
+		$babPhpSelf = $GLOBALS['babPhpSelf'];
+	
 if (!session_is_registered('BAB_SESS_NTREGISTER'))
 	{
 	if (!isset($ntident)) setcookie("ntident","connexion");
 	session_register("BAB_SESS_NTREGISTER");
 	$GLOBALS['BAB_SESS_NTREGISTER'] = true;
-	header("location:".$GLOBALS['babUrl'].$GLOBALS['babPhpSelf']);
+	header("location:".$GLOBALS['babUrl'].$babPhpSelf);
 	}
 
 if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && $ntident == "connexion")
@@ -113,7 +118,6 @@ if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && $ntident == "connexi
 	}
 
 
-
 if( $GLOBALS['BAB_SESS_NTREGISTER'] && $ntident == "connexion" )
 	{
 	$babBody->script .= 
@@ -130,7 +134,7 @@ if( $GLOBALS['BAB_SESS_NTREGISTER'] && $ntident == "connexion" )
 		if ( query.indexOf(\'?\') != -1 && query.indexOf(\'NTidUser\') == -1)
 			{window.location.href = query+"&NTidUser="+escape(WshShell.Username);}
 		else if (query.indexOf(\'NTidUser\') == -1)
-			{window.location.href = "'.$GLOBALS['babPhpSelf'].'?NTidUser="+escape(WshShell.Username);}
+			{window.location.href = "'.$babPhpSelf.'?NTidUser="+escape(WshShell.Username);}
 	}
 	loggedUser();';
 	}
