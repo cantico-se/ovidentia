@@ -139,7 +139,7 @@ function addComment($topics, $article, $subject, $message, $com="")
 				$this->msie = 1;
 			else
 				$this->msie = 0;
-			$this->urlsee = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&art=".$article;
+			$this->urlsee = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$article;
 			$res = $db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $db->db_fetch_row($res);
 			$arr = $db->db_fetch_array($db->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'"));
