@@ -100,6 +100,8 @@ function printBody()
 			$this->style = $babStyle;
 			$this->script = $body->script;
 			$this->slogan = $babSlogan;
+			$this->home = babTranslate("Home");
+			$this->homeurl = $GLOBALS[babUrl]."index.php?tg=entry";
 			if( isset($LOGGED_IN) && $LOGGED_IN == true )
 				{
 				$this->login = babTranslate("Logout");

@@ -142,7 +142,7 @@ if( isset($login) && $login == "login")
 	{
 	if(!signOn($nickname, $password))
 		return;
-	Header("Location: index.php?tg=calview");
+	Header("Location: index.php?tg=entry");
 	}
 
 

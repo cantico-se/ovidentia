@@ -76,14 +76,6 @@ function siteHomePage0($id)
 	global $body;
 	class temp0
 		{
-		var $name;
-		var $description;
-		var $nameval;
-		var $descriptionval;
-		var $lang;
-		var $langval;
-		var $siteemail;
-		var $siteemailval;
 		var $create;
 	
 		var $moveup;
@@ -96,13 +88,11 @@ function siteHomePage0($id)
 
 		var $listhometxt;
 		var $listpagetxt;
+		var $title;
 
 		function temp0($id)
 			{
-			$this->name = babTranslate("Site name");
-			$this->description = babTranslate("Description");
-			$this->lang = babTranslate("Lang");
-			$this->siteemail = babTranslate("Email site");
+			$this->title = babTranslate("Unregistered users home page");
 			$this->listhometxt = babTranslate("---- Proposed Home articles ----");
 			$this->listpagetxt = babTranslate("---- Home page articles ----");
 			$this->moveup = babTranslate("Move Up");
@@ -158,6 +148,86 @@ function siteHomePage0($id)
 
 	$temp0 = new temp0($id);
 	$body->babecho(	babPrintTemplate($temp0, "sites.html", "sitehomepage0"));
+	}
+
+function siteHomePage1($id)
+	{
+
+	global $body;
+	class temp1
+		{
+		var $create;
+	
+		var $moveup;
+		var $movedown;
+
+		var $id;
+		var $arr = array();
+		var $db;
+		var $res;
+
+		var $listhometxt;
+		var $listpagetxt;
+		var $title;
+
+		function temp1($id)
+			{
+			$this->title = babTranslate("Registered users home page");
+			$this->listhometxt = babTranslate("---- Proposed Home articles ----");
+			$this->listpagetxt = babTranslate("---- Home page articles ----");
+			$this->moveup = babTranslate("Move Up");
+			$this->movedown = babTranslate("Move Down");
+			$this->create = babTranslate("Modify");
+			$this->id = $id;
+
+			$this->db = new db_mysql();
+			$req = "select * from homepages where id_group='1' and id_site='$id' and ordering='0'";
+			$this->reshome1 = $this->db->db_query($req);
+			$this->counthome1 = $this->db->db_num_rows($this->reshome1);
+			$req = "select * from homepages where id_group='1' and id_site='$id' and ordering!='0' order by ordering asc";
+			$this->respage1 = $this->db->db_query($req);
+			$this->countpage1 = $this->db->db_num_rows($this->respage1);
+			}
+
+		function getnexthome1()
+			{
+			static $i = 0;
+			if( $i < $this->counthome1 )
+				{
+				$arr = $this->db->db_fetch_array($this->reshome1 );
+				$this->home1id = $arr[id_article];
+				$req = "select * from articles where id='".$this->home1id."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->home1val = $arr[title];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextpage1()
+			{
+			static $k = 0;
+			if( $k < $this->countpage1 )
+				{
+				$arr = $this->db->db_fetch_array($this->respage1 );
+				$this->page1id = $arr[id_article];
+				$req = "select * from articles where id='".$this->page1id."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->page1val = $arr[title];
+				$k++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp0 = new temp1($id);
+	$body->babecho(	babPrintTemplate($temp0, "sites.html", "sitehomepage1"));
 	}
 
 function sectionDelete($id)
@@ -230,12 +300,26 @@ function confirmDeleteSite($id)
 function siteUpdateHomePage0($item, $listpage0)
 	{
 	$db = new db_mysql();
-	$req = "update homepages set ordering='0' where id_site='".$item."'";
+	$req = "update homepages set ordering='0' where id_site='".$item."' and id_group='2'";
 	$res = $db->db_query($req);
 
 	for($i=0; $i < count($listpage0); $i++)
 		{
-		$req = "update homepages set ordering='".($i + 1)."' where id_site='".$item."' and id_article='".$listpage0[$i]."'";
+		$req = "update homepages set ordering='".($i + 1)."' where id_group='2' and id_site='".$item."' and id_article='".$listpage0[$i]."'";
+		$res = $db->db_query($req);
+		}
+	return true;
+	}
+
+function siteUpdateHomePage1($item, $listpage1)
+	{
+	$db = new db_mysql();
+	$req = "update homepages set ordering='0' where id_site='".$item."' and id_group='1'";
+	$res = $db->db_query($req);
+
+	for($i=0; $i < count($listpage1); $i++)
+		{
+		$req = "update homepages set ordering='".($i + 1)."' where id_group='1' and id_site='".$item."' and id_article='".$listpage1[$i]."'";
 		$res = $db->db_query($req);
 		}
 	return true;
@@ -248,10 +332,18 @@ if( isset($modify))
 		$idx = "modify";
 	}
 
-if( isset($update) && $update == "homepage0")
+if( isset($update) )
 	{
-	if(!siteUpdateHomePage0($item, $listpage0))
-		$idx = "modify";
+	if( $update == "homepage0" )
+		{
+		if(!siteUpdateHomePage0($item, $listpage0))
+			$idx = "modify";
+		}
+	else if( $update == "homepage1" )
+		{
+		if(!siteUpdateHomePage1($item, $listpage1))
+			$idx = "modify";
+		}
 	}
 
 if( !isset($idx))
@@ -276,6 +368,7 @@ switch($idx)
 		$body->title = getSiteName($item);
 		siteModify($item);
 		siteHomePage0($item);
+		siteHomePage1($item);
 		$body->addItemMenu("List", babTranslate("Sites"),$GLOBALS[babUrl]."index.php?tg=sites&idx=list");
 		$body->addItemMenu("modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=site&idx=modify&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=site&idx=Delete&item=".$item);

@@ -115,7 +115,7 @@ function oldListArticles()
 	return $temp->count;
 	}
 
-function ListArticles()
+function ListArticles($idgroup)
 	{
 	global $body;
 
@@ -130,7 +130,7 @@ function ListArticles()
 		var $moreurl;
 		var $morename;
 
-		function temp()
+		function temp($idgroup)
 			{
 			$this->db = new db_mysql();
 			$req = "select * from sites where name='".$GLOBALS[babSiteName]."'";
@@ -146,7 +146,7 @@ function ListArticles()
 				$arr = $this->db->db_fetch_array($res);
 				$idsite = $arr[id];
 				}
-			$req = "select * from homepages where id_group='2' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
+			$req = "select * from homepages where id_group='".$idgroup."' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->countres = $this->db->db_num_rows($this->res);
 			$this->morename = babTranslate("Read More");
@@ -174,7 +174,7 @@ function ListArticles()
 			}
 		}
 	
-	$temp = new temp();
+	$temp = new temp($idgroup);
 	$body->babecho(	babPrintTemplate($temp,"entry.html", "homepage0"));
 	return $temp->count;
 	}
@@ -226,6 +226,14 @@ if(!isset($idx))
 	$idx = "list";
 	}
 
+if(!isset($idg))
+	{
+	$idg = 2; // non registered users
+	}
+
+if( $LOGGED_IN)
+	$idg = 1; // registered users
+
 switch($idx)
 	{
 	case "more":
@@ -238,7 +246,7 @@ switch($idx)
 	case "list":
 		$body->title = babTranslate("List of articles");
 		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=entry");
-		listArticles();
+		listArticles($idg);
 		break;
 	}
 $body->setCurrentItemMenu($idx);

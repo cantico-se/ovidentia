@@ -179,6 +179,7 @@ function selectAll(list)
 <!--#end sitemodify -->
 <!--#begin sitehomepage0 -->
 <br><br>
+<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ title }</center></td></tr></table></center><br><center>
 <table border="0" width="90%" cellpadding="0" cellspacing="0">
 <tr><td>
 <form method="post" name="homeform" action="index.php">
@@ -222,5 +223,52 @@ function selectAll(list)
 </table>
 </center>
 <!--#end sitehomepage0 -->
+<!--#begin sitehomepage1 -->
+<br><br>
+<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ title }</center></td></tr></table></center><br><center>
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" name="homeform1" action="index.php">
+<input type="hidden" name="tg" value="site">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="update" value="homepage1">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td>
+<select name="listhome1"  size=12 multiple>
+<option value="0">{ listhometxt }</option>
+<!--#in getnexthome1 -->
+<option value="{ home1id }">{ home1val }</option>
+<!--#endin getnexthome1 -->
+</select>
+</td>
+<td align="center" valign="center"><input type="button" name="moveleft" value="<<" OnClick="Javascript:moveOptions(document.homeform1.elements[7],document.homeform1.listhome1)"><br><br><input type="button" name="moveright" value=">>" OnClick="Javascript:moveOptions(document.homeform1.listhome1,document.homeform1.elements[7])"></td>
+<td>
+<select name="listpage1[]"  size=12 multiple>
+<option value="0">{ listpagetxt }</option>
+<!--#in getnextpage1 -->
+<option value="{ page1id }">{ page1val }</option>
+<!--#endin getnextpage1 -->
+</select>
+</td>
+</td>
+<td align="center" valign="center"><input type="button" name="moveup" value="{ moveup }" onclick="move(true, document.homeform1.elements[7])"><br><br><input type="button" name="movedown" value="{ movedown }"  onclick="move(false, document.homeform1.elements[7])"></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td align="center"><input type="submit" name="Submit" value="{ create }" onclick="Javascript:selectAll(document.homeform1.elements[7]); document.homeform1.submit()"></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end sitehomepage1 -->
 </BODY>
 </HTML>
