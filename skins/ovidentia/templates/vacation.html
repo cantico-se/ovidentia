@@ -20,13 +20,6 @@ function updateDates(elemDay, elemMonth, elemYear)
 	elemDay.options[0].selected = true;
 }
 
-
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "CalendarWindow", "width=250,height=250,status=no,resizable=no,top=200,left=200");
-}
-
 function dateBegin(day, month, year)
 {
 	document.vacform.elements['daybegin'].options[day-1].selected = true;
