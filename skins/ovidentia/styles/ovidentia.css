@@ -151,6 +151,9 @@ a.BabTopicsFooterLink:Hover {COLOR: #009933; font : 10px Verdana, Arial, sans-se
 .BabCalendarBodyBackground { BACKGROUND: #000000 ; font: 10px Verdana, Arial, sans-serif }
 .BabCalendarBodyBadMonthBackground {background: #CCCCCC ; font: 10px Verdana, Arial, sans-serif}
 .BabMonthCalendarCurentDayBackground { BACKGROUND: #E6E6F7 ; font: 10px Verdana, Arial, sans-serif }
+.BabMonthAltCalendarCurentDayBackground { BACKGROUND: #D1D1D9 ; font: 10px Verdana, Arial, sans-serif }
+.BabMonthAlt2CalendarCurentDayBackground { BACKGROUND: #CCCCCC ; font: 10px Verdana, Arial, sans-serif }
+.BabMonthAltCalendarCurentUserBackground { BACKGROUND: #999999 ; font: 10px Verdana, Arial, sans-serif }
 /*also in use on inbox  */
 .BabCalendarBodyFont { COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
 
