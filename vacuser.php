@@ -639,8 +639,8 @@ if (!isset($_POST['daybegin']) ||
 	return false;
 	}
 
-	$yearbegin = date("Y") + $_POST['yearbegin'] - 1;
-	$yearend = date("Y") + $_POST['yearend'] - 1;
+	$yearbegin = $_POST['year'] + $_POST['yearbegin'] - 1;
+	$yearend = $_POST['year'] + $_POST['yearend'] - 1;
 
 	$begin = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $yearbegin);
 	$end = mktime( 0,0,0,$_POST['monthend'], $_POST['dayend'], $yearend);

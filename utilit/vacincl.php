@@ -340,6 +340,7 @@ function viewVacationCalendar($users, $period = false )
 			$this->t_nonworking = bab_translate("Non-working day");
 			$this->t_weekend = bab_translate("Week-end");
 			$this->t_rotate = bab_translate("Print in landscape");
+			$this->t_non_used = bab_translate("Non-used days");
 			
 			$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
 
@@ -514,7 +515,7 @@ function viewVacationCalendar($users, $period = false )
 
 				for( $k=0; $k < count($this->entries); $k++)
 					{
-					if( $startmonth <= $this->entries[$k]['db'] && $endmonth >= $this->entries[$k]['db'] || $startmonth <= $this->entries[$k]['de'] && $endmonth >= $this->entries[$k]['de'] )
+					if( $startmonth <= $this->entries[$k]['db'] && $endmonth >= $this->entries[$k]['db'] || $startmonth <= $this->entries[$k]['de'] && $endmonth >= $this->entries[$k]['de'] || $this->entries[$k]['db'] <= $startmonth &&  $this->entries[$k]['de'] >= $endmonth )
 						{
 						$this->month_entries[] = $k;
 						if (!in_array($this->entries[$k]['id_user'],$this->month_users))
@@ -771,11 +772,13 @@ function listVacationRequests($id_user)
 
 				$this->urledit = $GLOBALS['babUrlScript']."?tg=vacuser&idx=period&id=".$arr['id']."&year=".date('Y',$begin_ts)."&month=".date('n',$begin_ts);
 
+				$personal = $arr['id_user'] == $GLOBALS['BAB_SESS_USERID'];
+
 				switch($arr['status'])
 					{
 					case 'Y':
 						$this->status = $this->statarr[1];
-						$this->modify = !$this->personal;
+						$this->modify = !$personal;
 						break;
 					case 'N':
 						$this->status = $this->statarr[2];
@@ -783,7 +786,7 @@ function listVacationRequests($id_user)
 						break;
 					default:
 						$this->status = $this->statarr[0];
-						$this->modify = $this->personal;
+						$this->modify = $personal;
 						break;
 					}
 				$i++;
@@ -1191,7 +1194,10 @@ function updateUserColl()
 			}
 		}
 
-	$db->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id NOT IN(".implode(',',$worked_ids).") AND id_user= '".$_POST['idp']."'");
+	if (count($worked_ids) > 0)
+		{
+		$db->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id NOT IN(".implode(',',$worked_ids).") AND id_user= '".$_POST['idp']."'");
+		}
 
 	$db->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_coll='".$_POST['idcol']."' WHERE id_user='".$_POST['idp']."'");
 

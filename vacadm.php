@@ -1054,6 +1054,9 @@ if( isset($_POST['add']) )
 			break;
 
 		case 'modvc':
+
+			if ( !isset($vtypeids))
+				$vtypeids = array();
 		
 			if( isset($bdel))
 				deleteVacationCollection($vcid);

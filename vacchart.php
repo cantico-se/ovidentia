@@ -119,6 +119,7 @@ function entity_members($ide)
 			$this->t_schema = bab_translate('Approbation schema');
 			
 			$this->users = array();
+			$this->b_rights = $this->superior_id != $GLOBALS['BAB_SESS_USERID'];
 
 			while (list(,$arr) = each($users))
 				{
@@ -165,10 +166,10 @@ function entity_members($ide)
 			{
 			if (list($this->id_user,$this->name) = each($this->users))
 				{
-
+				$this->b_rights = $this->id_user != $GLOBALS['BAB_SESS_USERID'];
 				$this->collection = isset($this->more[$this->id_user][0]) ? $this->more[$this->id_user][0] : '';
 				$this->schema = isset($this->more[$this->id_user][1]) ? $this->more[$this->id_user][1] : '';
-
+				
 				return true;
 				}
 			else
@@ -361,7 +362,7 @@ switch($idx)
 
 	case 'rights':
 		
-		if (bab_IsUserUnderSuperior($_GET['id_user']))
+		if (bab_IsUserUnderSuperior($_GET['id_user']) && $_GET['id_user'] != $GLOBALS['BAB_SESS_USERID'])
 			{
 			listRightsByUser($_GET['id_user']);
 			exit;
@@ -399,7 +400,7 @@ switch($idx)
 	case "modp":
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
 		
-		if (bab_IsUserUnderSuperior($_REQUEST['iduser']))
+		if (bab_IsUserUnderSuperior($_REQUEST['iduser']) && $_GET['id_user'] != $GLOBALS['BAB_SESS_USERID'])
 			{
 			$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
 			$babBody->title = bab_translate("Modify user");
@@ -413,7 +414,7 @@ switch($idx)
 
 	case 'changeucol':
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_REQUEST['ide']);
-		if (bab_IsUserUnderSuperior($_POST['idp']))
+		if (bab_IsUserUnderSuperior($_POST['idp']) && $_GET['id_user'] != $GLOBALS['BAB_SESS_USERID'])
 			{
 			$babBody->addItemMenu("changeucol", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=changeucol&ide=".$_REQUEST['ide']);
 			$babBody->title = bab_translate("Change user collection");

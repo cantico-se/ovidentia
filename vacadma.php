@@ -162,7 +162,16 @@ function browsePersonnelByType($pos, $cb, $idtype)
 		}
 
 	$temp = new temp($pos, $cb, $idtype);
-	echo bab_printTemplate($temp, "vacadma.html", "browseusers");
+
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "vacadma.html", "browseusers"));
+	printBabBodyPopup();
+	die();
+
+	
 	}
 
 function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
@@ -924,12 +933,13 @@ function updateVacationRight()
 				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$post['collid']."'"));
 			else
 				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL));
-
+			/*
 			if( $total == 0 )
 				{
 				$babBody->msgerror = bab_translate("Users does'nt exist") ." !";
 				return false;
 				}
+			*/
 			}
 
 
@@ -1049,6 +1059,7 @@ switch($idx)
 	{
 	case "browt":
 		if( !isset($pos)) $pos ="";
+		$babBody->title = bab_translate("Personnel associated with type");
 		browsePersonnelByType($pos, $cb, $idtype);
 		exit;
 		break;

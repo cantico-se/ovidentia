@@ -80,14 +80,22 @@ if (users != '')
 		</tr>
 		<!--#if superior_id -->
 		<tr class="BabSiteAdminFontBackground"> 
-			<td><strong><a href="{ babUrlScript }?tg=vacchart&idx=modp&ide={ ide }&iduser={ superior_id }">{ superior_name }</a></strong></td>
+			<td><strong>
+			<!--#if b_rights -->
+			<a href="{ babUrlScript }?tg=vacchart&idx=modp&ide={ ide }&iduser={ superior_id }">{ superior_name }</a>
+			<!--#else b_rights -->
+			{ superior_name }
+			<!--#endif b_rights -->
+			</strong></td>
 			<td>{ s_collection }</td>
 			<td>{ s_schema }</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=asks&id_user={ superior_id }&ide={ ide }">{ t_asks }</a>
 			</td>
 			<td>
+			<!--#if b_rights -->
 				<a href="{ babUrlScript }?tg=vacchart&idx=rights&id_user={ superior_id }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ t_rights }" border="0" /></a>
+				<!--#endif b_rights -->
 			</td>
 			<td><input type="checkbox" name="userids[]" value="{ superior_id }" /></td>
 		</tr>
@@ -100,9 +108,13 @@ if (users != '')
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=asks&id_user={ id_user }&ide={ ide }">{ t_asks }</a>
 			</td>
+			
 			<td>
-				<a href="{ babUrlScript }?tg=vacchart&idx=rights&id_user={ id_user }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ t_rights }" border="0" /></a>
+			<!--#if b_rights -->
+			<a href="{ babUrlScript }?tg=vacchart&idx=rights&id_user={ id_user }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ t_rights }" border="0" /></a></td>
+			<!--#endif b_rights -->
 			</td>
+			
 
 			<td><input type="checkbox" name="userids[]" value="{ id_user }" /></td>
 		</tr>
