@@ -1717,11 +1717,32 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 	$babBody->babecho(	bab_printTemplate($temp,"search.html", "searchresult"));
 	}
 
+
+class bab_searchVisuPopup
+	{
+	function bab_searchVisuPopup()
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+
+		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
+		$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
+		
+		}
+
+	function printHTML($file,$tpl)
+		{
+		$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($this, $file, $tpl));
+		printBabBodyPopup();
+		die();
+		}
+	}
+
 function viewArticle($article,$w)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends bab_searchVisuPopup
 		{
 	
 		var $content;
@@ -1740,10 +1761,11 @@ function viewArticle($article,$w)
 
 		function temp($article,$w)
 			{
+			$this->bab_searchVisuPopup();
 			$this->close = bab_translate("Close");
 			$this->attachmentxt = bab_translate("Associated documents");
 			$this->commentstxt = bab_translate("Comments");
-			$this->db = $GLOBALS['babDB'];
+			$this->db = &$GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
@@ -1821,14 +1843,14 @@ function viewArticle($article,$w)
 		}
 	
 	$temp = new temp($article,$w);
-	echo bab_printTemplate($temp,"search.html", "viewart");
+	$temp->printHTML("search.html", "viewart");
 	}
 
 function viewComment($topics, $article, $com, $w)
 	{
 	global $babBody;
 	
-	class ctp
+	class ctp extends bab_searchVisuPopup
 		{
 		var $subject;
 		var $add;
@@ -1839,9 +1861,7 @@ function viewComment($topics, $article, $com, $w)
 
 		function ctp($topics, $article, $com, $w)
 			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$this->babUrl = $GLOBALS['babUrl'];
-			$this->sitename = $GLOBALS['babSiteName'];
+			$this->bab_searchVisuPopup();
 			$this->title = bab_getArticleTitle($article);
 			$this->subject = bab_translate("Subject");
 			$this->by = bab_translate("By");
@@ -1859,14 +1879,14 @@ function viewComment($topics, $article, $com, $w)
 		}
 
 	$ctp = new ctp($topics, $article, $com, $w);
-	echo bab_printTemplate($ctp,"search.html", "viewcom");
+	$temp->printHTML("search.html", "viewcom");
 	}
 
 function viewPost($thread, $post, $w)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends bab_searchVisuPopup
 		{
 	
 		var $postmessage;
@@ -1878,6 +1898,7 @@ function viewPost($thread, $post, $w)
 
 		function temp($thread, $post, $w)
 			{
+			$this->bab_searchVisuPopup();
 			$db = $GLOBALS['babDB'];
 			$req = "select forum from ".BAB_THREADS_TBL." where id='".$thread."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
@@ -1893,13 +1914,13 @@ function viewPost($thread, $post, $w)
 		}
 	
 	$temp = new temp($thread, $post, $w);
-	echo bab_printTemplate($temp,"search.html", "viewfor");
+	$temp->printHTML("search.html", "viewfor");
 	}
 
 function viewQuestion($idcat, $id, $w)
 	{
 	global $babBody;
-	class temp
+	class temp extends bab_searchVisuPopup
 		{
 		var $arr = array();
 		var $db;
@@ -1908,7 +1929,7 @@ function viewQuestion($idcat, $id, $w)
 
 		function temp($idcat, $id, $w)
 			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->bab_searchVisuPopup();
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FAQQR_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
@@ -1923,14 +1944,13 @@ function viewQuestion($idcat, $id, $w)
 		}
 
 	$temp = new temp($idcat, $id, $w);
-	echo bab_printTemplate($temp,"search.html", "viewfaq");
-	return true;
+	$temp->printHTML("search.html", "viewfaq");
 	}
 
 function viewFile($id, $w)
 	{
 	global $babBody;
-	class temp
+	class temp extends bab_searchVisuPopup
 		{
 		var $arr = array();
 		var $db;
@@ -1953,6 +1973,7 @@ function viewFile($id, $w)
 
 		function temp($id, $w)
 			{
+			$this->bab_searchVisuPopup();
 			$this->description = bab_translate("Description");
 			$this->keywords = bab_translate("Keywords");
 			$this->modifiedtxt = bab_translate("Modified");
@@ -2036,14 +2057,14 @@ function viewFile($id, $w)
 		}
 
 	$temp = new temp($id, $w);
-	echo bab_printTemplate($temp,"search.html", "viewfil");
+	$temp->printHTML("search.html", "viewfil");
 	return true;
 	}
 
 
 function viewContact($id, $what)
 	{
-	class temp
+	class temp extends bab_searchVisuPopup
 		{
 		var $firstname;
 		var $lastname;
@@ -2074,6 +2095,7 @@ function viewContact($id, $what)
 
 		function temp($id, $what)
 			{
+			$this->bab_searchVisuPopup();
 			global $BAB_SESS_USERID;
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
@@ -2126,7 +2148,7 @@ function viewContact($id, $what)
 		}
 
 	$temp = new temp($id, $what);
-	echo bab_printTemplate($temp,"search.html", "viewcon");
+	$temp->printHTML("search.html", "viewcon");
 	}
 
 function viewDirectoryUser($id, $what)
