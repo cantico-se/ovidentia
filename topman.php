@@ -346,7 +346,7 @@ switch($idx)
 		listArticles($item);
 		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topman");
 		$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=topman&idx=Articles&item=".$item);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$item."&new=".$newa."&newc=".$newc);
+		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
 		break;
 
 	default:
