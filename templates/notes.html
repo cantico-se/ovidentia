@@ -24,11 +24,12 @@
 <!--#if msie "== 1" -->
 <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
 <tr>
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content"></textarea>
+<td align="right" nowrap>&nbsp;</td>
+<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content"></textarea></td>
 </tr>
 <tr>
-<td width="107" align="right" nowrap>&nbsp;</td>
-<td width="103">
+<td align="right" nowrap>&nbsp;</td>
+<td>
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
@@ -37,24 +38,22 @@
 </td>
 </tr>
 <!--#endif msie -->
-<!-- -->
-
 <tr>
-<td width="107" align="right">{ notes }</td>
-<td width="103">
+<td align="right">{ notes }</td>
+<td>
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
 	editor.InFrame(0, "content", "0", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
-	<textarea cols="50" rows="10" name="content"></textarea></td>
+	<textarea cols="50" rows="10" name="content"></textarea>
 <!--#endif msie -->
-</tr>
+</td></tr>
 
 <!--#if msie "== 1" -->
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ create }"></td>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ create }"></td>
 </tr>
 <SCRIPT LANGUAGE="JavaScript">
 	editor.FinalInstantiate(0);
@@ -111,11 +110,12 @@
 <!--#if msie "== 1" -->
 <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
 <tr>
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content">{ arr[content] }</textarea>
+<td align="right" nowrap>&nbsp;</td>
+<td><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content">{ arr[content] }</textarea></td>
 </tr>
 <tr>
-<td width="107" align="right" nowrap>&nbsp;</td>
-<td width="103">
+<td align="right" nowrap>&nbsp;</td>
+<td>
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator);
@@ -124,24 +124,21 @@
 </td>
 </tr>
 <!--#endif msie -->
-<!-- -->
-
 <tr>
-<td width="107" align="right">{ notes }</td>
-<td width="103">
+<td align="right">{ notes }</td>
+<td>
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
 	editor.InFrame(0, "content", "0", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
-	<textarea cols="50" rows="10" name="content">{ arr[content] }</textarea></td>
+	<textarea cols="50" rows="10" name="content">{ arr[content] }</textarea>
 <!--#endif msie -->
-</tr>
-
+</td></tr>
 <!--#if msie "== 1" -->
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
 </tr>
 <SCRIPT LANGUAGE="JavaScript">
 	editor.FinalInstantiate(0);
@@ -149,11 +146,10 @@
 </SCRIPT>
 <!--#else msie -->
 <tr>
-<td width="107" align="right">&nbsp;</td>
-<td width="103"><input type="submit" name="submit" value="{ modify }"></td>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ modify }"></td>
 </tr>
 <!--#endif msie -->
-
 </table>
 </center>
 </form>
