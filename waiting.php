@@ -367,6 +367,50 @@ function confirmComment($article, $topics, $com, $newc)
 	$body->babecho(	babPrintTemplate($temp,"waiting.html", "confirmcomment"));
 	}
 
+function notifyArticleAuthor($subject, $msg, $title, $from, $to)
+	{
+	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+    include $babInstallPath."utilit/mailincl.php";
+
+	class tempa
+		{
+		var $message;
+        var $from;
+        var $author;
+        var $about;
+        var $title;
+        var $titlename;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($subject, $msg, $title, $from, $to)
+			{
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->about = babTranslate("About your article");
+            $this->title = babTranslate("Title");
+            $this->titlename = $title;
+            $this->site = babTranslate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = babTranslate("Date");
+            $this->dateval = bab_strftime(mktime());
+            $this->message = $msg;
+			}
+		}
+	
+	$tempa = new tempa($subject, $msg, $title, $from, $to);
+	$message = babPrintTemplate($tempa,"mailinfo.html", "confirmarticle");
+
+    $mail = new babMail();
+    $mail->mailTo($to);
+    $mail->mailFrom($from, "Ovidentia Administrator");
+    $mail->mailSubject($subject);
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
+
 function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1)
 	{
 	global $body, $new;
@@ -427,7 +471,8 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		$msg = nl2br($message);
 		if(get_cfg_var("magic_quotes_gpc"))
 			$msg = stripslashes($msg);
-		mail ($arr[email],$subject,$title . "\n". $msg,"From: ".$arr2[email]);
+        notifyArticleAuthor($subject, $msg, $title, $arr2[email], $arr[email]);
+		//mail ($arr[email],$subject,$title . "\n". $msg,"From: ".$arr2[email]);
 		}
 
 	$new--;
@@ -460,10 +505,49 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	$res = $db->db_query($req);		
 	}
 
+function notifyCommentAuthor($subject, $msg, $from, $to)
+	{
+	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+    include $babInstallPath."utilit/mailincl.php";
+
+	class tempa
+		{
+		var $message;
+        var $from;
+        var $author;
+        var $about;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($subject, $msg, $from, $to)
+			{
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->about = babTranslate("About your comment");
+            $this->site = babTranslate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = babTranslate("Date");
+            $this->dateval = bab_strftime(mktime());
+            $this->message = $msg;
+			}
+		}
+	
+	$tempa = new tempa($subject, $msg, $from, $to);
+	$message = babPrintTemplate($tempa,"mailinfo.html", "confirmcomment");
+
+    $mail = new babMail();
+    $mail->mailTo($to);
+    $mail->mailFrom($from, "Ovidentia Administrator");
+    $mail->mailSubject($subject);
+    $mail->mailBody($message, "html");
+    $mail->send();
+	}
 
 function updateConfirmComment($topics, $article, $action, $send, $author, $message, $com, $newc)
 	{
-	global $body, $new;
+	global $body, $new, $BAB_SESS_USER, $babAdminEmail;
 
 	$db = new db_mysql();
 	$query = "select * from comments where id='$com'";
@@ -482,10 +566,15 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 
 	if( $send == "1")
 		{
+		if( $action == "1")
+			$subject = "Your comment has been accepted";
+		else
+			$subject = "Your comment has been refused";
 		$msg = nl2br($message);
 		if(get_cfg_var("magic_quotes_gpc"))
 			$msg = stripslashes($msg);
-		mail ($arr[email], babTranslate("About your comment"), $msg,"From: ".$arr2[email]);
+		//mail ($arr[email], babTranslate("About your comment"), $msg,"From: ".$arr2[email]);
+        notifyCommentAuthor($subject, $msg, empty($BAB_SESS_USER)? $babAdminEmail: $BAB_SESS_USER, $arr[email]);
 		}
 
 	$newc--;
