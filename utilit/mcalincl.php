@@ -671,13 +671,14 @@ class calendarchoice
 
 		if (!empty($icalendars->id_percal))
 			{
-			$this->resuser[$icalendars->id_percal] = array('name'=>$GLOBALS['BAB_SESS_USER']);
+			$this->resuser[$icalendars->id_percal] = array('name'=>$GLOBALS['BAB_SESS_USER'],'access'=>2);
 			}
 
 		$this->resuser_sort = array();
 		foreach($this->resuser as $k => $v)
 			{
-			$this->resuser_sort[$k] = $v['name'];
+			if ($_GET['tg'] != 'event' || $v['access'] > 0)
+				$this->resuser_sort[$k] = $v['name'];
 			}
 		asort($this->resuser_sort);
 
