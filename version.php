@@ -47,15 +47,17 @@ switch($idx)
 			$str .= babTranslate("You site is already up to date");
 		}
 		$oldversion = strtr($oldversion, ".", "-");
-		include "upgrade".$oldversion."to".strtr($CurrentVersion, ".", "-");
+		include $babInstallPath."upgrade".$oldversion."to".strtr($CurrentVersion, ".", "-").".php";
 		$str = upgrade();
 		if( empty($str))
-			putVersion(CurrentVersion);
+			putVersion($CurrentVersion);
 		break;
 
 	case "version":
 	default:
-		$str = "Version ". $CurrentVersion;
+		$oldversion = getVersion();
+		$str = "Source Version ". $CurrentVersion ."<br>";
+		$str .= "Database Version ". $oldversion ."<br>";
 		break;
 	}
 ?>

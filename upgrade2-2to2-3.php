@@ -1,7 +1,5 @@
 <?php
 /* upgrade from 2.2 to 2.3 */
-include "config.php";
-include $babInstallPath."index.php";
 
 function upgrade()
 {
