@@ -8,6 +8,12 @@ include $babInstallPath."utilit/topincl.php";
 include $babInstallPath."utilit/forumincl.php";
 
 $babLimit = 20;
+
+function highlightWord( $w, $text)
+{
+	return preg_replace("/(\s*>[^<]*|\s+)(".$w.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+}
+
 function searchKeyword($sfaq, $sart, $snot, $sfor, $what)
 	{
 	global $body;
@@ -38,13 +44,13 @@ function searchKeyword($sfaq, $sart, $snot, $sfor, $what)
 			$this->sfor = $sfor;
 			$this->what = stripslashes($what);
 			if( $sart == 1)
-				$this->arr[] = "art";
+				$this->arr[] = "Articles";
 			if( $sfor == 1)
-				$this->arr[] = "for";
+				$this->arr[] = "Forums";
 			if( $sfaq == 1)
-				$this->arr[] = "faq";
+				$this->arr[] = "Faq";
 			if( $snot == 1)
-				$this->arr[] = "not";
+				$this->arr[] = "Notes";
 
 			$this->count = count($this->arr);
 			}
@@ -54,7 +60,7 @@ function searchKeyword($sfaq, $sart, $snot, $sfor, $what)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->itemvalue = $this->arr[$i];
+				$this->itemvalue = strtolower(substr($this->arr[$i], 0, 3));
 				$this->itemname = babTranslate($this->arr[$i]);
 				$i++;
 				return true;
@@ -96,7 +102,9 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 			$this->nottitle = babTranslate("Notes");
 			$this->next = babTranslate( "Next" );
 
-			$this->what = $what;
+			//$this->like = "not regexp '<.*".$what."[^>]*'";
+			$this->like = "like '%".$what."%'";
+			$this->what = urlencode($what);
 			$this->countart = 0;
 			$this->countfor = 0;
 			$this->countnot = 0;
@@ -120,19 +128,19 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 					{
 					if(isAccessValid("topicsview_groups", $row[id]))
 						{
-						$req = "insert into artresults select id, id_topic, title from articles where title like '%".$what."%' and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into artresults select id, id_topic, title from articles where title ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
 						$this->db->db_query($req);
 
-						$req = "insert into artresults select id, id_topic, title from articles where head like '%".$what."%' and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into artresults select id, id_topic, title from articles where head ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
 						$this->db->db_query($req);
 
-						$req = "insert into artresults select id, id_topic, title from articles where body like '%".$what."%' and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into artresults select id, id_topic, title from articles where body ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
 						$this->db->db_query($req);
 
-						$req = "insert into comresults select id, id_article, id_topic, subject from comments where subject like '%".$what."%' and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into comresults select id, id_article, id_topic, subject from comments where subject ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
 						$this->db->db_query($req);
 
-						$req = "insert into comresults select id, id_article, id_topic, subject from comments where message like '%".$what."%' and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into comresults select id, id_article, id_topic, subject from comments where message ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
 						$this->db->db_query($req);
 						}
 					}
@@ -148,7 +156,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->artpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->artnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					$this->artnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".$this->what;
 					}
 				else
 					{
@@ -163,7 +171,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->compage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->comnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					$this->comnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".$this->what;
 					}
 				else
 					{
@@ -193,10 +201,10 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 						$res2 = $this->db->db_query($req);
 						while( $r = $this->db->db_fetch_array($res2))
 							{
-							$req = "insert into forresults select id, id_thread, subject from posts where subject like '%".$what."%' and confirmed='Y' and id_thread='".$r[id]."'";
+							$req = "insert into forresults select id, id_thread, subject from posts where subject ".$this->like." and confirmed='Y' and id_thread='".$r[id]."'";
 							$this->db->db_query($req);
 
-							$req = "insert into forresults select id, id_thread, subject from posts where message like '%".$what."%' and confirmed='Y' and id_thread='".$r[id]."'";
+							$req = "insert into forresults select id, id_thread, subject from posts where message ".$this->like." and confirmed='Y' and id_thread='".$r[id]."'";
 							$this->db->db_query($req);
 							}
 						}
@@ -209,7 +217,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->forpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->fornext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					$this->fornext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".$this->what;
 					}
 				else
 					{
@@ -234,10 +242,10 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 					{
 					if(isAccessValid("faqcat_groups", $row[id]))
 						{
-						$req = "insert into faqresults select * from faqqr where question like '%".$what."%' and idcat='".$row[id]."'";
+						$req = "insert into faqresults select * from faqqr where question ".$this->like." and idcat='".$row[id]."'";
 						$this->db->db_query($req);
 
-						$req = "insert into faqresults select * from faqqr where response like '%".$what."%' and idcat='".$row[id]."'";
+						$req = "insert into faqresults select * from faqqr where response ".$this->like." and idcat='".$row[id]."'";
 						$this->db->db_query($req);
 						}
 					}
@@ -249,7 +257,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->faqpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->faqnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					$this->faqnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".$this->what;
 					}
 				else
 					{
@@ -264,14 +272,14 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 			
 			if( (empty($item) || $item == "not") && !empty($BAB_SESS_USERID))
 				{
-				$req = "select count(*) from notes where content like '%".$what."%' and id_user='".$BAB_SESS_USERID."'";
+				$req = "select count(*) from notes where content ".$this->like." and id_user='".$BAB_SESS_USERID."'";
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
 
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->notpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->notnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					$this->notnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".$this->what;
 					}
 				else
 					{
@@ -279,7 +287,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 					$this->notnext = 0;
 					}
 
-				$req = "select * from notes where content like '%".$what."%' and id_user='".$BAB_SESS_USERID."' limit ".$pos.", ".$babLimit;
+				$req = "select * from notes where content ".$this->like." and id_user='".$BAB_SESS_USERID."' limit ".$pos.", ".$babLimit;
 				$this->resnot = $this->db->db_query($req);
 				$this->countnot = $this->db->db_num_rows($this->resnot);
 				}
@@ -312,7 +320,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->com = $arr[subject];
-				$this->comurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=c&idt=".$arr[id_topic]."&ida=".$arr[id_article]."&idc=".$arr[id]."')";
+				$this->comurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=c&idt=".$arr[id_topic]."&ida=".$arr[id_article]."&idc=".$arr[id]."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -331,7 +339,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resfor);
 				$this->post = $arr[subject];
-				$this->posturl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=f&idt=".$arr[id_thread]."&idp=".$arr[id]."')";
+				$this->posturl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=f&idt=".$arr[id_thread]."&idp=".$arr[id]."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -349,7 +357,7 @@ function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resfaq);
 				$this->question = $arr[question];
-				$this->questionurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=q&idc=".$arr[idcat]."&idq=".$arr[id]."')";
+				$this->questionurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=q&idc=".$arr[idcat]."&idq=".$arr[id]."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -404,8 +412,8 @@ function viewArticle($article, $w)
 			$req = "select * from articles where id='$article' and confirmed='Y'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
-			$this->content = $arr[body];
-			$this->title = $arr[title];
+			$this->content = highlightWord( $w, $arr[body]);
+			$this->title = highlightWord( $w, $arr[title]);
 			}
 		}
 	
@@ -413,7 +421,7 @@ function viewArticle($article, $w)
 	echo babPrintTemplate($temp,"search.html", "viewart");
 	}
 
-function viewComment($topics, $article, $com)
+function viewComment($topics, $article, $com, $w)
 	{
 	global $body;
 	
@@ -428,7 +436,7 @@ function viewComment($topics, $article, $com)
 		var $babUrl;
 		var $sitename;
 
-		function ctp($topics, $article, $com)
+		function ctp($topics, $article, $com, $w)
 			{
 			$this->style = $GLOBALS[babStyle];
 			$this->babUrl = $GLOBALS[babUrl];
@@ -444,14 +452,16 @@ function viewComment($topics, $article, $com)
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
+			$this->arr[subject] = highlightWord( $w, $this->arr[subject]);
+			$this->arr[message] = highlightWord( $w, $this->arr[message]);
 			}
 		}
 
-	$ctp = new ctp($topics, $article, $com);
+	$ctp = new ctp($topics, $article, $com, $w);
 	echo babPrintTemplate($ctp,"search.html", "viewcom");
 	}
 
-function viewPost($thread, $post)
+function viewPost($thread, $post, $w)
 	{
 	global $body;
 
@@ -467,7 +477,7 @@ function viewPost($thread, $post)
 		var $babUrl;
 		var $sitename;
 
-		function temp($thread, $post)
+		function temp($thread, $post, $w)
 			{
 			$this->style = $GLOBALS[babStyle];
 			$this->babUrl = $GLOBALS[babUrl];
@@ -482,14 +492,16 @@ function viewPost($thread, $post)
 			$this->postauthor = $arr[author];
 			$this->postsubject = $arr[subject];
 			$this->postmessage = $arr[message];
+			$this->postsubject = highlightWord( $w, $arr[subject]);
+			$this->postmessage = highlightWord( $w, $arr[message]);
 			}
 		}
 	
-	$temp = new temp($thread, $post);
+	$temp = new temp($thread, $post, $w);
 	echo babPrintTemplate($temp,"search.html", "viewfor");
 	}
 
-function viewQuestion($idcat, $id)
+function viewQuestion($idcat, $id, $w)
 	{
 	global $body;
 	class temp
@@ -501,7 +513,7 @@ function viewQuestion($idcat, $id)
 		var $babUrl;
 		var $sitename;
 
-		function temp($idcat, $id)
+		function temp($idcat, $id, $w)
 			{
 			$this->style = $GLOBALS[babStyle];
 			$this->babUrl = $GLOBALS[babUrl];
@@ -510,14 +522,16 @@ function viewQuestion($idcat, $id)
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->arr[question] = highlightWord( $w, $this->arr[question]);
+			$this->arr[response] = highlightWord( $w, $this->arr[response]);
 			$req = "select category from faqcat where id='$idcat'";
 			$a = $this->db->db_fetch_array($this->db->db_query($req));
-			$this->title = $a[category];
+			$this->title = highlightWord( $w,  $a[category]);
 			}
 
 		}
 
-	$temp = new temp($idcat, $id);
+	$temp = new temp($idcat, $id, $w);
 	echo babPrintTemplate($temp,"search.html", "viewfaq");
 	return true;
 	}
@@ -536,17 +550,17 @@ switch($idx)
 		break;
 
 	case "c":
-		viewComment($idt, $ida, $idc);
+		viewComment($idt, $ida, $idc, $w);
 		exit;
 		break;
 
 	case "f":
-		viewPost($idt, $idp);
+		viewPost($idt, $idp, $w);
 		exit;
 		break;
 
 	case "q":
-		viewQuestion($idc, $idq);
+		viewQuestion($idc, $idq, $w);
 		exit;
 		break;
 
@@ -564,3 +578,4 @@ switch($idx)
 
 $body->setCurrentItemMenu($idx);
 ?>
+
