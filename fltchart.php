@@ -336,6 +336,7 @@ if( !$access )
 if( $oeid )
 {
 $oeinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."'"));
+chart_session_oeid($ocid);
 }
 
 if( !isset($idx) || empty($idx)) { $idx = "listr"; }

@@ -685,7 +685,17 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 				$res = $babDB->db_query("select det.id from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_GROUPS_TBL." ugt on det.id_user=ugt.id_object where ugt.id_group='".$grpid."' and det.id_directory='0'");
 				while($arr = $babDB->db_fetch_array($res))
 					{
-					$babDB->db_query("insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$idrole."','".$arr['id']."','Y')");
+					$res2 = $babDB->db_query("select ocrut.id from  ".BAB_OC_ROLES_USERS_TBL." ocrut left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id where ocrt.id_oc='".$ocid."' and  ocrut.id_user='".$arr['id']."' and ocrut.isprimary='Y'");
+					if( $res2 && $babDB->db_num_rows($res2) > 0 )
+					{
+						$isprimary = 'N';
+					}
+					else
+					{
+						$isprimary = 'Y';
+					}
+
+					$babDB->db_query("insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$idrole."','".$arr['id']."','".$isprimary."')");
 					}
 				}
 			}

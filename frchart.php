@@ -27,16 +27,18 @@ include $babInstallPath."utilit/treeincl.php";
 
 define("ORG_MAX_REQUESTS_LIST", 100);
 
-function displayChart($ocid, $oeid, $update, $template='')
+function displayChart($ocid, $oeid, $update, $disp='')
 	{
 	global $babBody;
 	class temp
 		{
-		function temp($ocid, $oeid, $update)
+		function temp($ocid, $oeid, $update, $disp)
 			{
 			global $babDB, $ocinfo;
 			$this->ocid = $ocid;
 			$this->update = $update;
+			$this->disp = $disp;
+
 			$this->roles = bab_translate("Roles");
 			$this->delete = bab_translate("Delete");
 			$this->startnode = bab_translate("Start");
@@ -106,7 +108,8 @@ function displayChart($ocid, $oeid, $update, $template='')
 					   array_pop($this->padarr);
 					   } 
 					} 
-				$this->entity = $row['name'];
+				//$this->entity = $row['name']."(".$row['id'].")";
+				$this->entity = $row['name']."(".$row['id'].")";
 				if( !empty($row['description']))
 					{
 					$this->description = "( ".$row['description']." )";
@@ -120,7 +123,7 @@ function displayChart($ocid, $oeid, $update, $template='')
 				$this->colspan = $this->maxlevel - count($this->padarr) + 1;
 				if( $this->babTree->hasChildren($row['id_node']))
 					{
-					$this->closenodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=closen&ocid=".$this->ocid."&oeid=".$this->oeid;
+					$this->closenodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=closen&disp=".$this->disp."&ocid=".$this->ocid."&oeid=".$this->oeid;
 					$this->parent = 1;
 					}
 				else
@@ -177,15 +180,15 @@ function displayChart($ocid, $oeid, $update, $template='')
 				if( count($this->closednodes) > 0 && in_array($row['id_node'], $this->closednodes))
 					{
 					$this->bparent = true;
-					$this->opennodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=openn&ocid=".$this->ocid."&oeid=".$this->oeid;
+					$this->opennodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=openn&disp=".$this->disp."&ocid=".$this->ocid."&oeid=".$this->oeid;
 					}
 				else
 					{
 					$this->bparent = false;
 					}
 				$this->listrurl =  $GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$this->ocid."&oeid=".$this->oeid;
-				$this->startnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=startn&ocid=".$this->ocid."&oeid=".$this->oeid;
-				$this->startupnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=startup&ocid=".$this->ocid."&oeid=".$this->oeid;
+				$this->startnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=".$this->disp."&idx=startn&ocid=".$this->ocid."&oeid=".$this->oeid;
+				$this->startupnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=".$this->disp."&idx=startup&ocid=".$this->ocid."&oeid=".$this->oeid;
 				$this->nodecell = bab_printTemplate($this, "frchart.html", "nodecell");
 				$i++;
 				return true;
@@ -219,11 +222,14 @@ function displayChart($ocid, $oeid, $update, $template='')
 			}
 		}
 
-	if( empty($template))
+	if( empty($disp))
+		{
 		$template = "oedirectorylist_disp2";
+		$disp ='disp2';
+		}
 	else
 		{
-		switch ($template)
+		switch ($disp)
 			{
 			case "disp1":
 				$template = "oedirectorylist_disp1";
@@ -232,12 +238,12 @@ function displayChart($ocid, $oeid, $update, $template='')
 				$template = "oedirectorylist_disp2";
 				break;
 			case "disp2":
-				default:
+			default:
 				$template = "oedirectorylist_disp2";
 				break;
 			}
 		}
-	$temp = new temp($ocid, $oeid, $update);
+	$temp = new temp($ocid, $oeid, $update, $disp);
 	echo bab_printTemplate($temp, "frchart.html", $template);
 	}
 
@@ -267,7 +273,7 @@ class orgtemp
 			{
 			$this->description = "";
 			}
-		$this->oeid = $id;
+		$this->oeid = $this->obj->babTree->nodes[$id]['datas']['id'];
 		$fid = $this->obj->babTree->getFirstChild($id);
 		$this->childs = array();
 		if( $fid )
@@ -281,7 +287,7 @@ class orgtemp
 		$this->count = count($this->childs);
 		if( $this->obj->babTree->hasChildren($id))
 			{
-			$this->closenodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=closen&ocid=".$this->ocid."&oeid=".$this->oeid;
+			$this->closenodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=disp3".$this->ocid."&idx=closen&ocid=".$this->ocid."&oeid=".$this->oeid;
 			$this->parent = 1;
 			$this->leaf = 0;
 			}
@@ -332,7 +338,7 @@ class orgtemp
 		if( count($this->obj->closednodes) > 0 && in_array($id, $this->obj->closednodes))
 			{
 			$this->bparent = true;
-			$this->opennodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=openn&ocid=".$this->ocid."&oeid=".$this->oeid;
+			$this->opennodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=disp3&idx=openn&ocid=".$this->ocid."&oeid=".$this->oeid;
 			}
 		else
 			{
@@ -347,8 +353,8 @@ class orgtemp
 			$this->current = false;
 			}
 		$this->listrurl =  $GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$this->ocid."&oeid=".$this->oeid;
-		$this->startnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=startn&ocid=".$this->ocid."&oeid=".$this->oeid;
-		$this->startupnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&idx=startup&ocid=".$this->ocid."&oeid=".$this->oeid;
+		$this->startnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=disp3&idx=startn&ocid=".$this->ocid."&oeid=".$this->oeid;
+		$this->startupnodeurl =  $GLOBALS['babUrlScript']."?tg=frchart&disp=disp3&idx=startup&ocid=".$this->ocid."&oeid=".$this->oeid;
 		$this->nodecell = bab_printTemplate($this, "frchart.html", "nodecell");
 		$this->index = 0;
 		}
@@ -1026,8 +1032,8 @@ if( !$update && !bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $ocid))
 }
 if (!$update)
 {
-$ocinfo['id_closed_nodes'] = isset($GLOBALS['BAB_SESS_CHARTCN'])? $GLOBALS['BAB_SESS_CHARTCN']: '';
-$ocinfo['id_first_node'] = isset($GLOBALS['BAB_SESS_CHARTRN'])?$GLOBALS['BAB_SESS_CHARTRN']:0;
+$ocinfo['id_closed_nodes'] = isset($GLOBALS['BAB_SESS_CHARTCN-'.$ocid])? $GLOBALS['BAB_SESS_CHARTCN-'.$ocid]: '';
+$ocinfo['id_first_node'] = isset($GLOBALS['BAB_SESS_CHARTRN-'.$ocid])?$GLOBALS['BAB_SESS_CHARTRN-'.$ocid]:0;
 }
 if(!isset($idx))
 	{
@@ -1071,6 +1077,7 @@ elseif( isset($$sess))
 }
 
 chart_session_oeid($ocid);
+//echo "oeid=".$oeid."hhh";
 switch($idx)
 	{
 	case "frt":
