@@ -129,7 +129,7 @@ function cleanAfter() {
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
 <tr>
 	<td align="right">
 	&nbsp;&nbsp;{ search }:&nbsp;</td><td><input type="text" name="what" size="35" value="{ fields[what] }">&nbsp;
@@ -155,7 +155,7 @@ function cleanAfter() {
 </tr>
 <tr height="30">
 	<td align="right" width="5%" nowrap valign="middle">&nbsp;&nbsp;
-	<a href="javascript:advswitch()" class="copy">{ switch }&nbsp;:</a>&nbsp;</td><td valign="middle" nowrap>
+	<a href="javascript:advswitch()" class="BabAlphabetLink">{ switch }&nbsp;:</a>&nbsp;</td><td valign="middle" nowrap>
 	<select name="option" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] -->>
 			  <option value="OR" { or_selected }>{ option_or }</option>
 			  <option value="AND" { and_selected }>{ option_and }</option>
@@ -202,7 +202,7 @@ function cleanAfter() {
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 	<td align="right" nowrap>
-	<a class="BabFaqLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
+	<a  class="BabAlphabetLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
 	</td>
 	<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="javascript:cleanAfter();"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 	<input type="hidden" name="after" value="{ fields[after] }">
@@ -211,7 +211,7 @@ function cleanAfter() {
 </tr>
 <tr>
 	<td align="right" nowrap>
-	<a class="BabFaqLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
+	<a  class="BabAlphabetLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
 	</td>
 	<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="javascript:cleanBefore()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 	<input type="hidden" name="before" value="{ fields[before] }">
@@ -274,7 +274,7 @@ function cleanAfter() {
 	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="2" align="right">
 	<tr>
 		<td align="right">
-		<a class="BabFaqLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
+		<a  class="BabAlphabetLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
 		</td>
 		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 		<input type="hidden" name="after" value="{ fields[after] }">
@@ -283,7 +283,7 @@ function cleanAfter() {
 	</tr>
 	<tr>
 		<td align="right">
-		<a class="BabFaqLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
+		<a  class="BabAlphabetLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
 		</td>
 		<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="#" onclick="before_display.value='';before_memo.value='';before.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 		<input type="hidden" name="before" value="{ fields[before] }">
