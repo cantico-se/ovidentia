@@ -337,7 +337,7 @@ function acceptFileVersion($arrfile, $arrvf, $bnotify)
 	$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified='".$arrvf['date']."', modifiedby='".$arrvf['author']."', ver_major='".$arrvf['ver_major']."', ver_minor='".$arrvf['ver_minor']."', ver_comment='".addslashes($arrvf['comment'])."' where id='".$arrfile['id']."'");
 
 	$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$arrfile['id']."', now(), '".$arrvf['author']."', '".BAB_FACTION_COMMIT."', '".addslashes($arrvf['comment'])."', '".$arrvf['ver_major'].".".$arrvf['ver_minor']."')");
-	$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='0', confirmed='Y', ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', comment='".addslashes($arrfile['ver_comment'])."' where id='".$arrfile['edit']."'");
+	$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='0', confirmed='Y', ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', author='".($arrfile['modifiedby']==0?$arrfile['author']: $arrfile['modifiedby'])."', comment='".addslashes($arrfile['ver_comment'])."' where id='".$arrfile['edit']."'");
 	notifyFileAuthor(bab_translate("Your new file version has been accepted"), $arrvf['ver_major'].".".$arrvf['ver_minor'], $arrvf['author']);
 	if( $bnotify == "Y")
 		{

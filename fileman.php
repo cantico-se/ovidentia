@@ -98,6 +98,7 @@ class listFiles
 		$this->db = $GLOBALS['babDB'];
 		$this->bmanager = $bmanager;
 		$this->countwf = 0;
+		$this->bdownload = false;
 		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 			{
 			$this->arrgrp['id'][] = $babBody->aclfm['id'][$i];
@@ -116,7 +117,7 @@ class listFiles
 				}
 			}
 
-		if( !$this->bdownload )
+		if(!$this->bdownload )
 			$this->bdownload = $bmanager? true: false;
 
 		if( $gr == "Y" || ($gr == "N" && !empty($path)))
@@ -242,7 +243,7 @@ function listTrashFiles($id, $gr)
 					$this->sizef = "???";
 
 				$this->modified = date("d/m/Y H:i", bab_mktime($arr['modified']));
-				$this->postedby = bab_getUserName($arr['author']);
+				$this->postedby = bab_getUserName($arr['modifiedby'] == 0? $arr['author']: $arr['modifiedby']);
 				$i++;
 				return true;
 				}
@@ -690,7 +691,7 @@ function listFiles($id, $gr, $path, $bmanager)
 				$this->sizef = "???";
 
 			$this->modified = date("d/m/Y H:i", bab_mktime($arr['modified']));
-			$this->postedby = bab_getUserName($arr['author']);
+			$this->postedby = bab_getUserName($arr['modifiedby'] == 0? $arr['author']: $arr['modifiedby']);
 			$this->hits = $arr['hits'];
 			if( $arr['readonly'] == "Y" )
 				$this->readonly = "R";
@@ -1809,7 +1810,7 @@ function viewFile( $idf)
 				$this->fcreatedtxt = bab_translate("Created");
 				$this->fcreated = date("d/m/Y H:i", bab_mktime($arr['created']));
 				$this->fpostedbytxt = bab_translate("Posted by");
-				$this->fpostedby = bab_getUserName($arr['author']);
+				$this->fpostedby = bab_getUserName($arr['modifiedby'] == 0? $arr['author']: $arr['modifiedby']);
 
 				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']);
 				$this->download = bab_translate("Download");
@@ -2216,7 +2217,7 @@ if( isset($cdel) && $cdel == "update")
 }
 
 if(!isset($editor))
-	$editor = none;
+	$editor = 'none';
 switch($idx)
 	{
 	case "brow":
@@ -2235,6 +2236,7 @@ switch($idx)
 		break;
 
 	case "get":
+		if(!isset($inl)) { $inl ='';}
 		getFile($file, $id, $gr, $path, $inl);
 		exit;
 		break;
