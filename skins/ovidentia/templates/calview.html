@@ -156,6 +156,11 @@ src="{ babSkinPath }images/Puces/PuceSummary.gif" width="19" height="16" border=
 <!--#in getnextforum -->
 <!--#in getnextthread -->
 <!--#in getpost -->
+<!--#if ipost "== 1" -->
+<tr>
+<td class="BabSummaryTitleFontBackground" colspan="3">{ forumname }</td>
+</tr>
+<!--#endif ipost -->
 <tr>
 <td class="BabSummaryContentBackground">{ date }</td>
 <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ title }</a></td>

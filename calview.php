@@ -5,6 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include $babInstallPath."utilit/topincl.php";
+include $babInstallPath."utilit/forumincl.php";
 
 function upComingEvents($idcal)
 {
@@ -306,6 +307,7 @@ function newThreads($nbdays)
 		var $newposts;
 		var $posts;
 		var $nbdays;
+		var $forumname;
 
 		function temp3($nbdays)
 			{
@@ -313,7 +315,7 @@ function newThreads($nbdays)
 			$this->db = $GLOBALS['babDB'];
 
 			$this->nbdays = $nbdays;
-			$req = "select * from ".BAB_FORUMS_TBL."";
+			$req = "select id from ".BAB_FORUMS_TBL."";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
@@ -334,9 +336,10 @@ function newThreads($nbdays)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from ".BAB_THREADS_TBL." where forum='".$this->arrid[$k]."' order by date desc";
+				$req = "select id, post from ".BAB_THREADS_TBL." where forum='".$this->arrid[$k]."' order by date desc";
 				$this->resthread = $this->db->db_query($req);
 				$this->countthreads = $this->db->db_num_rows($this->resthread);
+				$this->forumname = bab_getForumName($this->arrid[$k]);
 				$this->forum = $this->arrid[$k];
 				$k++;
 				return true;
@@ -363,8 +366,8 @@ function newThreads($nbdays)
 					$req .= "'".$babBody->lastlog."'";
 				$this->resposts = $this->db->db_query($req);
 				$this->total = $this->db->db_num_rows($this->resposts);
-
-				$req = "select * from ".BAB_POSTS_TBL." where id='".$arr['post']."' and confirmed='Y'";
+				$this->ipost = 0;
+				$req = "select subject from ".BAB_POSTS_TBL." where id='".$arr['post']."' and confirmed='Y'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->posts = $arr2['subject'];
@@ -380,17 +383,19 @@ function newThreads($nbdays)
 
 		function getpost()
 			{
-			if( $this->total > 0)
+			if( $this->ipost < $this->total)
 				{
 				$arr = $this->db->db_fetch_array($this->resposts);
-				$this->total--;
+				//$this->total--;
 				$this->date = bab_strftime(bab_mktime($arr['date']));
 				$this->title = $arr['subject'];
 				$this->titleurl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->forum."&thread=".$arr['id_thread']."&post=".$arr['id'];
+				$this->ipost++;
 				return true;
 				}
 			else
 				{
+				$this->ipost = 0;
 				return false;
 				}
 			}
