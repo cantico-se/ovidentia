@@ -28,6 +28,55 @@ define("BAB_ART_STATUS_WAIT", 1);
 define("BAB_ART_STATUS_OK"	, 2);
 define("BAB_ART_STATUS_NOK"	, 3);
 
+function bab_editor($content, $editname, $formname)
+	{
+	global $babBody;
+
+	class babEditorCls
+		{
+		var $editname;
+		var $formname;
+		var $contentval;
+
+		function babEditorCls($content, $editname, $formname)
+			{
+			$this->editname = $editname;
+			$this->formname = $formname;
+
+			if( empty($content))
+				{
+				$this->contentval = "";
+				}
+			else
+				{
+				$this->contentval = htmlentities($content);
+				}
+
+			if( bab_isMagicQuotesGpcOn())
+				{
+				$this->contentval = stripslashes($this->contentval);
+				}
+	
+			$this->images = bab_translate("Images");
+			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
+			$this->files = bab_translate("Files");
+			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
+				{
+				$this->msie = 1;
+				}
+			else
+				{
+				$this->msie = 0;
+				}
+			}	
+		}
+	
+	$temp = new babEditorCls($content, $editname, $formname);
+	return bab_printTemplate($temp,"uiutil.html", "babeditortemplate");
+	}
+
+
 function bab_array_search($str, $vars)
 {
 	foreach ($vars as $key => $val)
