@@ -96,7 +96,7 @@ a.BabTitleSmall:Hover {COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif ; 
 /****** SECTIONS GENERAL ***************************/
 .BabTitleSectionFont { COLOR: #000000;  font: 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
 .BabTitleSectionBackground {background: #D1D1D9 }
-.BabSectionBackground {background: #111166 }
+.BabSectionBackground {background: #111166;border-bottom: solid 4px white} 
 .BabBodySection {COLOR: #F2F2F2;  font: 10px Verdana, Arial, sans-serif }
 
 /* font sections header footer */

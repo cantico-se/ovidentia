@@ -8,27 +8,26 @@
 <!--
 { script }
 //-->
-</script>
-
-</HEAD>
-<BODY>
-
+</script></HEAD>
+<BODY> <br>
+<!--#if babLevelOne --> &gt; <!--#endif babLevelOne -->{ babLevelOne } <!--#if babLevelTwo --> &gt; <!--#endif babLevelTwo -->{ babLevelTwo } <!--#if BAB_SESS_LOGGED --><!--#if babCurrentMenu --> &gt; <!--#endif babCurrentMenu --> { babCurrentMenu }<!--#else BAB_SESS_LOGGED --><!--#endif BAB_SESS_LOGGED --><br>
+<br>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="BabHeaderBackground"> 
 <td align="center" valign="middle"> { babLogoLT } </td>
 <td align="center" valign="middle"> { babBanner } </td>
-<td align="center" valign="middle"> { babLogoRT } </td>
-</tr>
+<td align="center" valign="middle"> { babLogoRT }
+<tr>
 <tr class="BabCnxMenuBackground"> 
-<td align="left">&nbsp;<!--#if bsearch "== 1" --><a class="BabCnxLink" href="{ searchurl }">{ search }<!--#endif bsearch --></a></td>
+<td align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bsearch "== 1" --><a class="BabCnxLink" href="{ searchurl }">{ search }<!--#endif bsearch --></a></td>
 <td class="BabSloganFont" valign="middle">{ babSlogan }</td>
-<td align="right" valign="bottom"><a class="BabCnxLink" href="{ homeurl }">{ home }</a>&nbsp;&nbsp;<a class="BabCnxLink" href="{ logurl }">{ login }</a></td>
+<td align="right" valign="bottom"><a class="BabCnxLink" href="{ homeurl }">{ home }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabCnxLink" href="{ logurl }">{ login }</a></td>
 </tr>
 <tr class="BabMenuBackground"> 
 <td colspan="3"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="10" border="0"></td>
 </tr>
 <tr class="BabMenuBackground"> 
-<td>&nbsp;</td>
+<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td> 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr> 
@@ -38,30 +37,26 @@
 <!--#in getNextMenu -->
 <!--#if enabled "== 0" -->
 <td align="center" valign="middle" nowrap width="20%" class="BabMenuActiveBackground"> 
-&nbsp; &nbsp;{ menutext }&nbsp; &nbsp;</td>
+<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ menutext }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 <!--#else enabled -->
-<td width="20%" align="center" valign="middle" nowrap class="BabMenuTabBackground"> &nbsp;&nbsp;<a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
- menutext }</a>&nbsp;&nbsp;</td>
+<td width="20%" align="center" valign="middle" nowrap class="BabMenuTabBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
+ menutext }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 <!--#endif enabled -->
 <!--#endin getNextMenu -->
-<td>&nbsp;</td>
+<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 </tr>
 </table>
 </td>
 </tr>
 </table>
 </td>
-<td>&nbsp;</td>
+<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 </tr>
 <tr> 
 <td class="BabSectionsColBackground" valign="top"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5">
 <tr>
-<td valign="top"> 
-<!--#in getNextSectionLeft -->
-{ sectionleft } 
-<!--#endin getNextSectionLeft -->
-</td>
+<td valign="top"><!--#in getNextSectionLeft -->{ sectionleft }<!--#endin getNextSectionLeft --></td>
 </tr>
 </table>
 
@@ -90,9 +85,9 @@
 <tr> 
 <td class="BabFooterBackground" align="center" valign="middle"> { babLogoLB } </td>
 <td class="BabFooterBackground" align="center" valign="bottom">
-<a href="mailto:{ babAdminEmail }" class="copy">Webmaster</a>&nbsp;&nbsp;<B>Ovidentia</B> - { version }<br>
+<a href="mailto:{ babAdminEmail }" class="copy">Webmaster</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><B>Ovidentia</B> - { version }<br>
 &copy; 2001-2002, <a href="http://www.ovidentia.org" target="_blank" class="copy">Ovidentia Community</a>&nbsp 
-All rights reserved.&nbsp;<b>Ovidentia</b> is a trademark of <a href="http://www.cantico.fr" target="_blank" class="copy">Cantico</a><BR>
+All rights reserved.<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><b>Ovidentia</b> is a trademark of <a href="http://www.cantico.fr" target="_blank" class="copy">Cantico</a><BR>
 </td>
 <td class="BabFooterBackground" align="center" valign="middle"> { babLogoRB } 
 </td>

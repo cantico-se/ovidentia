@@ -1,64 +1,62 @@
-
-<!-- section article -->
-
-<!--#begin template -->
-<table width="150" cellpadding="3" cellspacing="0" border="0">
-<tr> 
+<!--#begin template --><table width="150" cellpadding="0" cellspacing="0" border="0">
+  <tr> 
 <td class="BabSectionBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr> 
-<td align="center" valign="middle">
-<table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
-<tr> 
-<td align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceArticles.gif" width="18" height="16" border="0" alt=""></td>
-<td class="BabTitleSectionFont" width="128" align="center" valign="middle">{ title } </td>
-<!--#if bbox "== 1" --> 
+          <td align="center" valign="middle">
+            <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+			  <!--#if BAB_SESS_LOGGED --> 
+                <!--#if bbox "== 1" -->
+                <!--#if close "== 0" -->
+                <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.png" border="0"></a></td>
+                <!--#else close -->
+                <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.png" border="0"></a></td>
+                <!--#endif close -->
+                <!--#endif bbox -->
+				
+				<!--#else BAB_SESS_LOGGED --> 
+				  <td class="BabTitleSectionFont" width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceSectionClose.png" border="0"></td>
+				<!--#endif BAB_SESS_LOGGED --> 
+                <td class="BabTitleSectionFont" align="left" valign="middle" width="121">{ title }</td>
+              </tr>
+            </table> </td>
+</tr>
         <!--#if close "== 0" --> 
-                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.gif" border="0"></a></td>
-        <!--#else close --> 
-                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.gif" border="0"></a></td>
-        <!--#endif close --> 
-        <!--#endif bbox --> 
-</tr>
-</table>
-</td>
-</tr>
-        <!--#if close "== 0" --> 
 <tr> 
-<td> 
-<table width="100%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td class="BabHeaderBodySection" align="center"><br>
-{ head }</td>
+<td>
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+              <tr> 
+                <td class="BabHeaderBodySection" align="center">
+                <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>{ head }</td>
 </tr>
-<tr> 
-<td > 
-<br>
-<table width="100%" cellpadding="0" cellspacing="0">
+<tr>  <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br><td >
+<table width="100%" border="0" cellpadding="0" cellspacing="0"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
 <!--#in topicsGetNext -->
 <tr> 
 <td width="10"></td>
-<td valign="middle">{ babsectionbullet }</td>
-<td width="5"></td>
-<td class="BabBodySection" width="126"><a class="BabSectionsLinkColor" href="{ url }">{ 
-  text }</a><!--#if newa "== a" -->&nbsp;&nbsp;&nbsp;{ waitingaimg }<!--#endif newa -->&nbsp;<!--#if newc "== c" -->&nbsp;&nbsp;&nbsp;{ waitingcimg }<!--#endif newc --></td>
+<td align="center" valign="middle">{ babsectionbullet }</td>
+<td width="5"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td width="126" align="left" valign="middle" class="BabBodySection">
+<a class="BabSectionsLinkColor" href="{ url }">{ text }</a><!--#if newa "== a" --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a href="{ url }">{ waitingaimg }</a>
+<!--#endif newa --><!--#if newc "== c" --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a href="{ url }">{ waitingcimg }</a><!--#endif newc -->
+</td>
 </tr>
 <!--#endin topicsGetNext -->
 </table>
 </td>
 </tr>
 <tr> 
-<td class="BabFooterBodySection">
-<br>
-        <!--#if bfooter "== 1" --> 
-<table width="100%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td width="134" class="BabBodySection">{ waitinga }</td>
-<td width="10">{ waitingaimg }</td>
+                <td class="BabFooterBodySection"> <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
+                  <!--#if bfooter "== 1" -->
+                  <table width="100%" cellpadding="1" cellspacing="0" align="center">
+<tr align="center"> 
+<td width="134" align="left" valign="middle" class="BabBodySection">{ waitinga }</td>
+                      <td width="10" align="left" valign="middle">{ waitingaimg }</td>
 </tr>
-<tr> 
-<td class="BabBodySection">{ waitingc }</td>
-<td>{ waitingcimg }</td>
+<tr align="center"> 
+<td align="left" valign="middle" class="BabBodySection">{ waitingc }</td>
+<td align="left" valign="middle">{ waitingcimg }</td>
 </tr>
 </table>
         <!--#endif bfooter --> 
@@ -69,9 +67,7 @@
         <!--#endif close --> 
 </table>
 </td>
- </tr>
+
+</tr>
 </table>
-<br>
-
 <!--#end template -->
-
