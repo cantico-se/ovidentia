@@ -3,7 +3,7 @@ and any resources used by your site ( like files, images, ... )!!!
 
 To upgrade from previous Ovidentia versions:
 
-Copy the files located in ovidentia folder in your
+Copy the files located in 'ovidentia' folder in your
 old distribution.
 
 Make sure to chmod 666 config.php to let ovidentia update
@@ -13,7 +13,7 @@ Please consult your system Administrator )
 
 Otherwise you must make this by hand in config.php:
 
-$babVersion="3.2"
+$babVersion="3.3"
 
 point your browser to:
 

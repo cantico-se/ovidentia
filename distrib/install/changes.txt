@@ -32,3 +32,54 @@ February 2002: Version 3.2b2
 - Increased timeout script when we upload files
 - Added delete note to notes list
 - Fixed some minors bugs
+
+/************************************************************************/
+Mai 2002: Version 3.3b
+/************************************************************************/
+- Add-on support (see the "Ovidentia add-ons tutorial" part in 
+  the Developer's Guide for more information). 
+- A user can through the "options" item in the "User" section select her 
+  preferred stylesheet for her selected skin. 
+- Implementation of the $ARTICLE function for topics and articles. 
+- Implementation of the $FAQ function for FAQs and questions. 
+- Users can now send mail to contributors to forums. 
+- Administrators can configure Ovidentia so that visitors can not register at all,
+  can register themselves, or can request to be registered. Ovidentia can be 
+  configured to send a confirmation mail or not. 
+- Files in file manager will be sorted alphabetically. 
+- The parameter $babMaxRows in config.php is not used anymore. The maximum 
+  number of rows displayed is now configurable from the forum creation interface. 
+- When you write a comment on an article, you keep the visibility of the article
+  for which you are writing a comment. And if you reply to a post to a forum, 
+  you keep the visibility of the post to which you reply. 
+- You can decide to not moderate comments on articles. 
+- Archiving of articles. 
+- All tables in the Ovidentia database are now prefixed with "bab" in order 
+  to avoid name clashes with tables for Ovidentia add-ons. 
+- Homogenization of the Ovidentia user interface 
+- A small printer icon is added to each article. This allows to display the 
+  article in a new browser window in a printable format. 
+- The "Read more..." link will not be added to an article anymore if there is 
+  no body for the article. 
+- E-mail formatting tests are dropped. We only check that there is some 
+  content in this field and that there are no spaces in the content. 
+- A message is sent to the moderator informing him when a comment is 
+  submitted for an article in a topic with moderated comments. 
+- Normalization of the names of the language files. The name of a 
+  language file starts with the characters "lang-", followed by a two letter
+  ISO 639 language code, eventually followed by a "-" character and a two letter
+  ISO 3166 country code and always terminated with a ".xml" file extension.
+  To be decided: these files will be valid xml files with utf-8 encoding. 
+- Placeholders for additional language information for articles will be added 
+  in the database. 
+- Per Forum a list of contributions will be added in the "Summary" link of 
+  the User's section. 
+- Creation of telephone directories (database based only). 
+- Modification of the colors for the "ovidentia" skin of the distribution. 
+- A model for the description of an add-on is added to the documentation. 
+- A Developer's Guide is added to the documentation. 
+- Common JavaScripts are put in a script file outside the templates. 
+- In the "User's section" an entry is added after "Since your last connection" 
+  telling you how many files have been uploaded for the groups of which you are a member. 
+- In the file manager, on the page titled "Update file", an additionallink will
+  allow to download the file for which information is displayed on this page
