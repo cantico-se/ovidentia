@@ -980,7 +980,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 			$bret = $bconfirm == "Y"? true: false;
 			if( bab_isMagicQuotesGpcOn())
 				{
-				$contents = stripslashes($contents);
+				$comment = stripslashes($comment);
 				}
 			$comment = addslashes($comment);
 			$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$idart."','".$comment."','".$GLOBALS['BAB_SESS_USERID']."', now())");
