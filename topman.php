@@ -1313,10 +1313,12 @@ elseif( isset($updateh)  && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBo
 	{
 	if( $updateh == "homepage0" )
 		{
+		if( !isset($listpage0)) { $listpage0 = array();}
 		siteUpdateHomePage0($item, $listpage0);
 		}
 	else if( $updateh == "homepage1" )
 		{
+		if( !isset($listpage1)) { $listpage1 = array();}
 		siteUpdateHomePage1($item, $listpage1);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=list");
@@ -1518,14 +1520,11 @@ switch($idx)
 	default:
 	case "list":
 		$babBody->title = bab_translate("List of managed topics");
-		if( listCategories() > 0 )
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
+		if( listCategories() == 0 )
 			{
-			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-			}
-		else
-		{
 			$babBody->title = bab_translate("There is no topic");
-		}
+			}
 		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
 		{
 			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);

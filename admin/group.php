@@ -113,14 +113,16 @@ function groupModify($id)
 				}
 			$this->tgval = "group";
 			$this->selected = "";
+			$this->bdggroup = false;
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				{
 				$this->res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
 				$this->count = $babDB->db_num_rows($this->res);
-				$this->bdggroup = true;
+				if( $this->count > 0 )
+					{
+					$this->bdggroup = true;
+					}
 				}
-			else
-				$this->bdggroup = false;
 			}
 
 		function getnext()
@@ -354,7 +356,7 @@ function deleteMembers($users, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyGroup($name, $description, $managerid, $bemail, $grpid, $grpdg)
+function modifyGroup($name, $description, $managerid, $grpid, $grpdg)
 	{
 	global $babBody;
 	if( empty($name))
@@ -512,7 +514,8 @@ if( isset($add))
 	{
 	if( isset($submit))
 		{
-		if(!modifyGroup($name, $description, $managerid, $bemail, $grpid, $grpdg))
+		if( !isset($grpdg)) { $grpdg = 0; }
+		if(!modifyGroup($name, $description, $managerid, $grpid, $grpdg))
 			{
 			$idx = "Modify";
 			$item = $grpid;
