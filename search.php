@@ -686,6 +686,10 @@ function viewFile($id, $w)
 		var $postedby;
 		var $modifiedtxt;
 		var $postedbytxt;
+		var $createdtxt;
+		var $created;
+		var $modifiedbytxt;
+		var $modifiedby;
 		var $sizetxt;
 		var $size;
 		var $download;
@@ -696,7 +700,9 @@ function viewFile($id, $w)
 			$this->description = bab_translate("Description");
 			$this->keywords = bab_translate("Keywords");
 			$this->modifiedtxt = bab_translate("Modified");
+			$this->createdtxt = bab_translate("Created");
 			$this->postedbytxt = bab_translate("Posted by");
+			$this->modifiedbytxt = bab_translate("Modified by");
 			$this->download = bab_translate("Download");
 			$this->sizetxt = bab_translate("Size");
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
@@ -711,7 +717,9 @@ function viewFile($id, $w)
 				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
 				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
 				$this->modified = date("d/m/Y H:i", bab_mktime($this->arr['modified']));
+				$this->created = date("d/m/Y H:i", bab_mktime($this->arr['created']));
 				$this->postedby = bab_getUserName($this->arr['author']);
+				$this->modifiedby = bab_getUserName($this->arr['modifiedby']);
 				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".$this->arr['path']."&file=".$this->arr['name'];
 				if( $this->arr['bgroup'] == "Y")
 					$fstat = stat($GLOBALS['babUploadPath']."/G".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
@@ -724,6 +732,8 @@ function viewFile($id, $w)
 				$this->title = bab_translate("Access denied");
 				$this->arr['description'] = "";
 				$this->arr['keywords'] = "";
+				$this->created = "";
+				$this->modifiedby = "";
 				$this->modified = "";
 				$this->postedby = "";
 				$this->geturl = "";
