@@ -137,6 +137,21 @@ function siteModify($id)
 			$this->smtpselected = "";
 			$this->sendmailselected = "";
 			$this->disabledselected = "";
+
+			// bloc 2
+			$this->firstlast = bab_translate("Firstname")." ".bab_translate("Lastname");
+			$this->lastfirst = bab_translate("Lastname")." ".bab_translate("Firstname");
+			$this->name_order_title = bab_translate("User name composition");
+			$this->change_nickname_title = bab_translate("User can modifiy his nickname");
+			$this->change_password_title = bab_translate("User can modifiy his password");
+			$this->remember_login_title = bab_translate("Automatic connection");
+			$this->babslogan_title = bab_translate("Site slogan");
+			$this->uploadpath_title = bab_translate("Upload path");
+			$this->maxfilesize_title = bab_translate("File manager max file size");
+			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
+			$this->user_diskspace_title = bab_translate("File manager max user directory size");
+			$this->total_diskspace_title = bab_translate("File manager max total size");
+
 			$this->id = $id;
 			$this->langfiltertxt = bab_translate("Language filter");
 
@@ -158,6 +173,7 @@ function siteModify($id)
 				$this->grpidsel = $arr['idgroup'];
 				$this->smtpuserval = $arr['smtpuser'];
 				$this->smtppassval = $arr['smtppass'];
+				$this->dbvalue = $arr;
 				if( $arr['registration'] == "Y")
 					{
 					$this->nregister = "";
@@ -580,7 +596,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter)
+function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter)
 	{
 	global $babBody;
 	if( empty($name))
@@ -649,7 +665,47 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
+		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "'";
+		$db->db_query($req);
+		}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+	}
+
+
+function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $change_password, $change_nickname, $name_order)
+	{
+	global $babBody;
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$babslogan = addslashes($babslogan);
+		$uploadpath = addslashes($uploadpath);
+		}
+
+
+	function str_is_int($str) {
+		 return 0 === strcmp($str , (int)$str);
+		}
+
+	if( !str_is_int($total_diskspace) || !str_is_int($user_diskspace) || !str_is_int($folder_diskspace) || !str_is_int($maxfilesize))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide all file manager size limits !!");
+		return false;
+		}
+
+	$db = $GLOBALS['babDB'];
+	$query = "select * from ".BAB_SITES_TBL." where name='".$namev."' and id!='".$id."'";
+	$res = $db->db_query($query);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("ERROR: This site already exists");
+		return false;
+		}
+	else
+		{
+		list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
+		$req = "update ".BAB_SITES_TBL." set ";
+
+		$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."' where id='".$id."'";
 		$db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -700,16 +756,25 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 	return;
 }
 
-if( isset($modify))
+if( isset($modify) && $modify=="bloc1")
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter)))
+		if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter)))
 			$idx = "modify";
 		}
 	else if( !empty($delete))
 		{
 		$idx = "Delete";
+		}
+	}
+
+if( isset($modify) && $modify=="bloc2")
+	{
+	if( !empty($Submit))
+		{
+		if(!siteUpdate_bloc2($item,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $change_password, $change_nickname, $name_order))
+			$idx = "modify";
 		}
 	}
 
