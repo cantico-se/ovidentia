@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include $babInstallPath."utilit/topincl.php";
 
 function isUserManager($item)
 	{
@@ -141,6 +142,7 @@ function viewQuestion($idcat, $id)
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->arr['response'] = locateArticle($this->arr['response'])
 			$this->returnurl = $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$idcat;
 			$this->return = babTranslate("Return to Questions");
 			}
