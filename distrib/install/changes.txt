@@ -87,3 +87,15 @@ Mai 2002: Version 3.3b
 Mai 2002: Version 3.3
 /************************************************************************/
 - Fixed some minors bugs
+/************************************************************************/
+Mai 2002: Version 3.3.1
+/************************************************************************/
+- Fixed Add-ons bug: Functions xxx_OnUserCreate(), xxx_OnUserDelete(), 
+  xxx_OnGroupDelete() and xxx_OnGroupCreate() are not collaed
+- Removed 'Read more' when body article is empty
+- Fixed problems quotes
+- Now Ovidentia version is in the form 'major'.'minor'.'build'
+- We can upgrade from 3.1 to the last version in one step
+- Fixed missing Meta Keywords in Ovidentia page
+- Fiexd bug: $ARTICLE does'nt work correctly
+- Fixed some minors bugs
