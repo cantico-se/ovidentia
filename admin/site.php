@@ -86,6 +86,9 @@ function siteHomePage0($id)
 		var $siteemailval;
 		var $create;
 	
+		var $moveup;
+		var $movedown;
+
 		var $id;
 		var $arr = array();
 		var $db;
@@ -102,6 +105,8 @@ function siteHomePage0($id)
 			$this->siteemail = babTranslate("Email site");
 			$this->listhometxt = babTranslate("---- Proposed Home articles ----");
 			$this->listpagetxt = babTranslate("---- Home page articles ----");
+			$this->moveup = babTranslate("Move Up");
+			$this->movedown = babTranslate("Move Down");
 			$this->create = babTranslate("Modify");
 			$this->id = $id;
 
