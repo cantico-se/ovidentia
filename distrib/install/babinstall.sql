@@ -95,6 +95,7 @@ CREATE TABLE bab_forums (
    description varchar(100) NOT NULL,
    moderator int(11) unsigned DEFAULT '0' NOT NULL,
    moderation enum('N','Y') DEFAULT 'N' NOT NULL,
+   notification enum('N','Y') DEFAULT 'N' NOT NULL,
    display int(11) unsigned DEFAULT '0' NOT NULL,
    active enum('Y','N') DEFAULT 'Y' NOT NULL,
    PRIMARY KEY (id)
@@ -694,6 +695,7 @@ CREATE TABLE bab_sites (
    lang char(10) NOT NULL,
    adminemail char(255) NOT NULL,
    skin char(255) NOT NULL,
+   style char(255) NOT NULL,
    registration enum('Y','N') DEFAULT 'Y' NOT NULL,
    email_confirm enum('Y','N') DEFAULT 'Y' NOT NULL,
    mailfunc char(20) NOT NULL DEFAUL 'mail',
