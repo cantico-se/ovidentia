@@ -28,6 +28,7 @@ adminsection.html       template        Added <!--#in addAddonUrl --> ... <!--#e
 admvacs.html					        changed action="index.php" to action="{ babPhpSelf }"
 artcileprint.html
 articles.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        introlist       Added <!--#if barch --> ... <!--#endif barch -->
 calendar.html					        changed action="index.php" to action="{ babPhpSelf }"
 calopt.html					            changed action="index.php" to action="{ babPhpSelf }"
 calview.html
@@ -92,6 +93,8 @@ topcatsection.html
 topics.html					            changed action="index.php" to action="{ babPhpSelf }"
 topicssection.html
 topman.html					            changed action="index.php" to action="{ babPhpSelf }"
+                                        added checkboxes to archive articles
+                                        Added oldarticleslist section
 topusr.html
 users.html					            changed action="index.php" to action="{ babPhpSelf }"
 usersection.html        template        Added <!--#in addAddonUrl --> ... <!--#endin addAddonUrl -->

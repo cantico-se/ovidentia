@@ -6,6 +6,8 @@
  ***********************************************************************/
 include $babInstallPath."utilit/topincl.php";
 
+define("MAX_ARTICLES", 10);
+
 function listArticles($topics, $newc)
 	{
 	global $babBody;
@@ -31,7 +33,7 @@ function listArticles($topics, $newc)
 		function temp($topics, $newc)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -41,6 +43,8 @@ function listArticles($topics, $newc)
 			else
 				$this->com = false;
 			$this->morename = bab_translate("Read More");
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+			list($this->nbarch) = $this->db->db_fetch_row($res);
 			}
 
 		function getnext()
@@ -94,6 +98,144 @@ function listArticles($topics, $newc)
 	
 	$temp = new temp($topics, $newc);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
+	$arr = array($temp->count, $temp->nbarch);
+	return $arr;
+	}
+
+function listOldArticles($topics, $pos)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $content;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $more;
+		var $newc;
+		var $topics;
+		var $com;
+		var $author;
+		var $commentsurl;
+		var $commentsname;
+		var $moreurl;
+		var $morename;
+
+		function temp($topics, $pos)
+			{
+			$this->topurl = "";
+			$this->bottomurl = "";
+			$this->nexturl = "";
+			$this->prevurl = "";
+			$this->topname = "";
+			$this->bottomname = "";
+			$this->nextname = "";
+			$this->prevname = "";
+			$this->db = $GLOBALS['babDB'];
+
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y'");
+			list($total)= $this->db->db_fetch_array($res);
+
+			if( $total > MAX_ARTICLES)
+				{
+				$this->barch = true;
+				if( $pos > 0)
+					{
+					$this->topurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics;
+					$this->topname = "&lt;&lt;";
+					}
+
+				$next = $pos - MAX_ARTICLES;
+				if( $next >= 0)
+					{
+					$this->prevurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics."&pos=".$next;
+					$this->prevname = "&lt;";
+					}
+
+				$next = $pos + MAX_ARTICLES;
+				if( $next < $total)
+					{
+					$this->nexturl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics."&pos=".$next;
+					$this->nextname = "&gt;";
+					if( $next + MAX_ARTICLES < $total)
+						{
+						$bottom = $total - MAX_ARTICLES;
+						}
+					else
+						$bottom = $next;
+					$this->bottomurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics."&pos=".$bottom;
+					$this->bottomname = "&gt;&gt;";
+					}
+				}
+			else
+				$this->barch = false;
+
+
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
+			if( $total > MAX_ARTICLES)
+				{
+				$req .= " limit ".$pos.",".MAX_ARTICLES;
+				}
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->topics = $topics;
+			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserApprover($topics))
+				$this->com = true;
+			else
+				$this->com = false;
+			$this->morename = bab_translate("Read More");
+			}
+
+		function getnext()
+			{
+			global $new; 
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($this->arr['id']). " - ". bab_getArticleDate($this->arr['id']);
+				$this->content = bab_replace($this->arr['head']);
+
+				if( $this->com)
+					{
+					$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='Y'";
+					$res = $this->db->db_query($req);
+					$ar = $this->db->db_fetch_array($res);
+					$total = $ar['total'];
+					$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='N'";
+					$res = $this->db->db_query($req);
+					$ar = $this->db->db_fetch_array($res);
+					$totalw = $ar['total'];
+					$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
+					if( isset($new) && $new > 0)
+						$this->commentsurl .= "&new=".$new;
+					$this->commentsurl .= "&newc=".$this->newc;
+					if( $totalw > 0 )
+						$this->commentsname = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
+					else
+						$this->commentsname = bab_translate("Comments")."&nbsp;(".$total.")";
+					}
+				else
+					{
+					$this->commentsurl = "";
+					$this->commentsname = "";
+					}
+
+				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
+				$this->morename = bab_translate("Read more")."...";
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	
+	$temp = new temp($topics, $pos);
+	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
 	return $temp->count;
 	}
 
@@ -120,6 +262,8 @@ function readMore($topics, $article)
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+			list($this->nbarch) = $this->db->db_fetch_row($res);
 			}
 
 		function getnext()
@@ -140,6 +284,7 @@ function readMore($topics, $article)
 	
 	$temp = new temp($topics, $article);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "readmore"));
+	return $temp->nbarch;
 	}
 
 function submitArticleByFile($topics)
@@ -503,6 +648,8 @@ if(!isset($idx))
 	{
 	$idx = "Articles";
 	}
+if( !isset($pos))
+	$pos = 0;
 
 if( isset($addarticle))
 	{
@@ -558,11 +705,13 @@ switch($idx)
 		$babBody->title = bab_getCategoryTitle($topics);
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
-			readMore($topics, $article);
+			$barch = readMore($topics, $article);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 				{
 				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics."&new=".$new."&newc=".$newc);
-				//$babBody->addItemMenu("Comments", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+				if( $barch > 0 )
+					$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
+
 				if( $approver)
 					{
 					$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
@@ -603,12 +752,34 @@ switch($idx)
 		exit();
 		break;
 
+	case "larch":
+		$babBody->title = bab_translate("List of old articles");
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
+			{
+			$nbarch = listOldArticles($topics, $pos);
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
+				{
+				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+				if( $approver)
+					{
+					if( isset($new) && $new > 0)
+						$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new."&newc=".$newc);
+					}
+				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
+				}
+			if( $nbarch < 1)
+				$babBody->title = bab_translate("Today, there is no articles");
+			else
+				$babBody->title = bab_translate("List of old articles").": ". bab_getCategoryTitle($topics);
+			}
+		break;
+
 	default:
 	case "Articles":
 		$babBody->title = bab_translate("List of articles");
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
-			$count = listArticles($topics, $newc);
+			$arr = listArticles($topics, $newc);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				if( $approver)
@@ -617,8 +788,11 @@ switch($idx)
 						$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new."&newc=".$newc);
 					}
 				$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
+				if( $arr[1] > 0 )
+					$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
+
 				}
-			if( $count < 1)
+			if( $arr[0] < 1)
 				$babBody->title = bab_translate("Today, there is no articles");
 			else
 				$babBody->title = bab_getCategoryTitle($topics);

@@ -102,7 +102,9 @@ function listArticles($id)
 		var $deletealt;
 		var $art0alt;
 		var $art1alt;
+		var $archivealt;
 		var $deletehelp;
+		var $archivehelp;
 		var $art0help;
 		var $art1help;
 
@@ -114,9 +116,11 @@ function listArticles($id)
 			$this->deletealt = bab_translate("Delete articles");
 			$this->art0alt = bab_translate("Make available to unregistered users home page");
 			$this->art1alt = bab_translate("Make available to registered users home page");
+			$this->archivealt = bab_translate("Archive selected articles");
 			$this->deletehelp = bab_translate("Click on this image to delete selected articles");
 			$this->art0help = bab_translate("Click on this image to make selected articles available to unregistered users home page");
 			$this->art1help = bab_translate("Click on this image to make selected articles available to registered users home page");
+			$this->archivehelp = bab_translate("Click on this image to archive selected articles");
 			$this->homepages = bab_translate("Customize home pages ( Registered and unregistered users )");
 			$this->badmin = bab_isUserAdministrator();
 
@@ -124,12 +128,14 @@ function listArticles($id)
 			$this->db = $GLOBALS['babDB'];
 			$r = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$r['id'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' and archive='N' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 			$r = $this->db->db_fetch_array($this->db->db_query($req));
 			$this->siteid = $r['id'];
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and archive='Y'");
+			list($this->nbarch) = $this->db->db_fetch_row($res);
 			}
 
 		function getnext()
@@ -165,6 +171,66 @@ function listArticles($id)
 
 	$temp = new temp($id);
 	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "articleslist"));
+	return $temp->nbarch;
+	}
+
+function listOldArticles($id)
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $title;
+		var $titlename;
+		var $articleid;
+		var $item;
+		var $checkall;
+		var $uncheckall;
+		var $urltitle;
+
+		var $db;
+		var $res;
+		var $count;
+
+		var $archivealt;
+		var $archivehelp;
+
+		function temp($id)
+			{
+			$this->titlename = bab_translate("Title");
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
+			$this->archivealt = bab_translate("Move selected articles from archive");
+			$this->archivehelp = bab_translate("Click on this image to move out selected articles from archive");
+
+			$this->item = $id;
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' and archive='Y' order by date desc";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->title = $arr['title'];
+				$this->articleid = $arr['id'];
+				$this->urltitle = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id']."');";
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		
+		}
+
+	$temp = new temp($id);
+	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "oldarticleslist"));
 	}
 
 function viewArticle($article)
@@ -319,6 +385,30 @@ function addToHomePages($item, $homepage, $art)
 		}
 }
 
+function archiveArticles($item, $aart)
+{
+	$cnt = count($aart);
+	$db = $GLOBALS['babDB'];
+	for($i = 0; $i < $cnt; $i++)
+		{
+		$db->db_query("update ".BAB_ARTICLES_TBL." set archive='Y' where id='".$aart[$i]."'");
+		$db->db_query("delete from ".BAB_HOMEPAGES_TBL." where id_article='".$aart[$i]."'");
+		}
+}
+
+function unarchiveArticles($item, $aart)
+{
+	global $idx;
+
+	$idx = "Articles";
+	$cnt = count($aart);
+	$db = $GLOBALS['babDB'];
+	for($i = 0; $i < $cnt; $i++)
+		{
+		$db->db_query("update ".BAB_ARTICLES_TBL." set archive='N' where id='".$aart[$i]."'");
+		}
+}
+
 /* main */
 if(!isset($idx))
 	{
@@ -334,6 +424,9 @@ if( isset($upart) && $upart == "articles")
 			break;
 		case "homepage1":
 			addToHomePages($item, 1, $hart1);
+			break;
+		case "unarch":
+			unarchiveArticles($item, $aart);
 			break;
 		}
 	}
@@ -360,13 +453,31 @@ switch($idx)
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
 		$babBody->addItemMenu("deletea", bab_translate("Delete"), "javascript:(submitForm('deletea'))");
 		break;
-	
+
+	case "alist":
+		$babBody->title = bab_translate("List of old articles").": ".bab_getCategoryTitle($item);
+		listOldArticles($item);
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
+		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item."&new=".$new."&newc=".$newc);
+		$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item."&new=".$new."&newc=".$newc);
+
+		if( $new > 0)
+			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
+		break;
+
+	case "archive":
+		archiveArticles($item, $aart);
+		/* no break; */
 	case "Articles":
 		$babBody->title = bab_translate("List of articles").": ".bab_getCategoryTitle($item);
-		listArticles($item);
+		$nbarch = listArticles($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
-		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
+		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item."&new=".$new."&newc=".$newc);
+		if( $nbarch > 0)
+			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item."&new=".$new."&newc=".$newc);
+
+		if( $new > 0)
+			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
 		break;
 
 	default:

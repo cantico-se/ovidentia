@@ -35,6 +35,10 @@ function listComments($topics, $article, $newc)
 			$this->article = $article;
 			$this->alternate = 0;
 			$this->newc = $newc;
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+			list($this->nbarch) = $this->db->db_fetch_row($res);
+			$res = $this->db->db_query("select archive from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and id='".$article."'");
+			list($this->barch) = $this->db->db_fetch_row($res);
 			}
 
 		function getnext()
@@ -60,7 +64,7 @@ function listComments($topics, $article, $newc)
 	
 	$temp = new temp($topics, $article, $newc);
 	$babBody->babecho(	bab_printTemplate($temp,"comments.html", "commentslist"));
-	return $temp->count;
+	return array('count' => $temp->count, 'nbarch' => $temp->nbarch,'barch' => $temp->barch);
 	}
 
 
@@ -118,12 +122,15 @@ function addComment($topics, $article, $subject, $com="")
 			else
 				$this->msie = 0;
 			$this->urlsee = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$article."');";
+			$res = $db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+			list($this->nbarch) = $db->db_fetch_row($res);
 			}
 		}
 
 	$temp = new temp($topics, $article, $subject, $com);
 	$tpl = new babTemplate();
 	$babBody->babecho(	bab_printTemplate($temp,"comments.html", "commentcreate"));
+	return $temp->nbarch;
 	}
 
 function readComment($topics, $article, $com)
@@ -150,12 +157,16 @@ function readComment($topics, $article, $com)
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
+			$res = $db->db_query("select archive from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and id='".$article."'");
+			list($this->barch) = $db->db_fetch_row($res);
 			}
 		}
 
 	$ctp = new ctp($topics, $article, $com);
 	$babBody->babecho(	bab_printTemplate($ctp,"comments.html", "commentread"));
-	addComment($topics, $article, "RE: ".$ctp->arr['subject'], $com);
+	if( $ctp->barch == "N" )
+		addComment($topics, $article, "RE: ".$ctp->arr['subject'], $com);
+	return $ctp->barch;
 	}
 
 
@@ -324,10 +335,12 @@ switch($idx)
 		$babBody->title = bab_getArticleTitle($article);
 		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
-			addComment($topics, $article, "");
+			$nbarch = addComment($topics, $article, "");
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 			$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics."&newc=".$newc);
+			if( $nbarch > 0 )
+				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 			}
 		break;
 
@@ -335,14 +348,17 @@ switch($idx)
 		$babBody->title = bab_getArticleTitle($article);
 		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
-			readComment($topics, $article, $com);
+			$barch = readComment($topics, $article, $com);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-			$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
+			if( $barch == "N" )
+				$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
 			if( $approver)
 				{
 				$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com."&newc=".$newc);
 				}
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics."&newc=".$newc);
+			if( $barch == "Y" )
+				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 			}
 		break;
 
@@ -360,16 +376,19 @@ switch($idx)
 		$babBody->title = bab_translate("List of comments");
 		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
-			$count = listComments($topics, $article, $newc);
+			$arr = listComments($topics, $article, $newc);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-			$babBody->addItemMenu("AddComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
+			if( $arr['barch'] == "N")
+				$babBody->addItemMenu("AddComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
 			if( isset($newc) && $newc > 0)
 				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);				
-			if( $count < 1)
+			if( $arr['count'] < 1)
 				$babBody->title = bab_translate("Today, there is no comment on this article");
 			else
 				$babBody->title = bab_getArticleTitle($article);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics."&newc=".$newc);
+			if( $arr['nbarch'] > 0 )
+				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 			}
 		break;
 	}
