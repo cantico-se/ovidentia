@@ -1429,4 +1429,10 @@
 <string id="Config change failed on">Le changement de configuration à échoué sur</string>
 <string id="Failed to read config file">Impossible de lire le fichier de configuration</string>
 <string id="Failed to write into config file">Impossible d'écrire dans le fichier de configuration</string>
+<string id="Export database">Exporter la base de donnés</string>
+<string id="Add 'DROP TABLE' instructions">Ajouter des instructions 'DROP TABLE'</string>
+<string id="Export table data">Exporter les donnés des tables</string>
+<string id="Export table structure">Exporter la structure des tables</string>
+<string id="Database management">Gestion de la base de donnés</string>
+<string id="Database">Base de donnés</string>
 </fr>

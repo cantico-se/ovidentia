@@ -1310,3 +1310,75 @@ savef(document.discmod.content);
 </table>
 </form>
 <!--#end zipupgrade -->
+
+
+<!--#begin database -->
+<script type="text/javascript">
+<!--
+function drop_table_check(obj)
+	{
+	var f = document.forms['database'];
+	if (obj.checked)
+		f.drop_table.disabled = false;
+	else
+		f.drop_table.disabled = true;
+	}
+//-->
+</script>
+
+<form name="database" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="sites" />
+<input type="hidden" name="idx" value="database" />
+<input type="hidden" name="action" value="export_database" />
+
+<table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+
+	<tr> 
+		<td align="right" width="50%" nowrap>{ t_structure }</td>
+		<td>
+			<!--#if val[structure] -->
+			<input type="checkbox" name="structure" onclick="drop_table_check(this)" checked />
+			<!--#else val[structure] -->
+			<input type="checkbox" name="structure" onclick="drop_table_check(this)" />
+			<!--#endif val[structure] -->
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" nowrap>{ t_data }</td>
+		<td>
+			<!--#if val[data] -->
+			<input type="checkbox" name="data" checked />
+			<!--#else val[data] -->
+			<input type="checkbox" name="data" />
+			<!--#endif val[data] -->
+		</td>
+	</tr>
+	
+	<tr> 
+		<td align="right" nowrap>{ t_drop_table }</td>
+		<td>
+			<!--#if val[drop_table] -->
+			<input type="checkbox" name="drop_table" checked />
+			<!--#else val[drop_table] -->
+			<input type="checkbox" name="drop_table" />
+			<!--#endif val[drop_table] -->
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2" align="center"><br /><input type="submit" value="{ t_submit }" /></td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<script type="text/javascript">
+<!--
+drop_table_check(document.forms['database'].structure);
+//-->
+</script>
+<!--#end database -->
