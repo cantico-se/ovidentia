@@ -1096,6 +1096,7 @@ function categoriesList($calid)
 			if( $i < $this->countcat)
 				{
 				$this->arr = $this->db->db_fetch_array($this->rescat);
+				if (trim($this->arr['description']) == '') $this->arr['description'] = $this->arr['name'];
 				$i++;
 				return true;
 				}
