@@ -250,7 +250,7 @@ function categoriesList()
 		function categoriesListCls()
 			{
 			global $babBodyPopup, $babBody, $babDB;
-			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL."");
+			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name,description");
 			$this->count = $babDB->db_num_rows($this->res);
 
 			$this->t_name = bab_translate('Name');
@@ -351,15 +351,19 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$sortvalue[$arr['id_event']] = $arr['start_date'];
 					}
 				}
+			
+			if (isset($sortvalue))
+				{
 
-			asort($sortvalue);
-			reset($sortvalue);
+				asort($sortvalue);
+				reset($sortvalue);
 
-			while (list ($arr_key, $arr_val) = each ($sortvalue)) {
-					 $new_array[$arr_key] = $this->resevent[$arr_key];
-					}
+				while (list ($arr_key, $arr_val) = each ($sortvalue)) {
+						 $new_array[$arr_key] = $this->resevent[$arr_key];
+						}
 
-			$this->resevent = $new_array;
+				$this->resevent = $new_array;
+				}
 
 			}
 

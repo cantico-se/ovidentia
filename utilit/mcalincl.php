@@ -551,7 +551,7 @@ class cal_wmdbaseCls
 						{
 						$this->allow_modify = true;
 						}
-					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE && $calinfo['idowner'] !=  $GLOBALS['BAB_SESS_USERID'] && $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'])
+					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE && $calinfo['idowner'] !=  $GLOBALS['BAB_SESS_USERID'] && ($evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] || ($evtarr['block'] == 'N' && $evtarr['bprivate'] == 'N')))
 						{
 						$this->allow_modify = true;
 						}
@@ -702,7 +702,7 @@ class calendarchoice
 			if ($_REQUEST['tg'] != 'event' || $v['access'] > 0)
 				$this->resuser_sort[$k] = $v['name'];
 			}
-		asort($this->resuser_sort);
+		natcasesort($this->resuser_sort);
 
 		$this->respub_sort = array();
 		foreach($this->respub as $k => $v)
@@ -710,7 +710,7 @@ class calendarchoice
 			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1)
 				$this->respub_sort[$k] = $v['name'];
 			}
-		asort($this->respub_sort);
+		natcasesort($this->respub_sort);
 
 		$this->resres_sort = array();
 
@@ -719,7 +719,7 @@ class calendarchoice
 			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1)
 				$this->resres_sort[$k] = $v['name'];
 			}
-		asort($this->resres_sort);
+		natcasesort($this->resres_sort);
 
 		}
 
@@ -800,7 +800,8 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 
 		function cal_searchAvailabilityCls($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			{
-			global $babBodyPopup, $babBody, $babDB;
+			global $babBodyPopup, $babBody;
+			
 			$this->datebegintxt = bab_translate("Begin date")." ".bab_translate("dd-mm-yyyy");
 			$this->dateendtxt = bab_translate("Until date")." ".bab_translate("dd-mm-yyyy");
 			$this->searchtxt = bab_translate("Search");
@@ -859,7 +860,57 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			$this->minutestxt = bab_translate("Minutes");
 
 			$this->freeevents = array();
-			$workdays = explode(',', $babBody->icalendars->workdays);
+
+			$db = &$GLOBALS['babDB'];
+
+			$workdays = array();
+			$workdays_user = array();
+
+			function time_to_sec($time)
+				{
+				list($h,$m,$s) = explode(':',$time);
+				return $h*3600 + $m*60 + $s;
+				}
+
+			function sec_to_time($sec)
+				{
+				$min = $sec%3600;
+				return sprintf("%02s:%02s:%02s", ($sec/3600), ($min/60), ($min%60));
+				}
+
+			$starttime_sec = 0;
+			$endtime_sec = 3600*24;
+
+			$res = $db->db_query("SELECT c.id,o.work_days, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$this->idcals).") AND o.id_user = c.owner AND c.type='1'");
+
+			while ($arr = $db->db_fetch_array($res))
+				{
+				$calopt[$arr['id']] = explode( ',', $arr['work_days'] );
+				$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
+				
+				$s = time_to_sec($arr['start_time']);
+				$starttime_sec = $s > $starttime_sec ? $s : $starttime_sec;
+				$s = time_to_sec($arr['end_time']);
+				$endtime_sec = $s < $endtime_sec ? $s : $endtime_sec;
+				}
+
+			$workdays = array_unique($workdays);
+
+			foreach ($calopt as $user)
+				{
+				foreach ($workdays as $k => $day)
+					{
+					if (!in_array($day,$user))
+						{
+						unset($workdays[$k]);
+						}
+					}
+				}
+
+
+			$starttime = sec_to_time($starttime_sec);
+			$endtime = sec_to_time($endtime_sec);
+
 			while( $this->mcals->getNextFreeEvent($this->sdate, $this->edate, $arr, $this->gap))
 				{
 				$this->free = $arr[2] == 0;
@@ -879,8 +930,8 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 								{
 								$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time0), date("n", $time0), date("j", $time0));
 
-								$workdate0 = $this->cdate.' '.$babBody->icalendars->starttime;
-								$workdate1 = $this->cdate.' '.$babBody->icalendars->endtime;
+								$workdate0 = $this->cdate.' '.$starttime;
+								$workdate1 = $this->cdate.' '.$endtime;
 
 								if( $arr[1] > $workdate0 && $arr[0] < $workdate1 )
 									{
