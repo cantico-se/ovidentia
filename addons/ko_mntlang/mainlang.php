@@ -4,6 +4,10 @@
  ************************************************************************
  * Copyright (c) 2002, Koblix ( http://www.koblix.com )                 *
  ***********************************************************************/
+function ko_mnt_translate($str)
+	{
+		return bab_translate($str, $GLOBALS['babAddonFolder']);
+	}
  	
 	class temp
 	{
@@ -83,13 +87,13 @@
 		
 		function temp()
 			{
-				$this->strdesc = bab_translate("This function updates a language file of your choice");
-				$this->strlang = bab_translate("Language");
+				$this->strdesc = ko_mnt_translate("This function updates a language file of your choice");
+				$this->strlang = ko_mnt_translate("Language");
 				$this->getLangFiles();		
 				$this->nbrlangs = count($this->langs);
-				$this->strfind = bab_translate("Text to translate");
-				$this->strupd = bab_translate("Translation");
-				$this->strsubmit = bab_translate("Translate");
+				$this->strfind = ko_mnt_translate("Text to translate");
+				$this->strupd = ko_mnt_translate("Translation");
+				$this->strsubmit = ko_mnt_translate("Translate");
 				
                 $this->userlang = bab_getUserSetting($GLOBALS['BAB_SESS_USERID'], 'lang');
            
@@ -167,7 +171,7 @@ function updateLangFile()
 			if (!copy($babInstallPath."lang/lang-".$langselect.".xml", $filename)) 
 			{
 				$temp->bError = true;
-				$temp->strmsg = bab_translate("Failed to copie a new")." lang-".$langselect.".xml " .bab_translate("file!!");//."\n".$GLOBALS["myerrmsg"];
+				$temp->strmsg = ko_mnt_translate("Failed to copie a new")." lang-".$langselect.".xml " .ko_mnt_translate("file!!");//."\n".$GLOBALS["myerrmsg"];
 				$ok = false;
 			}
 			else{
@@ -202,18 +206,18 @@ function updateLangFile()
 		fclose($fp);
 		if ($found){
 			$temp->bMessage = true;
-			$temp->strmsg = bab_translate("Your text is translated");
+			$temp->strmsg = ko_mnt_translate("Your text is translated");
 		}
 		else{
 			$temp->bError = true;
-			$temp->strmsg = bab_translate("Your text was not found");
+			$temp->strmsg = ko_mnt_translate("Your text was not found");
 		}
 	}//end vd ok
 	
 	}
 	else{
 		$temp->bError = true;
-		$temp->strmsg = bab_translate('You have to give a value for both "Text to translate" and "Translation"!');
+		$temp->strmsg = ko_mnt_translate('You have to give a value for both "Text to translate" and "Translation"!');
 	}//end if isset
 	
 	$babBody->babecho(bab_printTemplate($temp, $GLOBALS['babAddonHtmlPath']."mainlang.html", "mtlupdate"));
@@ -222,7 +226,7 @@ function updateLangFile()
 /* main */
 if( !isset($idx ))
 	$idx = "first";
-$babBody->title = bab_translate("Maintain Language File");
+$babBody->title = ko_mnt_translate("Maintain Language File");
 switch($idx)
 	{
 	case "first":
