@@ -448,10 +448,16 @@ function import()
 			}
 		if( !get_cfg_var('safe_mode'))
 			set_time_limit(0);
+
+		if (!is_dir($GLOBALS['babUploadPath'].'tmp/'))
+		bab_mkdir($GLOBALS['babUploadPath'].'tmp/',$GLOBALS['babMkdirMode']);
+
+		$ul = $GLOBALS['babUploadPath'].'tmp/'.$_FILES['uploadf']['name'];
+		move_uploaded_file($_FILES['uploadf']['tmp_name'],$ul);
 		
 		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 		$zip = new Zip;
-		$zipcontents = $zip->get_List($_FILES['uploadf']['tmp_name']);
+		$zipcontents = $zip->get_List($ul);
 		
 		$loc_in = $GLOBALS['addons_files_location']['loc_in'];
 		$loc_out = $GLOBALS['addons_files_location']['loc_out'];
@@ -501,8 +507,10 @@ function import()
 			$path = $GLOBALS['babInstallPath'].$loc_in[$arr[0]].'/'.$addon_name;
 			$subdir = dirname(substr($zipcontents[$arr[2]]['filename'],strlen($loc_out[$arr[0]])+1));
 			$subdir = isset($subdir) && $subdir != '.' ? '/'.$subdir : '';
-			$zip->Extract($_FILES['uploadf']['tmp_name'],$path.$subdir,$arr[1],false );
+			$zip->Extract($ul,$path.$subdir,$arr[1],false );
 			}
+
+		//unlink($ul);
 		}
 	}
 
