@@ -96,6 +96,8 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		var $new;
 		var $maxevent;
 		var $plus;
+		var $babCalendarStartDay;
+		var $babCalendarUsebgColor;
 	
 		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			{
@@ -114,6 +116,16 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->new = babTranslate("New");
 			$this->maxevent = 6;
 			$this->plus = "";
+			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$res = $this->db->db_query($req);
+			$this->babCalendarStartDay = 0;
+			$this->babCalendarUsebgColor = "Y";
+			if( $res && $this->db->db_num_rows($res) > 0)
+				{
+				$arr = $this->db->db_fetch_array($res);
+				$this->babCalendarStartDay = $arr[startday];
+				$this->babCalendarUsebgColor = $arr[usebgcolor];
+				}
 
 			switch($caltype)
 				{
@@ -190,7 +202,10 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			static $i = 0;
 			if( $i < 7)
 				{
-				$this->dayname = $babDays[$i];
+				$a = $i + $this->babCalendarStartDay;
+				if( $a > 6)
+					$a -=  7;
+				$this->dayname = $babDays[$a];
 				$i++;
 				return true;
 				}
@@ -224,7 +239,12 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->nbevent = 0;
 				$this->countevent = 0;
 				$this->countgrpevent = 0;
-				$day = (7 * ($this->w-1)) + $d - $this->firstday +1 ;
+
+				$b = $this->firstday - $this->babCalendarStartDay;
+				if( $b < 0)
+					$b += 7;
+
+				$day = (7 * ($this->w-1)) + $d - $b +1 ;
 				if( $day <= 0 || $day > $this->totaldays)
 					$this->currentmonth = 0;
 				$mktime = mktime(0,0,0,$this->month, $day,$this->year);
@@ -301,12 +321,15 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->title = substr($arr[start_time], 0 ,5). " " . substr($arr[end_time], 0 ,5). " " .$arr[title];
 				$this->titleten = substr($arr[start_time], 0 ,5). " ". substr($arr[title], 0, 20) ;
 				$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid. "&evtid=".$arr[id];
-				$req = "select * from categoriescal where id='".$arr[id_cat]."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( $this->babCalendarUsebgColor == "Y")
 					{
-					$arr = $this->db->db_fetch_array($res);
-					$this->bgcolor = $arr[bgcolor];
+					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
+					$res = $this->db->db_query($req);
+					if( $res && $this->db->db_num_rows($res) > 0)
+						{
+						$arr = $this->db->db_fetch_array($res);
+						$this->bgcolor = $arr[bgcolor];
+						}
 					}
 				$k++;
 				return true;
@@ -323,6 +346,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			static $k=0;
 			if( $k < $this->maxevent - $this->nbevent)
 				{
+				$this->bgcolor = "";
 				$this->titleten = "";
 				$this->titletenurl = "";
 				$this->notempty = 0;
@@ -333,15 +357,16 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 					$this->title = substr($arr[start_time], 0 ,5). " " . substr($arr[end_time], 0 ,5). " " .$arr[title];
 					$this->titleten = substr($arr[start_time], 0 ,5). " ". substr($arr[title], 0, 20) ;
 					$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id];
-					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
-					$res = $this->db->db_query($req);
-					if( $res && $this->db->db_num_rows($res) > 0)
+					if( $this->babCalendarUsebgColor == "Y")
 						{
-						$arr = $this->db->db_fetch_array($res);
-						$this->bgcolor = $arr[bgcolor];
+						$req = "select * from categoriescal where id='".$arr[id_cat]."'";
+						$res = $this->db->db_query($req);
+						if( $res && $this->db->db_num_rows($res) > 0)
+							{
+							$arr = $this->db->db_fetch_array($res);
+							$this->bgcolor = $arr[bgcolor];
+							}
 						}
-					else
-						$this->bgcolor = "";
 					}
 				else
 					{
@@ -399,6 +424,9 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		var $neweventurl;
 
 		var $db;
+		var $babCalendarStartDay;
+		var $babCalendarUsebgColor;
+
 		
 		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			{
@@ -409,6 +437,16 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->month = $month;
 			$this->year = $year;
 			$this->day = $day;
+			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$res = $this->db->db_query($req);
+			$this->babCalendarStartDay = 0;
+			$this->babCalendarUsebgColor = "Y";
+			if( $res && $this->db->db_num_rows($res) > 0)
+				{
+				$arr = $this->db->db_fetch_array($res);
+				$this->babCalendarStartDay = $arr[startday];
+				$this->babCalendarUsebgColor = $arr[usebgcolor];
+				}
 			switch($caltype)
 				{
 				case 1:
@@ -519,7 +557,10 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			if( $i < 7)
 				{
 				$this->nbevent = 0;
-				$day = $this->day - $this->curday + $i;
+				$a = $this->curday - $this->babCalendarStartDay;
+				if( $a < 0)
+					$a += 7;
+				$day = $this->day - $a + $i;
 				$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $day, $this->year), false);
 				$this->resevent = getEventsResult($this->calid, $day, $this->month, $this->year);
 				$this->countevent = $this->db->db_num_rows($this->resevent);
@@ -552,12 +593,15 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->title = substr($arr[start_time], 0 ,5). " " . substr($arr[end_time], 0 ,5). " " .$arr[title];
 				$this->titleten = $this->title ;
 				$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id];
-				$req = "select * from categoriescal where id='".$arr[id_cat]."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( $babCalendarUsebgColor == "Y")
 					{
-					$arr = $this->db->db_fetch_array($res);
-					$this->bgcolor = $arr[bgcolor];
+					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
+					$res = $this->db->db_query($req);
+					if( $res && $this->db->db_num_rows($res) > 0)
+						{
+						$arr = $this->db->db_fetch_array($res);
+						$this->bgcolor = $arr[bgcolor];
+						}
 					}
 				$k++;
 				return true;
@@ -581,15 +625,16 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->title = substr($arr[start_time], 0, 5). " " . substr($arr[end_time], 0, 5). " " .$arr[title];
 				$this->titleten = $this->title;
 				$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id];
-				$req = "select * from categoriescal where id='".$arr[id_cat]."'";
-				$res = $this->db->db_query($req);
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( $babCalendarUsebgColor == "Y")
 					{
-					$arr = $this->db->db_fetch_array($res);
-					$this->bgcolor = $arr[bgcolor];
+					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
+					$res = $this->db->db_query($req);
+					if( $res && $this->db->db_num_rows($res) > 0)
+						{
+						$arr = $this->db->db_fetch_array($res);
+						$this->bgcolor = $arr[bgcolor];
+						}
 					}
-				else
-					$this->bgcolor = "";
 				$k++;
 				return true;
 				}
@@ -639,6 +684,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 		var $db;
 		var $curhour;
 		var $colspan;
+		var $babCalendarUsebgColor;
 	
 		function temp($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager)
 			{
@@ -649,6 +695,14 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 			$this->firsttime ="";
 			$this->calid = $calid;
 			$this->caltype = $caltype;
+			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$res = $this->db->db_query($req);
+			$this->babCalendarUsebgColor = "Y";
+			if( $res && $this->db->db_num_rows($res) > 0)
+				{
+				$arr = $this->db->db_fetch_array($res);
+				$this->babCalendarUsebgColor = $arr[usebgcolor];
+				}
 			switch($caltype)
 				{
 				case 1:
@@ -827,6 +881,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 			static $tab = array();
 			if( $k < $this->countevent)
 				{
+				$this->bgcolor = "white";
 				$this->notempty = 0;
 				$hourmin = $this->curhour;
 				$hourmax = $this->curhour  + 30;
@@ -855,15 +910,16 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 					$this->titleten = $tab[$k];
 					$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id];
 
-					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
-					$res = $this->db->db_query($req);
-					if( $res && $this->db->db_num_rows($res) > 0)
+					if( $babCalendarUsebgColor == "Y")
 						{
-						$arr = $this->db->db_fetch_array($res);
-						$this->bgcolor = $arr[bgcolor];
+						$req = "select * from categoriescal where id='".$arr[id_cat]."'";
+						$res = $this->db->db_query($req);
+						if( $res && $this->db->db_num_rows($res) > 0)
+							{
+							$arr = $this->db->db_fetch_array($res);
+							$this->bgcolor = $arr[bgcolor];
+							}
 						}
-					else
-						$this->bgcolor = "white";
 					}
 				$k++;
 				return true;
@@ -881,6 +937,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 			static $tab = array();
 			if( $k < $this->countgrpevent)
 				{
+				$this->bgcolor = "white";
 				$this->notempty = 0;
 				$hourmin = $this->curhour;
 				$hourmax = $this->curhour  + 30;
@@ -906,15 +963,16 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 
 					$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id];
 					$this->titleten = $tab[$k];
-					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
-					$res = $this->db->db_query($req);
-					if( $res && $this->db->db_num_rows($res) > 0)
+					if( $babCalendarUsebgColor == "Y")
 						{
-						$arr = $this->db->db_fetch_array($res);
-						$this->bgcolor = $arr[bgcolor];
+						$req = "select * from categoriescal where id='".$arr[id_cat]."'";
+						$res = $this->db->db_query($req);
+						if( $res && $this->db->db_num_rows($res) > 0)
+							{
+							$arr = $this->db->db_fetch_array($res);
+							$this->bgcolor = $arr[bgcolor];
+							}
 						}
-					else
-						$this->bgcolor = "white";
 					}
 				$k++;
 				return true;
@@ -1008,8 +1066,96 @@ function accessCalendar($view, $day, $month, $year, $start, $calid)
 
 	$temp = new temp($view, $day, $month, $year, $start, $calid);
 	$body->babecho(	babPrintTemplate($temp,"calendar.html", "access"));
-
 }
+
+function categoriesList($calid)
+	{
+	global $body, $BAB_SESS_USERID;
+	class temp2
+		{
+		var $description;
+		var $bgcolor;
+				
+		var $db;
+		var $arr = array();
+		var $countcal;
+		var $rescat;
+
+		function temp2($calendarid)
+			{
+			global $BAB_SESS_USERID;
+			$this->description = babTranslate("Categories");
+			$this->calid = $calendarid;
+			$this->caltype = getCalendarType($calendarid);
+			$this->db = new db_mysql();
+			switch( $this->caltype)
+				{
+				case 1: // user
+					$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+					$resgroups = $this->db->db_query($req);
+					if( $resgroups )
+						{
+						$countgroups = $this->db->db_num_rows($resgroups); 
+						}
+
+					$req2 = "select * from categoriescal where id_group='1'";
+					if( $countgroups > 0)
+						{
+						for( $i = 0; $i < $countgroups; $i++)
+							{
+							$arr = $this->db->db_fetch_array($resgroups);
+							$req2 .= " or id_group='".$arr[id]."'"; 
+							}
+						$this->db->db_data_seek($resgroups, 0);
+						}
+					$this->rescat = $this->db->db_query($req2);
+					$this->countcat = $this->db->db_num_rows($this->rescat); 
+					break;
+				case 2: // group
+					$req = "select * from calendar where id='".$calendarid."'";
+					$res = $this->db->db_query($req);
+					$arr = $this->db->db_fetch_array($res);
+					$req = "select * from categoriescal where id_group='1' or id_group='".$arr[owner]."'";
+					$this->rescat = $this->db->db_query($req);
+					$this->countcat = $this->db->db_num_rows($this->rescat); 
+					break;
+				case 3: // resource
+				default:
+					$this->bcategory = 0;
+					$this->countcat = 0;
+					break;
+				}
+
+			}
+			
+		function getnextcat()
+			{
+			static $i = 0;
+			if( $i < $this->countcat)
+				{
+				$this->arr = $this->db->db_fetch_array($this->rescat);
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+		}
+
+	$db = new db_mysql();
+	$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+	$res = $db->db_query($req);
+	$arr = $db->db_fetch_array($res);
+	if( $arr[viewcat] == "Y")
+		{
+		$temp = new temp2($calid);
+		$body->babecho(	babPrintTemplate($temp, "calendar.html", "categorieslist"));
+		}
+	}
 
 function addAccessUsers( $emails, $calid, $baccess, $del )
 {
@@ -1102,6 +1248,8 @@ switch($idx)
 	case "viewd":
 		$body->title = "";
 		calendarDay($calid, $day, $month, $year, $start, $caltype, $owner, $bmanager);
+		categoriesList($calid);
+		$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options&day=".$day."&month=".$month."&year=".$year."&start=".$start."&calid=".$calid."&view=viewd");
 		if( $caltype == 1)
 			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=access&day=".$day."&month=".$month."&year=".$year."&start=".$start."&calid=".$calid."&view=viewd");
 		if( $bmanager)
@@ -1114,6 +1262,8 @@ switch($idx)
 	case "viewq":
 		$body->title = "";
 		calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager);
+		categoriesList($calid);
+		$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options&day=".$day."&month=".$month."&year=".$year."&calid=".$calid."&view=viewq");
 		if( $caltype == 1)
 			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=access&day=".$day."&month=".$month."&year=".$year."&calid=".$calid."&view=viewq");
 		if( $bmanager)
@@ -1126,6 +1276,8 @@ switch($idx)
 	case "viewm":
 		$body->title = "";
 		calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager);
+		categoriesList($calid);
+		$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options&day=".$day."&month=".$month."&year=".$year."&calid=".$calid."&view=viewm");
 		if( $caltype == 1)
 			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=access&day=".$day."&month=".$month."&year=".$year."&calid=".$calid."&view=viewm");
 		if( $bmanager)
