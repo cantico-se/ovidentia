@@ -868,7 +868,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 				{
 				$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
 				$starttime = sprintf("%s:00", $timebegin);
-				$enddate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
+				$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 				$endtime = sprintf("%s:00", $timeend);
 				}
 			$req = "insert into cal_events ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
@@ -883,14 +883,14 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		{
 		$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
 		$starttime = "00:00:00";
-		$enddate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
+		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 		$endtime = "23:59:59";
 		}
 	else
 		{
 		$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
 		$starttime = sprintf("%s:00", $timebegin);
-		$enddate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
+		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 		$endtime = sprintf("%s:00", $timeend);
 		}
 	$req = "insert into cal_events ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
