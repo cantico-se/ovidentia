@@ -96,14 +96,9 @@ function listImages()
 	{
 	class temp
 		{
-		var $babCss;
-		var $babMeta;
 
 		function temp()
 			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$this->babMeta = bab_printTemplate($this,"config.html", "babMeta");
-			$this->babMeta = bab_printTemplate($this,"config.html", "babMeta");
 			$this->imagemaxsize = "25000";
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
