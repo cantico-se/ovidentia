@@ -951,7 +951,7 @@ function addNewUser( $nickname, $password1, $password2)
 			}
 		}
 
-	$iduser = registerUser($fields['givenname'], $fields['sn'], $fields['givenname'], $fields['email'],$nickname, $password1, $password2, false);
+	$iduser = registerUser(stripslashes($fields['givenname']), stripslashes($fields['sn']), stripslashes($fields['givenname']), $fields['email'],$nickname, $password1, $password2, false);
 	if( $iduser == false )
 		{
 		return false;
