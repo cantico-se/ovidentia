@@ -1954,8 +1954,6 @@ if( count($babBody->aclfm['id']) == 0 && !$babBody->ustorage )
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
 }
-else
-	$access = true;
 
 if(!isset($idx))
 	{
@@ -2019,6 +2017,11 @@ if( $gr == "Y")
 				$upload = true;
 			break;
 			}
+		}
+	if( $id != 0 && $i >= count($babBody->aclfm['id']))
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+			return;
 		}
 	}
 
