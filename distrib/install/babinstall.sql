@@ -786,22 +786,13 @@ INSERT INTO bab_mime_types VALUES ('zip', 'application/zip');
 #
 
 CREATE TABLE bab_addons (
-   id int(11) unsigned NOT NULL auto_increment,
-   name varchar(60) NOT NULL,
-   description varchar(255) NOT NULL,
-   folder varchar(255) NOT NULL,
-   initfile varchar(60) NOT NULL,
-   usload varchar(255) NOT NULL,
-   asload varchar(255) NOT NULL,
-   ucreate varchar(255) NOT NULL,
-   udelete varchar(255) NOT NULL,
-   gcreate varchar(255) NOT NULL,
-   gdelete varchar(255) NOT NULL,
-   section enum('N','Y') DEFAULT 'N' NOT NULL,
-   enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
-   PRIMARY KEY (id)
+  id int(11) unsigned NOT NULL auto_increment,
+  title varchar(255) NOT NULL default '',
+  enabled enum('Y','N') NOT NULL default 'Y',
+  PRIMARY KEY  (id)
 );
 
+    
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_addons_groups'
