@@ -770,7 +770,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$private = false;
 				// open wide
 				$idfile = "";
-				$grpfiles = " and bgroup='Y' ";
+				$grpfiles = " and F.bgroup='Y' ";
 
 				for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 					{
@@ -798,18 +798,23 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." ) and ";
 				else $plus = "";
 
-				if ($temp6 != "")
-					$join = "LEFT JOIN ".BAB_FM_FIELDSVAL_TBL." M on (".$temp6." and M.id_file=F.id ) ";
-
                 if ($idfile != "") 
 					{
-					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R ".$join." where F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
+					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R where F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
                     $this->db->db_query($req);
+					
+					if ($temp6 != "")
+						{
+						$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M where ".$temp6." and M.id_file=F.id AND F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
+						$this->db->db_query($req);
+						}
                     }
+
 
 				$req = "select count(*) from filresults";
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
+
 				$navpos = $this->navpos;
 				if ($navitem != "e") $navpos = 0;
 				$this->navbar_e = navbar($babLimit,$nbrows,"e",$navpos);
