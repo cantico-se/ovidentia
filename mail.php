@@ -40,7 +40,7 @@ function addAddress( $val, $to, &$class)
 				$id = bab_getUserId(substr($addr, 0, -3));
 				if( $id < 1) // it's a group
 				{
-					$idgrp = bab_isMemberOfGroup($addr);
+					$idgrp = bab_isMemberOfGroup(substr($addr, 0, -3));
 					if( $idgrp > 0 )
 					{
 					$req = "select p1.firstname, p1.lastname, p1.email from ".BAB_USERS_TBL." as p1, ".BAB_USERS_GROUPS_TBL." as p2 where p2.id_group='".$idgrp."' and p1.id=p2.id_object";
