@@ -1402,7 +1402,7 @@ function loadSections()
 					$objectid = $arrsectionsbytype[$type][$sectionid];
 					$acces =false;
 					if (is_file($GLOBALS['babAddonsPath'].$arr2['title']."/addonini.php"))
-						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr2['title']."/addonini.php");
 					else $acces =true;
 					if( $arr2['access']  && (($arr_ini['version'] == $arr2['version']) || $acces) && is_file($GLOBALS['babAddonsPath'].$arr2['title']."/init.php"))
 						{
