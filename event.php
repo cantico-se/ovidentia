@@ -60,6 +60,7 @@ function getAvailableGroupsCalendars()
 
 function getAvailableResourcesCalendars()
 {
+	global $BAB_SESS_USERID,$BAB_SESS_USER;
 	$tab = array();
 	$rr = array();
 
@@ -73,7 +74,6 @@ function getAvailableResourcesCalendars()
 	{
 		$req .= " or id_group='".$arr['id']."'"; 
 	}
-
 	$res = $db->db_query($req);
 	while($arr = $db->db_fetch_array($res))
 	{

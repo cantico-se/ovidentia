@@ -562,9 +562,7 @@ function babUserSection($close)
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
 		$this->blogged = true;
-		$req = "select id from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' or supplier='".$BAB_SESS_USERID."'";
-		$res = $babDB->db_query($req);
-		if( $res && $babDB->db_num_rows($res) > 0 || bab_isUserUseVacation($BAB_SESS_USERID))
+		if( count(bab_vacationsAccess()) > 0)
 			$vac = true;
 
 		$req = "select id from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'";
@@ -594,7 +592,7 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Faq")] = $GLOBALS['babUrlScript']."?tg=faq";
 		}
 	if( $vac )
-		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacation";
+		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacuser";
 	if( (bab_getCalendarId(1, 2) != 0  || ($pgrpid != "" && bab_getCalendarId($pgrpid, 2) != 0)) &&  $idcal != 0 )
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&calid=".$idcal;
 	if( $bemail )

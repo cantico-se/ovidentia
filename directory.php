@@ -972,7 +972,7 @@ function processImportDbFile( $pfile, $id, $separ )
 	while( $arr = $db->db_fetch_array($res))
 		{
 		$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
-		if( $rr['required'] == "Y" && empty($GLOBALS[$arr['name']]))
+		if( $rr['required'] == "Y" && $GLOBALS[$arr['name']] == "")
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return false;
@@ -1041,7 +1041,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							$req = "";
 							while( $row = $db->db_fetch_array($res))
 								{
-								if( !empty($GLOBALS[$row['name']]))
+								if( $GLOBALS[$row['name']] != "")
 									{
 									$req .= $row['name']."='".addslashes($arr[$GLOBALS[$row['name']]])."',";
 									}
@@ -1071,7 +1071,7 @@ function processImportDbFile( $pfile, $id, $separ )
 								$req = "";
 								while( $row = $db->db_fetch_array($res))
 									{
-									if( !empty($GLOBALS[$row['name']]))
+									if( $GLOBALS[$row['name']] != "" )
 										{
 										$req .= $row['name']."='".addslashes($arr[$GLOBALS[$row['name']]])."',";
 										}
@@ -1095,7 +1095,7 @@ function processImportDbFile( $pfile, $id, $separ )
 					$arrv = array();
 					while( $row = $db->db_fetch_array($res))
 						{
-						if( !empty($GLOBALS[$row['name']]))
+						if( $GLOBALS[$row['name']] != "")
 							{
 							$req .= $row['name'].",";
 							array_push( $arrv, $arr[$GLOBALS[$row['name']]]);
@@ -1112,7 +1112,6 @@ function processImportDbFile( $pfile, $id, $separ )
 						$idu = $db->db_insert_id();
 						if( $idgroup > 0 )
 							{
-							/* XXXXX c'est fini normallement */
 							$hash=md5($GLOBALS['nickname'].$GLOBALS['BAB_HASH_VAR']);
 							$db->db_query("insert into ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['givenname']])."', lastname='".addslashes($arr[$GLOBALS['sn']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."', confirm_hash='".$hash."', date=now(), is_confirmed='1', changepwd='1', lang='".$GLOBALS['babLanguage']."'");
 							$iduser = $db->db_insert_id();

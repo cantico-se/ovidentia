@@ -70,4 +70,13 @@ define("BAB_VACATIONS_STATES_TBL", "bab_vacations_states");
 define("BAB_VACATIONS_TYPES_TBL", "bab_vacations_types");
 define("BAB_VACATIONSMAN_GROUPS_TBL", "bab_vacationsman_groups");
 define("BAB_VACATIONSVIEW_GROUPS_TBL", "bab_vacationsview_groups");
+define("BAB_VAC_MANAGERS_TBL", "bab_vac_managers");
+define("BAB_VAC_TYPES_TBL", "bab_vac_types");
+define("BAB_VAC_COLLECTIONS_TBL", "bab_vac_collections");
+define("BAB_VAC_COLL_TYPES_TBL", "bab_vac_coll_types");
+define("BAB_VAC_PERSONNEL_TBL", "bab_vac_personnel");
+define("BAB_VAC_RIGHTS_TBL", "bab_vac_rights");
+define("BAB_VAC_USERS_RIGHTS_TBL", "bab_vac_users_rights");
+define("BAB_VAC_ENTRIES_TBL", "bab_vac_entries");
+define("BAB_VAC_ENTRIES_ELEM_TBL", "bab_vac_entries_elem");
 ?>

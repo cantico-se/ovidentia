@@ -1,176 +1,76 @@
+<!--#begin managerslist -->
+<script type="text/javascript">
+<!--
+function onApprover(id, fn)
+{
+document.forms.gcreate.manager.value=fn;
+document.forms.gcreate.managerid.value=id;
+this.focus();
+op.close();
+}
 
-<!--#begin vacationcreate -->
-
-<form method="post" action="{ babPhpSelf }">
+var op = null;
+function openPopup(url)
+{
+if( op == null || op.closed )
+	op = this.open(url+'onApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+else
+	op.focus();
+}
+//-->
+</script>
+<form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="admvacs">
 <input type="hidden" name="idx" value="list">
-<input type="hidden" name="addvacation" value="addvacation">
-<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<input type="hidden" name="del" value="delm">
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
-valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="name" size="30" maxlength="30">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="30" maxlength="60">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ defaultdays }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="defaultnday" size="3" maxlength="3" value="">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ maxdays }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="maxdays" size="3" maxlength="3" value="">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ maxdaysauthorized }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="maxdaysauthorized" size="3" maxlength="3" value="">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="Submit" value="{ add }">
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</form>
-<!--#end vacationcreate -->
-<br>
-<br>
-<br>
-<br>
-<br>
-<!--#begin vacationmodify -->
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="admvac">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="update" value="updatevacation">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="40%" align="right" nowrap valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="60%" valign="middle"> 
-<input type="text" name="name" size="30" maxlength="30" value="{ arr[name] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="30" maxlength="60" value="{ arr[description] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ defaultdays }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="defaultnday" size="3" maxlength="3" value="{ arr[defaultdays] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle" nowrap>{ maxdays }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="maxdays" size="3" maxlength="3" value="{ arr[maxdays] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ maxdaysauthorized }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="maxdaysauthorized" size="3" maxlength="3" value="{ arr[days] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="Submit" value="{ update }">&nbsp;&nbsp;<input type="submit" name="vacdel" value="{ delete }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-</form>
-<!--#end vacationmodify -->
-<br>
-<br>
-<br>
-<br>
-<br>
-<!--#begin vacationslist -->
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ name }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle">{ description }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" valign="middle">{ days }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" valign="middle">{ max }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle">{ fullnametxt } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">&nbsp;</td>
 </tr>
 <!--#in getnext -->
 <tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">{ arr[days] }</td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">{ arr[maxdays] }</td>
-</tr>
+<td class="BabSiteAdminFontBackground" valign="middle">{ fullname }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="managers[]" value="{ userid }"></td>
+</tr>        
 <!--#endin getnext -->
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('managers', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('managers', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+</tr>
 </table>
 </td>
 </tr>
 </table>
 <br>
-<!--#end vacationslist -->
+<div align="center">
+<input type="submit" name="submit" value="{ delete }"></div>
+<br>
+</form>
 <br>
 <br>
-<br>
-<br>
-<!--#begin statuscreate -->
-<form method="post" action="{ babPhpSelf }">
+<form name="gcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="admvacs">
-<input type="hidden" name="idx" value="liststatus">
-<input type="hidden" name="addstatus" value="addstatus">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="add" value="addm">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
-valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="name" size="40" maxlength="100">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ managertext }</a>:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="40" maxlength="100">
+<input type="text" name="manager" size="45" maxlength="255" value="{ managerval }" disabled>
+<input type="hidden" name="managerid" value="{ managerid }">
 </td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground">&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ add }">
+<input type="submit" name="submit" value="{ adduser }">
 <br>
 </td>
 </tr>
@@ -178,72 +78,6 @@ valign="middle">{ name }:</td>
 </td>
 </tr>
 </table>
-<br>
 </form>
-<!--#end statuscreate -->
-<br>
-<br>
-<br>
-<br>
-<!--#begin statuslist -->
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><b>{ name }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle"><b>{ description }</b> 
-</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ arr[description] } </td>
-</tr>
-<!--#endin getnext -->
-</table>
-</td>
-</tr>
-</table>
-<!--#end statuslist -->
-<br>
-<br>
-<br>
-<br>
-<!--#begin statusmodify -->
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="admvac">
-<input type="hidden" name="idx" value="modifystatus">
-<input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="updatestatus" value="update">
-<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
-valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="name" size="40" maxlength="100" value="{ arr[status] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="40" value="{ arr[description] }" maxlength="100">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp; </td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="submit" value="{ modify }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-</form>
-<!--#end statusmodify -->
+<!--#end managerslist -->
+

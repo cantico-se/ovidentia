@@ -82,6 +82,20 @@ if( !isset($tg) || isset($tg) && $tg != "version" )
 	}
 
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
+if(!is_dir($babSkinPath)) {
+	$babSkinPath = $babInstallPath."skins/".'ovidentia'."/";
+	if(!is_dir($babSkinPath)) {
+		$folder = opendir($babInstallPath.'skins/');
+		while (false!==($file = readdir($folder))) {
+			if($file == '.' or $file == '..') break;
+			if(is_dir($file)) {
+				$babSkinPath = $babInstallPath."skins/".$file."/";
+				break;
+			}
+		}
+		closedir($folder);
+	}
+}
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
@@ -567,11 +581,11 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "calopt";
 		break;
-	case "vacation":
+	case "vacuser":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Vacation");
 		if( $BAB_SESS_LOGGED)
-    		$incl = "vacation";
+    		$incl = "vacuser";
 		break;
 	case "vacapp":
 		$babLevelOne = bab_translate("User's section");
@@ -584,6 +598,24 @@ switch($tg)
 		$babLevelTwo = bab_translate("Directories");
 		if( $BAB_SESS_LOGGED)
     		$incl = "directory";
+		break;
+	case "vacadm":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Vacations");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "vacadm";
+		break;
+	case "vacadma":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Vacations");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "vacadma";
+		break;
+	case "vacadmb":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Vacations");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "vacadmb";
 		break;
 	case "lusers":
 		$babLevelOne = "";

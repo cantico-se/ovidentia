@@ -339,6 +339,19 @@ function bab_isUserVacationApprover($groupid = 0)
 		}
 	}
 
+function bab_isUserVacationAdmin()
+	{
+	global $babDB, $BAB_SESS_USERID;
+	$res = $babDB->db_query("select id from ".BAB_VAC_MANAGERS_TBL." where id_user='".$BAB_SESS_USERID."'" );
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		return true;
+		}
+	else
+		{
+		return false;
+		}
+	}
 
 function bab_isUserUseVacation($iduser)
 	{
@@ -462,6 +475,42 @@ function bab_contactsAccess()
 	return false;
 	}
 
+function bab_vacationsAccess()
+	{
+	$db = $GLOBALS['babDB'];
+/*
+	$arr = $db->db_fetch_array($db->db_query("select vacations from ".BAB_GROUPS_TBL." where id='1'"));
+	if( $arr['vacations'] == "Y" )
+		return true;
+
+	$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and vacations='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group");
+	if( $res && $db->db_num_rows($res) > 0 )
+		return true;
+
+	return false;
+*/
+	$array = array();
+	$res = $db->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$array['user'] = true;
+		}
+
+	$res = $db->db_query("select id from ".BAB_VAC_MANAGERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$array['manager'] = true;
+		}
+
+	$res = $db->db_query("select ".BAB_VAC_ENTRIES_TBL.".* from ".BAB_VAC_ENTRIES_TBL." join ".BAB_FAR_INSTANCES_TBL." where status='' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_VAC_ENTRIES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'");
+	if($res && $db->db_num_rows($res) > 0 )
+		{
+		$array['approver'] = true;
+		}
+
+	return $array;
+	}
+	
 function bab_fileManagerAccessLevel()
 	{
 	global $babDB, $babBody, $BAB_SESS_USERID;

@@ -276,3 +276,40 @@ valign="middle">{ group }</td>
 <br>
 </form>
 <!--#end groupsoptions -->
+
+<!--#begin browsegroups -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabMailBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr valign="middle"> 
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="right" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminTitleFontBackground">{ fullname }</td>
+</tr>
+<!--#in getnext -->
+<tr valign="middle"> 
+<td width="1%" align="right" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminFontBackground"><a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }({ groupid }, '{ groupname }')">{ groupname }</a> </td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+<!--#end browsegroups -->

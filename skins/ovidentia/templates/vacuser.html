@@ -1,0 +1,478 @@
+
+<!--#begin newvacation -->
+<BR>
+<SCRIPT language="JavaScript">
+<!--
+
+function validateNum(field) {
+var valid = ".0123456789"
+var ok = "yes";
+var temp;
+for (var i=0; i<field.value.length; i++) {
+temp = "" + field.value.substring(i, i+1);
+if (valid.indexOf(temp) == "-1") ok = "no";
+}
+if (ok == "no") {
+var d2;
+alert("{ invalidentry }");
+field.focus();
+field.select();
+return false;
+   }
+return true;
+}
+
+function validateDayField(field) {
+	if( field.value.length > 0 && validateNum(field))
+	{
+	tp = parseFloat(field.value);
+	if( isNaN(tp) )
+		alert( '{ invalidentry1 }');
+
+	if( tp % 0.5 != 0 )
+		{
+		var d1;
+		alert( '{ invalidentry2 }' );
+		field.focus();
+		field.select();
+		}
+	var total = 0;
+	for( i=0; i < document.vacform.elements.length; i++)
+	{
+		if( document.vacform.elements[i].name.substring(0, 6) == 'nbdays')
+		{
+			total += parseFloat(document.vacform.elements[i].value);
+		}
+	}
+	document.vacform.elements['total'].value = total;
+	}
+}
+function updateDates(elemDay, elemMonth, elemYear)
+{
+	ds = elemDay.selectedIndex;
+	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < elemDay.length; i++)
+	{
+	elemDay.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+	elemDay.options[i] = new Option(i+1);
+	}
+	if( ds < daysInMonth )
+	elemDay.options[ds].selected = true;
+	else
+	elemDay.options[daysInMonth-1].selected = true;
+}
+
+function dateBegin(day, month, year)
+{
+	document.vacform.elements['daybegin'].options[day-1].selected = true;
+	document.vacform.elements['monthbegin'].options[month-1].selected = true;
+	document.vacform.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
+}
+
+function dateEnd(day, month, year)
+{
+	document.vacform.elements['dayend'].options[day-1].selected = true;
+	document.vacform.elements['monthend'].options[month-1].selected = true;
+	document.vacform.elements['yearend'].options[year-{ yearend }].selected = true;
+
+}
+
+function validateForm(fr)
+{
+var ret = true;
+if( fr.yearbegin.selectedIndex > fr.yearend.selectedIndex )
+	{
+	ret = false;
+	}
+else if( fr.yearbegin.selectedIndex == fr.yearend.selectedIndex )
+	{
+		if( fr.monthbegin.selectedIndex > fr.monthend.selectedIndex )
+		{
+		ret = false;
+		}
+		else if( fr.monthbegin.selectedIndex == fr.monthend.selectedIndex ) 
+		{
+		if( fr.daybegin.selectedIndex > fr.dayend.selectedIndex )
+			{
+			ret = false;
+			}
+		}
+	}
+
+if( ret == false)
+	{
+	var d1;
+	alert ('{ invaliddate }');
+	return false;
+	}
+
+dateA = new Date(fr.yearbegin.options[fr.yearbegin.selectedIndex].text, fr.monthbegin.options[fr.monthbegin.selectedIndex].value-1, fr.daybegin.options[fr.daybegin.selectedIndex].text );
+dateB = new Date(fr.yearend.options[fr.yearend.selectedIndex].text, fr.monthend.options[fr.monthend.selectedIndex].value-1, fr.dayend.options[fr.dayend.selectedIndex].text );
+
+diff = ((dateB - dateA)/86400000)+1;
+
+if( parseFloat(fr.total.value) > diff )
+	{
+	var d2;
+	alert ( '{ invaliddate2 }');
+	return false;
+	}
+return true;
+}
+//-->
+</SCRIPT>
+<form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
+<input type="hidden" name="tg" value="vacuser">
+<input type="hidden" name="idx" value="vunew">
+<input type="hidden" name="add" value="newvu">
+<table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
+<td valign="middle"> 
+<select name="daybegin">
+  <!--#in getnextday -->
+  <option value="{ dayid }" { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }" { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="halfdaybegin">
+  <!--#in getnexthalf -->
+  <option value="{ halfid }" { selected }>{ halfname }</option>
+  <!--#endin getnexthalf -->
+</select>
+</td>
+</tr>
+<tr> 
+<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"">{ dateendtxt }</a>: </td>
+<td valign="middle"> 
+<select name="dayend">
+  <!--#in getnextday -->
+  <option value="{ dayid }"  { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }"  { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }" { selected }>{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="halfdayend">
+  <!--#in getnexthalf -->
+  <option value="{ halfid }" { selected }>{ halfname }</option>
+  <!--#endin getnexthalf -->
+</select >
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" valign="middle">{ nbdaystxt }: </td>
+<td class="BabLoginMenuBackground" colspan="4" valign="middle">
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >{ balancetxt }</td></tr>
+<!--#in getnexttype -->
+<!--#in getnextright -->
+<tr><td class="BabLoginMenuBackground" ><input type="text" name="{ nbdaysname }" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)"></td><td class="BabLoginMenuBackground" >{ typename }</td><td class="BabLoginMenuBackground" >{ quantitydays }</td></tr>
+<!--#endin getnextright -->
+<!--#endin getnexttype -->
+</table>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" valign="middle">{ totaltxt }: </td>
+<td class="BabLoginMenuBackground" colspan="4" valign="middle">
+<input type="text" name="total" size="5" maxlength="5" value="{ totalval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" valign="middle">{ remark }: </td>
+<td class="BabLoginMenuBackground" colspan="4" valign="middle">
+<textarea cols="40" rows="10" name="remarks">{ remarks }</textarea>
+</td>
+</tr>
+<tr> 
+<td>&nbsp;</td>
+<td colspan="4" valign="middle"> 
+<input type="submit" name="Submit" value="{ addvac }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</form>
+<!--#end newvacation -->
+
+<!--#begin vwaitinglist -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="vacuser">
+<input type="hidden" name="idx" value="lper">
+<input type="hidden" name="add" value="vven">
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ totaltxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ datebtxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ dateetxt }</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ total }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ dateb }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ datee }</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end vwaitinglist -->
+
+<!--#begin vwdetail -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center" >{ fullname }</td>
+</tr></table></center>
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
+<!--#in getnexttype -->
+{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
+<!--#endin getnexttype -->
+</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ totaltxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ totalval }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<form method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
+<input type="hidden" name="tg" value="vacuser">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="add" value="vven">
+<input type="hidden" name="veid" value="{ veid }">
+<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ commenttxt }: </td>
+</tr> 
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">
+<textarea cols="40" rows="10" name="remarks"></textarea>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">
+<div align="center"><input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+</BODY>
+</HTML>
+<!--#end vwdetail -->
+<!--#begin vedunload -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+
+</HEAD>
+<BODY onUnload="javascript:this.opener.location.href='{ redirecturl }';">
+<br><br><br><br>
+
+<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+</tr>
+<tr align="left" valign="middle">
+<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
+close }</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+<script type="text/javascript">
+	setTimeout("this.close()","1000");
+</script>
+
+</BODY>
+</HTML>
+<!--#end vedunload -->
+<!--#begin vrequestslist -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ begindatetxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ enddatetxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ statustxt }</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ begindate }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ enddate }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ status }</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end vrequestslist -->
+
+<!--#begin ventrydetail -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabErrorMessage" align="center" >{ fullname }</td>
+</tr></table></center>
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
+<!--#in getnexttype -->
+{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
+<!--#endin getnexttype -->
+</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ totaltxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ totalval }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ comment }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" valign="top" width="30%"><b>{ statustxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ status }<br>
+<!--#in getnextuser -->
+<br>{ fullname }
+<!--#endin getnextuser -->
+</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+<!--#end ventrydetail -->

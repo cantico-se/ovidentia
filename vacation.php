@@ -208,6 +208,7 @@ EOD;
 				}
 
 			}
+		
 		function getnextyear()
 			{
 			static $i = 0;
@@ -478,6 +479,8 @@ switch($idx)
 			}
 		if( bab_isUserVacationApprover())
 			$babBody->addItemMenu("approver", bab_translate("Approver"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=listvac");
+		if( bab_isUserVacationAdmin())
+			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
