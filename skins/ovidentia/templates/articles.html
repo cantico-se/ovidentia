@@ -150,7 +150,7 @@ ctrlf = t;
 <!-- Toolbar articlesmodify-->
 <!--#if msie "!= 1" -->
 <tr> 
-<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">files</a></center>
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', 'OvidentiaImages', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', 'OvidentiaFiles', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">files</a></center>
 </td>
 </tr>
 <!--#endif msie -->
@@ -280,7 +280,7 @@ ctrlf = t;
 <!-- toolbar articlescreate -->
 <!--#if msie "!= 1" -->
 <tr> 
-<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">files</a></center>
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', 'OvidentiaImages', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a>&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ urlfiles }', 'OvidentiaFiles', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">files</a></center>
 </td>
 </tr>
 <!--#endif msie -->
@@ -374,6 +374,7 @@ ctrlf = t;
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
+window.focus();
 //-->
 </script>
 </HEAD>

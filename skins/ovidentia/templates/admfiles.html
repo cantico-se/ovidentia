@@ -13,6 +13,7 @@
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ public } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ private } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ moderate } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notify } </td>
 </tr>
 <!--#in getnext -->
 <tr> 
@@ -35,13 +36,20 @@
 <td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="moderate[]" { cmoderate } value="{ arr[id] }">
 </td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"> 
+<!--#if bview -->
+<input type="checkbox" name="ntfgrps[]" { cnotify } value="{ arr[id] }">
+<!--#else bview -->&nbsp;
+<!--#endif bview -->
+</td>
 </tr>        
 <!--#endin getnext -->
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('groups', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('groups', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('ugroups', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('ugroups', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('moderate', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('moderate', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('moderate', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('moderate', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('ntfgrps', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('ntfgrps', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
 </table>
 </td>
 </tr>

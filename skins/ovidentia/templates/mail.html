@@ -20,6 +20,7 @@ function mm()
 }
 
 <!--#endif bhtml -->
+window.focus();
 //-->
 </script>
 </HEAD>
@@ -48,19 +49,19 @@ function mm()
 <td  class="BabMailText" width="80%" valign="middle"><b>{ fromval }</b></td>
 </tr>
 <tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: Start('{ urlto }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ to }</a></td>
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: Start('{ urlto }', 'OviMailL', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ to }</a></td>
 <td  class="BabMailBackground" valign="middle">
 <input type="text" name="to" size="40" value="{ toval }"> 
 </td>
 </tr>
 <tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: Start('{ urlto }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cc }</a></td>
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: Start('{ urlto }', 'OviMailM', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cc }</a></td>
 <td class="BabMailBackground" valign="middle"> 
 <input type="text" name="cc" size="40" value="{ ccval }"> 
 </td>
 </tr>
 <tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: Start('{ urlto }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ bcc }</a></td>
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="javascript: Start('{ urlto }', 'OviMailW', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ bcc }</a></td>
 <td class="BabMailBackground" valign="middle"> 
 <input type="text" name="bcc" size="40" value="{ bccval }"> 
 </td>
@@ -195,7 +196,7 @@ function mm()
 
 <script type="text/javascript">
 <!--
-
+window.focus();
 //-->
 </script>
 

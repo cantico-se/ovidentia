@@ -32,6 +32,8 @@
 	var BUTTON_PAD2_PREFIX = "buttonPad2";
 	var LIST_IMAGES_URL = "";
 	var LIST_FILES_URL = "";
+	var HANDLE_POPUP_IMAGES = null;
+	var HANDLE_POPUP_FILES = null;
 	var buttonMap = new Object();
 
 	function Button
@@ -1087,13 +1089,19 @@
 	function EditorOnListImages(id)
 	{
 		eval(EDITOR_COMPOSITION_PREFIX + id).focus();
-		window.open(LIST_IMAGES_URL+"&editor="+id, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+		if( HANDLE_POPUP_IMAGES == null || HANDLE_POPUP_IMAGES.closed)
+			HANDLE_POPUP_IMAGES = window.open(LIST_IMAGES_URL+"&editor="+id, 'OvidentiaImages', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+		else
+			HANDLE_POPUP_IMAGES.focus();
 	}
 
 	function EditorOnListFiles(id)
 	{
 		eval(EDITOR_COMPOSITION_PREFIX + id).focus();
-		window.open(LIST_FILES_URL+"&editor="+id, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+		if( HANDLE_POPUP_FILES == null || HANDLE_POPUP_FILES.closed)
+			HANDLE_POPUP_FILES = window.open(LIST_FILES_URL+"&editor="+id, 'OvidentiaFiles', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+		else
+			HANDLE_POPUP_FILES.focus();
 	}
 
 	function EditorOnPropertiesTable(id)
