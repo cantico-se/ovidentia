@@ -118,7 +118,9 @@ function bab_translate($str)
 	static $langcontent;
 	if( empty($GLOBALS['babLanguage']) || empty($str))
 		return $str;
-	$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
+	$filename = "lang/lang-".$GLOBALS['babLanguage'].".xml";
+	if( !file_exists($filename))
+		$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
 	if( empty($langcontent))
 		{
 		if( !file_exists($filename))
