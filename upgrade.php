@@ -409,6 +409,21 @@ function upgrade332to340()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
-return ret;
+
+$req = "CREATE TABLE ".BAB_IMAGES_TEMP_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "id_owner int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_IMAGES_TEMP_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
 }
 ?>
