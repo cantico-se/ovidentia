@@ -174,6 +174,7 @@ function saveCategory($category, $description, $approver, $cat, $modcom)
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This topic already exists");
+		return;
 		}
 
 	$approverid = bab_getUserId($approver);	
