@@ -12,8 +12,6 @@
 	- Remove files owned by a group or a user when we delete a group or a user
 	- When we want to delete a faq category, we have a warning caused by /r in text translation.
 ************************************************************************/
-include "config.php";
-
 function upgrade()
 {
 $ret = "";
