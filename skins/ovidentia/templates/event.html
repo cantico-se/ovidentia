@@ -254,6 +254,15 @@
 		<td colspan="2">{ editor }</td>
 	</tr>
 
+	<tr id="event_owner">
+		<td align="right">{ t_event_owner }</td>
+		<td>
+			<select name="event_owner">
+				<option value=""></option>
+			</select>
+		</td>
+	</tr>
+
 	<tr> 
 		<td colspan="2">{ calendars }</td>
 	</tr>
@@ -662,6 +671,37 @@ function view_main_form()
 	{
 	document.forms['vacform'].avariability.value == 0;
 	document.getElementById('main_form').style.display = '';
+	}
+
+
+function cal_movecalendar(action,text,value,classname)
+	{
+	var tr = document.getElementById('event_owner');
+	var sel = document.forms['vacform'].event_owner;
+
+	if (action == 0 && classname == 'usr')
+		{
+		sel.options[sel.options.length] = new Option(text, value);
+		}
+	else if (action == 1)
+		{
+		for (var i = 0 ; i < sel.options.length ; i++)
+			{
+			if (sel.options[i].value == value)
+				{
+				sel.options[i] = null;
+				}
+			}
+		}
+
+	if (sel.options.length > 1)
+		{
+		tr.style.display = '';
+		}
+	else
+		{
+		tr.style.display = 'none';
+		}
 	}
 
 

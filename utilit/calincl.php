@@ -311,7 +311,7 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 	}
 
 
-function createEvent($idcals, $title, $description, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash='')
+function createEvent($idcals,$id_owner, $title, $description, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash='')
 {
 
 	global $babBody, $babDB;
@@ -319,7 +319,7 @@ function createEvent($idcals, $title, $description, $startdate, $enddate, $categ
 	$title = stripslashes($title);
 	$description = stripslashes($description);
 
-	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) values ('".addslashes($title)."', '".addslashes($description)."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$GLOBALS['BAB_SESS_USERID']."', '".$color."', '".$private."', '".$lock."', '".$free."', '".$hash."')");
+	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash) values ('".addslashes($title)."', '".addslashes($description)."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$id_owner."', '".$color."', '".$private."', '".$lock."', '".$free."', '".$hash."')");
 	
 	$id_event = $babDB->db_insert_id();
 

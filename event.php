@@ -154,6 +154,8 @@ function newEvent()
 
 			global $babBodyPopup;
 
+			$this->t_event_owner = bab_translate("Event owner");
+
 			$this->mcals = explode(",", $this->calid);
 			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 1;
 			$this->repeat_cb_checked = isset($_POST['repeat_cb']) ? 'checked' : '';
@@ -776,6 +778,16 @@ function addEvent(&$message)
 	$block = isset($_POST['block']) ? $_POST['block'] : 'N';
 	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
 
+	
+	$id_owner = $GLOBALS['BAB_SESS_USERID'];
+
+	if (isset($_POST['event_owner']) && isset($babBody->icalendars->usercal[$_POST['event_owner']]) )
+		{
+		$db = &$GLOBALS['babDB'];
+		$arr = $db->db_fetch_array($db->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$_POST['event_owner']."'"));
+		$id_owner = isset($arr['owner']) ? $arr['owner'] : $GLOBALS['BAB_SESS_USERID'];
+		}
+
 
 	$tb = explode(':',$timebegin);
 	$te = explode(':',$timeend);
@@ -818,7 +830,7 @@ function addEvent(&$message)
 					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 					do
 						{
-						$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+						$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 						$day += 7;
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
@@ -845,7 +857,7 @@ function addEvent(&$message)
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 						do
 							{
-							$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+							$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 							$day += 7;					
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
@@ -868,7 +880,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -887,7 +899,7 @@ function addEvent(&$message)
 				$time = $begin;
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 					$time = mktime( $tb[0],$tb[1],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
@@ -911,7 +923,7 @@ function addEvent(&$message)
 				$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
 				do
 					{
-					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
+					$arrf = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 					$day += $_POST['repeat_n_1'];
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					$time = mktime( $tb[0],$tb[1],0,$monthbegin, $day, $yearbegin );
@@ -923,7 +935,7 @@ function addEvent(&$message)
 		}
 	else
 		{
-		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $begin, $end, $category, $color, $bprivate, $block, $bfree, '');
+		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $begin, $end, $category, $color, $bprivate, $block, $bfree, '');
 		}
 
 	if( count($arrnotify) > 0 )

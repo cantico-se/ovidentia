@@ -143,7 +143,7 @@ function optionInGroup(grp,optvalue)
 
 var assoc = new Array();
 
-function moveOptions(src,dest)
+function moveOptions(src,dest,action)
 {	
 	var destoptgroup = dest.getElementsByTagName('optgroup');
 	var srcoptgroup = src.getElementsByTagName('optgroup');
@@ -197,7 +197,14 @@ function moveOptions(src,dest)
 			{
 			nbsel++;
 			resopt[rescnt] = new Option(src.options[i].text, src.options[i].value);
+			
+			if (typeof cal_movecalendar != 'undefined')
+				{
+				cal_movecalendar(action,src.options[i].text, src.options[i].value, assoc[src.options[i].value]);
+				}
+
 			src.options[i] = null;
+
 			i--;
 			srclen--;
 			rescnt++;
@@ -240,14 +247,16 @@ function movecalendar(action)
 	var src = document.forms[form].calendars;
 	var dest = document.forms[form].elements['selected_calendars[]'];
 
+	
+
 	switch (action)
 		{
 
 		case 0:
-			moveOptions(src,dest);
+			moveOptions(src,dest,action);
 			break;
 		case 1:
-			moveOptions(dest,src);
+			moveOptions(dest,src,action);
 			break;
 		}
 	}
