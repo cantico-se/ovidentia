@@ -116,20 +116,16 @@ function addGroup($name, $description, $manager, $bemail)
 		{
 		if( !empty($manager))
 			{
-			$req = "select * from users where email='".$manager."'";	
-			$res = $db->db_query($req);
-
-			if( $db->db_num_rows($res) < 1)
+			$idmanager = getUserId($manager);	
+			if( $idmanager < 1)
 				{
 				$body->msgerror = babTranslate("The manager doesn't exist");
 				return;
 				}
-			$arr = $db->db_fetch_array($res);
-			$idmanager = $arr[id];
 			}
 		else
 			$idmanager = 0;
-		$req = "insert into groups (name, description, vacation, mail, manager) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "', '". $bemail. "', '" . $managerid. "')";
+		$req = "insert into groups (name, description, vacation, mail, manager) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "', '". $bemail. "', '" . $idmanager. "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 

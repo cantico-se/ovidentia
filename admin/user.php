@@ -132,6 +132,7 @@ function listGroups($id)
 				if($this->count1 > 0)
 					{
 					$this->db->db_data_seek($this->res1, 0);
+					$this->arrgroups[select] = "";
 					for( $j = 0; $j < $this->count1; $j++)
 						{
 						$this->groups = $this->db->db_fetch_array($this->res1);
