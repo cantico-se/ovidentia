@@ -190,7 +190,7 @@ function listThreads($forum, $active, $pos)
 					$arr0 = explode("-", $tmp[0]);
 					$arr1 = explode(":", $tmp[1]);
 					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
-					if( mktime() - bab_mktime($ar['date']) <= 43200 )
+					if( mktime() - bab_mktime($ar['date']) <= 86400 )
 						$this->brecent = true;
 					else
 						$this->brecent = false;
