@@ -844,7 +844,7 @@ class bab_Articles extends bab_handler
 
 			}
 
-			$req = "select at.id, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic IN (".implode(',', $topicid).")".$archive;
+			$req = "select at.id, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic IN (".implode(',', $topicid).") and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())".$archive;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -971,7 +971,7 @@ class bab_Article extends bab_handler
 			$this->count = 0;
 		else
 		{
-			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.")");
+			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())");
 			while( $arr = $babDB->db_fetch_array($res))
 			{
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
@@ -1043,7 +1043,7 @@ class bab_ArticleFiles extends bab_handler
 			$this->count = 0;
 		else
 		{
-			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.")");
+			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())");
 			while( $arr = $babDB->db_fetch_array($res))
 			{
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
@@ -1980,7 +1980,7 @@ class bab_RecentArticles extends bab_handler
 
 			}
 
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where id_topic IN (".implode(',', $this->topicid).")";
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where id_topic IN (".implode(',', $this->topicid).") and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
