@@ -1,0 +1,118 @@
+<!--#begin contactcreate -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY class="BabBodyBgnd">
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="contact">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="bliste" value="{ bliste }">
+<input type="hidden" name="addcontact" value="{ what }">
+<center>
+<table class="BabDialogBgnd" border="0" cellspacing="5" cellpadding="0">
+<tr><td></td><td class="BabError">{ msgerror }</td></tr>
+<tr>
+<td align="right" nowrap>{ firstname }:</td>
+<td><input type="text" name="firstname" size="60" value="{ firstnameval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ lastname }:</td>
+<td><input type="text" name="lastname" size="60" value="{ lastnameval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ email }:</td>
+<td><input type="text" name="email" size="60" value="{ emailval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ compagny }:</td>
+<td><input type="text" name="compagny" size="60" value="{ compagnyval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ hometel }:</td>
+<td><input type="text" name="hometel" size="20" value="{ hometelval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ mobiletel }:</td>
+<td><input type="text" name="mobiletel" size="20" value="{ mobiletelval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ businesstel }:</td>
+<td><input type="text" name="businesstel" size="20" value="{ businesstelval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ businessfax }:</td>
+<td><input type="text" name="businessfax" size="20" value="{ businessfaxval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ jobtitle }:</td>
+<td><input type="text" name="jobtitle" size="60" value="{ jobtitleval }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ businessaddress }</td>
+<td ><textarea cols="50" rows="5" name="baddress">{ businessaddressval }</textarea></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ homeaddress }</td>
+<td ><textarea cols="50" rows="5" name="haddress">{ homeaddressval }</textarea></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="Submit" value="{ addcontact }">&nbsp;&nbsp;<input type="button" name="cancel" value="{ cancel }"  onclick="window.close()"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+</BODY></HTML>
+<!--#end contactcreate -->
+<!--#begin contactunload -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<!--#if bliste "== 1" -->
+<BODY class="BabBodyBgnd" onunload="this.opener.location.href='{ url }';this.opener.location.reload()">
+<!--#else bliste -->
+<BODY class="BabBodyBgnd">
+<!--#endif bliste -->
+<br><br><br><br>
+<center>{ message }<br>
+<a HREF="javascript:this.close()">{ close }</a>
+</center>
+
+<script type="text/javascript">
+	setTimeout("this.close()","1000");
+</script>
+
+</BODY>
+</HTML>
+<!--#end contactunload -->

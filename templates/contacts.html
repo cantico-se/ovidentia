@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle2.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<br><br><br><br><br>
+<!--#begin contactslist -->
+<script language="javascript">
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		objCtrl = document.forms.listform.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200");
+}
+
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="contacts">
+<input type="hidden" name="idx" value="delete">
+<input type="hidden" name="pos" value="{ pos }">
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<tr>
+<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('item', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ fullname }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ compagny }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ btel }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ htel }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ mtel }</b></td>
+</tr>
+<!--#in getnext -->
+<tr>
+<td><input type="checkbox" name="item[]" value="{ arr[id] }">
+<td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td>
+<!--#if accid "!= 0" -->
+<td nowrap><a class=BabMenuLink href="{ urlmail }">{ arr[email] }</a></td>
+<!--#else accid -->
+<a href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a>
+<!--#endif accid -->
+<td nowrap>{ arr[compagny] }</td>
+<td nowrap>{ arr[businesstel] }</td>
+<td nowrap>{ arr[hometel] }</td>
+<td nowrap>{ arr[mobiletel] }</td>
+</tr>
+<!--#endin getnext -->
+<tr>
+<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('item', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
+<td class="BabListTitleBgnd" colspan="6">
+<!--#if allselected "== 1" -->
+{ allname }&nbsp;&nbsp;
+<!--#else allselected -->
+<a class=BabMenuLink href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }&nbsp;&nbsp;
+<!--#else selected -->
+<a class=BabMenuLink href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
+<!--#endif selected -->
+<!--#endin getnextselect -->
+</td>
+</tr>
+</table>
+</td></tr>
+</table>
+</center>
+</form>
+<!--#end contactslist -->
+<br><br><br><br><br>
+</BODY>
+</HTML>
