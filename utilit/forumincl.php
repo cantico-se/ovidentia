@@ -287,7 +287,7 @@ function bab_getPostFiles($forum,$postid)
 			{
 			if (substr($file,0,strpos($file,',')) == $postid)
 				{
-				$name = substr($file,strstr(',',$file)+2);
+				$name = substr(strstr($file,','),1);
 				$out[] = array(
 						'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($name),
 						'path' => $baseurl.$file,
