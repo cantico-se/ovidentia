@@ -128,7 +128,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$arr2 = $this->db->db_fetch_array($res2);
 					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-					$this->mbox = imap_open($cnxstring, $arr['account'], $arr['accpass']);
+					$this->mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
 					if(!$this->mbox)
 						{
 						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
