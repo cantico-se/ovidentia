@@ -14,11 +14,12 @@
       printable }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
   </tr>
   <tr> 
-    <td class="BabTopicsAuthorBackground" nowrap valign="middle">{ author }</td>
-    <td class="BabTopicsAuthorBackground" nowrap align="right" valign="middle"> 
-
-      <!--#if blen "> 0" --><a class="BabTopicsFooterMoreLink" href="{ moreurl }"> 
-      { morename }</a> 
+    <td width="90%" valign="middle" nowrap class="BabTopicsAuthorBackground">{ author }</td>
+    <td width="10%" align="right" valign="middle" nowrap class="BabTopicsAuthorBackground">
+      <!--#if blen "> 0" -->
+      <a class="BabTopicsFooterMoreLink" href="{ moreurl }">{ morename }</a>
+      <!--#else blen -->
+      <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"> 
       <!--#endif blen -->
       </td>
   </tr>
