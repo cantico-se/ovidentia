@@ -8,7 +8,7 @@
 function bab_getCategoryTitle($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from topics where id='$id'";
+	$query = "select * from ".BAB_TOPICS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -24,7 +24,7 @@ function bab_getCategoryTitle($id)
 function bab_getTopicCategoryTitle($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from topics_categories where id='$id'";
+	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -40,7 +40,7 @@ function bab_getTopicCategoryTitle($id)
 function bab_getArticleTitle($article)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from articles where id='$article'";
+	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -56,7 +56,7 @@ function bab_getArticleTitle($article)
 function bab_getArticleDate($article)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from articles where id='$article'";
+	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -72,12 +72,12 @@ function bab_getArticleDate($article)
 function bab_getArticleAuthor($article)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from articles where id='$article'";
+	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from users where id='".$arr['id_author']."'";
+		$query = "select * from ".BAB_USERS_TBL." where id='".$arr['id_author']."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -96,7 +96,7 @@ function bab_getArticleAuthor($article)
 function bab_getCommentTitle($com)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from comments where id='$com'";
+	$query = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -113,23 +113,23 @@ function bab_confirmDeleteCategory($id)
 	{
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from articles where id_topic='$id'";
+	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id'";
 	$res = $db->db_query($req);
 	while( $arr = $db->db_fetch_array($res))
 		{
 		// delete article and comments
 		bab_confirmDeleteArticle($id, $arr['id']);
 		}
-	$req = "delete from topicscom_groups where id_object='$id'";
+	$req = "delete from BAB_".TOPICSCOM_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 	
-	$req = "delete from topicssub_groups where id_object='$id'";
+	$req = "delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 
-	$req = "delete from topicsview_groups where id_object='$id'";
+	$req = "delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 
-	$req = "delete from topics where id='$id'";
+	$req = "delete from ".BAB_TOPICS_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	}
 
@@ -137,21 +137,21 @@ function bab_confirmDeleteArticle($topics, $article)
 	{
 	// delete comments
 	$db = $GLOBALS['babDB'];
-	$req = "delete from comments where id_article='$article'";
+	$req = "delete from ".BAB_COMMENTS_TBL." where id_article='$article'";
 	$res = $db->db_query($req);
 
-	$req = "delete from homepages where id_article='".$article."'";
+	$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$article."'";
 	$res = $db->db_query($req);
 
 	// delete article
-	$req = "delete from articles where id='$article'";
+	$req = "delete from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($req);
 	}
 
 function bab_deleteComments($com)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from comments where id_parent='$com'";
+	$req = "select * from ".BAB_COMMENTS_TBL." where id_parent='$com'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res))
 		{
@@ -160,7 +160,7 @@ function bab_deleteComments($com)
 			bab_deleteComments($arr['id']);
 			}
 		}
-	$req = "delete from comments where id='$com'";
+	$req = "delete from ".BAB_COMMENTS_TBL." where id='$com'";
 	$res = $db->db_query($req);	
 	}
 ?>

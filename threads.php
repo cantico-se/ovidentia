@@ -60,7 +60,7 @@ function listThreads($forum, $active, $pos)
 			$this->moderator = bab_isUserForumModerator($forum, $GLOBALS['BAB_SESS_USERID']);
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select count(*) as total from threads where forum='$forum' and active='$active'";
+			$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='$forum' and active='$active'";
 			$this->res = $this->db->db_query($req);
 			$row = $this->db->db_fetch_array($this->res);
 			$total = $row["total"];
@@ -100,7 +100,7 @@ function listThreads($forum, $active, $pos)
 					}
 				}
 
-			$req = "select * from threads where forum='$forum' and active='$active' order by date desc";
+			$req = "select * from ".BAB_THREADS_TBL." where forum='$forum' and active='$active' order by date desc";
 			if( $total > $babMaxRows)
 				{
 				$req .= " limit ".$pos.",".$babMaxRows;
@@ -117,7 +117,7 @@ function listThreads($forum, $active, $pos)
 			if( $i < $this->count)
 				{
 				$this->arrthread = $this->db->db_fetch_array($this->res);
-				$req = "select * from posts where id_thread='".$this->arrthread['id']."' and id='".$this->arrthread['post']."'";
+				$req = "select * from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and id='".$this->arrthread['post']."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
@@ -131,7 +131,7 @@ function listThreads($forum, $active, $pos)
 					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
 					//$this->lastpostdate = bab_strftime(bab_mktime($arr['date']));
 
-					$res = $this->db->db_query("select email from users where id='".bab_getUserId( $this->arrpost['author'])."'");
+					$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".bab_getUserId( $this->arrpost['author'])."'");
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
 						$r = $this->db->db_fetch_array($res);
@@ -144,7 +144,7 @@ function listThreads($forum, $active, $pos)
 					else
 						$this->replymail = 0;
 
-					$req = "select count(*) as total from posts where id_thread='".$this->arrthread['id']."' and confirmed='Y'";
+					$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='Y'";
 					$res = $this->db->db_query($req);
 					$row = $this->db->db_fetch_array($res);
 					$this->replies = $row["total"];
@@ -153,7 +153,7 @@ function listThreads($forum, $active, $pos)
 					else
 						$this->disabled = 0;
 					}
-				$req = "select count(*) as total from posts where id_thread='".$this->arrthread['id']."' and confirmed='N'";
+				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($res);
 				if( $this->arrthread['active'] != "N" && $ar['total'] > 0)
@@ -253,7 +253,7 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 		$notifyme = "N";
 
 	$db = $GLOBALS['babDB'];
-	$req = "insert into threads (forum, date, notify, starter) values ";
+	$req = "insert into ".BAB_THREADS_TBL." (forum, date, notify, starter) values ";
 	$req .= "('" .$forum. "', now(), '" . $notifyme. "', '". $idstarter. "')";
 	$res = $db->db_query($req);
 	$idthread = $db->db_insert_id();
@@ -269,19 +269,19 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 		$message = addslashes($message);
 		$name = addslashes($name);
 		}
-	$req = "insert into posts (id_thread, date, subject, message, author, confirmed) values ";
+	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed) values ";
 	$req .= "('" .$idthread. "', now(), '" . $subject. "', '" . $message. "', '". $name. "', '". $confirmed. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
 	
-	$req = "update threads set lastpost='$idpost', post='$idpost' where id = '$idthread'";
+	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost', post='$idpost' where id = '$idthread'";
 	$res = $db->db_query($req);
 	}
 
 function getClosedThreads($forum)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select count(*) as total from threads where forum='$forum' and active='N'";
+	$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='$forum' and active='N'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 	return $arr['total'];
@@ -304,7 +304,7 @@ if( isset($add) && $add == "addthread")
 switch($idx)
 	{
 	case "newthread":
-		if( bab_isAccessValid("forumspost_groups", $forum))
+		if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 			{
 			$babBody->title = bab_getForumName($forum);
 			newThread($forum);
@@ -316,14 +316,14 @@ switch($idx)
 
 	case "ListC":
 		$babBody->title = bab_getForumName($forum);
-		if( bab_isAccessValid("forumsview_groups", $forum))
+		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 			$count = listThreads($forum, "N", $pos);
 			if( $count > 0)
 				$babBody->addItemMenu("ListC", bab_translate("Closed"), $GLOBALS['babUrlScript']."?tg=threads&idx=ListC&forum=".$forum);
 
-			if( bab_isAccessValid("forumspost_groups", $forum))
+			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 				{
 				$babBody->addItemMenu("newthread", bab_translate("New thread"), $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$forum);
 				}
@@ -333,7 +333,7 @@ switch($idx)
 	default:
 	case "List":
 		$babBody->title = bab_getForumName($forum);
-		if( bab_isAccessValid("forumsview_groups", $forum))
+		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
 			$count = listThreads($forum, "Y", $pos);
 			//if( $count > 0)
@@ -341,7 +341,7 @@ switch($idx)
 			if( getClosedThreads($forum) > 0)
 				$babBody->addItemMenu("ListC", bab_translate("Closed"), $GLOBALS['babUrlScript']."?tg=threads&idx=ListC&forum=".$forum);
 
-			if( bab_isAccessValid("forumspost_groups", $forum))
+			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 				{
 				$babBody->addItemMenu("newthread", bab_translate("New thread"), $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$forum);
 				}

@@ -100,15 +100,15 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->db = $GLOBALS['babDB'];
 			if( empty($accid))
 				{
-				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and prefered='Y'";
+				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and prefered='Y'";
 				$res = $this->db->db_query($req);
 				if( !$res || $this->db->db_num_rows($res) == 0 )
 					{
-					$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."'";
+					$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
 					}
 				}
 			else
-				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where id='".$accid."' and owner='".$BAB_SESS_USERID."'";
+				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$accid."' and owner='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0 )
 				{
@@ -119,7 +119,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$this->accid = $arr['id'];
 					}
-				$req = "select * from mail_domains where id='".$arr['domain']."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
 				$res2 = $this->db->db_query($req);
 				if( $res2 && $this->db->db_num_rows($res2) > 0 )
 					{
@@ -151,7 +151,7 @@ function listMails($accid, $criteria, $reverse, $start)
 						}
 					}
 				}
-			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
 			$this->resacc = $this->db->db_query($req);
 			$this->countacc = $this->db->db_num_rows($this->resacc);
 			}
@@ -327,12 +327,12 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			$this->ccval = "";
 
 			$db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where id='".$accid."'";
+			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$accid."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
 				$arr = $db->db_fetch_array($res);
-				$req = "select * from mail_domains where id='".$arr['domain']."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
 				$res2 = $db->db_query($req);
 				if( $res2 && $db->db_num_rows($res2) > 0 )
 					{
@@ -619,12 +619,12 @@ function showPart($accid, $msg, $cid)
 	{
 		global $BAB_HASH_VAR;
 	$db = $GLOBALS['babDB'];
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$req = "select * from mail_domains where id='".$arr['domain']."'";
+		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
 		$res2 = $db->db_query($req);
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
@@ -650,12 +650,12 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 	global $BAB_SESS_USERID, $BAB_HASH_VAR;
 
 	$db = $GLOBALS['babDB'];
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$req = "select * from mail_domains where id='".$arr['domain']."'";
+		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
 		$res2 = $db->db_query($req);
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
@@ -715,12 +715,12 @@ function deleteMails($item, $accid, $criteria, $reverse)
 	global $BAB_SESS_USERID, $BAB_HASH_VAR;
 
 	$db = $GLOBALS['babDB'];
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$req = "select * from mail_domains where id='".$arr['domain']."'";
+		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
 		$res2 = $db->db_query($req);
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{

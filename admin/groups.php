@@ -59,7 +59,7 @@ function groupList()
 			$this->description = bab_translate("Description");
 			$this->manager = bab_translate("Manager");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from groups where id > 2 order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 order by id asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -106,7 +106,7 @@ function addGroup($name, $description, $manager, $bemail)
 
 	$db = $GLOBALS['babDB'];
 
-	$req = "select * from groups where name='$name'";	
+	$req = "select * from ".BAB_GROUPS_TBL." where name='$name'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -125,11 +125,11 @@ function addGroup($name, $description, $manager, $bemail)
 			}
 		else
 			$idmanager = 0;
-		$req = "insert into groups (name, description, vacation, mail, manager) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "', '". $bemail. "', '" . $idmanager. "')";
+		$req = "insert into ".BAB_GROUPS_TBL." (name, description, vacation, mail, manager) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "', '". $bemail. "', '" . $idmanager. "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 
-		$req = "insert into calendar (owner, actif, type) VALUES ('" .$id. "', 'Y', '2')";
+		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'Y', '2')";
 		bab_callAddonsFunction('bab_group_create', $id);
 		$db->db_query($req);
 		}

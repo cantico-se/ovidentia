@@ -76,7 +76,7 @@ function bab_deleteUploadUserFiles($gr, $id)
 	{
 	$db = $GLOBALS['babDB'];	
 	$pathx = bab_getUploadFullPath($gr, $id);
-	$db->db_query("delete from files where id_owner='".$id."' and bgroup='".$gr."'");
+	$db->db_query("delete from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'");
 	@bab_deleteUploadDir($pathx);
 	}
 

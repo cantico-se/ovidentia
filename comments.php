@@ -28,7 +28,7 @@ function listComments($topics, $article, $newc)
 		function temp($topics, $article, $newc)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from comments where id_article='$article' and confirmed='Y'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='$article' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -106,7 +106,7 @@ function addComment($topics, $article, $subject, $com="")
 				$this->username = $BAB_SESS_USER;
 				}
 			$db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->titleval = $arr['title'];
@@ -142,7 +142,7 @@ function readComment($topics, $article, $com)
 			$this->topics = $topics;
 			$this->article = $article;
 			$db = $GLOBALS['babDB'];
-			$req = "select * from comments where id='$com'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
@@ -257,7 +257,7 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 	if( empty($com))
 		$com = 0;
 	$db = $GLOBALS['babDB'];
-	$req = "insert into comments (id_topic, id_article, id_parent, date, subject, message, name, email) values ";
+	$req = "insert into ".BAB_COMMENTS_TBL." (id_topic, id_article, id_parent, date, subject, message, name, email) values ";
 	$req .= "('" .$topics. "', '" . $article.  "', '" . $com. "', now(), '" . $subject. "', '" . $message. "', '";
 	if( !isset($name) || empty($name))
 		$req .= $BAB_SESS_USER. "', '" . $BAB_SESS_EMAIL. "')";
@@ -266,18 +266,18 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 
 	$res = $db->db_query($req);
 
-	$req = "select * from topics where id='$topics'";
+	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
         $top = $arr['category'];
-		$req = "select * from users where id='".$arr['id_approver']."'";
+		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr2 = $db->db_fetch_array($res);
-			$req = "select * from articles where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$res = $db->db_query($req);
 			$arr3 = $db->db_fetch_array($res);
 			//$message = bab_translate("A new Comment is waiting for you on topic: \n  "). $arr['category'];
@@ -318,7 +318,7 @@ switch($idx)
 
 	case "addComment":
 		$babBody->title = bab_getArticleTitle($article);
-		if( bab_isAccessValid("topicscom_groups", $topics) || $approver)
+		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
 			addComment($topics, $article, "");
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
@@ -329,7 +329,7 @@ switch($idx)
 
 	case "read":
 		$babBody->title = bab_getArticleTitle($article);
-		if( bab_isAccessValid("topicscom_groups", $topics) || $approver)
+		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
 			readComment($topics, $article, $com);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
@@ -354,7 +354,7 @@ switch($idx)
 	default:
 	case "List":
 		$babBody->title = bab_translate("List of comments");
-		if( bab_isAccessValid("topicscom_groups", $topics) || $approver)
+		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
 			$count = listComments($topics, $article, $newc);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);

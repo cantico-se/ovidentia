@@ -7,7 +7,7 @@
 function getDomainName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from mail_domains where id='$id'";
+	$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -52,7 +52,7 @@ function domainModify($userid, $id, $bgrp)
 			$this->modify = bab_translate("Modify mail domain");
 			$this->bgrp = $bgrp;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from mail_domains where id='$id'";
+			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			if( strtolower($this->arr['access']) == "pop3")
@@ -134,7 +134,7 @@ function modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmeth
 		$outportserver = 25;
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from mail_domains where id='$id'";	
+	$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
@@ -142,7 +142,7 @@ function modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmeth
 		}
 	else
 		{
-		$query = "update mail_domains set name='$name', description='$description', access='$accessmethod', inserver='$inmailserver', inport='$inportserver', outserver='$outmailserver', outport='$outportserver' where id='$id'";
+		$query = "update ".BAB_MAIL_DOMAINS_TBL." set name='$name', description='$description', access='$accessmethod', inserver='$inmailserver', inport='$inportserver', outserver='$outmailserver', outport='$outportserver' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
@@ -153,7 +153,7 @@ function confirmDeleteDomain($userid, $id, $bgrp)
 	$db = $GLOBALS['babDB'];
 
 	// delete category
-	$req = "delete from mail_domains where id='$id'";
+	$req = "delete from ".BAB_MAIL_DOMAINS_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 	}
@@ -183,7 +183,7 @@ if(  $userid == 0 )
 else
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from groups where manager='".$userid."'";
+	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$userid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{

@@ -10,7 +10,7 @@ function isUserManager($item)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from faqcat where id='$item'";
+	$req = "select * from ".BAB_FAQCAT_TBL." where id='$item'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -48,7 +48,7 @@ function listCategories()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$req = "select * from faqcat where id='".$this->arrid[$i]."'";
+				$req = "select * from ".BAB_FAQCAT_TBL." where id='".$this->arrid[$i]."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
@@ -65,11 +65,11 @@ function listCategories()
 			}
 		}
 	$db = $GLOBALS['babDB'];
-	$req = "select * from faqcat";
+	$req = "select * from ".BAB_FAQCAT_TBL."";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if(bab_isAccessValid("faqcat_groups", $row['id']))
+		if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
 			{
 			array_push($arrid, $row['id']);
 			}
@@ -99,7 +99,7 @@ function listQuestions($idcat)
 			{
 			$this->idcat = $id;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqqr where idcat='$id' order by id asc";
+			$req = "select * from ".BAB_FAQQR_TBL." where idcat='$id' order by id asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -139,7 +139,7 @@ function viewQuestion($idcat, $id)
 		function temp($idcat, $id)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqqr where id='$id'";
+			$req = "select * from ".BAB_FAQQR_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->arr['response'] = bab_replace($this->arr['response']);
@@ -174,7 +174,7 @@ function viewPopupQuestion($id)
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->close = bab_translate("Close");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqqr where id='$id'";
+			$req = "select * from ".BAB_FAQQR_TBL." where id='$id'";
 			$res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($res);
 			$this->arr['response'] = bab_replace($this->arr['response']);
@@ -210,10 +210,10 @@ function faqPrint($idcat)
 			$this->sitename = $babSiteName;
 			$this->urlsite = $babUrl;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqcat where id='$id'";
+			$req = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr1 = $this->db->db_fetch_array($this->res);
-			$req = "select * from faqqr where idcat='$id'";
+			$req = "select * from ".BAB_FAQQR_TBL." where idcat='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -280,7 +280,7 @@ function listAdmQuestions($idcat)
 			{
 			$this->idcat = $id;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqqr where idcat='$id'";
+			$req = "select * from ".BAB_FAQQR_TBL." where idcat='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->idcat = $id;
@@ -365,7 +365,7 @@ function modifyQuestion($item, $idq)
 			$this->add = bab_translate("Update Question");
 			$this->idcat = $idcat;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqqr where id='$idq'";
+			$req = "select * from ".BAB_FAQQR_TBL." where id='$idq'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
@@ -419,7 +419,7 @@ function saveQuestion($item, $question, $response)
 		return;
 		}
 	$db = $GLOBALS['babDB'];
-	$query = "insert into faqqr (idcat, question, response) values ('" .$item. "', '" .$question. "', '" . $response. "')";
+	$query = "insert into ".BAB_FAQQR_TBL." (idcat, question, response) values ('" .$item. "', '" .$question. "', '" . $response. "')";
 	$db->db_query($query);
 	
 	}
@@ -432,7 +432,7 @@ function updateQuestion($idq, $question, $response)
 		return;
 		}
 	$db = $GLOBALS['babDB'];
-	$query = "update faqqr set question='$question', response='$response' where id = '$idq'";
+	$query = "update ".BAB_FAQQR_TBL." set question='$question', response='$response' where id = '$idq'";
 	$db->db_query($query);
 
 	}
@@ -440,7 +440,7 @@ function updateQuestion($idq, $question, $response)
 function confirmDeleteQuestion($item, $idq)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "delete from faqqr where id = '$idq'";
+	$req = "delete from ".BAB_FAQQR_TBL." where id = '$idq'";
 	$res = $db->db_query($req);
 	}
 
@@ -471,7 +471,7 @@ switch($idx)
 	{
 	case "questions":
 		$babBody->title = bab_translate("Questions and Answers");
-		if( bab_isAccessValid("faqcat_groups", $item))
+		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
 			listQuestions($item);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
@@ -490,7 +490,7 @@ switch($idx)
 
 	case "viewq":
 		$babBody->title = bab_translate("Questions and Answers");
-		if( bab_isAccessValid("faqcat_groups", $item))
+		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
 			viewQuestion($item, $idq);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
@@ -543,7 +543,7 @@ switch($idx)
 		break;
 
 	case "Print":
-		if( bab_isAccessValid("faqcat_groups", $item))
+		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			faqPrint($item);
 		exit();
 		break;

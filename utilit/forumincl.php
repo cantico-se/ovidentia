@@ -8,7 +8,7 @@
 function bab_getForumName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from forums where id='$id'";
+	$query = "select * from ".BAB_FORUMS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -24,7 +24,7 @@ function bab_getForumName($id)
 function bab_isForumModerated($forum)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from forums where id='$forum'";
+	$query = "select * from ".BAB_FORUMS_TBL." where id='$forum'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -40,7 +40,7 @@ function bab_isForumModerated($forum)
 function bab_isForumThreadOpen($thread)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from threads where id='$thread'";
+	$query = "select * from ".BAB_THREADS_TBL." where id='$thread'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -56,12 +56,12 @@ function bab_isForumThreadOpen($thread)
 function bab_getForumThreadTitle($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from threads where id='$id'";
+	$query = "select * from ".BAB_THREADS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from posts where id='".$arr['post']."'";
+		$query = "select * from ".BAB_POSTS_TBL." where id='".$arr['post']."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -82,7 +82,7 @@ function bab_isUserForumModerator($forum, $id)
 		return false;
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from forums where id='$forum' and moderator='$id'";
+	$query = "select * from ".BAB_FORUMS_TBL." where id='$forum' and moderator='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{

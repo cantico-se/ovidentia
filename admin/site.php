@@ -9,7 +9,7 @@ include $babInstallPath."admin/acl.php";
 function getSiteName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sites where id='$id'";
+	$query = "select * from ".BAB_SITES_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -73,7 +73,7 @@ function siteModify($id)
 			$this->id = $id;
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from sites where id='$id'";
+			$req = "select * from ".BAB_SITES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
@@ -203,10 +203,10 @@ function siteHomePage0($id)
 			$this->id = $id;
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from homepages where id_group='2' and id_site='$id' and ordering='0'";
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='2' and id_site='$id' and ordering='0'";
 			$this->reshome0 = $this->db->db_query($req);
 			$this->counthome0 = $this->db->db_num_rows($this->reshome0);
-			$req = "select * from homepages where id_group='2' and id_site='$id' and ordering!='0' order by ordering asc";
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='2' and id_site='$id' and ordering!='0' order by ordering asc";
 			$this->respage0 = $this->db->db_query($req);
 			$this->countpage0 = $this->db->db_num_rows($this->respage0);
 			}
@@ -218,7 +218,7 @@ function siteHomePage0($id)
 				{
 				$arr = $this->db->db_fetch_array($this->reshome0 );
 				$this->home0id = $arr['id_article'];
-				$req = "select * from articles where id='".$this->home0id."'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->home0id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->home0val = $arr['title'];
@@ -236,7 +236,7 @@ function siteHomePage0($id)
 				{
 				$arr = $this->db->db_fetch_array($this->respage0 );
 				$this->page0id = $arr['id_article'];
-				$req = "select * from articles where id='".$this->page0id."'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->page0id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->page0val = $arr['title'];
@@ -283,10 +283,10 @@ function siteHomePage1($id)
 			$this->id = $id;
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from homepages where id_group='1' and id_site='$id' and ordering='0'";
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='1' and id_site='$id' and ordering='0'";
 			$this->reshome1 = $this->db->db_query($req);
 			$this->counthome1 = $this->db->db_num_rows($this->reshome1);
-			$req = "select * from homepages where id_group='1' and id_site='$id' and ordering!='0' order by ordering asc";
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='1' and id_site='$id' and ordering!='0' order by ordering asc";
 			$this->respage1 = $this->db->db_query($req);
 			$this->countpage1 = $this->db->db_num_rows($this->respage1);
 			}
@@ -298,7 +298,7 @@ function siteHomePage1($id)
 				{
 				$arr = $this->db->db_fetch_array($this->reshome1 );
 				$this->home1id = $arr['id_article'];
-				$req = "select * from articles where id='".$this->home1id."'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->home1id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->home1val = $arr['title'];
@@ -316,7 +316,7 @@ function siteHomePage1($id)
 				{
 				$arr = $this->db->db_fetch_array($this->respage1 );
 				$this->page1id = $arr['id_article'];
-				$req = "select * from articles where id='".$this->page1id."'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->page1id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->page1val = $arr['title'];
@@ -380,7 +380,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $registe
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sites where name='$name' and id!='$id'";
+	$query = "select * from ".BAB_SITES_TBL." where name='$name' and id!='$id'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -389,7 +389,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $registe
 		}
 	else
 		{
-		$query = "update sites set name='$name', description='$description', lang='$lang', adminemail='$siteemail', skin='$skin', registration='$register', email_confirm='$confirm' where id='$id'";
+		$query = "update ".BAB_SITES_TBL." set name='$name', description='$description', lang='$lang', adminemail='$siteemail', skin='$skin', registration='$register', email_confirm='$confirm' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -400,7 +400,7 @@ function confirmDeleteSite($id)
 	$db = $GLOBALS['babDB'];
 
 	// delete site
-	$req = "delete from sites where id='$id'";
+	$req = "delete from ".BAB_SITES_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
@@ -408,12 +408,12 @@ function confirmDeleteSite($id)
 function siteUpdateHomePage0($item, $listpage0)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "update homepages set ordering='0' where id_site='".$item."' and id_group='2'";
+	$req = "update ".BAB_HOMEPAGES_TBL." set ordering='0' where id_site='".$item."' and id_group='2'";
 	$res = $db->db_query($req);
 
 	for($i=0; $i < count($listpage0); $i++)
 		{
-		$req = "update homepages set ordering='".($i + 1)."' where id_group='2' and id_site='".$item."' and id_article='".$listpage0[$i]."'";
+		$req = "update ".BAB_HOMEPAGES_TBL." set ordering='".($i + 1)."' where id_group='2' and id_site='".$item."' and id_article='".$listpage0[$i]."'";
 		$res = $db->db_query($req);
 		}
 	return true;
@@ -422,12 +422,12 @@ function siteUpdateHomePage0($item, $listpage0)
 function siteUpdateHomePage1($item, $listpage1)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "update homepages set ordering='0' where id_site='".$item."' and id_group='1'";
+	$req = "update ".BAB_HOMEPAGES_TBL." set ordering='0' where id_site='".$item."' and id_group='1'";
 	$res = $db->db_query($req);
 
 	for($i=0; $i < count($listpage1); $i++)
 		{
-		$req = "update homepages set ordering='".($i + 1)."' where id_group='1' and id_site='".$item."' and id_article='".$listpage1[$i]."'";
+		$req = "update ".BAB_HOMEPAGES_TBL." set ordering='".($i + 1)."' where id_group='1' and id_site='".$item."' and id_article='".$listpage1[$i]."'";
 		$res = $db->db_query($req);
 		}
 	return true;

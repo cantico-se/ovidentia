@@ -10,18 +10,18 @@ function getApproverEmail($userid, $order)
 	{
 	$email = "";
 	$db = $GLOBALS['babDB'];
-	$query = "select * from users_groups where id_object='$userid' and isprimary='Y'";
+	$query = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
 	$res = $db->db_query($query);
 
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from vacationsman_groups where id_group='".$arr['id_group']."' and ordering='".$order."'";
+		$query = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$arr['id_group']."' and ordering='".$order."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from users where id='".$arr['id_object']."'";
+			$query = "select * from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
 			$res = $db->db_query($query);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
@@ -36,13 +36,13 @@ function getApproverEmail($userid, $order)
 function getApproverStatus($userid, $order)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from users_groups where id_object='$userid' and isprimary='Y'";
+	$query = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
 	$res = $db->db_query($query);
 
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from vacationsman_groups where id_group='".$arr['id_group']."' and ordering='".$order."'";
+		$query = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$arr['id_group']."' and ordering='".$order."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -82,7 +82,7 @@ function listVacations()
 			$this->end = bab_translate("End date");
 			$this->status = bab_translate("Status");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from vacations where userid='$BAB_SESS_USERID' order by datebegin desc";
+			$req = "select * from ".BAB_VACATIONS_TBL." where userid='$BAB_SESS_USERID' order by datebegin desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -97,7 +97,7 @@ function listVacations()
 				$this->datebegin = bab_strftime(bab_mktime($this->arr['datebegin']), false) . "  " . $babDayType[$this->arr['daybegin']];
 				$this->dateend = bab_strftime(bab_mktime($this->arr['dateend']), false) . "  " . $babDayType[$this->arr['dayend']];
 				$this->statusval = bab_getStatusName($this->arr['status']);
-				$req = "select * from vacations_types where id='".$this->arr['type']."'";
+				$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='".$this->arr['type']."'";
 				$r = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($r);
 				$this->typename = $ar['name'];
@@ -152,7 +152,7 @@ function newVacation()
 			$this->addvac = bab_translate("Add Vacation");
 			$this->remark = bab_translate("Remarks");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from vacations_types";
+			$req = "select * from ".BAB_VACATIONS_TYPES_TBL."";
 			$this->res = $this->db->db_query($req);
 			if( $this->res )
 				{
@@ -357,7 +357,7 @@ function confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			$this->remarkstext = bab_translate("Remarks");
 			$this->remarks = $remarks;
 			$db = $GLOBALS['babDB'];
-			$req = "select * from vacations_types where id='$vactype'";
+			$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='$vactype'";
 			$res = $db->db_query($req);
 			if( $res )
 				{
@@ -379,7 +379,7 @@ function confirmAddVacation($begindate, $enddate, $halfdaybegin, $halfdayend, $v
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_USER, $babAdminEmail;
 	$idstatus = getApproverStatus($BAB_SESS_USERID, 1);
 	$db = $GLOBALS['babDB'];
-	$req = "insert into vacations (userid, datebegin, dateend, daybegin, dayend, type, status, comment, date) values ";
+	$req = "insert into ".BAB_VACATIONS_TBL." (userid, datebegin, dateend, daybegin, dayend, type, status, comment, date) values ";
 	$req .= "('" .$BAB_SESS_USERID. "', '" . $begindate. "', '" . $enddate. "', '" . $halfdaybegin. "', '" . $halfdayend. "', '" . $vactype. "', '" . $idstatus. "', '" . $remarks. "', now())";
 	$res = $db->db_query($req);
 	$emailapprover = getApproverEmail($BAB_SESS_USERID, 1);

@@ -51,7 +51,7 @@ function domainCreate($userid, $grpid, $bgrp)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$req = "select * from groups where id='".$this->idgrp[$i]."'";
+				$req = "select * from ".BAB_GROUPS_TBL." where id='".$this->idgrp[$i]."'";
 				$res = $this->db->db_query($req);
 				$this->arrgroups = $this->db->db_fetch_array($res);
 				if( $i == 0 )
@@ -112,31 +112,31 @@ function domainsList($userid, $grpid, $bgrp)
 			$this->countusr = 0;
 			if( $bgrp == "y" && $userid == 0)
 				{
-				$req = "select * from mail_domains where bgroup='Y' and owner='1'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
 				$this->resadm = $this->db->db_query($req);
 				$this->countadm = $this->db->db_num_rows($this->resadm);
 				}
 			else if( $bgrp == "y" && $userid != 0)
 				{
-				$req = "select * from mail_domains where bgroup='Y' and owner='1'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
 				$this->resadm = $this->db->db_query($req);
 				$this->countadm = $this->db->db_num_rows($this->resadm);
 
-				$req = "select mail_domains.* from mail_domains join groups where bgroup='Y' and groups.manager='".$BAB_SESS_USERID."' and owner=groups.id";
+				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_GROUPS_TBL." where bgroup='Y' and ".BAB_GROUPS_TBL.".manager='".$BAB_SESS_USERID."' and owner=".BAB_GROUPS_TBL.".id";
 				$this->resgrp = $this->db->db_query($req);
 				$this->countgrp = $this->db->db_num_rows($this->resgrp);
 				}
 			else
 				{
-				$req = "select * from mail_domains where bgroup='Y' and owner='1'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
 				$this->resadm = $this->db->db_query($req);
 				$this->countadm = $this->db->db_num_rows($this->resadm);
 
-				$req = "select mail_domains.* from mail_domains join users_groups where bgroup='Y' and users_groups.id_object='".$BAB_SESS_USERID."' and owner=users_groups.id_group";
+				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$BAB_SESS_USERID."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
 				$this->resgrp = $this->db->db_query($req);
 				$this->countgrp = $this->db->db_num_rows($this->resgrp);
 				
-				$req = "select * from mail_domains where owner='".$BAB_SESS_USERID."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$BAB_SESS_USERID."'";
 				$this->resusr = $this->db->db_query($req);
 				$this->countusr = $this->db->db_num_rows($this->resusr);
 				}
@@ -295,7 +295,7 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 
 	for( $i = 0; $i < $count; $i++)
 		{		
-		$query = "select * from mail_domains where name='$name' and owner='".$groups[$i]."' and bgroup='".$bgroup."'";	
+		$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where name='$name' and owner='".$groups[$i]."' and bgroup='".$bgroup."'";	
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -303,7 +303,7 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 			}
 		else
 			{
-			$query = "insert into mail_domains (name, description, access, inserver, inport, outserver, outport, bgroup, owner) VALUES ";
+			$query = "insert into ".BAB_MAIL_DOMAINS_TBL." (name, description, access, inserver, inport, outserver, outport, bgroup, owner) VALUES ";
 			$query .= "('" .$name. "', '" . $description. "', '" . $accessmethod. "', '" . $inmailserver. "', '" . $inportserver. "', '" . $outmailserver. "', '" . $outportserver. "', '". $bgroup. "', '" . $groups[$i]. "')";
 			$db->db_query($query);
 			}
@@ -335,7 +335,7 @@ if( $bgrp == "y")
 	else
 		{
 		$db = $GLOBALS['babDB'];
-		$req = "select * from groups where manager='".$userid."'";
+		$req = "select * from ".BAB_GROUPS_TBL." where manager='".$userid."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{

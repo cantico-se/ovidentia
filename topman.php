@@ -33,8 +33,8 @@ function listCategories()
 			$this->articles = bab_translate("Article") ."(s)";
 			$this->waiting = bab_translate("Waiting");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from topics where id_approver='".$BAB_SESS_USERID."'";
-			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and topics.id_approver='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'";
+			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$BAB_SESS_USERID."'";
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -48,15 +48,15 @@ function listCategories()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->arr['description'] = $this->arr['description'];
 				$this->namecategory = $this->arr['category'];
-				$req = "select count(*) as total from articles where id_topic='".$this->arr['id']."'";
+				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
-				$req = "select * from articles where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newa = $this->db->db_num_rows($res);
 
-				$req = "select * from comments where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newc = $this->db->db_num_rows($res);
 
@@ -122,12 +122,12 @@ function listArticles($id)
 
 			$this->item = $id;
 			$this->db = $GLOBALS['babDB'];
-			$r = $this->db->db_fetch_array($this->db->db_query("select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'"));
+			$r = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$r['id'];
-			$req = "select * from articles where id_topic='$id' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$req="select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 			$r = $this->db->db_fetch_array($this->db->db_query($req));
 			$this->siteid = $r['id'];
 			}
@@ -138,13 +138,13 @@ function listArticles($id)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='2' and id_site='".$this->siteid."'";
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='2' and id_site='".$this->siteid."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					$this->checked0 = "checked";
 				else
 					$this->checked0 = "";
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='1' and id_site='".$this->siteid."'";
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='1' and id_site='".$this->siteid."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					$this->checked1 = "checked";
@@ -191,7 +191,7 @@ function viewArticle($article)
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->close = bab_translate("Close");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->content = bab_replace($this->arr['body']);
@@ -225,7 +225,7 @@ function deleteArticles($art, $item)
 			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($art); $i++)
 				{
-				$req = "select * from articles where id='".$art[$i]."'";	
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$art[$i]."'";	
 				$res = $db->db_query($req);
 				if( $db->db_num_rows($res) > 0)
 					{
@@ -262,13 +262,13 @@ function bab_confirmDeleteArticles($items)
 	$db = $GLOBALS['babDB'];
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$req = "delete from comments where id_article='".$arr[$i]."'";
+		$req = "delete from ".BAB_COMMENTS_TBL." where id_article='".$arr[$i]."'";
 		$res = $db->db_query($req);
 
-		$req = "delete from homepages where id_article='".$arr[$i]."'";
+		$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr[$i]."'";
 		$res = $db->db_query($req);
 
-		$req = "delete from articles where id='".$arr[$i]."'";	
+		$req = "delete from ".BAB_ARTICLES_TBL." where id='".$arr[$i]."'";	
 		$res = $db->db_query($req);
 		}
 }
@@ -282,11 +282,11 @@ function addToHomePages($item, $homepage, $art)
 
 	$db = $GLOBALS['babDB'];
 
-	$req = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res = $db->db_query($req);
 	if( !$res || $db->db_num_rows($res) < 1)
 	{
-		$req = "insert into sites ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
+		$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
 		$res = $db->db_query($req);
 		$idsite = $db->db_insert_id();
 	}
@@ -296,23 +296,23 @@ function addToHomePages($item, $homepage, $art)
 		$idsite = $arr['id'];
 	}
 
-	$req = "select * from articles where id_topic='".$item."' order by date desc";
+	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$item."' order by date desc";
 	$res = $db->db_query($req);
 	while( $arr = $db->db_fetch_array($res))
 		{
 		if( $count > 0 && in_array($arr['id'], $art))
 			{
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$idsite."'";
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$idsite."'";
 				$res2 = $db->db_query($req);
 				if( !$res2 || $db->db_num_rows($res2) < 1)
 				{
-					$req = "insert into homepages (id_article, id_site, id_group) values ('" .$arr['id']. "', '" . $idsite. "', '" . $homepage. "')";
+					$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$arr['id']. "', '" . $idsite. "', '" . $homepage. "')";
 					$db->db_query($req);
 				}
 			}
 		else
 			{
-				$req = "delete from homepages where id_article='".$arr['id']."' and id_group='".$homepage."'";
+				$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."'";
 				$db->db_query($req);
 			}
 

@@ -59,7 +59,7 @@ function listTrashFiles($id, $gr)
 			$this->postedtxt = bab_translate("Posted by");
 			$this->fullpath = bab_getUploadFullPath($gr, $id);
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='D' order by name asc";
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='D' order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -387,16 +387,17 @@ function listFiles($id, $gr, $path, $bmanager)
 							}
 						}
 					closedir($h);
-					$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' order by name asc";
+					$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."'";
 					if( !$this->bmanager )
-						$req .= "and confirmed='Y'";
+						$req .= " and confirmed='Y'";
+						$req .= " order by name asc";
 					$this->res = $this->db->db_query($req);
 					$this->count = $this->db->db_num_rows($this->res);
 					}
 				$this->bdel = false;
 				if( $this->bmanager )
 					{
-					$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='X' order by name asc";
+					$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='X' order by name asc";
 					$this->xres = $this->db->db_query($req);
 					$this->xcount = $this->db->db_num_rows($this->xres);
 					if( !empty($path) && count($this->arrdir) <= 1 && $this->count == 0 )
@@ -783,19 +784,19 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 
 	$db = $GLOBALS['babDB'];
-	$req = "insert into files (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
+	$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
 	$req .= "('" .$filename. "', '" . $description. "', '" . $keywords. "', '" . $path. "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
 	$res = $db->db_query($req);
 
 	if( $confirmed == "N" )
 		{
-		$res = $db->db_query("select * from groups where id='".$id."'");
+		$res = $db->db_query("select * from ".BAB_GROUPS_TBL." where id='".$id."'");
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
 			if( $arr['manager'] != 0)
 				{
-				$res = $db->db_query("select * from users where id='".$arr['manager']."'");
+				$res = $db->db_query("select * from ".BAB_USERS_TBL." where id='".$arr['manager']."'");
 				if( $res && $db->db_num_rows($res) > 0)
 					{
 					$arr2 = $db->db_fetch_array($res);
@@ -820,7 +821,7 @@ function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keyw
 		if( in_array(1, $aclfm['pr']) )
 			{
 			$db = $GLOBALS['babDB'];
-			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
@@ -835,7 +836,7 @@ function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keyw
 		if( (($id == 2 || $id ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($id))
 			{
 			$db = $GLOBALS['babDB'];
-			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
@@ -881,7 +882,7 @@ function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keyw
 		}
 	
 	$db = $GLOBALS['babDB'];
-	$req = "update files set name='".$name."', description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirm."' where id='".$idf."' and id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+	$req = "update ".BAB_FILES_TBL." set name='".$name."', description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirm."' where id='".$idf."' and id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -966,13 +967,13 @@ function renameDirectory($dirname, $id, $gr, $path)
 			{
 			$len = strlen($path);
 			$db = $GLOBALS['babDB'];
-			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."'";
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'";
 			$res = $db->db_query($req);
 			while( $arr = $db->db_fetch_array($res))
 				{
 				if( substr($arr['path'], 0, $len) == $path )
 					{
-					$req = "update files set path='".str_replace($path, $uppath.$dirname, $arr['path'])."' where id='".$arr['id']."'";
+					$req = "update ".BAB_FILES_TBL." set path='".str_replace($path, $uppath.$dirname, $arr['path'])."' where id='".$arr['id']."'";
 					$db->db_query($req);
 					}
 				}
@@ -1005,12 +1006,12 @@ function removeDirectory($id, $gr, $path)
 	if( is_dir($pathx.$path))
 		{
 		$db = $GLOBALS['babDB'];
-		$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."'";
+		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."'";
 		$res = $db->db_query($req);
 		while( $arr = $db->db_fetch_array($res))
 			{
 			if( @unlink($pathx.$path."/".$arr['name']))
-				$db->db_query("delete from files where id='".$arr['id']."'");
+				$db->db_query("delete from ".BAB_FILES_TBL." where id='".$arr['id']."'");
 			}
 
 		if( $pos = strrpos($path, "/"))
@@ -1053,12 +1054,12 @@ function getFile( $file, $id, $gr, $path)
 	$db = $GLOBALS['babDB'];
 	if( $access )
 		{
-		$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
 			{
 			$arr = $db->db_fetch_array($res);
-			$db->db_query("update files set hits='".($arr['hits'] + 1)."' where id='".$arr['id']."'");
+			$db->db_query("update ".BAB_FILES_TBL." set hits='".($arr['hits'] + 1)."' where id='".$arr['id']."'");
 			$access = true;
 			}
 		else
@@ -1076,7 +1077,7 @@ function getFile( $file, $id, $gr, $path)
 		{
 		$ext = substr($ext,1);
 		$db = $GLOBALS['babDB'];
-		$res = $db->db_query("select * from mime_types where ext='".$ext."'");
+		$res = $db->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$ext."'");
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
@@ -1109,7 +1110,7 @@ function cutFile( $file, $id, $gr, $path, $bmanager)
 		return false;
 		}
 	$db = $GLOBALS['babDB'];
-	$req = "update files set state='X' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
+	$req = "update ".BAB_FILES_TBL." set state='X' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -1124,7 +1125,7 @@ function delFile( $file, $id, $gr, $path, $bmanager)
 		return false;
 		}
 	$db = $GLOBALS['babDB'];
-	$req = "update files set state='D' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
+	$req = "update ".BAB_FILES_TBL." set state='D' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -1145,7 +1146,7 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 		if( $path == $tp )
 			{
 			$db = $GLOBALS['babDB'];
-			$req = "update files set state='' where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+			$req = "update ".BAB_FILES_TBL." set state='' where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
 			$res = $db->db_query($req);
 			return true;
 			}
@@ -1156,7 +1157,7 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 	if( rename( $pathx.$path."/".$file, $pathx.$tp."/".$file))
 		{
 		$db = $GLOBALS['babDB'];
-		$req = "update files set state='', path='".$tp."' where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+		$req = "update ".BAB_FILES_TBL." set state='', path='".$tp."' where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
 		$res = $db->db_query($req);
 		return true;
 		}
@@ -1242,7 +1243,7 @@ function updateFile( $file, $id, $gr, $path, $aclfm)
 		if( in_array(1, $aclfm['pr']) )
 			{
 			$db = $GLOBALS['babDB'];
-			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
@@ -1257,7 +1258,7 @@ function updateFile( $file, $id, $gr, $path, $aclfm)
 		if( (($id == 2 || $id ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($id))
 			{
 			$db = $GLOBALS['babDB'];
-			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
@@ -1284,7 +1285,7 @@ function deleteFiles($items, $gr, $id)
 	$pathx = bab_getUploadFullPath($gr, $id);
 	for( $i = 0; $i < count($items); $i++)
 		{
-		$res = $db->db_query("select * from files where id='".$items[$i]."'");
+		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id='".$items[$i]."'");
 		if( $res && $db->db_num_rows($res) > 0 )
 			{
 			$arr = $db->db_fetch_array($res);
@@ -1292,7 +1293,7 @@ function deleteFiles($items, $gr, $id)
 				{
 				if( unlink($pathx.$arr['path']."/".$arr['name']))
 					{
-					$db->db_query("delete from files where id='".$items[$i]."' or link='".$items[$i]."'");
+					$db->db_query("delete from ".BAB_FILES_TBL." where id='".$items[$i]."' or link='".$items[$i]."'");
 					}
 				}
 			}
@@ -1304,7 +1305,7 @@ function restoreFiles($items)
 	$db = $GLOBALS['babDB'];	
 	for( $i = 0; $i < count($items); $i++)
 		{
-		$db->db_query("update files set state='' where id='".$items[$i]."'");
+		$db->db_query("update ".BAB_FILES_TBL." set state='' where id='".$items[$i]."'");
 		}
 	}
 	

@@ -45,7 +45,7 @@ function findVacations()
 			$this->resgroups = $this->db->db_query($req);
 			$this->countgroups = $this->db->db_num_rows($this->resgroups);
 
-			$req = "select * from vacations_states";
+			$req = "select * from ".BAB_VACATIONS_STATES_TBL."";
 			$this->resstatus = $this->db->db_query($req);
 			$this->countstatus = $this->db->db_num_rows($this->resstatus);
 			}
@@ -116,10 +116,10 @@ function listVacations( $group, $email)
 			$this->db = $GLOBALS['babDB'];
 
 			$thsi->email = $email;
-			$req = "select id_group, ordering, status from vacationsman_groups join groups where id_object='$BAB_SESS_USERID'";
+			$req = "select id_group, ordering, status from ".BAB_VACATIONSMAN_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='$BAB_SESS_USERID'";
 			if( !empty($group))
 				$req .= " and id_group='".$group."'";
-			$req .= " and groups.id=vacationsman_groups.id_group and groups.vacation='Y'";
+			$req .= " and ".BAB_GROUPS_TBL.".id=".BAB_VACATIONSMAN_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".vacation='Y'";
 			$this->resgrp = $this->db->db_query($req);
 			if( $this->resgrp )
 				{
@@ -136,10 +136,10 @@ function listVacations( $group, $email)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrp);
 				$this->statusgrp = $arr['status'];
-				$req = "select * from users_groups where id_group='".$arr['id_group']."' and isprimary='Y'";
+				$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='".$arr['id_group']."' and isprimary='Y'";
 				if( !empty($this->email))
 					{
-					$query = "select * from users where email='".$this->email."'";
+					$query = "select * from ".BAB_USERS_TBL." where email='".$this->email."'";
 					$res = $this->db->db_query($query);
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
@@ -168,7 +168,7 @@ function listVacations( $group, $email)
 				{
 				$arr = $this->db->db_fetch_array($this->resusers);
 				$this->groupid = $arr['id_group'];
-				$req = "select * from vacations where userid='".$arr['id_object']."' and status='".$this->statusgrp."'";
+				$req = "select * from ".BAB_VACATIONS_TBL." where userid='".$arr['id_object']."' and status='".$this->statusgrp."'";
 				$this->resvac = $this->db->db_query($req);
 				if( $this->resvac )
 					{
@@ -199,7 +199,7 @@ function listVacations( $group, $email)
 				//$this->statusval = bab_getStatusName($arr['status']);
 				$this->userurl = $GLOBALS['babUrlScript']."?tg=vacapp&idx=updatevac&item=".$arr['id']."&groupid=".$this->groupid;
 				$this->username = bab_getUserName($this->userid);
-				$req = "select * from vacations_types where id='".$arr['type']."'";
+				$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='".$arr['type']."'";
 				$r = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($r);
 				$this->typename = $ar['name'];
@@ -252,7 +252,7 @@ function updateVacation($vacid, $groupid)
 			{
 			global $babDayType;
 			$db = $GLOBALS['babDB'];
-			$req = "select * from vacations where id='".$vacid."'";
+			$req = "select * from ".BAB_VACATIONS_TBL." where id='".$vacid."'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->groupid = $groupid;
@@ -273,7 +273,7 @@ function updateVacation($vacid, $groupid)
 			$this->remarks = $arr['comment'];
 			$this->username = bab_getUserName($arr['userid']);
 
-			$req = "select * from vacations_types where id='".$arr['type']."'";
+			$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='".$arr['type']."'";
 			$res = $db->db_query($req);
 			if( $res )
 				{
@@ -281,12 +281,12 @@ function updateVacation($vacid, $groupid)
 				$this->typename = $arr2['name'];
 				}
 
-			$req = "select * from vacationsman_groups where status='".$arr['status']."'";
+			$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where status='".$arr['status']."'";
 			$res = $db->db_query($req);
 			if( $res )
 				{
 				$arr = $db->db_fetch_array($res);
-				$req = "select max(ordering) as maxorder from vacationsman_groups where id_group='".$arr['id_group']."'";
+				$req = "select max(ordering) as maxorder from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$arr['id_group']."'";
 				$res = $db->db_query($req);
 				$arr2 = $db->db_fetch_array($res);
 				if( $arr2['maxorder'] == $arr['ordering'])
@@ -312,7 +312,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		global $BAB_SESS_USERID, $babAdminEmail, $babDayType;
 
 		$db = $GLOBALS['babDB'];
-		$req = "select * from vacations where id='".$vacid."'";
+		$req = "select * from ".BAB_VACATIONS_TBL." where id='".$vacid."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
 
@@ -326,7 +326,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		$message .= bab_translate("from"). " " . bab_strftime(bab_mktime($arr['datebegin']), false). " ". $babDayType[$arr['daybegin']] . "\n";
 		$message .= bab_translate("to"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend']] . "\n";
 
-		$req = "select * from users where id='".$arr['userid']."'";
+		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['userid']."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
 		$email = $arr['email'];
@@ -337,11 +337,11 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 			$newstatus = 1;
 			if( $ordering == 0 )
 				{
-				$req = "select * from vacationsman_groups where id_group='".$groupid."' and id_object!='".$BAB_SESS_USERID."'";
+				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$groupid."' and id_object!='".$BAB_SESS_USERID."'";
 				}
 			else
 				{
-				$req = "select * from vacationsman_groups where id_group='".$groupid."' and ordering >= '1' and ordering < '".$ordering."' and id_object!='".$BAB_SESS_USERID."'";
+				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$groupid."' and ordering >= '1' and ordering < '".$ordering."' and id_object!='".$BAB_SESS_USERID."'";
 				}
 
 			$result .= "\n". $comref;
@@ -350,13 +350,13 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		{
 			if( $ordering == 0 )
 				{
-				$req = "select * from vacationsman_groups where id_group='".$groupid."' and id_object!='".$BAB_SESS_USERID."'";
+				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$groupid."' and id_object!='".$BAB_SESS_USERID."'";
 				$newstatus = 2;
 				$result = bab_translate("has been accepted");
 				}
 			else
 				{
-				$req = "select * from vacationsman_groups where id_group='".$groupid."' and ordering='".$ordering."'";
+				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$groupid."' and ordering='".$ordering."'";
 				$res = $db->db_query($req);
 				$r = $db->db_fetch_array($res);
 				$newstatus = $r['status'];
@@ -369,7 +369,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		$arrrecipients = array();
 		while( $ar = $db->db_fetch_array($res))
 		{
-			$req = "select * from users where id='".$ar['id_object']."'";
+			$req = "select * from ".BAB_USERS_TBL." where id='".$ar['id_object']."'";
 			$res2 = $db->db_query($req);
 			$r = $db->db_fetch_array($res2);
 			array_push($arrrecipients, $r['email']);
@@ -390,7 +390,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 			mail($email, $subject, $message.$result, $header);
 		}
 
-		$req = "update vacations set ";
+		$req = "update ".BAB_VACATIONS_TBL." set ";
 		if( $status == 0)
 			$req .= "comref='".$comref."',";
 		$req .= "status='".$newstatus."' where id='".$vacid."'";

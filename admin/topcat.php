@@ -37,7 +37,7 @@ function topcatModify($id)
 			$this->yes = bab_translate("Yes");
 			$this->modify = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from topics_categories where id='$id'";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			if( $this->arr['enabled'] == "Y")
@@ -85,7 +85,7 @@ function topcatDelete($id)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$r = $db->db_fetch_array($db->db_query("select count(*) as total from topics where id_cat='".$id."'"));
+	$r = $db->db_fetch_array($db->db_query("select count(*) as total from ".BAB_TOPICS_TBL." where id_cat='".$id."'"));
 	if( $r['total'] > 0 )
 		{
 		$babBody->msgerror = bab_translate("To delete topic category, you must delete topics before");
@@ -109,7 +109,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from topics_categories where title='$oldname'";
+	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='$oldname'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
@@ -117,7 +117,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id)
 		}
 	else
 		{
-		$query = "update topics_categories set title='$name', description='$description', enabled='$benabled' where id='$id'";
+		$query = "update ".BAB_TOPICS_CATEGORIES_TBL." set title='$name', description='$description', enabled='$benabled' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
@@ -128,21 +128,21 @@ function confirmDeleteTopcat($id)
 	{
 	$db = $GLOBALS['babDB'];
 
-	// delete from sections_order
-	$req = "delete from sections_order where id_section='$id' and type='3'";
+	// delete from BAB_SECTIONS_ORDER_TBL
+	$req = "delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='$id' and type='3'";
 	$res = $db->db_query($req);	
 
-	// delete from sections_states
-	$req = "delete from sections_states where id_section='$id' and type='3'";
+	// delete from BAB_SECTIONS_STATES_TBL
+	$req = "delete from ".BAB_SECTIONS_STATES_TBL." where id_section='$id' and type='3'";
 	$res = $db->db_query($req);	
 
 	// delete all topics/articles/comments
-	$res = $db->db_query("select * from topics where id_cat='".$id."'");
+	$res = $db->db_query("select * from ".BAB_TOPICS_TBL." where id_cat='".$id."'");
 	while( $arr = $db->db_fetch_array($res))
 		bab_confirmDeleteCategory($arr['id']);
 
 	// delete topic category
-	$req = "delete from topics_categories where id='$id'";
+	$req = "delete from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 	}

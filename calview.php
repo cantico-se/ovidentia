@@ -30,13 +30,13 @@ function upComingEvents($idcal)
 			$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 			$mktime = $mktime + 518400;
 			$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-			$req = "select * from cal_events where id_cal='".$idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
+			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
 			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";		
 			$this->resevent = $this->db->db_query($req);
 			$this->countevent = $this->db->db_num_rows($this->resevent);
 			$idgrp = bab_getPrimaryGroupId($BAB_SESS_USERID);
 			$this->grpname = bab_getGroupName($idgrp);
-			$req = "select * from cal_events where id_cal='".bab_getCalendarId($idgrp, 2)."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
+			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".bab_getCalendarId($idgrp, 2)."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
 			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";		
 			$this->resgrpevent = $this->db->db_query($req);
 			$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
@@ -119,11 +119,11 @@ function newArticles($days)
 			$this->db = $GLOBALS['babDB'];
 
 			$this->nbdays = $days;
-			$req = "select * from topics";
+			$req = "select * from ".BAB_TOPICS_TBL."";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(bab_isAccessValid("topicsview_groups", $row['id']))
+				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
 					{
 					array_push($this->arrid, $row['id']);
 					}
@@ -145,7 +145,7 @@ function newArticles($days)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from articles where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else
@@ -175,7 +175,7 @@ function newArticles($days)
 				$this->titleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
 				$this->author = bab_getArticleAuthor($arr['id']);
 				$this->date = bab_getArticleDate($arr['id']);
-				$req = "select * from comments where id_article='".$arr['id']."' and confirmed='Y' and date >= ";
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$arr['id']."' and confirmed='Y' and date >= ";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else
@@ -221,11 +221,11 @@ function newComments($days)
 			$this->db = $GLOBALS['babDB'];
 
 			$this->nbdays = $days;
-			$req = "select * from topics";
+			$req = "select * from ".BAB_TOPICS_TBL."";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(bab_isAccessValid("topicsview_groups", $row['id']))
+				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
 					{
 					array_push($this->arrid, $row['id']);
 					}
@@ -247,7 +247,7 @@ function newComments($days)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from comments where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else
@@ -313,11 +313,11 @@ function newThreads($nbdays)
 			$this->db = $GLOBALS['babDB'];
 
 			$this->nbdays = $nbdays;
-			$req = "select * from forums";
+			$req = "select * from ".BAB_FORUMS_TBL."";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(bab_isAccessValid("forumsview_groups", $row['id']))
+				if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 					{
 					array_push($this->arrid, $row['id']);
 					}
@@ -334,7 +334,7 @@ function newThreads($nbdays)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from threads where forum='".$this->arrid[$k]."' order by date desc";
+				$req = "select * from ".BAB_THREADS_TBL." where forum='".$this->arrid[$k]."' order by date desc";
 				$this->resthread = $this->db->db_query($req);
 				$this->countthreads = $this->db->db_num_rows($this->resthread);
 				$this->forum = $this->arrid[$k];
@@ -356,7 +356,7 @@ function newThreads($nbdays)
 				{
 				$this->total = 0;
 				$arr = $this->db->db_fetch_array($this->resthread);
-				$req = "select * from posts where id_thread='".$arr['id']."' and confirmed='Y' and date >=";
+				$req = "select * from ".BAB_POSTS_TBL." where id_thread='".$arr['id']."' and confirmed='Y' and date >=";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else
@@ -364,7 +364,7 @@ function newThreads($nbdays)
 				$this->resposts = $this->db->db_query($req);
 				$this->total = $this->db->db_num_rows($this->resposts);
 
-				$req = "select * from posts where id='".$arr['post']."' and confirmed='Y'";
+				$req = "select * from ".BAB_POSTS_TBL." where id='".$arr['post']."' and confirmed='Y'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->posts = $arr2['subject'];
@@ -420,7 +420,7 @@ function newEmails()
 			{
 			global $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."'";
+			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->newmails = bab_translate("Waiting mails");
@@ -432,7 +432,7 @@ function newEmails()
 			if( $i < $this->count )
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from mail_domains where id='".$arr['domain']."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
 				$res2 = $this->db->db_query($req);
 				$this->domain = "";
 				$this->nbemails = "";

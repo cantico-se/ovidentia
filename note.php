@@ -23,7 +23,7 @@ function notesModify($id)
 			$this->notes = bab_translate("Content");
 			$this->modify = bab_translate("Update Note");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from notes where id='$id'";
+			$req = "select * from ".BAB_NOTES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
@@ -40,7 +40,7 @@ function notesModify($id)
 function deleteNotes($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "delete from notes where id = '$id'";
+	$query = "delete from ".BAB_NOTES_TBL." where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 	}
@@ -48,7 +48,7 @@ function deleteNotes($id)
 function updateNotes($id, $content)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "update notes set content='$content' where id = '$id'";
+	$query = "update ".BAB_NOTES_TBL." set content='$content' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 	}

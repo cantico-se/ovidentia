@@ -42,7 +42,7 @@ function groupModify($id)
 			$this->yes = bab_translate("Yes");
 			$this->modify = bab_translate("Modify Group");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from groups where id='$id'";
+			$req = "select * from ".BAB_GROUPS_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			if( $this->arr['mail'] == "Y")
@@ -55,7 +55,7 @@ function groupModify($id)
 				$this->noselected = "selected";
 				$this->yesselected = "";
 				}
-			$req = "select * from users where id='".$this->arr['manager']."'";
+			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['manager']."'";
 			$res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($res) > 0)
 				{
@@ -97,7 +97,7 @@ function groupMembers($id)
 			$this->idgroup = $id;
 			$this->group = bab_getGroupName($id);
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from users_groups where id_group= '$id'";
+			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group= '$id'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -113,7 +113,7 @@ function groupMembers($id)
 				else
 					$this->primary = "";
 				$db = $GLOBALS['babDB'];
-				$req = "select * from users where id='".$this->arr['id_object']."'";
+				$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_object']."'";
 				$result = $db->db_query($req);
 				$this->arr = $db->db_fetch_array($result);
 				$this->url = $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$this->arr['id'];
@@ -201,7 +201,7 @@ function groupVacation($id)
 			$this->db = $GLOBALS['babDB'];
 			$this->count = 2;
 
-			$req = "select * from groups where id='$id'";
+			$req = "select * from ".BAB_GROUPS_TBL." where id='$id'";
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
@@ -222,13 +222,13 @@ function groupVacation($id)
 				$this->approvertext = bab_translate("Approver")." ".($i+1);
 				$this->approvername = "approver-".($i+1);
 
-				$req = "select * from vacationsman_groups where id_group='".$this->groupid."' and ordering='".($i+1)."'";
+				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$this->groupid."' and ordering='".($i+1)."'";
 				$res = $this->db->db_query($req);
 
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from users where id='".$arr['id_object']."'";
+					$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0)
 						{
@@ -271,7 +271,7 @@ function deleteMembers($users, $item)
 			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($users); $i++)
 				{
-				$req = "select * from users where id='".$users[$i]."'";	
+				$req = "select * from ".BAB_USERS_TBL." where id='".$users[$i]."'";	
 				$res = $db->db_query($req);
 				if( $db->db_num_rows($res) > 0)
 					{
@@ -311,7 +311,7 @@ function modifyGroup($oldname, $name, $description, $manager, $bemail, $id)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from groups where name='$oldname'";	
+	$query = "select * from ".BAB_GROUPS_TBL." where name='$oldname'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
@@ -331,7 +331,7 @@ function modifyGroup($oldname, $name, $description, $manager, $bemail, $id)
 		else
 			$idmanager = 0;
 
-		$query = "update groups set name='$name', description='$description', mail='$bemail', manager='$idmanager' where id='$id'";
+		$query = "update ".BAB_GROUPS_TBL." set name='$name', description='$description', mail='$bemail', manager='$idmanager' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
@@ -365,21 +365,21 @@ function vacationGroup($usevacation, $approver, $item)
 				
 				if( $approverid != 0)
 					{
-					$req = "select * from vacationsman_groups where id_group ='$item' and ordering='".($i+1)."'";
+					$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group ='$item' and ordering='".($i+1)."'";
 					$res = $db->db_query($req);
 					if( $res && $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
 						if( $arr['id_object'] !== $approverid)
 							{
-							$req = "delete from vacations_states where id='".$arr['status']."'";
+							$req = "delete from ".BAB_VACATIONS_STATES_TBL." where id='".$arr['status']."'";
 							$res = $db->db_query($req);
 							$name = "Waiting to validate by". " " .$approver[$i].
 							$description = "";
-							$req = "insert into vacations_states (status, description) VALUES ('" .$name. "', '" . $description. "')";
+							$req = "insert into ".BAB_VACATIONS_STATES_TBL." (status, description) VALUES ('" .$name. "', '" . $description. "')";
 							$res = $db->db_query($req);
 							$statusid = $db->db_insert_id();
-							$req = "update vacationsman_groups set id_object='".$approverid."', status='".$statusid."' where id_group ='$item' and ordering='".($i+1)."'";
+							$req = "update ".BAB_VACATIONSMAN_GROUPS_TBL." set id_object='".$approverid."', status='".$statusid."' where id_group ='$item' and ordering='".($i+1)."'";
 							$res = $db->db_query($req);
 							}
 						}
@@ -387,23 +387,23 @@ function vacationGroup($usevacation, $approver, $item)
 						{
 						$name = "Waiting to validate by". " " .$approver[$i].
 						$description = "";
-						$req = "insert into vacations_states (status, description) VALUES ('" .$name. "', '" . $description. "')";
+						$req = "insert into ".BAB_VACATIONS_STATES_TBL." (status, description) VALUES ('" .$name. "', '" . $description. "')";
 						$res = $db->db_query($req);
 						$statusid = $db->db_insert_id();
-						$req = "insert into vacationsman_groups (id_object, id_group, ordering, status) VALUES ('" .$approverid. "', '" .$item. "', '".($i+1)."', '".$statusid."')";
+						$req = "insert into ".BAB_VACATIONSMAN_GROUPS_TBL." (id_object, id_group, ordering, status) VALUES ('" .$approverid. "', '" .$item. "', '".($i+1)."', '".$statusid."')";
 						$res = $db->db_query($req);
 						}
 					}
 				else
 					{
-					$req = "select * from vacationsman_groups where id_group ='$item' and ordering='".($i+1)."'";
+					$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group ='$item' and ordering='".($i+1)."'";
 					$res = $db->db_query($req);
 					if( $res && $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$req = "delete from vacations_states where id='".$arr['status']."'";
+						$req = "delete from ".BAB_VACATIONS_STATES_TBL." where id='".$arr['status']."'";
 						$res = $db->db_query($req);
-						$req = "delete from vacationsman_groups where id_group ='$item' and ordering='".($i+1)."'";
+						$req = "delete from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group ='$item' and ordering='".($i+1)."'";
 						$res = $db->db_query($req);
 						}
 					}
@@ -413,7 +413,7 @@ function vacationGroup($usevacation, $approver, $item)
 	else
 		$usevacation = "N";
 
-	$req = "update groups set vacation='$usevacation' where id='$item'";
+	$req = "update ".BAB_GROUPS_TBL." set vacation='$usevacation' where id='$item'";
 	$res = $db->db_query($req);
 	}
 
@@ -426,7 +426,7 @@ function confirmDeleteMembers($item, $names)
 		$db = $GLOBALS['babDB'];
 		for($i = 0; $i < $cnt; $i++)
 			{
-			$req = "delete from users_groups where id_object='".$arr[$i]."' and id_group='".$item."'";	
+			$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr[$i]."' and id_group='".$item."'";	
 			$res = $db->db_query($req);
 			}
 	}
@@ -437,69 +437,69 @@ function confirmDeleteGroup($id)
 	if( $id <= 3)
 		return;
 	$db = $GLOBALS['babDB'];
-	$req = "delete from topicsview_groups where id_group='$id'";
+	$req = "delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from topicscom_groups where id_group='$id'";
+	$req = "delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from topicssub_groups where id_group='$id'";
+	$req = "delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from sections_groups where id_group='$id'";
+	$req = "delete from ".BAB_SECTIONS_GROUPS_TBL." where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from faqcat_groups where id_group='$id'";
+	$req = "delete from ".BAB_FAQCAT_GROUPS_TBL." where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from users_groups where id_group='$id'";
+	$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from vacationsman_groups where id_group='$id'";
+	$req = "delete from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='$id'";
 	$res = $db->db_query($req);
-	$req = "delete from categoriescal where id_group='$id'";
+	$req = "delete from ".BAB_CATEGORIESCAL_TBL." where id_group='$id'";
 	$res = $db->db_query($req);
 
-	$req = "select * from resourcescal where id_group='$id'";
+	$req = "select * from ".BAB_RESOURCESCAL_TBL." where id_group='$id'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		
 		while( $arr = $db->db_fetch_array($res))
 			{
-			$req = "select * from calendar where owner='".$arr['id']."' and type='3'";
+			$req = "select * from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'";
 			$res = $db->db_query($req);
 			$r = $db->db_fetch_array($res);
 
 			// delete resource's events
-			$req = "delete from cal_events where id_cal='".$r['id']."'";
+			$req = "delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$r['id']."'";
 			$res = $db->db_query($req);	
 
 			// delete resource from calendar
-			$req = "delete from calendar where owner='".$arr['id']."' and type='3'";
+			$req = "delete from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'";
 			$res = $db->db_query($req);	
 
 			// delete resource
-			$req = "delete from resourcescal where id_group='$id'";
+			$req = "delete from ".BAB_RESOURCESCAL_TBL." where id_group='$id'";
 			$res = $db->db_query($req);
 			}
 		}
 
-	$req = "select * from calendar where owner='$id' and type='2'";
+	$req = "select * from ".BAB_CALENDAR_TBL." where owner='$id' and type='2'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
 	// delete group's events
-	$req = "delete from cal_events where id_cal='".$arr['id']."'";
+	$req = "delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$arr['id']."'";
 	$res = $db->db_query($req);	
 
 	// delete user from calendar
-	$req = "delete from calendar where owner='$id' and type='2'";
+	$req = "delete from ".BAB_CALENDAR_TBL." where owner='$id' and type='2'";
 	$res = $db->db_query($req);	
 
-	// delete user from mail_domains
-	$req = "delete from mail_domains where owner='$id' and bgroup='Y'";
+	// delete user from BAB_MAIL_DOMAINS_TBL
+	$req = "delete from ".BAB_MAIL_DOMAINS_TBL." where owner='$id' and bgroup='Y'";
 	$res = $db->db_query($req);	
 
 	// delete files owned by this group
 	bab_deleteUploadUserFiles("Y", $id);
 
     // delete group
-	$req = "delete from groups where id='$id'";
+	$req = "delete from ".BAB_GROUPS_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	bab_callAddonsFunction('bab_group_delete', $id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");

@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include $babInstallPath."utilit/defines.php";
 include $babInstallPath."utilit/dbutil.php";
 include $babInstallPath."utilit/uiutil.php";
 include $babInstallPath."utilit/template.php";
@@ -408,11 +409,11 @@ function babUserSection()
 	$pgrpid = bab_getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from faqcat";
+	$req = "select * from ".BAB_FAQCAT_TBL."";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if(bab_isAccessValid("faqcat_groups", $row['id']))
+		if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
 			{
 			$faq = true;
 			break;
@@ -426,12 +427,12 @@ function babUserSection()
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
 		$this->blogged = true;
-		$req = "select * from vacationsman_groups where id_object='".$BAB_SESS_USERID."' or supplier='".$BAB_SESS_USERID."'";
+		$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' or supplier='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 || bab_isUserUseVacation($BAB_SESS_USERID))
 			$vac = true;
 
-		$req = "select * from topics where id_approver='".$BAB_SESS_USERID."'";
+		$req = "select * from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
 			$mtopics = true;
@@ -586,22 +587,22 @@ function babTopcatSection()
 	$this->title = bab_translate("Topics categories");
 	$this->head = bab_translate("List of different topics categories");
 	$this->db = $GLOBALS['babDB'];
-	$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id";
+	$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id";
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
-		if( bab_isAccessValid("topicsview_groups", $row['id']) )
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
 			{
 			if( !in_array($row['id_cat'], $this->arrid))
 				array_push($this->arrid, $row['id_cat']);
 
-			$req = "select count(*) as total from articles where id_topic='".$row['id']."' and confirmed='Y' and date >= '".$babBody->lastlog."'";
+			$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$row['id']."' and confirmed='Y' and date >= '".$babBody->lastlog."'";
 			$res2 = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res2);
 			if( $arr['total'] > 0)
 				$babBody->newarticles += $arr['total'];
 			
-			$req = "select count(*) as total from comments where id_topic='".$row['id']."' and confirmed='Y' and date >= '".$babBody->lastlog."'";
+			$req = "select count(*) as total from ".BAB_COMMENTS_TBL." where id_topic='".$row['id']."' and confirmed='Y' and date >= '".$babBody->lastlog."'";
 			$res2 = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res2);
 			if( $arr['total'] > 0)
@@ -617,7 +618,7 @@ function topcatGetNext()
 	static $i = 0;
 	if( $i < $this->count)
 		{
-		$req = "select * from topics_categories where id='".$this->arrid[$i]."'";
+		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->arrid[$i]."'";
 		$res = $this->db->db_query($req);
 		if( $res && $this->db->db_num_rows($res) > 0)
 			{
@@ -663,14 +664,14 @@ function babTopicsSection($cat)
 	$this->waitingaimg = bab_printTemplate($this, "config.html", "babWaitingArticle");
 	$this->waitingcimg = bab_printTemplate($this, "config.html", "babWaitingComment");
 	$this->db = $GLOBALS['babDB'];
-	$r = $this->db->db_fetch_array($this->db->db_query("select * from topics_categories where id='".$cat."'"));
+	$r = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
 	$this->head = $r['description'];
 	$this->title = $r['title'];
-	$req = "select * from topics where id_cat='".$cat."'";
+	$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."'";
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
-		if(bab_isAccessValid("topicsview_groups", $row['id']) )
+		if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
 			{
 			array_push($this->arrid, $row['id']);
 			}
@@ -688,7 +689,7 @@ function topicsGetNext()
 	static $i = 0;
 	if( $i < $this->count)
 		{
-		$req = "select * from topics where id='".$this->arrid[$i]."'";
+		$req = "select * from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'";
 		$res = $this->db->db_query($req);
 		$this->newa = "";
 		$this->newc = "";
@@ -698,11 +699,11 @@ function topicsGetNext()
 			if( $BAB_SESS_USERID == $this->arr['id_approver'])
 				{
 				$this->bfooter = 1;
-				$req = "select * from articles where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newartcount = $this->db->db_num_rows($res);
 
-				$req = "select * from comments where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newcomcount = $this->db->db_num_rows($res);
 				
@@ -761,14 +762,14 @@ function babForumsSection()
 	$this->waitingf = bab_translate("Waiting posts");
 	$this->bfooter = 0;
 	$this->db = $GLOBALS['babDB'];
-	$req = "select * from forums";
+	$req = "select * from ".BAB_FORUMS_TBL."";
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
-		if(bab_isAccessValid("forumsview_groups", $row['id']))
+		if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 			{
 			array_push($this->arrid, $row['id']);
-			$req = "select count(posts.id) as total from posts, threads where posts.date >= '".$babBody->lastlog."' and posts.confirmed='Y' and posts.id_thread=threads.id and threads.forum='".$row['id']."'";
+			$req = "select count(".BAB_POSTS_TBL.".id) as total from ".BAB_POSTS_TBL.", ".BAB_THREADS_TBL." where ".BAB_POSTS_TBL.".date >= '".$babBody->lastlog."' and ".BAB_POSTS_TBL.".confirmed='Y' and ".BAB_POSTS_TBL.".id_thread=".BAB_THREADS_TBL.".id and ".BAB_THREADS_TBL.".forum='".$row['id']."'";
 			$res2 = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res2);
 			if( $arr['total'] > 0)
@@ -787,7 +788,7 @@ function forumsGetNext()
 	static $i = 0;
 	if( $i < $this->count)
 		{
-		$req = "select * from forums where id='".$this->arrid[$i]."'";
+		$req = "select * from ".BAB_FORUMS_TBL." where id='".$this->arrid[$i]."'";
 		$res = $this->db->db_query($req);
 		if( $res && $this->db->db_num_rows($res) > 0)
 			{
@@ -798,8 +799,8 @@ function forumsGetNext()
 			if( $BAB_SESS_USERID == $this->arr["moderator"])
 				{
 				$this->bfooter = 1;
-				$req = "select count(posts.id) as total from posts join threads where threads.active='Y' and threads.forum='".$this->arr['id'];
-				$req .= "' and posts.confirmed='N' and threads.id=posts.id_thread";
+				$req = "select count(".BAB_POSTS_TBL.".id) as total from ".BAB_POSTS_TBL." join ".BAB_THREADS_TBL." where ".BAB_THREADS_TBL.".active='Y' and ".BAB_THREADS_TBL.".forum='".$this->arr['id'];
+				$req .= "' and ".BAB_POSTS_TBL.".confirmed='N' and ".BAB_THREADS_TBL.".id=".BAB_POSTS_TBL.".id_thread";
 				$res = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($res);
 				if( $ar['total'] > 0)
@@ -894,12 +895,12 @@ function loadSection($title, $pos=-1)
 	global $babBody;
 	$add = false;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from sections where title='$title' and enabled='Y'";
+	$req = "select * from ".BAB_SECTIONS_TBL." where title='$title' and enabled='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$add = bab_isAccessValid("sections_groups", $arr['id']);
+		$add = bab_isAccessValid(BAB_SECTIONS_GROUPS_TBL, $arr['id']);
 		}
 	if( $add )
 		{
@@ -919,15 +920,15 @@ function loadSections()
 	global $babBody, $LOGGED_IN, $BAB_SESS_USERID, $babSearchUrl;
 	$add = false;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from sections_order order by ordering asc";
+	$req = "select * from ".BAB_SECTIONS_ORDER_TBL." order by ordering asc";
 	$res = $db->db_query($req);
 	while( $arr =  $db->db_fetch_array($res))
 		{
 		$add = false;
 		switch( $arr['type'] )
 			{
-			case "1": // private_sections
-				$r = $db->db_fetch_array($db->db_query("select * from private_sections where id='".$arr['id_section']."'"));
+			case "1": // BAB_PRIVATE_SECTIONS_TBL
+				$r = $db->db_fetch_array($db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id='".$arr['id_section']."'"));
 				switch( $arr['id_section'] )
 					{
 					case 1: // admin
@@ -973,8 +974,8 @@ function loadSections()
 						break;
 					}
 				break;
-			case "3": // topics_categories sections
-				$r = $db->db_fetch_array($db->db_query("select * from topics_categories where id='".$arr['id_section']."'"));
+			case "3": // BAB_TOPICS_CATEGORIES_TBL sections
+				$r = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_section']."'"));
 				if( $r['enabled'] == "Y")
 					{
 					$sec = new babTopicsSection($r['id']);
@@ -983,10 +984,10 @@ function loadSections()
 					}
 				break;
 			default: // user's sections
-				$add = bab_isAccessValid("sections_groups", $arr['id_section']);
+				$add = bab_isAccessValid(BAB_SECTIONS_GROUPS_TBL, $arr['id_section']);
 				if( $add )
 					{
-					$req = "select * from sections where id='".$arr['id_section']."' and enabled='Y'";
+					$req = "select * from ".BAB_SECTIONS_TBL." where id='".$arr['id_section']."' and enabled='Y'";
 					$res2 = $db->db_query($req);
 					if( $res2 && $db->db_num_rows($res2) > 0)
 						{
@@ -1004,7 +1005,7 @@ function loadSections()
 		if( $add )
 			{
 			$sec->setPosition($arr['position']);
-			$req = "select * from sections_states where id_section='".$arr['id_section']."' and id_user='".$BAB_SESS_USERID."' and type='".$arr['type']."'";
+			$req = "select * from ".BAB_SECTIONS_STATES_TBL." where id_section='".$arr['id_section']."' and id_user='".$BAB_SESS_USERID."' and type='".$arr['type']."'";
 			$res2 = $db->db_query($req);
 			$sec->bbox = 1;
 			if( $res2 && $db->db_num_rows($res2) > 0)
@@ -1139,7 +1140,7 @@ function babMonthA($month = "", $year = "")
 
 	if( !empty($BAB_SESS_USERID))
 		{
-		$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+		$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 		$res = $this->db->db_query($req);
 		$this->babCalendarStartDay = 0;
 		if( $res && $this->db->db_num_rows($res) > 0)
@@ -1227,7 +1228,7 @@ function printout()
 				$mktime = mktime(0,0,0,$this->currentMonth, $total,$this->currentYear);
 				$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 				$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-				$req = "select * from cal_events where id_cal='".$this->idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
+				$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$this->idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
 				$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax')";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
@@ -1238,7 +1239,7 @@ function printout()
 					}
 				else
 					{
-					$req = "select * from cal_events where id_cal='".$this->idgrpcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
+					$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$this->idgrpcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
 					$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax')";
 					$res = $this->db->db_query($req);
 					if( $res && $this->db->db_num_rows($res) > 0)
@@ -1276,7 +1277,7 @@ function bab_updateUserSettings()
 		{
 		$db = $GLOBALS['babDB'];
 
-		$req="select * from users where id='$BAB_SESS_USERID'";
+		$req="select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
 		$res=$db->db_query($req);
 
         if( $res && $db->db_num_rows($res) > 0 )
@@ -1295,7 +1296,7 @@ function bab_updateUserSettings()
                 $GLOBALS['babStyle'] = $arr['style'];
                 }
             /*
-            $req="select * from users_log where id_user='$BAB_SESS_USERID'";
+            $req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
             $res=$db->db_query($req);
             if( $res && $db->db_num_rows($res) > 0)
                 {
@@ -1305,10 +1306,10 @@ function bab_updateUserSettings()
                     }
                 }
             */
-            $req="update users_log set dateact=now() where id_user='$BAB_SESS_USERID'";
+            $req="update ".BAB_USERS_LOG_TBL." set dateact=now() where id_user='$BAB_SESS_USERID'";
             $res=$db->db_query($req);
 
-			$req="select * from users_log where id_user='$BAB_SESS_USERID'";
+			$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$BAB_SESS_USERID'";
 			$res=$db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$babBody->lastlog = $arr['lastlog'];
@@ -1321,7 +1322,7 @@ function bab_updateSiteSettings()
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 
-	$req="select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$db->db_query($req);
 
 	if( $res && $db->db_num_rows($res) > 0 )

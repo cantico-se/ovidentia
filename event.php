@@ -78,7 +78,7 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 			$this->description = bab_translate("Description");
 			$this->category = bab_translate("Category");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			$this->daytypechecked = "";
 			if( $res && $this->db->db_num_rows($res))
@@ -92,15 +92,15 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 				{
 				case 1: // user
 					$this->bcategory = 1;
-					$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+					$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=$BAB_SESS_USERID and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 					$this->resgroups = $this->db->db_query($req);
 					if( $this->resgroups )
 						{
 						$this->countgroups = $this->db->db_num_rows($this->resgroups); 
 						}
 
-					$req = "select * from resourcescal where id_group='1'";
-					$req2 = "select * from categoriescal where id_group='1'";
+					$req = "select * from ".BAB_RESOURCESCAL_TBL." where id_group='1'";
+					$req2 = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1'";
 					if( $this->countgroups > 0)
 						{
 						for( $i = 0; $i < $this->countgroups; $i++)
@@ -119,10 +119,10 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 					break;
 				case 2: // group
 					$this->bcategory = 1;
-					$req = "select * from calendar where id='".$calendarid."'";
+					$req = "select * from ".BAB_CALENDAR_TBL." where id='".$calendarid."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from categoriescal where id_group='1' or id_group='".$arr['owner']."'";
+					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1' or id_group='".$arr['owner']."'";
 					$this->rescat = $this->db->db_query($req);
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
@@ -400,7 +400,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 			$this->caltype = bab_getCalendarType($calendarid);
 			$babBody->title = bab_translate("Calendar"). "  ". bab_getCalendarOwnerName($this->calid, $this->caltype);
 
-			$req = "select * from cal_events where id='$evtid'";
+			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id='$evtid'";
 			$res = $this->db->db_query($req);
 			$this->evtarr = $this->db->db_fetch_array($res);
 			$this->evtarr['description'] = bab_replace($this->evtarr['description']);
@@ -437,14 +437,14 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 				{
 				case 1: // user
 					$this->bcategory = 1;
-					$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+					$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=$BAB_SESS_USERID and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 					$this->resgroups = $this->db->db_query($req);
 					if( $this->resgroups )
 						{
 						$this->countgroups = $this->db->db_num_rows($this->resgroups); 
 						}
 
-					$req2 = "select * from categoriescal where id_group='1'";
+					$req2 = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1'";
 					if( $this->countgroups > 0)
 						{
 						for( $i = 0; $i < $this->countgroups; $i++)
@@ -459,10 +459,10 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 					break;
 				case 2: // group
 					$this->bcategory = 1;
-					$req = "select * from calendar where id='".$calendarid."'";
+					$req = "select * from ".BAB_CALENDAR_TBL." where id='".$calendarid."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from categoriescal where id_group='1' or id_group='".$arr['owner']."'";
+					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1' or id_group='".$arr['owner']."'";
 					$this->rescat = $this->db->db_query($req);
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
@@ -477,14 +477,14 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 
 			if( $this->caltype == 1 )
 				{
-				$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+				$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=$BAB_SESS_USERID and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 				$this->resgroups = $this->db->db_query($req);
 				if( $this->resgroups )
 					{
 					$this->countgroups = $this->db->db_num_rows($this->resgroups); 
 					}
 
-				$req2 = "select * from categoriescal where id_group='1'";
+				$req2 = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1'";
 				if( $this->countgroups > 0)
 					{
 					for( $i = 0; $i < $this->countgroups; $i++)
@@ -755,7 +755,7 @@ function viewEvent($calid, $evtid)
 			$this->enddatename = bab_translate("End date");
 			$this->descriptionname = bab_translate("Description");
 			$db = $GLOBALS['babDB'];
-			$req = "select * from cal_events where id='".$evtid."'";
+			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->title = $arr['title'];
@@ -789,7 +789,7 @@ function editDescription($calid, $evtid)
 			$this->modify = bab_translate("Update");
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from cal_events where id='".$evtid."'";
+			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
@@ -912,7 +912,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 							$endtime = sprintf("%s:00", $timeend);
 							}
 
-						$req = "insert into cal_events ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
+						$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
 						$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
 						$db->db_query($req);
 						$nextday += 7;
@@ -937,7 +937,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 				$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 				$endtime = sprintf("%s:00", $timeend);
 				}
-			$req = "insert into cal_events ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
+			$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
 			$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
 			$db->db_query($req);
 			}
@@ -968,7 +968,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 		$endtime = sprintf("%s:00", $timeend);
 		}
-	$req = "insert into cal_events ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
+	$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
 	$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
 	$db->db_query($req);
 	return true;
@@ -1014,7 +1014,7 @@ function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebe
 	$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 	$endtime = sprintf("%s:00", $timeend);
 
-	$req = "update cal_events set title='$title', start_date='$startdate', start_time='$starttime', end_date='$enddate', end_time='$endtime', id_cat='$catid' where id='$evtid'";
+	$req = "update ".BAB_CAL_EVENTS_TBL." set title='$title', start_date='$startdate', start_time='$starttime', end_date='$enddate', end_time='$endtime', id_cat='$catid' where id='$evtid'";
 	$db->db_query($req);
 
 }
@@ -1022,14 +1022,14 @@ function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebe
 function confirmDeleteEvent($calid, $evtid)
 {
 	$db = $GLOBALS['babDB'];
-	$req = "delete from cal_events where id='$evtid'";
+	$req = "delete from ".BAB_CAL_EVENTS_TBL." where id='$evtid'";
 	$res = $db->db_query($req);	
 }
 
 function updateDescription($calid, $evtid, $content)
 {
 	$db = $GLOBALS['babDB'];
-	$db->db_query("update cal_events set description='".$content."' where id='".$evtid."'");
+	$db->db_query("update ".BAB_CAL_EVENTS_TBL." set description='".$content."' where id='".$evtid."'");
 }
 
 /* main */

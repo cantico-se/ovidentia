@@ -9,7 +9,7 @@ include $babInstallPath."admin/acl.php";
 function getFaqName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from faqcat where id='$id'";
+	$query = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -71,7 +71,7 @@ function listCategories()
 			{
 			$this->access = bab_translate("Access");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqcat";
+			$req = "select * from ".BAB_FAQCAT_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -125,7 +125,7 @@ function saveCategory($category, $description, $manager)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from faqcat where category='$category'";	
+	$query = "select * from ".BAB_FAQCAT_TBL." where category='$category'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -140,7 +140,7 @@ function saveCategory($category, $description, $manager)
 		return;
 		}
 
-	$query = "insert into faqcat (id_manager, category, description) values ('" .$managerid. "', '" .$category. "', '" . $description. "')";
+	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description) values ('" .$managerid. "', '" .$category. "', '" . $description. "')";
 	$db->db_query($query);
 
 	}

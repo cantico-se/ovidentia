@@ -33,7 +33,7 @@ function listContacts($pos)
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and lastname like '".$this->pos."%' order by lastname, firstname asc";
+				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and lastname like '".$this->pos."%' order by lastname, firstname asc";
 				$this->fullname = bab_translate("Lastname Firstname");
 				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
@@ -41,7 +41,7 @@ function listContacts($pos)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$this->pos."%' order by firstname, lastname asc";
+				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and firstname like '".$this->pos."%' order by firstname, lastname asc";
 				$this->fullname = bab_translate("Firstname Lastname");
 				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
@@ -67,11 +67,11 @@ function listContacts($pos)
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=";
 
 			/* find prefered mail account */
-			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and prefered='Y'";
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and prefered='Y'";
 			$res = $this->db->db_query($req);
 			if( !$res || $this->db->db_num_rows($res) == 0 )
 				{
-				$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."'";
+				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."'";
 				$res = $this->db->db_query($req);
 				}
 
@@ -119,11 +119,11 @@ function listContacts($pos)
 					{
 					if( $this->ord == "-" )
 						{
-						$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and lastname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and lastname like '".$this->selectname."%'";
 						}
 					else
 						{
-						$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and firstname like '".$this->selectname."%'";
 						}
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
@@ -168,7 +168,7 @@ function contactsDelete($item, $pos)
 			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($item); $i++)
 				{
-				$req = "select * from contacts where id='".$item[$i]."'and owner='".$BAB_SESS_USERID."'";	
+				$req = "select * from ".BAB_CONTACTS_TBL." where id='".$item[$i]."'and owner='".$BAB_SESS_USERID."'";	
 				$res = $db->db_query($req);
 				if( $db->db_num_rows($res) > 0)
 					{
@@ -206,7 +206,7 @@ function confirmDeleteContacts($items)
 	$db = $GLOBALS['babDB'];
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$req = "delete from contacts where id='".$arr[$i]."'";	
+		$req = "delete from ".BAB_CONTACTS_TBL." where id='".$arr[$i]."'";	
 		$res = $db->db_query($req);
 		}
 }

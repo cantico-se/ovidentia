@@ -30,7 +30,7 @@ function listGroups()
 			$this->public = bab_translate("Public");
 			$this->private = bab_translate("Private");
 			$this->modify = bab_translate("Update");
-			$req = "select * from groups order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." order by id asc";
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -75,7 +75,7 @@ function listGroups()
 function updateGroups($groups, $ugroups )
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select id from groups";
+	$req = "select id from ".BAB_GROUPS_TBL."";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -88,7 +88,7 @@ function updateGroups($groups, $ugroups )
 			$gs = "Y";
 		else
 			$gs = "N";
-		$req = "update groups set gstorage='".$gs."', ustorage='".$us."' where id='".$row['id']."'";
+		$req = "update ".BAB_GROUPS_TBL." set gstorage='".$gs."', ustorage='".$us."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}

@@ -82,7 +82,7 @@ function aclGroups($target, $index, $table, $id, $return)
 					}
 				}
 
-			$req = "select * from groups where id > 2 order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 order by id asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}

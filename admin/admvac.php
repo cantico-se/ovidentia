@@ -40,7 +40,7 @@ function modifyVacation($id)
 			$this->update = bab_translate("Update");
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from vacations_types where id='$id'";
+			$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			}
@@ -106,7 +106,7 @@ function modifyStatus($id)
 			$this->description = bab_translate("Description");
 			$this->modify = bab_translate("Modify Status");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from vacations_states where id='$id'";
+			$req = "select * from ".BAB_VACATIONS_STATES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			}
@@ -186,7 +186,7 @@ function updateVacation($id, $name, $description, $defaultnday, $maxdays, $maxda
 
 	$db = $GLOBALS['babDB'];
 
-	$query = "update vacations_types set name='$name', description='$description', defaultdays='$dndval', maxdays='$maxdval', days='$maxdauth' where id = '$id'";
+	$query = "update ".BAB_VACATIONS_TYPES_TBL." set name='$name', description='$description', defaultdays='$dndval', maxdays='$maxdval', days='$maxdauth' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
 
@@ -197,10 +197,10 @@ function confirmDeleteVacation($id)
 	
 	$db = $GLOBALS['babDB'];
 
-	$req = "delete from vacationsview_groups where id_object='$id'";
+	$req = "delete from ".BAB_VACATIONSVIEW_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 	
-	$req = "delete from vacations_types where id='$id'";
+	$req = "delete from ".BAB_VACATIONS_TYPES_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	}
 
@@ -208,7 +208,7 @@ function confirmDeleteStatus($id)
 	{	
 	$db = $GLOBALS['babDB'];
 
-	$req = "delete from vacations_states where id='$id'";
+	$req = "delete from ".BAB_VACATIONS_STATES_TBL." where id='$id'";
 	$res = $db->db_query($req);
 
 	}
@@ -223,7 +223,7 @@ function updateStatus($id, $name, $description)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from vacations_states where id ='$id'";	
+	$query = "select * from ".BAB_VACATIONS_STATES_TBL." where id ='$id'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
@@ -231,7 +231,7 @@ function updateStatus($id, $name, $description)
 		}
 	else
 		{
-		$query = "update vacations_states set status='$name', description='$description' where id='$id'";
+		$query = "update ".BAB_VACATIONS_STATES_TBL." set status='$name', description='$description' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admvacs&idx=liststatus");
@@ -272,7 +272,7 @@ switch($idx)
 
 	case "groups":
 		$babBody->title = bab_translate("List of groups");
-		aclGroups("vacation", "modify", "vacationsview_groups", $item, "aclview");
+		aclGroups("vacation", "modify", BAB_VACATIONSVIEW_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admvac&idx=modify&item=".$item);
 		//$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admvac&idx=delete&item=".$item);
 		break;

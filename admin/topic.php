@@ -56,10 +56,10 @@ function listArticles($id, $userid)
 			$this->userid = $userid;
 			$this->item = $id;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id_topic='$id' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$req="select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 			$r = $this->db->db_fetch_array($this->db->db_query($req));
 			$this->siteid = $r['id'];
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$r['id'];
@@ -71,13 +71,13 @@ function listArticles($id, $userid)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='2' and id_site='".$this->siteid."'";
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='2' and id_site='".$this->siteid."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					$this->checked0 = "checked";
 				else
 					$this->checked0 = "";
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='1' and id_site='".$this->siteid."'";
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='1' and id_site='".$this->siteid."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					$this->checked1 = "checked";
@@ -123,7 +123,7 @@ function deleteArticles($art, $item, $userid)
 			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($art); $i++)
 				{
-				$req = "select * from articles where id='".$art[$i]."'";	
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$art[$i]."'";	
 				$res = $db->db_query($req);
 				if( $db->db_num_rows($res) > 0)
 					{
@@ -185,15 +185,15 @@ function modifyCategory($id)
 			$this->approver = bab_translate("Approver");
 			$this->add = bab_translate("Update Topic");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from topics where id='$id'";
+			$req = "select * from ".BAB_TOPICS_TBL." where id='$id'";
 			$res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($res);
 
-			$req = "select * from topics_categories";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
-			$req = "select * from users where id='".$this->arr['id_approver']."'";
+			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_approver']."'";
 			$res = $this->db->db_query($req);
 			$r = $this->db->db_fetch_array($res);
 			$this->approvername = bab_composeUserName($r['firstname'], $r['lastname']);
@@ -281,7 +281,7 @@ function viewArticle($article)
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->close = bab_translate("Close");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->content = bab_replace($this->arr['body']);
@@ -316,7 +316,7 @@ function updateCategory($id, $category, $description, $approver, $cat)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "update topics set id_approver='$approverid', category='$category', description='$description', id_cat='$cat' where id = '$id'";
+	$query = "update ".BAB_TOPICS_TBL." set id_approver='$approverid', category='$category', description='$description', id_cat='$cat' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
@@ -328,13 +328,13 @@ function bab_confirmDeleteArticles($items)
 	$db = $GLOBALS['babDB'];
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$req = "delete from comments where id_article='".$arr[$i]."'";
+		$req = "delete from ".BAB_COMMENTS_TBL." where id_article='".$arr[$i]."'";
 		$res = $db->db_query($req);
 
-		$req = "delete from homepages where id_article='".$arr[$i]."'";
+		$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr[$i]."'";
 		$res = $db->db_query($req);
 
-		$req = "delete from articles where id='".$arr[$i]."'";	
+		$req = "delete from ".BAB_ARTICLES_TBL." where id='".$arr[$i]."'";	
 		$res = $db->db_query($req);
 		}
 }
@@ -348,11 +348,11 @@ function addToHomePages($item, $homepage, $art)
 
 	$db = $GLOBALS['babDB'];
 
-	$req = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res = $db->db_query($req);
 	if( !$res || $db->db_num_rows($res) < 1)
 	{
-		$req = "insert into sites ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
+		$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
 		$res = $db->db_query($req);
 		$idsite = $db->db_insert_id();
 	}
@@ -362,23 +362,23 @@ function addToHomePages($item, $homepage, $art)
 		$idsite = $arr['id'];
 	}
 
-	$req = "select * from articles where id_topic='".$item."' order by date desc";
+	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$item."' order by date desc";
 	$res = $db->db_query($req);
 	while( $arr = $db->db_fetch_array($res))
 		{
 		if( $count > 0 && in_array($arr['id'], $art))
 			{
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$idsite."'";
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$idsite."'";
 				$res2 = $db->db_query($req);
 				if( !$res2 || $db->db_num_rows($res2) < 1)
 				{
-					$req = "insert into homepages (id_article, id_site, id_group) values ('" .$arr['id']. "', '" . $idsite. "', '" . $homepage. "')";
+					$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$arr['id']. "', '" . $idsite. "', '" . $homepage. "')";
 					$db->db_query($req);
 				}
 			}
 		else
 			{
-				$req = "delete from homepages where id_article='".$arr['id']."' and id_group='".$homepage."'";
+				$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr['id']."' and id_group='".$homepage."'";
 				$db->db_query($req);
 			}
 
@@ -395,7 +395,7 @@ if(!isset($idx))
 if(!isset($cat))
 	{
 	$db = $GLOBALS['babDB'];
-	$r = $db->db_fetch_array($db->db_query("select * from topics where id='".$item."'"));
+	$r = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$item."'"));
 	$cat = $r['id_cat'];
 	}
 
@@ -470,7 +470,7 @@ switch($idx)
 		$babBody->title = bab_getCategoryTitle($item);
 		if( $adminid > 0)
 		{
-		aclGroups("topic", "Modify", "topicsview_groups", $item, "aclview");
+		aclGroups("topic", "Modify", BAB_TOPICSVIEW_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
@@ -485,7 +485,7 @@ switch($idx)
 		$babBody->title = bab_getCategoryTitle($item);
 		if( $adminid > 0)
 		{
-		aclGroups("topic", "Modify", "topicscom_groups", $item, "aclview");
+		aclGroups("topic", "Modify", BAB_TOPICSCOM_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
@@ -500,7 +500,7 @@ switch($idx)
 		$babBody->title = bab_getCategoryTitle($item);
 		if( $adminid > 0)
 		{
-		aclGroups("topic", "Modify", "topicssub_groups", $item, "aclview");
+		aclGroups("topic", "Modify", BAB_TOPICSSUB_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);

@@ -31,12 +31,12 @@ function listArticles($topics, $newc)
 		function temp($topics, $newc)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id_topic='$topics' and confirmed='Y' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
 			$this->newc = $newc;
-			if( bab_isAccessValid("topicscom_groups", $this->topics) || bab_isUserApprover($topics))
+			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserApprover($topics))
 				$this->com = true;
 			else
 				$this->com = false;
@@ -55,11 +55,11 @@ function listArticles($topics, $newc)
 
 				if( $this->com)
 					{
-					$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='Y'";
+					$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='Y'";
 					$res = $this->db->db_query($req);
 					$ar = $this->db->db_fetch_array($res);
 					$total = $ar['total'];
-					$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='N'";
+					$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='N'";
 					$res = $this->db->db_query($req);
 					$ar = $this->db->db_fetch_array($res);
 					$totalw = $ar['total'];
@@ -116,7 +116,7 @@ function readMore($topics, $article)
 		function temp($topics, $article)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article' and confirmed='Y'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -237,7 +237,7 @@ function modifyArticle($topics, $article)
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( $this->count > 0)
@@ -304,7 +304,7 @@ function articlePrint($topics, $article)
 		function temp($topics, $article)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -407,19 +407,19 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	$bodytext = addslashes($bodytext);
 
 	$db = $GLOBALS['babDB'];
-	$req = "insert into articles (id_topic, id_author, date, title, body, head) values ";
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, title, body, head) values ";
 	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
 	//##: mail to approver
-	$req = "select * from topics where id='$topics'";
+	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
         $top = $arr['category'];
-		$req = "select * from users where id='".$arr['id_approver']."'";
+		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -450,18 +450,18 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		$title = addslashes($title);
 		}
 
-	$req = "insert into articles (id_topic, id_author, date, title, body, head) values ";
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, title, body, head) values ";
 	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
-	$req = "select * from topics where id='$topics'";
+	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
         $top = $arr['category'];
-		$req = "select * from users where id='".$arr['id_approver']."'";
+		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -492,7 +492,7 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext)
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
 	$db = $GLOBALS['babDB'];
-	$req = "update articles set title='$title', head='$headtext', body='$bodytext' where id='$article'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext' where id='$article'";
 	$res = $db->db_query($req);
 
 	}
@@ -532,7 +532,7 @@ switch($idx)
 	{
 	case "Submit":
 		$babBody->title = bab_translate("Submit an article");
-		if( bab_isAccessValid("topicssub_groups", $topics) || $approver)
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticle($topics);
 			$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
@@ -542,7 +542,7 @@ switch($idx)
 
 	case "subfile":
 		$babBody->title = bab_translate("Submit an article");
-		if( bab_isAccessValid("topicssub_groups", $topics) || $approver)
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticleByFile($topics);
 			$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
@@ -556,10 +556,10 @@ switch($idx)
 
 	case "More":
 		$babBody->title = bab_getCategoryTitle($topics);
-		if( bab_isAccessValid("topicsview_groups", $topics)|| $approver)
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
 			readMore($topics, $article);
-			if( bab_isAccessValid("topicssub_groups", $topics) || $approver)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 				{
 				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics."&new=".$new."&newc=".$newc);
 				//$babBody->addItemMenu("Comments", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
@@ -569,7 +569,7 @@ switch($idx)
 					$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
 					}
 				}
-			if( bab_isAccessValid("topicscom_groups", $topics) || $approver)
+			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 				{
 				$babBody->addItemMenu("Comments", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 				}
@@ -598,7 +598,7 @@ switch($idx)
 		break;
 
 	case "Print":
-		if( bab_isAccessValid("topicsview_groups", $topics) || $approver)
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics) || $approver)
 			articlePrint($topics, $article);
 		exit();
 		break;
@@ -606,10 +606,10 @@ switch($idx)
 	default:
 	case "Articles":
 		$babBody->title = bab_translate("List of articles");
-		if( bab_isAccessValid("topicsview_groups", $topics)|| $approver)
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
 			$count = listArticles($topics, $newc);
-			if( bab_isAccessValid("topicssub_groups", $topics)|| $approver)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				if( $approver)
 					{

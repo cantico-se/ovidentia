@@ -37,7 +37,7 @@ function addCategory($cat)
 				$this->msie = 0;	
 			$this->idcat = $cat;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from topics_categories";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -99,9 +99,9 @@ function listCategories($cat, $adminid)
 			$this->articles = bab_translate("Article") ."(s)";
 			$this->db = $GLOBALS['babDB'];
 			if( $adminid > 0)
-				$req = "select * from topics where id_cat='".$cat."'";
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."'";
 			else
-				$req = "select * from topics where id_cat='".$cat."' and id_approver='".$BAB_SESS_USERID."'";
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' and id_approver='".$BAB_SESS_USERID."'";
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -126,11 +126,11 @@ function listCategories($cat, $adminid)
 				$this->arr['description'] = $this->arr['description'];//nl2br($this->arr['description']);
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->namecategory = $this->arr['category'];
-				$req = "select * from users where id='".$this->arr['id_approver']."'";
+				$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_approver']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->approver = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
-				$req = "select count(*) as total from articles where id_topic='".$this->arr['id']."'";
+				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
@@ -163,7 +163,7 @@ function saveCategory($category, $description, $approver, $cat)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from topics where category='$category' and id_cat='".$cat."'";	
+	$query = "select * from ".BAB_TOPICS_TBL." where category='$category' and id_cat='".$cat."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -177,7 +177,7 @@ function saveCategory($category, $description, $approver, $cat)
 		return;
 		}
 
-	$query = "insert into topics (id_approver, category, description, id_cat) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "')";
 	$db->db_query($query);
 	}
 

@@ -9,7 +9,7 @@ include $babInstallPath."admin/acl.php";
 function getSectionName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sections where id='$id'";
+	$query = "select * from ".BAB_SECTIONS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -61,7 +61,7 @@ function sectionModify($id)
 			$this->modify = bab_translate("Modify");
 			$this->id = $id;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from sections where id='$id'";
+			$req = "select * from ".BAB_SECTIONS_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
@@ -133,20 +133,20 @@ function sectionUpdate($id, $title, $desc, $content, $script)
 	else
 		$php = "N";
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sections where id='".$id."'";
+	$query = "select * from ".BAB_SECTIONS_TBL." where id='".$id."'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
 	/*
 	if( $arr['position'] != $pos)
 		{
-		$query = "select max(ordering) from sections_order where private='N' and position='".$arr['position']."'";
+		$query = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where private='N' and position='".$arr['position']."'";
 		$res = $db->db_query($query);
 		$arr = $db->db_fetch_array($res);
-		$query = "update sections_order set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";
+		$query = "update ".BAB_SECTIONS_ORDER_TBL." set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";
 		$db->db_query($query);
 		}
 	*/
-	//$query = "update sections set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
+	//$query = "update ".BAB_SECTIONS_TBL." set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
 	if(!get_cfg_var("magic_quotes_gpc"))
 		{
 		$desc = addslashes($desc);
@@ -154,7 +154,7 @@ function sectionUpdate($id, $title, $desc, $content, $script)
 		$title = addslashes($title);
 		}
 			
-	$query = "update sections set title='$title', description='$desc', content='$content', script='$php' where id=$id";
+	$query = "update ".BAB_SECTIONS_TBL." set title='$title', description='$desc', content='$content', script='$php' where id=$id";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	}
@@ -164,19 +164,19 @@ function confirmDeleteSection($id)
 	$db = $GLOBALS['babDB'];
 
 	// delete refernce group
-	$req = "delete from sections_groups where id_object='$id'";
+	$req = "delete from ".BAB_SECTIONS_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);	
 
-	// delete from sections_order
-	$req = "delete from sections_order where id_section='$id' and type='2'";
+	// delete from ".BAB_SECTIONS_ORDER_TBL
+	$req = "delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='$id' and type='2'";
 	$res = $db->db_query($req);	
 
-	// delete from sections_states
-	$req = "delete from sections_states where id_section='$id' and type='2'";
+	// delete from BAB_SECTIONS_STATES_TBL
+	$req = "delete from ".BAB_SECTIONS_STATES_TBL." where id_section='$id' and type='2'";
 	$res = $db->db_query($req);	
 
 	// delete section
-	$req = "delete from sections where id='$id'";
+	$req = "delete from ".BAB_SECTIONS_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	}
@@ -210,7 +210,7 @@ switch($idx)
 		break;
 	case "Groups":
 		$babBody->title = getSectionName($item) . bab_translate(" is visible by groups");
-		aclGroups("section", "Modify", "sections_groups", $item, "aclsec");
+		aclGroups("section", "Modify", BAB_SECTIONS_GROUPS_TBL, $item, "aclsec");
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("Access"),$GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$item);

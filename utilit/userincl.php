@@ -8,7 +8,7 @@ function bab_isUserApprover($topics)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$query = "select * from topics where id='$topics' and id_approver='$BAB_SESS_USERID'";
+	$query = "select * from ".BAB_TOPICS_TBL." where id='$topics' and id_approver='$BAB_SESS_USERID'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -27,9 +27,9 @@ function bab_isUserGroupManager($grpid="")
 		return false;
 
 	if( empty($grpid))
-		$query = "select * from groups where manager='$BAB_SESS_USERID'";
+		$query = "select * from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID'";
 	else
-		$query = "select * from groups where manager='$BAB_SESS_USERID' and id='$grpid'";
+		$query = "select * from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID' and id='$grpid'";
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -51,12 +51,12 @@ function bab_isMemberOfGroup($groupname, $userid="")
 		if( $userid == "")
 			$userid = $BAB_SESS_USERID;
 		$db = $GLOBALS['babDB'];
-		$req = "select * from groups where name='$groupname'";
+		$req = "select * from ".BAB_GROUPS_TBL." where name='$groupname'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$req = "select * from users_groups where id_object='$userid' and id_group='".$arr['id']."'";
+			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and id_group='".$arr['id']."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				return $arr['id'];
@@ -74,7 +74,7 @@ function bab_isUserAdministrator()
 {
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from users_groups where id_object='".$BAB_SESS_USERID."' and id_group='3'";
+	$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and id_group='3'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -126,7 +126,7 @@ function bab_isAccessValid($table, $idobject)
 					{
 					while( $row = $db->db_fetch_array($res))
 						{
-						$req = "select * from users_groups where id_object=$BAB_SESS_USERID and id_group='".$row['id_group']."'"; //groups
+						$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object=$BAB_SESS_USERID and id_group='".$row['id_group']."'"; //groups
 						$res2 = $db->db_query($req);
 						if( $res2 && $db->db_num_rows($res2) > 0 )
 							{
@@ -145,7 +145,7 @@ function bab_isAccessValid($table, $idobject)
 function bab_isUserAlreadyLogged($iduser)
 {
 	$db = $GLOBALS['babDB'];
-	$req="select * from users_log where id_user='$iduser'";
+	$req="select * from ".BAB_USERS_LOG_TBL." where id_user='$iduser'";
 	$res=$db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -187,7 +187,7 @@ function bab_userIsloggedin()
 function bab_getUserName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from users where id='$id'";
+	$query = "select * from ".BAB_USERS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -205,9 +205,9 @@ function bab_isUserVacationApprover($groupid = 0)
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
 	if( $groupid == 0)
-		$query = "select * from vacationsman_groups where id_object='$BAB_SESS_USERID' or supplier='$BAB_SESS_USERID'";
+		$query = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID' or supplier='$BAB_SESS_USERID'";
 	else
-		$query = "select * from vacationsman_groups where id_object='$BAB_SESS_USERID'  or supplier='$BAB_SESS_USERID' and id_group='$groupid'";
+		$query = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_object='$BAB_SESS_USERID'  or supplier='$BAB_SESS_USERID' and id_group='$groupid'";
 
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -224,13 +224,13 @@ function bab_isUserVacationApprover($groupid = 0)
 function bab_isUserUseVacation($iduser)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from users_groups where id_object='$iduser' and isprimary='Y'";
+	$query = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$iduser' and isprimary='Y'";
 	$res = $db->db_query($query);
 
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from groups where id='".$arr['id_group']."' and vacation='Y'";
+		$query = "select * from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."' and vacation='Y'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -255,7 +255,7 @@ function bab_getGroupName($id)
 			return bab_translate("Unregistered users");
 		default:
 			$db = $GLOBALS['babDB'];
-			$query = "select * from groups where id='$id'";
+			$query = "select * from ".BAB_GROUPS_TBL." where id='$id'";
 			$res = $db->db_query($query);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
@@ -272,7 +272,7 @@ function bab_getGroupName($id)
 function bab_getPrimaryGroupId($userid)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from users_groups where id_object='$userid' and isprimary='Y'";
+	$query = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -291,12 +291,12 @@ function bab_mailAccessLevel()
 	$db = $GLOBALS['babDB'];
 
 	$bemail = 0;
-	$req = "select * from users_groups join groups where id_object='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
+	$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		$bemail = 1;
 
-	$req = "select * from groups where manager='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
+	$req = "select * from ".BAB_GROUPS_TBL." where manager='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -315,7 +315,7 @@ function bab_fileManagerAccessLevel()
 	$aret = array();
 	$badmin = bab_isUserAdministrator();
 
-	$req = "select * from groups where id=2 and (ustorage ='Y' or gstorage ='Y')";
+	$req = "select * from ".BAB_GROUPS_TBL." where id=2 and (ustorage ='Y' or gstorage ='Y')";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -331,7 +331,7 @@ function bab_fileManagerAccessLevel()
 
 	if( !empty($BAB_SESS_USERID))
 		{
-		$req = "select * from groups where id=1 and (ustorage ='Y' or gstorage ='Y')";
+		$req = "select * from ".BAB_GROUPS_TBL." where id=1 and (ustorage ='Y' or gstorage ='Y')";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
 			{
@@ -345,7 +345,7 @@ function bab_fileManagerAccessLevel()
 				$aret['ma'][] = 0;
 			}
 
-		$req = "select groups.id, groups.gstorage, groups.ustorage from groups join users_groups where id_object='".$BAB_SESS_USERID."' and groups.id=users_groups.id_group and groups.manager !='".$BAB_SESS_USERID."' and (groups.ustorage ='Y' or groups.gstorage ='Y')";
+		$req = "select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".gstorage, ".BAB_GROUPS_TBL.".ustorage from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".manager !='".$BAB_SESS_USERID."' and (".BAB_GROUPS_TBL.".ustorage ='Y' or ".BAB_GROUPS_TBL.".gstorage ='Y')";
 		$res = $db->db_query($req);
 		while( $arr = $db->db_fetch_array($res))
 			{
@@ -356,7 +356,7 @@ function bab_fileManagerAccessLevel()
 			}
 
 
-		$req = "select id, gstorage, ustorage from groups where manager='".$BAB_SESS_USERID."' and gstorage='Y'";
+		$req = "select id, gstorage, ustorage from ".BAB_GROUPS_TBL." where manager='".$BAB_SESS_USERID."' and gstorage='Y'";
 		$res = $db->db_query($req);
 		while( $arr = $db->db_fetch_array($res))
 			{
@@ -376,7 +376,7 @@ function bab_getUserId( $name )
 	$replace = array( " " => "", "-" => "");
 	$db = $GLOBALS['babDB'];
 	$hash = md5(strtolower(strtr($name, $replace)));
-	$query = "select * from users where hashname='".$hash."'";	
+	$query = "select * from ".BAB_USERS_TBL." where hashname='".$hash."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -406,7 +406,7 @@ function bab_replace( $txt )
 				$article = trim($tab[1]);
 				if( $article[strlen($article)-1] == '"' )
 					$article = substr($article, 0, -1);
-				$req = "select * from topics where category='".addslashes($topic)."'";
+				$req = "select * from ".BAB_TOPICS_TBL." where category='".addslashes($topic)."'";
 				$res = $db->db_query($req);
 				if( $res && $db->db_num_rows($res) > 0)
 					{
@@ -420,7 +420,7 @@ function bab_replace( $txt )
 				if( sizeof( $tab ) > 1 )
 					{
 					$article = trim($tab[0]);
-					$req = "select * from topics where category='".addslashes(trim($tab[0]))."'";
+					$req = "select * from ".BAB_TOPICS_TBL." where category='".addslashes(trim($tab[0]))."'";
 					$res = $db->db_query($req);
 					if( $res && $db->db_num_rows($res) > 0)
 						{
@@ -435,17 +435,17 @@ function bab_replace( $txt )
 				}
 
 			if( isset($idtopic))
-				$req = "select * from articles where id_topic='".$idtopic."' and title= '".addslashes($article)."'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$idtopic."' and title= '".addslashes($article)."'";
 			else
 				{
-				$req = "select * from articles where title like '%".addslashes($article)."%'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where title like '%".addslashes($article)."%'";
 				}
 
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if(bab_isAccessValid("topicsview_groups", $arr['id_topic'])) 
+				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic'])) 
 					$txt = preg_replace("/\\\$ARTICLE\(".preg_quote($m[1][$k])."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=topic&idx=viewa&item=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$arr['title']."</a>", $txt);
 				else
 					$txt = preg_replace("/\\\$ARTICLE\(".preg_quote($m[1][$k])."\)/", $arr['title'], $txt);
@@ -458,7 +458,7 @@ function bab_replace( $txt )
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$req = "select * from contacts where  owner='".$GLOBALS['BAB_SESS_USERID']."' and firstname like '%".addslashes(trim($m[1][$k]))."%' and lastname like '%".addslashes(trim($m[2][$k]))."%'";
+			$req = "select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and firstname like '%".addslashes(trim($m[1][$k]))."%' and lastname like '%".addslashes(trim($m[2][$k]))."%'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
@@ -475,15 +475,15 @@ function bab_replace( $txt )
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$req = "select * from faqcat where category='".addslashes(trim($m[1][$k]))."'";
+			$req = "select * from ".BAB_FAQCAT_TBL." where category='".addslashes(trim($m[1][$k]))."'";
 			$res = $db->db_query($req);
 			$repl = false;
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if(bab_isAccessValid("faqcat_groups", $arr['id']))
+				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['id']))
 					{
-					$req = "select * from faqqr where question='".addslashes(trim($m[2][$k]))."'";
+					$req = "select * from ".BAB_FAQQR_TBL." where question='".addslashes(trim($m[2][$k]))."'";
 					$res = $db->db_query($req);
 					if( $res && $db->db_num_rows($res) > 0)
 						{

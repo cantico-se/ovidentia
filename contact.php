@@ -114,7 +114,7 @@ function contactUpdate($id)
 {
 	global $bliste, $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$req = "select * from contacts where id='$id' and owner='".$BAB_SESS_USERID."'";
+	$req = "select * from ".BAB_CONTACTS_TBL." where id='$id' and owner='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -140,14 +140,14 @@ function addContact( $firstname, $lastname, $email, $compagny, $hometel, $mobile
 	$db = $GLOBALS['babDB'];
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
-	$req = "select * from contacts where hashname='".$hash."' and owner='".$BAB_SESS_USERID."'";	
+	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$hash."' and owner='".$BAB_SESS_USERID."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
 		$msgerror = bab_translate("ERROR: This contact already exists");
 		return false;
 		}
-	$req = "insert into contacts (owner, firstname, lastname, hashname, email, compagny, hometel, mobiletel, businesstel, businessfax, jobtitle, businessaddress, homeaddress) VALUES ('". $BAB_SESS_USERID. "','" . $firstname. "','". $lastname. "','". $hash. "','" . $email. "','" . $compagny. "','" . $hometel. "','" . $mobiletel. "','" . $businesstel. "','" . $businessfax. "','" . $jobtitle. "','" . $baddress. "','" . $haddress. "')";
+	$req = "insert into ".BAB_CONTACTS_TBL." (owner, firstname, lastname, hashname, email, compagny, hometel, mobiletel, businesstel, businessfax, jobtitle, businessaddress, homeaddress) VALUES ('". $BAB_SESS_USERID. "','" . $firstname. "','". $lastname. "','". $hash. "','" . $email. "','" . $compagny. "','" . $hometel. "','" . $mobiletel. "','" . $businesstel. "','" . $businessfax. "','" . $jobtitle. "','" . $baddress. "','" . $haddress. "')";
 	$res = $db->db_query($req);	
 	return true;
 }
@@ -169,7 +169,7 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
-	$req = "select * from contacts where hashname='".$hash."' and owner='".$BAB_SESS_USERID."' and id!='".$id."'";	
+	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$hash."' and owner='".$BAB_SESS_USERID."' and id!='".$id."'";	
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
@@ -178,7 +178,7 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 		return false;
 		}
 
-	$req = "update contacts set owner='$BAB_SESS_USERID', firstname='$firstname', lastname='$lastname', hashname='$hash',email='$email', compagny='$compagny', hometel='$hometel', mobiletel='$mobiletel', businesstel='$businesstel', businessfax='$businessfax', jobtitle='$jobtitle', businessaddress='$baddress', homeaddress='$haddress' where id='$id'";
+	$req = "update ".BAB_CONTACTS_TBL." set owner='$BAB_SESS_USERID', firstname='$firstname', lastname='$lastname', hashname='$hash',email='$email', compagny='$compagny', hometel='$hometel', mobiletel='$mobiletel', businesstel='$businesstel', businessfax='$businessfax', jobtitle='$jobtitle', businessaddress='$baddress', homeaddress='$haddress' where id='$id'";
 	$res = $db->db_query($req);	
 	return true;
 }

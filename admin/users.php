@@ -51,7 +51,7 @@ function listUsers($pos, $grp)
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select * from users where lastname like '".$this->pos."%' order by lastname, firstname asc";
+				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
@@ -59,7 +59,7 @@ function listUsers($pos, $grp)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from users where firstname like '".$this->pos."%' order by firstname, lastname asc";
+				$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->pos."%' order by firstname, lastname asc";
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
@@ -88,7 +88,7 @@ function listUsers($pos, $grp)
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 
 				$this->userid = $this->arr['id'];
-				$req = "select * from users_log where id_user='".$this->arr['id']."'";
+				$req = "select * from ".BAB_USERS_LOG_TBL." where id_user='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				if( $arr2['islogged'] == "Y")
@@ -96,7 +96,7 @@ function listUsers($pos, $grp)
 				else
 					$this->status ="";
 
-				$req = "select * from users_groups where id_object='".$this->arr['id']."' and id_group='".$this->grp."'";
+				$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->arr['id']."' and id_group='".$this->grp."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
@@ -134,9 +134,9 @@ function listUsers($pos, $grp)
 				else 
 					{
 					if( $this->ord == "-" )
-						$req = "select * from users where lastname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
 					else
-						$req = "select * from users where firstname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
@@ -207,7 +207,7 @@ function updateGroup( $grp, $users, $userst)
 	{
 		if( count($users) < 1 || !in_array($tab[$i], $users))
 		{
-			$req = "delete from users_groups where id_group='".$grp."' and id_object='".$tab[$i]."'";
+			$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$grp."' and id_object='".$tab[$i]."'";
 			$res = $db->db_query($req);
 		}
 	}
@@ -215,7 +215,7 @@ function updateGroup( $grp, $users, $userst)
 	{
 		if( count($tab) < 1 || !in_array($users[$i], $tab))
 		{
-			$req = "insert into users_groups (id_group, id_object) VALUES ('" .$grp. "', '" . $users[$i]. "')";
+			$req = "insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$grp. "', '" . $users[$i]. "')";
 			$res = $db->db_query($req);
 		}
 	}

@@ -50,7 +50,7 @@ function notesList()
 			$this->date = bab_translate("Date");
 			$this->content = bab_translate("Content");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from notes where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_NOTES_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -88,7 +88,7 @@ function saveNotes($content)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "insert into notes (id_user, date, content) VALUES ('". $BAB_SESS_USERID. "',now(), '" . $content. "')";
+	$query = "insert into ".BAB_NOTES_TBL." (id_user, date, content) VALUES ('". $BAB_SESS_USERID. "',now(), '" . $content. "')";
 	$db->db_query($query);
 	}
 

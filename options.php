@@ -26,7 +26,7 @@ function changePassword()
 		}
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from users where id='$BAB_SESS_USERID'";
+	$req = "select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
@@ -75,7 +75,7 @@ function changeUserInfo($firstname, $lastname, $nickname, $email)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from users where id='$BAB_SESS_USERID'";
+	$req = "select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
@@ -107,7 +107,7 @@ function changeLanguage()
             $this->count = 0;
 
             $db = $GLOBALS['babDB'];
-            $req = "select * from users where id='$BAB_SESS_USERID'";
+            $req = "select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
             $res = $db->db_query($req);
             if( $res && $db->db_num_rows($res) > 0 )
                 {
@@ -195,7 +195,7 @@ function changeSkin($skin)
             $this->cntstyles = 0;
 
 			$db = $GLOBALS['babDB'];
-			$req = "select * from users where id='$BAB_SESS_USERID'";
+			$req = "select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
@@ -327,7 +327,7 @@ function updateLanguage($lang)
 	if( !empty($lang))
 		{
         $db = $GLOBALS['babDB'];
-        $req = "update users set lang='".$lang."' where id='".$BAB_SESS_USERID."'";
+        $req = "update ".BAB_USERS_TBL." set lang='".$lang."' where id='".$BAB_SESS_USERID."'";
         $res = $db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
@@ -339,7 +339,7 @@ function updateSkin($skin, $style)
 	if( !empty($skin))
 		{
         $db = $GLOBALS['babDB'];
-        $req = "update users set skin='".$skin."', style='".$style."' where id='".$BAB_SESS_USERID."'";
+        $req = "update ".BAB_USERS_TBL." set skin='".$skin."', style='".$style."' where id='".$BAB_SESS_USERID."'";
         $res = $db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
@@ -350,7 +350,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 
 	$password = strtolower($password);
-	$req = "select * from users where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
+	$req = "select * from ".BAB_USERS_TBL." where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($req);
 	if (!$res || $db->db_num_rows($res) < 1)
@@ -375,7 +375,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 		
 		if( $BAB_SESS_NICKNAME != $nickname )
 			{
-			$req = "select * from users where nickname='".$nickname."'";	
+			$req = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
 			$res = $db->db_query($req);
 			if( $db->db_num_rows($res) > 0)
 				{
@@ -395,7 +395,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 		$hash=md5($nickname.$BAB_HASH_VAR);
 		$replace = array( " " => "", "-" => "");
 		$hashname = md5(strtolower(strtr($firstname.$lastname, $replace)));
-		$req = "update users set firstname='".$firstname."', lastname='".$lastname."', nickname='".$nickname."', email='".$email."', confirm_hash='".$hash."', hashname='".$hashname."' where id='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_USERS_TBL." set firstname='".$firstname."', lastname='".$lastname."', nickname='".$nickname."', email='".$email."', confirm_hash='".$hash."', hashname='".$hashname."' where id='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 		$BAB_SESS_NICKNAME = $nickname;
 		$BAB_SESS_USER = bab_composeUserName($firstname, $lastname);
@@ -451,12 +451,12 @@ function updateStateSection($c, $w, $closed)
 	if( !empty($BAB_SESS_USERID))
 		{
 		$db = $GLOBALS['babDB'];
-		$req = "select * from sections_states where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		$req = "select * from ".BAB_SECTIONS_STATES_TBL." where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
-			$req = "update sections_states set closed='".$closed."' where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+			$req = "update ".BAB_SECTIONS_STATES_TBL." set closed='".$closed."' where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
 		else
-			$req = "insert into sections_states (id_section, closed, type, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
+			$req = "insert into ".BAB_SECTIONS_STATES_TBL." (id_section, closed, type, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
 
 		$db->db_query($req);
 		}
@@ -467,7 +467,7 @@ function updateStateSection($c, $w, $closed)
 if( !isset($firstname) &&  !isset($lastname) && !isset($nickname) && !isset($email))
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from users where id='".$BAB_SESS_USERID."'";
+	$req = "select * from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{

@@ -64,7 +64,7 @@ function topcatsList()
 			$this->update = bab_translate("Disable");
 			$this->topics = bab_translate("Number of topics");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from topics_categories";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -76,7 +76,7 @@ function topcatsList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$this->arr['id'];
-				$r = $this->db->db_fetch_array($this->db->db_query("select count(*) as total from topics where id_cat='".$this->arr['id']."'"));
+				$r = $this->db->db_fetch_array($this->db->db_query("select count(*) as total from ".BAB_TOPICS_TBL." where id_cat='".$this->arr['id']."'"));
 				$this->topcount = $r['total'];
 				$this->topcounturl = $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$this->arr['id'];
 				if( $this->arr['enabled'] == "N")
@@ -108,7 +108,7 @@ function addTopCat($name, $description, $benabled)
 
 	$db = $GLOBALS['babDB'];
 
-	$res = $db->db_query("select * from topics_categories where title='$name'");
+	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='$name'");
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This topic category already exists");
@@ -120,14 +120,14 @@ function addTopCat($name, $description, $benabled)
 			$description = addslashes($description);
 			$name = addslashes($name);
 			}
-		$req = "insert into topics_categories (title, description, enabled) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "')";
+		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "')";
 		$db->db_query($req);
 
 		$id = $db->db_insert_id();
-		$req = "select max(ordering) from sections_order where position='0'";
+		$req = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='0'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
-		$req = "insert into sections_order (id_section, position, type, ordering) VALUES ('" .$id. "', '0', '3', '" . ($arr[0]+1). "')";
+		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '0', '3', '" . ($arr[0]+1). "')";
 		$db->db_query($req);
 		}
 	}
@@ -135,7 +135,7 @@ function addTopCat($name, $description, $benabled)
 function disableTopcats($topcats)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select id from topics_categories";
+	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL."";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -144,7 +144,7 @@ function disableTopcats($topcats)
 		else
 			$enabled = "Y";
 
-		$req = "update topics_categories set enabled='".$enabled."' where id='".$row['id']."'";
+		$req = "update ".BAB_TOPICS_CATEGORIES_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}

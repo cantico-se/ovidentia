@@ -9,7 +9,7 @@ $babDayType = array(1=>bab_translate("Whole day"), bab_translate("Morning"), bab
 function bab_getVacationName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from vacations_types where id='$id'";
+	$query = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -25,7 +25,7 @@ function bab_getVacationName($id)
 function bab_getStatusName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from vacations_states where id='$id'";
+	$query = "select * from ".BAB_VACATIONS_STATES_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{

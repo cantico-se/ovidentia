@@ -81,7 +81,7 @@ function listForums()
 			$this->reply = bab_translate("Reply");
 			$this->posts = bab_translate("Post");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from forums order by name asc";
+			$req = "select * from ".BAB_FORUMS_TBL." order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -129,7 +129,7 @@ function saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, 
 		}
 	
 	$db = $GLOBALS['babDB'];
-	$query = "select * from forums where name='$name'";	
+	$query = "select * from ".BAB_FORUMS_TBL." where name='$name'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -148,7 +148,7 @@ function saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, 
 		}
 	else
 		$moderatorid = 0;	
-	$query = "insert into forums (name, description, display, moderator, moderation, active)";
+	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderator, moderation, active)";
 	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $moderatorid. "', '" . $moderation. "', '" . $active. "')";
 	$db->db_query($query);
 	return true;

@@ -44,11 +44,11 @@ function modifyForum($id)
 			$this->no = bab_translate("No");
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from forums where id='$id'";
+			$req = "select * from ".BAB_FORUMS_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 
-			$req = "select * from users where id='".$this->arr['moderator']."'";
+			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['moderator']."'";
 			$this->res = $this->db->db_query($req);
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
@@ -126,7 +126,7 @@ function updateForum($id, $name, $description, $moderator, $moderation, $nbmsgdi
 	else
 		$moderatorid = 0;
 
-	$query = "update forums set name='$name', description='$description', moderation='$moderation', moderator='$moderatorid', display='$nbmsgdisplay', active='$active' where id = '$id'";
+	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', moderator='$moderatorid', display='$nbmsgdisplay', active='$active' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 
@@ -138,16 +138,16 @@ function confirmDeleteForum($id)
 	$db = $GLOBALS['babDB'];
 	//@@: delete all posts
 
-	$req = "delete from forumsview_groups where id_object='$id'";
+	$req = "delete from ".BAB_FORUMSVIEW_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 	
-	$req = "delete from forumspost_groups where id_object='$id'";
+	$req = "delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 
-	$req = "delete from forumsreply_groups where id_object='$id'";
+	$req = "delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 
-	$req = "delete from forums where id='$id'";
+	$req = "delete from ".BAB_FORUMS_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	}
 
@@ -178,7 +178,7 @@ switch($idx)
 
 	case "Groups":
 		$babBody->title = bab_getForumName($item) . ": ".bab_translate("List of groups");
-		aclGroups("forum", "Modify", "forumsview_groups", $item, "aclview");
+		aclGroups("forum", "Modify", BAB_FORUMSVIEW_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
@@ -189,7 +189,7 @@ switch($idx)
 
 	case "Reply":
 		$babBody->title = bab_getForumName($item) . ": ".bab_translate("List of groups");
-		aclGroups("forum", "Modify", "forumsreply_groups", $item, "aclview");
+		aclGroups("forum", "Modify", BAB_FORUMSREPLY_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
@@ -200,7 +200,7 @@ switch($idx)
 
 	case "Post":
 		$babBody->title = bab_getForumName($item) . ": ".bab_translate("List of groups");
-		aclGroups("forum", "Modify", "forumspost_groups", $item, "aclview");
+		aclGroups("forum", "Modify", BAB_FORUMSPOST_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);

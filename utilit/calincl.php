@@ -7,7 +7,7 @@
 function bab_getCategoryCalName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from categoriescal where id='$id'";
+	$query = "select * from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -23,7 +23,7 @@ function bab_getCategoryCalName($id)
 function bab_getResourceCalName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from resourcescal where id='$id'";
+	$query = "select * from ".BAB_RESOURCESCAL_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -39,7 +39,7 @@ function bab_getResourceCalName($id)
 function bab_getCalendarId($iduser, $type)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select * from calendar where owner='$iduser' and actif='Y' and type='".$type."'";
+	$query = "select * from ".BAB_CALENDAR_TBL." where owner='$iduser' and actif='Y' and type='".$type."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -55,7 +55,7 @@ function bab_getCalendarId($iduser, $type)
 function bab_getCalendarType($idcal)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select * from calendar where id='$idcal'";
+	$query = "select * from ".BAB_CALENDAR_TBL." where id='$idcal'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -71,7 +71,7 @@ function bab_getCalendarType($idcal)
 function bab_getCalendarOwner($idcal)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select * from calendar where id='$idcal'";
+	$query = "select * from ".BAB_CALENDAR_TBL." where id='$idcal'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -87,7 +87,7 @@ function bab_getCalendarOwner($idcal)
 function bab_getCalendarEventTitle($evtid)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select * from cal_events where id='$evtid'";
+	$query = "select * from ".BAB_CAL_EVENTS_TBL." where id='$evtid'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -104,14 +104,14 @@ function bab_getCalendarOwnerName($idcal, $type)
 {
 	$ret = "";
 	$db = $GLOBALS['babDB'];
-	$query = "select * from calendar where id='$idcal'";
+	$query = "select * from ".BAB_CALENDAR_TBL." where id='$idcal'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		if( $type == 1)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from users where id='".$arr['owner']."'";
+			$query = "select * from ".BAB_USERS_TBL." where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
 			$ret = bab_composeUserName( $arr['firstname'], $arr['lastname']);
@@ -119,7 +119,7 @@ function bab_getCalendarOwnerName($idcal, $type)
 		else if( $type == 2)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from groups where id='".$arr['owner']."'";
+			$query = "select * from ".BAB_GROUPS_TBL." where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
 			$ret = $arr['name'];
@@ -127,7 +127,7 @@ function bab_getCalendarOwnerName($idcal, $type)
 		else if( $type == 3)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from resourcescal where id='".$arr['owner']."'";
+			$query = "select * from ".BAB_RESOURCESCAL_TBL." where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
 			$ret = $arr['name'];

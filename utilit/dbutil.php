@@ -70,7 +70,7 @@ function db_query($id, $query)
 		case "mysql":
 		default:
 			$res = mysql_query($query, $id);
-			if (!$res )
+			if (!$res)
 				{
 				$this->db_print_error("Can't execute query : <br><pre>" . htmlspecialchars($query) . "</pre>");
 				}
@@ -165,7 +165,7 @@ class babDatabase extends bab_database
 {
 	function babDatabase()
 		{
-		$this->bab_database();
+		$this->bab_database(true);
 		}
 
 	function db_connect()

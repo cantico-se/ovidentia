@@ -8,7 +8,7 @@
 function getSiteName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sites where id='$id'";
+	$query = "select * from ".BAB_SITES_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -46,7 +46,7 @@ function sitesList()
 			$this->lang = bab_translate("Lang");
 			$this->email = bab_translate("Email");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from sites";
+			$req = "select * from ".BAB_SITES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -232,7 +232,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $register, $con
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sites where name='$name'";	
+	$query = "select * from ".BAB_SITES_TBL." where name='$name'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -241,7 +241,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $register, $con
 		}
 	else
 		{
-		$query = "insert into sites (name, description, lang, adminemail, skin, registration, email_confirm) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $register. "', '" . $confirm."')";
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, registration, email_confirm) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $register. "', '" . $confirm."')";
 		$db->db_query($query);
 		}
 	return true;

@@ -33,13 +33,13 @@ function oldListArticles()
 		function temp()
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from topics";
+			$req = "select * from ".BAB_TOPICS_TBL."";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(bab_isAccessValid("topicsview_groups", $row['id']))
+				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
 					{
-					$req = "select * from articles where id_topic='".$row['id']."' and confirmed='Y' order by date desc";
+					$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$row['id']."' and confirmed='Y' order by date desc";
 					$res2 = $this->db->db_query($req);
 
 					if( $res2 && $this->db->db_num_rows($res2) > 0)
@@ -61,7 +61,7 @@ function oldListArticles()
 			static $i = 0;
 			if( $i < $this->counttop)
 				{
-				$req = "select * from articles where id_topic='".$this->arrid[$i]."' and confirmed='Y' order by date desc";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arrid[$i]."' and confirmed='Y' order by date desc";
 				$this->res = $this->db->db_query($req);
 
 				if( $this->res && $this->db->db_num_rows($this->res) > 0)
@@ -72,11 +72,11 @@ function oldListArticles()
 
 					if( $this->com)
 						{
-						$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='Y'";
+						$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='Y'";
 						$res = $this->db->db_query($req);
 						$ar = $this->db->db_fetch_array($res);
 						$total = $ar['total'];
-						$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='N'";
+						$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='N'";
 						$res = $this->db->db_query($req);
 						$ar = $this->db->db_fetch_array($res);
 						$totalw = $ar['total'];
@@ -133,11 +133,11 @@ function ListArticles($idgroup)
 		function temp($idgroup)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+			$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 			$res = $this->db->db_query($req);
 			if( !$res || $this->db->db_num_rows($res) < 1)
 				{
-				$req = "insert into sites ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
+				$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
 				$res = $this->db->db_query($req);
 				$idsite = $this->db->db_insert_id();
 				}
@@ -146,7 +146,7 @@ function ListArticles($idgroup)
 				$arr = $this->db->db_fetch_array($res);
 				$idsite = $arr['id'];
 				}
-			$req = "select * from homepages where id_group='".$idgroup."' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->countres = $this->db->db_num_rows($this->res);
 			$this->morename = bab_translate("Read More");
@@ -159,7 +159,7 @@ function ListArticles($idgroup)
 			if( $i < $this->countres)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from articles where id='".$arr['id_article']."'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->title = $arr['title'];
@@ -195,7 +195,7 @@ function readMore($article)
 		function temp($article)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article' and confirmed='Y'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}

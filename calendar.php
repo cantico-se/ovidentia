@@ -15,7 +15,7 @@ function getAvailableCalendars()
 	array_push($tab, $rr);
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from calaccess_users where id_user='".$BAB_SESS_USERID."'";
+	$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_user='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	while($row = $db->db_fetch_array($res))
 	{
@@ -25,14 +25,14 @@ function getAvailableCalendars()
 	}
 
 
-	$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+	$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=$BAB_SESS_USERID and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 	$resgroups = $db->db_query($req);
 	if( $resgroups )
 		{
 		$countgroups = $db->db_num_rows($resgroups); 
 		}
 
-	$req = "select * from resourcescal where id_group='1'";
+	$req = "select * from ".BAB_RESOURCESCAL_TBL." where id_group='1'";
 	if( $countgroups > 0)
 		{
 		for( $i = 0; $i < $countgroups; $i++)
@@ -65,7 +65,7 @@ function getEventsResult($calid, $day, $month, $year)
 	$mktime = mktime(0,0,0,$month, $day,$year);
 	$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 	$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-	$req = "select * from cal_events where id_cal='".$calid."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
+	$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
 	$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";
 	return $this->resevent = $db->db_query($req);
 }
@@ -121,7 +121,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->new = bab_translate("New");
 			$this->maxevent = 6;
 			$this->plus = "";
-			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			$this->babCalendarStartDay = 0;
 			$this->babCalendarUsebgColor = "Y";
@@ -140,7 +140,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 					else
 						{
 						$this->bowner = 0;
-						$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
+						$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
 						$res = $this->db->db_query($req);
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
@@ -331,7 +331,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$this->calid. "&evtid=".$arr['id']. "&view=viewm";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
-					$req = "select * from categoriescal where id='".$arr['id_cat']."'";
+					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
 					$res = $this->db->db_query($req);
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
@@ -370,7 +370,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewm";
 					if( $this->babCalendarUsebgColor == "Y")
 						{
-						$req = "select * from categoriescal where id='".$arr['id_cat']."'";
+						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
 						$res = $this->db->db_query($req);
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
@@ -449,7 +449,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->month = $month;
 			$this->year = $year;
 			$this->day = $day;
-			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			$this->babCalendarStartDay = 0;
 			$this->babCalendarUsebgColor = "Y";
@@ -467,7 +467,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 					else
 						{
 						$this->bowner = 0;
-						$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
+						$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
 						$res = $this->db->db_query($req);
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
@@ -607,7 +607,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
-					$req = "select * from categoriescal where id='".$arr['id_cat']."'";
+					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
 					$res = $this->db->db_query($req);
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
@@ -639,7 +639,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
-					$req = "select * from categoriescal where id='".$arr['id_cat']."'";
+					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
 					$res = $this->db->db_query($req);
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
@@ -715,7 +715,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 			$this->firsttime ="";
 			$this->calid = $calid;
 			$this->caltype = $caltype;
-			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			$this->babCalendarUsebgColor = "Y";
 			if( $res && $this->db->db_num_rows($res) > 0)
@@ -731,7 +731,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 					else
 						{
 						$this->bowner = 0;
-						$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
+						$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
 						$res = $this->db->db_query($req);
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
@@ -938,7 +938,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 
 					if( $this->babCalendarUsebgColor == "Y")
 						{
-						$req = "select * from categoriescal where id='".$arr['id_cat']."'";
+						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
 						$res = $this->db->db_query($req);
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
@@ -991,7 +991,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 					$this->titleten = $tab[$k];
 					if( $this->babCalendarUsebgColor == "Y")
 						{
-						$req = "select * from categoriescal where id='".$arr['id_cat']."'";
+						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
 						$res = $this->db->db_query($req);
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
@@ -1043,14 +1043,14 @@ function categoriesList($calid)
 			switch( $this->caltype)
 				{
 				case 1: // user
-					$req = "select * from users_groups join groups where id_object=$BAB_SESS_USERID and groups.id=users_groups.id_group";
+					$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=$BAB_SESS_USERID and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 					$resgroups = $this->db->db_query($req);
 					if( $resgroups )
 						{
 						$countgroups = $this->db->db_num_rows($resgroups); 
 						}
 
-					$req2 = "select * from categoriescal where id_group='1'";
+					$req2 = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1'";
 					if( $countgroups > 0)
 						{
 						for( $i = 0; $i < $countgroups; $i++)
@@ -1064,10 +1064,10 @@ function categoriesList($calid)
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
 				case 2: // group
-					$req = "select * from calendar where id='".$calendarid."'";
+					$req = "select * from ".BAB_CALENDAR_TBL." where id='".$calendarid."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from categoriescal where id_group='1' or id_group='".$arr['owner']."'";
+					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group='1' or id_group='".$arr['owner']."'";
 					$this->rescat = $this->db->db_query($req);
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
@@ -1099,7 +1099,7 @@ function categoriesList($calid)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+	$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 	if( $arr['viewcat'] == "Y")

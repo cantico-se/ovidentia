@@ -35,11 +35,11 @@ function listCategories($cat)
 			$this->waiting = bab_translate("Waiting");
 			$this->txtsubmit = bab_translate("Submit");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and  topics.id_cat='".$cat."'";
+			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and  ".BAB_TOPICS_TBL.".id_cat='".$cat."'";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(bab_isAccessValid("topicsview_groups", $row['id']) )
+				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
 					{
 					array_push($this->arrid, $row['id']);
 					}
@@ -54,21 +54,21 @@ function listCategories($cat)
 			if( $i < $this->count)
 				{			
 				$this->urlsubmit = "";
-				$this->arr = $this->db->db_fetch_array($this->db->db_query("select * from topics where id='".$this->arrid[$i]."'"));
+				$this->arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'"));
 				$this->arr['description'] = $this->arr['description'];
 				$this->namecategory = $this->arr['category'];
-				$req = "select count(*) as total from articles where id_topic='".$this->arr['id']."' and confirmed='Y'";
+				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='Y'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
 				if( $this->nbarticles == 0 )
 					$this->urlsubmit = $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arr['id'];
 
-				$req = "select * from articles where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newa = $this->db->db_num_rows($res);
 
-				$req = "select * from comments where id_topic='".$this->arr['id']."' and confirmed='N'";
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newc = $this->db->db_num_rows($res);
 				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;

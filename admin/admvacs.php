@@ -58,7 +58,7 @@ function listVacations()
 			$this->days = bab_translate("Days");
 			$this->max = bab_translate("Max");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from vacations_types order by name asc";
+			$req = "select * from ".BAB_VACATIONS_TYPES_TBL." order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -107,7 +107,7 @@ function listStatus()
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from vacations_states order by status asc";
+			$req = "select * from ".BAB_VACATIONS_STATES_TBL." order by status asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -193,7 +193,7 @@ function saveVacation($name, $description, $defaultnday, $maxdays, $maxdaysautho
 
 	$db = $GLOBALS['babDB'];
 	
-	$req = "select * from vacations_types where name='$name'";
+	$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where name='$name'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -201,7 +201,7 @@ function saveVacation($name, $description, $defaultnday, $maxdays, $maxdaysautho
 		return;
 		}
 	
-	$req = "insert into vacations_types ( name, description, defaultdays, maxdays, days)";
+	$req = "insert into ".BAB_VACATIONS_TYPES_TBL." ( name, description, defaultdays, maxdays, days)";
 	$req .= " values ('".$name."', '" .$description. "', '" .$dndval. "', '" .$maxdval. "', '" .$maxdauth. "')";
 	$res = $db->db_query($req);
 
@@ -217,7 +217,7 @@ function addStatus($name, $description)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from vacations_states where status='$name'";
+	$query = "select * from ".BAB_VACATIONS_STATES_TBL." where status='$name'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -225,7 +225,7 @@ function addStatus($name, $description)
 		}
 	else
 		{
-		$query = "insert into vacations_states (status, description) VALUES ('" .$name. "', '" . $description. "')";
+		$query = "insert into ".BAB_VACATIONS_STATES_TBL." (status, description) VALUES ('" .$name. "', '" . $description. "')";
 		$db->db_query($query);
 		}
 	}

@@ -26,7 +26,7 @@ function listArticles($topics)
 		function temp($topics)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id_topic='$topics' and confirmed='N'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -75,7 +75,7 @@ function readMore($topics, $article)
 		function temp($topics, $article)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article' and confirmed='N'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -131,7 +131,7 @@ function modifyArticle($topics, $article)
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article' and confirmed='N'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( $this->count > 0)
@@ -197,13 +197,13 @@ function confirmArticle($article, $topics)
 			$this->idxval = "Waiting";
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from articles where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( $this->count > 0)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from users where id='".$arr['id_author']."'";
+				$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_author']."'";
 				$this->res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($this->res);
 				$this->fullname = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
@@ -237,7 +237,7 @@ function listWaitingComments($topics, $article, $newc)
 		function temp($topics, $article, $newc)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from comments where id_article='$article' and confirmed='N'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -295,7 +295,7 @@ function readComment($topics, $article, $com)
 			$this->topics = $topics;
 			$this->article = $article;
 			$db = $GLOBALS['babDB'];
-			$req = "select * from comments where id='$com'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
@@ -350,7 +350,7 @@ function confirmComment($article, $topics, $com, $newc)
 			$this->idxval = "WaitingC";
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from comments where id='$com'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( $this->count > 0)
@@ -415,44 +415,44 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	global $babBody, $new;
 	$db = $GLOBALS['babDB'];
 
-	$query = "select * from articles where id='$article'";
+	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
 	$filename = $arr['filename'];
 	$title = $arr['title'];
 
-	$query = "select * from users where id='$author'";
+	$query = "select * from ".BAB_USERS_TBL." where id='$author'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
 
-	$query = "select * from topics where id='$topics'";
+	$query = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
 	$res = $db->db_query($query);
 	$arr2 = $db->db_fetch_array($res);
 
-	$query = "select * from users where id='".$arr2['id_approver']."'";
+	$query = "select * from ".BAB_USERS_TBL." where id='".$arr2['id_approver']."'";
 	$res = $db->db_query($query);
 	$arr2 = $db->db_fetch_array($res);
 
 	if( $action == "1")
 		{
-		$query = "update articles set confirmed='Y' where id = '$article'";
+		$query = "update ".BAB_ARTICLES_TBL." set confirmed='Y' where id = '$article'";
 		$subject = bab_translate("Your article has been accepted");
 		$res = $db->db_query($query);
 
-		$query = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+		$query = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr3 = $db->db_fetch_array($res);
 			if( $homepage0 == "2")
 				{
-				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage0. "')";
+				$query = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage0. "')";
 				$res = $db->db_query($query);
 				}
 
 			if( $homepage1 == "1")
 				{
-				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage1. "')";
+				$query = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage1. "')";
 				$res = $db->db_query($query);
 				}
 			}
@@ -460,7 +460,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		}
 	else
 		{
-		$query = "delete from articles where id = '$article'";
+		$query = "delete from ".BAB_ARTICLES_TBL." where id = '$article'";
 		$subject = bab_translate("Your article has been refused");
 		$res = $db->db_query($query);
 		}
@@ -500,7 +500,7 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
 	$db = $GLOBALS['babDB'];
-	$req = "update articles set title='$title', head='$headtext', body='$bodytext' where id='$article'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext' where id='$article'";
 	$res = $db->db_query($req);		
 	}
 
@@ -549,17 +549,17 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 	global $babBody, $new, $BAB_SESS_USER, $babAdminEmail;
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from comments where id='$com'";
+	$query = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
 
 	if( $action == "1")
 		{
-		$query = "update comments set confirmed='Y' where id = '$com'";
+		$query = "update ".BAB_COMMENTS_TBL." set confirmed='Y' where id = '$com'";
 		}
 	else
 		{
-		$query = "delete from comments where id = '$com'";
+		$query = "delete from ".BAB_COMMENTS_TBL." where id = '$com'";
 		}
 	$res = $db->db_query($query);
 

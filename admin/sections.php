@@ -9,7 +9,7 @@ include $babInstallPath."admin/acl.php";
 function getSectionName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sections where id='$id'";
+	$query = "select * from ".BAB_SECTIONS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -62,15 +62,15 @@ function sectionsList()
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from sections";
+			$req = "select * from ".BAB_SECTIONS_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
 			/* don't get Administrator section */
-			$this->resa = $this->db->db_query("select * from private_sections where id > '1'");
+			$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id > '1'");
 			$this->counta = $this->db->db_num_rows($this->resa);
 
-			$this->rescat = $this->db->db_query("select * from topics_categories");
+			$this->rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL."");
 			$this->countcat = $this->db->db_num_rows($this->rescat);
 			}
 
@@ -164,10 +164,10 @@ function sectionsOrder()
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from sections_order where position='0' order by ordering asc";
+			$req = "select * from ".BAB_SECTIONS_ORDER_TBL." where position='0' order by ordering asc";
 			$this->resleft = $this->db->db_query($req);
 			$this->countleft = $this->db->db_num_rows($this->resleft);
-			$req = "select * from sections_order where position='1' order by ordering asc";
+			$req = "select * from ".BAB_SECTIONS_ORDER_TBL." where position='1' order by ordering asc";
 			$this->resright = $this->db->db_query($req);
 			$this->countright = $this->db->db_num_rows($this->resright);
 			}
@@ -181,13 +181,13 @@ function sectionsOrder()
 				switch( $arr['type'] )
 					{
 					case "1":
-						$req = "select * from private_sections where id ='".$arr['id_section']."'";
+						$req = "select * from ".BAB_PRIVATE_SECTIONS_TBL." where id ='".$arr['id_section']."'";
 						break;
 					case "3":
-						$req = "select * from topics_categories where id ='".$arr['id_section']."'";
+						$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
 						break;
 					default:
-						$req = "select * from sections where id ='".$arr['id_section']."'";
+						$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
 						break;
 					}
 				$res2 = $this->db->db_query($req);
@@ -213,13 +213,13 @@ function sectionsOrder()
 				switch( $arr['type'] )
 					{
 					case "1":
-						$req = "select * from private_sections where id ='".$arr['id_section']."'";
+						$req = "select * from ".BAB_PRIVATE_SECTIONS_TBL." where id ='".$arr['id_section']."'";
 						break;
 					case "3":
-						$req = "select * from topics_categories where id ='".$arr['id_section']."'";
+						$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
 						break;
 					default:
-						$req = "select * from sections where id ='".$arr['id_section']."'";
+						$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
 						break;
 					}
 				$res2 = $this->db->db_query($req);
@@ -293,7 +293,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from sections where title='$title'";	
+	$query = "select * from ".BAB_SECTIONS_TBL." where title='$title'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -317,13 +317,13 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into sections (title, position, description, content, script, jscript) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
-		$db->db_query("insert into sections_groups (id_object, id_group) values ('". $id. "', '3')");
-		$res = $db->db_query("select max(ordering) from sections_order where position='".$pos."'");
+		$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
+		$res = $db->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='".$pos."'");
 		$arr = $db->db_fetch_array($res);
-		$db->db_query("insert into sections_order (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')");		
+		$db->db_query("insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')");		
 		}
 	}
 
@@ -333,21 +333,21 @@ function saveSectionsOrder($listleft, $listright)
 
 		for( $i = 0; $i < count($listleft); $i++)
 		{
-			$db->db_query("update sections_order set position='0', ordering='".($i+1)."' where id='".$listleft[$i]."'");
-			$arr = $db->db_fetch_array($db->db_query("select id, type from sections_order where id='".$listleft[$i]."'"));
+			$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set position='0', ordering='".($i+1)."' where id='".$listleft[$i]."'");
+			$arr = $db->db_fetch_array($db->db_query("select id, type from ".BAB_SECTIONS_ORDER_TBL." where id='".$listleft[$i]."'"));
 			if( $arr['type'] == "2")
 				{
-				$db->db_query("update sections set position='0' where id='".$listleft[$i]."'");
+				$db->db_query("update ".BAB_SECTIONS_TBL." set position='0' where id='".$listleft[$i]."'");
 				}
 		}
 
 		for( $i = 0; $i < count($listright); $i++)
 		{
-			$db->db_query("update sections_order set position='1', ordering='".($i+1)."' where id='".$listright[$i]."'");
-			$arr = $db->db_fetch_array($db->db_query("select id, type from sections_order where id='".$listright[$i]."'"));
+			$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set position='1', ordering='".($i+1)."' where id='".$listright[$i]."'");
+			$arr = $db->db_fetch_array($db->db_query("select id, type from ".BAB_SECTIONS_ORDER_TBL." where id='".$listright[$i]."'"));
 			if( $arr['type'] == "2")
 				{
-				$db->db_query("update sections set position='1' where id='".$listright[$i]."'");
+				$db->db_query("update ".BAB_SECTIONS_TBL." set position='1' where id='".$listright[$i]."'");
 				}
 		}
 	}
@@ -355,7 +355,7 @@ function saveSectionsOrder($listleft, $listright)
 function disableSections($sections)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select id from sections";
+	$req = "select id from ".BAB_SECTIONS_TBL."";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -364,11 +364,11 @@ function disableSections($sections)
 		else
 			$enabled = "Y";
 
-		$req = "update sections set enabled='".$enabled."' where id='".$row['id']."'";
+		$req = "update ".BAB_SECTIONS_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 
-	$req = "select id from private_sections";
+	$req = "select id from ".BAB_PRIVATE_SECTIONS_TBL."";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -377,11 +377,11 @@ function disableSections($sections)
 		else
 			$enabled = "Y";
 
-		$req = "update private_sections set enabled='".$enabled."' where id='".$row['id']."'";
+		$req = "update ".BAB_PRIVATE_SECTIONS_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 
-	$req = "select id from topics_categories";
+	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL."";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -390,7 +390,7 @@ function disableSections($sections)
 		else
 			$enabled = "Y";
 
-		$req = "update topics_categories set enabled='".$enabled."' where id='".$row['id']."'";
+		$req = "update ".BAB_TOPICS_CATEGORIES_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}

@@ -9,7 +9,7 @@ include $babInstallPath."admin/acl.php";
 function getFaqName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from faqcat where id='$id'";
+	$query = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -51,11 +51,11 @@ function modifyCategory($id)
 			$this->add = bab_translate("Update Category");
 			$this->manager = bab_translate("Manager");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from faqcat where id='$id'";
+			$req = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 
-			$req = "select * from users where id='".$this->arr['id_manager']."'";
+			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_manager']."'";
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
 			$this->managername = bab_composeUserName( $this->arr2['firstname'], $this->arr2['lastname']);
@@ -122,7 +122,7 @@ function updateCategory($id, $category, $description, $manager)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "update faqcat set id_manager='$managerid', category='$category', description='$description' where id = '$id'";
+	$query = "update ".BAB_FAQCAT_TBL." set id_manager='$managerid', category='$category', description='$description' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 
@@ -133,15 +133,15 @@ function confirmDeleteFaq($id)
 	$db = $GLOBALS['babDB'];
 
 	// delete questions/responses for this faq
-	$req = "delete from faqqr where idcat='$id'";
+	$req = "delete from ".BAB_FAQQR_TBL." where idcat='$id'";
 	$res = $db->db_query($req);	
 
 	// delete faq from groups
-	$req = "delete from faqcat_groups where id_object='$id'";
+	$req = "delete from ".BAB_FAQCAT_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);	
 
 	// delete faq
-	$req = "delete from faqcat where id='$id'";
+	$req = "delete from ".BAB_FAQCAT_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 	}
@@ -172,7 +172,7 @@ switch($idx)
 
 	case "Groups":
 		$babBody->title = bab_translate("List of groups").": ". getFaqName($item);
-		aclGroups("admfaq", "Modify", "faqcat_groups", $item, "aclfaq");
+		aclGroups("admfaq", "Modify", BAB_FAQCAT_GROUPS_TBL, $item, "aclfaq");
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);

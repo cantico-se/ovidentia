@@ -38,7 +38,7 @@ function calendarGroups()
 			$this->listgroups = bab_translate("Groups List");
 			$this->db = $GLOBALS['babDB'];
 			
-			$req = "select * from calendar where owner!='2' and type='2' order by owner asc";
+			$req = "select * from ".BAB_CALENDAR_TBL." where owner!='2' and type='2' order by owner asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -85,24 +85,24 @@ function groupsUpdate($groups, $what)
 
 	if( $what == "0") // none
 		{
-		$req = "update calendar set actif='N' where type='2'";
+		$req = "update ".BAB_CALENDAR_TBL." set actif='N' where type='2'";
 		$res = $db->db_query($req);
 		}
 	else if( $what == -1 ) // all
 		{
-		$req = "update calendar set actif='Y' where owner!='2' and type='2'";
+		$req = "update ".BAB_CALENDAR_TBL." set actif='Y' where owner!='2' and type='2'";
 		$res = $db->db_query($req);
 		}
 	else
 		{
 		$cnt = count($groups);
-		$req = "update calendar set actif='N' where type='2'";
+		$req = "update ".BAB_CALENDAR_TBL." set actif='N' where type='2'";
 		$res = $db->db_query($req);
 		if( $cnt > 0)
 			{
 			for( $i = 0; $i < $cnt; $i++)
 				{
-				$req = "update calendar set actif='Y' where id='".$groups[$i]."' and type='2'";
+				$req = "update ".BAB_CALENDAR_TBL." set actif='Y' where id='".$groups[$i]."' and type='2'";
 				$res = $db->db_query($req);
 				}
 			}

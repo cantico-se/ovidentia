@@ -72,13 +72,13 @@ function notifyAdminRegistration($name, $useremail, $warning)
 
     $mail = new babMail();
 	$db = $GLOBALS['babDB'];
-	$sql = "select * from users_groups where id_group='3'";
+	$sql = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='3'";
 	$result=$db->db_query($sql);
 	if( $result && $db->db_num_rows($result) > 0 )
 		{
 		while( $arr = $db->db_fetch_array($result))
 			{
-			$sql = "select email from users where id='".$arr['id_object']."'";
+			$sql = "select email from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
 			$res=$db->db_query($sql);
 			$r = $db->db_fetch_array($res);
 			$mail->mailTo($r['email']);
@@ -116,7 +116,7 @@ function addUser( $firstname, $lastname, $nickname, $email, $password1, $passwor
 		return false;
 		}
 	$db = $GLOBALS['babDB'];
-	$query = "select * from users where nickname='".$nickname."'";	
+	$query = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -127,7 +127,7 @@ function addUser( $firstname, $lastname, $nickname, $email, $password1, $passwor
 	$replace = array( " " => "", "-" => "");
 
 	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
-	$query = "select * from users where hashname='".$hash."'";	
+	$query = "select * from ".BAB_USERS_TBL." where hashname='".$hash."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -159,17 +159,17 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 	global $BAB_HASH_VAR, $babBody, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
 	$password1=strtolower($password1);
 	$hash=md5($nickname.$BAB_HASH_VAR);
-	$sql="insert into users (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang) ".
+	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang) ".
 		"values ('$nickname','$firstname','$lastname','$hashname','". md5($password1) ."','$email', now(),'$hash','0','1','$babLanguage')";
 	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($result)
 		{
 		$id = $db->db_insert_id();
-		$sql = "insert into calendar (owner, type) values ('$id', '1')";
+		$sql = "insert into ".BAB_CALENDAR_TBL." (owner, type) values ('$id', '1')";
 		$result=$db->db_query($sql);
 
-		$result=$db->db_query("select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'");
+		$result=$db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
 		if( $result && $db->db_num_rows($result) > 0 )
 			{
 			$r = $db->db_fetch_array($result);
@@ -202,7 +202,7 @@ function userLogin($nickname,$password)
 	{
 	global $babBody, $BAB_SESS_NICKNAME, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 	$password=strtolower($password);
-	$sql="select * from users where nickname='$nickname' and password='". md5($password) ."'";
+	$sql="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='". md5($password) ."'";
 	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($db->db_num_rows($result) < 1)
@@ -250,7 +250,7 @@ function confirmUser($hash, $nickname)
 	$new_hash=md5($nickname.$BAB_HASH_VAR);
 	if ($new_hash && ($new_hash==$hash))
 		{
-		$sql="select * from users where confirm_hash='$hash'";
+		$sql="select * from ".BAB_USERS_TBL." where confirm_hash='$hash'";
 		$db = $GLOBALS['babDB'];
 		$result=$db->db_query($sql);
 		if( $db->db_num_rows($result) < 1)
@@ -261,7 +261,7 @@ function confirmUser($hash, $nickname)
 		else
 			{
 			$babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
-			$sql="update users set is_confirmed='1' WHERE confirm_hash='$hash'";
+			$sql="update ".BAB_USERS_TBL." set is_confirmed='1' WHERE confirm_hash='$hash'";
 			$result=$db->db_query($sql);
 			return true;
 			}
@@ -279,7 +279,7 @@ function userChangePassword($oldpwd, $newpwd)
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 
 	$new_password1=strtolower($newpwd);
-	$sql="select * from users where id='". $BAB_SESS_USERID ."'";
+	$sql="select * from ".BAB_USERS_TBL." where id='". $BAB_SESS_USERID ."'";
 	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($db->db_num_rows($result) < 1)
@@ -293,7 +293,7 @@ function userChangePassword($oldpwd, $newpwd)
 		$oldpwd2 = md5(strtolower($oldpwd));
 		if( $oldpwd2 == $arr['password'])
 			{
-			$sql="update users set password='". md5(strtolower($newpwd)). "' ".
+			$sql="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd)). "' ".
 				"where id='". $BAB_SESS_USERID . "'";
 			$result=$db->db_query($sql);
 			if ($db->db_affected_rows() < 1)
@@ -353,7 +353,7 @@ function sendPassword ($nickname)
 
 	if (!empty($nickname))
 		{
-		$req="select * from users where nickname='$nickname'";
+		$req="select * from ".BAB_USERS_TBL." where nickname='$nickname'";
 		$db = $GLOBALS['babDB'];
 		$res = $db->db_query($req);
 		if (!$res || $db->db_num_rows($res) < 1)
@@ -367,7 +367,7 @@ function sendPassword ($nickname)
 			$new_pass=strtolower(random_password(8));
 
 			//update the database to include the new password
-			$req="update users set password='". md5($new_pass) ."' where nickname='$nickname'";
+			$req="update ".BAB_USERS_TBL." set password='". md5($new_pass) ."' where nickname='$nickname'";
 			$res=$db->db_query($req);
 
 			//send a simple email with the new password

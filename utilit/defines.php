@@ -4,12 +4,12 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-define("BAB_ARTICLES_TBL", "bab_ARTICLES");
-define("BAB_CAL_EVENTS_TBL", "bab_CAL_EVENTS");
+define("BAB_ARTICLES_TBL", "bab_articles");
+define("BAB_CAL_EVENTS_TBL", "bab_cal_events");
 define("BAB_CALACCESS_USERS_TBL", "bab_calaccess_users");
 define("BAB_CALENDAR_TBL", "bab_calendar");
-define("BAB_CALOPTIONS_TBL", "bab_cal_events");
-define("BAB_CATEGORIESCAL_TBL", "bab_calaccess_users");
+define("BAB_CALOPTIONS_TBL", "bab_caloptions");
+define("BAB_CATEGORIESCAL_TBL", "bab_categoriescal");
 define("BAB_COMMENTS_TBL", "bab_comments");
 define("BAB_CONTACTS_TBL", "bab_contacts");
 define("BAB_FAQCAT_TBL", "bab_faqcat");

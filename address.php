@@ -69,7 +69,7 @@ function listAddress($pos)
 
 			$this->db = $GLOBALS['babDB'];
 
-			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
+			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
@@ -80,11 +80,11 @@ function listAddress($pos)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=";
-			$req = "select distinct p3.id, p3.firstname, p3.lastname, p3.email from users as p3, users_groups as p1,  users_groups as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and firstname like '".$pos."%' order by firstname, lastname asc";
+			$req = "select distinct p3.id, p3.firstname, p3.lastname, p3.email from ".BAB_USERS_TBL." as p3, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->resgrpm = $this->db->db_query($req);
 			$this->countgrpm = $this->db->db_num_rows($this->resgrpm);
 
-			$req = "select groups.id, groups.name from  groups, users_groups as p1 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = groups.id and groups.name like '".$pos."%' order by groups.name asc";
+			$req = "select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from  ".BAB_GROUPS_TBL.", ".BAB_USERS_GROUPS_TBL." as p1 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = ".BAB_GROUPS_TBL.".id and ".BAB_GROUPS_TBL.".name like '".$pos."%' order by ".BAB_GROUPS_TBL.".name asc";
 			$this->resgrp = $this->db->db_query($req);
 			$this->countgrp = $this->db->db_num_rows($this->resgrp);
 
@@ -161,11 +161,11 @@ function listAddress($pos)
 					$this->selected = 1;
 				else 
 					{
-					$req = "select * from contacts where firstname like '".$this->selectname."%'";
+					$req = "select * from ".BAB_CONTACTS_TBL." where firstname like '".$this->selectname."%'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) < 1 )
 						{
-						$req = "select distinct p3.id, p3.firstname, p3.lastname, p3.email from users as p3, users_groups as p1,  users_groups as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and firstname like '".$this->selectname."%'";
+						$req = "select distinct p3.id, p3.firstname, p3.lastname, p3.email from ".BAB_USERS_TBL." as p3, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and firstname like '".$this->selectname."%'";
 						$res = $this->db->db_query($req);
 						if( $this->db->db_num_rows($res) > 0 )
 							{
@@ -173,7 +173,7 @@ function listAddress($pos)
 							}
 						else
 							{
-							$req = "select groups.id from  groups, users_groups as p1 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = groups.id and groups.name like '".$this->selectname."%'";
+							$req = "select ".BAB_GROUPS_TBL.".id from  ".BAB_GROUPS_TBL.", ".BAB_USERS_GROUPS_TBL." as p1 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = ".BAB_GROUPS_TBL.".id and ".BAB_GROUPS_TBL.".name like '".$this->selectname."%'";
 							$res = $this->db->db_query($req);
 							if( $this->db->db_num_rows($res) > 0 )
 								{
