@@ -23,6 +23,9 @@ function listThreads($forum, $active, $pos)
 		var $lastpostdate;
 		var $replies;
 		var $subjecturl;
+		var $subjecturlflat;
+		var $altnoflattxt;
+		var $altflattxt;
 		var $subjectname;
 
 		var $arrthread = array();
@@ -65,6 +68,8 @@ function listThreads($forum, $active, $pos)
 			$this->openthreadsinfo = bab_translate("Opened threads");
 			$this->waitthreadsinfo = bab_translate("Waiting posts");
 			$this->closedthreadsinfo = bab_translate("Closed threads");
+			$this->altnoflattxt = bab_translate("View thread as hierarchical list");
+			$this->altflattxt = bab_translate("View thread as flat list");
 
 			$this->moderator = bab_isUserForumModerator($forum, $GLOBALS['BAB_SESS_USERID']);
 
@@ -136,7 +141,7 @@ function listThreads($forum, $active, $pos)
 					$this->arrpost = $this->db->db_fetch_array($res);
 					$this->subjecturl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->arrthread['id']."&views=1";
 					$this->subjectname = $this->arrpost['subject'];
-				
+					$this->subjecturlflat  = $this->subjecturl."&flat=1";
 					$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".bab_getUserId( $this->arrpost['author'])."'");
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
