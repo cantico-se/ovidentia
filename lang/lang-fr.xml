@@ -1447,8 +1447,8 @@
 <string id="Attendee">Invité</string>
 <string id="Declined">Refusé</string>
 <string id="Raison">Raison</string>
-<string id="Accept">Accepté</string>
-<string id="Decline">Accepte</string>
+<string id="Accept">Accepte</string>
+<string id="Decline">Refusee</string>
 <string id="Event approbation">Approbation de l'évènement</string>
 <string id="Event Detail">Détail de l'évènement</string>
 <string id="Attendees">Invités</string>
@@ -1673,5 +1673,5 @@
 <string id="The event isn't on displayed hours for all calendars">L'évènement ne sera pas visible sur les vues jour et semaine</string>
 <string id="Show / hide finished events">Afficher / cacher les évènements terminés</string>
 <string id="Avariable days">Jours disponibles</string>
-<string id="Waiting days">Jours en attente d'approbation</string>
+<string id="Waiting days">Jours en attente d'approbation</string
 </fr>
