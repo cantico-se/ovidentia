@@ -241,7 +241,6 @@ var $babsectionpuce;
 
 function babSection($title = "Section", $content="<br>This is a sample of content<br>")
 {
-	global $HTTP_GET_VARS;
 	$this->title = $title;
 	$this->content = $content;
 	$this->hiddenz = false;
