@@ -32,6 +32,7 @@ calendar.html					        changed action="index.php" to action="{ babPhpSelf }"
 calopt.html					            changed action="index.php" to action="{ babPhpSelf }"
 calview.html
 comments.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        commentcreate   Added <script .... href="{ urlsee }">{ see }</a></center>
 confcals.html					        changed action="index.php" to action="{ babPhpSelf }"
 config.html
 contact.html					        changed action="index.php" to action="{ babPhpSelf }"
@@ -69,6 +70,8 @@ page.html
 posts.html					            changed action="index.php" to action="{ babPhpSelf }"
                         newpostslist    added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
                                         to let user email contributors
+                        postcreate      <table ... </table><br> before <form> to let user view post on
+                                        the reply is made
 readme.txt
 
 search.html					            changed action="index.php" to action="{ babPhpSelf }"

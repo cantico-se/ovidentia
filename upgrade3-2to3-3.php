@@ -14,6 +14,8 @@
 - Add: Administrator can configure site to accept or not registration.
   And if registration is accepted, confirmation email can be sent or not
 - Sorted files in Files Manager
+- babMaxRows is no longer used from config.php. Value in forum defintion is used
+- Now, when you reply you can view post or comment or read article on witch you reply
 ************************************************************************/
 function upgrade()
 {
