@@ -26,13 +26,14 @@ function groupModify($id)
 		var $yes;
 		var $noselected;
 		var $yesselected;
-		var $modify;
+		var $add;
 		var $delete;
 		var $bdel;
 
-		var $db;
-		var $arr = array();
-		var $res;
+		var $usersbrowurl;
+		var $grpid;
+		var $noselected;
+		var $yesselected;
 
 		function temp($id)
 			{
@@ -42,13 +43,17 @@ function groupModify($id)
 			$this->useemail = bab_translate("Use email");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
-			$this->modify = bab_translate("Modify Group");
+			$this->add = bab_translate("Modify Group");
 			$this->delete = bab_translate("Delete");
-			$this->db = $GLOBALS['babDB'];
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
+			$db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_GROUPS_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
-			if( $this->arr['mail'] == "Y")
+			$res = $db->db_query($req);
+			$arr = $db->db_fetch_array($res);
+			$this->grpid = $id;
+			$this->grpname = $arr['name'];
+			$this->grpdesc = $arr['description'];
+			if( $arr['mail'] == "Y")
 				{
 				$this->noselected = "";
 				$this->yesselected = "selected";
@@ -58,24 +63,29 @@ function groupModify($id)
 				$this->noselected = "selected";
 				$this->yesselected = "";
 				}
-			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['manager']."'";
-			$res = $this->db->db_query($req);
-			if( $this->db->db_num_rows($res) > 0)
+			$req = "select * from ".BAB_USERS_TBL." where id='".$arr['manager']."'";
+			$res = $db->db_query($req);
+			if( $db->db_num_rows($res) > 0)
 				{
-				$arr = $this->db->db_fetch_array($res);
+				$arr = $db->db_fetch_array($res);
 				$this->managerval = bab_composeUserName($arr['firstname'], $arr['lastname']);
+				$this->managerid = $arr['id'];
 				}
 			else
+				{
+				$this->managerid = "";
 				$this->managerval = "";
+				}
 			if( $id > 3 )
 				$this->bdel = true;
 			else
 				$this->bdel = false;
+			$this->tgval = "group";
 			}
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupsmodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
 	}
 
 function groupMembers($id)
@@ -312,40 +322,39 @@ function deleteMembers($users, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyGroup($oldname, $name, $description, $manager, $bemail, $id)
+function modifyGroup($name, $description, $managerid, $bemail, $grpid)
 	{
 	global $babBody;
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return;
+		return false;
+		}
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$description = addslashes($description);
+		$name = addslashes($name);
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_GROUPS_TBL." where name='$oldname'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) < 1)
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_GROUPS_TBL." where id='".$grpid."'"));
+	$res = $db->db_query("select * from ".BAB_GROUPS_TBL." where id!='".$grpid."' and name='".$name."'");
+	if( $db->db_num_rows($res) > 0)
 		{
-		$babBody->msgerror = bab_translate("ERROR: Th group doesn't exist");
+		$babBody->msgerror = bab_translate("Group with the same name already exists!");
+		return false;
 		}
 	else
 		{
-		if( !empty($manager))
-			{
-			$idmanager = bab_getUserId($manager);
-			if( $idmanager < 1)
-				{
-				$babBody->msgerror = bab_translate("The manager doesn't exist");
-				return;
-				}
-			}
-		else
-			$idmanager = 0;
+		if( empty($managerid))
+			$managerid = 0;
 
-		$query = "update ".BAB_GROUPS_TBL." set name='$name', description='$description', mail='$bemail', manager='$idmanager' where id='$id'";
+		$query = "update ".BAB_GROUPS_TBL." set name='".$name."', description='".$description."', mail='".$bemail."', manager='".$managerid."' where id='".$grpid."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+	return true;
 	}
 
 function vacationGroup($usevacation, $approver, $item)
@@ -520,12 +529,19 @@ function confirmDeleteGroup($id)
 if( !isset($idx))
 	$idx = "Modify";
 
-if( isset($modify))
+if( isset($add))
 	{
 	if( isset($submit))
-		modifyGroup($oldname, $name, $description, $manager, $bemail, $item);
+		{
+		if(!modifyGroup($name, $description, $managerid, $bemail, $grpid))
+			$idx = "Modify";
+			$item = $grpid;
+		}
 	else if( isset($deleteg) )
+		{
+		$item = $grpid;
 		$idx = "Delete";
+		}
 	}
 
 if( isset($vacation) && $vacation == "update")
