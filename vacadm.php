@@ -740,6 +740,7 @@ function viewCalendarByUser($id, $month, $year)
 		var $fullname;
 		var $vacwaitingtxt;
 		var $vacapprovedtxt;
+		var $print;
 
 
 		function temp($id, $month, $year)
@@ -751,6 +752,7 @@ function viewCalendarByUser($id, $month, $year)
 			$this->fullname = bab_getUserName($id);
 			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
 			$this->vacapprovedtxt = bab_translate("Approved vacation request");
+			$this->print = bab_translate("Print");
 
 			$urltmp = $GLOBALS['babUrlScript']."?tg=vacadm&idx=cal&idu=".$this->iduser;
 			$this->previousmonth = $urltmp."&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));

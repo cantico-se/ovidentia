@@ -187,6 +187,7 @@ function listVacationRequests($idstatus, $userid, $dateb, $datee, $vpos)
 		var $resettxt;
 
 		var $entryid;
+		var $alttxt;
 
 		function temp($idstatus, $userid, $dateb, $datee, $vpos)
 			{
@@ -203,6 +204,7 @@ function listVacationRequests($idstatus, $userid, $dateb, $datee, $vpos)
 			$this->begintxt = bab_translate("Begin");
 			$this->endtxt = bab_translate("End");
 			$this->resettxt = bab_translate("Reset");
+			$this->alttxt = bab_translate("Modify");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";

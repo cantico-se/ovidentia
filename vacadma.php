@@ -222,7 +222,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->activeno = bab_translate("Closed rights");
 			$this->closedtxt = bab_translate("Vac. closed");
 			$this->openedtxt = bab_translate("Vac. opened");
-			$this->alttxt = bab_translate("View right detail");
+			$this->alttxt = bab_translate("Modify");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
