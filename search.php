@@ -606,6 +606,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->datem=bab_translate("Last update");
 			$this->directory=bab_translate("Site directory");
 			$this->department=bab_translate("Department");
+			$this->t_archive = bab_translate("archive");
 
 			$this->fields = $GLOBALS['HTTP_POST_VARS'];
 
@@ -1359,6 +1360,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->article = put_text($arr['title']);
 				$this->artdate = bab_shortDate($arr['date'], true);
 				$this->artauthor = $arr['author'];
+				$this->archive = 'Y' == $arr['archive'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
 				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what;
