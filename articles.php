@@ -741,8 +741,8 @@ function modifyArticle($topics, $article)
 				}
 			else
 				{
-				$this->notifnsel = "selected";
-				$this->notifysel = "";
+				$this->notifysel = "selected";
+				$this->notifnsel = "";
 				}
 			}
 
