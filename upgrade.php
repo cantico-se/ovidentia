@@ -404,4 +404,11 @@ if( !$res)
 	}
 
 }
+
+function upgrade332to340()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+return ret;
+}
 ?>
