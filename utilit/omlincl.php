@@ -183,7 +183,7 @@ class bab_ArticlesHomePages extends bab_handler
 
 		switch(strtoupper($order))
 		{
-			case "DESC": $order = "ordering DESC"; break;
+			case "DESC": $order = "ht.ordering DESC"; break;
 			case "RAND": $order = "rand()"; break;
 			case "ASC":
 			default: $order = "ht.ordering"; break;
@@ -197,9 +197,13 @@ class bab_ArticlesHomePages extends bab_handler
 			case "private":
 			default:
 				if( $GLOBALS['BAB_SESS_LOGGED'])
+					{
 					$idgroup = 1; // registered users
+					}
 				else
+					{
 					$idgroup = 2; // non registered users
+					}
 				break;
 			}
 	
@@ -3548,9 +3552,13 @@ function babOvTemplate($args = array())
 	$this->gctx->push("babSiteName", $GLOBALS['babSiteName']);
 	$this->gctx->push("babSiteSlogan", $GLOBALS['babSlogan']);
 	if( $GLOBALS['BAB_SESS_USERID'] != "" )
+		{
 		$this->gctx->push("babUserName", $GLOBALS['BAB_SESS_USERID']);
+		}
 	else
+		{
 		$this->gctx->push("babUserName", 0);
+		}
 	$this->gctx->push("babCurrentDate", mktime());
 	$this->gctx->push("babNewArticlesCount", $babBody->newarticles);
 	$this->gctx->push("babNewCommentsCount", $babBody->newcomments);
@@ -3850,6 +3858,7 @@ function bab_Translate($args)
 /* save a variable to global space */
 function bab_PutVar($args)
 	{
+	global $babBody;
 	$name = "";
 	$value = "";
 	$global = true;
@@ -3862,15 +3871,24 @@ function bab_PutVar($args)
 				{
 				case 'name':
 					$name = $mm[3][$j];
-					break;
 				case 'value':
 					$value = $mm[3][$j];
 					$global = false;
+					switch($name)
+					{
+						case 'babSlogan': $GLOBALS['babSlogan'] = $value; break;
+						case 'babTitle': $babBody->title = $value; break;
+						case 'babError': $babBody->msgerror = $value; break;
+						default: break;
+					}
+					break;
 					break;
 				}
 			}					
 		if( $global )
+			{
 			$value = $GLOBALS[$name];
+			}
 		$this->gctx->push($name, $value);
 		}
 	}
@@ -4007,7 +4025,7 @@ function bab_rel2abs($relative, $url)
 	if( $relative[0] == '#')
 		return $relative;
 
-    if ($url['path']{strlen($url['path']) - 1} == '/')
+    if (strlen($url['path']) > 1 && $url['path']{strlen($url['path']) - 1} == '/')
         $dir = substr($url['path'], 0, strlen($url['path']) - 1);
     else
         $dir = dirname($url['path']);
@@ -4017,9 +4035,10 @@ function bab_rel2abs($relative, $url)
         $relative = substr($relative, 1);
         $dir = '';
 		}
-
     else if (substr($relative, 0, 2) == './')
+		{
         $relative = substr($relative, 2);
+		}
     else while (substr($relative, 0, 3) == '../')
 		{
         $relative = substr($relative, 3);
