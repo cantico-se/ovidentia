@@ -367,8 +367,8 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
         </tr>
         <tr> 
           <td class="BabForumTopicsNavDate" nowrap width="100%" valign="middle">{ 
-            postdate }<br><A HREF="#TOP">{ backtotoptxt }</A></td>
-          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="middle" ><!--#if replymail "!= 0" -->
+            postdate }<br><A class="BabForumTopicsNavContribution" HREF="#TOP">{ backtotoptxt }</A></td>
+          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="bottom" ><!--#if replymail "!= 0" -->
 <!--#if BAB_SESS_LOGGED --><a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ postauthor }</a><!--#else BAB_SESS_LOGGED -->{ postauthor }<!--#endif BAB_SESS_LOGGED -->
 <!--#else replymail -->
 { postauthor }

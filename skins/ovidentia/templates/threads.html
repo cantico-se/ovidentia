@@ -2,10 +2,10 @@
 <table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
     <tr>
     <td class="BabForumBackground" align="center" valign="midlle">
-<img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ openthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ openthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
-<img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt="{ waitthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ waitthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
-<img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ closedthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ closedthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
-<img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ altrecentposts }
+<!--#if active "== Y" --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ openthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ openthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><!--#endif active -->
+<!--#if active "== Y" --><img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt="{ waitthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ waitthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><!--#endif active -->
+<!--#if active "== N" --><img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ closedthreadsinfo }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ closedthreadsinfo }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><!--#endif active -->
+<!--#if active "== Y" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"> :<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ altrecentposts }<!--#endif active -->
     </td>
     </tr>
     
@@ -26,7 +26,7 @@
 <td>
 <table border="0" width="100%" cellpadding="3" cellspacing="1">
 <tr> 
-
+<td class="BabForumTitle" align="center"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td class="BabForumTitle" align="center">{ thread }</td>
 <td class="BabForumTitle" align="center">{ repliesname }</td>
 
@@ -34,79 +34,57 @@
              
 <td class="BabForumTitle" align="center">{ views }</td>                  
 <td class="BabForumTitle" align="center">{ lastpost }</td>
-</tr><tr> 
-<!--#in getnext -->
-
-
-
-
-<td class="BabForumBackground" align="left" nowrap>
-<!--#if status "== *" -->
-    <!--#if disabled "== 1" -->
-    <table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt="{ subjectname }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-    <!--#else disabled -->  
-    <table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt="{ subjectname }" border="0" align="absmiddle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-    <!--#endif disabled -->    
-            <!--#if disabled "== 1" -->
-            <td class="BabForumBackground" align="left">{ subjectname }</td></tr></table>
-            <!--#else disabled -->   
-            <td class="BabForumBackground"><a class="BabContentLinkColor" href="{ subjecturl }">{ subjectname }</a></td></tr></table>                
-            <!--#endif disabled -->  
-
-<!--#else status -->
-<!--#if arrthread[active] "== Y" -->
-
-    <!--#if disabled "== 1" -->
-    <table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ subjectname }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-    <!--#else disabled -->  
-    <table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><!--#else brecent --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ subjectname }" border="0" align="absmiddle"><!--#endif brecent --></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-    <!--#endif disabled --> 
-           <!--#if disabled "== 1" -->
-           <td align="left">{ subjectname }</td></tr></table>
-           <!--#else disabled -->   
-           <td class="BabForumBackground"><a class="BabContentLinkColor" href="{ subjecturl }">{ subjectname }</a></td></tr></table>                
-           <!--#endif disabled -->  
-<!--#else arrthread[active] -->
-<!--#if disabled "== 1" -->
-<table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ subjectname }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-<!--#else disabled -->
-<table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ subjectname }" border="0" align="absmiddle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-<!--#endif disabled --> 
-           <!--#if disabled "== 1" -->
-           <td align="left">{ subjectname }</td></tr></table>
-           <!--#else disabled -->   
-           <td class="BabForumBackground"><a class="BabContentLinkColor" href="{ subjecturl }">{ subjectname }</a></td></tr></table>                
-           <!--#endif disabled -->  
-
-<!--#endif arrthread[active] -->
-<!--#endif status -->
-</td>            
-
-
-
-
-
-<!--#if replies "== 0" -->
-<td class="BabForumBackground" align="center" width="1%">[{ replies }]</td>
-<!--#else replies -->
-<td class="BabForumBackground" align="center" width="1%"><a class="BabContentLinkColor" href="{ subjecturl }">[{ replies }]</a></td>
-<!--#endif replies -->
-
-
-
-
-
-<td class="BabForumBackground" align="center" nowrap width="1%">
-<!--#if replymail "!= 0" --><!--#if BAB_SESS_LOGGED -->
-<a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ arrpost[author] }</a><!--#else BAB_SESS_LOGGED -->{ arrpost[author] }<!--#endif BAB_SESS_LOGGED -->
-<!--#else replymail -->
-{ arrpost[author] }
-<!--#endif replymail -->
-</td>
-<td class="BabForumBackground" align="center" width="1%">{ arrthread[views] }</td>
-          <td class="BabForumBackground" align="center" nowrap width="1%">{ lastpostdate }</td>
 </tr>
+<!--#in getnext -->
+<tr>
+        <!--#if status "== *" -->
+        <!--#if disabled "== 1" -->
+       <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%" nowrap><img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt="{ subjectname }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+        <!--#else disabled -->  
+        <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt="{ subjectname }" border="0" align="absmiddle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+        <!--#endif disabled -->    
+            <!--#if disabled "== 1" -->
+            <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="left">{ subjectname }</td>
+            <!--#else disabled -->   
+            <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate -->><a class="BabContentLinkColor" href="{ subjecturl }">{ subjectname }</a></td>             
+            <!--#endif disabled -->  
+        <!--#else status -->
+        <!--#if arrthread[active] "== Y" -->
+        <!--#if disabled "== 1" -->
+       <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%" nowrap><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ subjectname }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+        <!--#else disabled -->  
+        <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><!--#else brecent --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ subjectname }" border="0" align="absmiddle"><!--#endif brecent --></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+        <!--#endif disabled --> 
+           <!--#if disabled "== 1" -->
+           <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="left">{ subjectname }</td>
+           <!--#else disabled -->   
+           <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> ><a class="BabContentLinkColor" href="{ subjecturl }">{ subjectname }</a></td>     
+           <!--#endif disabled -->  
+        <!--#else arrthread[active] -->
+        <!--#if disabled "== 1" -->
+       <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%" nowrap><img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ subjectname }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+        <!--#else disabled -->
+        <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt="{ subjectname }" border="0" align="absmiddle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+        <!--#endif disabled --> 
+           <!--#if disabled "== 1" -->
+           <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="left">{ subjectname }</td>
+           <!--#else disabled -->   
+           <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> ><a class="BabContentLinkColor" href="{ subjecturl }">{ subjectname }</a></td>            
+           <!--#endif disabled -->  
+        <!--#endif arrthread[active] -->
+        <!--#endif status -->
+        
+            <!--#if replies "== 0" -->
+            <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%">[{ replies }]</td>
+            <!--#else replies -->
+            <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%"><a class="BabContentLinkColor" href="{ subjecturl }">[{ replies }]</a></td>
+            <!--#endif replies -->
 
+            <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" nowrap width="1%"><!--#if replymail "!= 0" --><!--#if BAB_SESS_LOGGED --><a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ arrpost[author] }</a><!--#else BAB_SESS_LOGGED -->{ arrpost[author] }<!--#endif BAB_SESS_LOGGED --><!--#else replymail -->{ arrpost[author] }<!--#endif replymail --></td>
+            <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" width="1%">{ arrthread[views] }</td>
+            <td <!--#if alternate "== 0" --> class="BabForumBackground"<!--#else alternate --> class="BabForumBackground1"<!--#endif alternate --> align="center" nowrap width="1%">{ lastpostdate }</td>
+
+</tr>
 <!--#endin getnext -->
 </table>
 </td>
