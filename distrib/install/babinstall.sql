@@ -1,14 +1,14 @@
 # phpMyAdmin MySQL-Dump
 # http://phpwizard.net/phpMyAdmin/
 #
-# Serveur: localhost Base de données: bab
+# Serveur: localhost Base de données: ovidentia
 
 # --------------------------------------------------------
 #
-# Structure de la table 'articles'
+# Structure de la table 'bab_articles'
 #
 
-CREATE TABLE articles (
+CREATE TABLE bab_articles (
    id int(11) unsigned NOT NULL auto_increment,
    id_topic int(11) unsigned DEFAULT '0' NOT NULL,
    id_author int(11) unsigned DEFAULT '0' NOT NULL,
@@ -24,10 +24,10 @@ CREATE TABLE articles (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'comments'
+# Structure de la table 'bab_comments'
 #
 
-CREATE TABLE comments (
+CREATE TABLE bab_comments (
    id int(11) unsigned NOT NULL auto_increment,
    id_parent mediumint(11) unsigned DEFAULT '0' NOT NULL,
    id_article int(11) unsigned DEFAULT '0' NOT NULL,
@@ -44,10 +44,10 @@ CREATE TABLE comments (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'faqcat'
+# Structure de la table 'bab_faqcat'
 #
 
-CREATE TABLE faqcat (
+CREATE TABLE bab_faqcat (
    id int(11) unsigned NOT NULL auto_increment,
    id_manager int(11) unsigned DEFAULT '0' NOT NULL,
    category varchar(60) NOT NULL,
@@ -58,10 +58,10 @@ CREATE TABLE faqcat (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'faqcat_groups'
+# Structure de la table 'bab_faqcat_groups'
 #
 
-CREATE TABLE faqcat_groups (
+CREATE TABLE bab_faqcat_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -71,10 +71,10 @@ CREATE TABLE faqcat_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'faqqr'
+# Structure de la table 'bab_faqqr'
 #
 
-CREATE TABLE faqqr (
+CREATE TABLE bab_faqqr (
    id int(11) unsigned NOT NULL auto_increment,
    idcat int(11) unsigned DEFAULT '0' NOT NULL,
    question text NOT NULL,
@@ -85,10 +85,10 @@ CREATE TABLE faqqr (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'forums'
+# Structure de la table 'bab_forums'
 #
 
-CREATE TABLE forums (
+CREATE TABLE bab_forums (
    id smallint(6) unsigned NOT NULL auto_increment,
    name varchar(30) NOT NULL,
    description varchar(100) NOT NULL,
@@ -102,10 +102,10 @@ CREATE TABLE forums (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'forumspost_groups'
+# Structure de la table 'bab_forumspost_groups'
 #
 
-CREATE TABLE forumspost_groups (
+CREATE TABLE bab_forumspost_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE forumspost_groups (
 # Structure de la table 'forumsreply_groups'
 #
 
-CREATE TABLE forumsreply_groups (
+CREATE TABLE bab_forumsreply_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -128,10 +128,10 @@ CREATE TABLE forumsreply_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'forumsview_groups'
+# Structure de la table 'bab_forumsview_groups'
 #
 
-CREATE TABLE forumsview_groups (
+CREATE TABLE bab_forumsview_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -141,10 +141,10 @@ CREATE TABLE forumsview_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'groups'
+# Structure de la table 'bab_groups'
 #
 
-CREATE TABLE groups (
+CREATE TABLE bab_groups (
    id int(11) unsigned NOT NULL auto_increment,
    name varchar(20) NOT NULL,
    description varchar(200) NOT NULL,
@@ -156,16 +156,16 @@ CREATE TABLE groups (
    PRIMARY KEY (id)
 );
 
-INSERT INTO groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'N');
-INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N');
-INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'N');
+INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'N');
+INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N');
+INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'N');
 
 # --------------------------------------------------------
 #
-# Structure de la table 'notes'
+# Structure de la table 'bab_notes'
 #
 
-CREATE TABLE notes (
+CREATE TABLE bab_notes (
    id int(11) unsigned NOT NULL auto_increment,
    id_user int(11) unsigned DEFAULT '0' NOT NULL,
    date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -176,10 +176,10 @@ CREATE TABLE notes (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'posts'
+# Structure de la table 'bab_posts'
 #
 
-CREATE TABLE posts (
+CREATE TABLE bab_posts (
    id int(11) unsigned NOT NULL auto_increment,
    id_thread int(11) unsigned DEFAULT '0' NOT NULL,
    id_parent int(11) unsigned DEFAULT '0' NOT NULL,
@@ -195,10 +195,10 @@ CREATE TABLE posts (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'sections'
+# Structure de la table 'bab_sections'
 #
 
-CREATE TABLE sections (
+CREATE TABLE bab_sections (
    id smallint(6) unsigned NOT NULL auto_increment,
    position enum('0','1') DEFAULT '0' NOT NULL,
    title varchar(60),
@@ -212,10 +212,10 @@ CREATE TABLE sections (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'private_sections'
+# Structure de la table 'bab_private_sections'
 #
 
-CREATE TABLE private_sections (
+CREATE TABLE bab_private_sections (
    id smallint(6) unsigned NOT NULL auto_increment,
    position enum('0','1') DEFAULT '0' NOT NULL,
    title varchar(60),
@@ -224,18 +224,18 @@ CREATE TABLE private_sections (
    PRIMARY KEY (id)
 );
 
-INSERT INTO private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration', 'Y');
-INSERT INTO private_sections VALUES ('2', '1', 'Month', 'This section shows calendar month', 'Y');
-INSERT INTO private_sections VALUES ('3', '0', 'Topics categories', 'This section lists topics', 'Y');
-INSERT INTO private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'Y');
-INSERT INTO private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'Y');
+INSERT INTO bab_private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration', 'Y');
+INSERT INTO bab_private_sections VALUES ('2', '1', 'Month', 'This section shows calendar month', 'Y');
+INSERT INTO bab_private_sections VALUES ('3', '0', 'Topics categories', 'This section lists topics', 'Y');
+INSERT INTO bab_private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'Y');
+INSERT INTO bab_private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'Y');
 
 # --------------------------------------------------------
 #
-# Structure de la table 'sections_order'
+# Structure de la table 'bab_sections_order'
 #
 
-CREATE TABLE sections_order (
+CREATE TABLE bab_sections_order (
    id smallint(6) unsigned NOT NULL auto_increment,
    id_section smallint(6) unsigned NOT NULL,
    position enum('0','1') DEFAULT '0' NOT NULL,
@@ -244,19 +244,19 @@ CREATE TABLE sections_order (
    PRIMARY KEY (id)
 );
 
-INSERT INTO sections_order VALUES ('1', '1', '0', '1', '1');
-INSERT INTO sections_order VALUES ('2', '2', '1', '1', '1');
-INSERT INTO sections_order VALUES ('3', '3', '0', '1', '2');
-INSERT INTO sections_order VALUES ('4', '4', '0', '1', '3');
-INSERT INTO sections_order VALUES ('5', '5', '1', '1', '2');
-INSERT INTO sections_order VALUES ('6', '1', '0', '3', '4');
+INSERT INTO bab_sections_order VALUES ('1', '1', '0', '1', '1');
+INSERT INTO bab_sections_order VALUES ('2', '2', '1', '1', '1');
+INSERT INTO bab_sections_order VALUES ('3', '3', '0', '1', '2');
+INSERT INTO bab_sections_order VALUES ('4', '4', '0', '1', '3');
+INSERT INTO bab_sections_order VALUES ('5', '5', '1', '1', '2');
+INSERT INTO bab_sections_order VALUES ('6', '1', '0', '3', '4');
 
 # --------------------------------------------------------
 #
-# Structure de la table 'sections_states'
+# Structure de la table 'bab_sections_states'
 #
 
-CREATE TABLE sections_states (
+CREATE TABLE bab_sections_states (
    id int(11) unsigned NOT NULL auto_increment,
    id_section smallint(6) unsigned NOT NULL,
    closed enum('N','Y') DEFAULT 'N' NOT NULL,
@@ -268,10 +268,10 @@ CREATE TABLE sections_states (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'sections_groups'
+# Structure de la table 'bab_sections_groups'
 #
 
-CREATE TABLE sections_groups (
+CREATE TABLE bab_sections_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -281,10 +281,10 @@ CREATE TABLE sections_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'threads'
+# Structure de la table 'bab_threads'
 #
 
-CREATE TABLE threads (
+CREATE TABLE bab_threads (
    id int(11) unsigned NOT NULL auto_increment,
    forum smallint(6) unsigned DEFAULT '0' NOT NULL,
    post int(11) unsigned DEFAULT '0' NOT NULL,
@@ -300,10 +300,10 @@ CREATE TABLE threads (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'topics'
+# Structure de la table 'bab_topics'
 #
 
-CREATE TABLE topics (
+CREATE TABLE bab_topics (
    id int(11) unsigned NOT NULL auto_increment,
    id_approver int(11) unsigned DEFAULT '0' NOT NULL,
    category varchar(60) NOT NULL,
@@ -314,10 +314,10 @@ CREATE TABLE topics (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'topics_categories'
+# Structure de la table 'bab_topics_categories'
 #
 
-CREATE TABLE topics_categories (
+CREATE TABLE bab_topics_categories (
    id int(11) unsigned NOT NULL auto_increment,
    title varchar(60),
    description varchar(200),
@@ -325,14 +325,14 @@ CREATE TABLE topics_categories (
    PRIMARY KEY (id)
 );
 
-INSERT INTO topics_categories VALUES ('1', 'Default category', 'Default category', 'Y');
+INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y');
 
 # --------------------------------------------------------
 #
-# Structure de la table 'topicscom_groups'
+# Structure de la table 'bab_topicscom_groups'
 #
 
-CREATE TABLE topicscom_groups (
+CREATE TABLE bab_topicscom_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -341,23 +341,10 @@ CREATE TABLE topicscom_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'topicssub_groups'
+# Structure de la table 'bab_topicssub_groups'
 #
 
-CREATE TABLE topicssub_groups (
-   id int(11) unsigned NOT NULL auto_increment,
-   id_object int(11) unsigned DEFAULT '0' NOT NULL,
-   id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
-);
-
-
-# --------------------------------------------------------
-#
-# Structure de la table 'topicsview_groups'
-#
-
-CREATE TABLE topicsview_groups (
+CREATE TABLE bab_topicssub_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -367,10 +354,23 @@ CREATE TABLE topicsview_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'users'
+# Structure de la table 'bab_topicsview_groups'
 #
 
-CREATE TABLE users (
+CREATE TABLE bab_topicsview_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id)
+);
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_users'
+#
+
+CREATE TABLE bab_users (
    id int(11) unsigned NOT NULL auto_increment,
    nickname varchar(255),
    firstname varchar(60),
@@ -387,17 +387,19 @@ CREATE TABLE users (
    lang varchar(10) NOT NULL,
    skin text,
    style text,
+   lastlog datetime DEFAULT '0000-00-00 00:00:00',
+   datelog datetime DEFAULT '0000-00-00 00:00:00',
    PRIMARY KEY (id)
 );
 
-INSERT INTO users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '');
+INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '');
 
 # --------------------------------------------------------
 #
-# Structure de la table 'users_groups'
+# Structure de la table 'bab_users_groups'
 #
 
-CREATE TABLE users_groups (
+CREATE TABLE bab_users_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -405,29 +407,29 @@ CREATE TABLE users_groups (
    PRIMARY KEY (id)
 );
 
-INSERT INTO users_groups VALUES ( '1', '1', '3', 'N');
+INSERT INTO bab_users_groups VALUES ( '1', '1', '3', 'N');
 
 # --------------------------------------------------------
 #
-# Structure de la table 'users_log'
+# Structure de la table 'bab_users_log'
 #
 
-CREATE TABLE users_log (
+CREATE TABLE bab_users_log (
    id int(11) unsigned NOT NULL auto_increment,
    id_user int(11) unsigned DEFAULT '0' NOT NULL,
-   islogged enum('N','Y') DEFAULT 'N' NOT NULL,
-   datelog datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-   lastlog datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-   dateact datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+   dateact timestamp(14) NOT NULL,
+   sessid tinytext NOT NULL,
+   remote_addr varchar(255) NOT NULL default '',
+   forwarded_for varchar(255) NOT NULL default '',
    PRIMARY KEY (id)
 );
 
 # --------------------------------------------------------
 #
-# Structure de la table 'vacations_types'
+# Structure de la table 'bab_vacations_types'
 #
 
-CREATE TABLE vacations_types (
+CREATE TABLE bab_vacations_types (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	name VARCHAR (30) not null,
 	description VARCHAR (224) not null,
@@ -439,10 +441,10 @@ CREATE TABLE vacations_types (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'vacationsview_groups'
+# Structure de la table 'bab_vacationsview_groups'
 #
 
-CREATE TABLE vacationsview_groups (
+CREATE TABLE bab_vacationsview_groups (
 	id int(11) unsigned NOT NULL auto_increment,
 	id_object int(11) unsigned DEFAULT '0' NOT NULL,
 	id_group int(11) unsigned DEFAULT '0' NOT NULL,
@@ -451,25 +453,25 @@ CREATE TABLE vacationsview_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'vacations_states'
+# Structure de la table 'bab_vacations_states'
 #
 
-CREATE TABLE vacations_states (
+CREATE TABLE bab_vacations_states (
 	id TINYINT (2) not null AUTO_INCREMENT,
 	status VARCHAR (255) not null,
 	description text NOT NULL,
 	PRIMARY KEY (id)
 );
 
-INSERT INTO vacations_states VALUES ( '1', 'Refused', 'Vacation refused');
-INSERT INTO vacations_states VALUES ( '2', 'Accepted', 'Vacation accepted');
+INSERT INTO bab_vacations_states VALUES ( '1', 'Refused', 'Vacation refused');
+INSERT INTO bab_vacations_states VALUES ( '2', 'Accepted', 'Vacation accepted');
 
 # --------------------------------------------------------
 #
-# Structure de la table 'vacations'
+# Structure de la table 'bab_vacations'
 #
 
-CREATE TABLE vacations (
+CREATE TABLE bab_vacations (
 	id INT UNSIGNED not null AUTO_INCREMENT,
 	userid INT UNSIGNED not null,
 	datebegin DATETIME not null,
@@ -486,10 +488,10 @@ CREATE TABLE vacations (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'vacationsman_groups'
+# Structure de la table 'bab_vacationsman_groups'
 #
 
-CREATE TABLE vacationsman_groups (
+CREATE TABLE bab_vacationsman_groups (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	id_object INT (11) not null,
 	id_group INT (11) not null,
@@ -503,10 +505,10 @@ CREATE TABLE vacationsman_groups (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'categoriescal'
+# Structure de la table 'bab_categoriescal'
 #
 
-CREATE TABLE categoriescal (
+CREATE TABLE bab_categoriescal (
 	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
 	name VARCHAR (60) not null,
 	description VARCHAR (255) not null,
@@ -518,10 +520,10 @@ CREATE TABLE categoriescal (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'resourcescal'
+# Structure de la table 'bab_resourcescal'
 #
 
-CREATE TABLE resourcescal (
+CREATE TABLE bab_resourcescal (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	name VARCHAR (60) not null,
 	description VARCHAR (255) not null,
@@ -531,10 +533,10 @@ CREATE TABLE resourcescal (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'cal_events'
+# Structure de la table 'bab_cal_events'
 #
 
-CREATE TABLE cal_events (
+CREATE TABLE bab_cal_events (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	id_cal INT (11) UNSIGNED not null,
 	title VARCHAR (255) not null,
@@ -551,10 +553,10 @@ CREATE TABLE cal_events (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'calendar'
+# Structure de la table 'bab_calendar'
 #
 
-CREATE TABLE calendar (
+CREATE TABLE bab_calendar (
 	id int(11) unsigned NOT NULL auto_increment,
 	owner int(11) unsigned DEFAULT '0' NOT NULL,
 	actif enum('Y','N') DEFAULT 'Y' NOT NULL,
@@ -562,18 +564,18 @@ CREATE TABLE calendar (
 	PRIMARY KEY (id)
 );
 
-INSERT INTO calendar VALUES ( '1', '1', 'Y', '1');
-INSERT INTO calendar VALUES ( '2', '1', 'Y', '2');
-INSERT INTO calendar VALUES ( '3', '2', 'N', '2');
-INSERT INTO calendar VALUES ( '4', '3', 'Y', '2');
+INSERT INTO bab_calendar VALUES ( '1', '1', 'Y', '1');
+INSERT INTO bab_calendar VALUES ( '2', '1', 'Y', '2');
+INSERT INTO bab_calendar VALUES ( '3', '2', 'N', '2');
+INSERT INTO bab_calendar VALUES ( '4', '3', 'Y', '2');
 
 
 # --------------------------------------------------------
 #
-# Structure de la table 'calaccess_users'
+# Structure de la table 'bab_calaccess_users'
 #
 
-CREATE TABLE calaccess_users (
+CREATE TABLE bab_calaccess_users (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	id_cal INT (11) UNSIGNED not null,
 	id_user INT (11) UNSIGNED not null,
@@ -583,10 +585,10 @@ CREATE TABLE calaccess_users (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'caloptions'
+# Structure de la table 'bab_caloptions'
 #
 
-CREATE TABLE caloptions (
+CREATE TABLE bab_caloptions (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT, 
 	id_user INT (11) UNSIGNED not null, 
 	startday TINYINT DEFAULT '0' not null, 
@@ -599,10 +601,10 @@ CREATE TABLE caloptions (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'mail_domains'
+# Structure de la table 'bab_mail_domains'
 #
 
-CREATE TABLE mail_domains (
+CREATE TABLE bab_mail_domains (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	name VARCHAR (254) not null,
 	description VARCHAR (224) not null,
@@ -619,10 +621,10 @@ CREATE TABLE mail_domains (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'mail_accounts'
+# Structure de la table 'bab_mail_accounts'
 #
 
-CREATE TABLE mail_accounts (
+CREATE TABLE bab_mail_accounts (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	name VARCHAR (255) not null,
 	email VARCHAR (255) not null,
@@ -638,10 +640,10 @@ CREATE TABLE mail_accounts (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'mail_signatures'
+# Structure de la table 'bab_mail_signatures'
 #
 
-CREATE TABLE mail_signatures (
+CREATE TABLE bab_mail_signatures (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	name varchar(255) NOT NULL,
 	owner INT (11) UNSIGNED not null,
@@ -652,10 +654,10 @@ CREATE TABLE mail_signatures (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'contacts'
+# Structure de la table 'bab_contacts'
 #
 
-CREATE TABLE contacts (
+CREATE TABLE bab_contacts (
    id int(11) unsigned NOT NULL auto_increment,
    category int(11) unsigned DEFAULT '0' NOT NULL,
    owner int(11) unsigned DEFAULT '0' NOT NULL,
@@ -678,10 +680,10 @@ CREATE TABLE contacts (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'sites'
+# Structure de la table 'bab_sites'
 #
 
-CREATE TABLE sites (
+CREATE TABLE bab_sites (
    id int(11) unsigned NOT NULL auto_increment,
    name char(30) NOT NULL,
    description char(100) NOT NULL,
@@ -695,10 +697,10 @@ CREATE TABLE sites (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'homepages'
+# Structure de la table 'bab_homepages'
 #
 
-CREATE TABLE homepages (
+CREATE TABLE bab_homepages (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	id_article INT (11) UNSIGNED not null,
 	id_site INT (11) UNSIGNED not null,
@@ -710,10 +712,10 @@ CREATE TABLE homepages (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'files'
+# Structure de la table 'bab_files'
 #
 
-CREATE TABLE files (
+CREATE TABLE bab_files (
   id int(11) unsigned NOT NULL auto_increment,
   name varchar(255) NOT NULL default '',
   description tinytext NOT NULL,
@@ -736,47 +738,47 @@ CREATE TABLE files (
 
 # --------------------------------------------------------
 #
-# Structure de la table 'mime_types'
+# Structure de la table 'bab_mime_types'
 #
 
-CREATE TABLE mime_types (
+CREATE TABLE bab_mime_types (
 	ext VARCHAR(10) NOT NULL, 
 	mimetype TINYTEXT NOT NULL,
 	PRIMARY KEY (ext)
 ); 
 
-INSERT INTO mime_types VALUES ('ai', 'application/postscript');
-INSERT INTO mime_types VALUES ('asc', 'text/plain');
-INSERT INTO mime_types VALUES ('au', 'audio/basic');
-INSERT INTO mime_types VALUES ('avi', 'video/x-msvideo');
-INSERT INTO mime_types VALUES ('bin', 'application/octet-stream');
-INSERT INTO mime_types VALUES ('bmp', 'image/bmp');
-INSERT INTO mime_types VALUES ('class', 'application/octet-stream');
-INSERT INTO mime_types VALUES ('css', 'text/css');
-INSERT INTO mime_types VALUES ('doc', 'application/msword');
-INSERT INTO mime_types VALUES ('dvi', 'application/x-dvi');
-INSERT INTO mime_types VALUES ('exe', 'application/octet-stream');
-INSERT INTO mime_types VALUES ('gif', 'image/gif');
-INSERT INTO mime_types VALUES ('htm', 'text/html');
-INSERT INTO mime_types VALUES ('html', 'text/html');
-INSERT INTO mime_types VALUES ('jpe', 'image/jpeg');
-INSERT INTO mime_types VALUES ('jpeg', 'image/jpeg');
-INSERT INTO mime_types VALUES ('jpg', 'image/jpeg');
-INSERT INTO mime_types VALUES ('js', 'application/x-javascript');
-INSERT INTO mime_types VALUES ('mid', 'audio/midi');
-INSERT INTO mime_types VALUES ('midi', 'audio/midi');
-INSERT INTO mime_types VALUES ('mp3', 'audio/mpeg');
-INSERT INTO mime_types VALUES ('mpeg', 'video/mpeg');
-INSERT INTO mime_types VALUES ('png', 'image/png');
-INSERT INTO mime_types VALUES ('ppt', 'application/vnd.ms-powerpoint');
-INSERT INTO mime_types VALUES ('ps', 'application/postscript');
-INSERT INTO mime_types VALUES ('rtf', 'text/rtf');
-INSERT INTO mime_types VALUES ('tar', 'application/x-tar');
-INSERT INTO mime_types VALUES ('txt', 'text/plain');
-INSERT INTO mime_types VALUES ('wav', 'audio/x-wav');
-INSERT INTO mime_types VALUES ('xls', 'application/vnd.ms-excel');
-INSERT INTO mime_types VALUES ('xml', 'text/xml');
-INSERT INTO mime_types VALUES ('zip', 'application/zip');
+INSERT INTO bab_mime_types VALUES ('ai', 'application/postscript');
+INSERT INTO bab_mime_types VALUES ('asc', 'text/plain');
+INSERT INTO bab_mime_types VALUES ('au', 'audio/basic');
+INSERT INTO bab_mime_types VALUES ('avi', 'video/x-msvideo');
+INSERT INTO bab_mime_types VALUES ('bin', 'application/octet-stream');
+INSERT INTO bab_mime_types VALUES ('bmp', 'image/bmp');
+INSERT INTO bab_mime_types VALUES ('class', 'application/octet-stream');
+INSERT INTO bab_mime_types VALUES ('css', 'text/css');
+INSERT INTO bab_mime_types VALUES ('doc', 'application/msword');
+INSERT INTO bab_mime_types VALUES ('dvi', 'application/x-dvi');
+INSERT INTO bab_mime_types VALUES ('exe', 'application/octet-stream');
+INSERT INTO bab_mime_types VALUES ('gif', 'image/gif');
+INSERT INTO bab_mime_types VALUES ('htm', 'text/html');
+INSERT INTO bab_mime_types VALUES ('html', 'text/html');
+INSERT INTO bab_mime_types VALUES ('jpe', 'image/jpeg');
+INSERT INTO bab_mime_types VALUES ('jpeg', 'image/jpeg');
+INSERT INTO bab_mime_types VALUES ('jpg', 'image/jpeg');
+INSERT INTO bab_mime_types VALUES ('js', 'application/x-javascript');
+INSERT INTO bab_mime_types VALUES ('mid', 'audio/midi');
+INSERT INTO bab_mime_types VALUES ('midi', 'audio/midi');
+INSERT INTO bab_mime_types VALUES ('mp3', 'audio/mpeg');
+INSERT INTO bab_mime_types VALUES ('mpeg', 'video/mpeg');
+INSERT INTO bab_mime_types VALUES ('png', 'image/png');
+INSERT INTO bab_mime_types VALUES ('ppt', 'application/vnd.ms-powerpoint');
+INSERT INTO bab_mime_types VALUES ('ps', 'application/postscript');
+INSERT INTO bab_mime_types VALUES ('rtf', 'text/rtf');
+INSERT INTO bab_mime_types VALUES ('tar', 'application/x-tar');
+INSERT INTO bab_mime_types VALUES ('txt', 'text/plain');
+INSERT INTO bab_mime_types VALUES ('wav', 'audio/x-wav');
+INSERT INTO bab_mime_types VALUES ('xls', 'application/vnd.ms-excel');
+INSERT INTO bab_mime_types VALUES ('xml', 'text/xml');
+INSERT INTO bab_mime_types VALUES ('zip', 'application/zip');
 
 # --------------------------------------------------------
 #
