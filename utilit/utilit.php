@@ -27,6 +27,45 @@ include_once $babInstallPath."utilit/userincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 include_once $babInstallPath."utilit/calincl.php";
 
+
+function bab_encrypt($txt,$key)
+	{
+	$td = mcrypt_module_open(MCRYPT_TRIPLEDES, '', MCRYPT_MODE_CFB, '');
+	if( $td === false)
+		return '';
+	$key = substr($key, 0, mcrypt_enc_get_key_size($td));
+	$iv_size = mcrypt_enc_get_iv_size($td);
+	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+	if( mcrypt_generic_init($td, $key, $iv) != -1 )
+		{
+		$crypttxt = mcrypt_generic($td, $txt);
+		mcrypt_generic_deinit($td);
+		mcrypt_module_close($td);
+		$crypttxt = $iv.$crypttxt;
+		return $crypttxt;
+		}
+	return '';
+	}
+
+function bab_decrypt($txt,$key)
+	{
+	$td = mcrypt_module_open(MCRYPT_TRIPLEDES, '', MCRYPT_MODE_CFB, '');
+	if( $td === false)
+		return '';
+	$key = substr($key, 0, mcrypt_enc_get_key_size($td));
+	$iv_size = mcrypt_enc_get_iv_size($td);
+	$iv = substr($txt,0,$iv_size);
+	$txt = substr($txt,$iv_size);
+	if (mcrypt_generic_init($td, $key, $iv) != -1)
+		{
+		$crypttxt = mdecrypt_generic($td, $txt);
+		mcrypt_generic_deinit($td);
+		mcrypt_module_close($td);
+		return rtrim($crypttxt);
+		}
+	return '';
+	}
+
 function bab_mkdir($path, $mode='')
 {
 	if( substr($path, -1) == "/" )
@@ -2340,10 +2379,15 @@ function bab_updateUserSettings()
 			}
 		}
 	
-	$res = $babDB->db_query("select id, id_dggroup from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
+	$res = $babDB->db_query("select id, id_dggroup, id_user, cpw from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $babDB->db_fetch_array($res);	
+		$arr = $babDB->db_fetch_array($res);
+		if( !empty($arr['cpw']) && isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arr['id_user'])
+			{
+			$GLOBALS['babUserPassword'] = bab_decrypt($arr['cpw'], md5($arr['id'].session_id().$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
+			}
+
 		if( $arr['id_dggroup'] != 0 && count($babBody->dgAdmGroups) > 0 && in_array($arr['id_dggroup'], $babBody->dgAdmGroups ))
 			{
 			$babBody->currentAdmGroup = $arr['id_dggroup'];

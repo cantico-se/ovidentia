@@ -450,7 +450,12 @@ function signOn( $nickname, $password,$lifetime)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."' where id='".$arr['id']."'");
+		$cpw = '';
+		if( isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) )
+			{
+			$cpw = bab_encrypt($password, md5($arr['id'].$arr['sessid'].$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
+			}
+		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."', cpw='".$cpw."' where id='".$arr['id']."'");
 		}
 
 	// ajout cookie

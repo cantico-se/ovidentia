@@ -86,6 +86,8 @@ if (!empty($_FILES))
 			}
 	}
 
+$babUserPassword = '';
+
 if( !isset($GLOBALS['babMkdirMode']))
 	{
 	$GLOBALS['babMkdirMode'] = 0770;

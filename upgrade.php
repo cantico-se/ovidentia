@@ -4511,6 +4511,14 @@ function upgrade552to553()
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
+$req = "ALTER TABLE ".BAB_USERS_LOG_TBL." ADD cpw varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 
