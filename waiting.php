@@ -550,7 +550,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 					}
 				}
 
-		if( $arr['id_author'] == 0 || (($artauthor = bab_getUserName($arrart['id_author'])) != ""))
+		if( $arrart['id_author'] == 0 || (($artauthor = bab_getUserName($arrart['id_author'])) == ''))
 			$artauthor = bab_translate("Anonymous");
 
 		if( $bnotify == "Y" )
