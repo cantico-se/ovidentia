@@ -222,39 +222,44 @@ function summarySections($col, $order)
 					{
 					list($totalh) = $this->db->db_fetch_row($this->db->db_query("select count(sst.id_user) from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='2' and sst.id_section='".$arr['id']."' and sst.hidden='Y'"));
 					$groups = array();
-					$res = $this->db->db_query("select * from ".BAB_SECTIONS_GROUPS_TBL." where id_object='".$arr['id']."'");
-					while( $row = $this->db->db_fetch_array($res))
+					if( $totalh != 0 )
 						{
-						switch($row['id_group'])
+						$res = $this->db->db_query("select * from ".BAB_SECTIONS_GROUPS_TBL." where id_object='".$arr['id']."'");
+						while( $row = $this->db->db_fetch_array($res))
 							{
-							case "0": // everybody
-							case "1": // users
-							case "2": // guests
-								if( $this->utotal < $totalh )
-									{
+							switch($row['id_group'])
+								{
+								case "0": // everybody
+								case "1": // users
+									if( $this->utotal <= $totalh  )
+										{
+										$upercent = 0;
+										}
+									else
+										{
+										$upercent = round((($this->utotal - $totalh)*100)/$this->utotal,2);
+										}
+									break;
+								case "2": // guests
 									$upercent = 100;
-									}
-								else
-									{
-									$upercent = round((($this->utotal - $totalh)*100)/$this->utotal,2);
-									}
-								break;
-							default:  //groups
-								$groups[] = $row['id_group'];
-								break;
+									break;
+								default:  //groups
+									$groups[] = $row['id_group'];
+									break;
+								}
 							}
-						}
 
-					if( count($groups) > 0 )
-						{
-						list($total) = $this->db->db_fetch_row($this->db->db_query("select distinct count(id_object) from ".BAB_USERS_GROUPS_TBL." where id_group in (".implode(',', $groups).")"));
-						if( $total < $totalh )
+						if( count($groups) > 0 )
 							{
-							$upercent = 100;
-							}
-						else
-							{
-							$upercent = round((($total - $totalh)*100)/$total,2);
+							list($total) = $this->db->db_fetch_row($this->db->db_query("select distinct count(id_object) from ".BAB_USERS_GROUPS_TBL." where id_group in (".implode(',', $groups).")"));
+							if( $total <= $totalh )
+								{
+								$upercent = 0;
+								}
+							else
+								{
+								$upercent = round((($total - $totalh)*100)/$total,2);
+								}
 							}
 						}
 					}
@@ -270,23 +275,24 @@ function summarySections($col, $order)
 			$res = $this->db->db_query("select pst.* from ".BAB_PRIVATE_SECTIONS_TBL." pst where pst.optional='Y' and pst.id > '1'");
 			while($arr = $this->db->db_fetch_array($res))
 				{
+				$upercent = 0;
 				$tmparr = array();
 				if( $arr['enabled'] == "Y")
 					{
 					list($totalh) = $this->db->db_fetch_row($this->db->db_query("select count(sst.id_user) as totalh from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='1' and sst.id_section='".$arr['id']."' and sst.hidden='Y'"));
-					if( $this->utotal < $totalh )
+					if( $totalh != 0 )
 						{
-						$upercent = 100;
-						}
-					else
-						{
-						$upercent = round((($this->utotal - $totalh)*100)/$this->utotal,2);
+						if( $this->utotal <= $totalh )
+							{
+							$upercent = 0;
+							}
+						else
+							{
+							$upercent = round((($this->utotal - $totalh)*100)/$this->utotal,2);
+							}
 						}
 					}
-				else
-					{
-					$upercent = 0;
-					}
+
 				$tmparr['section'] = $arr['title'];
 				$tmparr['dgname'] = '';
 				$tmparr['usage'] = $upercent;
@@ -313,6 +319,7 @@ function summarySections($col, $order)
 
 			while( $arr = $this->db->db_fetch_array($rescat) )
 				{
+				$upercent = 0;
 				$cat = $arr['id'];
 				if( !isset($arrtopcat[$cat]))
 					{
@@ -334,46 +341,38 @@ function summarySections($col, $order)
 					{
 					list($totalh) = $this->db->db_fetch_row($this->db->db_query("select count(sst.id_user) as totalh from ".BAB_SECTIONS_STATES_TBL." sst where sst.type='3' and sst.id_section='".$arr['id']."' and sst.hidden='Y'"));
 
-					if( count($arrtopcat[$arr['id']]) > 0 )
+					if( $totalh != 0  && count($arrtopcat[$arr['id']]) > 0 )
 						{
 						if( in_array(0, $arrtopcat[$arr['id']]) || in_array(1, $arrtopcat[$arr['id']]) || in_array(2, $arrtopcat[$arr['id']]))
 							{
-							if( $this->utotal < $totalh )
+							if( $this->utotal <= $totalh )
 								{
-								$this->upercent = 100;
+								$upercent = 0;
 								}
 							else
 								{
-								$this->upercent = round((($this->utotal - $totalh)*100)/$this->utotal,2);
+								$upercent = round((($this->utotal - $totalh)*100)/$this->utotal,2);
 								}
 							}
 						else
 							{
 							list($total) = $this->db->db_fetch_row($this->db->db_query("select distinct count(id_object) from ".BAB_USERS_GROUPS_TBL." where id_group in (".implode(',', $arrtopcat[$arr['id']]).")"));
-							if( $total < $totalh )
+							if( $total <= $totalh )
 								{
-								$this->upercent = 100;
+								$upercent = 0;
 								}
 							else
 								{
-								$this->upercent = round((($total - $totalh)*100)/$total,2);
+								$upercent = round((($total - $totalh)*100)/$total,2);
 								}
 							}
 						}
-					else
-						{
-						$this->upercent = 0;
-						}
-					}
-				else
-					{
-					$this->upercent = 0;
 					}
 
 				$tmparr = array();
 				$tmparr['section'] = $arr['title'];
 				$tmparr['dgname'] = $arr['dgname'];
-				$tmparr['usage'] = $this->upercent;
+				$tmparr['usage'] = $upercent;
 				$this->arrinfo[] = $tmparr;				
 				}
 
@@ -383,6 +382,7 @@ function summarySections($col, $order)
 			$this->urlorddesc = $GLOBALS['babUrlScript']."?tg=stat&idx=sections&order=".($col == 'dgname'? $this->sortord: $order)."&col=dgname";
 			$this->urlordusage = $GLOBALS['babUrlScript']."?tg=stat&idx=sections&order=".($col == 'usage'? $this->sortord: $order)."&col=usage";
 			}
+
 		function isNumeric($col)
 			{
 			switch( $col )
