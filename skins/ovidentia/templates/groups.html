@@ -185,6 +185,9 @@ class="BabAdminMembersList" href="{ url }">{ urlname }</a> </td>
 <!--#if bdgcalendar -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ calendar } </td>
 <!--#endif bdgcalendar -->
+<!--#if bpcalendar -->
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ pcalendar } </td>
+<!--#endif bpcalendar -->
 <!--#if bdgnotes -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notes } </td>
 <!--#endif bdgnotes -->
@@ -213,6 +216,11 @@ class="BabAdminMembersList" href="{ url }">{ urlname }</a> </td>
 <input type="checkbox" name="calgrpids[]" { calcheck } value="{ grpid }">
 </td>
 <!--#endif bdgcalendar -->
+<!--#if bpcalendar -->
+<td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="calperids[]" { pcalcheck } value="{ grpid }">
+</td>
+<!--#endif bpcalendar -->
 <!--#if bdgnotes -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="notgrpids[]" { notescheck } value="{ grpid }">
@@ -243,6 +251,9 @@ class="BabAdminMembersList" href="{ url }">{ urlname }</a> </td>
 <!--#if bdgcalendar -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('calgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <!--#endif bdgcalendar -->
+<!--#if bpcalendar -->
+<td width="1%" align="center"><a href="javascript:onCheckAll('calperids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calperids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<!--#endif bpcalendar -->
 <!--#if bdgnotes -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('notgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <!--#endif bdgnotes -->

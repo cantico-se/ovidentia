@@ -1983,6 +1983,33 @@ function bab_PutVar($args)
 		}
 	}
 
+/* save a variable to global space if not already defined */
+function bab_IfNotIsSet($args)
+	{
+	$name = "";
+	$value = "";
+
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					$name = $mm[3][$j];
+					break;
+				case 'value':
+					$value = $mm[3][$j];
+					break;
+				}
+			}
+
+		if( $this->gctx->get($name) === false )
+			{
+			$this->gctx->push($name, $value);
+			}
+		}
+	}
 
 /* Arithmetic operators */
 function bab_AOAddition($args)

@@ -101,16 +101,18 @@ function bab_isCalendarAccessValid($calid)
 		{
 		case 1:
 			if( $arr['owner'] == $GLOBALS['BAB_SESS_USERID'])
-				return true;
+				return bab_getCalendarId($arr['owner'], $arr['type']) == 0? false: true;
 			else
 				{
 				$res = $db->db_query("select id from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
 				if( $res && $db->db_num_rows($res) > 0 )
-					return true;			
+					return bab_getCalendarId($arr['owner'], $arr['type']) == 0? false: true;
 				}
 			break;
 
 		case 2:
+			if( $arr['owner'] == 1 && $GLOBALS['BAB_SESS_USERID'] != '')
+				return true;
 			$res = $db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group='".$arr['owner']."'");
 			if( $res && $db->db_num_rows($res) > 0 )
 				return true;			

@@ -223,18 +223,24 @@ function resourcesList($grpid, $userid)
 		var $res;
 
 		var $userid;
+		var $calrescheck;
+		var $resid;
+		var $disabled;
+		var $update;
+
 
 		function temp($grpid, $userid)
 			{
+			$this->disabled = bab_translate("Disabled");
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->group = bab_translate("Group");
+			$this->update = bab_translate("Update");
 			$this->idgrp = $grpid;
 			$this->count = count($grpid);
 			$this->db = $GLOBALS['babDB'];
 			$this->userid = $userid;
-			$req = "select * from ".BAB_RESOURCESCAL_TBL."";
-			$this->res = $this->db->db_query($req);
+			$this->res = $this->db->db_query("select * from ".BAB_RESOURCESCAL_TBL."");
 			$this->countcal = $this->db->db_num_rows($this->res);
 			}
 		
@@ -257,6 +263,12 @@ function resourcesList($grpid, $userid)
 				$this->groupname = bab_getGroupName($this->arr['id_group']);
 				$this->url = $GLOBALS['babUrlScript']."?tg=confcal&idx=modifyres&item=".$this->arr['id']."&userid=".$this->userid;
 				$this->urlname = $this->arr['name'];
+				$arr = $this->db->db_fetch_array($this->db->db_query("select id, actif from ".BAB_CALENDAR_TBL." where owner='".$this->arr['id']."' and type='3'"));
+				$this->resid = $this->arr['id'];
+				if( $arr['actif'] == 'N' )
+					$this->calrescheck = "checked";
+				else
+					$this->calrescheck = "";
 				$i++;
 				return true;
 				}
@@ -344,6 +356,28 @@ function addCalResource($groups, $name, $description)
 		}
 	}
 
+function disableCalResource($resids, $userid, $grpid)
+{
+	global $babDB;
+
+	$res = $babDB->db_query("select * from ".BAB_RESOURCESCAL_TBL);
+	while($arr = $babDB->db_fetch_array($res))
+	{
+		for( $k = 0; $k < count($grpid); $k++)
+		{
+			if( $grpid[$k] == $arr['id_group'])
+				{
+				if( count($resids) > 0 && in_array($arr['id'], $resids))
+					$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where owner='".$arr['id']."' and type='3'");
+				else
+					$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where owner='".$arr['id']."' and type='3'");
+				break;
+				}
+		}
+	}
+
+}
+
 /* main */
 if( !isset($idx))
 	$idx = "listcat";
@@ -375,9 +409,10 @@ else
 
 if( isset($addcat) && $addcat == "add")
 	addCalCategory($groups, $name, $description, $bgcolor);
-
-if( isset($addres) && $addres == "add")
+else if( isset($addres) && $addres == "add")
 	addCalResource($groups, $name, $description);
+else if( isset($update) && $update == "disable")
+	disableCalResource($resids, $userid, $grpid);
 
 
 switch($idx)
