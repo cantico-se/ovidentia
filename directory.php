@@ -702,7 +702,7 @@ function addDbContact($id, $fields)
 				$this->buserinfo = true;
 				$this->nickname = bab_translate("Nickname");
 				$this->password = bab_translate("Password");
-				$this->repassword = bab_translate("Retype Paasword");
+				$this->repassword = bab_translate("Retype Password");
 				$this->notifyuser = bab_translate("Notify user");
 				$this->sendpassword = bab_translate("Send password with email");
 				$this->yes = bab_translate("Yes");

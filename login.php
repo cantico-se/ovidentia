@@ -136,7 +136,7 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 			$this->nickname = bab_translate("Nickname");
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
-			$this->repassword = bab_translate("Retype Paasword");
+			$this->repassword = bab_translate("Retype Password");
 			$this->adduser = bab_translate("Register");
 			$this->infotxt = bab_translate("Please provide a valid email.") . "<br>";
 			$this->infotxt .= bab_translate("We will send you an email for confirmation before you can use our services") . "<br>";
