@@ -1113,10 +1113,6 @@ function getSections()
 	$body->loadSections();
 	}
 
-$font1 = new fontTag("", "verdana, arial, helvetica", 1);
-$font2 = new fontTag("white", "verdana, arial, helvetica", 2);
-$font3 = new fontTag("", "verdana, arial, helvetica", 3);
-
 $body = new babBody();
 $BAB_CONTENT_TITLE = "";
 $BAB_HASH_VAR='aqhjlongsmp';
