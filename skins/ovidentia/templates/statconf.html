@@ -1,0 +1,85 @@
+<!--#begin pages -->
+<form name="accform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="pages">
+<input type="hidden" name="action" value="dpages">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr align="center" > 
+<td class="BabSiteAdminTitleFontBackground" nowrap><b>{ pagetxt }</b></td>
+<td class="BabSiteAdminTitleFontBackground"><b>{ urltxt }</b> </td>
+<td class="BabSiteAdminTitleFontBackground">{ deletetxt }</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap>{ page }</td>
+<td class="BabSiteAdminFontBackground" nowrap>{ url }</td>
+<td class="BabSiteAdminFontBackground" align="center"><input type="checkbox" name="pages[]" value="{ pageid }"></td>
+</tr>
+<!--#endin getnext -->
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" colspan="5">&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<center><br><input type="submit" name="submit" value="{ updatetxt }"></center>
+</form>
+<br>
+<br>
+<form name="gcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="statconf">
+<input type="hidden" name="idx" value="pages">
+<input type="hidden" name="action" value="apage">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ urltxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="url" size="60" value="{ urlval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ desctxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="desc" size="60" value="{ descval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ addtxt }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end pages -->
+
+<!--#begin updatestat -->
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr align="center"> 
+<td class="BabFaqTitleFontBg" valign="middle">{ totaltxt }</td>
+<td class="BabFaqTitleFontBg" valign="middle">{ proctxt }</td>
+</tr>
+<tr align="center"> 
+<td class="BabFontBackground"><b>{ totalval }</b></td>
+<td class="BabFontBackground"><b>{ procval }</b></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end updatestat -->
