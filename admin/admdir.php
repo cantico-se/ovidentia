@@ -54,6 +54,7 @@ function listAds()
 		var $gaddurl;
 		var $grouptxt;
 		var $group;
+		var $altbg = true;
 
 		function temp()
 			{
