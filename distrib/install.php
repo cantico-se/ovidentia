@@ -227,6 +227,11 @@ function writeConfig()
 	
 function renameFile()
 	{
+	if (!defined('RENAMEFILE'))
+		{
+		return true;
+		}
+
 	global $error,$succes,$trans;
 	if (rename(basename($_SERVER['PHP_SELF']),RENAMEFILE))
 		{
@@ -237,7 +242,9 @@ function renameFile()
 		{
 		$error = $trans->str('Failed to rename the file').' '.basename($_SERVER['PHP_SELF']).' '.$trans->str('You must remove it for security reasons');
 		return true; // return true because of a non-blocker error
-		}	
+		}
+		
+	return false;
 	}
 	
 	
@@ -249,6 +256,15 @@ function testVars()
 		{
 		$error = $trans->str('No acces to core, Relative path to ovidentia core is wrong');
 		return false;
+		}
+
+	if (!empty($_POST['babUploadPath']) && !is_dir($_POST['babUploadPath']))
+		{
+		if (!@mkdir($_POST['babUploadPath']))
+			{
+			$error = $trans->str('can\'t create upload directory');
+			return false;
+			}
 		}
 		
 	if (!empty($_POST['babUploadPath']) && !is_writable($_POST['babUploadPath']))
@@ -287,7 +303,7 @@ if (isset($_POST) && count($_POST) > 0)
 						{
 						if (writeConfig())
 							{
-							if (!defined(RENAMEFILE) || renameFile())
+							if (renameFile())
 								{
 								$succes[] = $trans->str('Configuration done');
 								$all_is_ok = true;
@@ -449,7 +465,7 @@ a:hover {
 					<dt><label for="babInstallPath"><? echo $trans->str('Relative path to ovidentia core') ?> :</label><input type="text" id="babInstallPath" name="babInstallPath" value="ovidentia/" /></dt>
 					<dt><label for="babUrl"><? echo $trans->str('Base url') ?> :</label><input type="text" id="babUrl" name="babUrl" value="<? echo $babUrl ?>" /></dt>
 					<dt><label for="babUploadPath"><? echo $trans->str('Upload directory') ?> :</label><input type="text" id="babUploadPath" name="babUploadPath" value="/home/upload" /></dt>
-						<dd><? echo $trans->str('Full path to upload the files (example : c:\\\\path-to\\\\upload-directory for Windows, /home/upload for linux)') ?></dd>
+						<dd><? echo $trans->str('Full path to upload the files (example : c:\\path-to\\upload-directory\\ for Windows, /home/upload for linux)') ?></dd>
 				</fieldset>
 			</dl>
 			<input type="submit" value="<? echo $trans->str('Submit') ?>" />
