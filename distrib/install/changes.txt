@@ -1,9 +1,27 @@
 /************************************************************************/
 Juin 2002: Version 3.3.2
 /************************************************************************/
-- Mail sending use phpmailer class ( http://phpmailer.sourceforge.net )
 - Added Calendar sharing:  Consultation, Creation and update, and Total access
-
+- Introduction of a new mail class that addresses some problems in automatic mail
+  transmission and brings a larger choice of configuration possibilities to the administrator.
+  He can choose to disable mail altogether or to use mail, sendmail or SMTP.
+  Use phpmailer class( http://phpmailer.sourceforge.net )
+- Modification of a shared agenda : a user that has entered an event in a shared 
+  agenda is also allowed to modify the events she has introduced.
+- Moderation of file uploads for group folders can be activated or not.
+- Possibility to update a file through the file manager, and notification of updates 
+  for files in a group folder to all group members by E-mail.
+- Possibility to upload files, even if a file with the same name is present in the trash bin.
+- Enhancement of the management of skins and style sheets.
+- Through the Users link of the Administrator section an administrator can now see a user's nickname.
+- An administrator can change the password of a user.
+- The articles presented through the Summary link of the User's section section are 
+  available in a pop-up window with their title, header and body.
+- Handling of errors originated by SMTP configuration problems in php.ini file.
+- When you visualize an article for which you are the approver, you can modify or delete the article.
+- Now forum moderator can be notified when there is a new post
+- Administrators are notified by email when an article is proposed for home pages
+- Fixed some minors bugs
 /************************************************************************/
 Mai 2002: Version 3.3.1
 /************************************************************************/
