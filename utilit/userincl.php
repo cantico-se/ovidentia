@@ -724,7 +724,7 @@ function bab_fileManagerAccessLevel()
 		{
 		for( $i = 0; $i < count($babBody->usergroups); $i++)
 			{
-			if( $babBody->ovgroups[1]['ustorage'] == 'Y')
+			if( $babBody->ovgroups[$babBody->usergroups[$i]]['ustorage'] == 'Y')
 				{
 				$babBody->ustorage = true;
 				break;
