@@ -672,13 +672,6 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 			}
 		}
 	
-	/*
-	if ( !bab_isEmailValid($email))
-		{
-		$babBody->msgerror = bab_translate("ERROR: Your email is not valid !!");
-		return;
-		}
-	*/
 	$db = $GLOBALS['babDB'];
 	if( $prefacc == "Y" )
 		{
@@ -694,7 +687,7 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 	if( empty($password1) )
 		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', account='$account', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item'";
 	else
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', password='ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\")',  account='$account', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item'";
+		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),  account='$account', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item'";
 	$res = $db->db_query($req);
 
 }
