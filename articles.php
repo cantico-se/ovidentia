@@ -265,7 +265,7 @@ function listArticles($topics)
 					$this->commentstxt = "";
 					}
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$this->arr['id']."' order by name asc");
+				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$this->arr['id']."'");
 				$this->countf = $this->db->db_num_rows($this->resf);
 
 				if( $this->countf > 0 )
@@ -425,7 +425,7 @@ function listArchiveArticles($topics, $pos)
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$this->arr['id']."' order by name asc");
+				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$this->arr['id']."'");
 				$this->countf = $this->db->db_num_rows($this->resf);
 
 				if( $this->countf > 0 )
@@ -567,7 +567,7 @@ function readMore($topics, $article)
 				$this->bsubmit = false;
 				}
 
-			$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."' order by name asc");
+			$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
 			$this->countf = $this->db->db_num_rows($this->resf);
 
 			if( $this->countf > 0 )
@@ -640,7 +640,10 @@ function readMore($topics, $article)
 				}
 			else
 				{
-				$this->db->db_data_seek($this->resart,0);
+				if( $this->countart > 0 )
+					{
+					$this->db->db_data_seek($this->resart,0);
+					}
 				$i=0;
 				return false;
 				}
@@ -661,7 +664,10 @@ function readMore($topics, $article)
 				}
 			else
 				{
-				$this->db->db_data_seek($this->rescom,0);
+				if( $this->countcom > 0 )
+					{
+					$this->db->db_data_seek($this->rescom,0);
+					}
 				$i=0;
 				return false;
 				}
@@ -1035,7 +1041,7 @@ function viewArticle($article)
 				$this->content = bab_replace($this->arr['body']);
 				$this->head = bab_replace($this->arr['head']);
 
-				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."' order by name asc");
+				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
 				$this->countf = $this->db->db_num_rows($this->resf);
 
 				if( $this->countf > 0 )
@@ -1092,7 +1098,10 @@ function viewArticle($article)
 				}
 			else
 				{
-				$this->db->db_data_seek($this->rescom,0);
+				if( $this->countcom > 0 )
+					{
+					$this->db->db_data_seek($this->rescom,0);
+					}
 				$i=0;
 				return false;
 				}
