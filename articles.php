@@ -173,7 +173,7 @@ function listArticles($topics)
 				if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $this->topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $this->topics)))
 					{
 					$this->bmodify = true;
-					$res =  $this->db->db_query("select id_author from ".BAB_ART_DRAFTS_TBL." where id_article='".$this->arr['id']."'");
+					$res =  $this->db->db_query("select id, id_author from ".BAB_ART_DRAFTS_TBL." where id_article='".$this->arr['id']."'");
 					if( $res && $this->db->db_num_rows($res) > 0 )
 						{
 						$rr = $this->db->db_fetch_array($res);
@@ -181,6 +181,11 @@ function listArticles($topics)
 						$this->modifybytxt = bab_translate("In modification by");
 						$this->modifyauthor	= bab_getUserName($rr['id_author']);
 						$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id'];
+						if( $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
+							{
+							$this->modifydrafttxt = bab_translate("Edit draft");
+							$this->modifydrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$rr['id']."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$this->topics);
+							}
 						}
 					else
 						{
@@ -792,15 +797,27 @@ function viewArticleLog($topics, $article, $pos)
 			$this->actiontxt = bab_translate("Action");
 			$this->commenttxt = bab_translate("Comment");
 
-			$res = $babDB->db_query("select id  from ".BAB_ART_DRAFTS_TBL." where id_article='".$article."'");
+			$res = $babDB->db_query("select id, id_author  from ".BAB_ART_DRAFTS_TBL." where id_article='".$article."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
+				$arr = $babDB->db_fetch_array($res);
 				$this->bmodify = false;
+				if( $arr['id_author'] ==  $GLOBALS['BAB_SESS_USERID'] )
+					{
+					$this->editdrafttxt = bab_translate("Edit");
+					$this->editdrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+					}
+				else
+					{
+					$this->editdrafttxt = false;
+					}
 				}
 			else
 				{
+				$this->editdrafttxt = false;
 				$this->bmodify = true;
 				}
+
 
 			$res = $babDB->db_query("select count(*) as total from ".BAB_ART_LOG_TBL." where id_article='".$article."' order by date_log desc");
 			$row = $babDB->db_fetch_array($res);
