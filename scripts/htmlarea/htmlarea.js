@@ -76,7 +76,8 @@ HTMLArea.Config = function (babLanguage) {
 	// in the size or not.
 	this.sizeIncludesToolbar = false;
 
-	this.bodyStyle = "background-color: #fff; font-family: Verdana, Arial, sans-serif ; font-size:11px";
+	//this.bodyStyle = "background-color: #fff; font-family: Verdana, Arial, sans-serif ; font-size:11px";
+	this.bodyStyle = HTMLArea.bodyStyle;
 	this.invisibletable = "1px dotted #DDDDDD";
 	this.editorURL = HTMLArea.babInstallPath+"scripts/htmlarea/";
 

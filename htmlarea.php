@@ -32,7 +32,7 @@ function get_js_style_list()
 	if (is_file($filename))
 		{
 		$fcontents = file($filename);
-
+		$fcontents2 = $fcontents;
 		$get=false;
 
 		$jsligne[0] = "\t\"Normal\" : \"Normal\"";
@@ -42,7 +42,6 @@ function get_js_style_list()
 			if (trim($ligne) == "/*BAB_EDITOR_CSS_BEGIN*/") $get=true;
 			if (trim($ligne) == "/*BAB_EDITOR_CSS_END*/") $get=false;
 
-			// detecter si il y a un style, couper a l'accolade ou au deux points
 			$tmp = explode("{", $ligne);
 			$tmp = explode(":", $tmp[0]);
 			if (substr($tmp[0],0,1) == "." ) $tmp[0] = substr($tmp[0],1,(strlen($tmp[0])-1));
@@ -56,10 +55,29 @@ function get_js_style_list()
 				$jsligne[] = "\t\"".$affichage."\" : \"".$tmp."\"";
 				}
 			}
+
+		while(list( $numero_ligne, $ligne ) = each( $fcontents2))
+			{
+			if (trim($ligne) == "/*BAB_EDITOR_PAGE_BEGIN*/") $get=true;
+			if (trim($ligne) == "/*BAB_EDITOR_PAGE_END*/") $get=false;
+
+			$tmp = explode("{", $ligne);
+			$tmp1 = explode("}", $tmp[1]);
+			$tmp = explode(":", $tmp[0]);
+			if (substr($tmp[0],0,1) == "." ) $tmp[0] = substr($tmp[0],1,(strlen($tmp[0])-1));
+			$tmp = explode(".", $tmp[0]);
+			if (isset($tmp[1])) $tmp[0]=$tmp[1];
+			$tmp = trim($tmp[0]);
+			if ($tmp != "" && substr($tmp,-2)!="*/" && substr($tmp,0,2)!="/*" && $tmp!="{" && $tmp!="}" && $get)
+				{
+				$style = $tmp1[0];
+				}
+			}
 		}
 
 
 	header("Content-type: application/x-javascript");
+	//header("Content-type: text/plain");
 	
 	if (count($jsligne) > 1)
 		{
@@ -78,6 +96,11 @@ function get_js_style_list()
 		{
 		echo "HTMLArea.babstyle = {};\n";
 		}
+	echo "\n\n";
+	if (trim($style) != "")
+		echo "HTMLArea.bodyStyle = \"".trim($style)."\";\n";
+	else
+		echo "HTMLArea.bodyStyle = \"background-color: #fff; font-family: Verdana, Arial, sans-serif ; font-size:11px\";\n";
 	die();
 	}
 
