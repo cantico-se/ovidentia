@@ -1085,11 +1085,11 @@
 <string id="List of vacations managers">Liste des Gestionnaires de congés</string>
 <string id="Managers">Gestionnaires</string>
 <string id="WARNING: This operation will delete group and all references">ATTENTION: Cette opération supprime le groupe et ses références</string>
-<string id="Delete delegation group">Supprimer le groupe de délégation</string>
+<string id="Delete delegation">Supprimer la délégation</string>
 <string id="Members of delegation group">Les membres du groupe de délégation</string>
-<string id="Modify delegation group">Modifier un groupe de délégation</string>
-<string id="Create delegation group">Créer un groupe de délégation</string>
-<string id="Groups of delegation list">Liste des groupes de délégation</string>
+<string id="Modify delegation">Modifier une délégation</string>
+<string id="Create delegation">Créer une délégation</string>
+<string id="Delegations list">Liste des délégations</string>
 <string id="Modify approbation schema">Modifier un schéma d'approbation</string>
 <string id="Create a new approbation schema">Créer un schéma d'approbation</string>
 <string id="Test an approbation schema">Tester un schéma d'approbation</string>
@@ -1173,7 +1173,7 @@
 <string id="Create an e-mail account">Crée un compte e-mail</string>
 <string id="popup">popup</string>
 <string id="The new version need to be installed">La nouvelle version de l'add-on n'est pas installée</string>
-<string id="Groups of delegation">Groupes de délégation</string>
+<string id="Delegation">Délégation</string>
 <string id="Modify delegation group">Modifier un groupe de délégation</string>
 <string id="Are you sure you want to delete this delegation group">Etes-vous certain de vouloir détruire ce groupe de délégation</string>
 <string id="WARNING: This operation will delete delegation group and all references">ATTENTION: Cette opération supprime le groupe de délégation et ses références</string>
@@ -1181,7 +1181,8 @@
 <string id="Group of delegation with the same name already exists!">Un groupe de délégation avec le même nom existe déja</string>
 <string id="Managing administrators">Administrateurs délégués</string>
 <string id="It is necessary to remove all associations with the users groups">Il est nécessaire d\'enlever toutes les associations avec les groupes utilisteurs</string>
-<string id="Administrators of delegation group">Les administrateurs du groupe de délégation</string>
-<string id="Users groups">Groupes utilisateurs</string>
+<string id="Administrators of delegation">Les administrateurs de la délégation</string>
+<string id="Managed groups">Groupes administrés</string>
 <string id="Change administration">Changer d'administration</string>
+<string id="Deputy functions">Fonctions déléguées</string>
 </fr>
