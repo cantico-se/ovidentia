@@ -6,7 +6,7 @@ November 2003: Version 4.0.9
 - Approbation based on roles
 - Add support of Calendar Events in OVML
 - Enhanced OvML ( See documentation )
-- Support of sub categories
+- Support of sub categories (FAQ)
 - Support of Workflow for add-ons
 - Organizational Chart
 - Fixed some minors bugs
