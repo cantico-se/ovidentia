@@ -156,10 +156,7 @@ CREATE TABLE bab_groups (
    vacation enum('N','Y') DEFAULT 'N' NOT NULL,
    mail enum('N','Y') DEFAULT 'N' NOT NULL,
    manager int(11) unsigned  DEFAULT '0' NOT NULL,
-   gstorage enum('N','Y') DEFAULT 'N' NOT NULL,
    ustorage enum('N','Y') DEFAULT 'N' NOT NULL,
-   moderate enum('Y','N') DEFAULT 'Y' NOT NULL,
-   filenotify enum('N','Y') DEFAULT 'N' NOT NULL,
    notes enum('Y','N') NOT NULL default 'Y',
    contacts enum('Y','N') NOT NULL default 'Y',
    PRIMARY KEY (id)
@@ -888,3 +885,49 @@ CREATE TABLE bab_far_instances (
 );
 
 
+#
+# Structure de la table `bab_fm_folders`
+#
+
+CREATE TABLE bab_fm_folders (
+  id int(11) unsigned NOT NULL auto_increment,
+  folder char(255) NOT NULL default '',
+  manager int(11) unsigned NOT NULL default '0',
+  idsa int(11) unsigned NOT NULL default '0',
+  filenotify enum('N','Y') NOT NULL default 'N',
+  active enum('Y','N') NOT NULL default 'Y',
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_fmdownload_groups`
+#
+
+CREATE TABLE bab_fmdownload_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_fmupdate_groups`
+#
+
+CREATE TABLE bab_fmupdate_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_fmupload_groups`
+#
+
+CREATE TABLE bab_fmupload_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id)
+);

@@ -596,6 +596,12 @@ function siteUpdateHomePage1($item, $listpage1)
 	}
 
 /* main */
+if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( isset($modify))
 	{
 	if( !empty($Submit))

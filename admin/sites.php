@@ -386,6 +386,12 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 
 
 /* main */
+if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( isset($create))
 	{
 	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group))
