@@ -12,6 +12,7 @@
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ fullname } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ public } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ private } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ moderate } </td>
 </tr>
 <!--#in getnext -->
 <tr> 
@@ -28,13 +29,16 @@
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="ugroups[]" { ustorage } value="{ arr[id] }">
 </td>
+<td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="moderate[]" { cmoderate } value="{ arr[id] }">
+</td>
 </tr>        
 <!--#endin getnext -->
 <tr> 
 <td valign="middle">&nbsp;</td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('groups', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('groups', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('ugroups', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('ugroups', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-</tr>
+<td width="1%" align="center"><a href="javascript:onCheckAll('moderate', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('moderate', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
 </table>
 </td>
 </tr>
