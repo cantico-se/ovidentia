@@ -143,13 +143,15 @@ function bab_translate($str, $folder = "")
 
 	if( empty($folder))
 		{
-		$filename = "lang/lang-".$lang.".xml";
+		$filename = "lang/lang-".$GLOBALS['babLanguage'].".xml";
 		if (!file_exists($filename))
 			$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
 		}
 	else
 		{
-		$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$GLOBALS['babLanguage'].".xml";
+		$filename = "lang/addons/".$folder."/lang-".$GLOBALS['babLanguage'].".xml";
+		if (!file_exists($filename))
+			$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$GLOBALS['babLanguage'].".xml";
 		}
 
 	if( empty($tmp))
