@@ -561,4 +561,6 @@
 <string id="ERROR: You must choose a valid resource !!">FOUT: U moet een geldige resource kiezen !!</string>
 <string id="Modify Resource">Wijzig Resource</string>
 <string id="Are you sure you want to delete this calendar category">Bent u zeker dat u deze agenda categorie wil verwijderen?</string>
+<string id="File manager">File manager</string>
+<string id="You are logged on as">You are logged on as</string>
 </nl-be>
