@@ -96,10 +96,14 @@ $babSearchUrl = "";
 $babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts");  
 
 $babJs = $GLOBALS['babScriptPath']."ovidentia.js";
-$babCss = bab_printTemplate($this, "config.html", "babCss");
-$babMeta = bab_printTemplate($this, "config.html", "babMeta");
-$babsectionpuce = bab_printTemplate($this, "config.html", "babSectionPuce");
-$babsectionbullet = bab_printTemplate($this, "config.html", "babSectionBullet");
+$babCssPath = bab_getCssUrl();
+class babDummy { var $duumy; }
+$babDummy = new babDummy();
+
+$babCss = bab_printTemplate($babDummy, "config.html", "babCss");
+$babMeta = bab_printTemplate($babDummy, "config.html", "babMeta");
+$babsectionpuce = bab_printTemplate($babDummy, "config.html", "babSectionPuce");
+$babsectionbullet = bab_printTemplate($babDummy, "config.html", "babSectionBullet");
 
 function printBody()
 	{
