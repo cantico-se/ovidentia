@@ -452,7 +452,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			{
 			global $babDB;
 			static $i = 0;
-			if( $i < count($this->rescount))
+			if( $i < $this->rescount)
 				{
 				$arr = $babDB->db_fetch_array($this->rescat);
 				$this->catid = $arr['id'];

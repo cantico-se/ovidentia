@@ -181,7 +181,7 @@ function displayEventDetail($evtid, $idcal)
 					else
 						{
 						$this->title= $arr['title'];
-						$this->description = $arr['description'];
+						$this->description = bab_replace($arr['description']);
 						}
 					if( $arr['id_cat'] != 0 )
 						{
@@ -281,7 +281,7 @@ function confirmWaitingEvent($evtid, $idcal)
 					$this->begindate = bab_longDate(bab_mktime($arr['start_date']));
 					$this->enddate = bab_longDate(bab_mktime($arr['end_date']));
 					$this->title= $arr['title'];
-					$this->description = $arr['description'];
+					$this->description = bab_replace($arr['description']);
 					$this->evtid = $evtid;
 					$this->idcal = $idcal;
 					if( $arr['id_cat'] != 0 )

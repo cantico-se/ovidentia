@@ -195,17 +195,18 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->bprivate = $arr['bprivate'];
 			$this->block = $arr['block'];
 			$this->bfree = $arr['bfree'];
-			$this->description = $arr['description'];
 			$this->nbowners = $arr['nbowners'];
 			if( !$this->allow_viewtitle  )
 				{
 				$this->title = "xxxxxxxxxx";
 				$this->titleten = "xxxxxxxxxx";
+				$this->description = "";
 				}
 			else
 				{
 				$this->title = $arr['title'];
 				$this->titleten = $this->calstr($arr['title']);
+				$this->description = bab_replace($arr['description']);
 				}
 			if( $this->allow_modify )
 				{

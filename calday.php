@@ -194,7 +194,7 @@ class cal_dayCls extends cal_wmdbaseCls
 							{
 							$this->title = $arr['title'];
 							$this->titleten = $this->calstr($arr['title']);
-							$this->description = $arr['description'];
+							$this->description = bab_replace($arr['description']);
 							}
 
 						$this->nbowners = $arr['nbowners'];
