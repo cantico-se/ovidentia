@@ -159,8 +159,8 @@ function listThreads($forum, $active, $pos)
 					$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='Y'";
 					$res = $this->db->db_query($req);
 					$row = $this->db->db_fetch_array($res);
-					$this->replies = $row["total"];
-					if( $this->replies == 0 && $this->moderator == false )
+					$this->replies = $row["total"] > 0 ? ($row["total"] -1): 0;
+					if( $row["total"] == 0 && $this->moderator == false )
 						$this->disabled = 1;
 					else
 						$this->disabled = 0;
