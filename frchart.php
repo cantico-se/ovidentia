@@ -516,9 +516,9 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			$this->q = $q;
 			$this->iddir = $ocinfo['id_directory'];
 			$this->altbg = false;
-			if( $pos[0] == "-" )
+			if( strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = strlen($pos)>1? $pos[1]: '';
 				$this->ord = "";
 				}
 			else

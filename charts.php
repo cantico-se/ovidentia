@@ -128,6 +128,11 @@ if(!isset($idx))
 	$idx = "list";
 	}
 
+if(!isset($disp))
+	{
+	$disp = "disp1";
+	}
+
 $access = false;
 if( count($babBody->ocids) > 0)
 {

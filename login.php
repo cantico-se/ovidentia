@@ -456,6 +456,11 @@ switch($cmd)
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if ($GLOBALS['babEmailPassword'] ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
+		if( !isset($firstname)) { $firstname = '';}
+		if( !isset($middlename)) { $middlename = '';}
+		if( !isset($lastname)) { $lastname = '';}
+		if( !isset($nickname)) { $nickname = '';}
+		if( !isset($email)) { $email = '';}
 		userCreate($firstname, $middlename, $lastname, $nickname, $email);
 		break;
 
