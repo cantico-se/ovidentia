@@ -972,7 +972,7 @@ function viewArticle($article)
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->countf = 0;
 			$this->countcom = 0;
-			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) )
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
 				$this->content = bab_replace($this->arr['body']);
 				$this->head = bab_replace($this->arr['head']);
@@ -1109,10 +1109,15 @@ function getDocumentArticle($idf, $topics)
 {
 	global $babDB;
 	$access = false;
-	if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics) )
-			{
-			$access = true;
-			}
+	$res = $babDB->db_query("select at.restriction, at.id_topic from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where aft.id='".$idf."'");
+	if( $res && $babDB->db_num_rows($res))
+	{
+	$arr = $babDB->db_fetch_array($res);
+	if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic'])  && bab_articleAccessByRestriction($arr['restriction']))
+		{
+		$access = true;
+		}
+	}
 
 	if( !$access )
 	{
