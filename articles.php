@@ -790,6 +790,9 @@ if( $uaapp )
 else
 	$new = 0;
 
+$babLevelTwo = bab_getCategoryTitle($topics);
+$arr = $babDB->db_fetch_array($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+$babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
 
 switch($idx)
 	{
@@ -798,7 +801,7 @@ switch($idx)
 		exit;
 
 	case "Submit":
-		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
+		$babBody->title = bab_translate("Submit an article")." [ ". $babLevelTwo ." ]";
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
 			{
 			submitArticle($title, $headtext, $bodytext, $topics);
@@ -809,7 +812,7 @@ switch($idx)
 		break;
 
 	case "subfile":
-		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
+		$babBody->title = bab_translate("Submit an article")." [ ". $babLevelTwo ." ]";
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
 			{
 			submitArticleByFile($topics);
@@ -824,13 +827,13 @@ switch($idx)
 		return;
 
 	case "More":
-		$babBody->title = bab_getCategoryTitle($topics);
+		$babBody->title = $babLevelTwo;
 		if( in_array($topics, $babBody->topview) || $access)
 			{
 			$barch = readMore($topics, $article);
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
 				{
-				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 				if( $barch > 0 )
 					$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 
@@ -883,9 +886,9 @@ switch($idx)
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 				}
 			if( $nbarch < 1)
-				$babBody->title = bab_getCategoryTitle($topics).": ". bab_translate("Today, there are no article");
+				$babBody->title = $babLevelTwo.": ". bab_translate("Today, there are no article");
 			else
-				$babBody->title = bab_getCategoryTitle($topics).": ".bab_translate("List of old articles");
+				$babBody->title = $babLevelTwo.": ".bab_translate("List of old articles");
 			}
 		break;
 
@@ -905,9 +908,9 @@ switch($idx)
 				}
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			if( $arr[0] < 1)
-				$babBody->title = bab_getCategoryTitle($topics).": ".bab_translate("Today, there are no article");
+				$babBody->title = $babLevelTwo.": ".bab_translate("Today, there are no article");
 			else
-				$babBody->title = bab_getCategoryTitle($topics);
+				$babBody->title = $babLevelTwo;
 			}
 		break;
 	}

@@ -295,107 +295,160 @@ if( !isset($tg))
 switch($tg)
 	{
 	case "login":
+		$babLevelOne = bab_translate("Home");
+		$babLevelTwo = bab_translate("Login");
 		$incl = "login";
 		break;
 	case "sections":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Sections");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/sections";
 		break;
 	case "section":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Sections");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/section";
 		break;
 	case "register":
+		$babLevelOne = bab_translate("Home");
+		$babLevelTwo = bab_translate("Login");
 		$incl = "admin/register";
 		break;
 	case "users":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Users");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/users";
 		break;
 	case "user":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Users");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/user";
 		break;
 	case "groups":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Groups");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/groups";
 		break;
 	case "group":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Groups");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/group";
 		break;
 	case "admfaqs":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Faqs");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfaqs";
 		break;
 	case "admfaq":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Faqs");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfaq";
 		break;
 	case "topcat":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Topics categories");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/topcat";
 		break;
 	case "topcats":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Topics categories");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/topcats";
 		break;
 	case "apprflow":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Approbations");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/apprflow";
 		break;
 	case "admfms":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("File manager");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfms";
 		break;
 	case "admfm":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("File manager");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfm";
 		break;
 	case "topman":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Managed topics");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "topman";
 		break;
 	case "topics":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Topics categories");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "admin/topics";
 		break;
 	case "topic":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Topics categories");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "admin/topic";
 		break;
 	case "topusr":
+		$babLevelOne = bab_translate("Topics categories");
 		$incl = "topusr";
 		break;
 	case "forums":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Forums");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/forums";
 		break;
 	case "forum":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Forums");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/forum";
 		break;
 	case "admvacs":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Vacation");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admvacs";
 		break;
 	case "admvac":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Vacation");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admvac";
 		break;
 	case "admcals":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Calendar");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admcals";
 		break;
 	case "admcal":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Calendar");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admcal";
 		break;
 	case "sites":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Sites");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/sites";
 		break;
 	case "site":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Sites");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/site";
 		break;
@@ -404,69 +457,133 @@ switch($tg)
 			$incl = "admin/admfiles";
 		break;
 	case "addons":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Add-ons");
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/addons";
 		break;
 	case "options":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Options");
 		if( $BAB_SESS_LOGGED)
     		$incl = "options";
 		break;
 	case "mail":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Mail");
 		if( $BAB_SESS_LOGGED)
     		$incl = "mail";
 		break;
 	case "mailopt":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Options");
 		if( $BAB_SESS_LOGGED)
     		$incl = "mailopt";
 		break;
 	case "maildoms":
+		if( isset($userid) && $userid == 0 )
+			{
+			$babLevelOne = bab_translate("Administration");
+			$babLevelTwo = bab_translate("Mail");
+			}
+		else
+			{
+			$babLevelOne = bab_translate("User's section");
+			$babLevelTwo = bab_translate("Options");
+			}
 		if( $BAB_SESS_LOGGED)
     		$incl = "maildoms";
 		break;
 	case "maildom":
+		if( isset($userid) && $userid == 0 )
+			{
+			$babLevelOne = bab_translate("Administration");
+			$babLevelTwo = bab_translate("Mail");
+			}
+		else
+			{
+			$babLevelOne = bab_translate("User's section");
+			$babLevelTwo = bab_translate("Options");
+			}
 		if( $BAB_SESS_LOGGED)
     		$incl = "maildom";
 		break;
 	case "confcals":
+		if( isset($userid) && $userid == 0 )
+			{
+			$babLevelOne = bab_translate("Administration");
+			$babLevelTwo = bab_translate("Calendar");
+			}
+		else
+			{
+			$babLevelOne = bab_translate("User's section");
+			$babLevelTwo = bab_translate("Options");
+			}
 		if( $BAB_SESS_LOGGED)
     		$incl = "confcals";
 		break;
 	case "confcal":
+		if( isset($userid) && $userid == 0 )
+			{
+			$babLevelOne = bab_translate("Administration");
+			$babLevelTwo = bab_translate("Calendar");
+			}
+		else
+			{
+			$babLevelOne = bab_translate("User's section");
+			$babLevelTwo = bab_translate("Options");
+			}
 		if( $BAB_SESS_LOGGED)
     		$incl = "confcal";
 		break;
 	case "calendar":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Calendar");
 		if( $BAB_SESS_LOGGED)
     		$incl = "calendar";
 		break;
 	case "event":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Calendar");
 		if( $BAB_SESS_LOGGED)
     		$incl = "event";
 		break;
 	case "calview":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Summary");
 		if( $BAB_SESS_LOGGED)
     		$incl = "calview";
 		break;
 	case "calopt":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Calendar");
 		if( $BAB_SESS_LOGGED)
     		$incl = "calopt";
 		break;
 	case "vacation":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Vacation");
 		if( $BAB_SESS_LOGGED)
     		$incl = "vacation";
 		break;
 	case "vacapp":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Vacation");
 		if( $BAB_SESS_LOGGED)
     		$incl = "vacapp";
 		break;
 	case "lusers":
+		$babLevelOne = "";
+		$babLevelTwo = "";
 		if( $BAB_SESS_LOGGED)
     		$incl = "lusers";
 		break;
 	case "threads":
+		$babLevelOne = bab_translate("Forums");
 		$incl = "threads";
 		break;
 	case "posts":
+		$babLevelOne = bab_translate("Forums");
 		$incl = "posts";
 		break;
 	case "articles":
@@ -479,31 +596,47 @@ switch($tg)
 		$incl = "waiting";
 		break;
 	case "faq":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Faqs");
 		$incl = "faq";
 		break;
 	case "search":
+		$babLevelOne = bab_translate("Home");
+		$babLevelTwo = bab_translate("Search");
 		$incl = "search";
 		break;
 	case "fileman":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("File manager");
 		$incl = "fileman";
 		break;
 	case "notes":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Notes");
 		if( $BAB_SESS_LOGGED && bab_notesAccess())
 			$incl = "notes";
 		break;
 	case "note":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Notes");
 		if( $BAB_SESS_LOGGED && bab_notesAccess())
 			$incl = "note";
 		break;
 	case "inbox":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Mail");
 		if( $BAB_SESS_LOGGED)
 			$incl = "inbox";
 		break;
 	case "contacts":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Contacts");
 		if( $BAB_SESS_LOGGED && bab_contactsAccess())
 			$incl = "contacts";
 		break;
 	case "contact":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Contacts");
 		if( $BAB_SESS_LOGGED && bab_contactsAccess())
 			{
 			include $babInstallPath."contact.php";
@@ -540,9 +673,13 @@ switch($tg)
 		$babBody->msgerror = bab_translate("Access denied");
 		/* no break; */
 	case "entry":
+		$babLevelOne = bab_translate("Home");
+		$babLevelTwo = bab_translate("");
 		$incl = "entry";
 		break;
 	default:
+		$babLevelOne = "";
+		$babLevelTwo = "";
 		$incl = "entry";
 		$arr = explode("/", $tg);
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")

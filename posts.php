@@ -714,6 +714,7 @@ if( !isset($post))
 		$post = 0;
 	}
 
+$babLevelTwo = bab_getForumName($forum);
 
 switch($idx)
 	{

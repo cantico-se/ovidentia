@@ -305,11 +305,14 @@ if( isset($action) && $action == "Yes" && $approver)
 
 if( $ucapp )
 	{
-	$db = $GLOBALS['babDB'];
 	$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$article."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-	$res = $db->db_query($req);			
-	$new = $db->db_num_rows($res);
+	$res = $babDB->db_query($req);			
+	$new = $babDB->db_num_rows($res);
 	}
+
+$babLevelTwo = bab_getCategoryTitle($topics);
+$arr = $babDB->db_fetch_array($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+$babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
 
 switch($idx)
 	{
