@@ -956,34 +956,28 @@ switch($tg)
 				if( isset($babBody->babaddons[$arr[1]]))
 					{
 					$row = &$babBody->babaddons[$arr[1]];
-					$acces =false;
-					if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
-						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-					else $acces =true;
-					if (($arr_ini['version'] == $row['version']) || $acces)
+
+					$incl = "addons/".$row['title'];
+					if( is_dir( $GLOBALS['babInstallPath'].$incl))
 						{
-						$incl = "addons/".$row['title'];
-						if( is_dir( $GLOBALS['babInstallPath'].$incl))
-							{
-							$module = "";
-							for($i = 2; $i < sizeof($arr); $i++)
-								$module .= "/".$arr[$i];
-							$GLOBALS['babAddonFolder'] = $row['title'];
-							$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
-							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
-							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
-							$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
-							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
-							$babWebStat->addon($row['title']);
-							$babWebStat->module($module);
-							$incl .= $module;
-							}
-						else
-							$incl = "entry";
+						$module = "";
+						for($i = 2; $i < sizeof($arr); $i++)
+							$module .= "/".$arr[$i];
+						$GLOBALS['babAddonFolder'] = $row['title'];
+						$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
+						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
+						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+						$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+						$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
+						$babWebStat->addon($row['title']);
+						$babWebStat->module($module);
+						$incl .= $module;
 						}
 					else
-						$babBody->msgerror = bab_translate("The new version need to be installed");
+						$incl = "entry";
 					}
+				else
+					$babBody->msgerror = bab_translate("The addon is disabled or not installed");
 				}
 			else
 				$babBody->msgerror = bab_translate("Access denied");

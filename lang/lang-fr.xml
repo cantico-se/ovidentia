@@ -1183,7 +1183,7 @@
 <string id="Messages to display per screen">Messages à afficher par écrans</string>
 <string id="Create an e-mail account">Crée un compte e-mail</string>
 <string id="popup">popup</string>
-<string id="The new version need to be installed">La nouvelle version de l'add-on n'est pas installée</string>
+<string id="The addon is disabled or not installed">Le module est désactivé ou n'est pas installé</string>
 <string id="Delegation">Délégation</string>
 <string id="Modify delegation group">Modifier un groupe de délégation</string>
 <string id="Are you sure you want to delete this delegation group">Etes-vous certain de vouloir détruire ce groupe de délégation</string>

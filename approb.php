@@ -494,28 +494,19 @@ function listWaitingAddons()
 			$babBody = & $GLOBALS['babBody'];
 			reset($babBody->babaddons);
 			while( list($key,$row)=each($babBody->babaddons) ) 
-				{ 
-				$acces =false;
-				if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
-					$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-				else $acces =true;
-				if($row['access'] && (($arr_ini['version'] == $row['version']) || $acces))
+				{
+				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+				if($row['access'] && is_file($addonpath."/init.php" ))
 					{
-					$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-					if( is_file($addonpath."/init.php" ))
+					$this->_setGlobals($row['id'],$row['title']);
+					require_once( $addonpath."/init.php" );
+					
+					if( function_exists($this->call) )
 						{
-						$this->_setGlobals($row['id'],$row['title']);
-						require_once( $addonpath."/init.php" );
-						
-						if( function_exists($this->call) )
-							{
-							$this->arrAddons[$row['id']] = $row['title'];
-							
-							}
+						$this->arrAddons[$row['id']] = $row['title'];
 						}
 					}
 				}
-			
 			}
 
 		function _setGlobals($id,$title)

@@ -558,13 +558,9 @@ function bab_callAddonsFunction($func)
 {
 	$babBody = & $GLOBALS['babBody'];
 	reset($babBody->babaddons);
-	while( list($key,$row)=each($babBody->babaddons) ) 
+	while( list($key,$row) = each($babBody->babaddons) ) 
 		{ 
-		$acces =false;
-		if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
-			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-		else $acces =true;
-		if($row['access'] && (($arr_ini['version'] == $row['version']) || $acces))
+		if($row['access'])
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 			if( is_file($addonpath."/init.php" ))
@@ -821,14 +817,10 @@ function babAdminSection($close)
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		{
 		reset($babBody->babaddons);
-		while( $row=each($babBody->babaddons) ) 
+		while( $row = each($babBody->babaddons) ) 
 			{
 			$row = $row[1];
-			$acces =false;
-			if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
-				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-			else $acces =true;
-			if($row['access'] && (($arr_ini['version'] == $row['version']) || $acces))
+			if($row['access'])
 				{
 				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 				if( is_dir($addonpath))
@@ -1066,14 +1058,10 @@ function babUserSection($close)
 		}
 
 	reset($babBody->babaddons);
-	while( $row=each($babBody->babaddons) ) 
+	while( $row = each($babBody->babaddons) ) 
 		{
 		$row = $row[1];
-		$acces =false;
-		if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
-			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-		else $acces =true;
-		if($row['access'] && (($arr_ini['version'] == $row['version']) || $acces))
+		if($row['access'])
 			{
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 			if( is_dir($addonpath))
@@ -1668,50 +1656,47 @@ function loadSections()
 	$type = '4';
 	if(!empty($arrsectionsbytype[$type]))
 		{
-			$at = array_keys($arrsectionsbytype[$type]);
-			for($i=0; $i < count($at); $i++)
+		$at = array_keys($arrsectionsbytype[$type]);
+		for($i=0; $i < count($at); $i++)
+			{
+				if( isset($babBody->babaddons[$at[$i]]))
 				{
-					if( isset($babBody->babaddons[$at[$i]]))
+				$arr2 = $babBody->babaddons[$at[$i]];
+				$sectionid = $arr2['id'];
+				$objectid = $arrsectionsbytype[$type][$sectionid];
+
+				if( $arr2['access'] && is_file($GLOBALS['babAddonsPath'].$arr2['title']."/init.php"))
 					{
-					$arr2 = $babBody->babaddons[$at[$i]];
-					$sectionid = $arr2['id'];
-					$objectid = $arrsectionsbytype[$type][$sectionid];
-					$acces =false;
-					if (is_file($GLOBALS['babAddonsPath'].$arr2['title']."/addonini.php"))
-						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr2['title']."/addonini.php");
-					else $acces =true;
-					if( $arr2['access']  && (($arr_ini['version'] == $arr2['version']) || $acces) && is_file($GLOBALS['babAddonsPath'].$arr2['title']."/init.php"))
+					$GLOBALS['babAddonFolder'] = $arr2['title'];
+					$GLOBALS['babAddonTarget'] = "addon/".$sectionid;
+					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$sectionid."/";
+					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$arr2['title']."/";
+					$GLOBALS['babAddonHtmlPath'] = "addons/".$arr2['title']."/";
+					$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$arr2['title']."/";
+					require_once( $GLOBALS['babAddonsPath'].$arr2['title']."/init.php" );
+					$func = $arr2['title']."_onSectionCreate";
+					if(function_exists($func))
 						{
-							$GLOBALS['babAddonFolder'] = $arr2['title'];
-							$GLOBALS['babAddonTarget'] = "addon/".$sectionid;
-							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$sectionid."/";
-							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$arr2['title']."/";
-							$GLOBALS['babAddonHtmlPath'] = "addons/".$arr2['title']."/";
-							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$arr2['title']."/";
-							require_once( $GLOBALS['babAddonsPath'].$arr2['title']."/init.php" );
-							$func = $arr2['title']."_onSectionCreate";
-							if(function_exists($func))
-								{
-									if (!isset($template)) $template = false;
-									if($func($stitle, $scontent, $template))
-										{
-											if( !$arrsectionsinfo[$objectid]['close'])
-												{
-												$sec = new babSection($stitle, $scontent);
-												$sec->setTemplate($template);
-												}
-											else
-												{
-												$sec = new babSection($stitle, "");
-												}
-											$sec->setTemplate($arr2['title']);
-											$sec->htmlid = $arr2['title'];
-											$arrsections[$objectid] = $sec;
-										}
-								}
+						if (!isset($template)) $template = false;
+						if($func($stitle, $scontent, $template))
+							{
+								if( !$arrsectionsinfo[$objectid]['close'])
+									{
+									$sec = new babSection($stitle, $scontent);
+									$sec->setTemplate($template);
+									}
+								else
+									{
+									$sec = new babSection($stitle, "");
+									}
+								$sec->setTemplate($arr2['title']);
+								$sec->htmlid = $arr2['title'];
+								$arrsections[$objectid] = $sec;
+							}
 						}
 					}
 				}
+			}
 		}
 
 	// user's sections
@@ -2046,7 +2031,7 @@ function bab_updateUserSettings()
 	//bab_getCalendarIds();
 	$babBody->icalendars =& new bab_icalendars();
 
-	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
+	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$arr['access'] = bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']);

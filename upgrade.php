@@ -4154,7 +4154,7 @@ return $ret;
 function upgrade541to542()
 {
 $ret = "";
-$db = $GLOBALS['babDB'];
+$db = &$GLOBALS['babDB'];
 
 $res = $db->db_query("ALTER TABLE `".BAB_FORUMS_TBL."` CHANGE `description` `description` TEXT NOT NULL");
 if( !$res)
@@ -4162,6 +4162,37 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_FORUMS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+
+$res = $db->db_query("ALTER TABLE `".BAB_ADDONS_TBL."` ADD `installed` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL");
+$res = $db->db_query("ALTER TABLE `".BAB_ADDONS_TBL."` ADD INDEX ( `installed` )");
+$res = $db->db_query("ALTER TABLE `".BAB_ADDONS_TBL."` ADD INDEX ( `enabled` )");
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ADDONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$res = $db->db_query("SELECT * FROM ".BAB_ADDONS_TBL."");
+while($arr = $this->db->db_fetch_array($res))
+	{
+	$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title']."/addonini.php");
+	if( !empty($arr_ini['version']) && $arr_ini['version'] == $arr['version'])
+		{
+		$db->db_query("UPDATE `".BAB_ADDONS_TBL."` SET installed='Y' WHERE id='".$arr['id']."'");
+		}
+	else
+		{
+		$db->db_query("UPDATE `".BAB_ADDONS_TBL."` SET installed='N' WHERE id='".$arr['id']."'");
+		}
+	}
+
+if( !$res)
+	{
+	$ret = "Upgrade of <b>".BAB_ADDONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 ?>

@@ -185,7 +185,7 @@ function addonsList($upgradeall)
 							{
 							if ((function_exists($func_name) && $func_name($this->arr['version'],$arr_ini['version'])) || !function_exists($func_name))
 								{
-								$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$this->arr['id']."'";
+								$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."', installed='Y' where id='".$this->arr['id']."'";
 								$this->db->db_query($req);
 								$this->addversion = $arr_ini['version'];
 								}
@@ -194,7 +194,7 @@ function addonsList($upgradeall)
 							}
 						elseif (!function_exists($func_name))
 							{
-							$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$this->arr['id']."'";
+							$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."', installed='Y' where id='".$this->arr['id']."'";
 							$this->db->db_query($req);
 							$this->addversion = $arr_ini['version'];
 							}
@@ -257,12 +257,15 @@ function upgrade($id)
 			if ( compare_versions($row['version'],$arr_ini['version']) || $row['version'] == "" )
 				{
 				$GLOBALS['babAddonFolder'] = $row['title'];
+				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
 				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
 				require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
 				if ((function_exists($func_name) && $func_name($row['version'],$arr_ini['version'])) || !function_exists($func_name))
 					{
-					$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$_GET['item']."'";
+					$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."',installed='Y' where id='".$_GET['item']."'";
 					$db->db_query($req);
 					return true;
 					}
@@ -599,7 +602,7 @@ switch($idx)
 		break;
 
 	case "upgrade":
-		upgrade($item);
+		upgrade($_GET['item']);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 		exit;
 		

@@ -929,7 +929,10 @@ CREATE TABLE `bab_addons` (
   `title` varchar(255) NOT NULL default '',
   `enabled` enum('Y','N') NOT NULL default 'Y',
   `version` varchar(127) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `installed` enum('Y','N') NOT NULL default 'N',
+  PRIMARY KEY  (`id`),
+  KEY `installed` (`installed`),
+  KEY `enabled` (`enabled`)
 );
 
     
