@@ -1150,11 +1150,19 @@
 	function EditorOnClick(id, num)
 	{
 		EDITOR_COMPOSITION_PREFIX = Zone[num];
+		for ( k=0 ; k<document.forms.length ; k++ )
+		{
+			if( document.forms[k].name == ZForm )
+			{
+				break;
+			}
+		}	
+
 		if(editor.textMode[EDITOR_COMPOSITION_PREFIX]) {
-			eval(EDITOR_TOP_TOOLBAR_PREFIX + id).document.forms[0].elements['editorCheckbox'].checked = true;
+			eval(EDITOR_TOP_TOOLBAR_PREFIX + id).document.forms[k].elements['editorCheckbox'].checked = true;
 		}
 		else {
-			eval(EDITOR_TOP_TOOLBAR_PREFIX + id).document.forms[0].elements['editorCheckbox'].checked = false;
+			eval(EDITOR_TOP_TOOLBAR_PREFIX + id).document.forms[k].elements['editorCheckbox'].checked = false;
 		}
 		eval(EDITOR_BACK_COLOR_CHOOSER_PREFIX + id).Hide();
 		eval(EDITOR_FORE_COLOR_CHOOSER_PREFIX + id).Hide();
