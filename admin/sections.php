@@ -81,7 +81,7 @@ function sectionsList()
 			$this->update = bab_translate("Update");
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
-			$this->opttxt = bab_translate("Optional");
+			$this->opttxt = bab_translate("Optional(fem)");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
@@ -442,7 +442,7 @@ function sectionCreate($jscript)
 			$this->right = bab_translate("Right");
 			$this->script = bab_translate("PHP script");
 			$this->templatetxt = bab_translate("Template");
-			$this->optionaltxt = bab_translate("Optional");
+			$this->optionaltxt = bab_translate("Optional(fem)");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->langLabel = bab_translate("Language");
