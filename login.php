@@ -1114,7 +1114,7 @@ switch($cmd)
 
 	case "signon":
 	default:
-		if (!empty($_SERVER['SERVER_NAME']) && !isset($_GET['redirected'] && substr_count($GLOBALS['babUrl'],$_SERVER['SERVER_NAME']) == 0)
+		if (!empty($_SERVER['SERVER_NAME']) && !isset($_GET['redirected']) && substr_count($GLOBALS['babUrl'],$_SERVER['SERVER_NAME']) == 0)
 			{
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
 			}
