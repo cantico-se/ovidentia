@@ -195,7 +195,7 @@ function printBody()
 			$this->babBanner = bab_printTemplate($this, "config.html", "babBanner");
 			$this->script = $babBody->script;
 			$this->home = bab_translate("Home");
-			$this->homeurl = $GLOBALS['babUrlScript']."?tg=entry";
+			$this->homeurl = $GLOBALS['babUrlScript'];
 			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )
 				{
 				$this->login = bab_translate("Logout");
@@ -322,8 +322,6 @@ function printBody()
 	echo bab_printTemplate($temp,"page.html", "");
 	}
 
-if( !isset($tg))
-	$tg = "entry";
 
 switch($tg)
 	{
@@ -740,17 +738,7 @@ switch($tg)
 	case "entry":
 		$babLevelOne = bab_translate("Home");
 		$babLevelTwo = bab_translate("");
-		if( $BAB_SESS_LOGGED)
-			$file = "private.html";
-		else
-			$file = "public.html";
-		if( file_exists("skins/".$GLOBALS['babSkin']."/templates/".$file))
-			{
-			$incl = "oml";
-			break;
-			}
-		else
-			$incl = "entry";
+		$incl = "entry";
 		break;
 	default:
 		$babLevelOne = "";
@@ -784,6 +772,17 @@ switch($tg)
 			else
 				$babBody->msgerror = bab_translate("Access denied");
 			}
+		else
+		{
+			if( $BAB_SESS_LOGGED)
+				$file = "private.html";
+			else
+				$file = "public.html";
+			if( file_exists("skins/".$GLOBALS['babSkin']."/templates/".$file))
+				$incl = "oml";
+			else
+				$incl = "entry";
+		}
 		break;
 	}
 
