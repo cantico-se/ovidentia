@@ -84,4 +84,27 @@ function browseGroups($cb)
 	$temp = new temp($cb);
 	echo bab_printTemplate($temp, "groups.html", "browsegroups");
 	}
+
+// used in add-ons from v4.08
+function getGroupsMembers($id_grp)
+	{
+	if (is_array($id_grp))
+		$id_grp = implode(",",$id_grp);
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("SELECT u.* FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE g.id_group IN (".$id_grp.") AND g.id_object=u.id");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$i = 0;
+		while ($arr = $db->db_fetch_array($res))
+			{
+			$user[$i]['id'] = $arr['id'];
+			$user[$i]['name'] = bab_composeUserName($arr['firstname'],$arr['lastname']);
+			$user[$i]['email'] = $arr['email'];
+			$i++;
+			}
+		return $user;
+		}
+	else
+		return false;
+	}
 ?>
