@@ -4222,7 +4222,7 @@ return $ret;
 
 }
 
-function upgrade543to550()
+function upgrade543to544()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];

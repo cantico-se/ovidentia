@@ -683,7 +683,7 @@ switch($idx)
 		break;
 	default:
 	case "options":
-		$babBody->title = bab_translate("Calendar an Vacations Options");
+		$babBody->title = bab_translate("Calendar and Vacations Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 
 		calendarOptions($idcal, $urla);
