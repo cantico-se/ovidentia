@@ -896,25 +896,25 @@ function browseRoles($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update)
 			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(ocrt.id) as total from ".$req));
 			if( $total > ORG_MAX_REQUESTS_LIST )
 				{
-				$urltmp = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp4&ocid=".$this->ocid."&eid=".$this->oeid."&type=".$this->type."&role=".$this->role."&echo=".$this->echo."&vpos=";
+				$urltmp = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp4&ocid=".$this->ocid."&eid=".$this->oeid."&type=".$this->type."&role=".$this->role."&vpos=";
 
 				if( $vpos > 0)
 					{
-					$this->topurl = $urltmp."0"."&cb=".$this->cb;
+					$this->topurl = $urltmp."0";
 					$this->topname = "&lt;&lt;";
 					}
 
 				$next = $vpos - ORG_MAX_REQUESTS_LIST;
 				if( $next >= 0)
 					{
-					$this->prevurl = $urltmp.$next."&cb=".$this->cb;
+					$this->prevurl = $urltmp.$next;
 					$this->prevname = "&lt;";
 					}
 
 				$next = $vpos + ORG_MAX_REQUESTS_LIST;
 				if( $next < $total)
 					{
-					$this->nexturl = $urltmp.$next."&cb=".$this->cb;
+					$this->nexturl = $urltmp.$next;
 					$this->nextname = "&gt;";
 					if( $next + ORG_MAX_REQUESTS_LIST < $total)
 						{
@@ -922,7 +922,7 @@ function browseRoles($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update)
 						}
 					else
 						$bottom = $next;
-					$this->bottomurl = $urltmp.$bottom."&cb=".$this->cb;
+					$this->bottomurl = $urltmp.$bottom;
 					$this->bottomname = "&gt;&gt;";
 					}
 				}
