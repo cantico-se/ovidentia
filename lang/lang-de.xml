@@ -1111,4 +1111,11 @@
 <string id="All site">All site</string>
 <string id="Change administration group">Change administration group</string>
 <string id="Optional sections list">Optional sections list</string>
+<string id="Group calendar">Group calendar</string>
+<string id="Personal calendar">Personal calendar</string>
+<string id="Allow user update personnal information">Allow user update personnal information</string>
+<string id="Create event category">Create event category</string>
+<string id="Event categories list">Event categories list</string>
+<string id="Update personnal informations">Update personnal informations</string>
+<string id="Update nickname">Update nickname</string>
 </de>

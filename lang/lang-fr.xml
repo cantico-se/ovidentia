@@ -308,7 +308,7 @@
 <string id="ERROR: You must provide server address !!">ERREUR: Vous devez donner l'addresse d'un serveur !!</string>
 <string id="ERROR: You must provide signature !!">ERREUR: Vous devez spécifier une signature !!</string>
 <string id="ERROR: You must provide topic manager !!">ERREUR: Vous devez indiquer un gestionnaire pour le thème d'articles !!</string>
-<string id="ERROR: Your email is not valid !!">ERREUR: Votre adresse de messagerie n'est pas correcte !!</string>
+<string id="ERROR: Your email is not valid !!">ERREUR: Votre adresse de messagerie n'est pas correct !!</string>
 <string id="Edit request vacation">Modifier une demande de congé</string>
 <string id="Edit">Editer</string>
 <string id="Email a new password">Envoyer un nouveau mot de passe par e-mail</string>
@@ -340,8 +340,8 @@
 <string id="File">Fichier</string>
 <string id="Filename">Nom du fichier</string>
 <string id="Files">Fichiers</string>
-<string id="Filter language and country">Filtre sur le language et le pays</string>
-<string id="Filter language">Filtre sur le language</string>
+<string id="Filter language and country">Filtre sur le langage et le pays</string>
+<string id="Filter language">Filtre sur le langage</string>
 <string id="Filter on">Filtrer sur</string>
 <string id="Filter translated">Filtre traduit</string>
 <string id="Find">Trouver</string>
@@ -395,7 +395,7 @@
 <string id="Incoming mail server port">Port pour le serveur 'entrant'</string>
 <string id="Incoming mail server">Serveur de messagerie 'entrant' (Pop/Imap)</string>
 <string id="Incorrect nickname">Identifiant incorrect</string>
-<string id="Incorrect total number of days">Nombre de jours total est incorrecte</string>
+<string id="Incorrect total number of days">Nombre de jours total est incorrect</string>
 <string id="Index of questions">Index des questions</string>
 <string id="Information">Information</string>
 <string id="Introduction Tag">Balise d'introduction</string>
@@ -577,7 +577,7 @@
 <string id="Plain text">Texte</string>
 <string id="Planning">Planning</string>
 <string id="Please give a valid directory name">Veuillez spécifier un nom de répertoire correct</string>
-<string id="Please provide a valid email.">Merci d'indiquer une adresse e-mail correcte</string>
+<string id="Please provide a valid email.">Merci d'indiquer une adresse e-mail correct</string>
 <string id="Please select a file to upload">Séléctionnez un fichier à télécharger</string>
 <string id="Please select at least one item">SVP, veuillez sélectionner au moins un élément</string>
 <string id="Position">Position</string>
@@ -586,7 +586,7 @@
 <string id="Posts">Contributions</string>
 <string id="Prefered account">Compte préféré</string>
 <string id="Prefered format">Format préféré</string>
-<string id="Prefered language">Language préféré</string>
+<string id="Prefered language">Langage préféré</string>
 <string id="Prefered skin">Skin préféré</string>
 <string id="Previous day">Jour précédent</string>
 <string id="Previous time">Précédent</string>
@@ -770,7 +770,7 @@
 <string id="Update Forum">Modifier le forum</string>
 <string id="Update Groups">Mettre à jour</string>
 <string id="Update Info">Modifier les infos</string>
-<string id="Update Language">Mise à jour du language</string>
+<string id="Update Language">Mise à jour du langage</string>
 <string id="Update Note">Mettre à jour la note</string>
 <string id="Update Password">Modifier le mot de passe</string>
 <string id="Update Question">Mettre à jour la question</string>
@@ -900,7 +900,7 @@
 <string id="You must provide an outgoing mail server">Vous devez spécifier un serveur de messagerie sortant</string>
 <string id="You must select at least one calendar type">Vous devez sélectionner au moins un type de calendrier</string>
 <string id="You must select at least one group">Vous devez sélectionner au moins un groupe</string>
-<string id="You must specify a correct number days">Vous devez indiquez un nombre de jours correcte</string>
+<string id="You must specify a correct number days">Vous devez indiquez un nombre de jours correct</string>
 <string id="You must specify a user or collection">Vous devez spécifier un utilisateur ou un régime</string>
 <string id="You must specify a user or group">Vous devez spécifier un utilisateur ou un groupe</string>
 <string id="You must specify a vacation collection">Vous devez spécifier un régime</string>
@@ -916,7 +916,7 @@
 <string id="Your contact has been deleted">Votre contact a été supprimé</string>
 <string id="Your contact has been updated">Votre contact a été mis à jour</string>
 <string id="Your contacts list has been updated">Votre liste de contacts a été mise à jour</string>
-<string id="Your email is not valid !!">Votre adresse e-mail n'est pas correcte !!</string>
+<string id="Your email is not valid !!">Votre adresse e-mail n'est pas correct !!</string>
 <string id="Your event has been updated">Votre évènement a été mis à jour</string>
 <string id="Your file list has been updated">Votre fichier a été mis à jour</string>
 <string id="Your message has been sent">Votre message a été envoyé</string>
@@ -1113,4 +1113,11 @@
 <string id="Template">Patron</string>
 <string id="Section template">Patron de section</string>
 <string id="Topics category parent">Catégorie de sujet parent</string>
+<string id="Group calendar">Group calendar</string>
+<string id="Personal calendar">Agenda personnel</string>
+<string id="Allow user update personnal information">Permettre de mettre à jour les informations personnelles</string>
+<string id="Create event category">Créer une catégorie d'évènement</string>
+<string id="Event categories list">Liste des catégories d'évènements</string>
+<string id="Update personnal informations">Mettre à jour les informations personnelles</string>
+<string id="Update nickname">Mettre à jour le pseudonyme</string>
 </fr>
