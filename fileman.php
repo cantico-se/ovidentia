@@ -1346,6 +1346,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 
 			if( rename( $pathx.$osfname, $pathxnew.$osfname))
 				{
+				$db->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."'");
 				$tmp[] = "id_owner='".$newfolder."'";
 				$tmp[] = "path=''";
 				$arr['id_owner'] = $newfolder;
@@ -1894,9 +1895,9 @@ function viewFile( $idf)
 				$this->no = bab_translate("No");
 				$this->bviewnf = false;
 
+				$db = $GLOBALS['babDB'];
 				if( $arr['bgroup'] == "Y" && $this->bupdate)
 					{
-					$db = $GLOBALS['babDB'];
 					$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
 					if( $rr['filenotify'] == "N" )
 						{
