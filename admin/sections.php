@@ -153,7 +153,7 @@ function sectionsOrder()
 	return $temp->count;
 	}
 
-function sectionCreate()
+function sectionCreate($jscript)
 	{
 	global $body;
 	class temp
@@ -167,8 +167,9 @@ function sectionCreate()
 		var $right;
 		var $script;
 		var $msie;
+		var $jscript;
 
-		function temp()
+		function temp($jscript)
 			{
 			$this->title = babTranslate("Title");
 			$this->description = babTranslate("Description");
@@ -178,20 +179,21 @@ function sectionCreate()
 			$this->left = babTranslate("Left");
 			$this->right = babTranslate("Right");
 			$this->script = babTranslate("PHP script");
-			if( strtolower(browserAgent()) == "msie")
+			$this->jscript = $jscript;
+			if( $jscript == 0 && strtolower(browserAgent()) == "msie")
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
 			}
 		}
 
-	$temp = new temp();
+	$temp = new temp($jscript);
 	$body->babecho(	babPrintTemplate($temp,"sections.html", "sectionscreate"));
 	}
 
 
 
-function sectionSave($title, $pos, $desc, $content, $script)
+function sectionSave($title, $pos, $desc, $content, $script, $js)
 	{
 	global $body;
 	if( empty($title))
@@ -199,10 +201,6 @@ function sectionSave($title, $pos, $desc, $content, $script)
 		$body->msgerror = babTranslate("ERROR: You must provide a title !!");
 		return;
 		}
-	if( $script == "Y")
-		$php = "Y";
-	else
-		$php = "N";
 
 	$db = new db_mysql();
 	$query = "select * from sections where title='$title'";	
@@ -213,7 +211,16 @@ function sectionSave($title, $pos, $desc, $content, $script)
 		}
 	else
 		{
-		$query = "insert into sections (title, position, description, content, script) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php."')";
+		if( $script == "Y")
+			$php = "Y";
+		else
+			$php = "N";
+
+		if( $js == 1)
+			$js = "Y";
+		else
+			$js = "N";
+		$query = "insert into sections (title, position, description, content, script, jscript) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
 		$query = "select max(ordering) from sections_order where private='N' and position='".$pos."'";
@@ -248,7 +255,7 @@ function saveSectionsOrder($listleft, $listright)
 /* main */
 if( isset($create))
 	{
-	sectionSave($title, $position, $description, $content, $script);
+	sectionSave($title, $position, $description, $content, $script, $js);
 	}
 
 if( isset($update) && $update = "order")
@@ -267,14 +274,24 @@ switch($idx)
 		sectionsOrder();
 		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Create");
+		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
+		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
 		break;
-	case "Create":
+	case "ch":
 		$body->title = babTranslate("Create section");
-		sectionCreate();
+		sectionCreate(0);
 		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Create");
+		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
+		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
+		break;
+	case "cj":
+		$body->title = babTranslate("Create section");
+		sectionCreate(1);
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
+		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
+		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
 		break;
 	case "List":
 	default:
@@ -287,7 +304,8 @@ switch($idx)
 			$body->title = babTranslate("There is no section");
 
 		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Create");
+		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
+		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
 		break;
 	}
 

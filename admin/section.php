@@ -75,7 +75,7 @@ function sectionModify($id)
 				else
 					$this->ischecked = "";
 				}
-			if( strtolower(browserAgent()) == "msie")
+			if( $arr['jscript'] == "N" && strtolower(browserAgent()) == "msie")
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -144,7 +144,8 @@ function sectionUpdate($id, $title, $pos, $desc, $content, $script)
 		$query = "update sections_order set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";
 		$db->db_query($query);
 		}
-	$query = "update sections set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
+	//$query = "update sections set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
+	$query = "update sections set title='$title', description='$desc', content='$content', script='$php' where id=$id";
 	$db->db_query($query);
 	Header("Location: index.php?tg=sections&idx=List");
 	}
