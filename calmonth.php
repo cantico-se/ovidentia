@@ -226,7 +226,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			switch( $iarr['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
-					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || ($iarr['access'] == BAB_CAL_ACCESS_FULL && !$this->block))
+					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || ($iarr['access'] == BAB_CAL_ACCESS_FULL && $this->block == 'N'))
 						{
 						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
 						}
