@@ -365,7 +365,7 @@ switch($idx)
 				$body->title = babTranslate("Today, there is no comment on this article");
 			else
 				$body->title = getArticleTitle($article);
-			$body->addItemMenu("Articles", babTranslate("Topic"), $GLOBALS['babUrl']."index.php?tg=articles&topics=".$topics."&newc=".$newc);
+			$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=articles&topics=".$topics."&newc=".$newc);
 			}
 		break;
 	}
