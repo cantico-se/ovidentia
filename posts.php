@@ -126,6 +126,7 @@ function listPosts($forum, $thread, $pos, $what)
 				$this->confirmname = "";
 				$this->moreurl = "";
 				$this->morename = "";
+				$this->more = "";
 				if(  $this->what == "Y" && $dateupdate > 0)
 					{
 					$req = "select * from forums where id='".$this->forum."'";
