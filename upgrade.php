@@ -4450,20 +4450,24 @@ if ($n == 0)
 	$db->db_query("INSERT INTO ".BAB_MIME_TYPES_TBL." (ext, mimetype) VALUES ('pdf','application/pdf')");
 	}
 
-$req = "ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` ADD `trigger_type` INT UNSIGNED NOT NULL AFTER `trigger_nbdays_max`";
-$res = $db->db_query($req);
-if( !$res)
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE `".BAB_VAC_RIGHTS_RULES_TBL."` trigger_type"));
+if ( $arr[0] != 'trigger_type' )
 	{
-	$ret = "Alteration of <strong>".BAB_VAC_RIGHTS_RULES_TBL."</strong> table failed !<br />";
-	return $ret;
-	}
- 
-$req = "ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` ADD INDEX ( `trigger_type` )";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <strong>".BAB_VAC_RIGHTS_RULES_TBL."</strong> table failed !<br />";
-	return $ret;
+	$req = "ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` ADD `trigger_type` INT UNSIGNED NOT NULL AFTER `trigger_nbdays_max`";
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Alteration of <strong>".BAB_VAC_RIGHTS_RULES_TBL."</strong> table failed !<br />";
+		return $ret;
+		}
+	 
+	$req = "ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` ADD INDEX ( `trigger_type` )";
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Alteration of <strong>".BAB_VAC_RIGHTS_RULES_TBL."</strong> table failed !<br />";
+		return $ret;
+		}
 	}
 
 return $ret;
