@@ -653,6 +653,7 @@ function bab_calendarAccess()
 	{
 	global $babBody;
 	$db = $GLOBALS['babDB'];
+	include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
 
 	if( $GLOBALS['BAB_SESS_USERID'] != "" )
 		{
