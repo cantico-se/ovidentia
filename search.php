@@ -613,8 +613,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 						}
 					}
+				$temp1 = finder($this->like,"b.subject",$option,$this->like2);
+				$temp2 = finder($this->like,"b.message",$option,$this->like2);
+				if ($temp1 != "" && $temp2 != "")
+					$plus = "( ".$temp1." or ".$temp2.") and";
+				else $plus = "";
 				if ($idthreads != "") { 
-					$req = "insert into forresults select b.id, b.id_thread, F.name topic, F.id id_topic, b.subject title,b.message, author, DATE_FORMAT(b.date, '%d-%m-%Y') date from ".BAB_POSTS_TBL." b, ".BAB_THREADS_TBL." T, ".BAB_FORUMS_TBL." F where b.id_thread=T.id and T.forum=F.id and ( ".finder($this->like,"b.subject",$option,$this->like2)." or ".finder($this->like,"b.message",$option,$this->like2).") and b.confirmed='Y' and b.id_thread IN (".substr($idthreads,0,-1).") order by ".$order;
+					$req = "insert into forresults select b.id, b.id_thread, F.name topic, F.id id_topic, b.subject title,b.message, author, DATE_FORMAT(b.date, '%d-%m-%Y') date from ".BAB_POSTS_TBL." b, ".BAB_THREADS_TBL." T, ".BAB_FORUMS_TBL." F where b.id_thread=T.id and T.forum=F.id and ".$plus." b.confirmed='Y' and b.id_thread IN (".substr($idthreads,0,-1).") order by ".$order;
 					$this->db->db_query($req);
 				}
 
@@ -651,8 +656,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$idcat .= $row['id'].",";
 						}
 					}
+				$temp1 = finder($this->like,"question",$option,$this->like2);
+				$temp2 = finder($this->like,"response",$option,$this->like2);
+				if ($temp1 != "" && $temp2 != "")
+					$plus = "( ".$temp1." or ".$temp2.") and";
+				else $plus = "";
+
 				if ($idcat != "") {
-					$req = "insert into faqresults select T.id, idcat, question title, response, category topic,C.id_manager, concat( U.lastname, ' ', U.firstname ) author from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C, ".BAB_USERS_TBL." U where idcat=C.id and C.id_manager=U.id and ( ".finder($this->like,"question",$option,$this->like2)." or ".finder($this->like,"response",$option,$this->like2).") and idcat in (".substr($idcat,0,-1).") order by ".$order;
+					$req = "insert into faqresults select T.id, idcat, question title, response, category topic,C.id_manager, concat( U.lastname, ' ', U.firstname ) author from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C, ".BAB_USERS_TBL." U where idcat=C.id and C.id_manager=U.id and ".$plus." idcat in (".substr($idcat,0,-1).") order by ".$order;
 					$this->db->db_query($req);
 				}
 
@@ -675,14 +686,20 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			// ------------------------------------------------------------------------ PERSONAL NOTES
 			if( (empty($item) || $item == "d") && !empty($BAB_SESS_USERID))
 				{
-				$req = "select count(*) from ".BAB_NOTES_TBL." where ".finder($this->like,"content",$option,$this->like2)." and id_user='".$BAB_SESS_USERID."'";
+				$plus = "";
+				$plus = finder($this->like,"content",$option,$this->like2);
+				if ($plus != "") $plus .= " and";
+				$req = "select count(*) from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."'";
 				$res = $this->db->db_query($req);
 				list($nbrows) = $this->db->db_fetch_row($res);
 				$navpos = $this->navpos;
 				if ($navitem != "d") $navpos = 0;
 				$this->navbar_d = navbar($babLimit,$nbrows,"d",$navpos);
-
-				$req = "select id, content, DATE_FORMAT(date, '%d-%m-%Y') date  from ".BAB_NOTES_TBL." where ".finder($this->like,"content",$option,$this->like2)." and id_user='".$BAB_SESS_USERID."' limit ".$navpos.", ".$babLimit;
+				
+				$plus = "";
+				$plus = finder($this->like,"content",$option,$this->like2);
+				if ($plus != "") $plus .= " and";
+				$req = "select id, content, DATE_FORMAT(date, '%d-%m-%Y') date from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."' limit ".$navpos.", ".$babLimit;
 				$this->resnot = $this->db->db_query($req);
 				$this->countnot = $this->db->db_num_rows($this->resnot);
 				if( !$this->counttot && $this->countnot > 0 )
@@ -717,9 +734,21 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$grpfiles = "";
 					}
 
+				$plus = "";
+				$temp1 = finder($this->like,"F.name",$option,$this->like2);
+				$temp2 = finder($this->like,"description",$option,$this->like2);
+				$temp3 = finder($this->like,"keywords",$option,$this->like2);
+				$temp4 = finder($this->like,"F.path",$option,$this->like2);
+				$temp5 = finder($this->like,"R.folder",$option,$this->like2);
+				$temp6 = finder($this->like,"M.fvalue",$option,$this->like2);
+
+				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $temp5 != "" && $temp6 != "")
+					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." or ".$temp6.") and";
+				else $plus = "";
+
                 if ($idfile != "") 
 					{
-					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M where F.author=U.id and F.id_owner=R.id and (".finder($this->like,"F.name",$option,$this->like2)." or ".finder($this->like,"description",$option,$this->like2)." or ".finder($this->like,"keywords",$option,$this->like2)." or ".finder($this->like,"F.path",$option,$this->like2)." or ".finder($this->like,"R.folder",$option,$this->like2)." or ".finder($this->like,"M.fvalue",$option,$this->like2).") and F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' and M.id_file=F.id order by ".$order;
+					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M where F.author=U.id and F.id_owner=R.id and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' and M.id_file=F.id order by ".$order;
                     $this->db->db_query($req);
                     }
 
@@ -745,7 +774,21 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->db->db_query($req);
 				$req = "alter table conresults add unique (id)";
 				$this->db->db_query($req);
-				$req = "insert into conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where (".finder($this->like,"firstname",$option,$this->like2)." or ".finder($this->like,"lastname",$option,$this->like2)." or ".finder($this->like,"email",$option,$this->like2)." or ".finder($this->like,"compagny",$option,$this->like2)." or ".finder($this->like,"jobtitle",$option,$this->like2)." or ".finder($this->like,"businessaddress",$option,$this->like2)." or ".finder($this->like,"homeaddress",$option,$this->like2).") and owner='".$BAB_SESS_USERID."' order by ".$order;
+
+				$plus = "";
+				$temp1 = finder($this->like,"firstname",$option,$this->like2);
+				$temp2 = finder($this->like,"lastname",$option,$this->like2);
+				$temp3 = finder($this->like,"email",$option,$this->like2);
+				$temp4 = finder($this->like,"compagny",$option,$this->like2);
+				$temp5 = finder($this->like,"jobtitle",$option,$this->like2);
+				$temp6 = finder($this->like,"businessaddress",$option,$this->like2);
+				$temp7 = finder($this->like,"homeaddress",$option,$this->like2);
+
+				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $temp5 != "" && $temp6 != "" && $temp7 != "")
+					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." or ".$temp6." or ".$temp7.") and";
+				else $plus = "";
+
+				$req = "insert into conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where ".$plus." owner='".$BAB_SESS_USERID."' order by ".$order;
 				$this->db->db_query($req);
 
 				$req = "select count(*) from conresults";
