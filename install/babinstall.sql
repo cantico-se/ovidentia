@@ -226,7 +226,7 @@ CREATE TABLE private_sections (
 
 INSERT INTO private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration', 'Y');
 INSERT INTO private_sections VALUES ('2', '1', 'Month', 'This section shows calendar month', 'Y');
-INSERT INTO private_sections VALUES ('3', '0', 'Topics', 'This section lists topics', 'Y');
+INSERT INTO private_sections VALUES ('3', '0', 'Topics categories', 'This section lists topics', 'Y');
 INSERT INTO private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'Y');
 INSERT INTO private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'Y');
 
