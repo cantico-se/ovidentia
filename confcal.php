@@ -24,6 +24,7 @@ function categoryCalModify($userid, $id)
 		var $arr = array();
 		var $res;
 		var $userid;
+		var $delete;
 
 		function temp($userid, $id)
 			{
@@ -31,6 +32,7 @@ function categoryCalModify($userid, $id)
 			$this->description = bab_translate("Description");
 			$this->bgcolor = bab_translate("Color");
 			$this->modify = bab_translate("Modify Category");
+			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
@@ -60,12 +62,14 @@ function resourceCalModify($userid, $id)
 		var $db;
 		var $arr = array();
 		var $res;
+		var $delete;
 
 		function temp($userid, $id)
 			{
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->modify = bab_translate("Modify Resource");
+			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_RESOURCESCAL_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
@@ -223,10 +227,20 @@ if( !isset($idx))
 	$idx = "modifycat";
 
 if( isset($modify) && $modify == "modcat")
-	modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $item);
+	{
+	if( isset($submit))
+		modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $item);
+	else if( isset($caldel))
+		$idx = "delcat";
+	}
 
 if( isset($modify) && $modify == "modres")
-	modifyResourceCal($userid, $oldname, $name, $description, $item);
+	{
+	if( isset($submit))
+		modifyResourceCal($userid, $oldname, $name, $description, $item);
+	else if( isset($resdel))
+		$idx = "delres";
+	}
 
 if( isset($action) && $action == "Yes")
 	{
@@ -285,7 +299,6 @@ switch($idx)
 		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 		$babBody->addItemMenu("modifyres", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=confcal&idx=modifyres&item=".$item);
-		$babBody->addItemMenu("delres", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=confcal&idx=delres&item=".$item."&userid=".$userid);
 		break;
 	case "modifycat":
 	default:
@@ -293,7 +306,6 @@ switch($idx)
 		$babBody->title = bab_getCategoryCalName($item) . " ". bab_translate("category");
 		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("modifycat", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=confcal&idx=modifycat&item=".$item);
-		$babBody->addItemMenu("delcat", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=confcal&idx=delcat&item=".$item."&userid=".$userid);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 		break;
 	}

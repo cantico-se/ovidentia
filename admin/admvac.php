@@ -29,6 +29,7 @@ function modifyVacation($id)
 		var $arr = array();
 		var $arr2 = array();
 		var $res;
+		var $delete;
 
 		function temp($id)
 			{
@@ -38,6 +39,7 @@ function modifyVacation($id)
 			$this->maxdays = bab_translate("Max days number");
 			$this->maxdaysauthorized = bab_translate("Max days authorized");
 			$this->update = bab_translate("Update");
+			$this->delete = bab_translate("Delete");
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_VACATIONS_TYPES_TBL." where id='$id'";
@@ -245,7 +247,10 @@ if(!isset($idx))
 
 if( isset($update) && $update == "updatevacation")
 	{
-	updateVacation($item, $name, $description, $defaultnday, $maxdays, $maxdaysauthorized);
+	if( isset($Submit))
+		updateVacation($item, $name, $description, $defaultnday, $maxdays, $maxdaysauthorized);
+	else if( isset($vacdel))
+		$idx = "delete";
 	}
 
 if( isset($updatestatus) && $updatestatus == "update")
@@ -274,7 +279,6 @@ switch($idx)
 		$babBody->title = bab_translate("List of groups");
 		aclGroups("vacation", "modify", BAB_VACATIONSVIEW_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admvac&idx=modify&item=".$item);
-		//$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admvac&idx=delete&item=".$item);
 		break;
 
 	case "delete":
@@ -291,21 +295,12 @@ switch($idx)
 		$babBody->addItemMenu("modifystatus", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admvac&idx=modifystatus&item=".$item);
 		break;
 
-	/*
-	case "deletestatus":
-		$babBody->title = bab_translate("delete status");
-		deleteStatus($item);
-		$babBody->addItemMenu("modifystatus", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admvac&idx=modifystatus&item=".$item);
-		$babBody->addItemMenu("deletestatus", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admvac&idx=deletestatus&item=".$item);
-		break;
-	*/
 	default:
 	case "modify":
 		$babBody->title = bab_translate("Modify vacation");
 		modifyVacation($item);
 		$babBody->addItemMenu("list", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admvac&idx=modify&item=".$item);
-		$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admvac&idx=delete&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

@@ -353,11 +353,12 @@ EOD;
 		}
 
 	$temp = new temp($calendarid, $day, $month, $year, $view, $title, $description);
+	$babBody->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"event.html", "newevent"));
 	}
 
 
-function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
+function modifyEvent($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 	{
 	global $babBody;
 	class temp
@@ -389,14 +390,17 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 		var $curyear;
 		var $curview;
 		var $descurl;
+		var $delete;
 
-		function temp($calendarid, $evtid, $day, $month, $year, $view)
+		function temp($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 			{
 			global $BAB_SESS_USERID, $babBody;
 
+			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
 			$this->calid = $calendarid;
 			$this->evtid = $evtid;
+			$this->bmodif = $bmodif;
 			$this->caltype = bab_getCalendarType($calendarid);
 			$babBody->title = bab_translate("Calendar"). "  ". bab_getCalendarOwnerName($this->calid, $this->caltype);
 
@@ -697,7 +701,8 @@ EOD;
 
 		}
 
-	$temp = new temp($calendarid, $evtid, $day, $month, $year, $view);
+	$temp = new temp($calendarid, $evtid, $day, $month, $year, $view, $bmodif);
+	$babBody->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"event.html", "modifyevent"));
 	}
 
@@ -1051,8 +1056,18 @@ if( isset($update) && $update == "desc")
 
 if( isset($modifyevent) && $modifyevent == "modify")
 	{
-	updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+	if( isset($Submit))
+		{
+		updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+		}
+	else if( isset($evtdel))
+		{
+		$month = $curmonth;
+		$day = $curday;
+		$year = $curyear;
+		$idx = "delete";
+		}
 	}
 
 if( isset($addevent) && $addevent == "add")
@@ -1119,7 +1134,7 @@ switch($idx)
 				break;	
 			}
 		if( $bmodif )
-			modifyEvent($calid, $evtid, $day, $month, $year, $view);
+			modifyEvent($calid, $evtid, $day, $month, $year, $view, $bmodif);
 		else
 			viewEvent($calid, $evtid, $day, $month, $year, $view);
 
@@ -1129,8 +1144,6 @@ switch($idx)
 			$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 			}
 		$babBody->addItemMenu("calendar", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
-		if( $bmodif )
-			$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=event&idx=delete&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid. "&evtid=".$evtid."&view=".$view);
 		break;
 
 	case "newevent":

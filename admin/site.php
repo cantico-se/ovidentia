@@ -249,6 +249,7 @@ function siteHomePage0($id)
 		}
 
 	$temp0 = new temp0($id);
+	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "sitehomepage0"));
 	}
 
@@ -329,6 +330,7 @@ function siteHomePage1($id)
 		}
 
 	$temp0 = new temp1($id);
+	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "sitehomepage1"));
 	}
 
@@ -471,6 +473,24 @@ if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
+	case "hpriv":
+		$babBody->title = bab_translate("Registered users home page for site").": ".getSiteName($item);
+		siteHomePage1($item);
+		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
+		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
+		break;
+
+	case "hpub":
+		$babBody->title = bab_translate("Unregistered users home page for site").": ".getSiteName($item);
+		siteHomePage0($item);
+		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
+		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
+		break;
+
 	case "Delete":
 		$babBody->title = getSiteName($item);
 		sectionDelete($item);
@@ -482,10 +502,10 @@ switch($idx)
 	case "modify":
 		$babBody->title = getSiteName($item);
 		siteModify($item);
-		siteHomePage0($item);
-		siteHomePage1($item);
 		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
+		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
 		break;
 	}
 

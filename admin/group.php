@@ -555,14 +555,18 @@ if( isset($action) && $action == "Yes")
 switch($idx)
 	{
 	case "Deletem":
-		deleteMembers($users, $item);
-		$babBody->title = bab_translate("Delete group's members");
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Deletem", bab_translate("Delete"), "");
-		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
-		break;
+		if( count($users) > 0)
+			{
+			deleteMembers($users, $item);
+			$babBody->title = bab_translate("Delete group's members");
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
+			$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
+			$babBody->addItemMenu("Deletem", bab_translate("Delete"), "");
+			$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
+			break;
+			}
+		/* no break */
 	case "Members":
 		groupMembers($item);
 		$babBody->title = bab_translate("Group's members");

@@ -177,7 +177,7 @@ switch($idx)
 	{
 
 	case "Groups":
-		$babBody->title = bab_translate("List of groups").": ". getFaqName($item);
+		$babBody->title = bab_translate("FAQ").": ". getFaqName($item)." ".bab_translate("is visible by") ;
 		aclGroups("admfaq", "Modify", BAB_FAQCAT_GROUPS_TBL, $item, "aclfaq");
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
@@ -185,7 +185,7 @@ switch($idx)
 		break;
 
 	case "Delete":
-		$babBody->title = bab_translate("Delete a faq");
+		$babBody->title = bab_translate("Delete FAQ category");
 		deleteCategory($item);
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
@@ -195,7 +195,7 @@ switch($idx)
 
 	default:
 	case "Modify":
-		$babBody->title = bab_translate("Modify a faq").": ". getFaqName($item);
+		$babBody->title = bab_translate("Modify FAQ category").": ". getFaqName($item);
 		modifyCategory($item);
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);

@@ -41,6 +41,8 @@ comments.html					        changed action="index.php" to action="{ babPhpSelf }"
                                         Added <center><a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ urlsee }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center>                                        
 
 confcals.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        resourcecalmodify   Added button "delete"
+                        categorycalmodify   Added button "delete"
 config.html
 contact.html					        changed action="index.php" to action="{ babPhpSelf }"
 contacts.html					        changed action="index.php" to action="{ babPhpSelf }"
@@ -53,11 +55,14 @@ event.html					            changed action="index.php" to action="{ babPhpSelf }"
                         newevent        Removed Start() Javascript function
                                         Changed href="{ datebegin }" 
                                         Changed href="{ dateend }" 
+                                        Moved out javascript to new template tag "scripts"
                         modifyevent     Removed Start() Javascript function
                                         Changed href="{ datebegin }"
                                         Changed href="{ dateend }"
                                         Removed StartWW() Javascript function
                                         Changed href="{ descurl }"
+                                        Added button "delete"
+                                        Moved out javascript to new template tag "scripts"
                                        
 faq.html					            changed action="index.php" to action="{ babPhpSelf }"
                                         Addded popupquestion section
@@ -120,12 +125,15 @@ search.html					            changed action="index.php" to action="{ babPhpSelf }
 
 sections.html					        changed action="index.php" to action="{ babPhpSelf }"
                         sectionslist    Removed Javascript
+                        sectionsmodify  Added a button "delete"
 sectiontemplate.html
 
 sites.html					            changed action="index.php" to action="{ babPhpSelf }"
                         sitecreate      Added two select options ( register and confirm )
                         sitemodify      Added two select options ( register and confirm )
                                         Added <input type="submit" name="delete" value="{ delete }">
+                                        Moved out javascript to new template "scripts"
+                                        Added a new tag template 'scripts'
                         versions        Removed JavaScript Start()
                                         Changed href="{ urlphpinfo }" to javascript call
 
@@ -134,10 +142,12 @@ threads.html					        changed action="index.php" to action="{ babPhpSelf }"
                                         Added <!--#if ipost "== 1" --> ... <!--#endif ipost -->
 topcats.html					        changed action="index.php" to action="{ babPhpSelf }"
                         topcatslist     Removed Javascript
+                        topcatmodify    Added button "delete"
 topcatsection.html
 topics.html					            changed action="index.php" to action="{ babPhpSelf }"
                         articleslist    Removed JavaScript Start()
                                         Changed href="{ urltitle }" to javascript call
+                        categorymodify  Added button "delete"
 topicssection.html
 topman.html					            changed action="index.php" to action="{ babPhpSelf }"
                                         added checkboxes to archive articles

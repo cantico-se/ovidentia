@@ -181,6 +181,7 @@ function modifyCategory($id)
 		var $no;
 		var $yesselected;
 		var $noselected;
+		var $delete;
 
 		function temp($id)
 			{
@@ -192,6 +193,7 @@ function modifyCategory($id)
 			$this->modcom = bab_translate("Moderate comments");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_TOPICS_TBL." where id='$id'";
 			$res = $this->db->db_query($req);
@@ -419,7 +421,10 @@ if(!isset($cat))
 
 if( isset($update) && $adminid >0)
 	{
-	updateCategory($item, $category, $description, $approver, $cat, $modcom);
+	if( isset($Submit))
+		updateCategory($item, $category, $description, $approver, $cat, $modcom);
+	else if( isset($topdel))
+		$idx = "Delete";
 	}
 
 if( isset($aclview) && $adminid >0)
@@ -494,7 +499,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		}
 		break;
@@ -509,7 +513,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		}
 		break;
@@ -524,7 +527,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		}
 		break;
@@ -555,7 +557,6 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		}
 		break;

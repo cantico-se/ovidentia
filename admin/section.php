@@ -48,6 +48,7 @@ function sectionModify($id)
 		var $db;
 		var $res;
 		var $msie;
+		var $delete;
 
 		function temp($id)
 			{
@@ -59,6 +60,7 @@ function sectionModify($id)
 			$this->position = bab_translate("Position");
 			$this->script = bab_translate("PHP script");
 			$this->modify = bab_translate("Modify");
+			$this->delete = bab_translate("Delete");
 			$this->id = $id;
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_SECTIONS_TBL." where id='$id'";
@@ -184,7 +186,10 @@ function confirmDeleteSection($id)
 /* main */
 if( isset($modify))
 	{
-	sectionUpdate($item, $title, $description, $content, $script);
+	if( isset($Submit))
+		sectionUpdate($item, $title, $description, $content, $script);
+	else if(isset($secdel))
+		$idx = "Delete";
 	}
 
 if( isset($aclsec))
@@ -214,7 +219,6 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("Access"),$GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=section&idx=Delete&item=".$item);
 		break;
 	default:
 	case "Modify":
@@ -223,7 +227,6 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("Access"),$GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=section&idx=Delete&item=".$item);
 		break;
 	}
 

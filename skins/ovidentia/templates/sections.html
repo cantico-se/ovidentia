@@ -240,8 +240,7 @@ valign="middle">&nbsp;</td>
 <!--#if msie "== 1" --> 
 <tr> 
 <td align="center" colspan="2"> 
-<input onClick=SetVals() type="submit" name="submit" value="{ modify }">
-<br>
+<input onClick=SetVals() type="submit" name="submit" value="{ modify }">&nbsp;&nbsp;<input type="submit" name="secdel" value="{ delete }">
 </td>
 </tr>
 	<script language="JavaScript">
@@ -251,11 +250,10 @@ valign="middle">&nbsp;</td>
 <!--#else msie --> 
 <tr> 
 <td align="center" colspan="2"> 
-<input type="submit" name="Submit" value="{ modify }">
-<br>
+<input type="submit" name="Submit" value="{ modify }">&nbsp;&nbsp;<input type="submit" name="secdel" value="{ delete }">
 </td>
 </tr>
-<!--#endif msie --> 
+<!--#endif msie -->
 </table>
 </td>
 </tr>

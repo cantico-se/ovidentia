@@ -176,6 +176,7 @@ function listImages()
 				else
 					{
 					$this->srcurl = $this->arrufile[$this->ifiles];
+					$this->imgurl = $this->arrufile[$this->ifiles];
 					$this->imgwidth = $imgsize[0];
 					$this->imgheight = $imgsize[1];
 					}

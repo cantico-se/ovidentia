@@ -568,11 +568,16 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			static $i = 0;
 			if( $i < 7)
 				{
+				$this->currentday = 0;
 				$this->nbevent = 0;
 				$a = $this->curday - $this->babCalendarStartDay;
 				if( $a < 0)
 					$a += 7;
 				$day = $this->day - $a + $i;
+				if( $day == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
+					{
+					$this->currentday = 1;
+					}
 				$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $day, $this->year), false);
 				$this->resevent = getEventsResult($this->calid, $day, $this->month, $this->year);
 				$this->countevent = $this->db->db_num_rows($this->resevent);

@@ -1,42 +1,5 @@
 
 <!--#begin newevent -->
-<SCRIPT language="JavaScript">
-<!--
-function updateDates(elemDay, elemMonth, elemYear)
-{
-	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
-	timeDifference = timeA - 86400000;
-	timeB = new Date(timeDifference);
-	var daysInMonth = timeB.getDate();
-	for (var i = 0; i < elemDay.length; i++)
-	{
-	elemDay.options[0] = null;
-	}
-	for (var i = 0; i < daysInMonth; i++)
-	{
-	elemDay.options[i] = new Option(i+1);
-	}
-	elemDay.options[0].selected = true;
-}
-
-function dateBegin(day, month, year)
-{
-	document.vacform.elements['daybegin'].options[day-1].selected = true;
-	document.vacform.elements['monthbegin'].options[month-1].selected = true;
-	document.vacform.elements['yearbegin'].options[year-{ yearmin }].selected = true;
-
-}
-
-function dateEnd(day, month, year)
-{
-	document.vacform.elements['dayend'].options[day-1].selected = true;
-	document.vacform.elements['monthend'].options[month-1].selected = true;
-	document.vacform.elements['yearend'].options[year-{ yearmin }].selected = true;
-
-}
-//-->
-</SCRIPT>
-
 <form name="vacform" method="post" action="{ babPhpSelf }" >
 <input type="hidden" name="tg" value="event">
 <input type="hidden" name="idx" value="addevent">
@@ -232,43 +195,6 @@ href="javascript: var t=document.open('{ datebegin }', 'CalendarWindow', 'width=
 <!--#end newevent -->
 <br><br><br><br><br>
 <!--#begin modifyevent -->
-<SCRIPT language="JavaScript">
-<!--
-function updateDates(elemDay, elemMonth, elemYear)
-{
-	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
-	timeDifference = timeA - 86400000;
-	timeB = new Date(timeDifference);
-	var daysInMonth = timeB.getDate();
-	for (var i = 0; i < elemDay.length; i++)
-	{
-	elemDay.options[0] = null;
-	}
-	for (var i = 0; i < daysInMonth; i++)
-	{
-	elemDay.options[i] = new Option(i+1);
-	}
-	elemDay.options[0].selected = true;
-}
-
-function dateBegin(day, month, year)
-{
-	document.vacform.elements['daybegin'].options[day-1].selected = true;
-	document.vacform.elements['monthbegin'].options[month-1].selected = true;
-	document.vacform.elements['yearbegin'].options[year-{ yearmin }].selected = true;
-
-}
-
-function dateEnd(day, month, year)
-{
-	document.vacform.elements['dayend'].options[day-1].selected = true;
-	document.vacform.elements['monthend'].options[month-1].selected = true;
-	document.vacform.elements['yearend'].options[year-{ yearmin }].selected = true;
-
-}
-//-->
-</SCRIPT>
-
 <form name="vacform" method="post" action="{ babPhpSelf }" >
 <input type="hidden" name="tg" value="event">
 <input type="hidden" name="idx" value="modify">
@@ -386,6 +312,9 @@ dateendtxt }</a>:</td>
 <td>&nbsp;</td>
 <td colspan="4"> 
 <input type="submit" name="Submit" value="{ modify }">
+<!--#if bmodif -->
+&nbsp;&nbsp;<input type="submit" name="evtdel" value="{ delete }">
+<!--#endif bmodif -->
 <br>
 </td>
 </tr>
@@ -555,3 +484,43 @@ dateendtxt }</a>:</td>
 </BODY>
 </HTML>
 <!--#end eventunload -->
+
+<!--#begin scripts -->
+<SCRIPT language="JavaScript">
+<!--
+function updateDates(elemDay, elemMonth, elemYear)
+{
+	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < elemDay.length; i++)
+	{
+	elemDay.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+	elemDay.options[i] = new Option(i+1);
+	}
+	elemDay.options[0].selected = true;
+}
+
+function dateBegin(day, month, year)
+{
+	document.vacform.elements['daybegin'].options[day-1].selected = true;
+	document.vacform.elements['monthbegin'].options[month-1].selected = true;
+	document.vacform.elements['yearbegin'].options[year-{ yearmin }].selected = true;
+
+}
+
+function dateEnd(day, month, year)
+{
+	document.vacform.elements['dayend'].options[day-1].selected = true;
+	document.vacform.elements['monthend'].options[month-1].selected = true;
+	document.vacform.elements['yearend'].options[year-{ yearmin }].selected = true;
+
+}
+//-->
+</SCRIPT>
+<!--#end scripts -->
+
