@@ -274,7 +274,10 @@ function browseDbDirectory($id, $pos, $badd)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->cn = $arr['givenname']. " ". $arr['sn'];
+				if( empty($arr['givenname']) && empty($arr['sn']))
+					$this->cn = "???";
+				else
+					$this->cn = $arr['givenname']. " ". $arr['sn'];
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$arr['email'];
 				$this->email = $arr['email'];
 				$this->url = $GLOBALS['babAddonUrl']."main&idx=ddb&id=".$this->id."&idu=".$arr['id']."&pos=".$this->pos;
@@ -355,6 +358,7 @@ function summaryLdapContact($id, $cn)
 					}
 				}
 			$this->bfieldv = true;
+			$this->showph = true;
 			}
 
 		function getnextfield()
@@ -411,11 +415,15 @@ function summaryDbContact($id, $idu)
 				$this->count = $this->db->db_num_rows($this->res);
 			else
 				$this->count = 0;
-			$res = $this->db->db_query("select * from ".ADDON_DBENTRIES_TBL." where id_directory='".$id."' and id='".$idu."'");
+			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".ADDON_DBENTRIES_TBL." where id_directory='".$id."' and id='".$idu."'");
+			$this->showph = false;
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($res);
 				$this->name = $this->arr['givenname']. " ". $this->arr['sn'];
+				if( $this->arr['plen'] > 0 )
+					$this->showph = true;
+
 				$this->urlimg = $GLOBALS['babAddonUrl']."main&idx=getimg&id=".$id."&idu=".$idu;
 				}
 			else
@@ -691,12 +699,6 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 				$this->count = $this->db->db_num_rows($this->res);
 			else
 				$this->count = 0;
-			$fd = fopen($pfile, "r");
-			if( $fd )
-				{
-				$line = trim(fgets($fd, 4096));
-				fclose($fd);
-				}
 			switch($wsepar)
 				{
 				case "1":
@@ -710,7 +712,9 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 						$separ = ",";
 					break;
 				}
-			$this->arr = explode( $separ, $line);
+			$fd = fopen($pfile, "r");
+			$this->arr = fgetcsv( $fd, 4096, $separ);
+			fclose($fd);
 			$this->separ = $separ;
 			}
 
@@ -720,7 +724,7 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->ofieldname = $arr['description'];//ad_translate($arr['description']);
+				$this->ofieldname = ad_translate($arr['description']);
 				$this->ofieldv = $arr['name'];
 				$i++;
 				return true;
@@ -738,7 +742,7 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			if( $i < count($this->arr))
 				{
 				$this->ffieldid = $i;
-				$this->ffieldname = trimQuotes($this->arr[$i]);
+				$this->ffieldname = $this->arr[$i];
 				if( strtolower($this->ofieldname) == strtolower($this->ffieldname) )
 					$this->fselected = "selected";
 				else
@@ -829,69 +833,64 @@ function processImportDbFile( $pfile, $id, $separ )
 		{
 		$db = $GLOBALS['babDB'];
 		$res = $db->db_query("select name from ".ADDON_FIELDS_TBL);
-		$line = fgets($fd, 4096);
-		
-		while (!feof ($fd))
-			{
-			$line = trim(fgets($fd, 4096));
-			if( !empty($line))
-				{
-				$arr = explode( $separ, $line);
-				switch($GLOBALS['duphand'])
-					{
-					case 1: // Replace duplicates with items imported
-					case 2: // Do not import duplicates
-						$res2 = $db->db_query("select id from ".ADDON_DBENTRIES_TBL." where email='".trimQuotes($arr[$GLOBALS['email']])."' and id_directory='".$id."'");
-						if( $res2 && $db->db_num_rows($res2 ) > 0 )
-							{
-							if( $GLOBALS['duphand'] == 2 )
-								break;
-							while( $arr2 = $db->db_fetch_array($res2))
-								{
-								$req = "";
-								while( $row = $db->db_fetch_array($res))
-									{
-									if( !empty($GLOBALS[$row['name']]))
-										{
-										$req .= $row['name']."='".addslashes(trimQuotes($arr[$GLOBALS[$row['name']]]))."',";
-										}
-									}
-								if( !empty($req))
-									{
-									$req = substr($req, 0, strlen($req) -1);
-									$req = "update ".ADDON_DBENTRIES_TBL." set " . $req;
-									$req .= " where id='".$arr2['id']."'";
-									$db->db_query($req);
-									}
-								$db->db_data_seek($res,0);
-								}
-							
-							break;
-							}
-						/* no break; */
-					case 0: // Allow duplicates to be created
-						$req = "";
-						$arrv = array();
-						while( $row = $db->db_fetch_array($res))
-							{
-							if( !empty($GLOBALS[$row['name']]))
-								{
-								$req .= $row['name'].",";
-								array_push( $arrv, trimQuotes($arr[$GLOBALS[$row['name']]]));
-								}
-							}
-						$db->db_data_seek($res,0);
-						if( !empty($req))
-							{
-							$req = "insert into ".ADDON_DBENTRIES_TBL." (".$req."id_directory) values (";
-							for( $i = 0; $i < count($arrv); $i++)
-								$req .= "'". addslashes($arrv[$i])."',";
-							$req .= "'".$id."')";
-							$db->db_query($req);
-							}
-						break;
+		$arr = fgetcsv($fd, 4096, $separ);
 
-					}
+		while ($arr = fgetcsv($fd, 4096, $separ))
+			{
+			switch($GLOBALS['duphand'])
+				{
+				case 1: // Replace duplicates with items imported
+				case 2: // Do not import duplicates
+					$res2 = $db->db_query("select id from ".ADDON_DBENTRIES_TBL." where email='".$arr[$GLOBALS['email']]."' and id_directory='".$id."'");
+					if( $res2 && $db->db_num_rows($res2 ) > 0 )
+						{
+						if( $GLOBALS['duphand'] == 2 )
+							break;
+						while( $arr2 = $db->db_fetch_array($res2))
+							{
+							$req = "";
+							while( $row = $db->db_fetch_array($res))
+								{
+								if( !empty($GLOBALS[$row['name']]))
+									{
+									$req .= $row['name']."='".addslashes($arr[$GLOBALS[$row['name']]])."',";
+									}
+								}
+							if( !empty($req))
+								{
+								$req = substr($req, 0, strlen($req) -1);
+								$req = "update ".ADDON_DBENTRIES_TBL." set " . $req;
+								$req .= " where id='".$arr2['id']."'";
+								$db->db_query($req);
+								}
+							$db->db_data_seek($res,0);
+							}
+						
+						break;
+						}
+					/* no break; */
+				case 0: // Allow duplicates to be created
+					$req = "";
+					$arrv = array();
+					while( $row = $db->db_fetch_array($res))
+						{
+						if( !empty($GLOBALS[$row['name']]))
+							{
+							$req .= $row['name'].",";
+							array_push( $arrv, $arr[$GLOBALS[$row['name']]]);
+							}
+						}
+					$db->db_data_seek($res,0);
+					if( !empty($req))
+						{
+						$req = "insert into ".ADDON_DBENTRIES_TBL." (".$req."id_directory) values (";
+						for( $i = 0; $i < count($arrv); $i++)
+							$req .= "'". addslashes($arrv[$i])."',";
+						$req .= "'".$id."')";
+						$db->db_query($req);
+						}
+					break;
+
 				}
 			}
 		fclose($fd);
@@ -1152,80 +1151,80 @@ switch($idx)
 		break;
 
 	case "adbc":
-		$babBody->title = "Add entry to".": ".getDirectoryName($id);
+		$babBody->title = ad_translate("Add entry to").": ".getDirectoryName($id);
 		if($badd)
 			{
 			addDbContact($id, $fields);
 			exit;
 			}
 		else
-			$babBody->msgerror = "Access denied";
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("sdb", "Browse", $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id);
-		$babBody->addItemMenu("dbimp", "Import", $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
+			$babBody->msgerror = ad_translate("Access denied");
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("sdb", ad_translate("Browse"), $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id);
+		$babBody->addItemMenu("dbimp", ad_translate("Import"), $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
 		break;
 
 	case "sdb":
-		$babBody->title = "Database Directory".": ".getDirectoryName($id);
+		$babBody->title = ad_translate("Database Directory").": ".getDirectoryName($id);
 		browseDbDirectory($id, $pos, $badd);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("sdb", "Browse", $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("sdb", ad_translate("Browse"), $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)
 			{
-			$babBody->addItemMenu("dbimp", "Import", $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
+			$babBody->addItemMenu("dbimp", ad_translate("Import"), $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
 			}
 		break;
 
 	case "dbimp":
-		$babBody->title = "Import file to".": ".getDirectoryName($id);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("sdb", "Browse", $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
+		$babBody->title = ad_translate("Import file to").": ".getDirectoryName($id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("sdb", ad_translate("Browse"), $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)
 			{
 			importDbFile($id);
-			$babBody->addItemMenu("dbimp", "Import", $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
+			$babBody->addItemMenu("dbimp", ad_translate("Import"), $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
 			}
 		break;
 
 	case "dbmap":
-		$babBody->title = "Import file to".": ".getDirectoryName($id);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("sdb", "Browse", $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
+		$babBody->title = ad_translate("Import file to").": ".getDirectoryName($id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("sdb", ad_translate("Browse"), $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)
 			{
 			mapDbFile($id, $uploadf_name, $uploadf, $wsepar, $separ);
-			$babBody->addItemMenu("dbimp", "Import", $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
+			$babBody->addItemMenu("dbimp", ad_translate("Import"), $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
 			}
 		break;
 
 	case "dldap":
-		$babBody->title = "Summary of information about".": ".$cn;
+		$babBody->title = ad_translate("Summary of information about").": ".$cn;
 		summaryLdapContact($id, $cn);
 		exit;
 		break;
 
 	case "sldap":
-		$babBody->title = "Ldap Directory".": ".getDirectoryName($id);
+		$babBody->title = ad_translate("Ldap Directory").": ".getDirectoryName($id);
 		browseLdapDirectory($id, $pos);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("sldap", "Browse", $GLOBALS['babAddonUrl']."main&idx=sldap&id=".$id."&pos=".$pos);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("sldap", ad_translate("Browse"), $GLOBALS['babAddonUrl']."main&idx=sldap&id=".$id."&pos=".$pos);
 		break;
 
 	case "empdb":
-		$babBody->title = "Delete Database Directory";
+		$babBody->title = ad_translate("Delete Database Directory");
 		if( $badd )
 			emptyDb($id);
 		else
 			$babBody->msgerror = ad_translate("Access denied");
 
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
 		break;
 
 	case "list":
 	default:
 		$babBody->title = "";
 		listUserAds();
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
 		break;
 	}
 

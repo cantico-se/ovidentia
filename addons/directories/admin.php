@@ -698,8 +698,8 @@ switch($idx)
 	case "ldap":
 		$babBody->title = ad_translate("Add new ldap directory");
 		addAdLdap($adname, $description, $host, $basedn, $userdn);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("ldap", "New", $GLOBALS['babAddonUrl']."admin&idx=ldap");
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("ldap", ad_translate("New"), $GLOBALS['babAddonUrl']."admin&idx=ldap");
 		break;
 
 	case "db":

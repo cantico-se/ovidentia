@@ -49,7 +49,7 @@ function directories_onUserCreate( $id )
 {
 }
 
-function ad_onUserDelete( $id )
+function directories_onUserDelete( $id )
 {
 }
 
@@ -57,7 +57,7 @@ function directories_onGroupCreate( $id )
 {
 }
 
-function ad_onGroupDelete( $id )
+function directories_onGroupDelete( $id )
 {
 }
 
