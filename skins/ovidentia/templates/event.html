@@ -1,23 +1,6 @@
 
 <!--#begin newevent -->
-<script type="text/javascript">
-<!--
-function daytypeswitch()
-{
-var f = document.forms.vacform;
-if (f.daytype.checked)
-	{
-	f.timebegin.disabled = true;
-	f.timeend.disabled = true;
-	}
-else
-	{
-	f.timebegin.disabled = false;
-	f.timeend.disabled = false;
-	}
-}
-//-->
-</script>
+
 <form name="vacform" method="post" action="{ babPhpSelf }" >
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="addevent" />
@@ -30,261 +13,405 @@ else
 <table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-<tr> 
-<td align="right" nowrap width="30%" valign="middle"><a class="BabEventFaqLink" 
-href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:</td>
-<td valign="middle" width="10%"> 
-<select name="daybegin">
-<!--#in getnextday -->
-<option value="{ dayid }" { selected }>{ dayid }</option>
-<!--#endin getnextday -->
-</select>
-</td>
-<td valign="middle" width="10%"> 
-<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-<!--#in getnextmonth -->
-<option value="{ monthid }" { selected }>{ monthname }</option>
-<!--#endin getnextmonth -->
-</select>
-</td>
-<td valign="middle" width="20%"> 
-<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-<!--#in getnextyear -->
-<option value="{ yearid }"  { selected }>{ yearidval }</option>
-<!--#endin getnextyear -->
-</select>
-</td>
-<td width="30%">&nbsp;</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle">{ daytype }:</td>
-<td colspan="4" valign="middle"> 
-<input type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked }>
-</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle">{ or }:</td>
-<td valign="middle" nowrap colspan="4"> 
-<table class="BabLoginMenuBackground" border="0" cellspacing="0" cellpadding="0">
-<tr> 
-<td width="70" align="right" valign="middle">{ starttime }&nbsp;</td>
-<td width="50" valign="middle"> 
-<select name="timebegin">
-<!--#in getnexttime -->
-<option value="{ timeval }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-<td width="70" align="right" valign="middle">{ endtime }&nbsp;</td>
-<td width="50" valign="middle"> 
-<select name="timeend">
-<!--#in getnexttime -->
-<option value="{ timeval }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle">{ repeat }:</td>
-<td colspan="4" valign="middle"> 
-<input type="checkbox" name="repeat" value="y">
-</td>
-</tr>
-<tr> 
-<td align="right" valign="top">{ daystext }:</td>
-<td colspan="4" valign="top"> 
-<select multiple name="days[]" size="7">
-<!--#in getnextdays -->
-<option value="{ days }">{ daysname }</option>
-<!--#endin getnextdays -->
-</select >
-</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>:</td>
-<td valign="middle"> 
-<select name="dayend">
-<!--#in getnextday -->
-<option value="{ dayid }" { selected }>{ dayid }</option>
-<!--#endin getnextday -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-<!--#in getnextmonth -->
-<option value="{ monthid }" { selected }>{ monthname }</option>
-<!--#endin getnextmonth -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-<!--#in getnextyear -->
-<option value="{ yearid }"  { selected }>{ yearidval }</option>
-<!--#endin getnextyear -->
-</select>
-</td>
-<td>&nbsp;</td>
-</tr>
-<tr> 
-<td align="right" valign="middle">{ title }:</td>
-<td colspan="4" valign="middle"> 
-<input type="text" name="title" size="45" maxlength="100" value="{ titleval }">
-</td>
-</tr>
-<!--#if bcategory "== 1" -->
-<tr> 
-<td align="right" valign="middle">{ category }:</td>
-<td colspan="4" valign="middle"> 
-<select name="category">
-<option value="" selected ></option>
-<!--#in getnextcat -->
-<option value="{ catid }">{ catname }</option>
-<!--#endin getnextcat -->
-</select>
-</td>
-</tr>
-<!--#endif bcategory -->
-<!-- toolbar -->
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-<tr> 
-<td align="right" nowrap>&nbsp;</td>
-<td colspan="4"> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="evtdesc">{ descriptionval }</textarea>
-</td>
-</tr>
-<tr> 
-<td colspan="5" align="center"> 
-<script language="JavaScript"> 
-	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator, '{ babEditorImages }');
-	editor.ToolBar();
-</script>
-</td>
-</tr>
-<!--#else babOldEditor -->
-<style type="text/css">
-@import url('{ babUrl }{ babScriptPath }htmlarea/htmlarea.css');
-</style>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr> 
+		<td align="right">
+			<a class="BabEventFaqLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:
+		</td>
+		<td nowrap> 
+			<select name="daybegin">
+			<!--#in getnextday -->
+			<option value="{ dayid }" { selected }>{ dayid }</option>
+			<!--#endin getnextday -->
+			</select>
 
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
-<script language="JavaScript">
-initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
-</script>
-<!--#endif babOldEditor -->
-<!--#endif msie -->
-<tr> 
-<td colspan="5" align="center">{ description }</td>
-</tr>
-<tr> 
-<td align="center" colspan="5"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script language="JavaScript">
-	editor.InFrame(0, "evtdesc", "vacform", "100%", "160");
-</script>
-<!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','evtdesc')">
-</iframe>
-<textarea id="evtdesc" name="evtdesc" onfocus="savef(document.vacform.evtdesc)" style="width:100%" rows="10">{ descriptionval }</textarea>
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<textarea style="width:100%" rows="10" id="evtdesc" name="evtdesc" onblur="this.focus()" onfocus="savef(document.vacform.evtdesc)">{ descriptionval }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
+			<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+			<!--#in getnextmonth -->
+			<option value="{ monthid }" { selected }>{ monthname }</option>
+			<!--#endin getnextmonth -->
+			</select>
 
+			<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+			<!--#in getnextyear -->
+			<option value="{ yearid }"  { selected }>{ yearidval }</option>
+			<!--#endin getnextyear -->
+			</select>
 
-<tr> 
-<td colspan="2" valign="middle">{ usrcalendarstxt }</td>
-<td colspan="2" valign="middle">{ grpcalendarstxt }</td>
-<td colspan="2" valign="middle">{ rescalendarstxt }</td>
-</tr>
-<!--#in getnextrow -->
-<tr> 
-<td colspan="2" align="left" valign="middle">
-<!--#if busrcal -->
-<input type="checkbox" name="usrcals[]" value="{ usrcalid }" { usrsel }>{ usrcalname }
-<!--#else busrcal -->&nbsp;
-<!--#endif busrcal -->
-</td>
-<td colspan="2" align="left" valign="middle">
-<!--#if bgrpcal -->
-<input type="checkbox" name="grpcals[]" value="{ grpcalid }" { grpsel }>{ grpcalname }
-<!--#else bgrpcal -->&nbsp;
-<!--#endif bgrpcal -->
-</td>
-<td colspan="2" align="left" valign="middle">
-<!--#if brescal -->
-<input type="checkbox" name="rescals[]" value="{ rescalid }" { ressel }>{ rescalname }
-<!--#else brescal -->&nbsp;
-<!--#endif brescal -->
-</td>
-</tr>
-<!--#endin getnextrow -->
-<tr> 
-<td colspan="2">&nbsp;</td>
-<td colspan="3"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<input onClick="SetVals()" type="submit" name="Submit" value="{ addvac }">
-<br>
-</td>
-</tr>
-<script language="JavaScript">
- editor.FinalInstantiate(0);
- editor.CloseInitSection();
-</script>
-<!--#else babOldEditor -->
-<input type="submit" name="Submit" value="{ addvac }">
-<!--#endif babOldEditor -->
-<!--#else msie -->
-<input type="submit" name="Submit" value="{ addvac }">
-<!--#endif msie -->
-<br>
-</td>
-</tr>
-</table>
+			<select name="timebegin">
+			<!--#in getnexttime -->
+			<option value="{ timeval }" { selected }>{ time }</option>
+			<!--#endin getnexttime -->
+			</select >
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">
+			<a class="BabEventFaqLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>:
+		</td>
+		<td nowrap> 
+			<select name="dayend">
+			<!--#in getnextday -->
+			<option value="{ dayid }" { selected }>{ dayid }</option>
+			<!--#endin getnextday -->
+			</select>
+
+			<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+			<!--#in getnextmonth -->
+			<option value="{ monthid }" { selected }>{ monthname }</option>
+			<!--#endin getnextmonth -->
+			</select>
+
+			<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+			<!--#in getnextyear -->
+			<option value="{ yearid }"  { selected }>{ yearidval }</option>
+			<!--#endin getnextyear -->
+			</select>
+
+			<select name="timeend">
+			<!--#in getnexttime -->
+			<option value="{ timeval }" { selected }>{ time }</option>
+			<!--#endin getnexttime -->
+			</select >
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ daytype }:</td>
+		<td> 
+			<input type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked }>
+		</td>
+	</tr>
+	
+	<tr> 
+		<td align="right" nowrap>
+			<label for="repeat_radio_0">{ t_norepeat }</label>
+			<input type="radio" id="repeat_radio_0" name="repeat" value="0" onclick="repeat_switch()" /><br />
+			<label for="repeat_radio_1">{ t_daily }</label>
+			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch()" /><br />
+			<label for="repeat_radio_2">{ t_weekly }</label>
+			<input type="radio" id="repeat_radio_2" name="repeat" value="2" onclick="repeat_switch()" /><br />
+			<label for="repeat_radio_3">{ t_monthly }</label>
+			<input type="radio" id="repeat_radio_3" name="repeat" value="3" onclick="repeat_switch()" /><br />
+			<label for="repeat_radio_4">{ t_yearly }</label>
+			<input type="radio" id="repeat_radio_4" name="repeat" value="4" onclick="repeat_switch()" /><br />
+		
+		
+		<script type="text/javascript">
+		<!--
+		//var obj = document.getElementById('repeat_radio_{ repeat }');
+		//obj.checked = true;
+		repeat_switch();
+		//-->
+		</script>
+			
+		</td>
+		<td valign="top"> 
+			<div id="event_repeat_0"></div>
+			<div id="event_repeat_1">{ t_all_the }<input type="text" name="repeat_n_1" size="4" maxlength="4" />{ t_days }</div>
+			<div id="event_repeat_2">{ t_all_the }<input type="text" name="repeat_n_2" size="4" maxlength="4" />{ t_weeks }
+				<p nowrap>
+					<label for="repeat_wd_0">{ t_sun }</label><input id="repeat_wd_0" type="checkbox" name="repeat_wd[]" value="0" />
+					<label for="repeat_wd_1">{ t_mon }</label><input id="repeat_wd_1" type="checkbox" name="repeat_wd[]" value="1" />
+					<label for="repeat_wd_2">{ t_tue }</label><input id="repeat_wd_2" type="checkbox" name="repeat_wd[]" value="2" /><br />
+					<label for="repeat_wd_3">{ t_wen }</label><input id="repeat_wd_3" type="checkbox" name="repeat_wd[]" value="3" />
+					<label for="repeat_wd_4">{ t_thu }</label><input id="repeat_wd_4" type="checkbox" name="repeat_wd[]" value="4" />
+					<label for="repeat_wd_5">{ t_fri }</label><input id="repeat_wd_5" type="checkbox" name="repeat_wd[]" value="5" /><br />
+					<label for="repeat_wd_6">{ t_sat }</label><input id="repeat_wd_6" type="checkbox" name="repeat_wd[]" value="6" />
+				</p>
+			</div>
+			<div id="event_repeat_3">{ t_all_the }<input type="text" name="repeat_n_3" size="4" maxlength="4" />{ t_months }</div>
+			<div id="event_repeat_4">{ t_all_the }<input type="text" name="repeat_n_4" size="4" maxlength="4" />{ t_years }</div>
+			&nbsp;
+		</td>
+	</tr>
+	<tr id="repeat_enddate"> 
+	<td align="right" nowrap valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ repeat_dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ repeat_dateendtxt }</a>:</td>
+	<td valign="middle"> 
+		<select name="repeat_dayend">
+		<!--#in getnextday -->
+		<option value="{ dayid }" { selected }>{ dayid }</option>
+		<!--#endin getnextday -->
+		</select>
+
+		<select name="repeat_monthend" onChange="updateDates(this.form.repeat_dayend, this.form.repeat_monthend, this.form.repeat_yearend);">
+		<!--#in getnextmonth -->
+		<option value="{ monthid }" { selected }>{ monthname }</option>
+		<!--#endin getnextmonth -->
+		</select>
+
+		<select name="repeat_yearend" onChange="updateDates(this.form.repeat_dayend, this.form.repeat_monthend, this.form.repeat_yearend);">
+		<!--#in getnextyear -->
+		<option value="{ yearid }"  { selected }>{ yearidval }</option>
+		<!--#endin getnextyear -->
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" valign="middle">{ title }:</td>
+		<td> 
+		<input type="text" name="title" size="45" maxlength="100" value="{ titleval }">
+		</td>
+	</tr>
+	<!--#if catarr -->
+	<tr> 
+		<td align="right">{ category }:</td>
+		<td> 
+			<select name="category">
+			<option value="" selected ></option>
+			<!--#in getnextcat -->
+			<option value="{ catid }">{ catname }</option>
+			<!--#endin getnextcat -->
+			</select>
+		</td>
+	</tr>
+	<!--#endif catarr -->
+	<tr> 
+		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
+		<td> 
+			<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ colorvalue }"></div><input type="hidden" name="color" value="{ colorvalue }" />
+		</td>
+	</tr>
+	<!--#if bprivate -->
+	<tr> 
+		<td align="right">{ t_bprivate }:</td>
+		<td> 
+			<select name="bprivate">
+				<!--#if arr[bprivate] "== Y" -->
+				<option value="Y" selected>{ t_yes }</option>
+				<option value="N">{ t_no }</option>
+				<!--#else arr[bprivate] -->
+				<option value="Y">{ t_yes }</option>
+				<option value="N" selected>{ t_no }</option>
+				<!--#endif arr[bprivate] -->
+			</select>
+		</td>
+	</tr>
+	<!--#endif bprivate -->
+
+	<!--#if block -->
+	<tr> 
+		<td align="right">{ t_block }:</td>
+		<td> 
+			<select name="block">
+				<!--#if arr[block] "== Y" -->
+				<option value="Y" selected>{ t_yes }</option>
+				<option value="N">{ t_no }</option>
+				<!--#else arr[block] -->
+				<option value="Y">{ t_yes }</option>
+				<option value="N" selected>{ t_no }</option>
+				<!--#endif arr[block] -->
+			</select>
+		</td>
+	</tr>
+	<!--#endif block -->
+
+	<!--#if bfree -->
+	<tr> 
+		<td align="right">{ t_bfree }:</td>
+		<td> 
+			<select name="bfree">
+				<!--#if arr[bfree] "== Y" -->
+				<option value="Y" selected>{ t_yes }</option>
+				<option value="N">{ t_no }</option>
+				<!--#else arr[bfree] -->
+				<option value="Y">{ t_yes }</option>
+				<option value="N" selected>{ t_no }</option>
+				<!--#endif arr[bfree] -->
+			</select>
+		</td>
+	</tr>
+	<!--#endif bfree -->
+
+	<tr>
+		<td colspan="2">{ editor }</td>
+	</tr>
+
+	<tr> 
+		<td colspan="2">{ calendars }</td>
+	</tr>
+
+	<tr>
+		<td colspan="2" align="center"><input type="submit" name="Submit" value="{ addvac }"></td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<!--#if msie "!= 1" -->
+<!--#end newevent -->
+
+<!--#begin calendarchoice -->
 <script type="text/javascript">
 <!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+
+function optionInGroup(grp,optvalue)
+	{
+	var option = grp.getElementsByTagName('option');
+
+	for (var j = 0; j < option.length ; j++)
+		{
+		if (option.item(j).value == optvalue)
+			return true;
+		}
+	return false;
+	}
+
+var assoc = new Array();
+
+function moveOptions(src,dest)
+{	
+	var destoptgroup = dest.getElementsByTagName('optgroup');
+	var srcoptgroup = src.getElementsByTagName('optgroup');
+
+	
+	var destgroups = new Array();
+	
+
+	if (assoc.length == 0)
+		{
+		for (var i = 0; i < srcoptgroup.length ; i++)
+			{
+			var option = srcoptgroup[i].getElementsByTagName('option');
+
+			for (var j = 0; j < option.length ; j++)
+				{
+				assoc[option.item(j).value] = srcoptgroup[i]['className'];
+				}
+			}
+		}
+
+	for (var i = 0; i < destoptgroup.length ; i++)
+		{
+		destgroups[destoptgroup[i]['className']] = destoptgroup[i];
+		var option = destoptgroup[i].getElementsByTagName('option');
+		for (var j = 0; j < option.length ; j++)
+			{
+			assoc[option.item(j).value] = destoptgroup[i]['className'];
+			}
+		}
+
+	srclen = src.options.length;
+	if (srclen == 0) return;
+	reslen = dest.options.length + srclen;
+	resopt = new Array(reslen);
+	destcnt = 0;
+	rescnt = 0;
+	nbsel = 0;
+
+	while(destcnt < dest.options.length)
+		{
+		resopt[rescnt] = new Option(dest.options[destcnt].text, dest.options[destcnt].value);
+		destcnt++;
+		rescnt++;
+		}
+	for(i = 0; i < srclen; i++)
+		{
+		while((i < srclen) && (src.options[i].selected == false))
+			i++;
+		if(i < srclen)
+			{
+			nbsel++;
+			resopt[rescnt] = new Option(src.options[i].text, src.options[i].value);
+			src.options[i] = null;
+			i--;
+			srclen--;
+			rescnt++;
+			}
+		}
+
+	
+	for(i=0; i < nbsel;i++)
+		{
+		dest.options[i] = null;
+		dest.options[i] = resopt[rescnt - nbsel + i];
+		}
+
+	for(i=0; i < rescnt - nbsel; i++)
+		{
+		dest.options[nbsel + i] = null;
+		dest.options[nbsel + i] = resopt[i];
+		}
+
+	var sort = true;
+	
+	while (sort)
+		{
+		var loop = false;
+		for (i=0 ; i < dest.options.length ; i++ )
+			{
+			destgroups[assoc[dest.options[i].value]].appendChild(dest.options[i]);
+			if (!optionInGroup(destgroups[assoc[dest.options[i].value]],dest.options[i].value))
+				loop = true;
+			}
+		sort = loop ? true : false;
+		}
 }
 
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
+function movecalendar(action)
+	{
+	//{}
+	var form = '{ formname }';
+	var src = document.forms[form].calendars;
+	var dest = document.forms[form].selected_calendars;
 
-function savef(t)
-{
-ctrlf = t;
-}
+	switch (action)
+		{
 
-savef(document.createart.headtext);
+		case 0:
+			moveOptions(src,dest);
+			break;
+		case 1:
+			moveOptions(dest,src);
+			break;
+		}
+	}
 //-->
 </script>
-<!--#endif msie -->
-<br>
-<!--#end newevent -->
+<table align="center" width="100%">
+	<tr>
+		<td width="45%">
+		<select name="calendars" multiple="multiple" size="10" style="width:100%">
+			<optgroup class="usr" label="{ usrcalendarstxt }">
+			<!--#in getnextusrcal -->
+				<option value="{ id }" { selected }>{ name }</option>
+			<!--#endin getnextusrcal -->
+			</optgroup>
+			<optgroup class="grp" label="{ grpcalendarstxt }">
+			<!--#in getnextgrpcal -->
+				<option value="{ id }" { selected }>{ name }</option>
+			<!--#endin getnextgrpcal -->
+			</optgroup>
+			<optgroup class="res" label="{ rescalendarstxt }">
+			<!--#in getnextrescal -->
+				<option value="{ id }" { selected }>{ name }</option>
+			<!--#endin getnextrescal -->
+			</optgroup>
+		</select>
+		</td>
+
+		<td align="center">
+			<a href="javascript:movecalendar(0)" title="{ t_goright }"><img alt="{ t_goright }" src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" /></a>
+			<br /><br />
+			<a href="javascript:movecalendar(1)" title="{ t_goleft }"><img alt="{ t_goleft }" src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" /></a>
+		</td>
+
+		<td width="45%">
+			<select name="selected_calendars" multiple="multiple" size="10" style="width:100%">
+				<optgroup class="usr" label="{ usrcalendarstxt }">
+				</optgroup>
+				<optgroup class="grp" label="{ grpcalendarstxt }">
+				</optgroup>
+				<optgroup class="res" label="{ rescalendarstxt }">
+				</optgroup>
+			</select>
+		</td>
+	</tr>
+</table>
+<script type="text/javascript">
+<!--
+movecalendar(0);
+//-->
+</script>
+<!--#end calendarchoice -->
 
 
 <!--#begin modifyevent -->
@@ -302,29 +429,49 @@ savef(document.createart.headtext);
 <tr>
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+	
+	<!--#if brecevt -->
+	<tr> 
+		<td colspan="2" align="center">{ updaterec }</td>
+	</tr>
+	<tr> 
+		<td align="right">&nbsp;</td>
+		<td colspan="2"> 
+			<select name="bupdrec" onchange="bupdrec_change(this)">
+				<option value="1">{ all }</option>
+				<option value="2" selected>{ thisone }</option>
+			</select>
+		</td>
+	</tr>
+	<!--#endif brecevt -->
+	<tbody id="event_date_time">
 	<tr> 
 		<td align="right" nowrap width="25%" valign="middle"><a class="BabEventFaqLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ 
 		datebegintxt }</a>:</td>
-		<td width="15%"> 
+		<td> 
 			<select name="daybegin">
 			<!--#in getnextday -->
 			<option value="{ dayid }" { selected }>{ dayid }</option>
 			<!--#endin getnextday -->
 			</select>
-		</td>
-		<td width="15%"> 
+
 			<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 			<!--#in getnextmonth -->
 			<option value="{ monthid }" { selected }>{ monthname }</option>
 			<!--#endin getnextmonth -->
 			</select>
-		</td>
-		<td width="45%"> 
+
 			<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 			<!--#in getnextyear -->
 			<option value="{ yearid }"  { selected }>{ yearidval }</option>
 			<!--#endin getnextyear -->
 			</select>
+
+			<select name="timebegin">
+			<!--#in getnexttime -->
+			<option value="{ timeval }" { selected }>{ time }</option>
+			<!--#endin getnexttime -->
+			</select >
 		</td>
 	</tr>
 	<tr> 
@@ -336,33 +483,19 @@ savef(document.createart.headtext);
 			<option value="{ dayid }" { selected }>{ dayid }</option>
 			<!--#endin getnextday -->
 			</select>
-		</td>
-		<td> 
+
 			<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 			<!--#in getnextmonth -->
 			<option value="{ monthid }" { selected }>{ monthname }</option>
 			<!--#endin getnextmonth -->
 			</select>
-		</td>
-		<td> 
+
 			<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 			<!--#in getnextyear -->
 			<option value="{ yearid }"  { selected }>{ yearidval }</option>
 			<!--#endin getnextyear -->
 			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right" nowrap valign="middle">{ starttime }</td>
-		<td> 
-			<select name="timebegin">
-			<!--#in getnexttime -->
-			<option value="{ timeval }" { selected }>{ time }</option>
-			<!--#endin getnexttime -->
-			</select >
-		</td>
-		<td align="right" nowrap valign="middle">{ endtime }</td>
-		<td> 
+
 			<select name="timeend">
 			<!--#in getnexttime -->
 			<option value="{ time }" { selected }>{ time }</option>
@@ -370,26 +503,27 @@ savef(document.createart.headtext);
 			</select >
 		</td>
 	</tr>
+	
+	</tbody>
 	<tr> 
 		<td align="right">{ title }:</td>
-		<td colspan="4" valign="middle"><input type="text" name="title" size="50" maxlength="255" value="{ evtarr[title] }" /></td>
+		<td><input type="text" name="title" size="50" maxlength="255" value="{ evtarr[title] }" /></td>
 	</tr>
 	<tr>
 	<tr> 
-		<td align="right" valign="top">&nbsp;</td>
-		<td colspan="4" valign="top">&nbsp;</td>
+		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr> 
-		<td align="right" valign="top"><a class="BabEventFaqLink" href="javascript: bab_popup('{ descurl }',6);">{ description }</a></td>
-		<td colspan="4" valign="top">{ evtarr[description] }</td>
+		<td align="right"><a class="BabEventFaqLink" href="javascript: bab_popup('{ descurl }',6);">{ description }</a></td>
+		<td>{ evtarr[description] }</td>
 	</tr>
 	<tr> 
-		<td align="right" valign="top">&nbsp;</td>
-		<td colspan="4" valign="top">&nbsp;</td>
-	</tr><!--#if bcategory "== 1" -->
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<!--#if bcategory "== 1" -->
 	<tr> 
 		<td align="right">{ category }:</td>
-		<td colspan="4"> 
+		<td> 
 			<select name="category">
 			<option value="" selected ></option>
 			<!--#in getnextcat -->
@@ -399,23 +533,10 @@ savef(document.createart.headtext);
 		</td>
 	</tr>
 	<!--#endif bcategory -->
-	<!--#if brecevt -->
-	<tr> 
-		<td colspan="5" align="center">{ updaterec }</td>
-	</tr>
-	<tr> 
-		<td align="right">&nbsp;</td>
-		<td colspan="4"> 
-			<select name="bupdrec">
-				<option value="1">{ all }</option>
-				<option value="2" selected>{ thisone }</option>
-			</select>
-		</td>
-	</tr>
-	<!--#endif brecevt -->
+	
 	<tr> 
 		<td>&nbsp;</td>
-		<td colspan="4"> 
+		<td> 
 			<input type="submit" name="Submit" value="{ modify }" />
 			<!--#if bmodif -->
 			&nbsp;&nbsp;<input type="submit" name="evtdel" value="{ delete }" />
@@ -531,10 +652,10 @@ window.focus();
 		<!--#else babOldEditor -->
 		<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content')">
 		</iframe>
-		<textarea id="content" name="content"  onfocus="savef(document.descmod.content)" style="width:100%" rows="20">{ arr[description] }</textarea>
+		<textarea id="content" name="content"  onfocus="savef(this)" style="width:100%" rows="20">{ arr[description] }</textarea>
 		<!--#endif babOldEditor -->
 		<!--#else msie -->
-		<textarea onblur="this.focus()" onfocus="savef(document.createart.headtext)" style="width:100%" rows="20" id="content" name="content">{ arr[description] }</textarea>
+		<textarea onfocus="savef(this)" style="width:100%" rows="20" id="content" name="content">{ arr[description] }</textarea>
 		<!--#endif msie -->
 		</td>
 	</tr>
@@ -595,7 +716,7 @@ function savef(t)
 ctrlf = t;
 }
 
-savef(document.createart.headtext);
+savef(document.descmod.headtext);
 //-->
 </script>
 <!--#endif msie -->
@@ -649,8 +770,44 @@ window.focus();
 <!--#begin scripts -->
 <SCRIPT language="JavaScript">
 <!--
+
+
+function bupdrec_change(obj)
+	{
+	if (obj.value==2)
+		document.getElementById('event_date_time').style.display = ''; // one
+	else
+		document.getElementById('event_date_time').style.display = 'none'; // all
+	}
+
+function repeat_switch()
+	{
+	var grp = document.forms['vacform'].repeat;
+
+	while(div = document.getElementById('event_repeat_'+i))
+		{
+		var obj = document.getElementById('event_repeat_'+i);
+		if (i == obj.value)
+			div.style.display = '';
+		else
+			div.style.display = 'none';
+		i++;
+		}
+	var repeat_enddate = document.getElementById('repeat_enddate');
+
+	
+	if (obj.value == 0 && repeat_enddate)
+		{
+		repeat_enddate.style.display = 'none';
+		}
+	else if (repeat_enddate)
+		{
+		repeat_enddate.style.display = '';
+		}
+	}
+
 function updateDates(elemDay, elemMonth, elemYear)
-{
+	{
 	ds = elemDay.selectedIndex;
 	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
 	timeDifference = timeA - 86400000;
@@ -668,7 +825,7 @@ function updateDates(elemDay, elemMonth, elemYear)
 	elemDay.options[ds].selected = true;
 	else
 	elemDay.options[daysInMonth-1].selected = true;
-}
+	}
 
 function dateBegin(day, month, year)
 {
@@ -685,6 +842,30 @@ function dateEnd(day, month, year)
 	document.vacform.elements['yearend'].options[year-{ yearmin }].selected = true;
 
 }
+
+function daytypeswitch()
+{
+var f = document.forms.vacform;
+if (f.daytype.checked)
+	{
+	f.timebegin.disabled = true;
+	f.timeend.disabled = true;
+	}
+else
+	{
+	f.timebegin.disabled = false;
+	f.timeend.disabled = false;
+	}
+}
+
+
+function evtSetColor(color)
+	{
+	var f = document.forms['vacform'];
+	f.color.value = color;
+	document.getElementById('evtColor').style.backgroundColor = '#'+color;
+	}
+
 //-->
 </SCRIPT>
 <!--#end scripts -->
