@@ -688,6 +688,7 @@ function dateBegin(day, month, year)
 	document.propform.elements['daybegin'].options[day-1].selected = true;
 	document.propform.elements['monthbegin'].options[month-1].selected = true;
 	document.propform.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
+	updateDates(document.propform.elements['daybegin'], document.propform.elements['monthbegin'], document.propform.elements['yearbegin']);
 }
 
 function dateEnd(day, month, year)
@@ -695,7 +696,7 @@ function dateEnd(day, month, year)
 	document.propform.elements['dayend'].options[day-1].selected = true;
 	document.propform.elements['monthend'].options[month-1].selected = true;
 	document.propform.elements['yearend'].options[year-{ yearend }].selected = true;
-
+	updateDates(document.propform.elements['dayend'], document.propform.elements['monthend'], document.propform.elements['yearend']);
 }
 
 

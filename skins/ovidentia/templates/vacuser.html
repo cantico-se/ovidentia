@@ -71,6 +71,7 @@ function dateBegin(day, month, year)
 	document.vacform.elements['daybegin'].options[day-1].selected = true;
 	document.vacform.elements['monthbegin'].options[month-1].selected = true;
 	document.vacform.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
+	updateDates(document.vacform.elements['daybegin'], document.vacform.elements['monthbegin'], document.vacform.elements['yearbegin']);
 }
 
 function dateEnd(day, month, year)
@@ -78,6 +79,7 @@ function dateEnd(day, month, year)
 	document.vacform.elements['dayend'].options[day-1].selected = true;
 	document.vacform.elements['monthend'].options[month-1].selected = true;
 	document.vacform.elements['yearend'].options[year-{ yearend }].selected = true;
+	updateDates(document.vacform.elements['dayend'], document.vacform.elements['monthend'], document.vacform.elements['yearend']);
 
 }
 
