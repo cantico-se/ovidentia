@@ -1304,13 +1304,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					if (isset($addon_id) && is_numeric($addon_id))
 						{
-						$this->first_addon_searchresults = $this->addons->callSearchFunction($addon_id);
-						$nbrows = $this->first_addon_searchresults[1];
+						$first_addon_searchresults = $this->addons->callSearchFunction($addon_id);
+						$nbrows = $first_addon_searchresults[1];
 						$navpos = $this->navitem == 'as-'.$addon_id ? $this->navpos : 0;
 						$this->addons->pos = $navpos;
 						$navbar_i = navbar($GLOBALS['babLimit'],$nbrows,'as-'.$addon_id,$navpos);
 						if ($nbrows > 0)
-							$this->addonsdata[] = array($addon_id, $addon_title, $navbar_i);
+							$this->addonsdata[] = array($addon_id, $addon_title, $navbar_i, $first_addon_searchresults);
 						}
 					}
 
@@ -1637,7 +1637,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextaddon()
 			{
-			return list($key,list($this->addon_id, $this->addon_title, $this->navbar_i)) = each($this->addonsdata);
+			return list($key,list($this->addon_id, $this->addon_title, $this->navbar_i, $this->first_addon_searchresults)) = each($this->addonsdata);
 			}
 
 		function getnextaddonrow()
