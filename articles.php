@@ -8,7 +8,7 @@ include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);
 
-function listArticles($topics, $newc)
+function listArticles($topics, $newc, $approver)
 	{
 	global $babBody;
 
@@ -29,8 +29,9 @@ function listArticles($topics, $newc)
 		var $commentsname;
 		var $moreurl;
 		var $morename;
+		var $approver;
 
-		function temp($topics, $newc)
+		function temp($topics, $newc, $approver)
 			{
 			$this->printable = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
@@ -46,6 +47,7 @@ function listArticles($topics, $newc)
 			$this->morename = bab_translate("Read More");
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
+			$this->approver = $approver;
 			}
 
 		function getnext()
@@ -57,7 +59,10 @@ function listArticles($topics, $newc)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($this->arr['id']). " - ". bab_getArticleDate($this->arr['id']);
 				$this->content = bab_replace($this->arr['head']);
-				$this->blen = $this->arr['blen'];
+				if( $this->approver )
+					$this->blen = 1;
+				else
+					$this->blen = $this->arr['blen'];
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 
 				if( $this->com)
@@ -99,7 +104,7 @@ function listArticles($topics, $newc)
 			}
 		}
 	
-	$temp = new temp($topics, $newc);
+	$temp = new temp($topics, $newc, $approver);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
 	$arr = array($temp->count, $temp->nbarch);
 	return $arr;
@@ -791,7 +796,7 @@ switch($idx)
 		$babBody->title = bab_translate("List of articles");
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
-			$arr = listArticles($topics, $newc);
+			$arr = listArticles($topics, $newc, $approver);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				if( $approver)
