@@ -374,7 +374,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->grpid = $arr['id'];
 				$this->grpname = $arr['name'];
 				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
-				if( isset($GLOBALS["grpids-".$this->idprofile]) && count($GLOBALS["grpids-".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids-".$this->idprofile]))
+				if( isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile]))
 					{
 					if( $this->bmultiplicity == true )
 						{
@@ -936,9 +936,9 @@ function addNewUser( $nickname, $password1, $password2)
 	$groups = array();
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		if( isset($GLOBALS["grpids-".$arr['id']]))
+		if( isset($GLOBALS["grpids".$arr['id']]))
 			{
-			$grpvar = $GLOBALS["grpids-".$arr['id']];
+			$grpvar = $GLOBALS["grpids".$arr['id']];
 			}
 		else
 			{
