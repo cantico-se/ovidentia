@@ -347,6 +347,7 @@ class bab_icalendar
 			$idevtarr = array();
 			while( $arr = $babDB->db_fetch_array($res))
 				{
+				$arr['alert'] = false;
 				list($arr['nbowners']) = $babDB->db_fetch_row($babDB->db_query("select count(ceo.id_cal) from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$arr['id']."' and ceo.id_cal != '".$calid."'"));
 				if( $arr['nbowners'] == 0 && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && $this->access == BAB_CAL_ACCESS_FULL)
 					{
