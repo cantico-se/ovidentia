@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle2.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<br><br><br><br><br>
+<!--#begin caloptions -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="calopt">
+<input type="hidden" name="idx" value="options">
+<input type="hidden" name="view" value="{ view }">
+<input type="hidden" name="day" value="{ day }">
+<input type="hidden" name="month" value="{ month }">
+<input type="hidden" name="year" value="{ year }">
+<input type="hidden" name="start" value="{ start }">
+<input type="hidden" name="calid" value="{ calid }">
+<input type="hidden" name="modify" value="options">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right" nowrap>{ startday }</td>
+<td>
+<select name="startday">
+<!--#in getnextday -->
+<option value="{ dayid }" { selected }>{ dayname }</option>
+<!--#endin getnextday -->
+</select>
+</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ allday }</td>
+<td>
+<select name="allday">
+<option value="Y" <!--#if arr[allday] "== Y" -->selected<!--#endif arr[allday] -->>{ yes }</option>
+<option value="N" <!--#if arr[allday] "== N" -->selected<!--#endif arr[allday] -->>{ no }</option>
+</select>
+</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ viewcateg }</td>
+<td>
+<select name="viewcat">
+<option value="Y" <!--#if arr[viewcat] "== Y" -->selected<!--#endif arr[viewcat] -->>{ yes }</option>
+<option value="N" <!--#if arr[viewcat] "== N" -->selected<!--#endif arr[viewcat] -->>{ no }</option>
+</select>
+</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ usebgcolor }</td>
+<td>
+<select name="usebgcolor">
+<option value="Y" <!--#if arr[usebgcolor] "== Y" -->selected<!--#endif arr[usebgcolor] -->>{ yes }</option>
+<option value="N" <!--#if arr[usebgcolor] "== N" -->selected<!--#endif arr[usebgcolor] -->>{ no }</option>
+</select>
+</td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end caloptions -->
+</BODY>
+</HTML>
