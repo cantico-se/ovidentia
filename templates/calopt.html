@@ -78,13 +78,11 @@
 <TBODY>
 <tr>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ fullname }</b></td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ accessname }</b></td>
 </tr>
 <!--#in getnext -->
 <tr>
-<td nowrap>{ arr[fullname] }</td>
-<td nowrap>{ arr[email] }</td>
+<td nowrap>{ fullnameval }</td>
 <td nowrap>{ yesno }</td>
 </tr>
 <!--#endin getnext -->
@@ -109,8 +107,8 @@
 <td>{ textinfo }</td>
 </tr>
 <tr>
-<td align="right" nowrap>{ email }:</td>
-<td><input type="text" name="emails" size="60"></td>
+<td align="right" nowrap>{ userstxt }:</td>
+<td><input type="text" name="users" size="60"></td>
 </tr>
 <tr>
 <td align="right" nowrap>&nbsp;</td>
