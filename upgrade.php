@@ -560,6 +560,53 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "CREATE TABLE ".BAB_FLOW_APPROVERS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description tinytext NOT NULL,";
+$req .= "formula tinytext NOT NULL,";
+$req .= "forder enum('N','Y') NOT NULL default 'N',";
+$req .= "refcount int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FLOW_APPROVERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FA_INSTANCES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "idsch int(11) unsigned NOT NULL default '0',";
+$req .= "extra tinytext NOT NULL,";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FA_INSTANCES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FAR_INSTANCES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "idschi int(11) unsigned NOT NULL default '0',";
+$req .= "iduser int(11) NOT NULL default '0',";
+$req .= "result char(1) NOT NULL default '',";
+$req .= "notified enum('N','Y') NOT NULL default 'N',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FAR_INSTANCES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 $req = "select * from ".BAB_TOPICS_TBL;
 $res = $db->db_query($req);
 while($row = $db->db_fetch_array($res))
