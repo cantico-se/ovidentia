@@ -858,7 +858,7 @@ function deleteVacationType($vtid)
 			$bdel = false;
 		else
 			{
-			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_RIGHTS_TYPES_TBL." where id_type='".$vtid."'"));
+			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_RIGHTS_TBL." where id_type='".$vtid."'"));
 			if( $total > 0 )
 				$bdel = false;
 			}

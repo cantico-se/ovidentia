@@ -167,11 +167,10 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 
 
 <tr> 
-<td colspan="2" align="center" valign="middle">{ usrcalendarstxt }</td>
-<td colspan="2" align="center" valign="middle">{ grpcalendarstxt }</td>
-<td colspan="2" align="center" valign="middle">{ rescalendarstxt }</td>
+<td colspan="2" valign="middle">{ usrcalendarstxt }</td>
+<td colspan="2" valign="middle">{ grpcalendarstxt }</td>
+<td colspan="2" valign="middle">{ rescalendarstxt }</td>
 </tr>
-
 <!--#in getnextrow -->
 <tr> 
 <td colspan="2" align="left" valign="middle">
@@ -194,23 +193,23 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 </td>
 </tr>
 <!--#endin getnextrow -->
-
+ 
 <!--#if msie "== 1" -->
 <tr> 
-<td>&nbsp;</td>
-<td colspan="4"> 
+<td colspan="2">&nbsp;</td>
+<td colspan="3"> 
 <input onClick=SetVals() type="submit" name="Submit" value="{ addvac }">
 <br>
 </td>
 </tr>
 <script language="JavaScript">
-	editor.FinalInstantiate(0);
-	editor.CloseInitSection();
+ editor.FinalInstantiate(0);
+ editor.CloseInitSection();
 </script>
 <!--#else msie -->
 <tr> 
-<td nowrap>&nbsp;</td>
-<td colspan="4"> 
+<td colspan="2">&nbsp;</td>
+<td colspan="3">  
 <input type="submit" name="Submit" value="{ addvac }">
 <br>
 </td>
