@@ -516,7 +516,7 @@ function submitArticleByFile($topics)
 			if($i < $this->countLangFiles)
 			{
 				$this->langValue = $this->langFiles[$i];
-				if($this->langValue == $this->arr['lang'])
+				if($this->langValue == $GLOBALS['babLanguage'])
 				{
 					$this->langSelected = 'selected';
 				}
