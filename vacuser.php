@@ -445,11 +445,18 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 		{
 		$babDB->db_query("insert into ".BAB_VAC_ENTRIES_ELEM_TBL." (id_entry, id_type, quantity) values  ('" .$id. "', '" .$nbdays['id'][$i]. "', '" . $nbdays['val'][$i]. "')");
 		}
-	
-	$idfai = makeFlowInstance($row['id_sa'], "vac-".$id);
-	$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai='".$idfai."' where id='".$id."'");
-	$nfusers = getWaitingApproversFlowInstance($idfai, true);
-	notifyVacationApprovers($id, $nfusers);
+
+	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
+		{
+		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id);
+		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai='".$idfai."',status='' where id='".$id."'");
+		$nfusers = getWaitingApproversFlowInstance($idfai, true);
+		notifyVacationApprovers($id, $nfusers);
+		}
+	else
+		{
+		notifyOnRequestChange($id);
+		}
 	return true;
 }
 
@@ -642,14 +649,21 @@ switch ($_POST['action'])
 		break;
 
 	case 'vacation_request':
-		if(!addNewVacation($_POST['id_user'], $_POST['id'], $begin, $end, $halfdaybegin, $halfdayend, $remarks, $total))
-		$idx = "vunew";
-	else
+		if (bab_isRequestEditable($_POST['id']))
 		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
-		exit;
+		if(!addNewVacation($_POST['id_user'], $_POST['id'], $begin, $end, $halfdaybegin, $halfdayend, $remarks, $total))
+			$idx = "vunew";
+		elseif ($_POST['id_user'] == $GLOBALS['BAB_SESS_USERID'])
+			{
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
+			exit;
+			}
+		else
+			{
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+			}
 		}
-
+		break;
 	}
 }
 
@@ -698,7 +712,8 @@ switch($idx)
 			viewVacationCalendar(array($GLOBALS['BAB_SESS_USERID']), true);
 			period($GLOBALS['BAB_SESS_USERID']);
 			}
-
+		if ($entities_access > 0)
+			$babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		break;
 
 	case "vunew":
@@ -729,6 +744,8 @@ switch($idx)
 			}
 		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
 			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
+		if ($entities_access > 0)
+			$babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		break;
 
 	case "lvreq":
