@@ -641,6 +641,12 @@ function addAccount($fullname, $email, $account, $password1, $password2, $domain
 		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set prefered='N' where owner='".$BAB_SESS_USERID."'";	
 		$res = $db->db_query($req);
 		}
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$fullname = addslashes($fullname);
+		}
+
 	$req = "insert into ".BAB_MAIL_ACCOUNTS_TBL." (name, email, password, account, domain, owner, maxrows, prefered, format) values ";	
 	$req .= "('".$fullname."', '".$email."', ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\"), '".$account."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefered."', '".$prefformat."')";	
 	$res = $db->db_query($req);
@@ -678,6 +684,12 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set prefered='N' where owner='".$BAB_SESS_USERID."'";	
 		$res = $db->db_query($req);
 		}
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$fullname = addslashes($fullname);
+		}
+
 	if( empty($password1) )
 		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', account='$account', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item'";
 	else
