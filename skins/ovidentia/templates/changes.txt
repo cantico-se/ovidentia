@@ -212,6 +212,8 @@ event.html                                  Replace 'var t=document.open' by 'St
 fileman.html                                Replace 'var t=document.open' by 'Start'
 inbox.html                                  Replace 'var t=document.open' by 'Start'
 mail.html                                   Replace 'var t=document.open' by 'Start'
+                    mailcompose             Replace Meta Tags with { babMeta }
+                                            Add <script type="text/javascript" src="{ babOvidentiaJs }"></script>
 sites.html                                  Replace 'var t=document.open' by 'Start'
 topics.html                                 Replace 'var t=document.open' by 'Start'
 topman.html                                 Replace 'var t=document.open' by 'Start'
