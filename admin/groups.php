@@ -389,7 +389,7 @@ if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBod
 
 switch($idx)
 	{
-	case "brow":
+	case "brow": // Used by add-ons 
 		include_once $babInstallPath."utilit/grpincl.php";
 		browseGroups($cb);
 		exit;

@@ -404,7 +404,7 @@ if( $idx == "Create" && !$babBody->isSuperAdmin )
 
 switch($idx)
 	{	
-	case "brow":
+	case "brow": // Used by add-ons
 		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
 			{
 			browseUsers($pos, $cb);

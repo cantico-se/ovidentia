@@ -23,6 +23,10 @@
 ************************************************************************/
 include_once "base.php";
 
+/*
+Used by add-ons to let user select a color
+*/
+
 function select_color()
 	{
 	class temp
