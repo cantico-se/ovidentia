@@ -6,7 +6,7 @@
  ***********************************************************************/
 include $babInstallPath."admin/register.php";
 
-function listUsers($pos)
+function listUsers($pos, $grp)
 	{
 	global $body;
 	class temp
@@ -32,12 +32,21 @@ function listUsers($pos)
 		var $allname;
 		var $urlmail;
 
-		function temp($pos)
+		var $grp;
+		var $group;
+		var $groupurl;
+		var $checked;
+		var $userid;
+		var $usert;
+
+		function temp($pos, $grp)
 			{
 			$this->fullname = babTranslate("Full Name");
 			$this->email = babTranslate("Email");
 			$this->allname = babTranslate("All");
 			$this->db = new db_mysql();
+			$this->group = getGroupName($grp);
+			$this->grp = $grp;
 
 			$req = "select * from users where firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);
@@ -49,7 +58,8 @@ function listUsers($pos)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=";
+			$this->allurl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=&grp=".$this->grp;
+			$this->groupurl = $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$this->grp;
 
 			}
 
@@ -59,8 +69,9 @@ function listUsers($pos)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$this->arr[id]."&pos=".$this->pos;
+				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$this->arr[id]."&pos=".$this->pos."&grp=".$this->grp;
 				$this->urlname = composeName($this->arr[firstname],$this->arr[lastname]);
+				$this->userid = $this->arr[id];
 				$req = "select * from users_log where id_user='".$this->arr[id]."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
@@ -68,6 +79,22 @@ function listUsers($pos)
 					$this->status ="*";
 				else
 					$this->status ="";
+
+				$req = "select * from users_groups where id_object='".$this->arr[id]."' and id_group='".$this->grp."'";
+				$res = $this->db->db_query($req);
+				if( $res && $this->db->db_num_rows($res) > 0)
+					{
+					$this->checked = "checked";
+					if( empty($this->userst))
+						$this->userst = $this->arr[id];
+					else
+						$this->userst .= ",".$this->arr[id];
+					}
+				else
+					{
+					$this->checked = "";
+					}
+
 				$i++;
 				return true;
 				}
@@ -84,7 +111,7 @@ function listUsers($pos)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$this->selectname;
+				$this->selecturl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$this->selectname."&grp=".$this->grp;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -106,34 +133,9 @@ function listUsers($pos)
 			}
 		}
 
-	$temp = new temp($pos);
+	$temp = new temp($pos, $grp);
 	$body->babecho(	babPrintTemplate($temp, "users.html", "userslist"));
-	}
-
-function userFind()
-	{
-	global $body;
-	class temp
-		{
-		var $fullname;
-		var $email;
-		var $password;
-		var $repassword;
-		var $finduser;
-		var $by;
-
-		function temp()
-			{
-			$this->fullname = babTranslate("Full Name");
-			$this->email = babTranslate("Email");
-			$this->what = babTranslate("Email or Full name");
-			$this->by = babTranslate("By");
-			$this->finduser = babTranslate("Find User");
-			}
-		}
-
-	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"users.html", "usersfind"));
+	return $temp->count;
 	}
 
 function userCreate($firstname, $lastname, $nickname, $email)
@@ -173,33 +175,36 @@ function userCreate($firstname, $lastname, $nickname, $email)
 	$body->babecho(	babPrintTemplate($temp,"users.html", "usercreate"));
 	}
 
-
-function findUser( $what, $by)
+function updateGroup( $grp, $users, $userst)
 {
-	global $body, $pos, $like, $selectby, $idx;
+	$db = new db_mysql();
 
-	if( empty($what))
+	$tab = explode(",", $userst);
+
+	for( $i = 0; $i < count($tab); $i++)
+	{
+		if( !in_array($tab[$i], $users))
 		{
-		$body->msgerror = babTranslate("You must provide a name or email !!");
-		return;
+			$req = "delete from users_groups where id_group='".$grp."' and id_object='".$tab[$i]."'";
+			$res = $db->db_query($req);
 		}
-
-	$pos = "";
-	$like = $what;
-	if( $by == "0")
-		$selectby = "email";
-	else
-		$selectby = "fullname";
-	$idx = "List";
+	}
+	for( $i = 0; $i < count($users); $i++)
+	{
+		if( !in_array($users[$i], $tab))
+		{
+			$req = "insert into users_groups (id_group, id_object) VALUES ('" .$grp. "', '" . $users[$i]. "')";
+			$res = $db->db_query($req);
+		}
+	}
 }
 
 /* main */
 if( !isset($pos))
 	$pos = "A";
-if( !isset($selectby))
-	$selectby = "firstname";
-if( !isset($like))
-	$like = "";
+
+if( !isset($grp))
+	$grp = 3;
 
 if( !isset($idx))
 	$idx = "List";
@@ -212,33 +217,26 @@ if( isset($adduser))
 		$pos = substr($firstname,0,1);
 }
 
-if( isset($find))
-	findUser($what, $by);
 
 switch($idx)
-	{
-	/*
-	case "Find":
-		$body->title = babTranslate("Create a user");
-		userFind();
-		$body->addItemMenu("List", babTranslate("List"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create");
-		$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
-		break;
-	*/
+	{	
 	case "Create":
 		$body->title = babTranslate("Create a user");
 		userCreate($firstname, $lastname, $nickname, $email);
-		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create&pos=".$pos);
-		//$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
 		break;
+	case "Updateg":
+		updateGroup($grp, $users, $userst);
+		$idx = "List";
+		/* no break */
 	case "List":
 		$body->title = babTranslate("Users list");
-		listUsers($pos);
+		$cnt = listUsers($pos, $grp);
 		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create&pos=".$pos);
-		//$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
+		if( $cnt > 0 )
+			$body->addItemMenu("Upadteg", babTranslate("Update"), "javascript:(submitForm('Updateg'))");
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 		break;
 	default:
 		break;

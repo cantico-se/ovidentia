@@ -115,7 +115,7 @@ function groupMembers($id)
 				$req = "select * from users where id='".$this->arr[id_object]."'";
 				$result = $db->db_query($req);
 				$this->arr = $db->db_fetch_array($result);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$this->arr[id];
+				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Groups&item=".$this->arr[id];
 				$this->urlname = composeName($this->arr[firstname], $this->arr[lastname]);
 				$i++;
 				return true;
@@ -550,6 +550,7 @@ switch($idx)
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$item);
 		$body->addItemMenu("Members", babTranslate("Members"), $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$item);
 		$body->addItemMenu("Deletem", babTranslate("Delete"), "javascript:(submitForm('Deletem'))");
+		$body->addItemMenu("Add", babTranslate("Add"), $GLOBALS[babUrl]."index.php?tg=users&idx=List&grp=".$item);
 		$body->addItemMenu("Vacation", babTranslate("Vacation"), $GLOBALS[babUrl]."index.php?tg=group&idx=Vacation&item=".$item);
 		break;
 	case "Vacation":

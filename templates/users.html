@@ -11,6 +11,19 @@
 
 <BODY BGCOLOR="#FFFFFF">
 <!--#begin userslist -->
+<script language="javascript">
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="users">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="pos" value="{ pos }">
+<input type="hidden" name="grp" value="{ grp }">
 <center>
 <table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
 <table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
@@ -19,14 +32,16 @@
 <td class="BabListTitleBgnd" align="center">&nbsp;</td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ fullname }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b><a class=BabMenuLink href="{ groupurl }">{ group }</a></b></td>
 </tr>
 <!--#in getnext -->
 <tr><td nowrap><center>&nbsp;<!--#if status "== *" --><img src="images/online.gif" alt=""><!--#endif status --></center></td>
 <td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td>
 <td nowrap><a href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a></td>
+<td align="center" nowrap><input type="checkbox" name="users[]" value="{ userid }" { checked }></td>
 </tr>
 <!--#endin getnext -->
-<td class="BabListTitleBgnd" colspan="3">
+<td class="BabListTitleBgnd" colspan="4">
 <!--#if allselected "== 1" -->
 { allname }&nbsp;&nbsp;
 <!--#else allselected -->
@@ -45,6 +60,8 @@
 </td></tr>
 </table>
 </center>
+<input type="hidden" name="userst" value="{ userst }">
+</form>
 <!--#end userslist -->
 <br><br><br><br><br>
 <!--#begin usercreate -->
@@ -155,79 +172,44 @@
 <!--#end usersmodify -->
 <br><br><br><br><br>
 <!--#begin usersgroups -->
+<script language="javascript">
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
 <center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
-<form method="post" action="index.php">
+<form method="post" action="index.php" name="listform">
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ id }">
 <input type="hidden" name="updategroups" value="update">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="center" nowrap>{ name }:</td>
-<td align="center" nowrap>&nbsp;</td>
+<table  width="95%" border="0" cellspacing="1" cellpadding="0">
+<tr> 
+<td> 
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<tr> 
+<td class="BabListTitleBgnd" align="center">&nbsp;</td>
+<td class="BabListTitleBgnd" align="center">&nbsp;</td>
+<td class="BabListTitleBgnd" align="center"><b>{ group }</b> </td>
 </tr>
-<tr>
-<td align="center" nowrap>
-<select multiple name="groups[]" size="10">
-<option value="" { select }>------ { none } ------</option>
 <!--#in getnextgroup -->
-<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
-<!--#endin getnextgroup -->
-</select>
-</td>
-<td align="center" nowrap>&nbsp;</td>
-</tr>
 <tr>
-<td align="center"><input type="submit" name="submit" value="{ updategroups }"></td>
-<td align="center">&nbsp;</td>
+<td><input type="checkbox" name="groups[]" value="{ groupid  }" { checked }></td>
+<td>{ primary }</td>
+<td><a class="BabMenuLink" href="{ groupurl }">{ groupname }</a> </td>
+</tr>
+<!--#endin getnextgroup -->
+</table>
+</td>
 </tr>
 </table>
-</center>
+<input type="hidden" name="groupst" value="{ groupst }">
 </form>
-</td></tr>
-</table>
 </center>
 <!--#end usersgroups -->
-<br><br><br><br><br>
-<!--#begin usersfind -->
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-<tr><td>
-
-<form method="post" action="index.php">
-<input type="hidden" name="tg" value="users">
-<input type="hidden" name="idx" value="Find">
-<input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="find" value="find">
-<center>
-<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
-<tr>
-<td align="right" nowrap>{ what }:</td>
-<td><input type="text" name="what" value="" size="30" maxlength="60"></td>
-</tr>
-<tr>
-<td align="right" nowrap>{ by }:</td>
-<td>
-<select name="by">
-<option value="0" selected>{ email }</option>
-<option value="1" >{ fullname }</option>
-</select>
-</td>
-</tr>
-<tr>
-<td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="{ finduser }"></td>
-</tr>
-</table>
-</center>
-</form>
-</td></tr>
-</table>
-</center>
-<!--#end usersfind -->
 <br><br><br><br><br>
 </BODY>
 </HTML>
