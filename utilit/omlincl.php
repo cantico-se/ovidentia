@@ -1108,7 +1108,7 @@ class bab_Thread extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "select id, forum from ".BAB_THREADS_TBL." id IN (".implode(',', $arr).") and active='Y'";
+			$req = "select id, forum from ".BAB_THREADS_TBL." WHERE id IN (".implode(',', $arr).") and active='Y'";
 			$req .= " order by date desc";
 
 			$res = $babDB->db_query($req);
