@@ -535,8 +535,8 @@ function addVacationPersonnel($idcol, $idsa, $iduser)
 			$this->reset = bab_translate("Reset");
 			$this->orand = bab_translate("And / Or");
 			$this->delete = bab_translate("Delete");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
-			$this->groupsbrowurl = $GLOBALS['babUrlScript']."?tg=groups&idx=brow&cb=";
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=browu&cb=";
+			$this->groupsbrowurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=browg&cb=";
 
 			$this->db = $GLOBALS['babDB'];
 			if( !empty($iduser))
@@ -1231,6 +1231,16 @@ else if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
+	case "browu":
+		include_once $babInstallPath."utilit/lusersincl.php";
+		browseUsers($pos, $cb);
+		exit;
+		break;
+	case "browg":
+		include_once $babInstallPath."utilit/grpincl.php";
+		browseGroups($cb);
+		exit;
+		break;
 	case "rlbuul":
 		rlistbyuserUnload(bab_translate("Your request has been updated"));
 		exit;

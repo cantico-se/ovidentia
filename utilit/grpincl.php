@@ -22,4 +22,61 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+
+function browseGroups($cb)
+	{
+	global $babBody;
+	class temp
+		{
+		var $fullname;
+		var $urlname;
+		var $url;
+				
+		var $fullnameval;
+
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+
+		var $groupid;
+
+		function temp($cb)
+			{
+			$this->db = $GLOBALS['babDB'];
+			$this->cb = $cb;
+
+			$this->fullname = bab_translate("Group");
+			$this->res = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id!='2'");
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->groupid = $arr['id'];
+				if( $this->arr['id'] < 3 )
+					{
+					$this->groupname = bab_getGroupName($arr['id']);
+					}
+				else
+					{
+					$this->groupname = $arr['name'];
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+
+		}
+
+	$temp = new temp($cb);
+	echo bab_printTemplate($temp, "groups.html", "browsegroups");
+	}
 ?>
