@@ -719,7 +719,7 @@ function babUserSection($close)
 		{
 		if( $row['id_group'] != 0 )
 			{
-			list($bdiraccess) = $babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'");
+			list($bdiraccess) = $babDB->db_fetch_row($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
 			}
 		else
 			$bdiraccess = 'Y';
@@ -1679,11 +1679,17 @@ function bab_updateUserSettings()
 					}
 				}
 
-			$req = "select count(distinct f.id) from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y' and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
-			if( $BAB_SESS_USERID != "" )
-			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
-			$req .= ")";
+			bab_fileManagerAccessLevel();
+
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+			{
+				if($babBody->aclfm['down'][$i])
+					$arrfid[] = $babBody->aclfm['id'][$i];
+			}
+
+			$req = "select count(f.id) from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".implode(',', $arrfid).")";
 			$req .= " and f.modified >= '".$babBody->lastlog."'";
+			$req .= " order by f.modified desc";
 
 			list($babBody->newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
 
