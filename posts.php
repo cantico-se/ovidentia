@@ -279,6 +279,7 @@ function newReply($forum, $thread, $post)
 		var $anonyme;
 		var $notifyme;
 		var $postid;
+		var $msie;
 		
 
 		function temp($forum, $thread, $post)
@@ -307,6 +308,10 @@ function newReply($forum, $thread, $post)
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
 				}
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 
@@ -329,6 +334,7 @@ function editPost($forum, $thread, $post)
 		var $post;
 		var $newpost;
 		var $arr = array();
+		var $msie;
 
 		function temp($forum, $thread, $post)
 			{
@@ -344,6 +350,10 @@ function editPost($forum, $thread, $post)
 			$req = "select * from posts where id='$post'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 
@@ -513,7 +523,6 @@ function deletePost($forum, $post)
 		if( $arr2[lastpost] == $post ) // it's the lastpost
 			{
 			$req = "select * from posts where id_thread='".$arr[id_thread]."' order by date desc";
-			echo $req;
 			$res = $db->db_query($req);
 			$arr2 = $db->db_fetch_array($res);
 			$req = "update threads set lastpost='".$arr2[id]."' where id='".$arr[id_thread]."'";

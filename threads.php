@@ -172,6 +172,7 @@ function newThread($forum)
 		var $username;
 		var $anonyme;
 		var $notifyme;
+		var $msie;
 
 		function temp($forum)
 			{
@@ -188,6 +189,10 @@ function newThread($forum)
 				{
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 				}
 			}
 		}
