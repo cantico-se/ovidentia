@@ -521,7 +521,7 @@ if( isset($update))
 
 if( isset($acladd))
 	{
-	aclUpdate($table, $item, $groups, $what);
+	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 	}
 
