@@ -53,7 +53,10 @@ function listPosts($forum, $thread, $post)
 				$res = $this->db->db_query($req);
 				}
 				
-			$req = "select * from posts where id_thread='".$thread."' and id_parent='0'";
+			if( $moderator )
+				$req = "select * from posts where id_thread='".$thread."' and id_parent='0'";
+			else
+				$req = "select * from posts where id_thread='".$thread."' and id_parent='0' and confirmed='Y'";
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
@@ -120,8 +123,13 @@ function listPosts($forum, $thread, $post)
 			{
 			global $moderator;
 			static $k=0;
-			$req = "select * from posts where id_thread='".$this->thread."' and id='".$id."'";
+			if($moderator)
+				$req = "select * from posts where id_thread='".$this->thread."' and id='".$id."'";
+			else
+				$req = "select * from posts where id_thread='".$this->thread."' and id='".$id."' and confirmed='Y'";
 			$res = $this->db->db_query($req);
+			if( !$res && $this->db->db_num_rows($res) < 1)
+				return;
 			$arr = $this->db->db_fetch_array($res);
 			$idx = $k;
 			$this->arrresult["id"][$k] = $arr[id]; 
@@ -132,14 +140,13 @@ function listPosts($forum, $thread, $post)
 
 			$tab = array();
 			if( $iparent >= 0)
-			for( $m = $iparent; $m >= 0; )
 				{
-				$p = $this->arrresult["iparent"][$m];
-				if( $this->arrresult["leaf"][$m] == 1)
+				$tab = $this->arrresult["schema"][$iparent];
+				$p = $this->arrresult["iparent"][$iparent];
+				if( $this->arrresult["leaf"][$iparent] == 1)
 					$tab[$this->arrresult["delta"][$p]] = 0;
 				else
 					$tab[$this->arrresult["delta"][$p]] = 1;
-				$m = $p;
 				}
 			$this->arrresult["schema"][$k] = $tab;
 
@@ -171,22 +178,28 @@ function listPosts($forum, $thread, $post)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->replyauthor = "";
+				$this->replysubject = "";
+				$this->replydate = "";
 				$req = "select * from posts where id='".$this->arrresult[id][$i]."'";
 				$res = $this->db->db_query($req);
-				$arr = $this->db->db_fetch_array($res);
-				if( $this->alternate == 0)
-					$this->alternate = 1;
-				else
-					$this->alternate = 0;
-				$this->replydate = bab_strftime(bab_mktime($arr[date]));;
-				$this->replyauthor = $arr[author];
-				
-				$this->transarr = $this->arrresult[schema][$i];
-				$this->replysubject = $arr[subject];
+				if( $res && $this->db->db_num_rows($res) > 0)
+					{
+					$arr = $this->db->db_fetch_array($res);
+					$this->replydate = bab_strftime(bab_mktime($arr[date]));
+					$this->replyauthor = $arr[author];
+					$this->replysubject = $arr[subject];
+					}
 				if( $arr[confirmed] == "N")
 					$this->confirmed = "C";
 				else
 					$this->confirmed = "";
+				
+				if( $this->alternate == 0)
+					$this->alternate = 1;
+				else
+					$this->alternate = 0;
+				$this->transarr = $this->arrresult[schema][$i];
 				$this->leaf = $this->arrresult[leaf][$i];
 				$this->delta = $this->arrresult[delta][$i];
 				if( $this->arrresult[parent][$i] == 1)
@@ -563,10 +576,15 @@ if( isset($action) && $action == "Yes")
 	confirmDeleteThread($forum, $thread);
 	}
 
+$moderator = isUserModerator($forum, $BAB_SESS_USERID);
+
 if( !isset($post))
 	{
 	$db = new db_mysql();
-	$req = "select * from posts where id_thread='".$thread."' and id_parent='0'";
+	if( $moderator )
+		$req = "select * from posts where id_thread='".$thread."' and id_parent='0'";
+	else
+		$req = "select * from posts where id_thread='".$thread."' and id_parent='0' and confirmed='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -577,7 +595,6 @@ if( !isset($post))
 		$post = 0;
 	}
 
-$moderator = isUserModerator($forum, $BAB_SESS_USERID);
 
 switch($idx)
 	{
