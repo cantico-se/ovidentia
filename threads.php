@@ -5,6 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include $babInstallPath."utilit/forumincl.php";
+include $babInstallPath."utilit/mailincl.php";
 
 function listThreads($forum, $active, $pos)
 	{
@@ -266,24 +267,29 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	$res = $db->db_query($req);
 	$idthread = $db->db_insert_id();
 
-	if( bab_isForumModerated($forum))
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FORUMS_TBL." where id='".$forum."'"));
+
+	if( $arr['moderation'] == "Y" )
 		$confirmed = "N";
 	else
 		$confirmed = "Y";
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$subject = addslashes($subject);
-		$message = addslashes($message);
-		$name = addslashes($name);
-		}
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed) values ";
-	$req .= "('" .$idthread. "', now(), '" . $subject. "', '" . $message. "', '". $name. "', '". $confirmed. "')";
+	$req .= "('" .$idthread. "', now(), '";
+	if( !bab_isMagicQuotesGpcOn())
+		$req .= addslashes($subject). "', '" . addslashes($message). "', '". addslashes($name);
+	else
+		$req .= $subject. "', '" . $message. "', '". $name;
+
+	$req .= "', '". $confirmed. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
 	
 	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost', post='$idpost' where id = '$idthread'";
 	$res = $db->db_query($req);
+
+	if( $arr['notification'] == "Y" && ($email = bab_getUserEmail($arr['moderator'])) != "")
+	    notifyModerator($subject, $email, $name, $arr['name']);
 	}
 
 function getClosedThreads($forum)

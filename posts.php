@@ -6,6 +6,7 @@
  ***********************************************************************/
 include $babInstallPath."utilit/forumincl.php";
 include $babInstallPath."utilit/topincl.php";
+include $babInstallPath."utilit/mailincl.php";
 
 function listPosts($forum, $thread, $post)
 	{
@@ -419,9 +420,8 @@ function deleteThread($forum, $thread)
 function notifyThreadAuthor($threadTitle, $email, $author)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
 
-	class tempa
+	class tempb
 		{
 		var $message;
         var $from;
@@ -434,7 +434,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
         var $dateval;
 
 
-		function tempa($threadTitle, $email, $author)
+		function tempb($threadTitle, $email, $author)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->message = bab_translate("A new post has been registered on thread");
@@ -458,11 +458,11 @@ function notifyThreadAuthor($threadTitle, $email, $author)
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject(bab_translate("New post"));
 
-	$tempa = new tempa($threadTitle, $email, $author);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "newpost");
+	$tempb = new tempb($threadTitle, $email, $author);
+	$message = bab_printTemplate($tempb,"mailinfo.html", "newpost");
     $mail->mailBody($message, "html");
 
-	$message = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");
+	$message = bab_printTemplate($tempb,"mailinfo.html", "newposttxt");
     $mail->mailAltBody($message);
 
 	$mail->send();
@@ -504,15 +504,13 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	else
 		$confirmed = "Y";
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$subject = addslashes($subject);
-		$message = addslashes($message);
-		$name = addslashes($name);
-		}
-
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed, id_parent) values ";
-	$req .= "('" .$thread. "', now(), '" . $subject. "', '" . $message. "', '". $name. "', '". $confirmed."', '". $post. "')";
+	$req .= "('" .$thread. "', now(), '";
+	if( !bab_isMagicQuotesGpcOn())
+		$req .= addslashes($subject). "', '" . addslashes($message). "', '". addslashes($name);
+	else
+		$req .= $subject. "', '" . $message. "', '". $name;
+	$req .= "', '". $confirmed."', '". $post. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
 	
@@ -522,25 +520,47 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	$req = "select * from ".BAB_THREADS_TBL." where id='$thread'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
-	if( $arr['notify'] == "Y" && $arr['starter'] != 0)
+	if( $confirmed == "Y" && $arr['notify'] == "Y" && $arr['starter'] != 0)
 		{
 		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['starter']."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
-		//$msg = bab_translate("A new post has been registered on thread").": \n  ". bab_getForumThreadTitle($thread);
-		//mail ($arr['email'],'New Post',$msg,"From: ".$babAdminEmail);
         notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr['email'], $name);
+		}
+
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FORUMS_TBL." where id='".$forum."'"));
+	if( $arr['notification'] == "Y" && ($email = bab_getUserEmail($arr['moderator'])) != "")
+		{
+	    notifyModerator($subject, $email, $name, $arr['name']);
 		}
 	}
 
 function confirm($forum, $thread, $post)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_THREADS_TBL." set lastpost='$post' where id='$thread'";
+	$req = "update ".BAB_THREADS_TBL." set lastpost='".$post."' where id='".$thread."'";
 	$res = $db->db_query($req);
 
-	$req = "update ".BAB_POSTS_TBL." set confirmed='Y' where id='$post'";
+	$req = "update ".BAB_POSTS_TBL." set confirmed='Y' where id='".$post."'";
 	$res = $db->db_query($req);
+
+	$req = "select * from ".BAB_THREADS_TBL." where id='".$thread."'";
+	$res = $db->db_query($req);
+	$arr = $db->db_fetch_array($res);
+	if( $arr['notify'] == "Y" && $arr['starter'] != 0)
+		{
+		$req = "select email from ".BAB_USERS_TBL." where id='".$arr['starter']."'";
+		$res = $db->db_query($req);
+		$arr = $db->db_fetch_array($res);
+		$email = $arr['email'];
+
+		$req = "select author from ".BAB_POSTS_TBL." where id='".$post."'";
+		$res = $db->db_query($req);
+		$arr = $db->db_fetch_array($res);
+		$name = $arr['author'];
+		
+		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $name);
+		}
 	}
 
 function updateReply($forum, $thread, $subject, $message, $post)
