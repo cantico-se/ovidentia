@@ -1063,10 +1063,11 @@ switch($idx)
 
 	case "Submit":
 		$babBody->title = bab_translate("Submit an article")." [ ". $babLevelTwo ." ]";
-		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
+		if( in_array($topics, $babBody->topview))
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticle($title, $headtext, $bodytext, $topics);
-			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
 			$babBody->addItemMenu("subfile", bab_translate("File"), $GLOBALS['babUrlScript']."?tg=articles&idx=subfile&topics=".$topics);
 			}
@@ -1074,7 +1075,7 @@ switch($idx)
 
 	case "subfile":
 		$babBody->title = bab_translate("Submit an article")." [ ". $babLevelTwo ." ]";
-		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticleByFile($topics);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
@@ -1093,7 +1094,7 @@ switch($idx)
 			{
 			$barch = readMore($topics, $article);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 				{
 				if( $approver)
 					{
@@ -1157,13 +1158,13 @@ switch($idx)
 		if( in_array($topics, $babBody->topview)|| $access)
 			{
 			$arr = listSubmittedArticles($topics);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
 				$babBody->addItemMenu("Submited", bab_translate("Submitted"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submited&topics=".$topics);
-				if( isset($new) && $new > 0 && $uaapp)
-					$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 				}
+			if( isset($new) && $new > 0 && $uaapp)
+				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			if( $arr[1] > 0 )
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
@@ -1180,14 +1181,15 @@ switch($idx)
 		if( in_array($topics, $babBody->topview)|| $access)
 			{
 			$arr = listArticles($topics, $approver);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
 				if( $arr[2] > 0 )
 					$babBody->addItemMenu("Submited", bab_translate("Submitted"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submited&topics=".$topics);
-				if( isset($new) && $new > 0 && $uaapp)
-					$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 				}
+			if( isset($new) && $new > 0 && $uaapp)
+				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
+
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			if( $arr[1] > 0 )
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
