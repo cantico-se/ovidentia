@@ -1,5 +1,23 @@
 
 <!--#begin newevent -->
+<script type="text/javascript">
+<!--
+function daytypeswitch()
+{
+var f = document.forms.vacform;
+if (f.daytype.checked)
+	{
+	f.timebegin.disabled = true;
+	f.timeend.disabled = true;
+	}
+else
+	{
+	f.timebegin.disabled = false;
+	f.timeend.disabled = false;
+	}
+}
+//-->
+</script>
 <form name="vacform" method="post" action="{ babPhpSelf }" >
 <input type="hidden" name="tg" value="event">
 <input type="hidden" name="idx" value="addevent">
@@ -42,7 +60,7 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <tr> 
 <td align="right" nowrap valign="middle">{ daytype }:</td>
 <td colspan="4" valign="middle"> 
-<input type="checkbox" name="daytype" value="y" { daytypechecked }>
+<input type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked }>
 </td>
 </tr>
 <tr> 
