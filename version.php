@@ -183,6 +183,8 @@ switch($idx)
 		break;
 
 	case "lang":
+		if( !bab_isUserAdministrator())
+			exit;
 		$ar = echoLang($GLOBALS['babInstallPath']);
 		$tab = array();
 		for( $i = 0; $i < count($ar); $i++)
@@ -233,6 +235,8 @@ switch($idx)
 
 	case "version":
 	default:
+		if( !bab_isUserAdministrator())
+			exit;
 		$str = getVersion();
 		break;
 	}
