@@ -269,7 +269,7 @@ HTMLArea.prototype._createToolbar = function () {
 			    case "fontname":
 			    case "formatblock":
 				case "babstyle":
-				options = editor.config[txt]; // HACK ;)
+				options = editor.config[txt];
 				cmd = txt;
 				break;
 			}
@@ -522,6 +522,12 @@ HTMLArea.prototype.generate = function () {
 	HTMLArea._addEvent(textarea.form, "submit", function (event) {
 		editor._formSubmit(HTMLArea.is_ie ? window.event : event);
 	});
+
+	// add a handler for the "back/forward" case -- on body.unload we save
+	// the HTML content into the original textarea.
+	window.onunload = function() {
+		editor._textArea.value = editor.getHTML();
+	};
 
 	// creates & appends the toolbar
 	this._createToolbar();
