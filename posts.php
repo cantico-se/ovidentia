@@ -97,7 +97,7 @@ function listPosts($forum, $thread, $post)
 				$this->postauthor = $arr['author'];
 				$this->postsubject = $arr['subject'];
 				$this->postmessage = bab_replace($arr['message']);
-				$dateupdate = bab_mktime($this->arr['dateupdate']);
+				$dateupdate = bab_mktime($arr['dateupdate']);
 				$this->confirmurl = "";
 				$this->confirmname = "";
 				$this->moreurl = "";
@@ -113,7 +113,7 @@ function listPosts($forum, $thread, $post)
 					$req = "select * from ".BAB_USERS_TBL." where id='".$arr['moderator']."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$this->more = bab_translate("Modified by")." ".bab_composeUserName($arr['firstname'],$arr['lastname'])." ".bab_translate("on")." ".bab_strftime($dateupdate);
+					$this->more = bab_translate("Modified by")." ".bab_composeUserName($arr['firstname'],$arr['lastname'])." ".bab_strftime($dateupdate);
 					$this->confirmurl = "";
 					$this->confirmname = "";
 					$this->moreurl = "";
