@@ -826,10 +826,12 @@ function babUserSection($close)
 		{
 		$this->head = bab_translate("You are logged on as").":<br><center><b>";
 		$this->head .= $GLOBALS['BAB_SESS_USER'];
+		$this->login = bab_translate("You are logged on as");
 		}
 	else
 		{
 		$this->head = bab_translate("You are not yet logged in")."<br><center><b>";
+		$this->login = bab_translate("You are not yet logged in");
 		}
 	$this->head .= "</b></center>";
 	$this->foot = "";
