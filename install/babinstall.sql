@@ -239,6 +239,12 @@ CREATE TABLE sections_order (
    PRIMARY KEY (id)
 );
 
+INSERT INTO sections_order VALUES ('1', '1', '0', 'Y', '1');
+INSERT INTO sections_order VALUES ('2', '2', '1', 'Y', '2');
+INSERT INTO sections_order VALUES ('3', '3', '0', 'Y', '3');
+INSERT INTO sections_order VALUES ('4', '4', '0', 'Y', '4');
+INSERT INTO sections_order VALUES ('5', '5', '1', 'Y', '5');
+
 # --------------------------------------------------------
 #
 # Structure de la table 'sections_states'
