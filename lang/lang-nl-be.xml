@@ -798,4 +798,27 @@
 <string id="Use AM PM">Use AM PM</string>
 <string id="Time scale">Time scale</string>
 <string id="Minutes">Minutes</string>
+<string id="Folder">Folder</string>
+<string id="A new file has been uploaded">A new file has been uploaded</string>
+<string id="File has been updated">File has been updated</string>
+<string id="New file">New file</string>
+<string id="Notify members group">Notify members group</string>
+<string id="Notify user">Notify user</string>
+<string id="Send password with email">Send password with email</string>
+<string id="You have been registered on our site">You have been registered on our site</string>
+<string id="Create new topic">Create new topic</string>
+<string id="Personal disk space">Personal disk space</string>
+<string id="Threads Per Page">Threads Per Page</string>
+<string id="Notify">Notify</string>
+<string id="Approbation schema">Approbation schema</string>
+<string id="Notification">Notifification</string>
+<string id="Folders">Folders</string>
+<string id="Write">Write</string>
+<string id="Acces">Acces</string>
+<string id="Add a new folder">Add a new folder</string>
+<string id="Are you sure you want to delete this folder">Are you sure you want to delete this folder</string>
+<string id="WARNING: This operation will delete the folder with all files">WARNING: This operation will delete the folder with all files</string>
+<string id="Delete folder">Delete folder</string>
+<string id="Modify folder">Modify folder</string>
+<string id="Calendar access has been updated">Calendar access has been updated</string>
 </nl-be>

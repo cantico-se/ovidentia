@@ -18,7 +18,7 @@ function addFolder()
 			$this->description = bab_translate("Description");
 			$this->moderator = bab_translate("Manager");
 			$this->moderation = bab_translate("Approbation schema");
-			$this->notification = bab_translate("Notifification");
+			$this->notification = bab_translate("Notification");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->sabrowurl = $GLOBALS['babUrlScript']."?tg=lsa&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");

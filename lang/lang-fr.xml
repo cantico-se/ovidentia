@@ -807,4 +807,27 @@
 <string id="Use AM PM">Utiliser AM PM</string>
 <string id="Time scale">Echelle du temps</string>
 <string id="Minutes">Minutes</string>
+<string id="Folder">Répertoire</string>
+<string id="A new file has been uploaded">Un nou fichier a été chargé</string>
+<string id="File has been updated">Le fichier a été mis à jour</string>
+<string id="New file">Nouveau fichier</string>
+<string id="Notify members group">Notifier les membres du groupe</string>
+<string id="Notify user">Notify user</string>
+<string id="Send password with email">Envoyer le mot de passe avec l'email</string>
+<string id="You have been registered on our site">Vous avez été rnregistré sur notre sîte</string>
+<string id="Create new topic">Créer un nouveau sujet</string>
+<string id="Personal disk space">Esapce disque personnel</string>
+<string id="Threads Per Page">Sujets par page</string>
+<string id="Notify">Notifier</string>
+<string id="Approbation schema">Schéma d'approbation</string>
+<string id="Notification">Notification</string>
+<string id="Folders">Répertoire</string>
+<string id="Write">Mis à jour</string>
+<string id="Acces">Accès</string>
+<string id="Add a new folder">Ajouter un répertoire</string>
+<string id="Are you sure you want to delete this folder">Etes-vous sûr de vouloir supprimer ce répertoire</string>
+<string id="WARNING: This operation will delete the folder with all files">ATTENTION: Cete opération supprime le répertoire et tous les fichiers</string>
+<string id="Delete folder">Suuprimer le répertoire</string>
+<string id="Modify folder">Modifier le répertoire</string>
+<string id="Calendar access has been updated">L'agenda a été mis à jour</string>
 </fr>
