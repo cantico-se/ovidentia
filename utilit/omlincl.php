@@ -2975,7 +2975,12 @@ function format_output($val, $matches)
 			case 'strlen':
 				$arr = explode(',', $matches[3][$j] );
 				if( strlen($val) > $arr[0] )
+					{
 					$val = substr($val, 0, $matches[3][$j]).$arr[1];
+					$this->gctx->push('substr', 1);
+					}
+				else
+					$this->gctx->push('substr', 0);
 				break;
 			case 'striptags':
 				switch($matches[3][$j])
