@@ -1322,7 +1322,6 @@ if (isset($_REQUEST['action']))
 switch($idx)
 	{
 	case "unload":
-		exit;
 		include_once $babInstallPath."utilit/uiutil.php";
 		if( !isset($popupmessage)) { $popupmessage = bab_translate("Your event has been updated");}
 		switch($view)
