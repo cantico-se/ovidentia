@@ -1088,7 +1088,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
 								while( $rr = $this->db->db_fetch_array($res2))
 									{
-									$tmp[] = "babdirf".$rr['id_fieldx']." = '".mysql_escape_string($rr['field_value'])."'";
+									$tmp[] = "babdirf".$rr['id_fieldx']." = '".$this->db->db_escape_string($rr['field_value'])."'";
 									}
 								if( count($tmp) > 0 )
 									{
@@ -1151,7 +1151,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						{
 						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 							{
-							$dirname = mysql_escape_string($row['name']);
+							$dirname = $this->db->db_escape_string($row['name']);
 							
 							if( $row['id_group'] >= 1 )
 								{

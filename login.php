@@ -732,7 +732,7 @@ function userLogin($nickname,$password)
 	if( $babBody->babsite['authentification'] == '0' || (!$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y') )
 		{
 		$password=strtolower($password);
-		$nickname = bab_isMagicQuotesGpcOn() ? $nickname : mysql_escape_string($nickname);
+		$nickname = bab_isMagicQuotesGpcOn() ? $nickname : $db->db_escape_string($nickname);
 		$req="select * from ".BAB_USERS_TBL." where nickname='".$nickname."' and password='". md5($password) ."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )

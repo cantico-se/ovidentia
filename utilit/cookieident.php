@@ -36,7 +36,7 @@ function cookieUserLogin($nickname,$password)
 		return false;
 		}
 
-	$nickname = bab_isMagicQuotesGpcOn() ? $nickname : mysql_escape_string($nickname);
+	$nickname = bab_isMagicQuotesGpcOn() ? $nickname : $db->db_escape_string($nickname);
 
 	$sql="select * from ".BAB_USERS_TBL." where nickname='".$nickname."' and password='".$password."'";
 	$result=$db->db_query($sql);

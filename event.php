@@ -879,8 +879,10 @@ function deleteEvent()
 
 function post_string($key)
 {
+global $babDB;
+
 if( !bab_isMagicQuotesGpcOn())
-	return mysql_escape_string($_POST[$key]);
+	return $babDB->db_escape_string($_POST[$key]);
 else
 	return $_POST[$key];
 }

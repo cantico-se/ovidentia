@@ -1020,16 +1020,16 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 
-	$name = mysql_escape_string($osfname);
+	$db = $GLOBALS['babDB'];
+	$name = $db->db_escape_string($osfname);
 
 	$mqgo = bab_isMagicQuotesGpcOn();
 	if( !$mqgo)
 		{
-		$description = mysql_escape_string($description);
-		$keywords = mysql_escape_string($keywords);
+		$description = $db->db_escape_string($description);
+		$keywords = $db->db_escape_string($keywords);
 		}
 
-	$db = $GLOBALS['babDB'];
 	$bexist = false;
 	if( file_exists($pathx.$osfname))
 		{
@@ -1687,7 +1687,7 @@ function cutFile( $file, $id, $gr, $path, $bmanager)
 
 function delFile( $file, $id, $gr, $path, $bmanager)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	if( !$bmanager)
 		{
@@ -1697,8 +1697,8 @@ function delFile( $file, $id, $gr, $path, $bmanager)
 
 	if (!bab_isMagicQuotesGpcOn())
 		{
-		$path = mysql_escape_string($path);
-		$file = mysql_escape_string($file);
+		$path = $babDB->db_escape_string($path);
+		$file = $babDB->db_escape_string($file);
 		}
 	
 	$db = $GLOBALS['babDB'];

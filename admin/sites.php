@@ -750,7 +750,8 @@ class bab_sqlExport
 		
 	function sqlAddslashes($str)
 		{
-		return mysql_escape_string($str);
+		global $babDB;
+		return $babDB->db_escape_string($str);
 		}
 		
 	function commentPush($str,$nobr = false)

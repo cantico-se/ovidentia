@@ -56,12 +56,14 @@ function bab_sql_finder_he($tbl,$str,$not="")
 
 function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
 {
+	global $babDB;
+
 	$like = '';
 
 if( !bab_isMagicQuotesGpcOn())
 	{
-	$req2 = mysql_escape_string($req2);
-	$req1 = mysql_escape_string($req1);
+	$req2 = $db->db_escape_string($req2);
+	$req1 = $db->db_escape_string($req1);
 	}
 
 if (trim($req1) != "") 
