@@ -178,8 +178,14 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 	global $BAB_HASH_VAR, $babBody, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
 	$password1=strtolower($password1);
 	$hash=md5($nickname.$BAB_HASH_VAR);
+
 	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang) ".
-		"values ('$nickname','$firstname','$lastname','$hashname','". md5($password1) ."','$email', now(),'$hash','0','1','$babLanguage')";
+		"values ('";
+	if( !bab_isMagicQuotesGpcOn())
+		$sql .= addslashes($nickname)."','".addslashes($firstname)."','".addslashes($lastname);
+	else
+		$sql .= $nickname."','".$firstname."','".$lastname;
+	$sql .= "','".$hashname."','". md5($password1) ."','$email', now(),'$hash','0','1','$babLanguage')";
 	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($result)
