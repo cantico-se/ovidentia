@@ -54,7 +54,10 @@ function dire_dir($rep )
 			}
 		
 		}
-	return $fichier;
+	if (isset($fichier))
+		return $fichier;
+	else
+		return false;
 }
 
 
@@ -120,7 +123,12 @@ function browse($url,$cb)
 			if( $i < $this->count_files)
 				{
 				$this->file = $this->tablo_files[$i];
-				if ($this->url != "") $url=$this->url."/";
+				if ($this->url != "")
+					{
+					$url=$this->url."/";
+					}
+				else
+					$url='';
 				$this->urlfile = $this->path.$url.$this->tablo_files[$i];
 					
 				$i++;
@@ -145,7 +153,8 @@ if(!isset($cb))
 	$cb = "EditorOnInsertOvml";
 	}
 
-switch($idx)
+if (isset($_GET['idx']))
+switch($_GET['idx'])
 	{
 	default:
 	case "browse":
