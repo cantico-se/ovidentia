@@ -547,6 +547,12 @@ function listFiles($id, $gr, $path, $bmanager)
 		var $ovfcommiturl;
 		var $bfvwait;
 
+		var $altfilelog;
+		var $altfilelock;
+		var $altfileunlock;
+		var $altfilewrite;
+
+
 		function temp($id, $gr, $path, $bmanager)
 			{
 			global $BAB_SESS_USERID;
@@ -595,7 +601,13 @@ function listFiles($id, $gr, $path, $bmanager)
 				$this->rootpath = "";
 				}
 			if( $version == 'Y')
+				{
+	            $this->altfilelog =  bab_translate("View log");
+	            $this->altfilelock =  bab_translate("Edit file");
+	            $this->altfileunlock =  bab_translate("Unedit file");
+	            $this->altfilewrite =  bab_translate("Commit file");
 				$this->bversion = true;
+				}
 			else
 				$this->bversion = false;
 			$this->bdel = false;
