@@ -283,6 +283,7 @@ function changeSkin($skin)
 			{
         	global $BAB_SESS_USERID;
 			$this->title = bab_translate("Prefered skin");
+			$this->title_style = bab_translate("Prefered style");
 			$this->update = bab_translate("Update Skin");
             $this->cntskins = 0;
             $this->cntstyles = 0;
@@ -308,7 +309,8 @@ function changeSkin($skin)
 			if( $this->userstyle == "")
 				$this->userstyle = $GLOBALS['babStyle'];
 
-			$this->title .= " : ".$this->userskin ." / ". $this->userstyle;
+			$this->title .= " : ".$this->userskin;
+			$this->title_style .= " : ".substr($this->userstyle,0,strrpos($this->userstyle, "."));
 
 			if(!isset($skin) || empty($skin))
 				$this->skin = $this->userskin;

@@ -455,6 +455,7 @@ function viewVersion()
 			$this->baseversion = $arr['Value'];
 			$this->urlphpinfo = $GLOBALS['babUrlScript']."?tg=sites&idx=phpinfo";
 			$this->phpinfo = "phpinfo";
+			$this->currentyear = date("Y");
 			$res = $db->db_query("select * from ".BAB_INI_TBL."");
 			while( $arr = $db->db_fetch_array($res))
 				{
