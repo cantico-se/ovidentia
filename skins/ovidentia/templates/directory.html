@@ -96,16 +96,16 @@
           <!--#endin getnextcol -->
         </tr>
         <!--#in getnext -->
-        <tr> 
-          <td class="BabFontBackground" align="center" valign="middle" width="1%" > 
+        <!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+          <td align="center" valign="middle" width="1%" > 
             <!--#if accid "!= 0" -->
             <a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=600,height=700,status=no,resizable=yes,top=20,left=200,scrollbars=yes');">
             <!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>
             <!--#endif accid -->
             <img src="{ babSkinPath }images/Puces/mail.png" border="0"></a></td>
-          <td class="BabFontBackground" valign="middle" width="1%" ><a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <td valign="middle" width="1%" ><a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <!--#in getnextcolval -->
-          <td class="BabFontBackground" align="left" valign="middle">{ coltxt 
+          <td align="left" valign="middle">{ coltxt 
             }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
           <!--#endin getnextcolval -->
         </tr>

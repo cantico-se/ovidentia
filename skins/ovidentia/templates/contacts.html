@@ -33,7 +33,7 @@
 <td class="BabSiteAdminSmall" valign="middle" >{ mtel }</td>
 </tr>
 <!--#in getnext -->
-<tr valign="middle"> 
+<!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
 <td width="1%"> 
 <input type="checkbox" name="item[]" value="{ arr[id] }">
 </td>
@@ -45,9 +45,9 @@ urlname }</a></td>
 <td width="20%" nowrap><a href="mailto:{ arr[email] }" target=_top class="BabNameEmailLink">{ 
 arr[email] }</a></td>
 <!--#endif accid -->
-<td class="BabFontBackground" width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[compagny] }</td>
-<td class="BabFontBackground" width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[businesstel] }</td>
-<td class="BabFontBackground" width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[mobiletel] }</td>
+<td width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[compagny] }</td>
+<td width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[businesstel] }</td>
+<td width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ arr[mobiletel] }</td>
 </tr> 
 <!--#endin getnext -->
 <tr> 

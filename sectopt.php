@@ -94,6 +94,7 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->counta)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->resa);
 				$this->titleval = bab_translate($this->arr['title']);
 				$this->descval = bab_translate($this->arr['description']);
@@ -116,6 +117,7 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->countcat)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->arrcatid[$i]."'"));
 				$this->titleval = $this->arr['title'];
 				$this->descval = $this->arr['description'];
@@ -138,6 +140,7 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->titleval = $this->arr['title'];
 				$this->descval = $this->arr['description'];

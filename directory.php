@@ -391,6 +391,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arrf = $this->db->db_fetch_array($this->res);
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arrf['email'];
 				$this->email = $this->arrf['email'];
