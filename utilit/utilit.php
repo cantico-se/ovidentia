@@ -945,7 +945,10 @@ function topicsGetNext()
 					$res = $babDB->db_query($req);
 					if($babDB->db_num_rows($res) > 0)
 						$this->newa = "a";
+					}
 
+				if( isUserApproverFlow($this->arr['idsacom'], $BAB_SESS_USERID))
+					{
 					$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
 					$res = $babDB->db_query($req);
 					if($babDB->db_num_rows($res) > 0)
