@@ -107,7 +107,7 @@ function listPosts($forum, $thread, $post)
 					$this->confirmurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=Confirm&forum=".$this->forum."&thread=".$this->thread."&post=".$arr[id];
 					$this->confirmname = babTranslate("Confirm");
 					$this->deleteurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteP&forum=".$this->forum."&thread=".$this->thread."&post=".$this->postid;
-					$this->deletename = babTranslate("Delete");
+					$this->deletename = babTranslate("Refuse");
 					$this->moreurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=Modify&forum=".$this->forum."&thread=".$this->thread."&post=".$arr[id];
 					$this->morename = babTranslate("Edit");
 					}
