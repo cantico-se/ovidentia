@@ -377,11 +377,14 @@ function updateFolder($fid, $fname, $managerid, $active, $said, $notification, $
 		list($idsafolder, $bnotify) = $babDB->db_fetch_row($babDB->db_query("select idsa, filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
 		if( $idsafolder != $said )
 			{
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$fid."' and bgroup='Y' and confirmed='N'");
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				if( $row['idfai'] != 0 )
+					{
 					deleteFlowInstance($row['idfai']);
+					}
 				if( $said == 0 )
 					{
 					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
