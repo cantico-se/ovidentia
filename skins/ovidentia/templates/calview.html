@@ -4,9 +4,9 @@
 
 <!--#begin eventslist -->
 <br>
-<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr> 
 <td class="BabSummaryTitleFontBackground" width="10%" align="center" valign="middle"><img 
@@ -17,40 +17,40 @@ src="{ babSkinPath }images/Puces/PuceSummary.gif" width="19" height="16" border=
 </td>
 </tr>
 </table>
-<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr>
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table border="0" width="100%" cellpadding="3" cellspacing="0">
 <!--#in getevent -->
 <!--#if alternate "== 1" -->
 <tr>
-<td  class="BabSummaryContentBackground" width="20%">{ date }</td>
+<td  class="BabSummaryContentBackground">{ date }</td>
 <td  class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
 title }</a></td>
-<td  class="BabSummaryContentBackground" align="right">{ time }</td>
+<td  class="BabSummaryContentBackground" align="center" width="20%">{ time }</td>
 </tr>
 <!--#else alternate -->
 <tr>
 <td class="BabSummaryContentBackground">{ date }</td>
 <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ title }</a>
 </td>
-<td class="BabSummaryContentBackground" align="right">{ time }</td>
+<td class="BabSummaryContentBackground" align="center">{ time }</td>
 </tr>
 <!--#endif alternate -->
 <!--#endin getevent -->
 <!--#in getgrpevent -->
 <!--#if alternate "== 1" -->
 <tr>
-<td class="BabSummaryContentBackground" height="26">{ date }</td>
-<td class="BabSummaryContentBackground" height="26"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+<td class="BabSummaryContentBackground">{ date }</td>
+<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
 title }</a></td>
-<td class="BabSummaryContentBackground" height="26" align="right">{ time }</td>
+<td class="BabSummaryContentBackground" align="center">{ time }</td>
 </tr>
 <!--#else alternate -->
 <tr>
 <td class="BabSummaryContentBackground">{ date }</td>
 <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ title }</a></td>
-<td class="BabSummaryContentBackground" align="right">{ time }</td>
+<td class="BabSummaryContentBackground" align="center">{ time }</td>
 </tr>
 <!--#endif alternate -->
 <!--#endin getgrpevent -->
@@ -62,9 +62,9 @@ title }</a></td>
 
 <!--#begin articleslist -->
 <br>
-<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr> 
 <td class="BabSummaryTitleFontBackground" width="10%" align="center" valign="middle"><img 
@@ -77,17 +77,17 @@ src="{ babSkinPath }images/Puces/PuceSummary.gif" width="19" height="16" border=
 </td>
 </tr>
 </table>
-<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr>
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table  border="0" width="100%" cellpadding="3" cellspacing="0">
 <!--#in getnexttopic -->
 <!--#in getarticle -->
 <tr>
-<td class="BabSummaryContentBackground" width="20%">{ date }</td>
+<td class="BabSummaryContentBackground">{ date }</td>
 <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
 title }</a></td>
-<td class="BabSummaryContentBackground" align="right">{ author }</td>
+<td class="BabSummaryContentBackground">{ author }</td>
 </tr>
 <!--#endin getarticle -->
 <!--#endin getnexttopic -->
@@ -99,9 +99,9 @@ title }</a></td>
 
 <!--#begin threadslist -->
 <br>
-<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr> 
 <td class="BabSummaryTitleFontBackground" width="10%" align="center" valign="middle"><img 
@@ -112,17 +112,17 @@ src="{ babSkinPath }images/Puces/PuceSummary.gif" width="19" height="16" border=
 </td>
 </tr>
 </table>
-<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr>
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table border="0" width="100%" cellpadding="3" cellspacing="0">
 <!--#in getnextforum -->
 <!--#in getnextthread -->
 <!--#in getpost -->
 <tr>
-<td class="BabSummaryContentBackground" width="20%">{ date }</td>
+<td class="BabSummaryContentBackground">{ date }</td>
 <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ title }</a></td>
-<td class="BabSummaryContentBackground" align="right">{ posts }</td>
+<td class="BabSummaryContentBackground">{ posts }</td>
 </tr>
 <!--#endin getpost -->
 <!--#endin getnextthread -->
@@ -134,9 +134,9 @@ src="{ babSkinPath }images/Puces/PuceSummary.gif" width="19" height="16" border=
 <!--#end threadslist -->
 <!--#begin mailslist -->
 <br>
-<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr> 
 <td class="BabSummaryTitleFontBackground" width="10%" align="center" valign="middle"><img 
@@ -147,15 +147,15 @@ src="{ babSkinPath }images/Puces/PuceSummary.gif" width="19" height="16" border=
 </td>
 </tr>
 </table>
-<table border="0" cellpadding="0" cellspacing="0" align="center" width="95%">
+<table border="0" cellpadding="2" cellspacing="0" align="center" width="95%">
 <tr>
-<td> 
+<td class="BabLoginCadreBackground"> 
 <table class="BabSummaryContentBackground" border="0" width="100%" cellpadding="3" cellspacing="0">
 <!--#in getmail -->
 <tr> 
-<td class="BabSummaryContentBackground" nowrap valign="middle" width="30%"><a 
-class="BabSummaryLinkColor" href="{ domainurl }">{ domain }</a></td>
-<td class="BabSummaryNbrMessage" valign="middle">{ nbemails }</td>
+<td class="BabSummaryContentBackground" nowrap valign="middle" width="1%"><a 
+class="BabSummaryLinkColor" href="{ domainurl }">{ domain }&nbsp;</a></td>
+<td class="BabSummaryNbrMessage" valign="middle">&nbsp;{ nbemails }</td>
 </tr>
 <!--#endin getmail -->
 </table>
