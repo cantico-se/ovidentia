@@ -77,14 +77,26 @@ function listArticles($topics, $newc, $approver)
 					$res = $this->db->db_query($req);
 					$ar = $this->db->db_fetch_array($res);
 					$totalw = $ar['total'];
-					$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
-					if( isset($new) && $new > 0)
-						$this->commentsurl .= "&new=".$new;
-					$this->commentsurl .= "&newc=".$this->newc;
-					if( $totalw > 0 )
-						$this->commentsname = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
+					if( $total > 0 || ( $totalw > 0 && $this->approver ))
+						{
+						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
+						if( isset($new) && $new > 0)
+							$this->commentsurl .= "&new=".$new;
+						$this->commentsurl .= "&newc=".$this->newc;
+						if( $totalw > 0 )
+							$this->commentsname = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
+						else
+							$this->commentsname = bab_translate("Comments")."&nbsp;(".$total.")";
+						}
 					else
-						$this->commentsname = bab_translate("Comments")."&nbsp;(".$total.")";
+						{
+						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$this->topics."&article=".$this->arr['id'];
+						if( isset($new) && $new > 0)
+							$this->commentsurl .= "&new=".$new;
+						$this->commentsurl .= "&newc=".$this->newc;
+						$this->commentsname = bab_translate("Add Comment");
+						}
+
 					}
 				else
 					{

@@ -28,9 +28,10 @@
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="right" nowrap 
 valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="33%" valign="middle"><a class="BabSiteAdminListLink" href="{ fullnameurl }"><b>{ fullname }</b></a></td>
-<td class="BabSiteAdminTitleFontBackground" width="33%" valign="middle"><b>{ email }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="33%" align="center" valign="middle"><a class="BabSiteAdminListLink" href="{ groupurl }"><b>{ 
+<td class="BabSiteAdminTitleFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ fullnameurl }"><b>{ fullname }</b></a></td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle"><b>{ nickname }</b></td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle"><b>{ email }</b></td>
+<td class="BabSiteAdminTitleFontBackground" align="center" valign="middle"><a class="BabSiteAdminListLink" href="{ groupurl }"><b>{ 
 group }</b></a></td>
 </tr>
 <!--#in getnext -->
@@ -40,11 +41,12 @@ group }</b></a></td>
 <img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt=""> 
 <!--#endif status -->
 &nbsp; </td>
-<td width="33%" valign="middle"><a class="BabNameEmailLink" href="{ url }">{ 
+<td valign="middle"><a class="BabNameEmailLink" href="{ url }">{ 
 urlname }</a> </td>
-<td width="33%" valign="middle"><a class="BabNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ 
+<td class="BabSiteAdminFontBackground" valign="middle">{ arr[nickname] }</td>
+<td valign="middle"><a class="BabNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ 
 arr[email] }</a></td>
-<td width="33%" align="center" valign="middle"> 
+<td align="center" valign="middle"> 
 <input type="checkbox" name="users[]" value="{ userid }" { checked }></td>
 </tr>
 <!--#endin getnext -->
@@ -217,7 +219,44 @@ valign="middle">{ primarygroup } </td>
 </form>
 <br>
 <!--#end usersmodify -->
-
+<!--#begin changepassword -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="user">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ item }">
+<input type="hidden" name="pos" value="{ pos }">
+<input type="hidden" name="grp" value="{ grp }">
+<input type="hidden" name="update" value="password">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+<tr> 
+<td align="right" nowrap valign="middle">{ newpwd }:</td>
+<td valign="middle"> 
+<input type="password" name="newpwd1" size="20" maxlength="15">
+</td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ renewpwd }:</td>
+<td valign="middle"> 
+<input type="password" name="newpwd2" size="20" maxlength="15">
+</td>
+</tr>
+<tr> 
+<td nowrap>&nbsp;</td>
+<td valign="middle"> 
+<input type="submit" name="submit" value="{ update }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end changepassword -->
 <br><br><br><br>
 <!--#begin usersgroups -->
 <form method="post" action="{ babPhpSelf }" name="listform">

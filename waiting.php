@@ -655,15 +655,8 @@ switch($idx)
 	case "ReadC":
 		$babBody->title = bab_translate("Waiting Comment");
 		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
-		$babBody->addItemMenu("ConfirmC", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com);
 		readComment($topics, $article, $com);
-		break;
-
-	case "ConfirmC":
-		$babBody->title = bab_translate("Confirm a comment");
 		confirmComment($article, $topics, $com, $newc);
-		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
-		$babBody->addItemMenu("ConfirmC", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc);
 		break;
 
 	default:

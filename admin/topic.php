@@ -335,6 +335,12 @@ function updateCategory($id, $category, $description, $approver, $cat, $modcom)
 		return;
 		}
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$category = addslashes($category);
+		$description = addslashes($description);
+		}
+
 	$db = $GLOBALS['babDB'];
 	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$approverid."', category='".$category."', description='".$description."', id_cat='$cat', mod_com='".$modcom."' where id = '".$id."'";
 	$db->db_query($query);

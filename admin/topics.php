@@ -183,6 +183,12 @@ function saveCategory($category, $description, $approver, $cat, $modcom)
 		return;
 		}
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$category = addslashes($category);
+		$description = addslashes($description);
+		}
+
 	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, mod_com) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $modcom. "')";
 	$db->db_query($query);
 	}
