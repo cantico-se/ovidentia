@@ -21,3 +21,4 @@
 	var STR_ENTER_LINK = "Enter link (i.e.";
 	var STR_UNCHEK = "Please ucheck the \"View HTML\" box to use the toolbar.";
 	var STR_CONFIRM = "You will loose your formatting, do you wish to proceed? ";
+	var STR_INSERT_IMAGE = "Insert image";

@@ -19,5 +19,6 @@
 	var STR_INCREASE_INDENT = "Increase Indent";
 	var STR_INSERT_LINK = "Insert Hyperlink";
 	var STR_ENTER_LINK = "Enter link (i.e.";
-	var STR_UNCHEK = "Please ucheck the \"View HTML\" box to use the toolbar.";
-	var STR_CONFIRM = "Dit zal uw bericht in tekstformaat omzetten. Alle opmaak zal verloren gaan. Wenst u verder te gaan ? ";
+	var STR_UNCHEK = "doe het vinkje weg bij \"View HTML\" als u de Toolbar wenst te gebruiken!";
+	var STR_CONFIRM = "Uw formatering zal verloren gaan! Wenst u verder te gaan?";
+	var STR_INSERT_IMAGE = "Voeg afbeelding toe";

@@ -21,3 +21,4 @@
 	var STR_ENTER_LINK = "Enter link (i.e.";
 	var STR_UNCHEK = "Please ucheck the \"View HTML\" box to use the toolbar.";
 	var STR_CONFIRM = "Dit zal uw bericht in tekstformaat omzetten. Alle opmaak zal verloren gaan. Wenst u verder te gaan ? ";
+	var STR_INSERT_IMAGE = "Voeg afbeelding toe";

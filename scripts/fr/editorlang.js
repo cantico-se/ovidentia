@@ -21,3 +21,4 @@
 	var STR_ENTER_LINK = "Saisissez le lien (exemple";
 	var STR_UNCHEK = "Veuillez décocher la case \"Afficher le code HTML\" pour utiliser la barre d'outils.";
 	var STR_CONFIRM = "Ceci convertira votre message en format texte. Toutes les dispositions d'affichage seront perdues. Souhaitez-vous continuer ? ";
+	var STR_INSERT_IMAGE = "Insérer une image";
