@@ -1,140 +1,280 @@
 <us><string id="January">January</string>
+
 <string id="February">February</string>
+
 <string id="March">March</string>
+
 <string id="April">April</string>
+
 <string id="May">May</string>
+
 <string id="June">June</string>
+
 <string id="July">July</string>
+
 <string id="August">August</string>
+
 <string id="September">September</string>
+
 <string id="October">October</string>
+
 <string id="November">November</string>
+
 <string id="December">December</string>
+
 <string id="Sunday">Sunday</string>
+
 <string id="Monday">Monday</string>
+
 <string id="Tuesday">Tuesday</string>
+
 <string id="Wednesday">Wednesday</string>
+
 <string id="Thursday">Thursday</string>
+
 <string id="Friday">Friday</string>
+
 <string id="Saturday">Saturday</string>
+
 <string id="List">List</string>
+
 <string id="Upload">Upload</string>
+
 <string id="bytes">bytes</string>
+
 <string id="Create">Create</string>
+
 <string id="Create directory">Create directory</string>
+
 <string id="Home folder">Home folder</string>
+
 <string id="Refresh">Refresh</string>
+
 <string id="Name">Name</string>
+
 <string id="Size">Size</string>
+
 <string id="Modified">Modified</string>
+
 <string id="Posted by">Posted by</string>
+
 <string id="Registered users">Registered users</string>
+
 <string id="Sites">Sites</string>
+
 <string id="Sections">Sections</string>
+
 <string id="Users">Users</string>
+
 <string id="Groups">Groups</string>
+
 <string id="Faq">Faq</string>
+
 <string id="Topics">Topics</string>
+
 <string id="Forums">Forums</string>
+
 <string id="Vacation">Vacation</string>
+
 <string id="Calendar">Calendar</string>
+
 <string id="Mail">Mail</string>
+
 <string id="File manager">File manager</string>
+
 <string id="Administration">Administration</string>
+
 <string id="This section is for Administration">This section is for Administration</string>
+
 <string id="Summary">Summary</string>
+
 <string id="Options">Options</string>
+
 <string id="Notes">Notes</string>
+
 <string id="Contacts">Contacts</string>
+
 <string id="User's section">User's section</string>
+
 <string id="You are logged on as">You are logged on as</string>
+
 <string id="List of different topics">List of different topics</string>
+
 <string id="Topics with asterisk have waiting articles or comments ">Topics with asterisk have waiting articles or comments </string>
+
 <string id="Waiting comments">Waiting comments</string>
+
 <string id="Waiting articles">Waiting articles</string>
+
 <string id="List of different forums">List of different forums</string>
+
 <string id="Home">Home</string>
+
 <string id="Logout">Logout</string>
+
 <string id="Search">Search</string>
+
 <string id="Articles">Articles</string>
+
 <string id="Comments">Comments</string>
+
 <string id="Replies">Replies</string>
+
 <string id="Upload file to">Upload file to</string>
+
 <string id="Description">Description</string>
+
 <string id="Keywords">Keywords</string>
+
 <string id="Add">Add</string>
+
 <string id="Read only">Read only</string>
+
 <string id="Yes">Yes</string>
+
 <string id="No">No</string>
+
 <string id="Update file">Update file</string>
+
 <string id="Update">Update</string>
+
 <string id="Confirm">Confirm</string>
+
 <string id="Access denied">Access denied</string>
+
 <string id="List of articles">List of articles</string>
+
 <string id="Read More">Read More</string>
+
 <string id="A file with the same name already exists">A file with the same name already exists</string>
+
 <string id="Trash">Trash</string>
+
 <string id="Full Name">Full Name</string>
+
 <string id="Public">Public</string>
+
 <string id="Private">Private</string>
+
 <string id="Unregistered users">Unregistered users</string>
+
 <string id="Delete">Delete</string>
+
 <string id="Restore">Restore</string>
+
 <string id="First Name">First Name</string>
+
 <string id="Last Name">Last Name</string>
+
 <string id="Nickname">Nickname</string>
+
 <string id="Email">Email</string>
+
 <string id="Password">Password</string>
+
 <string id="Update Info">Update Info</string>
+
 <string id="Change user info">Change user info</string>
+
 <string id="Old Password">Old Password</string>
+
 <string id="New Password">New Password</string>
+
 <string id="Retype New Password">Retype New Password</string>
+
 <string id="Update Password">Update Password</string>
+
 <string id="Change password">Change password</string>
+
 <string id="Prefered language">Prefered language</string>
+
 <string id="Update Language">Update Language</string>
+
 <string id="Mail options">Mail options</string>
+
 <string id="Account">Account</string>
+
 <string id="Domain">Domain</string>
+
 <string id="Accounts">Accounts</string>
+
 <string id="Signatures">Signatures</string>
+
 <string id="User's Domains">User's Domains</string>
+
 <string id="Calendar Options">Calendar Options</string>
+
 <string id="First day of week">First day of week</string>
+
 <string id="On create new event, check">On create new event, check</string>
+
 <string id="All day">All day</string>
+
 <string id="View calendar categories">View calendar categories</string>
+
 <string id="Use bacground color for events">Use bacground color for events</string>
+
 <string id="Modify">Modify</string>
+
 <string id="Access">Access</string>
+
 <string id="Categories">Categories</string>
+
 <string id="Resources">Resources</string>
+
 <string id="Enter user name. ( You can enter multiple users separated by comma )">Enter user name. ( You can enter multiple users separated by comma )</string>
+
 <string id="Update access">Update access</string>
+
 <string id="User can update my calendar">User can update my calendar</string>
+
 <string id="Fullname">Fullname</string>
+
 <string id="Delete users">Delete users</string>
+
 <string id="Manager">Manager</string>
+
 <string id="Groups list">Groups list</string>
+
 <string id="Anonymous">Anonymous</string>
+
 <string id="Access denied xxx">Access denied xxx</string>
+
 <string id="You don't have permission to create directory">You don't have permission to create directory</string>
+
 <string id="Rename">Rename</string>
+
 <string id="Create or rename directory">Create or rename directory</string>
+
 <string id="Directory">Directory</string>
+
 <string id="Delete directory">Delete directory</string>
+
 <string id="A new file is waiting for you">A new file is waiting for you</string>
+
 <string id="Author">Author</string>
+
 <string id="Path">Path</string>
+
 <string id="File">File</string>
+
 <string id="Group">Group</string>
+
 <string id="Web site">Web site</string>
+
 <string id="Date">Date</string>
+
 <string id="New waiting file">New waiting file</string>
+
 <string id="Cannot remove directory">Cannot remove directory</string>
+
 <string id="Download">Download</string>
+
 <string id="Cut">Cut</string>
+
 <string id="Paste">Paste</string>
+
 <string id="Undo">Undo</string>
+<string id="starttime">starttime</string>
+<string id="endtime">endtime</string>
 </us>

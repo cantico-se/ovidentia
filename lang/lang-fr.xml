@@ -650,4 +650,6 @@
 <string id="Contact">Contact</string>
 <string id="Mr">Mr</string>
 <string id="Mrs">Mme</string>
+<string id="starttime">starttime</string>
+<string id="endtime">endtime</string>
 </fr>
