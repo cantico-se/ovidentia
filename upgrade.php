@@ -531,6 +531,8 @@ if( !$res)
 	return $ret;
 	}
 
+$db->db_query("INSERT INTO ".BAB_INI_TBL." VALUES ('ver_prod', 'G')");
+
 $db->db_query("ALTER TABLE ".BAB_ADDONS_GROUPS_TBL." ADD INDEX(id_object)");
 $db->db_query("ALTER TABLE ".BAB_ADDONS_GROUPS_TBL." ADD INDEX(id_group)");
 
