@@ -451,7 +451,7 @@ function signOn( $nickname, $password,$lifetime)
 		{
 		$arr = $db->db_fetch_array($res);
 		$cpw = '';
-		if( isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) )
+		if( extension_loaded('mcrypt') && isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) )
 			{
 			$cpw = bab_encrypt($password, md5($arr['id'].$arr['sessid'].$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
 			}
