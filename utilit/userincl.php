@@ -1110,7 +1110,7 @@ function bab_replace( $txt, $remove = '' )
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
 			$repl = false;
-			if (isset($m[1][$k]) && is_int($m[1][$k]) )
+			if (isset($m[1][$k]) && is_numeric($m[1][$k]) )
 				{
 				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$m[1][$k]."'";
 				$res = $db->db_query($req);
