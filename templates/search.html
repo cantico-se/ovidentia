@@ -63,6 +63,11 @@ function Start(page)
   </tr>
 <!--#endin getnextart -->
 </table>
+<center>{ artpage }
+<!--#if artnext "!= 0" -->
+<a class="BabFaqLink" href="{ artnext }">{ next }</a>
+<!--#endif artnext -->
+</center>
 <!--#endif countart -->
 <!--#if countcom "!= 0" -->
 <br>
@@ -75,6 +80,11 @@ function Start(page)
   </tr>
 <!--#endin getnextcom -->
 </table>
+<center>{ compage }
+<!--#if comnext "!= 0" -->
+<a class="BabFaqLink" href="{ comnext }">{ next }</a>
+<!--#endif comnext -->
+</center>
 <!--#endif countcom -->
 <!--#if countfor "!= 0" -->
 <br>
@@ -87,6 +97,11 @@ function Start(page)
   </tr>
 <!--#endin getnextfor -->
 </table>
+<center>{ forpage }
+<!--#if fornext "!= 0" -->
+<a class="BabFaqLink" href="{ fornext }">{ next }</a>
+<!--#endif fornext -->
+</center>
 <!--#endif countfor -->
 <!--#if countfaq "!= 0" -->
 <br>
@@ -99,6 +114,11 @@ function Start(page)
   </tr>
 <!--#endin getnextfaq -->
 </table>
+<center>{ faqpage }
+<!--#if faqnext "!= 0" -->
+<a class="BabFaqLink" href="{ faqnext }">{ next }</a>
+<!--#endif faqnext -->
+</center>
 <!--#endif countfaq -->
 <!--#if countnot "!= 0" -->
 <br>
@@ -111,6 +131,11 @@ function Start(page)
   </tr>
 <!--#endin getnextnot -->
 </table>
+<center>{ notpage }
+<!--#if notnext "!= 0" -->
+<a class="BabFaqLink" href="{ notnext }">{ next }</a>
+<!--#endif notnext -->
+</center>
 <!--#endif countnot -->
 <br>
 <!--#end searchresult -->

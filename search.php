@@ -7,6 +7,7 @@
 include $babInstallPath."utilit/topincl.php";
 include $babInstallPath."utilit/forumincl.php";
 
+$babLimit = 20;
 function searchKeyword($sfaq, $sart, $snot, $sfor, $what)
 	{
 	global $body;
@@ -37,13 +38,13 @@ function searchKeyword($sfaq, $sart, $snot, $sfor, $what)
 			$this->sfor = $sfor;
 			$this->what = stripslashes($what);
 			if( $sart == 1)
-				$this->arr[] = "Articles";
+				$this->arr[] = "art";
 			if( $sfor == 1)
-				$this->arr[] = "Forum";
+				$this->arr[] = "for";
 			if( $sfaq == 1)
-				$this->arr[] = "Faq";
+				$this->arr[] = "faq";
 			if( $snot == 1)
-				$this->arr[] = "Notes";
+				$this->arr[] = "not";
 
 			$this->count = count($this->arr);
 			}
@@ -67,7 +68,7 @@ function searchKeyword($sfaq, $sart, $snot, $sfor, $what)
 	$body->babecho(	babPrintTemplate($tempb,"search.html", "search"));
 	}
 
-function startSearch($item, $what, $pos)
+function startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 	{
 	global $body;
 
@@ -82,9 +83,9 @@ function startSearch($item, $what, $pos)
 		var $faqtitle;
 		var $nottitle;
 
-		function temp($item, $what, $pos)
+		function temp($sfaq, $sart, $snot, $sfor, $item, $what, $pos)
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babLimit;
 
 			$this->db = new db_mysql();
 			$this->search = babTranslate("Search");
@@ -93,6 +94,7 @@ function startSearch($item, $what, $pos)
 			$this->fortitle = babTranslate("Posts");
 			$this->faqtitle = babTranslate("Faq");
 			$this->nottitle = babTranslate("Notes");
+			$this->next = babTranslate( "Next" );
 
 			$this->what = $what;
 			$this->countart = 0;
@@ -100,12 +102,13 @@ function startSearch($item, $what, $pos)
 			$this->countnot = 0;
 			$this->countfaq = 0;
 			$this->countcom = 0;
-			if( empty($item) || $item == "Articles")
+			if( empty($item) || $item == "art")
 				{
 				$req = "create temporary table artresults select id, id_topic, title from articles where 0";
 				$this->db->db_query($req);
 				$req = "alter table artresults add unique (id)";
 				$this->db->db_query($req);
+
 				$req = "create temporary table comresults select id, id_article, id_topic, subject from comments where 0";
 				$this->db->db_query($req);
 				$req = "alter table comresults add unique (id)";
@@ -134,16 +137,46 @@ function startSearch($item, $what, $pos)
 						}
 					}
 
-				$req = "select * from artresults";
+				$req = "select count(*) from artresults";
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
+
+				$req = "select * from artresults limit ".$pos.", ".$babLimit;
 				$this->resart = $this->db->db_query($req);
 				$this->countart = $this->db->db_num_rows($this->resart);
 
-				$req = "select * from comresults";
+				if( $pos + $babLimit < $nbrows )
+					{
+					$this->artpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
+					$this->artnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					}
+				else
+					{
+					$this->artpage = ($pos + 1) . "-". $nbrows. " / " . $nbrows . " ";
+					$this->artnext = 0;
+					}
+
+				$req = "select count(*) from comresults";
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
+
+				if( $pos + $babLimit < $nbrows )
+					{
+					$this->compage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
+					$this->comnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					}
+				else
+					{
+					$this->compage = ($pos + 1) . "-". $nbrows. " / " . $nbrows . " ";
+					$this->comnext = 0;
+					}
+
+				$req = "select * from comresults limit ".$pos.", ".$babLimit;
 				$this->rescom = $this->db->db_query($req);
 				$this->countcom = $this->db->db_num_rows($this->rescom);
 				}
 
-			if( empty($item) || $item == "Forum")
+			if( empty($item) || $item == "for")
 				{
 				//http://dev.ovidentia.org/index.php?tg=posts&idx=List&forum=6&thread=45&post=141
 				$req = "create temporary table forresults select id, id_thread, subject from posts where 0";
@@ -169,12 +202,27 @@ function startSearch($item, $what, $pos)
 						}
 					}
 
-				$req = "select * from forresults";
+				$req = "select count(*) from forresults";
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
+
+				if( $pos + $babLimit < $nbrows )
+					{
+					$this->forpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
+					$this->fornext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					}
+				else
+					{
+					$this->forpage = ($pos + 1) . "-". $nbrows. " / " . $nbrows . " ";
+					$this->fornext = 0;
+					}
+
+				$req = "select * from forresults limit ".$pos.", ".$babLimit;
 				$this->resfor = $this->db->db_query($req);
 				$this->countfor = $this->db->db_num_rows($this->resfor);
 				}
 
-			if( empty($item) || $item == "Faq")
+			if( empty($item) || $item == "faq")
 				{
 				$req = "create temporary table faqresults select * from faqqr where 0";
 				$this->db->db_query($req);
@@ -194,14 +242,44 @@ function startSearch($item, $what, $pos)
 						}
 					}
 
-				$req = "select * from faqresults";
+				$req = "select count(*) from faqresults";
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
+
+				if( $pos + $babLimit < $nbrows )
+					{
+					$this->faqpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
+					$this->faqnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					}
+				else
+					{
+					$this->faqpage = ($pos + 1) . "-". $nbrows. " / " . $nbrows . " ";
+					$this->faqnext = 0;
+					}
+
+				$req = "select * from faqresults limit ".$pos.", ".$babLimit;
 				$this->resfaq = $this->db->db_query($req);
 				$this->countfaq = $this->db->db_num_rows($this->resfaq);
 				}
 			
-			if( (empty($item) || $item == "Notes") && !empty($BAB_SESS_USERID))
+			if( (empty($item) || $item == "not") && !empty($BAB_SESS_USERID))
 				{
-				$req = "select * from notes where content like '%".$what."%' and id_user='".$BAB_SESS_USERID."'";
+				$req = "select count(*) from notes where content like '%".$what."%' and id_user='".$BAB_SESS_USERID."'";
+				$res = $this->db->db_query($req);
+				list($nbrows) = $this->db->db_fetch_row($res);
+
+				if( $pos + $babLimit < $nbrows )
+					{
+					$this->notpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
+					$this->notnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&sart=".$sart."&sfaq=".$sfaq."&snot=".$snot."&sfor=".$sfor."&what=".urlencode($what);
+					}
+				else
+					{
+					$this->notpage = ($pos + 1) . "-". $nbrows. " / " . $nbrows . " ";
+					$this->notnext = 0;
+					}
+
+				$req = "select * from notes where content like '%".$what."%' and id_user='".$BAB_SESS_USERID."' limit ".$pos.", ".$babLimit;
 				$this->resnot = $this->db->db_query($req);
 				$this->countnot = $this->db->db_num_rows($this->resnot);
 				}
@@ -300,7 +378,7 @@ function startSearch($item, $what, $pos)
 			}
 		}
 
-	$temp = new temp($item, $what, $pos);
+	$temp = new temp($sfaq, $sart, $snot, $sfor, $item, $what, $pos);
 	$body->babecho(	babPrintTemplate($temp,"search.html", "searchresult"));
 	}
 
@@ -475,7 +553,7 @@ switch($idx)
 	case "find":
 		$body->title = babTranslate("Search");
 		searchKeyword($sfaq, $sart, $snot, $sfor, $what);
-		startSearch($item, $what, $pos);
+		startSearch($sfaq, $sart, $snot, $sfor, $item, $what, $pos);
 		break;
 
 	default:
