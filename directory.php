@@ -1361,10 +1361,10 @@ function processImportDbFile( $pfile, $id, $separ )
 									{
 									for( $k=0; $k < count($arridfx); $k++ )
 										{
-										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]." and  id_entry='".$arr2['id']."'");
+										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]."' and  id_entry='".$arr2['id']."'");
 										if( $rs && $db->db_num_rows($rs) > 0 )
 											{
-											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])." where id_fieldx='".$arridfx[$k]."' and id_entry='".$arr2['id']."'");
+											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$arridfx[$k]."' and id_entry='".$arr2['id']."'");
 											}
 										else
 											{
