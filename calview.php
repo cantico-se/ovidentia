@@ -95,7 +95,7 @@ function upComingEvents($idcal)
 	$body->babecho(	babPrintTemplate($temp,"calview.html", "eventslist"));
 }
 
-function newArticles()
+function newArticles($days)
 {
 	global $body;
 
@@ -107,18 +107,19 @@ function newArticles()
 		var $count;
 		var $resarticles;
 		var $countarticles;
+		var $rescomments;
+		var $countcomments;
 		var $lastlog;
 		var $newarticles;
+		var $newcomments;
+		var $nbdays;
 
-		function temp2()
+		function temp2($days)
 			{
-			global $BAB_SESS_USERID;
+			global $body, $BAB_SESS_USERID;
 			$this->db = new db_mysql();
-			$req = "select * from users_log where id_user='".$BAB_SESS_USERID."'";
-			$res = $this->db->db_query($req);
-			$row = $this->db->db_fetch_array($res);
-			$this->lastlog = $row[lastlog];
 
+			$this->nbdays = $days;
 			$req = "select * from topics";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
@@ -129,15 +130,30 @@ function newArticles()
 					}
 				}
 			$this->count = count($this->arrid);
-			$this->newarticles = babTranslate("New articles");
+			if( $days > 0 )
+				{
+				$this->newarticles = babTranslate("Last articles");
+				$this->newcomments = babTranslate("Last comments");
+				}
+			else
+				{
+				$this->newarticles = babTranslate("New articles");
+				$this->newcomments = babTranslate("New comments");
+				}
 			}
 
 		function getnexttopic()
 			{
+			global $body;
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from articles where id_topic='".$this->arrid[$k]."' and confirmed='Y' and date >= '".$this->lastlog."' order by date desc";
+				$req = "select * from articles where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
+				if( $this->nbdays > 0)
+					$req .= "DATE_ADD(\"".$body->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				else
+					$req .= "'".$body->lastlog."'";
+				$req .= " order by date desc";
 				$this->resarticles = $this->db->db_query($req);
 				$this->countarticles = $this->db->db_num_rows($this->resarticles);
 				$k++;
@@ -153,6 +169,7 @@ function newArticles()
 
 		function getarticle()
 			{
+			global $body;
 			static $k=0;
 			if( $k < $this->countarticles)
 				{
@@ -161,6 +178,14 @@ function newArticles()
 				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$arr[id_topic]."&article=".$arr[id];
 				$this->author = getArticleAuthor($arr[id]);
 				$this->date = getArticleDate($arr[id]);
+				$req = "select * from comments where id_article='".$arr[id]."' and confirmed='Y' and date >= ";
+				if( $this->nbdays > 0)
+					$req .= "DATE_ADD(\"".$body->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				else
+					$req .= "'".$body->lastlog."'";
+				$req .= " order by date desc";
+				$this->rescomments = $this->db->db_query($req);
+				$this->countcomments = $this->db->db_num_rows($this->rescomments);
 				$k++;
 				return true;
 				}
@@ -171,13 +196,57 @@ function newArticles()
 				}
 			}
 
+		function getnexttopiccom()
+			{
+			global $body;
+			static $k=0;
+			if( $k < $this->count)
+				{
+				$req = "select * from comments where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
+				if( $this->nbdays > 0)
+					$req .= "DATE_ADD(\"".$body->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				else
+					$req .= "'".$body->lastlog."'";
+				$req .= " order by date desc";
+				$this->rescomments = $this->db->db_query($req);
+				$this->countcomments = $this->db->db_num_rows($this->rescomments);
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+
+		function getcomment()
+			{
+			static $k=0;
+			if( $k < $this->countcomments)
+				{
+				$arr = $this->db->db_fetch_array($this->rescomments);
+				$this->title = $arr[subject];
+				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=comments&idx=read&topics=".$arr[id_topic]."&article=".$arr[id]."&com=".$arr[id];
+				$this->author = $arr[name];
+				$this->date = bab_strftime(bab_mktime($arr[date]));
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
 		}
 
-	$temp = new temp2();
+	$temp = new temp2($days);
 	$body->babecho(	babPrintTemplate($temp,"calview.html", "articleslist"));
 }
 
-function newThreads()
+
+function newThreads($nbdays)
 {
 	global $body;
 
@@ -192,16 +261,14 @@ function newThreads()
 		var $lastlog;
 		var $newposts;
 		var $posts;
+		var $nbdays;
 
-		function temp3()
+		function temp3($nbdays)
 			{
 			global $BAB_SESS_USERID;
 			$this->db = new db_mysql();
-			$req = "select * from users_log where id_user='".$BAB_SESS_USERID."'";
-			$res = $this->db->db_query($req);
-			$row = $this->db->db_fetch_array($res);
-			$this->lastlog = $row[lastlog];
 
+			$this->nbdays = $nbdays;
 			$req = "select * from forums";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
@@ -212,7 +279,10 @@ function newThreads()
 					}
 				}
 			$this->count = count($this->arrid);
-			$this->newposts = babTranslate("New posts");
+			if( $nbdays > 0)
+				$this->newposts = babTranslate("Last posts");
+			else
+				$this->newposts = babTranslate("New posts");
 			}
 
 		function getnextforum()
@@ -223,6 +293,7 @@ function newThreads()
 				$req = "select * from threads where forum='".$this->arrid[$k]."' order by date desc";
 				$this->resthread = $this->db->db_query($req);
 				$this->countthreads = $this->db->db_num_rows($this->resthread);
+				$this->forum = $this->arrid[$k];
 				$k++;
 				return true;
 				}
@@ -235,31 +306,30 @@ function newThreads()
 
 		function getnextthread()
 			{
-			static $k=0;
-			if( $k < $this->countthreads)
+			global $body;
+			static $m=0;
+			if( $m < $this->countthreads)
 				{
 				$this->total = 0;
 				$arr = $this->db->db_fetch_array($this->resthread);
-				$req = "select count(*) as total from posts where id_thread='".$arr[id]."' and confirmed='Y' and date >= '".$this->lastlog."'";
+				$req = "select * from posts where id_thread='".$arr[id]."' and confirmed='Y' and date >=";
+				if( $this->nbdays > 0)
+					$req .= "DATE_ADD(\"".$body->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+				else
+					$req .= "'".$body->lastlog."'";
+				$this->resposts = $this->db->db_query($req);
+				$this->total = $this->db->db_num_rows($this->resposts);
+
+				$req = "select * from posts where id='".$arr[post]."' and confirmed='Y'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				$this->total = $arr2[total];
-				$req = "select * from posts where id='".$arr[lastpost]."' and confirmed='Y'";
-				$res = $this->db->db_query($req);
-				$arr2 = $this->db->db_fetch_array($res);
-				$this->date = bab_strftime(bab_mktime($arr2[date]));
-				$req = "select * from posts where id='".$arr[post] ."'";
-				$res = $this->db->db_query($req);
-				$arr2 = $this->db->db_fetch_array($res);
-				$this->title = $arr2[subject];
-				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$arr[forum]."&thread=".$arr[id]."&views=1";
-				$this->posts = $this->total . " ". babTranslate("Post(s)");
-				$k++;
+				$this->posts = $arr2[subject];
+				$m++;
 				return true;
 				}
 			else
 				{
-				$k = 0;
+				$m = 0;
 				return false;
 				}
 			}
@@ -268,7 +338,11 @@ function newThreads()
 			{
 			if( $this->total > 0)
 				{
+				$arr = $this->db->db_fetch_array($this->resposts);
 				$this->total--;
+				$this->date = bab_strftime(bab_mktime($arr[date]));
+				$this->title = $arr[subject];
+				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$this->forum."&thread=".$arr[id_thread]."&post=".$arr[id];
 				return true;
 				}
 			else
@@ -279,7 +353,7 @@ function newThreads()
 
 		}
 
-	$temp = new temp3();
+	$temp = new temp3($nbdays);
 	$body->babecho(	babPrintTemplate($temp,"calview.html", "threadslist"));
 }
 
@@ -305,7 +379,7 @@ function newEmails()
 			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->newmails = babTranslate("New mails");
+			$this->newmails = babTranslate("Waiting mails");
 			}
 
 		function getmail()
@@ -361,6 +435,13 @@ if(!isset($idx))
 
 switch($idx)
 	{
+	case "com":
+	case "art":
+		newArticles(0);
+		break;
+	case "for":
+		newThreads(0);
+		break;
 	default:
 	case "view":
 		$body->title = "";
@@ -377,8 +458,8 @@ switch($idx)
 				}
 			*/
 		}
-		newArticles();
-		newThreads();
+		newArticles(7);
+		newThreads(7);
 		$bemail = mailAccessLevel();
 		if( $bemail == 1 || $bemail == 2)
 			{

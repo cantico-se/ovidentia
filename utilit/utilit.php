@@ -303,10 +303,13 @@ var $foot;
 var $key;
 var $val;
 var $titlebgnd;
+var $newcount;
+var $newtext;
+var $newurl;
 
 function userSection()
 	{
-	global $BAB_SESS_USERID, $bab, $babSearchUrl;
+	global $body, $BAB_SESS_USERID, $bab, $babSearchUrl;
 	$pgrpid = getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
 	$db = new db_mysql();
@@ -358,14 +361,13 @@ function userSection()
 		$this->array_urls[babTranslate("Mail")] = $GLOBALS[babUrl]."index.php?tg=inbox";
 	$this->array_urls[babTranslate("Contacts")] = $GLOBALS[babUrl]."index.php?tg=contacts";
 	$this->title = babTranslate("User's section");
-	$this->head = babTranslate("You are logged as").":<br><center><b>";
+	$this->head = babTranslate("You are logged on as").":<br><center><b>";
 	if( !empty($GLOBALS[BAB_SESS_USER]))
 		$this->head .= $GLOBALS[BAB_SESS_USER];
 	else
 		$this->head .= babTranslate("Anonymous");
-
 	$this->head .= "</b></center><br>";
-	$this->foot = babTranslate("");
+	$this->foot = "";
 	}
 
 function addUrl()
@@ -383,6 +385,38 @@ function addUrl()
 	else
 		return false;
 	}
+
+function getnextnew()
+	{
+	global $body;
+	static $i = 0;
+	if( $i < 3)
+		{
+		switch( $i )
+			{
+			case 0:
+				$this->newcount = $body->newarticles;
+				$this->newtext = babTranslate("Article")."(s)";
+				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=art";
+				break;
+			case 1:
+				$this->newcount = $body->newcomments;
+				$this->newtext = babTranslate("Comment")."(s)";
+				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=com";
+				break;
+			case 2:
+				$this->newcount = $body->newposts;
+				$this->newtext = babTranslate("Post")."(s)";
+				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=for";
+				break;
+			}
+		$i++;
+		return true;
+		}
+	else
+		return false;
+	}
+
 }
 
 
@@ -407,6 +441,7 @@ var $waitingaimg;
 
 function topicsSection()
 	{
+	global $body;
 	$this->babSectionTemplate("topicssection.html", "template");
 	$this->title = babTranslate("Topics");
 	$this->head = babTranslate("List of different topics");
@@ -423,6 +458,18 @@ function topicsSection()
 		if(isAccessValid("topicsview_groups", $row[id]) || isUserApprover($row[id]))
 			{
 			array_push($this->arrid, $row[id]);
+
+			$req = "select count(*) as total from articles where id_topic='".$row[id]."' and confirmed='Y' and date >= '".$body->lastlog."'";
+			$res2 = $this->db->db_query($req);
+			$arr = $this->db->db_fetch_array($res2);
+			if( $arr[total] > 0)
+				$body->newarticles += $arr[total];
+			
+			$req = "select count(*) as total from comments where id_topic='".$row[id]."' and confirmed='Y' and date >= '".$body->lastlog."'";
+			$res2 = $this->db->db_query($req);
+			$arr = $this->db->db_fetch_array($res2);
+			if( $arr[total] > 0)
+				$body->newcomments += $arr[total];
 			}
 		}
 	$this->count = count($this->arrid);
@@ -432,7 +479,7 @@ function topicsSection()
 
 function topicsGetNext()
 	{
-	global $BAB_SESS_USERID;
+	global $body, $BAB_SESS_USERID;
 	static $i = 0;
 	if( $i < $this->count)
 		{
@@ -452,6 +499,7 @@ function topicsGetNext()
 				$req = "select * from comments where id_topic='".$this->arr[id]."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newcomcount = $this->db->db_num_rows($res);
+				
 				if( $this->newartcount > 0 )
 					{
 					$this->newa = "a";
@@ -495,10 +543,10 @@ var $waiting;
 
 function forumsSection()
 	{
+	global $body;
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = babTranslate("Forums");
 	$this->head = babTranslate("List of different forums");
-	//$this->foot = babTranslate("");
 	$this->db = new db_mysql();
 	$req = "select * from forums";
 	$res = $this->db->db_query($req);
@@ -507,6 +555,11 @@ function forumsSection()
 		if(isAccessValid("forumsview_groups", $row[id]))
 			{
 			array_push($this->arrid, $row[id]);
+			$req = "select count(posts.id) as total from posts, threads where posts.date >= '".$body->lastlog."' and posts.id_thread=threads.id and threads.forum='".$row[id]."'";
+			$res2 = $this->db->db_query($req);
+			$arr = $this->db->db_fetch_array($res2);
+			if( $arr[total] > 0)
+				$body->newposts += $arr[total];
 			}
 		}
 	$this->count = count($this->arrid);
@@ -515,7 +568,7 @@ function forumsSection()
 
 function forumsGetNext()
 	{
-	global $BAB_SESS_USERID;
+	global $body, $BAB_SESS_USERID;
 	static $i = 0;
 	if( $i < $this->count)
 		{
@@ -591,6 +644,10 @@ var $content;
 var $title;
 var $message;
 var $script;
+var $lastlog; /* date of user last log */
+var $newarticles;
+var $newcomments;
+var $newposts;
 
 function babBody()
 {
@@ -600,6 +657,10 @@ function babBody()
 	$this->title = "";
 	$this->msgerror = "";
 	$this->content = "";
+	$this->lastlog = "";
+	$this->newarticles = 0;
+	$this->newcomments = 0;
+	$this->newposts = 0;
 }
 
 function resetContent()
@@ -739,6 +800,7 @@ function loadSections()
 			$body->addSection($sec);
 			}
 		}
+
 }
 
 function addSection($sec)
@@ -974,7 +1036,7 @@ function printout()
 
 function updateUserSettings()
 {
-	global $BAB_SESS_USERID;
+	global $body,$BAB_SESS_USERID;
 	if( isset($BAB_SESS_USERID) && !empty($BAB_SESS_USERID))
 		{
 		$db = new db_mysql();
@@ -1002,6 +1064,11 @@ function updateUserSettings()
             */
             $req="update users_log set dateact=now() where id_user='$BAB_SESS_USERID'";
             $res=$db->db_query($req);
+
+			$req="select * from users_log where id_user='$BAB_SESS_USERID'";
+			$res=$db->db_query($req);
+			$arr = $db->db_fetch_array($res);
+			$body->lastlog = $arr[datelog];
             }
 		}
 }

@@ -124,6 +124,50 @@
 </td></tr>
 
 </table>
+<br>
+&nbsp; 
+<table border="0" width="40%" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td align="center" valign="middle" width="20%">&nbsp;</td>
+    <td align="center" valign="middle" width="80%"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td class="BabSummaryTitleFontBackground" width="20%" align="center" valign="middle"><img src="images/Puces/PuceSummary.gif" width="19" height="16"></td>
+          <td class="BabSummaryTitleFontBackground" width="80%" valign="middle">{ 
+            newcomments }</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br>
+<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tr><td>
+
+<table  border="0" width="100%" cellpadding="3" cellspacing="0">
+
+
+
+<!--#in getnexttopiccom -->
+
+<!--#in getcomment -->
+
+<tr><td class="BabSummaryContentBackground" width="30%" nowrap>{ date }</td>
+          <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+<td class="BabSummaryContentBackground" width="10%" nowrap>{ author }</td></tr>
+
+<!--#endin getcomment -->
+
+<!--#endin getnexttopiccom -->
+
+
+
+</table>
+
+</td></tr>
+
+</table>
 
 
 
@@ -162,13 +206,15 @@
 <!--#in getnextforum -->
 
 <!--#in getnextthread -->
-
+<!--#if total "> 0" -->
+<tr><td class="BabSummaryContentBackground" colspan="2"><b>{ posts }</b></td></tr>
+<!--#endif total -->
 <!--#in getpost -->
 
 <tr><td class="BabSummaryContentBackground" width="30%" nowrap>{ date }</td>
           <td  class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
             title }</a></td>
-<td  class="BabSummaryContentBackground" width="10%" nowrap>{ posts }</td></tr>
+</tr>
 
 <!--#endin getpost -->
 
