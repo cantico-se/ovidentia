@@ -42,7 +42,7 @@
 		<!--#if currentmonth "== 1" -->
 		<td valign="top" <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> class="BabMonthCalendarCurentDayBackground" <!--#endif currentday --> width="0" height="0">
 		<!--#else currentmonth -->
-		<td valign="top" class="BabCalendarBodyBadMonthBackground"width="0" height="0">
+		<td valign="top" class="BabCalendarBodyBadMonthBackground" width="0" height="0">
 		<!--#endif currentmonth -->
 			<div class="HeaderDayCalendar">
 				<table width="100%" border="0" align="center">
@@ -77,6 +77,32 @@
 	</tr>
 	<!--#endin getnextweek -->
 </table>
+
+<br />
+<br />
+<script type="text/javascript">
+<!--
+function submitCtrl(form)
+	{
+	if (typeof calendarChoice_selectAll == 'function')
+		{
+		calendarChoice_selectAll(form.name);
+		}
+	}
+
+//-->
+</script>
+
+<form name="calendarchoice" method="post" action="{ commonurl }" onsubmit="return(submitCtrl(this))">
+<table width="98%" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
+	<tr>
+		<td align="center">
+			{ calendars }<br />
+			<input type="submit" value="{ t_update }" />
+		</td>
+	</tr>
+</table>
+</form>
 <!--#end calmonth -->
 
 <!--#begin calfreemonth -->

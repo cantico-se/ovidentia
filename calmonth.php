@@ -63,6 +63,9 @@ class cal_monthCls  extends cal_wmdbaseCls
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 
 		$this->cindex = 0;
+
+		$this->calendars = calendarchoice('calendarchoice');
+		$this->t_update = bab_translate('Update');
 		}
 
 	function getnextdayname()
@@ -251,6 +254,8 @@ if( empty($date))
 
 if( !isset($calid) )
 	$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+
+record_calendarchoice();
 
 
 switch($idx)
