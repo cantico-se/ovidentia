@@ -1,7 +1,18 @@
 
 <!--#begin domaincreate -->
-
-<form method="post" action="{ babPhpSelf }">
+<script language="javascript">
+<!--
+function changeport(obj)
+{
+var f = document.forms.domainmail;
+if (obj.value == 'imap')
+		f.inportserver.value = '143';
+if (obj.value == 'pop3')
+		f.inportserver.value = '110';
+}
+-->
+</script>
+<form method="post" name="domainmail" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="maildoms">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="userid" value="{ userid }">
@@ -26,7 +37,7 @@
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ accessmethod }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<select name="accessmethod" size="1">
+<select name="accessmethod" size="1" onchange="changeport(this);">
   <option value="pop3" selected>POP3</option>
   <option value="imap">IMAP</option>
 </select>
@@ -143,9 +154,19 @@
 
 <br><br><br><br>
 <!--#begin domainmodify -->
-
-
-<form method="post" action="{ babPhpSelf }">
+<script language="javascript">
+<!--
+function changeport(obj)
+{
+var f = document.forms.domainmail;
+if (obj.value == 'imap')
+		f.inportserver.value = '143';
+if (obj.value == 'pop3')
+		f.inportserver.value = '110';
+}
+-->
+</script>
+<form method="post" name="domainmail" action="{ babPhpSelf }">
   <input type="hidden" name="idx" value="modify">
 <input type="hidden" name="item" value="{ arr[id] }">
 <input type="hidden" name="babname" value="{ arr[name] }">
@@ -172,7 +193,7 @@
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ accessmethod }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<select name="accessmethod" size="1">
+<select name="accessmethod" size="1" onchange="changeport(this);">
   <option value="pop3" { popselected }>POP3</option>
   <option value="imap" { imapselected }>IMAP</option>
 </select>
@@ -218,4 +239,3 @@
 </form>
 <br>
 <!--#end domainmodify -->
-
