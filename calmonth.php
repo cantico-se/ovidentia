@@ -64,8 +64,6 @@ class cal_monthCls  extends cal_wmdbaseCls
 
 		$this->cindex = 0;
 
-		$this->calendars = calendarchoice('calendarchoice');
-		$this->t_update = bab_translate('Update');
 		}
 
 	function getnextdayname()
@@ -242,8 +240,8 @@ function cal_month_free($calids, $date)
 }
 
 /* main */
-record_calendarchoice();
-$calid = $babBody->icalendars->user_calendarids;
+
+$calid = isset($_GET['calid']) ? $_GET['calid'] : $babBody->icalendars->user_calendarids;
 
 if(!isset($idx))
 	{

@@ -411,3 +411,49 @@ close }</a> </td>
 </BODY>
 </HTML>
 <!--#end listunload -->
+
+
+<!--#begin calendarchoice -->
+
+<script type="text/javascript">
+<!--
+function submitCtrl(form)
+	{
+	if (typeof calendarChoice_selectAll == 'function')
+		{
+		calendarChoice_selectAll(form.name);
+		}
+	}
+
+//-->
+</script>
+
+<form name="calendarchoice" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this))">
+<input type="hidden" name="tg" value="calopt" />
+<input type="hidden" name="idx" value="unload" />
+<input type="hidden" name="backurl" value="{ backurl }" />
+
+<table width="98%" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
+	<tr>
+		<td align="center">
+			{ calendars }<br />
+			<input type="submit" value="{ t_record }" />
+		</td>
+	</tr>
+</table>
+</form>
+<!--#end calendarchoice -->
+
+<!--#begin unload -->
+<script type="text/javascript">
+<!--
+setTimeout("this.close()","1000");
+//}
+this.opener.location.href='{ backurl }';
+//-->
+</script>
+<br />
+<br />
+<br />
+<div align="center">{ message }</div>
+<!--#end unload -->

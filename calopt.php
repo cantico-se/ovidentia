@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 
+
 function browseUsers($pos, $cb, $idcal)
 	{
 	global $babBody;
@@ -514,6 +515,40 @@ function calendarOptions($calid)
 	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
 	}
 
+
+function pop_calendarchoice()
+	{
+	global $babBodyPopup;
+	class temp
+		{
+		function temp()
+			{
+			$this->backurl = $_GET['backurl'];
+			$this->calendars = calendarchoice('calendarchoice');
+			$this->t_record = bab_translate('Record');
+			}
+		}
+	$temp = new temp();
+	$babBodyPopup->babecho(	bab_printTemplate($temp,"calopt.html", "calendarchoice"));
+
+	}
+
+function unload()
+	{
+	global $babBodyPopup;
+	class temp
+		{
+		function temp()
+			{
+			$this->backurl = $_POST['backurl'].implode(',',$_POST['selected_calendars']);
+			$this->message = bab_translate('Successful recording');
+			}
+		}
+	$temp = new temp();
+	$babBodyPopup->babecho(	bab_printTemplate($temp,"calopt.html", "unload"));
+
+	}
+
 function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays, $useweeknb)
 	{
 	global $BAB_SESS_USERID;
@@ -555,7 +590,6 @@ if(!isset($idx))
 	$idx = "options";
 	}
 
-
 if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
 	addAccessUsers($nuserid, $idcal);
@@ -579,6 +613,23 @@ switch($idx)
 			if( !isset($cb)) { $cb = '';}
 			browseUsers($pos, $cb, $idcal);
 			}
+		exit;
+		break;
+
+	case "pop_calendarchoice":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$babBodyPopup = new babBodyPopup();
+		pop_calendarchoice();
+		printBabBodyPopup();
+		exit;
+		break;
+
+	case "unload":
+		record_calendarchoice();
+		include_once $babInstallPath."utilit/uiutil.php";
+		$babBodyPopup = new babBodyPopup();
+		unload();
+		printBabBodyPopup();
 		exit;
 		break;
 
