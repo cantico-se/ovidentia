@@ -56,9 +56,12 @@ function listArticles($id)
 		var $deletehelp;
 		var $art0help;
 		var $art1help;
+		var $bshowhpg;
 
 		function temp($id)
 			{
+			global $babBody;
+
 			$this->titlename = bab_translate("Title");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -80,6 +83,11 @@ function listArticles($id)
 			$r = $this->db->db_fetch_array($this->db->db_query($req));
 			$this->siteid = $r['id'];
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$r['id'];
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+				$this->bshowhpg = true;
+			else
+				$this->bshowhpg = false;
+
 			}
 
 		function getnext()
