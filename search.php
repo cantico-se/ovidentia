@@ -52,9 +52,7 @@ function put_text($txt,$limit=60,$limitmot=30)
 		$out = strip_tags($txt);
 	$arr = explode(" ",$out);
 	foreach($arr as $key => $mot)
-		{
 		$arr[$key] = substr($mot,0,$limitmot);
-		}
 return bab_replace(implode(" ",$arr));
 }
 
@@ -895,11 +893,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							{
 							if( $row['id_group'] > 1 )
 								{
-								$req = "select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." UG.id_group='".$row['id_group']."' and UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc";
+								$req = "select g.*, '".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." UG.id_group='".$row['id_group']."' and UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." order by sn asc,givenname asc";
 								}
 							else
 								{
-								$req = "select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc";
+								$req = "select g.*,'".$row['name']."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." order by sn asc,givenname asc";
 								}
 							}
 
@@ -919,7 +917,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$navpos = $this->navpos;
 				if ($navitem != "g") $navpos = 0;
 				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);
-
+				$tmp = explode(" ",$order);
+				if (in_array("title",$tmp)) $order = "sn ASC, givenname ASC";
 				$req = "select * from dirresults order by ".$order." limit ".$navpos.", ".$babLimit;
 				$this->resdir = $this->db->db_query($req);
 				$this->countdir = $this->db->db_num_rows($this->resdir);
@@ -1181,6 +1180,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$arr = $this->db->db_fetch_array($this->resdir);
 				$this->dir= $arr ;
+				//$this->name = bab_composeUserName($arr['sn'], $arr['givenname']);
 				$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;
