@@ -430,28 +430,19 @@ function viewVacationCalendar($users, $period = false )
 					}
 				}
 
-			if ($this->nbusers == 1 && $this->idusers[0] == $GLOBALS['BAB_SESS_USERID'])
+
+			$res = $this->db->db_query("SELECT id_user,workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user IN(".implode(',',$this->idusers).")");
+			while($arr = $this->db->db_fetch_array($res))
 				{
-				$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
+				if (!empty($arr['workdays']))
+					$this->u_workdays[$arr['id_user']] = & explode(',',$arr['workdays']);
 				}
-			elseif ($this->nbusers == 1)
-				{
-				$req = "SELECT workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$this->idusers[0]."'";
-				list($workdays) = $this->db->db_fetch_array($this->db->db_query($req));
-				if (!empty($workdays))
-					$this->workdays = & explode(',',$workdays);
-				else
-					$this->workdays = & explode(',',$GLOBALS['babBody']->babsite['workdays']);
-				}
-			else
-				{
-				$this->workdays = & explode(',',$GLOBALS['babBody']->babsite['workdays']);
-				}
+
+			$this->d_workdays = & explode(',',$GLOBALS['babBody']->babsite['workdays']);
 
 			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
 
 			$this->nonWorkingDays = array_merge(bab_getNonWorkingDays($year), bab_getNonWorkingDays($year+1));
-
 			$this->restypes = $this->db->db_query("SELECT t.* FROM ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." ct, ".BAB_VAC_PERSONNEL_TBL." p WHERE p.id_user IN(".implode(',', $this->idusers).") AND p.id_coll=ct.id_coll AND ct.id_type=t.id GROUP BY t.id");
 			}
 
@@ -499,6 +490,10 @@ function viewVacationCalendar($users, $period = false )
 					$this->username = '';
 					}
 				
+				if (isset($this->u_workdays[$this->id_user]))
+					$this->workdays = $this->u_workdays[$this->id_user];
+				else
+					$this->workdays = $this->d_workdays;
 				
 				$i++;
 				return true;
