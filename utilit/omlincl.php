@@ -3807,14 +3807,14 @@ class bab_CalendarResourceEvents extends bab_handler
 }
 
 
-class bab_IsUserMemberOfGroups extends bab_handler
+class bab_IfUserMemberOfGroups extends bab_handler
 {
 	var $res;
 	var $IdEntries = array();
 	var $index;
 	var $count;
 
-	function bab_IsUserMemberOfGroups( &$ctx)
+	function bab_IfUserMemberOfGroups( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
