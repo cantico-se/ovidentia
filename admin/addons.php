@@ -105,6 +105,8 @@ function addonsList($upgradeall)
 			$this->view = bab_translate("View");
 			$this->versiontxt = bab_translate("Version");
 			$this->t_delete = bab_translate("Delete");
+			$this->t_historic = bab_translate("Historic");
+			$this->t_download = bab_translate("Download");
 			$this->confirmdelete = bab_translate("Are you sure you want to delete this add-on").' ?';
 			$this->db = $GLOBALS['babDB'];
 			$this->upgradeall = $upgradeall;
@@ -199,6 +201,10 @@ function addonsList($upgradeall)
 					}
 				if( !empty($arr_ini['description']))
 					$this->description = $arr_ini['description'];
+				if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/history.txt"))
+					$this->history = $GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$this->arr['id'];
+				else
+					$this->history = false;
 				$i++;
 				return true;
 				}
@@ -500,6 +506,33 @@ function import()
 		}
 	}
 
+
+function history($item)
+	{
+	global $babBody;
+	class temp
+		{
+		function temp($item)
+			{
+			$this->t_title = bab_translate("Historic");
+			$this->t_close = bab_translate("Close");
+
+			$db = &$GLOBALS['babDB'];
+			list($title) = $db->db_fetch_array($db->db_query("SELECT title FROM ".BAB_ADDONS_TBL." where id='".$item."'"));
+			if (!empty($title))
+				{
+				$this->history = implode(file($GLOBALS['babAddonsPath'].$title.'/history.txt'));
+				$this->history = nl2br($this->history);
+				}
+			else
+				$this->history = '';
+			}
+		}
+
+	$temp = new temp($item);
+	die(bab_printTemplate($temp, "addons.html", "history"));
+	}
+
 /* main */
 if( !$babBody->isSuperAdmin )
 {
@@ -547,6 +580,10 @@ switch($idx)
 
 	case "export":
 		export($item);
+		break;
+
+	case "history":
+		history($_GET['item']);
 		break;
 
 	case "upgrade":

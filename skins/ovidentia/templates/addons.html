@@ -16,13 +16,13 @@ function deladdon(id)
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ name } </td>
 			<td>{ desctxt }</td>
 			<td align="center"><a href="{ upgradeallurl }">{ upgradetxt }</a></td>
 			<td align="center">{ versiontxt }</td>
-			<td colspan="3">&nbsp;</td>
+			<td colspan="4">&nbsp;</td>
 			<td width="1%">{ disabled }</td>
 		</tr>
 		<!--#in getnext --> 
@@ -33,10 +33,17 @@ function deladdon(id)
 			<!--#if upgradeurl --><a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a><!--#endif upgradeurl -->&nbsp;</td>
 			<td align="center">{ addversion }</td>
 			<td align="center"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
-			<td align="center"><a href="{ exporturl }"><img border="0" src="{ babSkinPath }images/Puces/download.gif"></a></td>
+			<td align="center"><a href="{ exporturl }" title="{ t_download }"><img alt="{ t_download }" border="0" src="{ babSkinPath }images/Puces/download.gif"></a></td>
+			<td align="center">
+				<!--#if history -->
+				<a href="javascript:bab_popup('{ history }')" title="{ t_historic }"><img alt="{ t_historic }" border="0" src="{ babSkinPath }images/Puces/properties.gif"></a>
+				<!--#else history -->&nbsp;
+				<!--#endif history -->
+			</td>
 			<td align="center">
 				<!--#if delete -->
-				<a href="javascript:deladdon({ arr[id] })" title="{ t_delete }"><img border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
+				<a href="javascript:deladdon({ arr[id] })" title="{ t_delete }"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
+				<!--#else delete -->&nbsp;
 				<!--#endif delete -->
 			</td>
 			<td valign="middle" width="0%" align="center"> 
@@ -45,7 +52,7 @@ function deladdon(id)
 			</tr>
 			<!--#endin getnext -->
 			<tr class="BabSiteAdminTitleFontBackground"> 
-			<td colspan="7">&nbsp;</td>
+			<td colspan="8">&nbsp;</td>
 			<td width="1%" align="center"><a href="javascript:onCheckAll('addons', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('addons', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 		</tr>
 		</table>
@@ -115,3 +122,48 @@ function deladdon(id)
 	</table>
 </form>
 <!--#end upload -->
+
+<!--#begin history -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+	window.focus();
+//-->
+</script>
+</head>
+<body>
+<br />
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="5">
+			<tr> 
+				<td class="BabSiteAdminTitleFontBackground" align="center">
+					{ t_title }
+				</td>
+			</tr>
+			<tr> 
+				<td class="BabSiteAdminFontBackground">
+					<br />
+					{ history }
+					<br />
+					<br />
+				</td>
+			</tr>
+			<tr> 
+				<td class="BabSiteAdminTitleFontBackground" align="center">
+					<input type="button" value="{ t_close }" onclick="window.close()">
+				</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+</body>
+</html>
+<!--#end history -->
