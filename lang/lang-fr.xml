@@ -830,4 +830,6 @@
 <string id="Delete folder">Suuprimer le répertoire</string>
 <string id="Modify folder">Modifier le répertoire</string>
 <string id="Calendar access has been updated">L'agenda a été mis à jour</string>
+<string id="Private home page articles">Liste des articles de la page d'accueil privée</string>
+<string id="Public home page articles">Liste des articles de la page d'accueil public</string>
 </fr>

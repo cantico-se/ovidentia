@@ -329,7 +329,10 @@ switch($idx)
 
 	default:
 	case "list":
-		$babBody->title = bab_translate("List of articles");
+		if( $idg == 1 )
+			$babBody->title = bab_translate("Private home page articles");
+		else
+			$babBody->title = bab_translate("Public home page articles");
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=entry");
 		listArticles($idg);
 		break;
