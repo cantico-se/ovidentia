@@ -1863,7 +1863,7 @@ class bab_RecentComments extends bab_handler
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
-				$order = "asc";
+				$order = "desc";
 
 			switch(strtoupper($order))
 			{
@@ -1953,7 +1953,7 @@ class bab_RecentPosts extends bab_handler
 
 		$order = $ctx->get_value('order');
 		if( $order === false || $order === '' )
-			$order = "asc";
+			$order = "desc";
 
 		switch(strtoupper($order))
 		{
@@ -2053,7 +2053,7 @@ class bab_RecentThreads extends bab_handler
 
 		$order = $ctx->get_value('order');
 		if( $order === false || $order === '' )
-			$order = "asc";
+			$order = "desc";
 
 		switch(strtoupper($order))
 		{
@@ -2177,7 +2177,7 @@ class bab_RecentFiles extends bab_handler
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
-				$order = "asc";
+				$order = "desc";
 
 			switch(strtoupper($order))
 			{
