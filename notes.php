@@ -13,7 +13,7 @@ function notesCreate()
 			{
 			$this->create = babTranslate("Create");
 			$this->notes = babTranslate("Content");
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	

@@ -501,7 +501,7 @@ function signatureAdd($signature, $name, $html)
 			$this->signatureval = $signature != ""? $signature: "";
 			$this->nameval = $name != ""? $name: "";
 			$this->onchange = "";
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				{
 				if( empty($html))
 					$html = "Y";
@@ -576,7 +576,7 @@ function signatureModify($sigid, $signature, $name, $html)
 				$this->nameval = $name;
 				}
 
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				{
 				$this->bhtml = 1;
 				$this->msie = 1;

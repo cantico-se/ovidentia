@@ -309,7 +309,7 @@ function newReply($forum, $thread, $post)
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
 				}
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -351,7 +351,7 @@ function editPost($forum, $thread, $post)
 			$req = "select * from posts where id='$post'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
