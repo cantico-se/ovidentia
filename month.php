@@ -83,7 +83,7 @@ function printout()
 	if( $todayyear >= $this->currentYear - $this->ymin && $todayyear <= $this->currentYear + $this->ymax )
 		{
 		$this->today = "<a href=\"".$GLOBALS['babUrlScript']."?tg=month&callback=".$this->callback."&ymin=";
-		$this->today .= ($todayyear - $this->currentYear + $this->ymin)."&ymax=".($this->currentYear + $this->ymax - $todayyear)."&month=".$todaymonth."&year=".($todayyear)."\">today</a>";
+		$this->today .= ($todayyear - $this->currentYear + $this->ymin)."&ymax=".($this->currentYear + $this->ymax - $todayyear)."&month=".$todaymonth."&year=".($todayyear)."\">".bab_translate("Go to Today")."</a>";
 		}
 
 	if( $this->currentYear > $this->currentYear - $this->ymin)

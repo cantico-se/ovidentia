@@ -199,6 +199,9 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 		var $pos;
 		var $bclose;
 		var $closedtxt;
+		var $openedtxt;
+		var $statusval;
+		var $alttxt;
 
 		function temp($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			{
@@ -218,6 +221,8 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->activeyes = bab_translate("Opened rights");
 			$this->activeno = bab_translate("Closed rights");
 			$this->closedtxt = bab_translate("Vac. closed");
+			$this->openedtxt = bab_translate("Vac. opened");
+			$this->alttxt = bab_translate("View right detail");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -361,6 +366,10 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				$this->creditor = bab_getUserName($arr['id_creditor']);
 				$this->date = bab_printDate($arr['date_entry']);
 				$this->bclose = $arr['active'] == "N"? true: false;
+				if( $this->bclose )
+					$this->statusval = $this->closedtxt;
+				else
+					$this->statusval = $this->openedtxt;
 				$this->urllistp = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&idvr=".$arr['id'];
 				$i++;
 				return true;
