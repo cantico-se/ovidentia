@@ -42,4 +42,130 @@ function popupUnload($message, $redirecturl)
 	$temp = new temp($message, $redirecturl);
 	echo bab_printTemplate($temp,"uiutil.html", "popupunload");
 	}
+
+class babBodyPopup
+{
+var $menu;
+var $msgerror;
+var $content;
+var $title;
+var $message;
+
+function babBodyPopup()
+{
+	global $babDB;
+	$this->menu = new babMenu();
+	$this->message = "";
+	$this->title = "";
+	$this->msgerror = "";
+	$this->content = "";
+}
+
+function resetContent()
+{
+	$this->content = "";
+}
+
+function babecho($txt)
+{
+	$this->content .= $txt;
+}
+
+function addItemMenu($title, $txt, $url, $enabled=true)
+{
+	$this->menu->addItem($title, $txt, $url, $enabled);
+}
+
+function addItemMenuAttributes($title, $attr)
+{
+	$this->menu->addItemAttributes($title, $attr);
+}
+
+function setCurrentItemMenu($title, $enabled=false)
+{
+	$this->menu->setCurrent($title, $enabled);
+}
+
+function printout()
+{
+    if(!empty($this->msgerror))
+		{
+		$this->message = $this->msgerror;
+		}
+	else if(!empty($this->title))
+		{
+		$this->message = $this->title;
+		}
+	return $this->content;
+}
+} 
+
+
+function printBabBodyPopup()
+	{
+	
+	class clsPrintBabBodyPopup
+	{
+		var $menuattribute;
+		var $menuurl;
+		var $menutext;
+		var $menukeys = array();
+		var $menuvals = array();
+		var $content;
+		var $title;
+		var $msgerror;
+
+		function clsPrintBabBodyPopup()
+			{
+			global $babBodyPopup;
+			$this->menukeys = array_keys($babBodyPopup->menu->items);
+			$this->menuvals = array_values($babBodyPopup->menu->items);
+			$this->menuitems = count($this->menukeys);
+
+			$this->content = $babBodyPopup->printout();
+			$this->title = $babBodyPopup->title;
+			$this->msgerror = $babBodyPopup->msgerror;
+			}
+
+		function getNextMenu()
+			{
+			global $babBodyPopup;
+			static $i = 0;
+			if( $i < $this->menuitems)
+				{
+				if(!strcmp($this->menukeys[$i], $babBodyPopup->menu->curItem))
+					{
+					$this->menuclass = "BabMenuCurArea";
+					}
+				else
+					$this->menuclass = "BabMenuArea";
+					 
+				$this->menutext = $this->menuvals[$i]["text"];
+				if( $this->menuvals[$i]["enabled"] == false)
+					$this->enabled = 0;
+				else
+					{
+					$this->enabled = 1;
+					if( !empty($this->menuvals[$i]["attributes"]))
+						{
+						$this->menuattribute = $this->menuvals[$i]["attributes"];
+						}
+					else
+						{
+						$this->menuattribute = "";
+						}
+					$this->menuurl = $this->menuvals[$i]["url"];
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+	}
+
+	$temp = new clsPrintBabBodyPopup();
+	echo bab_printTemplate($temp,"uiutil.html", "babbodypopup");
+	}
 ?>

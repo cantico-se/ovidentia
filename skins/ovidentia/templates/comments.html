@@ -1,26 +1,39 @@
-
-<!-- comments -->
-<!--#begin commentcreate -->
-<!--#if parentscount -->
-<table border="0" width="100%" cellpadding="1" cellspacing="0">
-<tr>
-<td class="BabCategTitleNavigation">
-<!--#in getnextparent -->
-<!--#if burl -->
-<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-<!--#else burl -->
-{ parentname }
-<!--#endif burl -->
-<!--#endin getnextparent -->
+<!--#begin commentslist -->
+<!--#if count -->
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnext -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>{ authorname }</td>
+<td align="left"><span style="font-Size:9">{ commenttitle }</span>
 </td>
-</tr></table>
-<TABLE>
-<TR>
-<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
-<!--#endif parentscount -->
-<br><center><a class="BabSectionsLinkColor" href="javascript: Start('{ urlsee }', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center><br>
+</tr>
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>{ commentdate }</td>
+<td align="left">{ commentbody }&nbsp;
+</td>
+</tr>
+<!--#endin getnext --> 
+</table>
+</td>
+</tr>
+</table>
+<!--#endif count -->
+<br>
+<!--#end commentslist -->
+
+<!--#begin commentcreate -->
+<br>
 <form name="comcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="comments">
 <input type="hidden" name="idx" value="List">
@@ -28,28 +41,20 @@
 <input type="hidden" name="article" value="{ article }">
 <input type="hidden" name="com" value="{ com }">
 <input type="hidden" name="addcomment" value="add">
+<input type="hidden" name="cname" value="{ authorname }">
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
 <tr> 
-<td align="center" nowrap valign="middle">{ name }:</td>
-</tr><tr>
-<td align="center"> 
-<!--#if anonyme "== 0" -->
-<b>{ username }</b> 
-<!--#endif anonyme -->
-<!--#if anonyme "== 1" -->
-<input type="text" name="cname" size="45" maxlength="60">
-<!--#endif anonyme -->
-</td>
+<td class="BabLoginMenuBackground" align="left" nowrap>{ add }:</td>
 </tr>
 <tr> 
 <td align="center" nowrap>{ subject }:</td>
 </tr>
 <tr>
 <td align="center" nowrap> 
-<input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }">
+<input type="text" name="subject" size="60" maxlength="60" value="{ subjectval }">
 </td>
 </tr>
 <!-- toolbar -->
@@ -95,7 +100,7 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <!--#else babOldEditor -->
 <iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','message')">
 </iframe>
-<textarea id="message" name="message"  onfocus="savef(document.comcreate.message)" style="width:100%" rows="20">{ messageval }</textarea>
+<textarea id="message" name="message"  onfocus="savef(document.comcreate.message)" style="width:100%" rows="10">{ messageval }</textarea>
 <!--#endif babOldEditor -->
 <!--#else msie -->
 <textarea onfocus="savef(document.comcreate.message)" style="width:100%" rows="10" id="message" name="message">{ messageval }</textarea>
@@ -153,140 +158,3 @@ savef(document.comcreate.message);
 </script>
 <!--#endif msie -->
 <!--#end commentcreate -->
-<br><br><br><br><br>
-
-<!--#begin commentslist -->
-<!--#if parentscount -->
-<table border="0" width="100%" cellpadding="1" cellspacing="0">
-<tr>
-<td class="BabCategTitleNavigation">
-<!--#in getnextparent -->
-<!--#if burl -->
-<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-<!--#else burl -->
-{ parentname }
-<!--#endif burl -->
-<!--#endin getnextparent -->
-</td>
-</tr></table>
-<TABLE>
-<TR>
-<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
-<!--#endif parentscount -->
-<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<!--#in getnext -->
-<!--#if alternate "== 1" -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="40%" valign="middle"><a class="
-BabSiteAdminListLink" href="{ subjecturl }">{ 
-subjectname }</a></td>
-<td class="BabDatesFont" width="30%" valign="middle">{ arr[name] 
-} </td>
-<td class="BabDatesFont" width="30%" align="right" valign="middle">{ arr[date] }</td>
-</tr>
-<!--#else alternate -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="
-BabSiteAdminListLink" href="{ subjecturl }">{ subjectname }</a> </td>
-<td class="BabDatesFont" valign="middle">{ arr[name] } </td>
-<td class="BabDatesFont" align="right" valign="middle">{ arr[date] }</td>
-</tr>
-<!--#endif alternate -->
-<!--#endin getnext --> 
-</table>
-</td>
-</tr>
-</table>
-<br>
-<!--#end commentslist -->
-<br><br><br><br><br>
-
-<!--#begin commentread -->
-<!--#if parentscount -->
-<table border="0" width="100%" cellpadding="1" cellspacing="0">
-<tr>
-<td class="BabCategTitleNavigation">
-<!--#in getnextparent -->
-<!--#if burl -->
-<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-<!--#else burl -->
-{ parentname }
-<!--#endif burl -->
-<!--#endin getnextparent -->
-</td>
-</tr></table>
-<TABLE>
-<TR>
-<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
-<!--#endif parentscount -->
-<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" colspan="2" valign="middle">{ arr[date] }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle">{  by }:</td>
-<td class="BabSiteAdminTitleFontBackground" width="80%" valign="middle">{ arr[name] } </td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ subject }:</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ arr[subject] }</td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" colspan="2">{ arr[message] }</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<br>
-<!--#end commentread -->
-
-<!--#begin commentview -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabTopicsAdminArticleViewFontBackground">
-<br>
-<table width="92%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground"> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
-<tr> 
-<td class="BabTopicsTitleBackground" align="center" nowrap><b>{ title }</b></td>
-</tr>
-<tr>
-<td class="BabTopicsBackground">{ content }</td>
-</tr>
-<tr> 
-<td colspan="2" align="center"> <br>
-<a href="javascript:this.close()" class="BabSiteAdminListLink">{ close }</a> <br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</BODY>
-</HTML>
-<!--#end commentview -->
-

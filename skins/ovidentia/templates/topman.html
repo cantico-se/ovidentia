@@ -18,46 +18,31 @@
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
         <tr> 
           <td width="97%" rowspan="2" align="left" valign="top" nowrap class="BabTopicsAdminListTitle">
-            <!--#if nbarticles "== 0" -->
-            { namecategory }
-            <!--#else nbarticles -->
+            <!--#if urlarticles  -->
             <a class="BabTopicsAdminTitleLink" href="{ urlarticles }">{ namecategory }</a>
-            <!--#endif nbarticles -->
+            <!--#else urlarticles -->
+            { namecategory }
+            <!--#endif urlarticles -->
              <br>
-{ nbarticles }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles }</td>
+{ nbarticles }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ onlinearticles }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">|<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ nbarcharticles }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ archarticles }</td>
         <!--#if newac "> 0" -->
 		<td width="1%" rowspan="2" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>
-            { waiting }
-:          </strong></td>
-          <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
-            
-            <!--#if newa "> 0" -->
-            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlnewa }"><img src="{ babSkinPath }images/Puces/PuceSectionContribArticle.png" width="12" height="13" alt="" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></a>
-            <!--#endif newa -->
+            { waiting }:</strong></td>
+          <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">            
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/PuceSectionContribArticle.png" width="12" height="13" alt="" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
             <br>
             </td>
           <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
-            <!--#if newa "> 0" -->
-            <a class="BabTopicsAdminNumberLink" href="{ urlwaitinga }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newa }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles }</a> 
-            <!--#else newa -->
             <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newa }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ articles } 
-            <!--#endif newa -->
             <br>
             </td>
         </tr>
         <tr>
           <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
-            <!--#if newc "> 0" -->
-            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlnewc }"><img src="{ babSkinPath }images/Puces/PuceSectionContribComment.png" width="12" height="13" alt="" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></a> 
-            <!--#endif newc -->
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/PuceSectionContribComment.png" width="12" height="13" alt="" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
           </td>
           <td width="1%" align="left" valign="middle" nowrap class="BabTopicsAdminListTitle">
-            <!--#if newc "> 0" -->
-            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabTopicsAdminNumberLink" href="{ urlwaitingc }">{ newc }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ comments 
-}</a> 
-            <!--#else newc -->
             <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ newc }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ comments } 
-            <!--#endif newc -->
           </td>
        <!--#endif newac -->
 </tr></table>
@@ -91,7 +76,10 @@
 <tr> 
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('hart0', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart0', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('hart1', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('hart1', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle">&nbsp;</td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><b>{ titlename }</b></td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ datepublicationtxt }</b></td>
+<td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;</td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </tr>
@@ -103,7 +91,10 @@
 <td align="center" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 }>
 </td>
-<td width="90%" align="left" valign="middle"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
+<td><a class="BabForumTopicsNavContribution" title="{ previewtxt }" href="javascript: Start('{ urltitle }', 'OvidentiaTopArt', 'width=750,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/preview.gif" alt="{ previewtxt }" border="0"></a></td>
+<td align="left" valign="middle"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ propurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
+<td align="left" valign="middle">&nbsp;{ datepublication }</td>
+<td align="left" valign="middle">&nbsp;<!--#if bupdate -->&nbsp;&nbsp;{ status }<!--#endif bupdate --></td>
 <td align="center" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
@@ -115,6 +106,9 @@
 <tr> 
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('homepage0', 'listform')"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png"  width="12" height="13" alt="{ art0alt }" border="0" align="absmiddle"></a></td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('homepage1', 'listform')"><img src="{ babSkinPath }images/Puces/PuceRegistered.png"  width="12" height="13" alt="{ art1alt }" border="0" align="absmiddle"></a></td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+<td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 <td class="BabTopicsAdminListTitle" valign="middle" ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('archive', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.png" width="12" height="13" alt="{ archivealt }" border="0" align="absmiddle"></a></td>
 <td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle"><a href="javascript:submitForm('deletea', 'listform')"><img src="{ babSkinPath }images/Puces/del.gif" width="12" height="13" alt="{ deletealt }" border="0" align="absmiddle"></a></td>
@@ -168,6 +162,55 @@ window.focus();
 </tr>
 <tr><td>{ content }</td></tr>
 <tr>
+<!--#if countf -->
+<tr>
+<td class="BabSiteAdminTitleFontBackground">{ attachmentxt }</td>
+</tr>
+<!--#in getnextdoc -->
+<tr><td>
+<a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;
+</td></tr>
+<!--#endin getnextdoc -->
+<!--#endif countf -->
+
+<!--#if countcom -->
+<tr>
+<td class="BabSiteAdminTitleFontBackground">{ commentstxt }</td>
+</tr>
+<tr><td>
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextcom -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>{ authorname }</td>
+<td align="left"><span style="font-Size:9"><a class="BabForumTopicsNavContribution" title="{ deletetxt }" href="{ delcomurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;&nbsp;{ commenttitle }</span>
+</td>
+</tr>
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>{ commentdate }</td>
+<td align="left">{ commentbody }&nbsp;
+</td>
+</tr>
+<!--#endin getnextcom --> 
+</table>
+</td>
+</tr>
+</table>
+</td></tr>
+<!--#endin getnextdoc -->
+<!--#endif countcom -->
+
+<tr>
 <td colspan="2" align="center">
 <br>
 <a href="javascript:this.close()">{ close }</a>
@@ -220,3 +263,280 @@ window.focus();
 </table>
 </td></tr></table>
 <!--#end oldarticleslist -->
+
+<!--#begin articlesorder -->
+<form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="topman">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="item" value="{ topicid }">
+<input type="hidden" name="update" value="order">
+
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td valign="middle" align="center"> 
+<select name="listarts[]" size=12 multiple>
+  <option value="0">{ toplisttxt }</option>
+  <!--#in getnext --> 
+  <option value="{ articleid }">{ articletitle }</option>
+  <!--#endin getnext --> 
+</select>
+</td>
+<td valign="middle" align="center"><a 
+href="Javascript:move(true, document.ordform.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
+width="22" height="18" border=0 alt="{ moveup }"></a> <br>
+<br>
+<a href="Javascript:move(false, document.ordform.elements[4])"> 
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+<br><br>
+<a href="Javascript:sortList('sortAA', document.ordform.elements[4])">
+<img src="{ babSkinPath }images/Puces/a-z.gif" border=0 alt="{ sorta }">
+</a>
+<br><br>
+<a href="Javascript:sortList('sortAD', document.ordform.elements[4])">
+<img src="{ babSkinPath }images/Puces/z-a.gif" border=0 alt="{ sortd }">
+</a>
+</td>
+</tr>
+<tr> 
+<td align="center"> 
+<input type="submit" name="Submit" value="{ create }" 
+onClick="Javascript:selectAll(document.ordform.elements[4]); document.ordform.submit()">
+<br>
+<br>
+</td>
+<td>&nbsp; </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+
+<!--#end articlesorder -->
+
+<!--#begin propertiesarticle -->
+<!--#if access -->
+<script type="text/javascript">
+<!--
+function stepSubmitForm(cmd, fmname) 
+{ 
+if( typeof document.forms[fmname] != "object" ) return;
+document.forms[fmname].updstep3.value = cmd;
+if(cmd == 'save' )
+{
+	if( validateForm(document.forms[fmname]))
+	{
+	return true;
+	}
+	else
+	{
+	return false;
+	}
+}
+else
+{
+return true;
+}
+}
+
+function updateDates(elemDay, elemMonth, elemYear)
+{
+	ds = elemDay.selectedIndex;
+	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < elemDay.length; i++)
+	{
+	elemDay.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+	elemDay.options[i] = new Option(i+1);
+	}
+	if( ds < daysInMonth )
+	elemDay.options[ds].selected = true;
+	else
+	elemDay.options[daysInMonth-1].selected = true;
+}
+
+function datePub(day, month, year)
+{
+	document.propform.elements['daysub'].options[day-1].selected = true;
+	document.propform.elements['monthsub'].options[month-1].selected = true;
+	document.propform.elements['yearsub'].options[year-{ yearsub }].selected = true;
+
+}
+//-->
+</script>
+<form name="propform" method="post" action="{ babPhpSelf }" >
+<input type="hidden" name="tg" value="topman">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="item" value="{ item }">
+<input type="hidden" name="idart" value="{ idart }">
+<input type="hidden" name="update" value="propa">
+<br>
+<table width="95%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td> 
+<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
+</td>
+</tr>
+</table>
+<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td>
+<br>
+<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+<tr> 
+<td align="center" valign="right">{ titletxt }:</td>
+<td valign="left"><b>{ draftname }</b></td>
+</tr>
+</table>
+</td>
+</tr>
+</table><table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+<!--#if bshowtopics -->
+<tr> 
+<td align="center" valign="middle"><b>{ topictxt }:</b>&nbsp;&nbsp;
+<select name="topicid">
+<!--#in getnexttopic -->
+<option value="{ idtopic }" { selected }>{ topicname }</option>
+<!--#endin getnexttopic -->
+</select>
+</td>
+</tr>
+<!--#if warnfilemessage -->
+<tr>
+<td class="BabErrorMessage" align="center" valign="middle">{ warnfilemessage }
+</td>
+</tr>
+<!--#endif warnfilemessage -->
+<!--#endif bshowtopics -->
+</table>
+</td>
+</tr>
+</table>
+<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+<tr> 
+<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
+</td>
+</tr>
+<tr> 
+<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datepuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datepubtxt }</a>: </td>
+<td valign="middle"> 
+<input type="checkbox" id="idcds" name="cdates" value="Y" { cdatescheck }></td>
+<td valign="middle"> 
+<select name="daypub">
+  <!--#in getnextday -->
+  <option value="{ dayid }" { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="monthpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }" { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="yearpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="timepub">
+<!--#in getnexttime -->
+<option value="{ timeval }" { selected }>{ time }</option>
+<!--#endin getnexttime -->
+</select >
+</td>
+</tr>
+<tr> 
+<td colspan="6" valign="middle" align="right"> 
+&nbsp;<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<!--#if restrictaccess -->
+<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td > 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+<tr> 
+<td align="left" valign="middle" colspan="2"><b>{ restrictiontitletxt }:</b></td>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ restrictiontxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="restriction">
+<option value="" { norestrictsel }>{ norestricttxt }</option>
+<option value="1" { yesrestrictsel }>{ yesrestricttxt }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ operatortxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="operator">
+<option value="," { operatororysel }>{ ortxt }</option>
+<option value="&" { operatorornsel }>{ andtxt }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ groupstxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<!--#in getnextgroup -->
+<br><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
+<!--#endin getnextgroup -->
+</td>
+</tr>
+<tr> 
+<td colspan="2" class="BabLoginMenuBackground" valign="middle" align="right"> 
+&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<!--#endif restrictaccess -->
+<br>
+<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td colspan="4" align="right">
+<input type="submit" name="bupdate" value="{ submittxt }"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</td>
+</tr>
+</table>
+</form>
+<!--#endif access -->
+<!--#end propertiesarticle -->

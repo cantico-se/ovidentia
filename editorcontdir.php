@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/dirincl.php";
+include_once $babInstallPath."utilit/dirincl.php";
 
 
 function dirlist()

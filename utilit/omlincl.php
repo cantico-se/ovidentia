@@ -229,7 +229,7 @@ class bab_ArticlesHomePages extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select at.* from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where at.id IN (".implode(',', $this->IdEntries).")  and at.confirmed='Y' group by at.id order by ".$order);
+			$this->res = $babDB->db_query("select at.* from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where at.id IN (".implode(',', $this->IdEntries).")  group by at.id order by ".$order);
 			}
 
 		$this->count = isset($this->res) ? $babDB->db_num_rows($this->res) : 0;
@@ -355,10 +355,10 @@ class bab_ParentsArticleCategory extends bab_handler
 			$this->count = 0;
 		else
 			{
-			while( $babBody->parentstopcat[$categoryid]['parent'] != 0 )
+			while( $babBody->topcats[$categoryid]['parent'] != 0 )
 				{
-				$this->IdEntries[] = $babBody->parentstopcat[$categoryid]['parent'];
-				$categoryid = $babBody->parentstopcat[$categoryid]['parent'];
+				$this->IdEntries[] = $babBody->topcats[$categoryid]['parent'];
+				$categoryid = $babBody->topcats[$categoryid]['parent'];
 				}
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
@@ -690,7 +690,7 @@ class bab_Articles extends bab_handler
 
 			}
 
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' ".$archive." and id_topic IN (".implode(',', $topicid).")";
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where id_topic IN (".implode(',', $topicid).")".$archive;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -751,7 +751,7 @@ class bab_Articles extends bab_handler
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
@@ -784,7 +784,7 @@ class bab_Article extends bab_handler
 			$this->count = 0;
 		else
 		{
-			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.") and confirmed='Y'");
+			$res = $babDB->db_query("select id, id_topic, restriction from ".BAB_ARTICLES_TBL." where id IN (".$articleid.")");
 			while( $arr = $babDB->db_fetch_array($res))
 			{
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
@@ -819,7 +819,7 @@ class bab_Article extends bab_handler
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
@@ -891,11 +891,11 @@ class bab_Forums extends bab_handler
 		$this->bab_handler($ctx);
 		$forumid = $ctx->get_value('forumid');
 		if( $forumid === false || $forumid === '' )
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." order by ordering asc");
+			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y' order by ordering asc");
 		else
 			{
 			$forumid = explode(',', $forumid);
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where id IN (".implode(',', $forumid).") order by ordering asc");
+			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y' and id IN (".implode(',', $forumid).") order by ordering asc");
 			}
 		while( $row = $babDB->db_fetch_array($res))
 			{
@@ -907,7 +907,7 @@ class bab_Forums extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id IN (".implode(',', $this->IdEntries).") order by ordering asc");
+			$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id IN (".implode(',', $this->IdEntries).") order by ordering asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -948,7 +948,7 @@ class bab_Forum extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$ctx->get_value('forumid')."'");
+		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$ctx->get_value('forumid')."' and active='Y'");
 		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
 			$this->count = 1;
 		else
@@ -1042,10 +1042,12 @@ class bab_Post extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE p.id IN (".implode(',', $arr).") AND p.confirmed =  'Y'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.id IN (".implode(',', $arr).") AND p.confirmed =  'Y'";			
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
+				{
 				$order = "asc";
+				}
 
 			switch(strtoupper($order))
 			{
@@ -1128,7 +1130,7 @@ class bab_Thread extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "select id, forum from ".BAB_THREADS_TBL." WHERE id IN (".implode(',', $arr).") and active='Y'";
+			$req = "select tt.id, tt.forum from ".BAB_THREADS_TBL." tt left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum WHERE ft.active='Y' and tt.id IN (".implode(',', $arr).") and tt.active='Y'";
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -1667,11 +1669,11 @@ class bab_RecentArticles extends bab_handler
 
 			}
 
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y'".$archive;
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where id_topic IN (".implode(',', $this->topicid).")";
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-			$req .= " and id_topic IN (".implode(',', $this->topicid).")";
+			$req .= $archive;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -1730,7 +1732,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->idx++;
@@ -1862,11 +1864,11 @@ class bab_RecentPosts extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";	
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";	
 			}
 		else
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE p.confirmed='Y'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.confirmed='Y'";			
 			}
 
 		if( $this->nbdays !== false)
@@ -1963,11 +1965,11 @@ class bab_RecentThreads extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE t.forum IN (".implode(',', $arr).") and p.confirmed='Y' and p.id_parent='0'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and t.forum IN (".implode(',', $arr).") and p.confirmed='Y' and p.id_parent='0'";			
 			}
 		else
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE p.confirmed='Y' and p.id_parent='0'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.confirmed='Y' and p.id_parent='0'";			
 			}
 
 		if( $this->nbdays !== false)
@@ -2169,14 +2171,16 @@ class bab_WaitingArticles extends bab_handler
 
 		$userid = $ctx->get_value('userid');
 		if( $userid === false || $userid === '' )
+			{
 			$userid = $GLOBALS['BAB_SESS_USERID'];
+			}
 
 		if( $userid != '')
 			{
 			$this->topicid = $ctx->get_value('topicid');
-			$req = "select a.id, a.id_topic from ".BAB_ARTICLES_TBL." a where a.confirmed='N'";
+			$req = "select adt.id, adt.id_topic from ".BAB_ART_DRAFTS_TBL." adt where adt.result='".BAB_ART_STATUS_WAIT."'";
 			if( $this->topicid !== false && $this->topicid !== '' )
-				$req .= " and a.id_topic IN (".$this->topicid.")";
+				$req .= " and adt.id_topic IN (".$this->topicid.")";
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
@@ -2191,12 +2195,14 @@ class bab_WaitingArticles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $this->IdEntries).") order by date desc");
+				$this->res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id IN (".implode(',', $this->IdEntries).") order by date_submission desc");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
 		else
+			{
 			$this->count = 0;
+			}
 
 		$this->ctx->curctx->push('CCount', $this->count);
 		}
@@ -2212,16 +2218,20 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head'],'OVML'));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body'],'OVML'));
 			if( empty($arr['body']))
+				{
 				$this->ctx->curctx->push('ArticleReadMore', 0);
+				}
 			else
+				{
 				$this->ctx->curctx->push('ArticleReadMore', 1);
+				}
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_submission']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
-			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$arr['id_topic']."&article=".$arr['id']);
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewa&article=".$arr['id']."&topics=".$arr['id_topic']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=approb");
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id']."&topics=".$arr['id_topic']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2296,8 +2306,8 @@ class bab_WaitingComments extends bab_handler
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('CommentAuthor', $arr['name']);
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
-			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=ReadC&com=".$arr['id']."&topics=".$arr['id_topic']."&article=".$arr['id_article']);
-			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
+			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=approb");
+			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id']."&idart=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2407,15 +2417,34 @@ class bab_WaitingPosts extends bab_handler
 
 		$userid = $ctx->get_value('userid');
 		if( $userid === false || $userid === '' )
-			$userid = $GLOBALS['BAB_SESS_USERID'];
-
-		if( $userid != '')
 			{
-			$this->forumid = $ctx->get_value('forumid');
-			$req = "SELECT p.*, t.forum  FROM  ".BAB_POSTS_TBL." p, ".BAB_FORUMS_TBL." f, ".BAB_THREADS_TBL." t WHERE p.confirmed ='N' AND t.forum = f.id AND t.id = p.id_thread and f.moderator='".$userid."'";
+			$userid = 0;
+			}
 
-			if( $this->forumid !== false && $this->forumid !== '' )
-				$req .= " and f.id IN (".$this->forumid.")";
+		$req = "select id from ".BAB_FORUMS_TBL." where active='Y'";
+		$this->forumid = $ctx->get_value('forumid');
+		if( $this->forumid !== false && $this->forumid !== '' )
+			{
+			$req .= " and id IN (".$this->forumid.")";
+			}
+
+		$res = $babDB->db_query($req);
+		$arrf = array();
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			if( $userid == 0 && bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $arr['id']))
+				{
+				$arrf[] = $arr['id'];
+				}
+			elseif( $userid != 0 && bab_isAccessValidByUser(BAB_FORUMSMAN_GROUPS_TBL, $arr['id'], $userid))
+				{
+				$arrf[] = $arr['id'];
+				}
+			}
+
+		if( count($arrf) > 0)
+			{
+			$req = "SELECT p.*, t.forum  FROM  ".BAB_POSTS_TBL." p, ".BAB_FORUMS_TBL." f, ".BAB_THREADS_TBL." t WHERE p.confirmed ='N' AND t.forum = f.id AND t.id = p.id_thread and f.id IN (".implode(',', $arrf).")";
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);

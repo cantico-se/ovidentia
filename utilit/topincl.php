@@ -22,7 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/imgincl.php";
 
 class categoriesHierarchy
 {
@@ -34,21 +33,47 @@ class categoriesHierarchy
 	var $topics;
 	var $topictitle;
 
-	function categoriesHierarchy($topics)
+	function categoriesHierarchy($topics,$cat,$link)
 		{
 		global $babBody, $babDB;
+		$this->link = $link;
+
+		if( $topics != 0 )
+			{
+			$res = $babDB->db_query("select id_cat, category from ".BAB_TOPICS_TBL." where id='".$topics."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arr = $babDB->db_fetch_array($res);
+				$cat = $arr['id_cat'];
+				$this->arrparents[] = array($topics, $arr['category']);
+				}
+			else
+				{
+				$cat = 0;
+				}		
+			}
+		else
+			{
+			$topics = 0;
+			}
+
+		if( $cat == -1)
+			{
+			$cat = 0;
+			}
 
 		$this->topics = $topics;
-
-		$this->arrparents[] = $topics;
-		list($cat, $this->topictitle) = $babDB->db_fetch_row($babDB->db_query("select id_cat, category from ".BAB_TOPICS_TBL." where id='".$topics."'"));
-		$this->arrparents[] = $cat;
-		while( $babBody->parentstopcat[$cat]['parent'] != 0 )
+		$this->cat = $cat;
+		if( isset($babBody->topcats[$cat]) )
 			{
-			$this->arrparents[] = $babBody->parentstopcat[$cat]['parent'];
-			$cat = $babBody->parentstopcat[$cat]['parent'];
+			$this->arrparents[] = array($cat, $babBody->topcats[$cat]['title']);
+			while( $babBody->topcats[$cat]['parent'] != 0 )
+			{
+				$this->arrparents[] = array($babBody->topcats[$cat]['parent'],$babBody->topcats[$babBody->topcats[$cat]['parent']]['title']);
+				$cat = $babBody->topcats[$cat]['parent'];
 			}
-		$this->arrparents[] = 0;
+			}
+		$this->arrparents[] = array(0, bab_translate("Top"));
 
 		$this->parentscount = count($this->arrparents);
 		$this->arrparents = array_reverse($this->arrparents);
@@ -61,25 +86,17 @@ class categoriesHierarchy
 		static $i = 0;
 		if( $i < $this->parentscount)
 			{
-			if( $i == $this->parentscount - 1 )
+			if( $i == ($this->parentscount - 1))
 				{
-				$this->parentname = $this->topictitle;
 				$this->parenturl = "";
 				$this->burl = false;
 				}
 			else
 				{
 				$this->burl = true;
-				if( $this->arrparents[$i] == 0 )
-					{
-					$this->parentname = bab_translate("Top");
+				$this->parenturl = $this->link."&cat=".$this->arrparents[$i][0];
 					}
-				else
-					{
-					$this->parentname = $babBody->parentstopcat[$this->arrparents[$i]]['title'];
-					}
-				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
-				}
+			$this->parentname = $this->arrparents[$i][1];
 			$i++;
 			return true;
 			}
@@ -101,7 +118,7 @@ function viewCategoriesHierarchy($topics)
 
 		function tempvch($topics)
 			{
-			$this->categoriesHierarchy($topics);
+			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			}
 		}
 
@@ -114,7 +131,7 @@ class tempvch_txt extends categoriesHierarchy
 
 	function tempvch_txt($topics)
 		{
-		$this->categoriesHierarchy($topics);
+		$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 		}
 	}
 
@@ -122,7 +139,7 @@ function viewCategoriesHierarchy_txt($topics)
 	{
 	global $babBody;
 
-	$temp = new tempvch_txt($topics);
+	$temp = new tempvch_txt($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 	return bab_printTemplate($temp,"articles.html", "categorieshierarchy_txt");
 	}
 
@@ -211,7 +228,7 @@ function bab_getArticleTitle($article)
 function bab_getArticleArray($article,$fullpath = false)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$article."' AND a.confirmed = 'Y' AND t.id=a.id_topic";
+	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$article."' AND t.id=a.id_topic";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -279,359 +296,5 @@ function bab_getCommentTitle($com)
 		{
 		return "";
 		}
-	}
-
-
-function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
-	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-
-	if(!class_exists("tempa"))
-		{
-		class tempa
-			{
-			var $articletitle;
-			var $message;
-			var $from;
-			var $author;
-			var $category;
-			var $categoryname;
-			var $title;
-			var $site;
-			var $sitename;
-			var $date;
-			var $dateval;
-
-
-			function tempa($top, $title, $homepage0, $homepage1)
-				{
-				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$this->articletitle = $title;
-				$this->message = bab_translate("A new article is proposed for home page(s)"). ": ";
-				if( $homepage1 == "1" )
-					$this->message .= bab_translate("Registered users");
-				$this->message .= " - ";
-				if( $homepage0 == "2" )
-					$this->message .= bab_translate("Unregistered users");
-
-				$this->from = bab_translate("Author");
-				$this->category = bab_translate("Topic");
-				$this->title = bab_translate("Title");
-				$this->categoryname = $top;
-				$this->site = bab_translate("Web site");
-				$this->sitename = $babSiteName;
-				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
-				if( !empty($BAB_SESS_USER))
-					$this->author = $BAB_SESS_USER;
-				else
-					$this->author = bab_translate("Unknown user");
-
-				if( !empty($BAB_SESS_EMAIL))
-					$this->authoremail = $BAB_SESS_EMAIL;
-				else
-					$this->authoremail = "";
-				}
-			}
-		}
-    $mail = bab_mail();
-	if( $mail == false )
-		return;
-
-	$db = $GLOBALS['babDB'];
-	$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." ut LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where id_group='3'";
-	$result=$db->db_query($sql);
-	while( $arr = $db->db_fetch_array($result))
-		{
-		$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'] , $arr['lastname']));
-		}
-
-	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-	$mail->mailSubject(bab_translate("New article for home page"));
-
-	$tempa = new tempa($top, $title, $homepage0, $homepage1);
-	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "articlehomepage"));
-	$mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempa,"mailinfo.html", "articlehomepagetxt");
-	$mail->mailAltBody($message);
-
-	$mail->send();
-	}
-
-
-function notifyArticleApprovers($id, $users)
-	{
-	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-
-	if(!class_exists("tempa"))
-		{
-		class tempa
-			{
-			var $articletitle;
-			var $message;
-			var $from;
-			var $author;
-			var $category;
-			var $categoryname;
-			var $title;
-			var $site;
-			var $sitename;
-			var $date;
-			var $dateval;
-
-
-			function tempa($id)
-				{
-				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$db = $GLOBALS['babDB'];
-				$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$id."'"));
-				$this->articletitle = $arr['title'];
-				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$arr['id_topic']);
-				$this->message = bab_translate("A new article is waiting for you");
-				$this->from = bab_translate("Author");
-				$this->category = bab_translate("Topic");
-				$this->title = bab_translate("Title");
-				$this->categoryname = viewCategoriesHierarchy_txt($arr['id_topic']);
-				$this->site = bab_translate("Web site");
-				$this->sitename = $babSiteName;
-				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
-				if( !empty($arr['id_author']) && $arr['id_author'] != 0)
-					{
-					$this->author = bab_getUserName($arr['id_author']);
-					$this->authoremail = bab_getUserEmail($arr['id_author']);
-					}
-				else
-					{
-					$this->author = bab_translate("Unknown user");
-					$this->authoremail = "";
-					}
-				}
-			}
-		}
-
-	$mail = bab_mail();
-	if( $mail == false )
-		return;
-
-	if( count($users) > 0 )
-		{
-		$sql = "select email from ".BAB_USERS_TBL." where id IN (".implode(',', $users).")";
-		$result=$babDB->db_query($sql);
-		while( $arr = $babDB->db_fetch_array($result))
-			{
-			$mail->mailBcc($arr['email']);
-			}
-		}
-	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-	$mail->mailSubject(bab_translate("New waiting article"));
-
-	$tempa = new tempa($id);
-	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "articlewait"));
-	$mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewaittxt");
-	$mail->mailAltBody($message);
-
-	$mail->send();
-	}
-
-function notifyCommentApprovers($idcom, $nfusers)
-	{
-	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-
-	if(!class_exists("tempa"))
-		{
-		class tempca
-			{
-			var $article;
-			var $articlename;
-			var $message;
-			var $from;
-			var $author;
-			var $category;
-			var $categoryname;
-			var $subject;
-			var $subjectname;
-			var $title;
-			var $site;
-			var $sitename;
-			var $date;
-			var $dateval;
-
-			function tempca($idcom)
-				{
-				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$db = $GLOBALS['babDB'];
-				$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$idcom."'"));
-
-				$this->message = bab_translate("A new comment is waiting for you");
-				$this->from = bab_translate("Author");
-				$this->subject = bab_translate("Subject");
-				$this->subjectname = $arr['subject'];
-				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$arr['id_topic']."&article=".$arr['id_article']);
-				$this->article = bab_translate("Article");
-				$this->articlename = bab_getArticleTitle($arr['id_article']);
-				$this->category = bab_translate("Topic");
-				$this->categoryname = viewCategoriesHierarchy_txt($arr['id_topic']);
-				$this->site = bab_translate("Web site");
-				$this->sitename = $babSiteName;
-				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
-				if( !empty($BAB_SESS_USER))
-					$this->author = $BAB_SESS_USER;
-				else
-					$this->author = bab_translate("Unknown user");
-
-				if( !empty($BAB_SESS_EMAIL))
-					$this->authoremail = $BAB_SESS_EMAIL;
-				else
-					$this->authoremail = "";
-				}
-			}
-		
-		$mail = bab_mail();
-		if( $mail == false )
-			return;
-
-		if( count($nfusers) > 0 )
-			{
-			$sql = "select email from ".BAB_USERS_TBL." where id IN (".implode(',', $nfusers).")";
-			$result=$babDB->db_query($sql);
-			while( $arr = $babDB->db_fetch_array($result))
-				{
-				$mail->mailBcc($arr['email']);
-				}
-			}
-		$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-		$mail->mailSubject(bab_translate("New waiting comment"));
-
-		$tempa = new tempca($idcom);
-		$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "commentwait"));
-		$mail->mailBody($message, "html");
-
-		$message = bab_printTemplate($tempa,"mailinfo.html", "commentwaittxt");
-		$mail->mailAltBody($message);
-		$mail->send();
-		}
-	}
-function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, $restriction)
-	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-
-	if(!class_exists("tempcc"))
-		{
-		class tempcc
-			{
-			var $message;
-			var $from;
-			var $author;
-			var $about;
-			var $title;
-			var $titlename;
-			var $site;
-			var $sitename;
-			var $date;
-			var $dateval;
-
-
-			function tempcc($topicname, $title, $author, $msg,$topics)
-				{
-				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$this->topic = bab_translate("Topic");
-				$this->topicname = $topicname;
-				$this->title = bab_translate("Title");
-				$this->authorname = $author;
-				$this->author = bab_translate("Author");
-				$this->titlename = $title;
-				$this->site = bab_translate("Web site");
-				$this->sitename = $babSiteName;
-				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
-				$this->message = $msg;
-				$this->linkurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
-				$this->linkname = viewCategoriesHierarchy_txt($topics);
-				}
-			}
-		}	
-    $mail = bab_mail();
-	if( $mail == false )
-		return;
-
-	if( $what == 'mod' )
-		$msg = bab_translate("An article has been modified");
-	else
-		$msg = bab_translate("An article has been published");
-
-
-    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject($msg);
-
-	$tempc = new tempcc($topicname, $title, $author, $msg,$topics);
-	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "notifyarticle"));
-
-	$messagetxt = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
-
-	$sep = ',';
-	if( !empty($restriction))
-	{
-		if( strchr($restriction, ","))
-			$sep = ',';
-		else
-			$sep = '&';
-		$arrres = explode($sep, $restriction);			
-	}
-
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id_group from ".BAB_TOPICSVIEW_GROUPS_TBL." where  id_object='".$topics."'");
-	$arrusers = array();
-	if( $res && $db->db_num_rows($res) > 0 )
-		{
-		while( $row = $db->db_fetch_array($res))
-			{
-			switch($row['id_group'])
-				{
-				case 0:
-				case 1:
-					$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-					break;
-				case 2:
-					return;
-				default:
-					$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
-					break;
-				}
-
-			if( $res2 && $db->db_num_rows($res2) > 0 )
-				{
-				$count = 0;
-				while(($arr = $db->db_fetch_array($res2)) && $count < 25)
-					{
-					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
-						{
-						$arrusers[] = $arr['id'];
-						if( !empty($restriction))
-							$add = bab_articleAccessByRestriction($restriction, $arr['id']);
-						else
-							$add = true;
-						if( $add )
-							{
-							$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-							$count++;
-							}
-						}
-					}
-
-				$mail->mailBody($message, "html");
-				$mail->mailAltBody($messagetxt);
-				$mail->send();
-				$mail->clearBcc();
-				$mail->clearTo();
-				$count = 0;
-
-				}	
-			}
-		}	
 	}
 ?>

@@ -84,4 +84,25 @@ function deleteImages($txt, $id, $prefix)
 		}
 	}
 
+
+function imagesUpdateLink($txt, $prefix, $newprefix)
+	{
+	preg_match_all("|src=\"?([^\"' >]+)|i", $txt, $m);
+	while(list(,$link) = each($m[1]))
+		{
+		$rr = explode('/', $link);
+		$file = $rr[sizeof($rr) -1];
+		$rr = explode( '_', $file );
+		$oldprefix = (isset($rr[0])?$rr[0]:'')."_".(isset($rr[1])?$rr[1]:'')."_";
+		if( $oldprefix == $prefix && is_file(BAB_IUD_ARTICLES.$file))
+			{
+			$txt = preg_replace("/".preg_quote($oldprefix, "/")."/", $newprefix, $txt);
+			array_shift($rr);
+			array_shift($rr);
+			@rename(BAB_IUD_ARTICLES.$file, BAB_IUD_ARTICLES.$newprefix.implode('_', $rr));
+			}
+		}
+	return $txt;
+	}
+
 ?>

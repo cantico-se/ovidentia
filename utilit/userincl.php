@@ -23,6 +23,11 @@
 ************************************************************************/
 include_once "base.php";
 
+define("BAB_ART_STATUS_DRAFT", 0);
+define("BAB_ART_STATUS_WAIT", 1);
+define("BAB_ART_STATUS_OK"	, 2);
+define("BAB_ART_STATUS_NOK"	, 3);
+
 function bab_array_search($str, $vars)
 {
 	foreach ($vars as $key => $val)
@@ -59,7 +64,7 @@ function bab_toAmPm($str)
 function bab_isUserTopicManager($topics)
 	{
 	global $babBody, $BAB_SESS_USERID;
-	if( count($babBody->babmanagertopics) > 0 && in_array($topics, $babBody->babmanagertopics))
+	if( count($babBody->topman) > 0 && in_array($topics, $babBody->topman))
 		{
 		return true;
 		}
@@ -164,16 +169,26 @@ function bab_isUserAdministrator()
 
 function bab_getWaitingIdSAInstance($iduser)
 	{
+	static $wIdSAInstance = array();
+	if( !isset($wIdSAInstance[$iduser]))
+		{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$arr = getWaitingApprobations($iduser);
-	return $arr['idschi'];
+	$wIdSAInstance[$iduser] = getWaitingApprobations($iduser);
+	}
+
+	return $wIdSAInstance[$iduser]['idschi'];
 	}
 
 function bab_getWaitingIdSA($iduser)
 	{
+	static $wIdSA = array();
+	if( !isset($wIdSA[$iduser]))
+		{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$arr = getWaitingApprobations($iduser);
-	return $arr['idsch'];
+		$wIdSA[$iduser] = getWaitingApprobations($iduser);
+	}
+
+	return $wIdSA[$iduser]['idsch'];
 	}
 
 function bab_getWaitingArticles($topics)
@@ -185,7 +200,7 @@ function bab_getWaitingArticles($topics)
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 		if( count($arrschi) > 0 )
 			{
-			$res = $babDB->db_query("SELECT at.id , at.idfai, at.id_topic FROM ".BAB_ARTICLES_TBL." at WHERE at.confirmed='N'");
+			$res = $babDB->db_query("SELECT adt.id , adt.idfai, adt.id_topic FROM ".BAB_ART_DRAFTS_TBL." adt WHERE adt.result='".BAB_ART_STATUS_WAIT."'");
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				$babBody->waitingarticles[$arr['id_topic']][] = $arr['id'];
@@ -249,9 +264,57 @@ function bab_isCurrentUserApproverFlow($idsa)
 		}
 	}
 
-function bab_isAccessValid($table, $idobject)
+
+function bab_isAccessValidByUser($table, $idobject, $iduser)
+{
+	global $babBody;
+	$add = false;
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select id_group from ".$table." where id_object='".$idobject."'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$row = $db->db_fetch_array($res);
+		switch($row['id_group'])
+			{
+			case "0": // everybody
+				$add = true;
+				break;
+			case "1": // users
+					$res = $db->db_query("select id from ".BAB_USERS_TBL." where id='".$iduser."' and disabled!='1'");
+					if( $res && $db->db_num_rows($res) > 0 )
+						{
+						$add = true;
+						}
+				break;
+			case "2": // guests
+				if( $iduser == 0 )
+					{
+					$add = true;
+					}
+				break;
+			default:  //groups
+				if( $iduser != 0 )
+					{
+					$res = $db->db_query("select ".BAB_USERS_GROUPS_TBL.".id from ".BAB_USERS_GROUPS_TBL." join ".$table." where ".$table.".id_object=".$idobject." and ".$table.".id_group=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_USERS_GROUPS_TBL.".id_object = '".$iduser."'");
+					if( $res && $db->db_num_rows($res) > 0 )
+						{
+						$add = true;
+						}
+					}
+				break;
+			}
+		}
+	return $add;
+}
+
+function bab_isAccessValid($table, $idobject, $iduser='')
 {
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
+	if( $iduser != '')
+		{
+		return bab_isAccessValidByUser($table, $idobject, $iduser);
+		}
+
 	$ok = false;
 	if( !isset($babBody->ovgroups[1][$table]))
 		{
@@ -309,7 +372,11 @@ function bab_isAccessValid($table, $idobject)
 	return $ok;
 }
 
-
+function bab_deleteArticleDraft($id)
+{
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteDraft($id);
+}
 
 /* for all users */
 function bab_isUserLogged($iduser = "")
@@ -386,7 +453,9 @@ function bab_getUserName($id)
 	static $arrnames = array();
 
 	if( isset($arrnames[$id]) )
+		{
 		return $arrnames[$id];
+		}
 
 	$db = $GLOBALS['babDB'];
 	$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='$id'";

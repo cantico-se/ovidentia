@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/topincl.php";
 
 function listTopicCategory($cat)
 	{
@@ -89,10 +89,10 @@ function listTopicCategory($cat)
 			if( $cat != 0 )
 				{
 				$this->arrparents[] = $cat;
-				while( $babBody->parentstopcat[$cat]['parent'] != 0 )
+				while( $babBody->topcats[$cat]['parent'] != 0 )
 					{
-					$this->arrparents[] = $babBody->parentstopcat[$cat]['parent'];
-					$cat = $babBody->parentstopcat[$cat]['parent'];
+					$this->arrparents[] = $babBody->topcats[$cat]['parent'];
+					$cat = $babBody->topcats[$cat]['parent'];
 					}
 				}
 			$this->arrparents[] = 0;
@@ -116,7 +116,7 @@ function listTopicCategory($cat)
 						}
 					}
 
-				$res = $this->db->db_query("select count(id) total, id_topic from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $arrtop).") and confirmed='Y' GROUP by id_topic");
+				$res = $this->db->db_query("select count(id) total, id_topic from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $arrtop).") GROUP by id_topic");
 				while( $arr = $this->db->db_fetch_array($res))
 					{
 					for($i=0; $i < $this->count; $i++)
@@ -190,7 +190,7 @@ function listTopicCategory($cat)
 				if( $this->arrparents[$i] == 0 )
 					$this->parentname = bab_translate("Top");
 				else
-					$this->parentname = $babBody->parentstopcat[$this->arrparents[$i]]['title'];
+					$this->parentname = $babBody->topcats[$this->arrparents[$i]]['title'];
 				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
 				if( $i == $this->parentscount - 1 )
 					$this->burl = false;

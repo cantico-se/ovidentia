@@ -22,10 +22,11 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/defines.php";
-include $babInstallPath."utilit/dbutil.php";
-include $babInstallPath."utilit/template.php";
-include $babInstallPath."utilit/userincl.php";
+include_once $babInstallPath."utilit/defines.php";
+include_once $babInstallPath."utilit/dbutil.php";
+include_once $babInstallPath."utilit/template.php";
+include_once $babInstallPath."utilit/userincl.php";
+include_once $babInstallPath."utilit/mailincl.php";
 
 function bab_formatDate($format, $time)
 {
@@ -799,7 +800,9 @@ function babUserSection($close)
 	$this->vacwaiting = false;
 
 	if( $close )
+		{
 		return;
+		}
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
@@ -828,7 +831,6 @@ function babUserSection($close)
 		}
 	
 	$vac = false;
-	$mtopics = false;
 	$bemail = false;
 	$idcal = 0;
 	if( !empty($GLOBALS['BAB_SESS_USER']))
@@ -841,17 +843,29 @@ function babUserSection($close)
 			$vac = true;
 			}
 
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			$mtopics = true;
-
 		$bemail = bab_mailAccessLevel();
 		if( $bemail == 1 || $bemail == 2)
 			$bemail = true;
 		}
 
-	if( $mtopics )
+
+	if( !empty($GLOBALS['BAB_SESS_USER']))
+		{
+		if( count($babBody->topsub) > 0  || count($babBody->topmod) > 0 )
+			{
+			$this->array_urls[bab_translate("Publication")] = $GLOBALS['babUrlScript']."?tg=artedit";
+			}
+		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		if( count($arrschi) > 0 )
+			{
+			$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=approb";
+			}
+		}
+
+	if( count($babBody->topman) > 0 )
+		{
 		$this->array_urls[bab_translate("Managed topics")] = $GLOBALS['babUrlScript']."?tg=topman";
+		}
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
@@ -866,7 +880,9 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Faq")] = $GLOBALS['babUrlScript']."?tg=faq";
 		}
 	if( $vac )
+		{
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacuser";
+		}
 	if( bab_calendarAccess() )
 		{
 		$babBody->calaccess = true;
@@ -885,7 +901,9 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$babBody->calendarids[0]['id'];
 		}
 	if( $bemail )
+		{
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";
+		}
 	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
 		{
 		$this->array_urls[bab_translate("Contacts")] = $GLOBALS['babUrlScript']."?tg=contacts";
@@ -927,7 +945,9 @@ function babUserSection($close)
 		}
 
 	if( $bdiradd )
+		{
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
+		}
 
 	if( count($babBody->ocids) > 0 )
 		{
@@ -1237,7 +1257,7 @@ function babForumsSection($close)
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = bab_translate("Forums");
 
-	$res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." order by ordering asc");
+	$res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' order by ordering asc");
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
@@ -1269,7 +1289,7 @@ function forumsGetNext()
 		$this->text = $this->arr['name'];
 		$this->url = $GLOBALS['babUrlScript']."?tg=threads&forum=".$this->arr['id'];
 		$this->waiting = "";
-		if( $BAB_SESS_USERID == $this->arr["moderator"])
+		if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->arr['id']))
 			{
 			$this->bfooter = 1;
 			$req = "select count(".BAB_POSTS_TBL.".id) as total from ".BAB_POSTS_TBL." join ".BAB_THREADS_TBL." where ".BAB_THREADS_TBL.".active='Y' and ".BAB_THREADS_TBL.".forum='".$this->arr['id'];
@@ -1285,7 +1305,9 @@ function forumsGetNext()
 		return true;
 		}
 	else
+		{
 		return false;
+		}
 	}
 }
 
@@ -1341,7 +1363,12 @@ var $newarticles;
 var $newcomments;
 var $newposts;
 var $topview = array();
+var $topsub = array();
+var $topcom = array();
+var $topmod = array();
+var $topman = array();
 var $topcatview = array();
+var $topcats = array(); /* all topics categories */
 var $calaccess;
 var $isSuperAdmin;
 var $currentAdmGroup; /* current group administrated by current user */	
@@ -1349,7 +1376,6 @@ var $currentDGGroup; /* contains database row of current delegation groups */
 var $dgAdmGroups; /* all groups administrated by current user */
 var $ovgroups; /* all ovidentia groups */
 var $babsite;
-var $babmanagertopics;
 var $ocids; /* orgnization chart ids */
 var $calendarids = array(); /* calendar ids */
 
@@ -1904,29 +1930,6 @@ function printout()
 		}
 }
 
-function bab_getTopcatRecurse($inclause)
-	{
-	global $babDB, $babBody;
-	$res = $babDB->db_query("SELECT id, title, id_parent FROM ".BAB_TOPICS_CATEGORIES_TBL." WHERE id IN(".$inclause.")");
-	$arrparents = array();
-	while($arr = $babDB->db_fetch_array($res))
-		{
-			$babBody->parentstopcat[$arr['id']]['parent'] = $arr['id_parent'];
-			$babBody->parentstopcat[$arr['id']]['title'] = $arr['title'];
-			$parent = $arr['id_parent'];
-			if( $parent != 0 && !in_array($parent, $babBody->topcatview))
-				{
-					$babBody->topcatview[] = $parent;
-					$arrparents[] = $parent;
-				}
-		}
-
-	if(!empty($arrparents))
-		{
-			bab_getTopcatRecurse(implode(',', $arrparents));
-		}
-	}
-
 
 function bab_updateUserSettings()
 {
@@ -1953,11 +1956,14 @@ function bab_updateUserSettings()
 		$babBody->babaddons[$arr['id']] = $arr;
 		}
 
-	$res = $babDB->db_query("select id, id_cat, id_approver from ".BAB_TOPICS_TBL."");
+	$res = $babDB->db_query("select id, id_cat from ".BAB_TOPICS_TBL."");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if( !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $row['id_approver'] )
-			$babBody->babmanagertopics[] = $row['id'];
+		if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $row['id']))
+			{
+			$babBody->topman[] = $row['id'];
+			}
+
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
 			{
 			$babBody->topview[] = $row['id'];
@@ -1966,13 +1972,37 @@ function bab_updateUserSettings()
 				$babBody->topcatview[] = $row['id_cat'];
 				}
 			}
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $row['id']) )
+			{
+			$babBody->topsub[] = $row['id'];
+			}
+		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $row['id']) )
+			{
+			$babBody->topcom[] = $row['id'];
+			}
+		if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $row['id']))
+			{
+			$babBody->topmod[] = $row['id'];
+			}
 		}
 
 	$babBody->ocids = bab_orgchartAccess();
 
 	if(!empty($babBody->topcatview))
 		{
-		bab_getTopcatRecurse(implode(',', $babBody->topcatview));
+		$topcats = $babBody->topcatview;
+		for( $i=0; $i < count($topcats); $i++ )
+			{
+			$cat = $topcats[$i];
+			while( $babBody->topcats[$cat]['parent'] != 0 )
+				{
+				if( !in_array($babBody->topcats[$cat]['parent'], $babBody->topcatview))
+					{
+					$babBody->topcatview[] = $babBody->topcats[$cat]['parent'];
+					}
+				$cat = $babBody->topcats[$cat]['parent'];
+				}
+		}
 		}
 
 	$babBody->isSuperAdmin = false;
@@ -2006,7 +2036,7 @@ function bab_updateUserSettings()
 
 			if( count($babBody->topview) > 0 )
 				{
-				$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
+				$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where date >= '".$babBody->lastlog."'");
 				while( $row = $babDB->db_fetch_array($res))
 					{
 					if( in_array($row['id_topic'], $babBody->topview) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
@@ -2102,7 +2132,9 @@ function bab_updateUserSettings()
 				}
 			}
 		else
+			{
 			$userid = 0;
+			}
 
 		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dggroup) values ('".$userid."', '".session_id()."', now(), '".$GLOBALS['REMOTE_ADDR']."', '".$GLOBALS['HTTP_X_FORWARDED_FOR']."', '".$babBody->currentAdmGroup."')");
 		}
@@ -2220,6 +2252,47 @@ function bab_updateSiteSettings()
 		$babBody->babsite['change_nickname'] ='N';
 		}
 
+	$res = $babDB->db_query("select id, title, description, id_parent from ".BAB_TOPICS_CATEGORIES_TBL."");
+	while($arr = $babDB->db_fetch_array($res))
+		{
+		$babBody->topcats[$arr['id']]['parent'] = $arr['id_parent'];
+		$babBody->topcats[$arr['id']]['title'] = $arr['title'];
+		$babBody->topcats[$arr['id']]['description'] = $arr['description'];
+		}
+
+	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);
+	while( $row  = $babDB->db_fetch_array($res))
+		{
+		if( $row['time'] + get_cfg_var('session.gc_maxlifetime') < time()) 
+			{
+			$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$row['id']."'");
+			while( $arr  = $babDB->db_fetch_array($res2))
+				{
+				bab_deleteArticleDraft($arr['id']);
+				}
+			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$row['id']."'");
+			}
+		}
+
+	$res = $babDB->db_query("select id,id_author, id_topic, date_submission from ".BAB_ART_DRAFTS_TBL." where result='".BAB_ART_STATUS_DRAFT."' and date_submission <= now() and date_submission !='0000-00-00 00:00:00'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/artincl.php";
+	while( $arr  = $babDB->db_fetch_array($res))
+		{
+		if(  $arr['id_topic'] != 0 && bab_isAccessValidByUser(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic'], $arr['id_author']))
+			{
+			bab_submitArticleDraft($arr['id']);
+			}
+		}
+	}
+
+	$res = $babDB->db_query("select id from ".BAB_ARTICLES_TBL." where date_archiving <= now() and date_archiving !='0000-00-00 00:00:00' and archive='N'");
+	while( $arr  = $babDB->db_fetch_array($res))
+		{
+		$babDB->db_query("update ".BAB_ARTICLES_TBL." set archive='Y' where id = '".$arr['id']."'");
+		}
 }
 
 class babLanguageFilter

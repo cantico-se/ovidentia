@@ -48,7 +48,7 @@ function listArticles($topics, $res)
 
 		function temp($topics, $res)
 			{
-			$this->categoriesHierarchy($topics);
+			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->modify = bab_translate("Modify");
 			$this->confirm = bab_translate("Confirm");
 			$this->db = $GLOBALS['babDB'];
@@ -103,7 +103,7 @@ function readMore($topics, $article)
 
 		function temp($topics, $article)
 			{
-			$this->categoriesHierarchy($topics);
+			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
@@ -168,7 +168,7 @@ function modifyArticle($topics, $article)
 
 		function temp($topics, $article)
 			{
-			$this->categoriesHierarchy($topics);
+			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->article = $article;
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");
@@ -261,7 +261,7 @@ function confirmArticle($article, $topics)
 
 		function temp($topics, $article)
 			{
-			$this->categoriesHierarchy($topics);
+			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->article = $article;
 			$this->name = bab_translate("Author");
 			$this->modify = bab_translate("Update");
@@ -331,7 +331,7 @@ function listWaitingComments($topics, $article, $res)
 
 		function temp($topics, $article, $res)
 			{
-			$this->categoriesHierarchy($topics);
+			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $res;
 			$this->count = $this->db->db_num_rows($this->res);
@@ -495,7 +495,7 @@ function confirmComment($article, $topics, $com)
 
 		function temp($topics, $article, $com)
 			{
-			$this->categoriesHierarchy($topics);
+			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			$this->article = $article;
 			$this->com = $com;
 			$this->name = bab_translate("Submiter");
@@ -621,7 +621,9 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 				}
 
 		if( $arrart['id_author'] == 0 || (($artauthor = bab_getUserName($arrart['id_author'])) == ''))
+			{
 			$artauthor = bab_translate("Anonymous");
+			}
 
 		if( $bnotify == "Y" )
 			notifyArticleGroupMembers(bab_getCategoryTitle($topics), $topics, $arrart['title'], $artauthor, 'add', $arrart['restriction']);
@@ -630,7 +632,9 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 			$subject = bab_translate("About your article");
 			$nfusers = getWaitingApproversFlowInstance($arrart['idfai'], true);
 			if( count($nfusers) > 0 )
+				{
 				notifyArticleApprovers($article, $nfusers);
+				}
 			break;
 		}
 

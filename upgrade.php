@@ -2163,7 +2163,7 @@ $req = "ALTER TABLE ".BAB_TOPICS_TBL." DROP ordering";
 $res = $db->db_query($req);
 if( !$res)
 	{
-	$ret = "Alteration of <b>".BAB_TOPICS_CATEGORIES_TBL."</b> table failed !<br>";
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
 
@@ -2771,6 +2771,350 @@ while( $arr = $db->db_fetch_array($res))
 		}
 	$db->db_data_seek($resf, 0 );
 	}
+return $ret;
+}
+
+function upgrade410to411()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "CREATE TABLE ".BAB_ART_DRAFTS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_author int(11) unsigned NOT NULL default '0',";
+$req .= "date_creation datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "date_modification datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "date_submission datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "date_publication datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "date_archiving datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "title tinytext NOT NULL,";
+$req .= "head mediumtext NOT NULL,";
+$req .= "body longtext NOT NULL,";
+$req .= "lang varchar(10) NOT NULL default '',";
+$req .= "trash enum('N','Y') NOT NULL default 'N',";
+$req .= "id_topic int(11) unsigned NOT NULL default '0',";
+$req .= "restriction varchar(255) NOT NULL default '',";
+$req .= "hpage_private enum('N','Y') NOT NULL default 'N',";
+$req .= "hpage_public enum('N','Y') NOT NULL default 'N',";
+$req .= "notify_members enum('Y','N') NOT NULL default 'N',";
+$req .= "idfai int(11) unsigned NOT NULL default '0',";
+$req .= "result smallint(5) unsigned NOT NULL default '0',";
+$req .= "id_article int(11) unsigned NOT NULL default '0',";
+$req .= "id_anonymous int(11) unsigned NOT NULL default '0',";
+$req .= "approbation enum('0','1','2') NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_topic (id_topic),";
+$req .= "KEY id_author (id_author),";
+$req .= "KEY trash (trash),";
+$req .= "KEY result (result)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ART_DRAFTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_ART_DRAFTS_FILES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_draft int(11) unsigned NOT NULL default '0',";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_draft (id_draft)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ART_DRAFTS_FILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_ART_DRAFTS_NOTES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_draft int(11) unsigned NOT NULL default '0',";
+$req .= "content text NOT NULL,";
+$req .= "id_author int(11) unsigned NOT NULL default '0',";
+$req .= "date_note datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_draft (id_draft),";
+$req .= "KEY id_author (id_author)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ART_DRAFTS_NOTES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_ART_FILES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_article int(11) unsigned NOT NULL default '0',";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_article (id_article)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ART_FILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_ART_LOG_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_article int(11) unsigned NOT NULL default '0',";
+$req .= "id_author int(11) unsigned NOT NULL default '0',";
+$req .= "date_log datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "action_log enum('lock','unlock','commit','refused','accepted') NOT NULL default 'lock',";
+$req .= "art_log text NOT NULL,";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_article (id_article),";
+$req .= "KEY id_author (id_author)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ART_LOG_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "CREATE TABLE ".BAB_TOPICSMAN_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_TOPICSMAN_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_TOPICSMOD_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_TOPICSMOD_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_hpages ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_pubdates ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_attachments ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_update ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD max_articles tinyint(3) UNSIGNED DEFAULT '10' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_manupdate ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD idsa_update INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." DROP mod_com";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+//$db->db_query("update ".BAB_TOPICS_TBL." set display_tmpl=''");
+
+$res = $db->db_query("select id, category, id_approver from ".BAB_TOPICS_TBL."");
+$arrusersgroups = array();
+while( $arr = $db->db_fetch_array($res))
+	{
+	if( $arr['id_approver'] != 0 )
+		{
+		if( !isset($arrusersgroups[$arr['id_approver']]) )
+			{
+			$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'");
+			$rr = $db->db_fetch_array($res2);
+			$grpname = "OVT_".$rr['firstname']."_".$rr['lastname'];
+			$description = bab_translate("Topics manager");
+			$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '0', 'N', 'N', 'N','0')");
+			$id = $db->db_insert_id();
+			$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_approver']."','".$id."')");
+			$arrusersgroups[$arr['id_approver']] = $id;
+			$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
+			$db->db_query($req);
+			}
+		$db->db_query("insert into ".BAB_TOPICSMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['id_approver']]."')");
+		}
+	}
+
+$db->db_query("update ".BAB_TOPICS_TBL." set allow_manupdate='Y'");
+$db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." DROP id_approver");
+
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." ADD date_archiving DATETIME NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." ADD date_modification DATETIME NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." ADD ordering INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." ADD id_modifiedby INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." CHANGE date_pub date_publication DATETIME NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where idfai!='0' and confirmed='N'");
+if( $res && $db->db_num_rows($res) > 0 )
+	{
+	include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
+	while( $arr = $db->db_fetch_array($res))
+		{
+		$db->db_query("insert into ".BAB_ART_DRAFTS_TBL." (id_author, id_topic, id_article, idfai, result, date_submission, date_creation, id_anonymous) values ('" .$arr['id_author']. "', '".$arr['id_topic']. "', '0', '".$arr['idfai']."', '".BAB_ART_STATUS_WAIT."', '".$arr['date']."', '".$arr['date']."', '0')");
+		$id = $db->db_insert_id();
+		$head = imagesUpdateLink($arr['head'], $arr['id']."_art_", $id."_draft_" );
+		$body = imagesUpdateLink($arr['body'], $arr['id']."_art_", $id."_draft_" );		
+		$db->db_query("update ".BAB_ART_DRAFTS_TBL." set head='".addslashes($head)."', body='".addslashes($body)."', title='".addslashes($arr['title'])."', lang='".$arr['lang']."' where id='".$id."'");
+		$db->db_query("delete from ".BAB_ARTICLES_TBL." where id='".$arr['id']."'");
+		}
+	}
+
+$db->db_query("update ".BAB_ARTICLES_TBL." set date_publication=date");
+$db->db_query("update ".BAB_ARTICLES_TBL." set date_modification=date");
+$db->db_query("update ".BAB_ARTICLES_TBL." set id_modifiedby=id_author");
+
+$db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." DROP confirmed");
+$db->db_query("ALTER TABLE ".BAB_ARTICLES_TBL." DROP idfai");
+
+$req = "CREATE TABLE ".BAB_FORUMSMAN_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FORUMSMAN_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$res = $db->db_query("select id, moderator from ".BAB_FORUMS_TBL."");
+$arrusersgroups = array();
+while( $arr = $db->db_fetch_array($res))
+	{
+	if( $arr['moderator'] != 0 )
+		{
+		if( !isset($arrusersgroups[$arr['moderator']]) )
+			{
+			$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['moderator']."'");
+			$rr = $db->db_fetch_array($res2);
+
+			$grpname = "OVF_".$rr['firstname']."_".$rr['lastname'];
+			$description = bab_translate("Forums manager");
+			$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '0', 'N', 'N', 'N','0')");
+			$id = $db->db_insert_id();
+			$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_approver']."','".$id."')");
+			$arrusersgroups[$arr['moderator']] = $id;
+			$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
+			$db->db_query($req);
+			}
+		$db->db_query("insert into ".BAB_FORUMSMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['moderator']]."')");
+		}
+	}
+
+$db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." DROP moderator");
+
 return $ret;
 }
 ?>

@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/topincl.php";
 
 function browse($cat,$cb)
 	{

@@ -22,9 +22,10 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/acl.php";
-include $babInstallPath."utilit/mailincl.php";
-include $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."admin/acl.php";
+include_once $babInstallPath."utilit/mailincl.php";
+include_once $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/artincl.php";
 
 function listArticles($id)
 	{
@@ -76,7 +77,7 @@ function listArticles($id)
 
 			$this->item = $id;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and confirmed='Y' and archive='N' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and archive='N' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->siteid = $babBody->babsite['id'];
@@ -176,7 +177,7 @@ function deleteArticles($art, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict)
+function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -189,8 +190,6 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $category;
 		var $description;
 		var $add;
-		var $approver;
-		var $approvername;
 		var $langLabel;
 		var $langValue;
 		var $langselected;
@@ -231,17 +230,26 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $restrictysel;
 		var $restrictnsel;
 		var $restricttxt;
+		var $manmodtxt;
+		var $manmodysel;
+		var $manmodnsel;
 
-		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict)
+		function temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
 			$this->title = bab_translate("Topic");
 			$this->desctitle = bab_translate("Description");
-			$this->approver = bab_translate("Topic manager");
 			$this->modcom = bab_translate("Approbation schema for comments");
 			$this->modart = bab_translate("Approbation schema for articles");
+			$this->modupd = bab_translate("Approbation schema for articles modification");
 			$this->notiftxt = bab_translate("Notify group members by mail");
+			$this->hpagestxt = bab_translate("Allow author to purpose articles for homes pages");
+			$this->pubdatestxt = bab_translate("Allow author to specify dates of publication");
+			$this->attachmenttxt = bab_translate("Allow author to attach files to articles");
+			$this->artupdatetxt = bab_translate("Allow author to modify their articles");
+			$this->manmodtxt = bab_translate("Allow managers to modify articles");
+			$this->artmaxtxt = bab_translate("Max articles by page");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Update Topic");
@@ -250,6 +258,8 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->arttmpltxt = bab_translate("Article's model");
 			$this->disptmpltxt = bab_translate("Display template");
 			$this->restricttxt = bab_translate("Articles's authors can restrict access to articles");
+			$this->yeswithapprobation = bab_translate("Yes with approbation");
+			$this->yesnoapprobation = bab_translate("Yes without approbation");
 			$this->tgval = "topic";
 			$this->item = $id;
 			$this->langLabel = bab_translate("Language");
@@ -263,38 +273,61 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->cat = $this->arr['id_cat'];
 
 			if(empty($cat))
+				{
 				$this->ncat = $this->arr['id_cat'];
+				}
 			else
+				{
 				$this->ncat = $cat;
+				}
 			if(empty($description))
+				{
 				$this->description = $this->arr['description'];
+				}
 			else
+				{
 				$this->description = $description;
+				}
 			if(empty($category))
+				{
 				$this->category = $this->arr['category'];
+				}
 			else
+				{
 				$this->category = $category;
-			if(empty($managerid))
-				{
-				$this->managerid = $this->arr['id_approver'];
 				}
-			else
-				{
-				$this->managerid = $managerid;
-				}
-			$this->managerval = bab_getUserName($this->managerid);
 
 			if(empty($sacom))
+				{
 				$this->sacom = $this->arr['idsacom'];
+				}
 			else
+				{
 				$this->sacom = $sacom;
+				}
 			if(empty($saart))
+				{
 				$this->saart = $this->arr['idsaart'];
+				}
 			else
+				{
 				$this->saart = $saart;
+				}
+			if(empty($saupd))
+				{
+				$this->saupd = $this->arr['idsa_update'];
+				}
+			else
+				{
+				$this->saupd = $saupd;
+				}
+
+			$this->currentsa = $this->saart;
 
 			if(empty($bnotif))
+				{
 				$bnotif = $this->arr['notify'];
+				}
 
 			if( $bnotif == "N")
 				{
@@ -308,7 +341,9 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				}
 
 			if(empty($restrict))
+				{
 				$restrict = $this->arr['restrict_access'];
+				}
 
 			if( $restrict == "N")
 				{
@@ -321,16 +356,130 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				$this->restrictysel = "selected";
 				}
 
-			if(empty($atid))
-				$this->atid = $this->arr['article_tmpl'];
+			if(empty($bhpages))
+				{
+				$bhpages = $this->arr['allow_hpages'];
+				}
+
+			if( $bhpages == "N")
+				{
+				$this->hpagesnsel = "selected";
+				$this->hpagesysel = "";
+				}
 			else
+				{
+				$this->hpagesysel = "selected";
+				$this->hpagesnsel = "";
+				}
+
+			if(empty($bpubdates))
+				{
+				$bpubdates = $this->arr['allow_pubdates'];
+				}
+
+			if( $bpubdates == "N")
+				{
+				$this->pubdatesnsel = "selected";
+				$this->pubdatesysel = "";
+				}
+			else
+				{
+				$this->pubdatesysel = "selected";
+				$this->pubdatesnsel = "";
+				}
+
+			if(empty($battachment))
+				{
+				$battachment = $this->arr['allow_attachments'];
+				}
+
+			if( $battachment == "N")
+				{
+				$this->attachmentnsel = "selected";
+				$this->attachmentysel = "";
+				}
+			else
+				{
+				$this->attachmentysel = "selected";
+				$this->attachmentnsel = "";
+				}
+
+			if(empty($bartupdate))
+				{
+				$bartupdate = $this->arr['allow_update'];
+				}
+
+			switch($bartupdate)
+				{
+				case '1':
+					$this->artupdateyasel = "selected";
+					$this->artupdateysel = "";
+					$this->artupdatensel = "";
+					break;
+				case '2':
+					$this->artupdateyasel = "";
+					$this->artupdateysel = "selected";
+					$this->artupdatensel = "";
+					break;
+				default:
+					$this->artupdateyasel = "";
+					$this->artupdateysel = "";
+					$this->artupdatensel = "selected";
+					break;
+					break;
+				}
+
+			if(empty($bmanmod))
+				{
+				$bmanmod = $this->arr['allow_manupdate'];
+				}
+
+			switch($bmanmod)
+				{
+				case '1':
+					$this->manmodyasel = "selected";
+					$this->manmodysel = "";
+					$this->manmodnsel = "";
+					break;
+				case '2':
+					$this->manmodyasel = "";
+					$this->manmodysel = "selected";
+					$this->manmodnsel = "";
+					break;
+				default:
+					$this->manmodyasel = "";
+					$this->manmodysel = "";
+					$this->manmodnsel = "selected";
+					break;
+					break;
+				}
+
+			if(empty($atid))
+				{
+				$this->atid = $this->arr['article_tmpl'];
+				}
+			else
+				{
 				$this->atid = $atid;
+				}
 
 			if(empty($disptid))
+				{
 				$this->disptid = $this->arr['display_tmpl'];
+				}
 			else
+				{
 				$this->disptid = $disptid;
+				}
 
+			if(empty($maxarts))
+				{
+				$this->maxarticlesval = $this->arr['max_articles'];
+				}
+			else
+				{
+				$this->maxarticlesval = $maxarts;
+				}
 			$this->bdel = true;
 			
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
@@ -340,15 +489,24 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->sares = $this->db->db_query($req);
 			if( !$this->sares )
+				{
 				$this->sacount = 0;
+				}
 			else
+				{
 				$this->sacount = $this->db->db_num_rows($this->sares);
+				}
+
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
+				{
 				$this->msie = 1;
+				}
 			else
+				{
 				$this->msie = 0;	
+				}
 
 			$file = "articlestemplate.html";
 			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
@@ -426,19 +584,13 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				$arr = $this->db->db_fetch_array($this->sares);
 				$this->saname = $arr['name'];
 				$this->said = $arr['id'];
-				if( !$j )
+				if( $this->said == $this->currentsa )
 					{
-					if( $this->said == $this->saart )
-						$this->saartsel = "selected";
-					else
-						$this->saartsel = "";
+					$this->sasel = "selected";
 					}
 				else
 					{
-					if( $this->said == $this->sacom )
-						$this->sacomsel = "selected";
-					else
-						$this->sacomsel = "";
+					$this->sasel = "";
 					}
 				$i++;
 				return true;
@@ -446,7 +598,17 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			else
 				{
 				if( $this->sacount > 0 )
+					{
 					$this->db->db_data_seek($this->sares, 0);
+					}
+				if($j==0 )
+					{
+					$this->currentsa = $this->sacom;
+					}
+				else
+					{
+					$this->currentsa = $this->saupd;
+					}
 				$i = 0;
 				$j++;
 				return false;
@@ -509,7 +671,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 
 		}
 
-	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
+	$temp = new temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -613,19 +775,13 @@ function warnRestrictionArticle($topics)
 	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
 	}
 
-function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang, $atid, $disptid, $restrict)
+function updateCategory($id, $category, $description, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
 	if( empty($category))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
-		return false;
-		}
-
-	if( empty($managerid))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide topic manager !!");
 		return false;
 		}
 
@@ -639,32 +795,42 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$id."'"));
 	if( $arr['idsaart'] != $saart )
 		{
-		$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and confirmed='N' and archive='N'");
+		$res = $db->db_query("select id, idfai from ".BAB_ART_DRAFTS_TBL." where id_topic='".$id."' and result='".BAB_ART_STATUS_WAIT."'");
 		while( $row = $db->db_fetch_array($res))
 			{
 			if( $row['idfai'] != 0 )
+				{
 				deleteFlowInstance($row['idfai']);
+				}
 			if( $saart == 0 )
 				{
-				$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
+				$db->db_query("update ".BAB_ART_DRAFTS_TBL." set idfai='0' where id='".$row['id']."'");
+				$articleid = acceptWaitingArticle($row['id']);
+				if( $articleid != 0)
+					{
+					notifyArticleDraftAuthor($row['id'], 1);
+					bab_deleteArticleDraft($row['id']);
+					}
 				}
 			else
 				{
-				$idfai = makeFlowInstance($saart, "art-".$row['id']);
-				$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
+				$idfai = makeFlowInstance($saart, "draft-".$row['id']);
+				$db->db_query("update ".BAB_ART_DRAFTS_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
 				$nfusers = getWaitingApproversFlowInstance($idfai, true);
-				notifyArticleApprovers($row['id'], $nfusers);
+				notifyArticleDraftApprovers($row['id'], $nfusers);
 				}
 			}
 		}
 
 	if( $arr['idsacom'] != $sacom )
 		{
-		$res = $db->db_query("select * from ".BAB_COMMENTS_TBL." where id_topic='".$id."' and confirmed='N'");
+		$res = $db->db_query("select id, idfai from ".BAB_COMMENTS_TBL." where id_topic='".$id."' and confirmed='N'");
 		while( $row = $db->db_fetch_array($res))
 			{
 			if( $row['idfai'] != 0 )
+				{
 				deleteFlowInstance($row['idfai']);
+				}
 			if( $sacom == 0 )
 				$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
 			else
@@ -677,13 +843,40 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 			}
 		}
 
-	if (($GLOBALS['babApplyLanguageFilter'] == 'loose') and ($lang != $arr['lang']) and ($lang != '*'))
+	if( $arr['idsa_update'] != $saupd )
+	{
+		$res = $db->db_query("select id, idfai from ".BAB_ART_DRAFTS_TBL." where id_topic='".$id."' and result='".BAB_ART_STATUS_WAIT."'");
+		while( $row = $db->db_fetch_array($res))
+			{
+			if( $row['idfai'] != 0 )
+				{
+				deleteFlowInstance($row['idfai']);
+				}
+			if( $saupd == 0 )
+				{
+				$articleid = acceptWaitingArticle($row['id']);
+				if( $articleid != 0)
+					{
+					bab_deleteArticleDraft($row['id']);
+					}
+				}
+			else
+				{
+				$idfai = makeFlowInstance($saupd, "draft-".$row['id']);
+				$db->db_query("update ".BAB_ART_DRAFTS_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
+				$nfusers = getWaitingApproversFlowInstance($idfai, true);
+				notifyArticleDraftApprovers($row['id'], $nfusers);
+				}
+			}
+		}
+
+	if ((isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') and ($lang != $arr['lang']) and ($lang != '*'))
 	{
 		$query = "update ".BAB_ARTICLES_TBL." set lang='*' where id_topic='".$id."'";
 		$db->db_query($query);
 	}
 
-	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."', restrict_access='".$restrict."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', idsa_update='".$saupd."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."', restrict_access='".$restrict."', allow_hpages='".$bhpages."', allow_pubdates='".$bpubdates."', allow_attachments='".$battachment."', allow_update='".$bartupdate."', allow_manupdate='".$bmanmod."' where id = '".$id."'";
 	$db->db_query($query);
 
 	if( $arr['id_cat'] != $cat )
@@ -757,7 +950,7 @@ if( isset($add) )
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $topdesc, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid, $disptid, $restrict))
+		if(!updateCategory($item, $category, $topdesc, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -766,14 +959,8 @@ if( isset($add) )
 
 if( isset($aclview) )
 	{
-	if( !isset($groups)) { $groups = array();}
-	aclUpdate($table, $item, $groups, $what);
-	if( $table == BAB_TOPICSVIEW_GROUPS_TBL )
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
-	else if( $table == BAB_TOPICSSUB_GROUPS_TBL )
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
-	else 
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+	maclGroups();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
 
 if( isset($upart) && $upart == "articles")
@@ -825,39 +1012,20 @@ switch($idx)
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
 
-	case "Groups":
+	case "rights":
 		$babBody->title = bab_getCategoryTitle($item);
-		aclGroups("topic", "Modify", BAB_TOPICSVIEW_GROUPS_TBL, $item, "aclview");
+		$macl = new macl("topic", "Modify", $item, "aclview");
+        $macl->addtable( BAB_TOPICSVIEW_GROUPS_TBL,bab_translate("Who can read articles from this topic?"));
+        $macl->addtable( BAB_TOPICSSUB_GROUPS_TBL,bab_translate("Who can submit new articles?"));
+		$macl->addtable( BAB_TOPICSCOM_GROUPS_TBL,bab_translate("Who can post comment?"));
+		$macl->addtable( BAB_TOPICSMOD_GROUPS_TBL,bab_translate("Who can modify articles?"));
+        $macl->addtable( BAB_TOPICSMAN_GROUPS_TBL,bab_translate("Who can manage this topic?"));
+		$macl->filter(0,0,1,1,1);
+        $macl->babecho();
 		warnRestrictionArticle($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
-		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
-		break;
-
-	case "Comments":
-		$babBody->title = bab_getCategoryTitle($item);
-		aclGroups("topic", "Modify", BAB_TOPICSCOM_GROUPS_TBL, $item, "aclview");
-		warnRestrictionArticle($item);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
-		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
-		break;
-
-	case "Submit":
-		$babBody->title = bab_getCategoryTitle($item);
-		aclGroups("topic", "Modify", BAB_TOPICSSUB_GROUPS_TBL, $item, "aclview");
-		warnRestrictionArticle($item);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
-		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
 
@@ -866,9 +1034,7 @@ switch($idx)
 		deleteCategory($item, $cat);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
-		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
@@ -879,19 +1045,23 @@ switch($idx)
 		if( !isset($ncat)) { $ncat='';}
 		if( !isset($category)) { $category='';}
 		if( !isset($topdesc)) { $topdesc='';}
-		if( !isset($managerid)) { $managerid='';}
 		if( !isset($saart)) { $saart='';}
 		if( !isset($sacom)) { $sacom='';}
+		if( !isset($saupd)) { $saupd='';}
 		if( !isset($bnotif)) { $bnotif='';}
 		if( !isset($atid)) { $atid='';}
 		if( !isset($disptid)) { $disptid='';}
 		if( !isset($restrict)) { $restrict='';}
-		modifyCategory($item, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
+		if( !isset($bhpages)) { $bhpages='';}
+		if( !isset($bpubdates)) { $bpubdates='';}
+		if( !isset($battachment)) { $battachment='';}
+		if( !isset($bartupdate)) { $bartupdate='';}
+		if( !isset($bmanmod)) { $bmanmod='';}
+		if( !isset($maxarts)) { $maxarts='10';}
+		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
-		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
 	}

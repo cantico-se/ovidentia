@@ -59,7 +59,6 @@ function listThreads($forum, $active, $pos)
 		var $bottomname;
 		var $nextname;
 		var $prevname;
-		var $moderator;
 		var $disabled;
 
 		var $openthreadsinfo;
@@ -95,7 +94,7 @@ function listThreads($forum, $active, $pos)
 			$this->alternate = 0;
 			$this->active = $active;
 
-			$this->moderator = bab_isUserForumModerator($forum, $GLOBALS['BAB_SESS_USERID']);
+			$this->moderator = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum);
 
 			$this->db = $GLOBALS['babDB'];
 			$row = $this->db->db_fetch_array($this->db->db_query("select display from ".BAB_FORUMS_TBL." where id='".$forum."'"));
@@ -141,7 +140,7 @@ function listThreads($forum, $active, $pos)
 					}
 				}
 
-			$req = "select * from ".BAB_THREADS_TBL." where forum='$forum' and active='$active' order by date desc";
+			$req = "select tt.* from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.lastpost=pt.id where forum='".$forum."' and active='Y' order by pt.date desc";
 			if( $total > $maxrows)
 				{
 				$req .= " limit ".$pos.",".$maxrows;
@@ -178,18 +177,31 @@ function listThreads($forum, $active, $pos)
 						$this->replymail .= $this->arrpost['subject'];
 						}
 					else
+						{
 						$this->replymail = 0;
+						}
 
 					$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='Y'";
 					$res = $this->db->db_query($req);
 					$row = $this->db->db_fetch_array($res);
 					$this->replies = $row["total"] > 0 ? ($row["total"] -1): 0;
 					if( $row["total"] == 0 && $this->moderator == false )
+						{
 						$this->disabled = 1;
+						}
 					else
+						{
 						$this->disabled = 0;
+						}
 
-					$res = $this->db->db_query("select date from ".BAB_POSTS_TBL." where id='".$this->arrthread['lastpost']."'");
+					if( $this->arrthread['lastpost'] != 0 )
+						{
+						$res = $this->db->db_query("select date from ".BAB_POSTS_TBL." where id='".$this->arrthread['lastpost']."'");
+						}
+					else
+						{
+						$res = $this->db->db_query("select date from ".BAB_POSTS_TBL." where id='".$this->arrthread['post']."'");
+						}
 					$ar = $this->db->db_fetch_array($res);
 					$tmp = explode(" ", $ar['date']);
 					$arr0 = explode("-", $tmp[0]);
@@ -342,8 +354,10 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	$req = "update ".BAB_THREADS_TBL." set lastpost='$idpost', post='$idpost' where id = '$idthread'";
 	$res = $db->db_query($req);
 
-	if( $arr['notification'] == "Y" && ($email = bab_getUserEmail($arr['moderator'])) != "")
-	    notifyModerator(stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
+	if( $arr['notification'] == "Y" )
+		{
+	    notifyModerator($forum, stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
+		}
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
 	exit;

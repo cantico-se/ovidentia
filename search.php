@@ -109,7 +109,7 @@ if (trim($req2) != "")
 
 function returnCategoriesHierarchy($topics)
 	{
-	$article_path = new categoriesHierarchy($topics);
+	$article_path = new categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 	$out = bab_printTemplate($article_path,"search.html", "article_path");
 	return $out;
 	}
@@ -593,7 +593,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($this->like || $this->like2)
 					$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
 				
-				$req = "insert into artresults SELECT a.id, a.id_topic, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." and confirmed='Y' ".$inart." ".$crit_art." order by $order ";
+				$req = "insert into artresults SELECT a.id, a.id_topic, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
 				$this->db->db_query($req);
 
 				$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
@@ -1380,7 +1380,7 @@ function viewArticle($article, $w)
 			{
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='Y'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 	

@@ -22,6 +22,9 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/artincl.php";
 
 function bab_deleteSection($id)
 {
@@ -63,7 +66,9 @@ function bab_deleteTopicCategory($id)
 	// delete all topics/articles/comments
 	$res = $db->db_query("select * from ".BAB_TOPICS_TBL." where id_cat='".$id."'");
 	while( $arr = $db->db_fetch_array($res))
+		{
 		bab_confirmDeleteTopic($arr['id']);
+		}
 
 	list($idparent) = $db->db_fetch_array($db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$id."'"));
 	$db->db_query("update ".BAB_TOPICS_CATEGORIES_TBL."  set id_parent='".$idparent."' where id_parent='".$id."'");
@@ -79,45 +84,88 @@ function bab_confirmDeleteTopic($id)
 	{
 
 	$db = $GLOBALS['babDB'];
-	$req = "select id from ".BAB_ARTICLES_TBL." where id_topic='$id'";
+	$req = "select id from ".BAB_ARTICLES_TBL." where id_topic='".$id."'";
 	$res = $db->db_query($req);
 	while( $arr = $db->db_fetch_array($res))
 		{
-		// delete article and comments
 		bab_confirmDeleteArticle($arr['id']);
 		}
-	$req = "delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_object='$id'";
+
+	$req = "select id, idfai from ".BAB_ART_DRAFTS_TBL." where id_topic='".$id."'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		while( $arr = $db->db_fetch_array($res))
+			{
+			if( $arr['idfai'] != 0 )
+				{
+				deleteFlowInstance($arr['idfai']);
+				}
+			}
+		}
+	
+	$db->db_query("update ".BAB_ART_DRAFTS_TBL." set result='0', idfai='0', id_topic='0' where id_topic='".$id."'");
+
+	$req = "delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_object='".$id."'";
 	$res = $db->db_query($req);
 	
-	$req = "delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_object='$id'";
+	$req = "delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_object='".$id."'";
 	$res = $db->db_query($req);
 
-	$req = "delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='$id'";
+	$req = "delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$id."'";
+	$res = $db->db_query($req);
+
+	$req = "delete from ".BAB_TOPICSMOD_GROUPS_TBL." where id_object='".$id."'";
+	$res = $db->db_query($req);
+
+	$req = "delete from ".BAB_TOPICSMAN_GROUPS_TBL." where id_object='".$id."'";
 	$res = $db->db_query($req);
 
 	// delete from BAB_TOPCAT_ORDER_TBL
 	$req = "delete from ".BAB_TOPCAT_ORDER_TBL." where id_topcat='".$id."' and type='2'";
 	$res = $db->db_query($req);	
 
-	$req = "delete from ".BAB_TOPICS_TBL." where id='$id'";
+	$req = "delete from ".BAB_TOPICS_TBL." where id='".$id."'";
 	$res = $db->db_query($req);
 	}
+
+
+function bab_deleteDraft($idart)
+	{
+	global $babDB;
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+	if( $res && $babDB->db_num_rows($res) == 1 )
+		{
+		$arr = $babDB->db_fetch_array($res);
+		if( $arr['idfai'] != 0 )
+			{
+			deleteFlowInstance($arr['idfai']);
+			}
+		deleteImages($arr['head'], $idart, "draft");
+		deleteImages($arr['body'], $idart, "draft");
+		bab_deleteDraftFiles($idart);
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$idart."'");
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TBL." where id='".$idart."'");
+		}
+	}
+
 
 function bab_confirmDeleteArticles($items)
 {
 	$arr = explode(",", $items);
 	$cnt = count($arr);
 	$db = $GLOBALS['babDB'];
-	for($i = 0; $i < $cnt; $i++)
-		{
-		bab_confirmDeleteArticle($arr[$i]);
-		}
+	if( $cnt > 0 )
+	{
+		for($i = 0; $i < $cnt; $i++)
+			{
+			bab_confirmDeleteArticle($arr[$i]);
+			}
+	}
 }
 
 function bab_confirmDeleteArticle($article)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	// delete comments
 	$db = $GLOBALS['babDB'];
 	$req = "delete from ".BAB_COMMENTS_TBL." where id_article='".$article."'";
@@ -130,8 +178,10 @@ function bab_confirmDeleteArticle($article)
 	deleteImages($arr['head'], $article, "art");
 	deleteImages($arr['body'], $article, "art");
 	
-	if( $arr['idfai'] != 0 )
-		deleteFlowInstance($arr['idfai']);
+	$res = $db->db_query("update ".BAB_ART_DRAFTS_TBL." set id_article='0' where id_article='".$article."'");
+
+	bab_deleteArticleFiles($article);
+
 	// delete article
 	$req = "delete from ".BAB_ARTICLES_TBL." where id='".$article."'";
 	$res = $db->db_query($req);
@@ -153,9 +203,23 @@ function bab_deleteComments($com)
 	$arr = $db->db_fetch_array($db->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$com."'"));
 	if( $arr['idfai'] != 0)
 		{
-		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		deleteFlowInstance($arr['idfai']);
 		}
+	$req = "delete from ".BAB_COMMENTS_TBL." where id='".$com."'";
+	$res = $db->db_query($req);	
+	}
+
+
+function bab_deleteComment($com)
+	{
+	$db = $GLOBALS['babDB'];
+	$arr = $db->db_fetch_array($db->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$com."'"));
+	if( $arr['idfai'] != 0)
+		{
+		deleteFlowInstance($arr['idfai']);
+		}
+	$res = $db->db_query("update ".BAB_COMMENTS_TBL." set id_parent='0' where id_parent='".$com."'");	
+
 	$req = "delete from ".BAB_COMMENTS_TBL." where id='".$com."'";
 	$res = $db->db_query($req);	
 	}
@@ -188,6 +252,9 @@ function bab_deleteForum($id)
 	$res = $db->db_query($req);
 
 	$req = "delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_object='$id'";
+	$res = $db->db_query($req);
+
+	$req = "delete from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
 
 	$req = "delete from ".BAB_FORUMS_TBL." where id='$id'";
@@ -249,7 +316,6 @@ function bab_deleteUploadUserFiles($gr, $id)
 function bab_deleteFolder($fid)
 {
 	global $babDB;
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	// delete files owned by this group
 	$res = $babDB->db_query("select id, idfai from ".BAB_FILES_TBL." where id_owner='".$fid."' and bgroup='Y'");
 	while( $arr = $babDB->db_fetch_array($res))
@@ -310,6 +376,8 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_TOPICSMOD_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_TOPICSMAN_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_SECTIONS_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_FAQCAT_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$id."'");	
@@ -363,6 +431,13 @@ function bab_deleteGroup($id)
 function bab_deleteUser($id)
 	{
 	$db = $GLOBALS['babDB'];
+
+	$req = "select id from ".BAB_ART_DRAFTS_TBL." where id_author='".$id."'";
+	$res = $db->db_query($req);
+	while( $arr = $db->db_fetch_array($res))
+		{
+		bab_deleteDraft($arr['id']);
+		}
 
 	// delete notes owned by this user
 	$res = $db->db_query("delete from ".BAB_NOTES_TBL." where id_user='$id'");	

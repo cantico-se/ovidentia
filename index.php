@@ -690,11 +690,14 @@ switch($tg)
 	case "articles":
 		$incl = "articles";
 		break;
+	case "artedit":
+		$incl = "artedit";
+		break;
+	case "approb":
+		$incl = "approb";
+		break;
 	case "comments":
 		$incl = "comments";
-		break;
-	case "waiting":
-		$incl = "waiting";
 		break;
 	case "charts":
 		$babLevelOne = bab_translate("User's section");

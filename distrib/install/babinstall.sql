@@ -9,22 +9,24 @@
 #
 
 CREATE TABLE bab_articles (
-   id int(11) unsigned NOT NULL auto_increment,
-   id_topic int(11) unsigned DEFAULT '0' NOT NULL,
-   id_author int(11) unsigned DEFAULT '0' NOT NULL,
-   confirmed enum('Y','N') DEFAULT 'N' NOT NULL,
-   date datetime,
-   date_pub varchar(30),
-   title tinytext NOT NULL,
-   head mediumtext NOT NULL,
-   body longtext NOT NULL,
-   archive enum('N','Y') NOT NULL default 'N',
-   idfai int(11) unsigned NOT NULL default '0',
-   lang varchar(10) NOT NULL default '',
-   restriction varchar(255) NOT NULL,
-   PRIMARY KEY (id),
-   KEY id_topic (id_topic),
-   KEY date (date)
+  id int(11) unsigned NOT NULL auto_increment,
+  id_topic int(11) unsigned NOT NULL default '0',
+  id_author int(11) unsigned NOT NULL default '0',
+  date datetime default NULL,
+  date_publication datetime NOT NULL default '0000-00-00 00:00:00',
+  date_archiving datetime NOT NULL default '0000-00-00 00:00:00',
+  date_modification datetime NOT NULL default '0000-00-00 00:00:00',
+  title tinytext NOT NULL,
+  head mediumtext NOT NULL,
+  body longtext NOT NULL,
+  archive enum('N','Y') NOT NULL default 'N',
+  lang varchar(10) NOT NULL default '',
+  restriction varchar(255) NOT NULL default '',
+  ordering int(11) unsigned NOT NULL default '0',
+  id_modifiedby int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_topic (id_topic),
+  KEY date (date)
 );
 
 
@@ -362,24 +364,26 @@ CREATE TABLE bab_threads (
 #
 
 CREATE TABLE bab_topics (
-   id int(11) unsigned NOT NULL auto_increment,
-   id_approver int(11) unsigned DEFAULT '0' NOT NULL,
-   category varchar(60) NOT NULL,
-   description text NOT NULL,
-   id_cat int(11) unsigned DEFAULT '0' NOT NULL,
-   mod_com enum('Y','N') NOT NULL default 'Y',
-   ordering smallint(6) unsigned NOT NULL default '0',
-   idsaart int(11) unsigned NOT NULL default '0',
-   idsacom int(11) unsigned NOT NULL default '0',
-   notify enum('N','Y') NOT NULL default 'N',
-   lang varchar(10) NOT NULL default '',
-   article_tmpl varchar(255),
-   display_tmpl varchar(255),
-   restrict_access enum('N','Y') NOT NULL default 'N',
-   PRIMARY KEY (id),
-   KEY id_approver (id_approver),
-   KEY id_cat (id_cat),
-   KEY ordering (ordering)
+  id int(11) unsigned NOT NULL auto_increment,
+  category varchar(60) NOT NULL default '',
+  description text NOT NULL,
+  id_cat int(11) unsigned NOT NULL default '0',
+  idsaart int(11) unsigned NOT NULL default '0',
+  idsacom int(11) unsigned NOT NULL default '0',
+  idsa_update int(11) unsigned NOT NULL default '0',
+  notify enum('N','Y') NOT NULL default 'N',
+  lang varchar(10) NOT NULL default '',
+  article_tmpl varchar(255) default NULL,
+  display_tmpl varchar(255) default NULL,
+  restrict_access enum('N','Y') NOT NULL default 'N',
+  allow_hpages enum('N','Y') NOT NULL default 'N',
+  allow_pubdates enum('N','Y') NOT NULL default 'N',
+  allow_attachments enum('N','Y') NOT NULL default 'N',
+  allow_update enum('0','1','2') NOT NULL default '0',
+  max_articles tinyint(3) unsigned NOT NULL default '0',
+  allow_manupdate enum('0','1','2') NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_cat (id_cat)
 );
 
 # --------------------------------------------------------
@@ -913,7 +917,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '4');
 INSERT INTO bab_ini VALUES ('ver_minor', '1');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1646,4 +1650,137 @@ CREATE TABLE `bab_ldap_sites_fields` (
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
   KEY `id_site` (`id_site`)
+);
+
+
+#
+# Structure de la table `bab_art_drafts`
+#
+
+CREATE TABLE bab_art_drafts (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_author int(11) unsigned NOT NULL default '0',
+  date_creation datetime NOT NULL default '0000-00-00 00:00:00',
+  date_modification datetime NOT NULL default '0000-00-00 00:00:00',
+  date_submission datetime NOT NULL default '0000-00-00 00:00:00',
+  date_publication datetime NOT NULL default '0000-00-00 00:00:00',
+  date_archiving datetime NOT NULL default '0000-00-00 00:00:00',
+  title tinytext NOT NULL,
+  head mediumtext NOT NULL,
+  body longtext NOT NULL,
+  lang varchar(10) NOT NULL default '',
+  trash enum('N','Y') NOT NULL default 'N',
+  id_topic int(11) unsigned NOT NULL default '0',
+  restriction varchar(255) NOT NULL default '',
+  hpage_private enum('N','Y') NOT NULL default 'N',
+  hpage_public enum('N','Y') NOT NULL default 'N',
+  notify_members enum('Y','N') NOT NULL default 'N',
+  idfai int(11) unsigned NOT NULL default '0',
+  result smallint(5) unsigned NOT NULL default '0',
+  id_article int(11) unsigned NOT NULL default '0',
+  id_anonymous int(11) unsigned NOT NULL default '0',
+  approbation enum('0','1','2') NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_topic (id_topic),
+  KEY id_author (id_author),
+  KEY trash (trash),
+  KEY result (result)
+);
+
+#
+# Structure de la table bab_art_drafts_files
+#
+
+CREATE TABLE bab_art_drafts_files (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_draft int(11) unsigned NOT NULL default '0',
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id),
+  KEY id_draft (id_draft)
+);
+
+#
+# Structure de la table `bab_art_drafts_notes`
+#
+
+CREATE TABLE bab_art_drafts_notes (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_draft int(11) unsigned NOT NULL default '0',
+  content text NOT NULL,
+  id_author int(11) unsigned NOT NULL default '0',
+  date datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (id),
+  KEY id_draft (id_draft),
+  KEY id_author (id_author)
+);
+
+#
+# Structure de la table `bab_art_files`
+#
+
+CREATE TABLE bab_art_files (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_article int(11) unsigned NOT NULL default '0',
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id),
+  KEY id_article (id_article)
+);
+
+
+#
+# Structure de la table `bab_art_log`
+#
+
+CREATE TABLE bab_art_log (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_article int(11) unsigned NOT NULL default '0',
+  id_author int(11) unsigned NOT NULL default '0',
+  date_log datetime NOT NULL default '0000-00-00 00:00:00',
+  action_log enum('lock','unlock','commit','refused','accepted') NOT NULL default 'lock',
+  art_log text NOT NULL,
+  PRIMARY KEY  (id),
+  KEY id_article (id_article),
+  KEY id_author (id_author)
+);
+
+
+#
+# Structure de la table `bab_topicsman_groups`
+#
+
+CREATE TABLE bab_topicsman_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table `bab_topicsmod_groups`
+#
+
+CREATE TABLE bab_topicsmod_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table `bab_forumsman_groups`
+#
+
+CREATE TABLE bab_forumsman_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
 );

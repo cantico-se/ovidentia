@@ -1489,11 +1489,12 @@ function document.body.onload() {
 		editor.SetHTML(document.forms[k].elements[Zone[i]].value);
   	}
 
+	document.forms[ZForm].attachEvent("onsubmit", SetVals);
+
 }
 
 function SetVals() {
 		//document.Compose.content.value = editor.GetHTML();
-
 	for ( k=0 ; k<document.forms.length ; k++ )
 	{
 		if( document.forms[k].name == ZForm )
@@ -1508,6 +1509,8 @@ function SetVals() {
 	}
 		
 }
+
+
 
 /*function RecordAttachments(Files, File0, File1, File2) {
   window.document.Compose.elements["File0Data"].value = File0;

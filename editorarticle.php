@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-include $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/topincl.php";
 
 class categoriesHierarchyPopup
 {
@@ -114,7 +114,7 @@ function browse($topics,$cat,$cb)
 			$this->restop = $this->db->db_query($reqtop);
 			$this->counttop = $this->db->db_num_rows($this->restop);
 
-			$req = "select id, id_topic, id_author, date, title, head, restriction from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' order by date desc";
+			$req = "select id, id_topic, id_author, date, title, head, restriction from ".BAB_ARTICLES_TBL." where id_topic='$topics' order by date desc";
 			$this->resart = $this->db->db_query($req);
 			$this->countarticles = $this->db->db_num_rows($this->resart);
 			
