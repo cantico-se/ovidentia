@@ -379,8 +379,9 @@ function calendarMonth($calid, $day, $month, $year)
 			static $k=0;
 			if( $k < count($this->mcals))
 				{
-				$this->fullname = htmlentities(bab_getCalendarOwnerName($this->mcals[$k], 0));
-				$this->fullnameten = htmlentities(substr($this->fullname, 0, 16));
+				$calname = bab_getCalendarOwnerName($this->mcals[$k], 0);
+				$this->fullname = htmlentities($calname);
+				$this->fullnameten = htmlentities(substr($calname, 0, 16));
 				//$this->fullnameten = htmlentities($this->fullname);
 				$this->resevent = getEventsResult($this->mcals[$k], $this->mday, $this->month, $this->year);
 				$this->countevent = $this->db->db_num_rows($this->resevent);

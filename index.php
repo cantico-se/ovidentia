@@ -148,6 +148,7 @@ function printBody()
 			$this->babLogoRB = "";
 			$this->babBanner = "";
 
+			$this->style = $babStyle;
 			$this->babNewArticles = $babBody->newarticles;
 			$this->babNewComments = $babBody->newcomments;
 			$this->babNewPosts = $babBody->newposts;
