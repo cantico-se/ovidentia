@@ -484,6 +484,38 @@ function listFiles($id, $gr, $path, $bmanager)
 
 	class temp extends listFiles
 		{
+        var $bytes;
+        var $mkdir;
+        var $rename;
+        var $delete;
+        var $directory;
+        var $download;
+        var $cuttxt;
+        var $paste;
+        var $undo;
+        var $deltxt;
+        var $root;
+        var $refresh;
+        var $nametxt;
+        var $sizetxt;
+        var $modifiedtxt;
+        var $postedtxt;
+        var $diskspace;
+        var $hitstxt;
+        var $altreadonly;
+        var $rooturl;
+        var $refreshurl;
+        var $urldiskspace;
+        var $upfolderimg;
+        var $usrfolderimg;
+        var $grpfolderimg;
+        var $manfolderimg;
+        var $rootpath;
+        var $bdel;
+        var $bmanager;
+        var $xres;
+        var $xcount;
+
 		function temp($id, $gr, $path, $bmanager)
 			{
 			global $BAB_SESS_USERID;
@@ -506,6 +538,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->postedtxt = bab_translate("Posted by");
 			$this->diskspace = bab_translate("Show disk space usage");
 			$this->hitstxt = bab_translate("Hits");
+            $this->altreadonly =  bab_translate("Read only");
 
 			$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list";
 			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
