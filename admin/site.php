@@ -180,6 +180,7 @@ function siteModify($id)
 				$this->smtpuserval = $arr['smtpuser'];
 				$this->smtppassval = $arr['smtppass'];
 				$this->dbvalue = $arr;
+				$this->dbvalue['babslogan'] = str_replace('"',"''",$GLOBALS['babSlogan']);
 				$this->dbvalue['total_diskspace'] = round($GLOBALS['babMaxTotalSize']/1048576);
 				$this->dbvalue['user_diskspace'] = round($GLOBALS['babMaxUserSize']/1048576);
 				$this->dbvalue['folder_diskspace'] = round($GLOBALS['babMaxGroupSize']/1048576);
