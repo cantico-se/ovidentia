@@ -13,7 +13,7 @@
 
 
 <!--#begin usersection -->
-<h5>{ login } <strong>{ BAB_SESS_USER }</strong></h5>
+<h5>{ login } <!--#if BAB_SESS_USER --><strong>{ BAB_SESS_USER }</strong><!--#endif BAB_SESS_USER --></h5>
 <ul>
 	<!--#in addUrl -->
 	<li><a href="{ url }">{ text }</a></li>
