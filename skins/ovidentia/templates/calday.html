@@ -15,7 +15,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
 	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
-	<a class="notifier" href="javascript:bab_popup('{ calnotifierurl }', 2)">{ t_notifier }</a>
+	<a class="notifier" href="{ calnotifierurl }" onclick="bab_popup_obj = 0;bab_popup(this.href, 2);return false;">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
@@ -167,7 +167,7 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<a class="print" href="javascript:bab_popup('{ eventlisturl }')">{ t_eventlist }</a>
 	<a class="categories" href="javascript:bab_popup('{ babUrlScript }?tg=calendar&idx=viewc')">{ t_catlist }</a>
-	<a class="notifier" href="javascript:bab_popup('{ calnotifierurl }', 2)">{ t_notifier }</a>
+	<a class="notifier" href="{ calnotifierurl }" onclick="bab_popup_obj = 0;bab_popup(this.href, 2);return false;">{ t_notifier }</a>
 	<!--#endif print -->
 </div>
 <!--#end calday -->

@@ -80,7 +80,7 @@ function bab_popup(url,divisor,menubar)
 		{
 		menubar = 'yes';
 		}
-	if (bab_popup_obj == null || bab_popup_obj.closed)
+	if (bab_popup_obj == null || bab_popup_obj.closed || bab_popup_obj == 0)
 		{
 		if (typeof divisor == 'undefined')
 			{
@@ -93,7 +93,16 @@ function bab_popup(url,divisor,menubar)
 		var l = Math.round(wd/2);
 		var t = Math.round(hd/2);
 		var name = 'bab_popup'+Math.floor(Math.random() * 99999999);
-		bab_popup_obj = window.open(url,name,'status=yes,menubar='+menubar+',personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+		
+		if (bab_popup_obj == 0)
+			{
+			window.open(url,name,'status=yes,menubar='+menubar+',personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+			bab_popup_obj = null;
+			}
+		else
+			{
+			bab_popup_obj = window.open(url,name,'status=yes,menubar='+menubar+',personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+			}
 		}
 	else
 		{
