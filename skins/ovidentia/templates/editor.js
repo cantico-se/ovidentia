@@ -6,7 +6,10 @@ var global_editor = null;
 	
 	config = new HTMLArea.Config();
 
-	
+	config.statusBar = false;
+	config.sizeIncludesToolbar = false;
+
+
 	config.toolbar = [
 	[ "fontname", "space", "fontsize", "space", "formatblock", "space" <!--#if arr_classname -->,"cssstyles" <!--#endif arr_classname -->],
 
@@ -19,15 +22,16 @@ var global_editor = null;
 	  "bold", "italic", "underline", "separator",
 	  "strikethrough", "subscript", "superscript", "separator",
 		 <!--#if mode "== 1" -->
-	     "bab_image", "bab_file", "bab_article", "bab_faq", "bab_ovml", "bab_contdir"]
+	     "bab_image", "bab_file", "bab_article", "bab_faq", "bab_ovml", "bab_contdir"
 		 <!--#endif mode -->
 
 		<!--#if mode "== 3" -->
-	      "bab_file", "bab_article", "bab_faq", "bab_ovml", "bab_contdir"]
+	      "bab_file", "bab_article", "bab_faq", "bab_ovml", "bab_contdir"
 		 <!--#endif mode -->
+		]
 	];
 
-	
+
 	config.btnList.removeformat[0] = '{ t_removeformat }';
 	config.btnList.killword[0] = '{ t_killword }';
 	<!--#if babLanguage "!= en" -->
@@ -258,7 +262,9 @@ var global_editor = null;
 	for(var i in textarea_id)
 	  {
 		var editor = new HTMLArea(textarea_id[i], config);
+		
 		editor.generate();
+		editor._toolbar.style.height = '67px';
 	  }
 	return false;
 };
