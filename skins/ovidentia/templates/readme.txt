@@ -1,5 +1,5 @@
 *****************************************************************************
-**3.1****************                  Ovidentia                      *******
+**3.3****************                  Ovidentia                      *******
 *****************************************************************************
 ************************   Description des Templates     ********************
 *****************************************************************************
@@ -9,8 +9,8 @@
 *****************************************************************************
 *                                                                           *
 *Nom du fichier.html                                                        *
-*		Nom du Tag						    *
-*			Description du template                             *
+*	                                	Nom du Tag						    *
+*	               		Description du template                             *
 *                                                                           *
 *****************************************************************************
 
@@ -19,6 +19,10 @@
 3.0	aclgroups
 		Gestion des droits d'accés des groupes
 	
+- addons.html ******************************************************************
+3.3 addonslist
+        Liste des addons disponnibles
+
 - address.html ******************************************************************
 3.0	addresslist
 		Liste des contacts en popup
@@ -97,6 +101,8 @@
 		Liste des dernieres contributions dans les forums
 3.0	mailslist
 		Presentation du nombre de messages dans les boite aux lettres
+3.3 fileslist
+        Presentation du nombre de fichier (groupe) uploader 
 
 - comments.html ***************************************************************
 3.0	commentcreate
@@ -106,7 +112,7 @@
 3.0	commentread
 		Presentation d'un commentaire
 
-- concals.html *****************************************************************
+- confcals.html *****************************************************************
 3.0	categorycreate
 		Creation des categories d'evenements
 3.0	categorieslist
@@ -121,6 +127,8 @@
 		Modification des ressources
 
 - config.html ******************************************************************
+3.2 babCss
+        Chemin du fichier CSS
 3.0	babLogoLT
 		Logo de l'angle haut gauche du portail
 3.0	babLogoRT
@@ -139,6 +147,11 @@
 		Meta tags for robots indexing
 3.1	babfolders
 		Icons for filemanager - path
+3.2 babSectionPuce
+        Puce de la  section
+3.2 babsectionBullet
+        Puce des listes des sections
+
 		
 - contact.html *****************************************************************
 3.0	contactcreate
@@ -163,6 +176,9 @@
 		Modification d'un rendez vous de l'agenda
 3.0	viewevent
 		Lecture d'un rendez vous de l'agenda
+3.2 descmodify
+        
+3.2 eventunload
 
 - faq.html *********************************************************************
 3.0	categorylist
@@ -177,6 +193,7 @@
 		Modification des questions/reponses  pour l'administrateur d'une categorie de faq
 3.0	viewquestion
 		Presentation de la  question d'une categorie de faq et de sa reponse 
+3.2 popupquestion
 
 - faqprint *********************************************************************
 3.0	Presentation de la question d'une categorie de faq et de sa reponse en pleine page
@@ -191,6 +208,8 @@
 		Update files
 3.1	trashfiles
 		Trash files
+3.2 diskspace
+        Presentation de l'espace disque disponible
 
 - forums.html ******************************************************************
 3.0	forumcreate
@@ -226,8 +245,6 @@
 - login.html *******************************************************************
 3.0	login
 		Page d'identification de l'utilisateur
-3.0	changepassword
-		Page de modification du mot de passe d'un utilisateur
 3.0	usercreate
 		Page d'enregistrement des utilistateurs
 3.0	emailpassword
@@ -247,7 +264,7 @@
 3.0	domainmodify
 		modification d'un domaine de messagerie
 
-- *mailinfo.html ***************************************************************
+- mailinfo.html ***************************************************************
 3.0	articlewait
 		formattage d'un courier electronique signalant l'attente de validation d'un article
 3.0	commentwait
@@ -262,6 +279,12 @@
 		formattage d'un courier electronique signalant l acceptation/refus d'un article
 3.0	confirmcomment
 		formattage d'un courier electronique signalant l'acceptation/refus d'un commentaire
+3.3 filewait
+
+3.3 sendpassword
+
+3.3 userconfirmation
+
 
 - mailopt.html ****************************************************************
 3.0	accountcreate
@@ -298,6 +321,8 @@
 		Modification des informations de l'utilisateur
 3.0	changelang
 		Modification de la langue d'Ovidentia
+3.2 changeskin
+
 
 - page.html ******************************************************************
 3.0	Definition de la structure de base d'Ovidentia
@@ -309,6 +334,24 @@
 		Edition de la contribution d'un forum
 3.0	newpostslist
 		Liste des contributions d'un forum
+
+- search.html **************************************************************
+3.1	search
+	Template search form
+3.1	searchresult
+	Template search results general
+3.1	viewart
+	Template view articles found
+3.1	viewcom
+	Template view comments found
+3.1	viewfor
+	Template view posts forums found
+3.1	viewfaq
+	Template view FAQ found
+3.1	viewfil
+	Template view files found
+3.1	viewcon
+	Template view contacts found
 
 - sections.html ***************************************************************
 3.0	sectionscreate
@@ -335,12 +378,24 @@
 		Configuration de la presentation des articles de la page d'accueil public
 3.0	sitehomepage1
 		Configuration de la presentation des articles de la page d'accueil privée
+3.3 scripts
+
 
 - threads.html **************************************************************
 3.0	threadlist
 		Presentation de la liste des forums
 3.0	threadcreate
 		Presentation de la creation d'un forum
+
+- topcats.html ***************************************************************
+3.2 topcatcreate
+
+3.2 topcatslist
+
+3.2 topcatmodify
+
+- topcatsection.html *********************************************************
+3.2 template
 
 - topics.html ****************************************************************
 3.0	categorycreate
@@ -358,7 +413,23 @@
 3.0	template
 		Presentation de la sections des themes d'articles
 
-- users.html *****************************************************************
+
+- topicssection.html **********************************************************
+3.2 template
+
+- topman.html *****************************************************************
+3.2 categorylist
+
+3.2 articleslist
+
+3.2 articleview
+
+3.3 oldarticleslist
+
+- topusr.html *****************************************************************
+3.2 categorylist
+
+- users.html ******************************************************************
 3.0	userslist
 		Presentation de la liste des utilisateurs
 3.0	usercreate
@@ -369,7 +440,7 @@
 		Presentations des groupes de l'utilisateur
 
 - usersection.html ************************************************************
-3.1	users section template
+3.1	template
 		Presentation of the sections created by administrators
 
 - vacapp.html ***************************************************************
@@ -385,6 +456,12 @@
 		Presentation de la confirmation de demande de vacances
 3.0	vacationslist
 		Presentation de la liste des demandes de vacances
+
+- version.html ***************************************************************
+3.2 versions
+
+3.2 upgrade
+
 
 - waiting.html ***************************************************************
 3.0	introlist
@@ -405,27 +482,6 @@
 		Presentation du Titre du Corps d'Ovidentia
 3.0	texterror
 		Presentation des erreurs
-
-
-
-
-- search.html **************************************************************
-3.1	search
-	Template search form
-3.1	searchresult
-	Template search results general
-3.1	viewart
-	Template view articles found
-3.1	viewcom
-	Template view comments found
-3.1	viewfor
-	Template view posts forums found
-3.1	viewfaq
-	Template view FAQ found
-3.1	viewfil
-	Template view files found
-3.1	viewcon
-	Template view contacts found
 
 
 *****************************************************************************
