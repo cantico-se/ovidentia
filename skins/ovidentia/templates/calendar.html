@@ -137,7 +137,7 @@ href="{ previousmonth }">&lt; </a> </td>
         <!--#endif currentmonth -->
         <div class="HeaderDayCalendar"><table width="100%" border="0" align="center">
 		<tr><td align="left" valign="middle">
-        <a class="BabMonthCalendarDayNumber" href="{ daynumberurl }">{ daynumbername }</a></td>
+        { daynumbername }</td>
 		<!--#if bowner "== 1" -->		
 		<td align="right" valign="middle"><a class="BabDayCalendarEventLink" href="{ neweventurl }"><IMG SRC="{ babSkinPath }images/Puces/PuceNewEvent.png" WIDTH="12" HEIGHT="11" BORDER=0 ALT="{ new }" align="absmiddle"></a></td>
 		<!--#endif bowner -->
@@ -362,7 +362,16 @@ href="{ titletenurl }">{ title }</a>
 </tr>
 <!--#endin getnextrow -->
 <tr> 
-<td colspan="6" align="center" valign="middle"><input type="submit" name="Submit" value="{ viewthis }"></td>
+<td colspan="6" align="center" valign="middle"><input type="submit" name="Submit" value="{ viewthis }">
+<!--#if bweek -->
+&nbsp;&nbsp;
+<select name="defvw">
+<!--#in getnextdvw -->
+<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+<!--#endin getnextdvw -->
+</select>
+<!--#endif bweek -->
+</td>
 </table>
 
 </form>

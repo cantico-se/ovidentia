@@ -137,6 +137,35 @@ function calendarForm($calid, $day, $month, $year, $view)
 
 	class tempform
 		{
+		var $usrcalendarstxt;
+		var $grpcalendarstxt;
+		var $rescalendarstxt;
+		var $mcals;
+		var $usrcalendars;
+		var $grpcalendars;
+		var $rescalendars;
+		var $maxcals;
+		var $viewthis;
+		var $viewcurl;
+		var $viewctxt;
+		var $day;
+		var $month;
+		var $year;
+		var $view;
+		var $bweek;
+		var $arrdvw;
+		var $busrcal;
+		var $brescal;
+		var $bgrpcal;
+		var $usrcalname;
+		var $usrcalid;
+		var $usrsel;
+		var $grpcalname;
+		var $grpcalid;
+		var $dvselected;
+		var $dvvalid;
+		var $dvval;
+
 		function tempform($calid, $day, $month, $year, $view)
 			{
 			$this->usrcalendarstxt = bab_translate("Users calendars");
@@ -154,6 +183,11 @@ function calendarForm($calid, $day, $month, $year, $view)
 			$this->month = $month;
 			$this->year = $year;
 			$this->view = $view;
+			if( $this->view == "viewq" || $this->view == "viewqc" )
+				$this->bweek = true;
+			else
+				$this->bweek = false;
+			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
 			}
 
 		function getnextrow()
@@ -193,6 +227,37 @@ function calendarForm($calid, $day, $month, $year, $view)
 					else
 						$this->ressel = "";
 					$this->brescal = true;
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+
+		function getnextdvw()
+			{
+			static $i = 0;
+			if( $i < count($this->arrdvw) )
+				{
+				$this->dvselected = "";
+				$this->dvval = $this->arrdvw[$i];		
+				switch($i)
+					{
+					case '0':
+						$this->dvvalid = "viewqc";
+						if( $this->view == "viewqc")
+							$this->dvselected = "selected";
+						break;
+					case '1':
+						$this->dvvalid = "viewq";
+						if( $this->view == "viewq")
+							$this->dvselected = "selected";
+						break;
 					}
 				$i++;
 				return true;
@@ -267,6 +332,7 @@ function calendarMonth($calid, $day, $month, $year)
 			$this->ampm = false;
 			$this->babCalendarStartDay = 0;
 			$this->babCalendarUsebgColor = "Y";
+			$this->defvw = "viewqc";
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
@@ -274,6 +340,10 @@ function calendarMonth($calid, $day, $month, $year)
 				$this->babCalendarUsebgColor = $arr['usebgcolor'];
 				if( $arr['ampm'] == "Y")
 					$this->ampm = true;
+				if( $arr['defaultviewweek'] )
+					$this->defvw = "viewqc";
+				else
+					$this->defvw = "viewq";
 				}
 
 			$this->bowner = isCalUpdate($this->mcals);
@@ -293,7 +363,7 @@ function calendarMonth($calid, $day, $month, $year)
 			$this->nextyear .= "&year=". date("Y", mktime( 0,0,0, $month, 1, $year+1)). "&calid=".$this->calid;
 
 			$this->monthurl = "";
-			$this->weekurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
+			$this->weekurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defvw."&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
 			$this->dayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
 
 			$this->monthurlname = bab_translate("Month");
@@ -446,7 +516,7 @@ function calendarMonth($calid, $day, $month, $year)
 }
 
 
-function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
+function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $idx)
 {
 	global $babBody;
 
@@ -480,9 +550,10 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 		var $babCalendarStartDay;
 		var $babCalendarUsebgColor;
 		var $defview;
+		var $defvw;
 
 		
-		function temp($calid, $day, $month, $year, $caltype, $owner)
+		function temp($calid, $day, $month, $year, $caltype, $owner, $idx)
 			{
 			global $BAB_SESS_USERID, $babMonths;
 			$this->mcals = explode(",", $calid);
@@ -492,12 +563,12 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 			$this->month = $month;
 			$this->year = $year;
 			$this->day = $day;
+			$this->defview = $idx;
 			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			$this->babCalendarStartDay = 0;
 			$this->babCalendarUsebgColor = "Y";
 			$this->ampm = false;
-			$this->defview = 0;
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
@@ -505,37 +576,36 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 				$this->babCalendarUsebgColor = $arr['usebgcolor'];
 				if( $arr['ampm'] == "Y")
 					$this->ampm = true;
-				$this->defview = $arr['defaultviewweek'];
 				}
 			$this->bowner = isCalUpdate($this->mcals);
 			$this->curday = date("w", mktime(0,0,0,$month, $day, $year));
 			$d = $day - 7;
 			if( $d == 0)
 				$d = -1;
-			$this->previousweek = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j", mktime( 0,0,0, $month, $d, $year));
+			$this->previousweek = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".date("j", mktime( 0,0,0, $month, $d, $year));
 			$this->previousweek .= "&month=".date("n", mktime( 0,0,0, $month, $d, $year));
 			$this->previousweek .= "&year=".date("Y", mktime( 0,0,0, $month, $d, $year)). "&calid=".$this->calid;
 			$d = $day + 7;
-			$this->nextweek = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j", mktime( 0,0,0, $month, $d, $year));
+			$this->nextweek = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".date("j", mktime( 0,0,0, $month, $d, $year));
 			$this->nextweek .= "&month=". date("n", mktime( 0,0,0, $month, $d, $year));
 			$this->nextweek .= "&year=". date("Y", mktime( 0,0,0, $month, $d, $year)). "&calid=".$this->calid;
 
-			$this->previousyear = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j", mktime( 0,0,0, $month, $day, $year-1));
+			$this->previousyear = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".date("j", mktime( 0,0,0, $month, $day, $year-1));
 			$this->previousyear .= "&month=".date("n", mktime( 0,0,0, $month, $day, $year-1));
 			$this->previousyear .= "&year=".date("Y", mktime( 0,0,0, $month, $day, $year-1)). "&calid=".$this->calid;
-			$this->nextyear = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j", mktime( 0,0,0, $month, $day, $year+1));
+			$this->nextyear = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".date("j", mktime( 0,0,0, $month, $day, $year+1));
 			$this->nextyear .= "&month=". date("n", mktime( 0,0,0, $month, $day, $year+1));
 			$this->nextyear .= "&year=". date("Y", mktime( 0,0,0, $month, $day, $year+1)). "&calid=".$this->calid;
 
-			$this->previousmonth = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j", mktime( 0,0,0, $month-1, $day, $year));
+			$this->previousmonth = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".date("j", mktime( 0,0,0, $month-1, $day, $year));
 			$this->previousmonth .= "&month=".date("n", mktime( 0,0,0, $month-1, $day, $year));
 			$this->previousmonth .= "&year=".date("Y", mktime( 0,0,0, $month-1, $day, $year)). "&calid=".$this->calid;
-			$this->nextmonth = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j", mktime( 0,0,0, $month+1, $day, $year));
+			$this->nextmonth = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".date("j", mktime( 0,0,0, $month+1, $day, $year));
 			$this->nextmonth .= "&month=". date("n", mktime( 0,0,0, $month+1, $day, $year));
 			$this->nextmonth .= "&year=". date("Y", mktime( 0,0,0, $month+1, $day, $year)). "&calid=".$this->calid;
 
 			$this->monthurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
-			$this->weekurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
+			$this->weekurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
 			$this->dayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
 			$this->monthurlname = bab_translate("Month");
 			$this->weekurlname = bab_translate("Week");
@@ -544,7 +614,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 			$this->next = bab_translate("Next");
 			$this->new = bab_translate("New");
 			$this->gotodayname = bab_translate("Go to Today");
-			$this->gotodayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j")."&month=".date("n")."&year=".date("Y"). "&calid=".$this->calid;
+			$this->gotodayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defview."&day=".date("j")."&month=".date("n")."&year=".date("Y"). "&calid=".$this->calid;
 			$this->delta = $this->curday - $this->babCalendarStartDay;
 			if( $this->delta < 0)
 				$this->delta += 7;
@@ -585,7 +655,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 					}
 				$this->daynumbername = date("j", mktime(0,0,0,$this->month, $this->mday,$this->year));
 				$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $this->mday, $this->year), false);
-				$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->mday."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=viewq";
+				$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->mday."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=".$this->defview."";
 				$i++;
 				return true;
 				}
@@ -635,7 +705,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 				else
 					$this->hourten = htmlentities(substr($arr['start_time'], 0 ,5));
 				$this->titleten = htmlentities(substr($arr['title'], 0, 10)) ;
-				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
+				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=".$this->defview."";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
 					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
@@ -658,13 +728,13 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 
 		}
 
-	$temp = new temp($calid, $day, $month, $year, $caltype, $owner);
-	if( $temp->defview )
+	$temp = new temp($calid, $day, $month, $year, $caltype, $owner, $idx);
+	if( $idx == "viewq" )
 		$tpl = "calweekrows";
 	else
 		$tpl = "calweekcols";
 	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", $tpl));
-	calendarForm($calid, $day, $month, $year, "viewq");
+	calendarForm($calid, $day, $month, $year, $idx);
 	return $temp->count;
 
 }
@@ -731,6 +801,10 @@ function calendarDay($calid, $day, $month, $year, $starttime)
 					$this->elapstime = $arr['elapstime'];
 				if( $arr['ampm'] == "Y")
 					$this->ampm = true;
+				if( $arr['defaultviewweek'] )
+					$this->defvw = "viewqc";
+				else
+					$this->defvw = "viewq";
 				}
 
 			$this->bowner = isCalUpdate($this->mcals);
@@ -796,7 +870,7 @@ function calendarDay($calid, $day, $month, $year, $starttime)
 			$this->nextyear .= "&year=". date("Y", mktime( 0,0,0, $month, $day, $year+1)). "&calid=".$this->calid;
 
 			$this->monthurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
-			$this->weekurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
+			$this->weekurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$this->defvw."&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
 			$this->dayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid;
 			$this->monthurlname = bab_translate("Month");
 			$this->weekurlname = bab_translate("Week");
@@ -1102,6 +1176,8 @@ if( isset($viewcal) && $viewcal == "view")
 		$grpcals = array();
 	if( !isset($rescals))
 		$rescals = array();
+	if( $idx == "viewq" || $idx == "viewqc" )
+		$idx = $defvw;
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$idx."&calid=".implode(",", array_merge($usrcals, $grpcals, $rescals))."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
 }
 
@@ -1116,6 +1192,7 @@ if( empty($day))
 
 if( !isset($calid) )
 	$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+
 
 switch($idx)
 	{
@@ -1133,14 +1210,15 @@ switch($idx)
 			$babBody->addItemMenu("viewd", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd");
 			}
 		break;
+	case "viewqc":
 	case "viewq":
 		if( !bab_isCalendarAccessValid($calid) )
 			$babBody->title = bab_translate("Acces denied");
 		else
 			{
 			$babBody->title = bab_translate("Calendar");
-			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid));
-			$babBody->addItemMenu("viewq", $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq");
+			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), $idx);
+			$babBody->addItemMenu($idx, $babBody->title, $GLOBALS['babUrlScript']."?tg=calendar&idx=".$idx);
 			}
 		break;
 	default:

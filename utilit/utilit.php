@@ -599,10 +599,15 @@ function babUserSection($close)
 	if( $idcal != 0 )
 		{
 		$babBody->calaccess = true;
-		list($view) = $babDB->db_fetch_row($babDB->db_query("select defaultview from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'"));
+		list($view, $wv) = $babDB->db_fetch_row($babDB->db_query("select defaultview, defaultviewweek from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'"));
 		switch($view)
 			{
-			case '1': $view='viewq'; break;
+			case '1':
+				if( $wv )
+					$view='viewq';
+				else
+					$view='viewqc';
+				break;
 			case '2': $view='viewd'; break;
 			default: $view='viewm'; break;
 			}
