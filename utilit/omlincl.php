@@ -694,7 +694,7 @@ class bab_Articles extends bab_handler
 
 			}
 
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where id_topic IN (".implode(',', $topicid).")".$archive;
+			$req = "select at.id, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic IN (".implode(',', $topicid).")".$archive;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -702,10 +702,10 @@ class bab_Articles extends bab_handler
 
 			switch(strtoupper($order))
 			{
-				case "ASC": $order = "date ASC"; break;
+				case "ASC": $order = "at.ordering ASC"; break;
 				case "RAND": $order = "rand()"; break;
 				case "DESC":
-				default: $order = "date DESC"; break;
+				default: $order = "at.ordering DESC"; break;
 			}
 
 			$req .= " order by ".$order;
