@@ -1,4 +1,10 @@
 /************************************************************************/
+Mars 2005: Version 5.5.5
+/************************************************************************/
+- Added possibility to define vacation right with fixed dates 
+- Fixed some minors bugs
+
+/************************************************************************/
 Mars 2005: Version 5.5.4
 /************************************************************************/
 - Added possibility to specify which calendar category will be used with a vacation event is 
