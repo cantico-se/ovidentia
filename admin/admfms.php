@@ -265,7 +265,12 @@ if( isset($add) && $add == "addfolder")
 		$idx = "addf";
 
 if( isset($update) && $update == "folders")
+	{
+	if(!isset($notifies)) { $notifies= array();}
+	if(!isset($actives)) { $actives= array();}
+	if(!isset($versions)) { $versions= array();}
 	updateFolders($notifies, $actives, $versions);
+	}
 
 switch($idx)
 	{

@@ -117,6 +117,8 @@ function modifyFolder($fid)
 			if ($n > 0)
 				{
 				$this->js_appflowlock = bab_translate("Approbation can't be disabled").', '.$n.' '.bab_translate("file(s) must be accepted or refused before");
+				$this->js_appflowlock = str_replace("'", "\'", $this->js_appflowlock );
+				$this->js_appflowlock = str_replace('"', "'+String.fromCharCode(34)+'",$this->js_appflowlock );
 				}
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
@@ -532,6 +534,7 @@ else if( isset($fmf))
 	}
 else if( isset($aclview))
 	{
+	if(!isset($groups)) { $groups=array();}
 	aclUpdate($table, $item, $groups, $what);
 	if( $table == BAB_FMDOWNLOAD_GROUPS_TBL )
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$item);

@@ -236,7 +236,7 @@ function bab_mail()
 		return false;
 
 	$mail = false;
-	switch($arr['mailfunc'])
+	switch($babBody->babsite['mailfunc'])
 	{
 		case "mail":
 			$mail = new babMail();
@@ -252,7 +252,7 @@ function bab_mail()
 			$mail->mail->IsSMTP();
 			$mail->mail->Host = $babBody->babsite['smtpserver'];
 			$mail->mail->Port = $babBody->babsite['smtpport'];
-			if( $arr['smtpuser'] != "" ||  $babBody->babsite['smtppass'] != "")
+			if( $babBody->babsite['smtpuser'] != "" ||  $babBody->babsite['smtppass'] != "")
 				{
 				$mail->mail->SMTPAuth = true;;
 				$mail->mail->Username = $babBody->babsite['smtpuser'];
