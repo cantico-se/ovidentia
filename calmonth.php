@@ -342,8 +342,7 @@ if( empty($date))
 	$date = Date("Y,n,j");
 	}
 
-if( !isset($calid) )
-	$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+
 
 
 
@@ -389,6 +388,11 @@ switch($idx)
 	case "view":
 	default:
 		$calid = bab_isCalendarAccessValid($calid);
+		if (!$calid )
+			{
+			$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+			}
+
 		if( !$calid )
 			{
 			$babBody->title = bab_translate("Acces denied");
