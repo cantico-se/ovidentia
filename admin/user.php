@@ -135,6 +135,8 @@ function listGroups($id)
 						if( $this->groups[id_group] == $this->arrgroups[id])
 							{
 							//$this->select = "selected"; bug ??? this does'nt work. Why ? I don't know
+							if( $this->groups[isprimary] == "Y")
+								$this->arrgroups[name] .= " *"; 
 							$this->arrgroups[select] = "selected";
 							}
 						}
@@ -194,6 +196,9 @@ function updateGroups($id, $groups)
 	{
 
 	$db = new db_mysql();
+	$req = "create temporary table temptbl select * from users_groups where id_object = '$id'";
+	$res = $db->db_query($req);
+
 	$req = "delete from users_groups where id_object = '$id'";
 	$res = $db->db_query($req);
 
@@ -204,7 +209,17 @@ function updateGroups($id, $groups)
 			{
 			if( !empty($groups[$i]))
 				{
-				$req = "insert into users_groups (id_object, id_group) values ('". $id. "', '" . $groups[$i]. "')";
+				$req = "select * from temptbl where id_object='".$id."' and id_group='".$groups[$i]."'";
+				$res = $db->db_query($req);
+				if( $res && $db->db_num_rows($res) > 0)
+					{
+					$arr = $db->db_fetch_array($res);
+					$req = "insert into users_groups (id_object, id_group, isprimary) values ('". $id. "', '" . $groups[$i]. "', '" . $arr[isprimary]. "')";
+					}
+				else
+					{
+					$req = "insert into users_groups (id_object, id_group) values ('". $id. "', '" . $groups[$i]. "')";
+					}
 				$res = $db->db_query($req);
 				}
 			}
