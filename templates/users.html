@@ -46,7 +46,7 @@ document.forms.listform.submit();
         <tr> 
           <td class="BabUserAdminBodyBackground" width="1%" align="right" nowrap valign="middle"> 
             <!--#if status "== *" -->
-            <img src="images/Puces/PuceOnline.gif" alt=""> 
+            <img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt=""> 
             <!--#endif status -->&nbsp;
           </td>
           <td class="BabUserAdminBodyBackground" width="33%" align="left" valign="middle"><a class="BabUserAdminNameBodyLink" href="{ url }">{ 
@@ -259,7 +259,7 @@ document.forms.listform.submit();
           <td class="BabUserAdminBodyBackground" width="2%" align="center" valign="middle"><input type="checkbox" name="groups[]" value="{ groupid  }" { checked }></td>
             <td class="BabUserAdminBodyBackground" width="10%" align="center" valign="middle" nowrap> 
               <!--#if primary "== Y" -->
-              <img src="images/Puces/PuceDefaultGroup.gif"  alt="{ primary }">
+              <img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }">
               <!--#endif primary -->&nbsp;
             </td>
             <td class="BabUserAdminBodyBackground" width="88%" align="left" valign="middle"><a class="BabUserAdminNameBodyLink" href="{ groupurl }">{ groupname }</a> </td>

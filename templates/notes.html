@@ -2,7 +2,7 @@
 <!--#begin notescreate -->
 
 
-<form method="post" action="index.php">
+<form name="notcreate" method="post" action="index.php">
 <input type="hidden" name="tg" value="notes">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="create" value="create">
@@ -15,7 +15,7 @@
           </tr>
           <!-- Instanciation de la barre d'outils -->
           <!--#if msie "== 1" -->
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="right" valign="middle"> 
             <td width="91%"> 
               <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content"></textarea>
@@ -25,7 +25,7 @@
             <td width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -35,7 +35,7 @@
             <td width="91%" align="center" valign="middle"> 
               <!--#if msie "== 1" -->
               <script language="JavaScript">
-	editor.InFrame(0, "content", "0", "90%", "160");
+	editor.InFrame(0, "content", "notcreate", "90%", "160");
 </script>
               <!--#else msie -->
               <textarea cols="50" rows="20" name="content"></textarea>
@@ -90,7 +90,7 @@
 
 
 
-<form method="post" action="index.php">
+<form name="notemod" method="post" action="index.php">
 <input type="hidden" name="tg" value="note">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
@@ -104,7 +104,7 @@
           </tr>
           <!-- Instanciation de la barre d'outils -->
           <!--#if msie "== 1" -->
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="right" valign="middle"> 
             <td width="91%"> 
               <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ arr[content] }</textarea>
@@ -114,7 +114,7 @@
             <td width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -124,7 +124,7 @@
             <td width="91%" align="center" valign="middle"> 
               <!--#if msie "== 1" -->
               <script language="JavaScript">
-	editor.InFrame(0, "content", "0", "90%", "160");
+	editor.InFrame(0, "content", "notemod", "90%", "160");
 </script>
               <!--#else msie -->
               <textarea cols="50" rows="20" name="content">{ arr[content] }</textarea>

@@ -2,7 +2,7 @@
 <!--#begin categorycreate -->
 
 
-<form method="post" action="index.php">
+<form name="catcreate" method="post" action="index.php">
 <input type="hidden" name="tg" value="admfaqs">
 <input type="hidden" name="idx" value="Categories">
 <input type="hidden" name="add" value="add">
@@ -18,7 +18,7 @@
               </td>
             </tr>
           <!-- Instanciation de la barre d'outils --> <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="left" valign="middle"> 
               <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
             <td class="BabLoginMenuBackground" width="91%"> 
@@ -30,7 +30,7 @@
             <td class="BabLoginMenuBackground" width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -42,7 +42,7 @@
               <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
 <!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "description", "0", "90%", "160");
+	editor.InFrame(0, "description", "catcreate", "90%", "160");
 </script>
               <!--#else msie -->
 			  <textarea cols="50" rows="10" name="description"></textarea>
@@ -108,7 +108,7 @@
 <br><br><br><br><br>
 <!--#begin categorymodify -->
 
-<form method="post" action="index.php">
+<form name="catmod" method="post" action="index.php">
 <input type="hidden" name="tg" value="admfaq">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
@@ -126,7 +126,7 @@
           </tr>
           <!-- Instanciation de la barre d'outils -->
 		  <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="left" valign="middle"> 
               <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
             <td class="BabLoginMenuBackground" width="91%"> 
@@ -138,7 +138,7 @@
             <td class="BabLoginMenuBackground" width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -150,7 +150,7 @@
             <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
 <!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "description", "0", "90%", "160");
+	editor.InFrame(0, "description", "catmod", "90%", "160");
 </script>
               <!--#else msie -->
               <textarea cols="50" rows="10" name="description">{ arr[description] }</textarea>

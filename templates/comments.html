@@ -1,7 +1,7 @@
 
 <!--#begin commentcreate -->
 
-<form method="post" action="index.php">
+<form name="comcreate" method="post" action="index.php">
 <input type="hidden" name="tg" value="comments">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="topics" value="{ topics }">
@@ -21,7 +21,7 @@
 
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
 <tr>
 
 
@@ -31,7 +31,7 @@
 <td width="103"><input type="text" name="subject" style="VISIBILITY: hidden" size="0" value="{ subjectval }">
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </SCRIPT>
 </td>
@@ -44,7 +44,7 @@
 <td width="103">
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "subject", "0", "75%", "20");
+	editor.InFrame(0, "subject", "comcreate", "75%", "20");
 </SCRIPT>
 <!--#else msie -->
 	<input type="text" name="subject" size="60" maxlength="60" value="{ subjectval }"></td>
@@ -55,7 +55,7 @@
 <td width="103">
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(1, "message", "0", "90%", "160");
+	editor.InFrame(1, "message", "comcreate", "90%", "160");
 </SCRIPT>
 <!--#else msie -->
 	<textarea cols="50" rows="10" name="message"></textarea></td>

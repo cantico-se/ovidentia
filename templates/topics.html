@@ -1,6 +1,6 @@
 
 <!--#begin categorycreate -->
-<form method="post" action="index.php">
+<form name="catcr" method="post" action="index.php">
   <input type="hidden" name="tg" value="topics">
   <input type="hidden" name="idx" value="Categories">
   <input type="hidden" name="add" value="add">
@@ -19,7 +19,7 @@
               <tr class="BabSectionsAdminTitleFontBackground" align="left"><td>{ description }</td></tr>
           <!-- Instanciation de la barre d'outils -->
 		  <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="right" valign="middle"> 
             <td width="91%"> 
               <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description"></textarea>
@@ -29,7 +29,7 @@
             <td width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -40,7 +40,7 @@
             <td width="91%">
 			<!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "description", "0", "90%", "160");
+	editor.InFrame(0, "description", "catcr", "90%", "160");
 </script>
               <!--#else msie --> 
               <textarea cols="50" rows="20" name="description"></textarea>
@@ -111,7 +111,7 @@
 <br><br><br><br>
 <!--#begin categorymodify -->
 
-<form method="post" action="index.php">
+<form name="catmod" method="post" action="index.php">
   <input type="hidden" name="tg" value="topic">
   <input type="hidden" name="idx" value="Modify">
   <input type="hidden" name="item" value="{ arr[id] }">
@@ -131,7 +131,7 @@
               <tr class="BabSectionsAdminTitleFontBackground" align="left"><td>{ description }</td></tr>
           <!-- Instanciation de la barre d'outils -->
 		  <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="right" valign="middle"> 
             <td width="91%"> 
               <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description">{ arr[description] }</textarea>
@@ -141,7 +141,7 @@
             <td width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -152,7 +152,7 @@
             <td width="91%">
 			<!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "description", "0", "90%", "160");
+	editor.InFrame(0, "description", "catmod", "90%", "160");
 </script>
               <!--#else msie --> 
               <textarea cols="50" rows="20" name="description" >{ arr[description] }</textarea>
@@ -225,7 +225,7 @@ function Start(page)
     <td> 
       <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
         <tr> 
-          <td class="BabTopicsAdminChoiceTitleFontBackground" width="1%"><a href="javascript:onCheckAll('art', true)"><img src="images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+          <td class="BabTopicsAdminChoiceTitleFontBackground" width="1%"><a href="javascript:onCheckAll('art', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('art', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 		  <td class="BabTopicsAdminChoiceTitleFontBackground">&nbsp;</td><td class="BabTopicsAdminChoiceTitleFontBackground">&nbsp;</td>
           <td class="BabTopicsAdminChoiceTitleFontBackground" align="left" valign="middle" ><b>{ 
             titlename }</b></td>
@@ -235,8 +235,8 @@ function Start(page)
           <td align="left" valign="middle" width="1%">
             <input width="2%" type="checkbox" name="art[]" value="{ articleid }">
           </td>
-          <td align="left" valign="middle" width="5%">&nbsp;<!--#if  bhomepage0 "== X" --><img src="images/Puces/PuceNotEnregistered.gif" alt="{ bhomepage0 }"  width="18" height="15" border="0"><!--#endif  bhomepage0 --></td>
-          <td align="left" valign="middle" width="5%">&nbsp;<!--#if  bhomepage1 "== X" --><img src="images/Puces/PuceEnregistered.gif" alt="{ bhomepage1 }" width="18" height="15" border="0"><!--#endif  bhomepage1 --></td>
+          <td align="left" valign="middle" width="5%">&nbsp;<!--#if  bhomepage0 "== X" --><img src="{ babSkinPath }images/Puces/PuceNotEnregistered.gif" alt="{ bhomepage0 }"  width="18" height="15" border="0"><!--#endif  bhomepage0 --></td>
+          <td align="left" valign="middle" width="5%">&nbsp;<!--#if  bhomepage1 "== X" --><img src="{ babSkinPath }images/Puces/PuceEnregistered.gif" alt="{ bhomepage1 }" width="18" height="15" border="0"><!--#endif  bhomepage1 --></td>
           <td align="left" valign="middle" width="90%"><a class="BabTopicsAdminChoiceLink" href="{ urltitle }">{ 
             title }</a></td>
           <!--#endin getnext -->
@@ -259,13 +259,13 @@ function Start(page)
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>{ sitename }</TITLE>
+<TITLE>{ babSiteName }</TITLE>
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META NAME="Generator" CONTENT="Bab">
 <META NAME="Author" CONTENT="">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
-<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+{ babCss }
 <script type="text/javascript">
 <!--
 //-->

@@ -3,13 +3,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>{ sitename }</TITLE>
+<TITLE>{ babSiteName }</TITLE>
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META NAME="Generator" CONTENT="Bab">
 <META NAME="Author" CONTENT="">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
-<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+{ babCss }
 <script type="text/javascript">
 <!--
 function Start(page)
@@ -31,6 +31,8 @@ function mm()
 </HEAD>
 <BODY class="BabBackground">
 <center>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+  <tr><td class="BabErrorMessage" ><center>&nbsp;{ msgerror }</center></td></tr></table><br>
 <form method="post" name="composef" action="index.php" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="mail">
 <input type="hidden" name="idx" value="compose">
@@ -109,7 +111,7 @@ function mm()
           </tr>
           <!-- Instanciation de la barre d'outils -->
           <!--#if msie "== 1" -->
-          <SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+          <SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
           <tr> 
             <td class="" width="20%" align="right" nowrap valign="middle">&nbsp;</td>
             <td class="" width="70%" align="left" valign="middle"> 
@@ -120,7 +122,7 @@ function mm()
             <td class="" colspan="2" align="center" nowrap valign="middle"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -130,7 +132,7 @@ function mm()
             <td class="" colspan="2" align="center" nowrap valign="middle"> 
               <!--#if msie "== 1" -->
               <script language="JavaScript">
-	editor.InFrame(0, "message", "0", "100%", "160");
+	editor.InFrame(0, "message", "composef", "100%", "160");
 </script>
               <!--#else msie -->
               <textarea cols="60" rows="20" name="message">{ messageval }</textarea>
@@ -178,13 +180,13 @@ function mm()
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>{ sitename }</TITLE>
+<TITLE>{ babSiteName }</TITLE>
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META NAME="Generator" CONTENT="Bab">
 <META NAME="Author" CONTENT="">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
-<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+{ babCss }
 <script type="text/javascript">
 <!--
 //-->
@@ -205,7 +207,7 @@ function mm()
             <td class="BabContactsCardErrorsFontBackground" width="91%" colspan="2" align="center"><a href="javascript:this.close()">{ 
               close }</a> </td>
           </tr>
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
         </table>
       </td>
     </tr>

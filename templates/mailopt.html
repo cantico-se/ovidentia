@@ -456,7 +456,7 @@
 
             <!--#if prefered "== P" -->
 
-<IMG SRC="images/Puces/PuceMailDefault.gif" WIDTH="11" HEIGHT="11" BORDER=0 ALT="{ prefered }">
+<IMG SRC="{ babSkinPath }images/Puces/PuceMailDefault.gif" WIDTH="11" HEIGHT="11" BORDER=0 ALT="{ prefered }">
 
 <!--#else prefered -->
 
@@ -603,7 +603,7 @@ function mm()
           </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
 <tr>
 <td class="BabLoginMenuBackground" align="right" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground"><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="signature">{ signatureval }</textarea></td>
@@ -613,7 +613,7 @@ function mm()
 <td class="BabLoginMenuBackground" >
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </SCRIPT>
 </td>
@@ -628,7 +628,7 @@ function mm()
             <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "signature", "0", "100%", "160");
+	editor.InFrame(0, "signature", "sigform", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
               <textarea cols="40" rows="10" name="signature">{ signatureval }</textarea>
@@ -740,7 +740,7 @@ function mm()
             </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
 <tr>
 <td class="BabLoginMenuBackground" align="right" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground"><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="signature">{ signatureval }</textarea></td>
@@ -750,7 +750,7 @@ function mm()
 <td class="BabLoginMenuBackground">
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </SCRIPT>
 </td>
@@ -766,7 +766,7 @@ function mm()
               <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "signature", "0", "100%", "160");
+	editor.InFrame(0, "signature", "sigform", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
                 <textarea cols="40" rows="10" name="signature">{ signatureval }</textarea>

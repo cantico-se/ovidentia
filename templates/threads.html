@@ -32,9 +32,9 @@
           <td class="BabForumTitleBackground" width="20%" align="center">{ 
             starter }</td>
                     
-          <td class="BabForumTitleBackground" width="5%" align="center"><img src="images/Puces/PuceForumContrib.gif" alt="{ repliesname }"></td>                  
+          <td class="BabForumTitleBackground" width="5%" align="center"><img src="{ babSkinPath }images/Puces/PuceForumContrib.gif" alt="{ repliesname }"></td>                  
                		
-          <td class="BabForumTitleBackground" width="5%" align="center"><img src="images/Puces/PuceForumConsult.gif" alt="{ views }"></td>                  
+          <td class="BabForumTitleBackground" width="5%" align="center"><img src="{ babSkinPath }images/Puces/PuceForumConsult.gif" alt="{ views }"></td>                  
                     
           <td class="BabForumTitleBackground" width="10%" align="center">{ 
             lastpost }</td>
@@ -44,14 +44,14 @@
               	<tr valign="middle"> 
                 <!--#if status "== *" -->
                 	
-          <td class="BabForumBackground" width="1%" align="center"><img src="images/Puces/PuceForumWaiting.gif" alt=""></td>
+          <td class="BabForumBackground" width="1%" align="center"><img src="{ babSkinPath }images/Puces/PuceForumWaiting.gif" alt=""></td>
                   	<!--#else status -->
                   	<!--#if arrthread[active] "== Y" -->
                     
-          <td class="BabForumBackground" width="1%" align="center"><img src="images/Puces/PuceForumOpen.gif" alt=""></td>
+          <td class="BabForumBackground" width="1%" align="center"><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt=""></td>
                  	<!--#else arrthread[active] -->
                   	
-          <td class="BabForumBackground" width="1%" align="center"><img src="images/Puces/PuceForumClose.gif" alt=""></td>
+          <td class="BabForumBackground" width="1%" align="center"><img src="{ babSkinPath }images/Puces/PuceForumClose.gif" alt=""></td>
                   	<!--#endif arrthread[active] -->
               	<!--#endif status -->
                   
@@ -98,7 +98,7 @@
 <!--#begin threadcreate -->
 
 <table class="BabThreadCreateCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center"><tr><td>
-<form method="post" action="index.php">
+<form name="threadcr" method="post" action="index.php">
 <input type="hidden" name="tg" value="threads">
 <input type="hidden" name="idx" value="addthread">
 <input type="hidden" name="forum" value="{ forum }">
@@ -118,7 +118,7 @@
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
 <tr>
 <td align="right" nowrap>&nbsp;</td>
 <td><textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message"></textarea></td>
@@ -128,7 +128,7 @@
 <td>
 <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </SCRIPT>
 </td>
@@ -139,7 +139,7 @@
 <td>
 <!--#if msie "== 1" -->
 <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "message", "0", "100%", "160");
+	editor.InFrame(0, "message", "threadcr", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
 <textarea cols="60" rows="20" name="message"></textarea>

@@ -65,7 +65,7 @@ function Start(page)
 
           <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
             <tr> 
-              <td class="BabMailTitleBackground" colspan="3"><a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images//Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images//Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+              <td class="BabMailTitleBackground" colspan="3"><a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
               <td class="BabMailTitleBackground" align="left" valign="middle"><a class="BabInboxMessageTitleLinkColor" href="{ fromurl }">{ 
                 fromname }</a></td>
               <td class="BabMailTitleBackground" align="left" valign="middle" width="10">&nbsp;</td>
@@ -80,14 +80,14 @@ function Start(page)
               <td align="left" valign="middle" width="1"> 
                 <input type="checkbox" name="item[]" value="{ msgid }">
               </td>
-              <td align="right" valign="middle" width="1" nowrap><img src="{ babSkinPath }images//Puces/Space1PxTrans.gif" width="1" height="1"> 
+              <td align="right" valign="middle" width="1" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1"> 
                 <!--#if attachment "== 1" -->
-                <img src="{ babSkinPath }images//Puces/PuceTrombonne.gif"> 
+                <img src="{ babSkinPath }images/Puces/PuceTrombonne.gif"> 
                 <!--#endif attachment -->
               </td>
-              <td align="right" valign="middle" width="1" nowrap><img src="{ babSkinPath }images//Puces/Space1PxTrans.gif" width="1" height="1">
+              <td align="right" valign="middle" width="1" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1">
                 <!--#if priority "== 1" -->
-                <img src="{ babSkinPath }images//Puces/PuceImportant.gif">  
+                <img src="{ babSkinPath }images/Puces/PuceImportant.gif">  
                 <!--#endif priority -->
               </td>
               <td align="left" valign="middle"><a class="BabInboxMessageSendfromLinkColor" href="{ msgfromurl }">{ 
@@ -183,13 +183,13 @@ function Start(page)
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>{ sitename }</TITLE>
+<TITLE>{ babSiteName }</TITLE>
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META NAME="Generator" CONTENT="Bab">
 <META NAME="Author" CONTENT="">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
-<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+{ babCss }
 <script type="text/javascript">
 <!--
 function Start(page)

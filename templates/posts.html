@@ -3,7 +3,7 @@
 
 
 
-<form method="post" action="index.php">
+<form name="postcr" method="post" action="index.php">
 
 <input type="hidden" name="tg" value="posts">
 
@@ -42,7 +42,7 @@
               </td>
             </tr>
           <!-- Instanciation de la barre d'outils --> <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="left" valign="middle"> 
               <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
             <td class="BabLoginMenuBackground" width="70%"> 
@@ -54,7 +54,7 @@
             <td class="BabLoginMenuBackground" width="70%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -66,7 +66,7 @@
               <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
 <!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "message", "0", "90%", "160");
+	editor.InFrame(0, "message", "postcr", "90%", "160");
 </script>
               <!--#else msie -->
                <textarea cols="60" rows="20" name="message"></textarea>
@@ -101,7 +101,7 @@
 
 
 
-<form method="post" action="index.php">
+<form name="posted" method="post" action="index.php">
 
 <input type="hidden" name="tg" value="posts">
 
@@ -135,7 +135,7 @@
               </td>
             </tr>
           <!-- Instanciation de la barre d'outils --> <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="left" valign="middle"> 
               <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
             <td class="BabLoginMenuBackground" width="70%"> 
@@ -147,7 +147,7 @@
             <td class="BabLoginMenuBackground" width="70%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -159,7 +159,7 @@
               <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
 <!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "message", "0", "90%", "160");
+	editor.InFrame(0, "message", "posted", "90%", "160");
 </script>
               <!--#else msie -->
 			  <textarea cols="60" rows="20" name="message">{ arr[message] }</textarea>
@@ -242,12 +242,12 @@
     <!--#in getnext -->
     <tr valign="middle">
             <!--#if alternate "== 0" -->
-        <td  valign="middle" align="center"  nowrap ><!--#if confirmed "== C" --><IMG SRC="images/Puces/PuceForumWaitConfirm.gif" WIDTH="15" HEIGHT="13" BORDER=0 ALT="{ confirmed }"> <!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
+        <td  valign="middle" align="center"  nowrap ><!--#if confirmed "== C" --><IMG SRC="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" WIDTH="15" HEIGHT="13" BORDER=0 ALT="{ confirmed }"> <!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
         <td >
             <table class="" cellspacing="0" cellpadding="0" border="0">
             <!--#else alternate -->
             <tr>
-            <td valign="middle" align="center"  nowrap><!--#if confirmed "== C" --><IMG SRC="images/Puces/PuceForumWaitConfirm.gif" WIDTH="15" HEIGHT="13" BORDER=0 ALT="{ confirmed }"> <!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
+            <td valign="middle" align="center"  nowrap><!--#if confirmed "== C" --><IMG SRC="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" WIDTH="15" HEIGHT="13" BORDER=0 ALT="{ confirmed }"> <!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
             <td>
 
                 <table  cellspacing="0" cellpadding="0" border="0">
@@ -256,23 +256,23 @@
                         <td nowrap valign="middle" align="center"><IMG SRC="images/s.gif" width="5" height="21" BORDER="0">
                              <!--#in gettrans -->
                              <!--#if vert "== 1" -->
-                            <img src="images/v.gif" width="12" height="21" border="0">
+                            <img src="{ babSkinPath }images/Puces/Puce-v.gif" width="12" height="21" border="0">
                             <!--#else vert -->
-                            <IMG SRC="images/s.gif" width="12" height="21" border="0">
+                            <IMG SRC="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="21" border="0">
                             <!--#endif vert -->
                             <!--#endin gettrans -->
                             <!--#if first "== 1" -->
                             <!--#else first -->
                             <!--#if leaf "== 1" -->
-                            <img src="images/l.gif" width="12" height="21" border="0">
+                            <img src="{ babSkinPath }images/Puces/Puce-l.gif" width="12" height="21" border="0">
                             <!--#else leaf -->
-                            <img src="images/t.gif" width="12" height="21" border="0">
+                            <img src="{ babSkinPath }images/Puces/Puce-t.gif" width="12" height="21" border="0">
                             <!--#endif leaf -->
                             <!--#endif first -->
                             <!--#if parent "== 1" -->
-                            <img src="images/m.gif" width="9" height="21" border="0">
+                            <img src="{ babSkinPath }images/Puces/Puce-m.gif" width="9" height="21" border="0">
                             <!--#else parent -->
-                            <img src="images/h.gif" width="9" height="21" border="0">
+                            <img src="{ babSkinPath }images/Puces/Puce-h.gif" width="9" height="21" border="0">
                             <!--#endif parent -->
                         </td>
                         <td class="BabForumTopicsNavTreeLiveFontBackground" valign="middle" align="center" >&nbsp;&nbsp;

@@ -1,5 +1,5 @@
  <!--#begin sectionscreate -->
-<form method="post" action="index.php">
+<form name="seccreate" method="post" action="index.php">
   <input type="hidden" name="tg" value="sections">
   <input type="hidden" name="idx" value="0">
   <input type="hidden" name="create" value="create">
@@ -47,7 +47,7 @@
               }</td>
           </tr>
           <!-- Instanciation de la barre d'outils --> <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="left" valign="middle"> 
             <td width="91%"> 
               <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content"></textarea>
@@ -57,7 +57,7 @@
             <td width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -66,7 +66,7 @@
           <tr align="left" valign="middle"> 
             <td width="91%"> <!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "content", "0", "90%", "160");
+	editor.InFrame(0, "content", "seccreate", "90%", "160");
 </script>
               <!--#else msie --> 
               <textarea cols="50" rows="20" name="content"></textarea>
@@ -128,7 +128,7 @@
 <br>
 <br>
 <!--#begin sectionsmodify --> 
-<form method="post" action="index.php">
+<form name="secmod" method="post" action="index.php">
   <input type="hidden" name="tg" value="section">
   <input type="hidden" name="idx" value="modify">
   <input type="hidden" name="item" value="{ id }">
@@ -179,7 +179,7 @@
               }</td>
           </tr>
           <!-- Instanciation de la barre d'outils --> <!--#if msie "== 1" --> 
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="left" valign="middle"> 
             <td width="91%"> 
               <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ contentval }</textarea>
@@ -189,7 +189,7 @@
             <td width="91%"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -198,7 +198,7 @@
           <tr align="left" valign="middle"> 
             <td width="91%"> <!--#if msie "== 1" --> 
               <script language="JavaScript">
-	editor.InFrame(0, "content", "0", "90%", "160");
+	editor.InFrame(0, "content", "secmod", "90%", "160");
 </script>
               <!--#else msie --> 
               <textarea cols="50" rows="20" name="content">{ contentval }</textarea>
@@ -270,9 +270,7 @@ function moveOptions(src,dest)
 	for(i = 1; i < srclen; i++)
 	{
 		while((i < srclen) && (src.options[i].selected == false))
-		{
 			i++;
-		}
 		if(i < srclen)
 		{
 			if(src.options[i].value != src.options[0].value)
@@ -320,15 +318,15 @@ function selectAll(list)
                 <!--#endin getnextsecleft --> 
               </select>
             </td>
-            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:move(true, document.secorderf.elements[3])"><img src="images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:move(true, document.secorderf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
               <br>
               <br>
               <a href="Javascript:move(false, document.secorderf.elements[3])"> 
-              <img src="images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+              <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
             </td>
           </tr>
           <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:moveOptions(document.secorderf.elements[3],document.secorderf.elements[4])"><img src="images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.secorderf.elements[4],document.secorderf.elements[3])" ><img src="images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
+            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:moveOptions(document.secorderf.elements[3],document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.secorderf.elements[4],document.secorderf.elements[3])" ><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
             <td class="BabLoginMenuBackground" align="center">&nbsp;</td>
           </tr>
           <tr valign="middle"> 
@@ -340,11 +338,11 @@ function selectAll(list)
                 <!--#endin getnextsecright --> 
               </select>
             </td>
-            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:move(true, document.secorderf.elements[4])"><img src="images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+            <td class="BabLoginMenuBackground" align="center"><a href="Javascript:move(true, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
               <br>
               <br>
               <a href="Javascript:move(false, document.secorderf.elements[4])"> 
-              <img src="images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+              <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
             </td>
           </tr>
           <tr valign="middle"> 

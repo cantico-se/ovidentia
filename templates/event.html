@@ -153,7 +153,7 @@ function dateEnd(day, month, year)
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
-<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
           <tr valign="middle"> 
             <td align="right" nowrap>&nbsp;</td>
             <td colspan="4"> 
@@ -164,7 +164,7 @@ function dateEnd(day, month, year)
             <td colspan="4"> 
               <SCRIPT LANGUAGE="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </SCRIPT>
 </td>
@@ -175,7 +175,7 @@ function dateEnd(day, month, year)
             <td colspan="4"> 
               <!--#if msie "== 1" -->
               <SCRIPT LANGUAGE="JavaScript">
-	editor.InFrame(0, "description", "0", "100%", "160");
+	editor.InFrame(0, "description", "vacform", "100%", "160");
 </SCRIPT>
 <!--#else msie -->
 <textarea cols="40" rows="5" name="description"></textarea>

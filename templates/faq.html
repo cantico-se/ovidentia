@@ -44,7 +44,7 @@
 <!--#begin admquestioncreate -->
 
 
-<form method="post" action="index.php">
+<form name="qcreate" method="post" action="index.php">
 <input type="hidden" name="tg" value="faq">
 <input type="hidden" name="idx" value="questions">
 <input type="hidden" name="item" value="{ idcat }">
@@ -58,12 +58,12 @@
           </tr>
           <!-- Instanciation de la barre d'outils -->
           <!--#if msie "== 1" -->
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="right" valign="middle"> 
             <td width="91%" align="center"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -81,7 +81,7 @@
             <td width="91%"> 
 			<!--#if msie "== 1" -->
 			<script language="JavaScript">
-			editor.InFrame(0, "question", "0", "100%", "20");
+			editor.InFrame(0, "question", "qcreate", "100%", "20");
 			</script>
 			<!--#else msie -->
               <input type="text" name="question" size="80" maxlength="100">
@@ -96,7 +96,7 @@
             <td width="91%" align="center" valign="middle"> 
               <!--#if msie "== 1" -->
               <script language="JavaScript">
-	editor.InFrame(1, "response", "0", "100%", "160");
+	editor.InFrame(1, "response", "qcreate", "100%", "160");
 </script>
               <!--#else msie -->
               <textarea cols="50" rows="20" name="response"></textarea>
@@ -134,7 +134,7 @@
 
 
 
-<form method="post" action="index.php">
+<form name="qmod" method="post" action="index.php">
 <input type="hidden" name="tg" value="faq">
 <input type="hidden" name="idx" value="questions">
 <input type="hidden" name="item" value="{ idcat }">
@@ -149,12 +149,12 @@
           </tr>
           <!-- Instanciation de la barre d'outils -->
           <!--#if msie "== 1" -->
-          <script src="templates/SaisieFormatee.js"></script>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
           <tr align="right" valign="middle"> 
             <td width="91%" align="center"> 
               <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
             </td>
@@ -173,7 +173,7 @@
             <td width="91%"> 
               <!--#if msie "== 1" -->
               <script language="JavaScript">
-			editor.InFrame(0, "question", "0", "100%", "20");
+			editor.InFrame(0, "question", "qmod", "100%", "20");
 			</script>
               <!--#else msie -->
               <input type="text" name="question" size="80" maxlength="100"  value="{ arr[question] }">
@@ -187,7 +187,7 @@
             <td width="91%" align="center" valign="middle"> 
               <!--#if msie "== 1" -->
               <script language="JavaScript">
-	editor.InFrame(1, "response", "0", "100%", "160");
+	editor.InFrame(1, "response", "qmod", "100%", "160");
 </script>
               <!--#else msie -->
               <textarea cols="50" rows="20" name="response">{ arr[response] }</textarea>
