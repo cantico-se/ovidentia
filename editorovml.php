@@ -25,6 +25,7 @@ include_once "base.php";
 
 function dire_ext($rep,$ext )
 {
+	if (!is_dir($rep)) return false;
 	$reper = opendir($rep);
 	$i = 0;
 	while($dir = readdir($reper))
@@ -41,6 +42,7 @@ function dire_ext($rep,$ext )
 
 function dire_dir($rep )
 {
+	if (!is_dir($rep)) return false;
 	$reper = opendir($rep);
 	$i = 0;
 	while($dir = readdir($reper))
@@ -80,7 +82,11 @@ function browse($url,$cb)
 			$this->tablo_dir = dire_dir($GLOBALS['babOvmlPath'].$url);
 			$this->tablo_files = dire_ext($GLOBALS['babOvmlPath'].$url,$this->ext);
 			$this->count_dir = count($this->tablo_dir);
-			$this->count_files = count($this->tablo_files);
+			if (is_array($this->tablo_files))
+				$this->count_files = count($this->tablo_files);
+			else
+				$this->count_files = 0;
+			
 			}
 
 		function getnext_dir()
