@@ -21,51 +21,7 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 <!--#endin getnext -->
 <!--#end categorylist -->
 
-<br><br><br><br><br>
-<!--#begin questionlist -->
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<!--#in getnextparent -->
-<tr> 
-<!--#if burl -->
-<td valign="top">
-<a class="BabFaqLink" href="{ parenturl }">{ parentname }</a>
-<!--#else burl -->
-<td valign="top">
-<b>--> { parentname }</b>
-<!--#endif burl -->
-</td>
-</tr>
-<!--#endin getnextparent -->
-<tr class="BabForumBackground1"> 
-<td valign="top"><b>{ subcategoriesname }:</b></td>
-</tr>
-<!--#in getnextchild -->
-<tr> 
-<td valign="top">
-<!--#if update -->
-<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>&nbsp
-<!--#endif update -->
-<a class="BabFaqLink" href="{ childurl }">{ childname }</a></td>
-</tr>
-<!--#endin getnextchild -->
-<tr class="BabForumBackground1"> 
-<td valign="top"><b>{ questionsname }:</b></td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td valign="top">
-<!--#if update -->
-<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>&nbsp
-<!--#endif update -->
-<a href="javascript: Start('{ questionurl }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ question }</a>
-</td>
-</tr>
-<!--#endin getnext -->
-</table>
 <br>
-<!--#end questionlist -->
-
-<br><br><br><br><br>
 
 <!--#begin admquestioncreate -->
 <form name="qcreate" method="post" action="{ babPhpSelf }">
@@ -509,7 +465,11 @@ window.focus();
 <!--#endif burl -->
 <!--#else update -->
 <!--#endif update -->
+<!--#if countq -->
 - <a href="{ subcaturl }"><b>{ subcatname }</b></a>
+<!--#else countq -->
+- <b>{ subcatname }</b>
+<!--#endif countq -->
 </td>
 </tr>
 </table>

@@ -1,3 +1,4 @@
+<!--#begin subcategory -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
@@ -36,5 +37,82 @@ window.focus();
 <a href="{ urlsite }">{ babSiteName }</a>&nbsp;&nbsp;{ babUrl }</td>
   </tr>
 </table>
+</BODY>
+<!--#end subcategory -->
+
+<!--#begin contents -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+<BODY>
+<br>
+<A name="top"></A>
+<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr class="BabForumBackground1"> 
+<td valign="top"><b>{ contentsname }:</b></td>
+</tr>
+</table>
+<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<!--#in getnextchild -->
+<tr>
+<td>
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<!--#in getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<!--#endin getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
+<td>
+- <b>{ subcatname }</b>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!--#in getnextquestion -->
+<tr>
+<td>
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<!--#in getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="1" border="0" alt=""></TD>
+<!--#endin getnextpad -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="1" border="0" alt=""></TD>
+<td>
+<a href="#{ idq }">{ questionname }</a>&nbsp
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!--#endin getnextquestion -->
+<!--#endin getnextchild -->
+</table>
+<br><br>
+<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<!--#in getnextchild -->
+<!--#in getnextquestion -->
+<tr>
+<td>
+<DL><A name="{ idq }"></A></DL>
+ <DT><strong><font size="3">{ questionname }</font></strong></DT>
+<DD><BR>{ response }</DD>
+<BR>
+<P align="right"><A href="#top">{ return }</A></P>
+</td>
+</tr>
+<!--#endin getnextquestion -->
+<!--#endin getnextchild -->
+</table>
 
 </BODY>
+<!--#end contents -->

@@ -116,167 +116,6 @@ function listCategories()
 	}
 
 
-function listQuestions($idcat, $idscat)
-	{
-	global $babBody;
-	class temp
-		{
-		var $idcat;
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $question;
-		var $questionurl;
-		var $faqname;
-
-		function temp($idcat, $idscat)
-			{
-			global $faqinfo;
-			$this->db = $GLOBALS['babDB'];
-			$this->idcat = $idcat;
-			$this->faqname = $faqinfo['category'];
-			$this->subcategoriesname = bab_translate("Sub categories");
-			$this->questionsname = bab_translate("Questions");
-			$this->modifytxt = bab_translate("Modify");
-			$this->babTree  = new bab_arraytree(BAB_FAQ_TREES_TBL, $idcat, "");
-			if( isUserManager())
-				{
-				$this->update = true;
-				}
-			else
-				{
-				$this->update = false;
-				}
-			if( empty($idscat) )
-				{
-				$scinfo = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_node='".$this->babTree->rootid."' and id_cat='".$idcat."'"));
-				}
-			else
-				{
-				$scinfo = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id='".$idscat."'"));
-				}
-
-			$this->idscat = $scinfo['id'];
-			
-			$fid = $this->babTree->getFirstChild($scinfo['id_node']);
-			$childs = array();
-			if( $fid )
-				{
-				$childs[] = $fid;
-				while( $fid = $this->babTree->getNextSibling($fid))
-					{
-					$childs[] = $fid;
-					}
-				}
-
-			if( count($childs) > 0 )
-				{
-				$this->subcatres = $this->db->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_node IN (".implode(',', $childs).") and id_cat='".$idcat."'");
-				$this->subcatcount = $this->db->db_num_rows($this->subcatres);
-				}
-			else
-				{
-				$this->subcatcount = 0;
-				}
-
-			$parents = array();
-			$parents[] = $scinfo['id_node'];
-			$fid = $this->babTree->getParentId($scinfo['id_node']);
-			if( $fid )
-				{
-				$parents[] = $fid;
-				while( $fid = $this->babTree->getParentId($fid))
-					{
-					$parents[] = $fid;
-					}
-				}
-
-
-			if( count($parents) > 0 )
-				{
-				$this->parcatres = $this->db->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_node IN (".implode(',', $parents).") and id_cat='".$idcat."'");
-				$this->parcatcount = $this->db->db_num_rows($this->parcatres);
-				}
-			else
-				{
-				$this->parcatcount = 0;
-				}
-
-			$req = "select * from ".BAB_FAQQR_TBL." where idcat='".$idcat."' and id_subcat='".$this->idscat."' order by id asc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
-			}
-
-		function getnextparent()
-			{
-			global $faqinfo;
-			static $i = 0;
-			if( $i < $this->parcatcount)
-				{
-				if( $i != $this->parcatcount - 1 )
-					{
-					$this->burl = true;
-					}
-				else
-					{
-					$this->burl = false;
-					}
-				$arr = $this->db->db_fetch_array($this->parcatres);
-				if( $faqinfo['id_root'] == $arr['id'] )
-					{
-					$this->parentname = $faqinfo['category'];
-					}
-				else
-					{
-					$this->parentname = $arr['name'];
-					}
-				$this->parenturl = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$this->idcat."&idscat=".$arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnextchild()
-			{
-			static $i = 0;
-			if( $i < $this->subcatcount)
-				{
-				$arr = $this->db->db_fetch_array($this->subcatres);
-				$this->childname = $arr['name'];
-				$this->childurl = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$this->idcat."&idscat=".$arr['id'];
-				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyC&item=".$this->idcat."&idscat=".$this->idscat."&ids=".$arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnext()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->question = $arr['question'];
-				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id'];
-				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$this->idcat."&idscat=".$arr['id_subcat']."&idq=".$arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-		}
-	$temp = new temp($idcat, $idscat);
-	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "questionlist"));
-	return true;
-	}
-
-
 function FaqTableOfContents($idcat)
 	{
 	global $babBody;
@@ -423,6 +262,164 @@ function FaqTableOfContents($idcat)
 		}
 	$temp = new temp($idcat);
 	$babBody->babecho(bab_printTemplate($temp,"faq.html", "tableofcontents"));
+	return true;
+	}
+
+
+function FaqPrintContents($idcat)
+	{
+	global $babBody;
+	class temp
+		{
+		var $idcat;
+
+		function temp($idcat)
+			{
+			global $babDB, $faqinfo;
+			$this->idcat = $idcat;
+			$this->contentsname = bab_translate("CONTENTS");
+			$this->return = bab_translate("Go to Top");
+			$this->babTree  = new bab_arraytree(BAB_FAQ_TREES_TBL, $idcat, "");
+			$this->arr = array();
+			reset($this->babTree->nodes);
+			$this->maxlevel = 0;
+			while( $row=each($this->babTree->nodes) ) 
+				{
+				$this->arr[$row[1]['id']] = $row[1]['lf'];
+				if( $row[1]['level'] > $this->maxlevel )
+					{
+					$this->maxlevel = $row[1]['level'];
+					}
+				}
+			asort($this->arr);
+			reset($this->arr);
+			$this->arr = array_keys($this->arr);
+			$this->maxlevel += 1;
+			$this->padarr = array();
+
+			if( isUserManager())
+				{
+				$this->update = true;
+				}
+			else
+				{
+				$this->update = false;
+				}
+
+			$this->res = $babDB->db_query("select fst.* from ".BAB_FAQ_SUBCAT_TBL." fst LEFT JOIN ".BAB_FAQ_TREES_TBL." ftt on ftt.id=fst.id_node where id_cat='".$this->idcat."' and ftt.id_user='".$this->idcat."' order by ftt.lf asc");
+			$this->count = $babDB->db_num_rows($this->res);
+			$this->arrquestions = array();
+			$this->bresponse = 0;
+			}
+
+		function getnextpad()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < count($this->padarr) -1)
+				{
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i=0;
+				return false;
+				}
+			}
+
+		function getnextchild()
+			{
+			global $babDB, $faqinfo;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$row = $babDB->db_fetch_array($this->res);
+
+				if( $faqinfo['id_root'] == $row['id_node'] )
+					{
+					$this->subcatname = $faqinfo['category'];
+					}
+				else
+					{
+					$this->subcatname = $row['name'];
+					}
+
+				if ( count($this->padarr) > 0 )
+					{ 
+					while ($this->babTree->getRightValue($this->padarr[count($this->padarr)-1]) < $this->babTree->getRightValue($row['id_node']))
+					   { 
+					   array_pop($this->padarr);
+					   } 
+					} 
+				$this->padarr[] = $row['id_node'];
+				if($this->arr[0] == $row['id_node'])
+					{
+					$this->first = 1;
+					if (count($this->arr) == 1)
+						{
+						$this->leaf = 1;
+						}
+					else
+						{
+						$this->leaf = 0;
+						}
+					}
+				else
+					{
+					$this->first = 0;
+					if( $this->babTree->getLastChild($this->babTree->getParentId($row['id_node'])) == $row['id_node'] )
+						{
+						$this->leaf = 1;
+						}
+					else
+						{
+						$this->leaf = 0;
+						}
+					}
+				$this->resq = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where idcat='".$this->idcat."' and id_subcat='".$row['id']."'");
+				$this->countq = $babDB->db_num_rows($this->resq);
+				$i++;
+				return true;
+				}
+			else
+				{
+				if( $this->count > 0 )
+					$babDB->db_data_seek($this->res, 0);
+				$this->bresponse = 1;
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnextquestion()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countq)
+				{
+				$row = $babDB->db_fetch_array($this->resq);
+				$this->idq = $row['id'];
+				$this->questionname = $row['question'];
+				if( $this->bresponse )
+					{
+					$this->response = bab_replace($row['response']);
+					}
+				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$this->idcat."&idscat=".$row['id_subcat']."&idq=".$row['id'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i=0;
+				return false;
+				}
+			}
+
+
+		}
+	$temp = new temp($idcat);
+	echo bab_printTemplate($temp,"faqprint.html", "contents");
 	return true;
 	}
 
@@ -648,7 +645,7 @@ function faqPrint($idcat, $idscat)
 		}
 
 	$temp = new temp($idcat, $idscat);
-	echo bab_printTemplate($temp,"faqprint.html");
+	echo bab_printTemplate($temp,"faqprint.html", "subcategory");
 	}
 
 
@@ -1213,7 +1210,16 @@ switch($idx)
 
 	case "Print":
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
-			faqPrint($item, $idscat);
+		{
+			if( empty($idscat))
+				{
+				FaqPrintContents($item);
+				}
+			else
+				{
+				faqPrint($item, $idscat);
+				}
+		}
 		exit();
 		break;
 
