@@ -84,24 +84,18 @@
 	<tr> 
 		<td align="right" nowrap>
 			<label for="repeat_radio_0">{ t_norepeat }</label>
-			<input type="radio" id="repeat_radio_0" name="repeat" value="0" onclick="repeat_switch()" /><br />
+			<input type="radio" id="repeat_radio_0" name="repeat" value="0" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_1">{ t_daily }</label>
-			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch()" /><br />
+			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_2">{ t_weekly }</label>
-			<input type="radio" id="repeat_radio_2" name="repeat" value="2" onclick="repeat_switch()" /><br />
+			<input type="radio" id="repeat_radio_2" name="repeat" value="2" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_3">{ t_monthly }</label>
-			<input type="radio" id="repeat_radio_3" name="repeat" value="3" onclick="repeat_switch()" /><br />
+			<input type="radio" id="repeat_radio_3" name="repeat" value="3" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_4">{ t_yearly }</label>
-			<input type="radio" id="repeat_radio_4" name="repeat" value="4" onclick="repeat_switch()" /><br />
+			<input type="radio" id="repeat_radio_4" name="repeat" value="4" onclick="repeat_switch(this)" /><br />
 		
 		
-		<script type="text/javascript">
-		<!--
-		//var obj = document.getElementById('repeat_radio_{ repeat }');
-		//obj.checked = true;
-		repeat_switch();
-		//-->
-		</script>
+		
 			
 		</td>
 		<td valign="top"> 
@@ -143,6 +137,17 @@
 		<option value="{ yearid }"  { selected }>{ yearidval }</option>
 		<!--#endin getnextyear -->
 		</select>
+
+		<script type="text/javascript">
+		<!--
+		document.forms['vacform'].repeat.value = { repeat };
+		document.getElementById('repeat_radio_'+document.forms['vacform'].repeat.value).checked = true;
+		repeat_switch();
+
+		daytypeswitch();
+		//-->
+		</script>
+
 		</td>
 	</tr>
 	<tr> 
@@ -793,14 +798,13 @@ function bupdrec_change(obj)
 		document.getElementById('event_date_time').style.display = 'none'; // all
 	}
 
-function repeat_switch()
+function repeat_switch(grp)
 	{
-	var grp = document.forms['vacform'].repeat;
-
+	var v = grp ? grp.value : 0 ;
+	var i=0;
 	while(div = document.getElementById('event_repeat_'+i))
 		{
-		var obj = document.getElementById('event_repeat_'+i);
-		if (i == obj.value)
+		if (i == v)
 			div.style.display = '';
 		else
 			div.style.display = 'none';
@@ -809,7 +813,7 @@ function repeat_switch()
 	var repeat_enddate = document.getElementById('repeat_enddate');
 
 	
-	if (obj.value == 0 && repeat_enddate)
+	if (v == 0 && repeat_enddate)
 		{
 		repeat_enddate.style.display = 'none';
 		}
