@@ -1,0 +1,84 @@
+
+<!--#begin nbronline --> 
+<table class="BabLoginCadreBackground" width="95%" border="1" cellspacing="0" cellpadding="2" align="center" bordercolor="#000000">
+  <tr bgcolor="#006699"> 
+    <td align="center" valign="middle" width="60%"><font face="Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>{ LoggedSession } : </b> <b><i><font color="#FF0000">{ nbrloggedsession }</font></i></b></font></td>
+    <td align="center" valign="middle" width="50%"><font face="Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>{ AnonymousSession } : </b> <font color="#FF0000"><b><i>{ nbranonymoussession }</i></b></font></font></td>
+  </tr>
+  <tr align="left" valign="top"> 
+    <td width="60%"> 
+      <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="#FFFFFF">
+        <tr bgcolor="#CCCCCC" align="center" valign="middle"> 
+          <td width="33%"><font face="Arial, Helvetica, sans-serif" size="1">{ FirstnameLastname }</font></td>
+          <td width="33%"><font face="Arial, Helvetica, sans-serif" size="1">{ PrivateIP }</font></td>
+          <td width="33%"><font face="Arial, Helvetica, sans-serif" size="1">{ PublicIP }</font></td>
+        </tr>
+      </table>
+      <!--#in getnext -->
+      <table width="100%" border="0" cellspacing="0" cellpadding="2">
+        <tr align="center" valign="middle"> 
+          <td width="33%"><a href="mailto:{ Email }"><font face="Arial, Helvetica, sans-serif" size="2">{ whoonline }</font></a></td>
+          <td width="33%"><font face="Arial, Helvetica, sans-serif" size="2">&nbsp;<!--#if perso_ip -->{ perso_ip }<!--#else perso_ip -->{ NotAvailable }<!--#endif perso_ip --> </font></td>
+          <td width="33%"><font face="Arial, Helvetica, sans-serif" size="2">&nbsp;{ ip }</font></td>
+        </tr>
+      </table>
+      <!--#endin getnext -->
+    </td width="50%">
+    <td align="left" valign="top"> 
+      <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="#FFFFFF">
+        <tr bgcolor="#CCCCCC" align="center" valign="middle"> 
+          <td width="50%"><font face="Arial, Helvetica, sans-serif" size="1">{ PrivateIP }</font></td>
+          <td width="50%"><font face="Arial, Helvetica, sans-serif" size="1">{ PublicIP }</font></td>
+        </tr>
+      </table>
+      <!--#in getnext1 -->
+      <table width="100%" border="0" cellspacing="0" cellpadding="2">
+        <tr align="center" valign="middle"> 
+          <td width="50%"><font face="Arial, Helvetica, sans-serif" size="2"><!--#if private_ip -->{ 
+            private_ip }<!--#else private_ip -->{ NotAvailable }<!--#endif private_ip --></font></td>
+          <td width="50%"><font face="Arial, Helvetica, sans-serif" size="2">{ 
+            anonyme_ip }</font></td>
+        </tr>
+      </table>
+      <!--#endin getnext1 -->
+    </td>
+  </tr>
+</table>
+<!--#end nbronline -->
+
+<!--#begin session -->
+
+  
+<table width="95%" border="0" cellspacing="2" cellpadding="0" align="center">
+  <tr> 
+    <td align="center" valign="middle" bgcolor="#FFFFFF"><font face="Arial, Helvetica, sans-serif" size="1" color="#000000"><b> { ActiveSession } : { Total }</b></font></td>
+  </tr>
+  <tr> 
+    <td align="center" valign="middle"> 
+      <p><font size="1" face="Arial, Helvetica, sans-serif" color="#FFFFFF"><br>
+        - 
+        <!--#if Admin -->
+        <a href="{ url }"> 
+        <!--#endif Admin -->
+       { Logged } 
+        <!--#if Admin -->
+        </a> 
+        <!--#endif Admin -->
+        <b>:&nbsp;{ logged }</b><br>
+        - 
+        <!--#if Admin -->
+        <a href="{ url }"> 
+        <!--#endif Admin -->
+         { Anonymous }
+        <!--#if Admin -->
+        </a> 
+        <!--#endif Admin -->
+        :<b>&nbsp;{ anonymous }</b><br>
+        </font></p>
+    </td>
+  </tr>
+</table>
+  <!--#end session -->
+
+
+
