@@ -180,6 +180,7 @@ CREATE TABLE notes (
 CREATE TABLE posts (
    id int(11) unsigned NOT NULL auto_increment,
    id_thread int(11) unsigned DEFAULT '0' NOT NULL,
+   id_parent int(11) unsigned DEFAULT '0' NOT NULL,
    date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    dateupdate datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    author text NOT NULL,

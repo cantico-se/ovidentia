@@ -118,7 +118,6 @@ CREATE TABLE mail_signatures (
 	PRIMARY KEY (id)
 ); 
 
-#------- dev
 CREATE TABLE contacts (
    id int(11) unsigned NOT NULL auto_increment,
    category int(11) unsigned DEFAULT '0' NOT NULL,
@@ -140,6 +139,7 @@ CREATE TABLE contacts (
    KEY id (id)
 );
 
-#------- dev et babinstall.sql
+#------- babinstall.sql
 ALTER TABLE users CHANGE name nickname CHAR (30);
 ALTER TABLE users ADD firstname CHAR (60) not null AFTER nickname , ADD lastname CHAR (60) not null AFTER firstname;
+ALTER TABLE posts ADD id_parent INT (11) UNSIGNED not null AFTER id_thread;

@@ -181,8 +181,28 @@ while( $arr = $db->db_fetch_array($res1))
 	$res = $db->db_query($req);
 	}
 
-return $ret;
-}
+$req = "ALTER TABLE posts ADD id_parent INT (11) UNSIGNED not null AFTER id_thread";
+$res1 = $db->db_query($req);
+
+$req = "select * from threads";
+$res1 = $db->db_query($req);
+while( $arr = $db->db_fetch_array($res1))
+	{
+	$req = "select * from posts where id='".$arr[post]."'";
+	$res2 = $db->db_query($req);
+	$arr2 = $db->db_fetch_array($res2);
+
+	$req = "select * from posts where id_thread='".$arr[id]."' and id!='".$arr[post]."'";
+	$res3 = $db->db_query($req);
+	while( $arr3 = $db->db_fetch_array($res3))
+		{
+		if( empty($arr3[subject]))			
+			$req = "update posts set id_parent='".$arr[post]."', subject='"."RE:".addslashes($arr2[subject])."' where id_thread='".$arr[id]."' and id!='".$arr[post]."'";
+		else
+			$req = "update posts set id_parent='".$arr[post]."' where id_thread='".$arr[id]."' and id!='".$arr[post]."'";
+		$res = $db->db_query($req);
+		}
+	}}
 
 upgrade();
 ?>
