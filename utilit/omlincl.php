@@ -2198,8 +2198,6 @@ class bab_RecentFiles extends bab_handler
 		else
 			$this->count = 0;
 
-		$this->res = $babDB->db_query($req);
-		$this->count = $babDB->db_num_rows($this->res);
 		$this->ctx->curctx->push('CCount', $this->count);
 		}
 
@@ -2980,8 +2978,17 @@ function format_output($val, $matches)
 					$val = substr($val, 0, $matches[3][$j]).$arr[1];
 				break;
 			case 'striptags':
-				if( $matches[3][$j] == '1')
-					$val = strip_tags($val);
+				switch($matches[3][$j])
+					{
+					case '1':
+						$val = strip_tags($val);
+						break;
+					case '2':
+						$val = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $val);
+						$val = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $val);
+						$val = strip_tags($val);
+						break;
+					}
 				break;
 			case 'htmlentities':
 				switch($matches[3][$j])
