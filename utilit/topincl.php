@@ -355,6 +355,7 @@ function notifyArticleApprovers($id, $users)
 				$db = $GLOBALS['babDB'];
 				$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$id."'"));
 				$this->articletitle = $arr['title'];
+				$this->articleurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$arr['id_topic'];
 				$this->message = bab_translate("A new article is waiting for you");
 				$this->from = bab_translate("Author");
 				$this->category = bab_translate("Topic");
@@ -430,6 +431,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 				$this->from = bab_translate("Author");
 				$this->subject = bab_translate("Subject");
 				$this->subjectname = $arr['subject'];
+				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$arr['id_topic']."&article=".$arr['id_article'];
 				$this->article = bab_translate("Article");
 				$this->articlename = bab_getArticleTitle($arr['id_article']);
 				$this->category = bab_translate("Topic");
