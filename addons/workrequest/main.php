@@ -1,6 +1,6 @@
 <?php
-include $babAddonPhpPath."wrincl.php";
-include $babInstallPath."utilit/mailincl.php";
+include_once $babAddonPhpPath."wrincl.php";
+include_once $babInstallPath."utilit/mailincl.php";
 
 
 function wr_workDescription($id)

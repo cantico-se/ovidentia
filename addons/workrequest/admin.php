@@ -1,6 +1,6 @@
 <?php
-include $babAddonPhpPath."wrincl.php";
-include $babInstallPath."admin/acl.php";
+include_once $babAddonPhpPath."wrincl.php";
+include_once $babInstallPath."admin/acl.php";
 
 $wr_fields_export = array(
 	'id' => array("user","service","office","room","tel","date_request","wtype", "worker", "date_start", "date_end", "status", "wtype2"),
