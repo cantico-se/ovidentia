@@ -56,7 +56,8 @@ function modifyCategory($id)
 			$req = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-
+			$this->arr['category'] = htmlentities($this->arr['category']);
+			$this->arr['description'] = htmlentities($this->arr['description']);
 			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_manager']."'";
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
@@ -121,6 +122,12 @@ function updateCategory($id, $category, $description, $manager)
 		{
 		$babBody->msgerror = bab_translate("ERROR: The manager doesn't exist !!");
 		return;
+		}
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$category = addslashes($category);
+		$description = addslashes($description);
 		}
 
 	$db = $GLOBALS['babDB'];

@@ -368,6 +368,8 @@ function modifyQuestion($item, $idq)
 			$req = "select * from ".BAB_FAQQR_TBL." where id='$idq'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->arr['question'] = htmlentities($this->arr['question']);
+			$this->arr['response'] = htmlentities($this->arr['response']);
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -418,6 +420,11 @@ function saveQuestion($item, $question, $response)
 		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
 		}
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$question = addslashes($question);
+		$response = addslashes($response);
+		}
 	$db = $GLOBALS['babDB'];
 	$query = "insert into ".BAB_FAQQR_TBL." (idcat, question, response) values ('" .$item. "', '" .$question. "', '" . $response. "')";
 	$db->db_query($query);
@@ -431,6 +438,12 @@ function updateQuestion($idq, $question, $response)
 		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
 		}
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$question = addslashes($question);
+		$response = addslashes($response);
+		}
+
 	$db = $GLOBALS['babDB'];
 	$query = "update ".BAB_FAQQR_TBL." set question='$question', response='$response' where id = '$idq'";
 	$db->db_query($query);
