@@ -37,10 +37,7 @@ function addAddress( $val, $to, &$class)
 			}
 			else if( strtolower(substr($addr, -3)) == "(g)")
 			{
-
-				eregi("([^(]*)", $addr, $res);
-				$addr = $res[1];
-				$id = getUserId($addr);
+				$id = getUserId(substr($addr, 0, -3));
 				if( $id < 1) // it's a group
 				{
 					$idgrp = isMemberOf($addr);
