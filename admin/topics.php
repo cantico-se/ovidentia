@@ -45,9 +45,12 @@ function listCategories()
 		var $approver;
 		var $urlcategory;
 		var $namecategory;
+		var $articles;
+		var $articlesval;
 
 		function temp()
 			{
+			$this->articles = babTranslate("Article") ."(s)";
 			$this->db = new db_mysql();
 			$req = "select * from topics";
 			$this->res = $this->db->db_query($req);
@@ -72,6 +75,10 @@ function listCategories()
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->approver = composeName($arr2[firstname], $arr2[lastname]);
+				$req = "select count(*) as total from articles where id_topic='".$this->arr[id]."'";
+				$res = $this->db->db_query($req);
+				$arr2 = $this->db->db_fetch_array($res);
+				$this->articlesval = $arr2[total];
 				$i++;
 				return true;
 				}
