@@ -233,7 +233,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		{
 		$id = $db->db_insert_id();
 		$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('$id', '1')");
-		$db->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." (sn, mn, givenname, email, id_directory, id_user) values ('".addslashes($firstname)."', '".addslashes($middlename)."', '".addslashes($lastname)."', '".$email."', '0', '".$id."')");
+		$db->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." (givenname, mn, sn, email, id_directory, id_user) values ('".addslashes($firstname)."', '".addslashes($middlename)."', '".addslashes($lastname)."', '".$email."', '0', '".$id."')");
 
 		if( !$badmin )
 			{

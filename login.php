@@ -318,7 +318,7 @@ function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $pas
 	if( $iduser == false )
 		return false;
 
-	$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (sn, mn, givenname, email ,id_directory, id_user) values ('".$firstname."', '".$middlename."', '".$lastname."', '".$email."', '0', '".$iduser."')";
+	$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (givenname, mn, sn, email ,id_directory, id_user) values ('".$firstname."', '".$middlename."', '".$lastname."', '".$email."', '0', '".$iduser."')";
 
 	$babDB->db_query($req);
 

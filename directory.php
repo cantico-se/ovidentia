@@ -1030,7 +1030,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							}
 		
 						$replace = array( " " => "", "-" => "");
-						$hashname = md5(strtolower(strtr($arr[$GLOBALS['sn']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['givenname']], $replace)));
+						$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 						$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."'";	
 						$res2 = $db->db_query($query);
 						if( $res2 && $db->db_num_rows($res2) > 0 )
@@ -1055,7 +1055,7 @@ function processImportDbFile( $pfile, $id, $separ )
 								$db->db_query($req);
 								}
 							$db->db_data_seek($res,0);
-							$db->db_query("update ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['sn']])."', lastname='".addslashes($arr[$GLOBALS['givenname']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."' where id='".$rrr['id']."'");
+							$db->db_query("update ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['givenname']])."', lastname='".addslashes($arr[$GLOBALS['sn']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."' where id='".$rrr['id']."'");
 							break;
 							}
 						}
@@ -1114,7 +1114,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							{
 							/* XXXXX c'est fini normallement */
 							$hash=md5($GLOBALS['nickname'].$GLOBALS['BAB_HASH_VAR']);
-							$db->db_query("insert into ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['sn']])."', lastname='".addslashes($arr[$GLOBALS['givenname']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."', confirm_hash='".$hash."', date=now(), is_confirmed='1', changepwd='1', lang='".$GLOBALS['babLanguage']."'");
+							$db->db_query("insert into ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['givenname']])."', lastname='".addslashes($arr[$GLOBALS['sn']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."', confirm_hash='".$hash."', date=now(), is_confirmed='1', changepwd='1', lang='".$GLOBALS['babLanguage']."'");
 							$iduser = $db->db_insert_id();
 							$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$iduser."', '1')");
 							$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$iduser."' where id='".$idu."'");
@@ -1227,7 +1227,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file)
 		{
 		$replace = array( " " => "", "-" => "");
 
-		$hashname = md5(strtolower(strtr($fields['sn'].$fields['mn'].$fields['givenname'], $replace)));
+		$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
 		$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."'";	
 		$res = $db->db_query($query);
 		if( $db->db_num_rows($res) > 0)
@@ -1237,7 +1237,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file)
 			}
 		list($iduser) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
 
-		$db->db_query("update ".BAB_USERS_TBL." set firstname='".addslashes($fields['sn'])."', lastname='".addslashes($fields['givenname'])."', email='".addslashes($fields['email'])."', hashname='".$hashname."' where id='".$iduser."'");
+		$db->db_query("update ".BAB_USERS_TBL." set firstname='".addslashes($fields['givenname'])."', lastname='".addslashes($fields['sn'])."', email='".addslashes($fields['email'])."', hashname='".$hashname."' where id='".$iduser."'");
 		}
 	if( !empty($file) && $file != "none")
 		{
@@ -1312,7 +1312,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			return false;
 			}
 
-		$iduser = registerUser($fields['sn'], $fields['givenname'], $fields['mn'], $fields['email'], $nickname, $password1, $password2, true);
+		$iduser = registerUser($fields['givenname'], $fields['sn'], $fields['mn'], $fields['email'], $nickname, $password1, $password2, true);
 		if( $iduser == false )
 			return false;
 		if( $id > 1 )
