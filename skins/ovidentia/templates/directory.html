@@ -464,7 +464,7 @@ redimimg();
 function openWinOrg(idx, oeid, idu)
 {
 var dummy;
-Start('{ vieworgurl }'+idx+'&oeid='+oeid+'&iduser='+idu, 'OrgChartWin', 'status=no,resizable=yes,scrollbars=yes');
+Start('{ vieworgurl }'+idx+'&oeid='+oeid+'&iduser='+idu, 'OrgChartWin', 'width='+(screen.width-6)+',height='+(screen.height-60)+',status=no,resizable=yes,scrollbars=yes,top=1,left=1');
 this.close();
 }
 
