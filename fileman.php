@@ -44,6 +44,10 @@ function listTrashFiles($id, $gr)
 		var $idfile;
 		var $delete;
 		var $restore;
+		var $nametxt;
+		var $modifiedtxt;
+		var $sizetxt;
+		var $postedtxt;
 
 
 		function temp($id, $gr)
@@ -53,6 +57,10 @@ function listTrashFiles($id, $gr)
 			$this->bytes = babTranslate("bytes");
 			$this->delete = babTranslate("Delete");
 			$this->restore = babTranslate("Restore");
+			$this->nametxt = babTranslate("Name");
+			$this->sizetxt = babTranslate("Size");
+			$this->modifiedtxt = babTranslate("Modified");
+			$this->postedtxt = babTranslate("Posted by");
 			$this->fullpath = getFullPath($gr, $id);
 			$this->db = new db_mysql();
 			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='D'";
@@ -441,12 +449,20 @@ function listFiles($id, $gr, $path, $bmanager)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$ext = substr(strrchr($arr['name'], "."), 1);
-				if( empty($this->arrext[$ext]))
+				$ext = strtolower(substr(strrchr($arr['name'], "."), 1));
+				if( !empty($ext) && empty($this->arrext[$ext]))
+					{
 					$this->arrext[$ext] = babPrintTemplate($this, "config.html", ".".$ext);
-				if( empty($this->arrext[$ext]))
-					$this->arrext[$ext] = babPrintTemplate($this, "config.html", ".unknown");				
-				$this->fileimage = $this->arrext[$ext];
+					if( empty($this->arrext[$ext]))
+						$this->arrext[$ext] = babPrintTemplate($this, "config.html", ".unknown");						
+					$this->fileimage = $this->arrext[$ext];
+					}
+				else if( empty($ext))
+					{
+					$this->fileimage = babPrintTemplate($this, "config.html", ".unknown");				
+					}
+				else
+					$this->fileimage = $this->arrext[$ext];
 				$this->name = $arr['name'];
 				$this->url = $GLOBALS['babUrl']."index.php?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$this->urlget = $GLOBALS['babUrl']."index.php?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
