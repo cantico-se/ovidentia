@@ -1140,10 +1140,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						{
 						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 							{
-							if( !bab_isMagicQuotesGpcOn())
-								$dirname = addslashes($row['name']);
-							else
-								$dirname = $row['name'];
+
+							$dirname = mysql_escape_string($row['name']);
+
 							if( $row['id_group'] == 1 )
 								{
 								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
