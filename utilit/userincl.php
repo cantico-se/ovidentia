@@ -527,7 +527,7 @@ function bab_notesAccess()
 
 	for( $i = 0; $i < count($babBody->usergroups); $i++)
 		{
-		if( $babBody->ovgroups[$babBody->usergroups[$i]]['mail'] == 'Y')
+		if( $babBody->ovgroups[$babBody->usergroups[$i]]['notes'] == 'Y')
 			{
 			return true;
 			}
