@@ -1,6 +1,7 @@
 
-<!--#begin sectionscreate -->
 
+
+<!--#begin sectionscreate -->
 <form name="seccreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="sections">
 <input type="hidden" name="idx" value="0">
@@ -11,7 +12,7 @@
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td colspan="2">{ title }</td>
+<td colspan="2" class="BabSiteAdminTitleFontBackground">{ title }</td>
 </tr>
 <tr> 
 <td colspan="2"> 
@@ -19,7 +20,7 @@
 </td>
 </tr>
 <tr> 
-<td colspan="2">{ description }</td>
+<td colspan="2" class="BabSiteAdminTitleFontBackground">{ description }</td>
 </tr>
 <tr> 
 <td colspan="2"> 
@@ -27,7 +28,7 @@
 </td>
 </tr>
 <tr> 
-<td width="30%" nowrap valign="middle">{ position }&nbsp; 
+<td width="30%" nowrap valign="middle" class="BabSiteAdminTitleFontBackground">{ position }&nbsp; 
 <select name="position">
 <option value="0" selected>{ left }</option>
 <option value="1">{ right }</option>
@@ -43,7 +44,7 @@
 </td>
 </tr>
 <tr align="center"> 
-<td colspan="2">{ content }</td>
+<td colspan="2" class="BabSiteAdminTitleFontBackground">{ content }</td>
 </tr>
 <tr> 
 <td colspan="2" align="center"> 
@@ -92,10 +93,11 @@
 </form>
 <br>
 <!--#end sectionscreate --> 
-<br>
-<br>
-<br>
-<br>
+
+
+
+
+
 <!--#begin sectionslist --> 
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="sections">
@@ -104,70 +106,53 @@
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+          <tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ title }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle">{ description }</td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap>{ access }</td>
+            <td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap>{ disabled }</td>
+</tr><!--#in getnextp -->
 <tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap 
-valign="middle"><b>{ title }</b></td>
-<td class="BabSiteAdminTitleFontBackground" 
-valign="middle"><b>{ description }</b> </td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ access }</td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ disabled }</td>
-</tr>
-<!--#in getnextp --> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ arr[title] }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+</tr><!--#endin getnextp --><!--#in getnextcat -->
 <tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><b>{ arr[title] }</b></td>
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ arr[description] 
-} </td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }">
-</td>
-</tr>
-<!--#endin getnextp --> 
-<!--#in getnextcat --> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ arr[title] }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description]  }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+</tr><!--#endin getnextcat --><!--#in getnext -->
 <tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><b>{ arr[title] }</b></td>
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ arr[description] 
-} </td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }">
-</td>
-</tr>
-<!--#endin getnextcat -->
-<!--#in getnext --> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><a class="BabSiteAdminListLink" href="{ accessurl }">{ groups }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+</tr><!--#endin getnext -->
 <tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ 
-arr[title] }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ arr[description] 
-} </td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><a class="BabSiteAdminListLink" href="{ accessurl }">{ groups }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }">
-</td>
-</tr>
-<!--#endin getnext --> 
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap 
-valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" 
-valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap><a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </table>
 </td>
 </tr>
 </table>
 <br>
-<div align="center">
-<input type="submit" name="submit" value="{ update }"></div>
+<div align="center"><input type="submit" name="submit" value="{ update }"></div>
 <br>
 </form>
-<!--#end sectionslist --> <br>
-<br>
-<br>
-<br>
-<br>
+<!--#end sectionslist -->
+
+
+
+
+
+
+
+
 <!--#begin sectionsmodify --> 
 <form name="secmod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="section">
@@ -250,7 +235,10 @@ valign="middle">&nbsp;</td>
 </form>
 <!--#end sectionsmodify --> 
 
-<br><br><br><br><br>
+
+
+
+
 
 <!--#begin sectionordering -->
 <script language="JavaScript">
@@ -320,6 +308,7 @@ function selectAll(list)
 	list.options[0].selected = false;
 	for(i=1; i < list.options.length; i++)
 	{
+		dummy = 1;
 		list.options[i].selected = true;
 	}
 }

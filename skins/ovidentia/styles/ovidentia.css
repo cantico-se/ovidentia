@@ -253,10 +253,10 @@ a.BabFaqAdminTitleLink:Hover { COLOR: #009933 ; font : 10px Verdana, Arial, sans
 
 /************* ADMINISTRATION SITES*************/
 
-.BabSiteAdminTitleFontBackground {background: #D1D1D9; COLOR: #111166 ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+.BabSiteAdminTitleFontBackground {background: #D1D1D9; COLOR: #111166 ; font : 11px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
 .BabSiteAdminSmall {background: #D1D1D9; COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
-.BabSiteAdminFontBackground {background: #FFFFFF; COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif }
-.BabSiteAdminFont { COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif }
+.BabSiteAdminFontBackground {background: #FFFFFF; COLOR: #000000 ; font : 11px Verdana, Arial, sans-serif }
+.BabSiteAdminFont { COLOR: #000000 ; font : 11px Verdana, Arial, sans-serif }
 
 a.BabSiteAdminListLink:Link { COLOR: blue  ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}
 a.BabSiteAdminListLink:Visited { COLOR: blue ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}

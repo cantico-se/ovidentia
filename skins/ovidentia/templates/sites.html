@@ -1,5 +1,4 @@
 <!--#begin sitecreate -->
-
 <form name="formsite" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="sites">
 <input type="hidden" name="idx" value="0">
@@ -7,33 +6,37 @@
   <table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
-<input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
+        <table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+              name }</td>
+            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
-<td valign="middle">
-<input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              description }</td>
+            <td> 
+              <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ lang }</td>
-<td valign="middle">
-<select name="lang">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              lang }</td>
+            <td> 
+              <select name="lang">
                   <!--#in getnextlang -->
                   <option value="{ langval }" { langselected }>{ langval }</option>
                   <!--#endin getnextlang -->
                 </select>
 </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ skin }</td>
-            <td class="BabLoginMenuBackground" align="left" valign="middle"> 
-  <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+              skin }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+              <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
     <!--#in getnextskin -->
     <option value="{ skinval }" { skinselected }>{ skinval }</option>
     <!--#endin getnextskin -->
@@ -42,28 +45,32 @@
                 </select>
             </td>
           </tr>
-<tr> 
-            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ registration }</td>
-            <td class="BabLoginMenuBackground" align="left" valign="middle">
-                <select name="register">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+              registration }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+              <select name="register">
                   <option value="Y" selected>{ yes }</option>
                   <option value="N">{ no }</option>
                 </select>
             </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ confirmation }</td>
-            <td class="BabLoginMenuBackground" align="left" valign="middle">
-                <select name="confirm">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+              confirmation }<br>
+              { helpconfirmation } </td>
+            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+              <select name="confirm">
                   <option value="Y" selected>{ yes }</option>
                   <option value="N">{ no }</option>
-                </select>&nbsp;{ helpconfirmation }
+                </select>
             </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ group }</td>
-            <td class="BabLoginMenuBackground" align="left" valign="middle">
-                <select name="group">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+              group }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+              <select name="group">
                   <option value="0" selected>{ none }</option>
                   <!--#in getnextgrp -->
                   <option value="{ grpid }">{ grpname }</option>
@@ -71,16 +78,18 @@
                 </select>
             </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ siteemail }</td>
-<td valign="middle">
-<input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              siteemail }</td>
+            <td> 
+              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
 </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ mailfunction }</td>
-            <td class="BabLoginMenuBackground" align="left" valign="middle">
-                <select name="mailfunc">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+              mailfunction }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+              <select name="mailfunc">
                   <option value="mail" selected>{ mail }</option>
                   <option value="">{ disabled }</option>
                   <option value="smtp">{ smtp }</option>
@@ -88,28 +97,31 @@
                 </select>
             </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ server }</td>
-<td valign="middle">
-<input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              server }</td>
+            <td> 
+              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ serverport }</td>
-<td valign="middle">
-<input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              serverport }</td>
+            <td> 
+              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ imagessize }</td>
-<td valign="middle">
-<input type="text" name="imgsize" size="5" maxlength="10" value="25">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              imagessize }</td>
+            <td> 
+              <input type="text" name="imgsize" size="5" maxlength="10" value="25">
 </td>
 </tr>
-<tr> 
-<td nowrap>&nbsp;</td>
-<td valign="middle">
-<input type="submit" name="Submit" value="{ create }">
+          <tr valign="middle"> 
+            <td nowrap align="left">&nbsp;</td>
+            <td> 
+              <input type="submit" name="Submit" value="{ create }">
 <br>
 </td>
 </tr>
@@ -120,13 +132,16 @@
 </form>
 <br>
 <!--#end sitecreate -->
-<br><br><br><br><br>
+
+
+
+
 <!--#begin siteslist --> 
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
+<td class="BabLoginCadreBackground" > 
+      <table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr> 
 <td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ name }</b> </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ lang }</b></td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ email }</b></td>
@@ -137,10 +152,14 @@
 <tr> 
 <td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
 <td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ arr[lang] }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">&nbsp;{ arr[adminemail] }</td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle">&nbsp;{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle">&nbsp;<a class="BabSiteAdminListLink" href="{ hprivurl }">{ hprivate }</a></td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle">&nbsp;<a class="BabSiteAdminListLink" href="{ hpuburl }">{ hpublic }</a></td>
+          <td class="BabSiteAdminFontBackground" valign="middle" align="center">&nbsp;{ 
+            arr[adminemail] }</td>
+          <td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ 
+            arr[description] }</td>
+          <td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;<a class="BabSiteAdminListLink" href="{ hprivurl }">{ 
+            hprivate }</a></td>
+          <td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;<a class="BabSiteAdminListLink" href="{ hpuburl }">{ 
+            hpublic }</a></td>
 </tr>
 <!--#endin getnext -->
 </table>
@@ -149,7 +168,9 @@
 </table>
 <!--#end siteslist -->
 
-<br><br><br><br><br>
+
+
+
 <!--#begin sitemodify -->
 <form name="formsite" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site">
@@ -159,34 +180,37 @@
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
-<td width="70%" valign="middle">
-<input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabSiteAdminTitleFontBackground">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+              name }</td>
+            <td width="70%"> 
+              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
-<td valign="middle">
-<input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              description }</td>
+            <td> 
+              <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ lang }</td>
-<td valign="middle">
-<select name="lang">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              lang }</td>
+            <td> 
+              <select name="lang">
                   <!--#in getnextlang -->
                   <option value="{ langval }" { langselected }>{ langval }</option>
                   <!--#endin getnextlang -->
                 </select>
 </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
               skin }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-                <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
+            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+              <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
                   <!--#in getnextskin -->
                   <option value="{ skinval }" { skinselected }>{ skinval }</option>
                   <!--#endin getnextskin -->
@@ -195,28 +219,32 @@
                 </select>
             </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ registration }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-                <select name="register">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+              registration }</td>
+            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+              <select name="register">
                   <option value="Y" { yregister }>{ yes }</option>
                   <option value="N" { nregister }>{ no }</option>
                 </select>
             </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ confirmation }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-                <select name="confirm">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+              confirmation }<br>
+              { helpconfirmation }</td>
+            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+              <select name="confirm">
                   <option value="Y" { yconfirm }>{ yes }</option>
                   <option value="N" { nconfirm }>{ no }</option>
-                </select>&nbsp;{ helpconfirmation }
+                </select>
             </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ group }</td>
-            <td class="BabLoginMenuBackground" align="left" valign="middle">
-                <select name="group">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+              group }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+              <select name="group">
                   <option value="0">{ none }</option>
                   <!--#in getnextgrp -->
                   <option value="{ grpid }" { grpsel }>{ grpname }</option>
@@ -224,16 +252,18 @@
                 </select>
             </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ siteemail }</td>
-<td valign="middle">
-<input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              siteemail }</td>
+            <td> 
+              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
 </td>
 </tr>
-<tr> 
-            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ mailfunction }</td>
-            <td class="BabLoginMenuBackground" align="left" valign="middle">
-                <select name="mailfunc">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+              mailfunction }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+              <select name="mailfunc">
                   <option value="mail" { mailselected }>{ mail }</option>
                   <option value="" { disabledselected }>{ disabled }</option>
                   <option value="smtp" { smtpselected }>{ smtp }</option>
@@ -241,28 +271,31 @@
                 </select>
             </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ server }</td>
-<td valign="middle">
-<input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              server }</td>
+            <td> 
+              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ serverport }</td>
-<td valign="middle">
-<input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              serverport }</td>
+            <td> 
+              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
 </td>
 </tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ imagessize }</td>
-<td valign="middle">
-<input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+              imagessize }</td>
+            <td> 
+              <input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }">
 </td>
 </tr>
-<tr> 
-<td>&nbsp;</td>
-<td valign="middle"> 
-<input type="submit" name="Submit" value="{ create }">&nbsp;&nbsp;<input type="submit" name="delete" value="{ delete }">
+          <tr valign="middle"> 
+            <td align="left">&nbsp;</td>
+            <td> 
+              <input type="submit" name="Submit" value="{ create }">&nbsp;&nbsp;<input type="submit" name="delete" value="{ delete }">
 <br>
 </td>
 </tr>
@@ -273,6 +306,10 @@
 </form>
 <br>
 <!--#end sitemodify -->
+
+
+
+
 <!--#begin sitehomepage0 -->
 <form method="post" name="homeform" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site">
@@ -283,7 +320,7 @@
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td align="center" nowrap valign="middle" colspan="2"> 
 <select name="listhome0" size=12 multiple>
@@ -344,6 +381,10 @@ onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.
 
 <!--#end sitehomepage0 -->
 
+
+
+
+
 <!--#begin sitehomepage1 -->
 <form method="post" name="homeform1" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site">
@@ -354,7 +395,7 @@ onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td align="center" nowrap valign="middle" colspan="2"> 
 <select name="listhome1"  size=12 multiple>
@@ -406,28 +447,33 @@ onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.
 </form>
 <br>
 <!--#end sitehomepage1 -->
+
+
+
+
+
 <!--#begin versions -->
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabSiteAdminTitleFontBackground">
 <tr> 
-<td align="right" width="50%" nowrap valign="middle">{ srcversiontxt }&nbsp;:</td>
-<td align="left" width="50%" nowrap valign="middle">{ srcversion }</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" width="50%" nowrap valign="middle">{ srcversiontxt }&nbsp;:</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" width="50%" nowrap valign="middle">{ srcversion }</td>
 </tr>
 <tr> 
-<td align="right" width="50%" nowrap valign="middle">{ phpversiontxt }&nbsp;:</td>
-<td align="left" width="50%" nowrap valign="middle">{ phpversion }</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" width="50%" nowrap valign="middle">{ phpversiontxt }&nbsp;:</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" width="50%" nowrap valign="middle">{ phpversion }</td>
 </tr>
 <tr> 
-<td align="right" width="50%" nowrap valign="middle">{ baseversiontxt }&nbsp;:</td>
-<td align="left" width="50%" nowrap valign="middle">{ baseversion }</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" width="50%" nowrap valign="middle">{ baseversiontxt }&nbsp;:</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" width="50%" nowrap valign="middle">{ baseversion }</td>
 </tr>
 <tr> 
-<td align="center" nowrap valign="middle" colspan="2"><a class="copy" href="javascript: Start('{ urlphpinfo }', 'OviSitesA', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ phpinfo }</a></td>
+<td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle" colspan="2"><a class="copy" href="javascript: Start('{ urlphpinfo }', 'OviSitesA', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ phpinfo }</a></td>
 </tr>
 <tr> 
-<td align="center" nowrap valign="middle" colspan="2"><P class="copyright">&copy; 2001-2002, <a class="copy"href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</P></td>
+<td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle" colspan="2"><P class="copyright">&copy; 2001-2002, <a class="copy"href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</P></td>
 </tr>
 </table>
 </td>
@@ -435,6 +481,9 @@ onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.
 </table>
 
 <!--#end versions -->
+
+
+
 
 <!--#begin scripts -->
 <script language="JavaScript">
@@ -521,6 +570,10 @@ function selectAll(list)
 //-->
 </script>
 <!--#end scripts -->
+
+
+
+
 
 <!--#begin skinscripts -->
 <script type="text/javascript">
