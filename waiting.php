@@ -34,7 +34,7 @@ function listArticles($topics)
 			$this->modify = bab_translate("Modify");
 			$this->confirm = bab_translate("Confirm");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;

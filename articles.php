@@ -44,7 +44,7 @@ function listSubmittedArticles($topics)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->date = bab_strftime(bab_mktime($this->arr['date']));
-				$this->content = $this->arr['head'];
+				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
 				$i++;
 				return true;
