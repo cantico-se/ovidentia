@@ -232,6 +232,11 @@ function EditorOnInsertFaq(id, txt, target)
 editor.insertHTML('$FAQID('+id+','+txt+','+target+')');
 }
 
+function EditorOnInsertOvml(txt)
+{
+editor.insertHTML('$OVML('+txt+')');
+}
+
 </script>
 </head>
 <body scroll="no" onload="init()" onunload="update_parent()">

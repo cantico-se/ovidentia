@@ -173,7 +173,8 @@ HTMLArea.Config = function (babLanguage) {
 		redo:			["redo",				 "Redo",			   "ed_redo.gif",							false],
 		babfile:		["babfile",				 "Insert Ovidentia File","ed_bab_file.gif",						false],
 		babarticle:		["babarticle",			"Ovidentia Article link","ed_bab_articleid.gif",				false],	
-		babfaq:			["babfaq",				"Ovidentia FAQ link",	"ed_bab_faqid.gif",						false]
+		babfaq:			["babfaq",				"Ovidentia FAQ link",	"ed_bab_faqid.gif",						false],
+		babovml:		["babovml",				"Ovidentia OVML link",	"ed_custom.gif",						false]
 	};
 
 	// initialize tooltips from the I18N module
@@ -1223,6 +1224,9 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 		case "babfaq":
 		this._babDialog(this.baburl+this.babPhpSelf+"?tg=editorfaq", null, null,'toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes');
 		break;
+		case "babovml":
+		this._babDialog(this.baburl+this.babPhpSelf+"?tg=editorovml", null, null,'toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes');
+		break;
 		case "cleanhtml":
 		this._babcleanhtml();
 		break;
@@ -1849,6 +1853,11 @@ function EditorOnInsertFaq(id, txt, target)
 editor.insertHTML('$FAQID('+id+','+txt+','+target+')');
 }
 
+function EditorOnInsertOvml(txt)
+{
+editor.insertHTML('$OVML('+txt+')');
+}
+
 // EOF
 // Local variables: //
 // c-basic-offset:8 //
@@ -1900,7 +1909,7 @@ function initEditor(what,ta)
 			 [ "popupeditor","bablink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
-			 ["cleanhtml","babimage","babfile","babarticle","babfaq"]
+			 ["cleanhtml","babimage","babfile","babarticle","babfaq","babovml"]
 		];
 		}
 
