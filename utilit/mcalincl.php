@@ -439,6 +439,8 @@ class cal_wmdbaseCls
 		$this->year = $rr[0];
 		$this->month = $rr[1];
 		$this->day = $rr[2];
+		$this->print = isset($_GET['print']) && $_GET['print'] == 1;
+		$this->multical = count($this->idcals) > 1;
 
 		$this->allow_create = false;
 		$this->allow_modify = false;
@@ -490,8 +492,6 @@ class cal_wmdbaseCls
 				break;
 		}
 
-		$this->print = isset($_GET['print']) && $_GET['print'] == 1;
-
 		$this->monthurlname = bab_translate("Month");
 		$this->weekurlname = bab_translate("Week");
 		$this->dayurlname = bab_translate("Day");
@@ -517,7 +517,7 @@ class cal_wmdbaseCls
 		$this->t_modify_event = bab_translate("Modify event");
 		$this->t_search = bab_translate("Search");
 
-		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
+		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."|date=".$date."|calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
 		$this->searcheventurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=rfree&date=".$date."&calid=".$this->currentidcals;
 
@@ -671,14 +671,37 @@ class calendarchoice
 			{
 			$this->resuser[$icalendars->id_percal] = array('name'=>$GLOBALS['BAB_SESS_USER']);
 			}
+
+		$this->resuser_sort = array();
+		foreach($this->resuser as $k => $v)
+			{
+			$this->resuser_sort[$k] = $v['name'];
+			}
+		asort($this->resuser_sort);
+
+		$this->respub_sort = array();
+		foreach($this->respub as $k => $v)
+			{
+			$this->respub_sort[$k] = $v['name'];
+			}
+		asort($this->respub_sort);
+
+		$this->resres_sort = array();
+		foreach($this->resres as $k => $v)
+			{
+			$this->resres_sort[$k] = $v['name'];
+			}
+		asort($this->resres_sort);
+
+
 		}
 
 	function getnextusrcal()
 		{
-		$out = list($this->id, $name) = each($this->resuser);
+		$out = list($this->id) = each($this->resuser_sort);
 		if ($out)
 			{
-			$this->name = isset($name['name']) ? $name['name'] : '';
+			$this->name = isset($this->resuser[$this->id]['name']) ? $this->resuser[$this->id]['name'] : '';
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 			}
 		return $out;
@@ -686,10 +709,10 @@ class calendarchoice
 
 	function getnextpubcal()
 		{
-		$out = list($this->id, $cal) = each($this->respub);
+		$out = list($this->id) = each($this->respub_sort);
 		if ($out)
 			{
-			$this->name = $cal['name'];
+			$this->name = $this->respub[$this->id]['name'];
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 			}
 		return $out;
@@ -697,10 +720,10 @@ class calendarchoice
 
 	function getnextrescal()
 		{
-		$out = list($this->id, $cal) = each($this->resres);
+		$out = list($this->id) = each($this->resres_sort);
 		if ($out)
 			{
-			$this->name = $cal['name'];
+			$this->name = $this->resres[$this->id]['name'];
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 			}
 		return $out;

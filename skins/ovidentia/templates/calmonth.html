@@ -9,6 +9,14 @@ document.onmousemove = bab_tooltipPosition;
 @import url('{ babInstallPath }styles/calendar.css');
 </style>
 
+<div class="bab_cal_buttons">
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
+</div>
 
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0">
 	<tr class="BabCalendarMenuBackground"> 
@@ -76,7 +84,9 @@ document.onmousemove = bab_tooltipPosition;
 			<!--#in getnextcal -->
 			<!--#if countevent "> 0" -->
 			<div class="calendar">
+				<!--#if multical -->
 				<h4 title="{ fullname }">{ fullnameten }</h4>
+				<!--#endif multical -->
 			<!--#endif countevent -->
 				<!--#in getnextevent -->
 				<div id="calevent{ evtidx }" class="bab_tooltip" style="background-color:#{ bgcolor }">
@@ -123,8 +133,7 @@ document.onmousemove = bab_tooltipPosition;
 	<!--#endin getnextweek -->
 	</tbody>
 </table>
-<br />
-<div class="bab_buttons" align="center">
+<div class="bab_cal_buttons">
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
@@ -144,6 +153,15 @@ document.onmousemove = bab_tooltipPosition;
 @import url('{ babInstallPath }styles/calendar.css');
 </style>
 
+<div class="bab_cal_buttons">
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
+	<a class="calendars" href="javascript:bab_popup('{ searcheventurl }')">{ t_search }</a>
+</div>
 
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0">
 	<tr class="BabCalendarMenuBackground"> 
@@ -223,8 +241,8 @@ document.onmousemove = bab_tooltipPosition;
 	<!--#endin getnextweek -->
 	</tbody>
 </table>
-<br />
-<div class="bab_buttons" align="center">
+
+<div class="bab_cal_buttons">
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->

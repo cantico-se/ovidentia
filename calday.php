@@ -67,28 +67,24 @@ class cal_dayCls extends cal_wmdbaseCls
 				$idxhour = $i;
 				$curhour = $this->startwtime * 60 + $i * $this->elapstime;
 				$st = sprintf("%02d:%02d", $curhour/60, $curhour%60);
+				$this->h_start = sprintf("%02d:%02d", $curhour/60, $curhour%60);
 				if( $babBody->ampm)
 					{
-					$h = explode(" ", bab_toAmPm($st));
+					$h = explode(" ", bab_toAmPm($this->h_start));
 					$hh = explode(":", $h[0]);
 					$this->hour = sprintf("%02d<sup>%s</sup>%02d", $hh[0], $h[1], $hh[1]);
 					if( $i == 0 )
 						$this->hour = sprintf("%02d<sup>%s", $hh[0], $h[1]);
 					else if( $hh[0] == "12" && $hh[1] == "00")
 						$this->hour = sprintf("%02d<sup>%s", $hh[0], $h[1]);
-					else if( $hh[1] != "00")
-						$this->hour = sprintf("__<sup>%02d</sup>", $hh[1]);
 					else
 						$this->hour = sprintf("%02d<sup>%02d</sup>", $hh[0], $hh[1]);
 					}
 				else
 					{
-					if( $curhour%60 == 0)
-						$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
-					else
-						$this->hour = sprintf("__<sup>%02d</sup>", $curhour%60);
+					$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
 					}
-				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".$st;
+				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".$this->h_start;
 				if( $i % 2)
 					{
 					$this->altbgcolor = true;
@@ -97,7 +93,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					{
 					$this->altbgcolor = false;
 					}
-				$this->startdt = $this->cdate." ".$st.":00";
+				$this->startdt = $this->cdate." ".$this->h_start.":00";
 				$this->enddt = $this->cdate." ".sprintf("%02d:%02d", ($curhour+$this->elapstime)/60, ($curhour+$this->elapstime)%60).":00";
 				$i++;
 				return true;

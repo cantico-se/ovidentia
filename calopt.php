@@ -523,7 +523,8 @@ function pop_calendarchoice()
 		{
 		function temp()
 			{
-			$this->backurl = $_GET['backurl'];
+			
+			$this->backurl = str_replace('|','&',$_GET['backurl']);
 			$this->calendars = calendarchoice('calendarchoice');
 			$this->t_record = bab_translate("Record");
 			}

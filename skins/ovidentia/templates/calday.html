@@ -7,6 +7,14 @@ document.onmousemove = bab_tooltipPosition;
 <style type="text/css">
 @import url('{ babInstallPath }styles/calendar.css');
 </style>
+<div class="bab_cal_buttons">
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
+</div>
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
 	<tr class="BabCalendarMenuBackground"> 
 		<td class="prev" width="25%">
@@ -39,91 +47,96 @@ document.onmousemove = bab_tooltipPosition;
 		</td>
 	</tr>
 </table>
-
- <br>
-<table class="BabCalendarBodyBackground" width="98%" cellpadding="2" cellspacing="0" align="center">
-	<tr>
-		<td class="BabCalendarDays" align="center" colspan="{ colspan }" valign="middle">{ dayname } ({ week })</td>
-	</tr>
-</table>
-
+<br />
 <table id="bab_calday" class="bab_calendar" width="98%" align="center">
 	<thead>
 	<tr>
 		<th>&nbsp;</th>
-		<!--#in getnextcal -->
-		<td colspan="{ cols }">{ fullname }</td>
-		<!--#endin getnextcal -->
+		<td class="BabCalendarDays" align="center">{ dayname } ({ week })</td>
 	</tr>
 	</thead>
 	<tbody>
-<!--#in getnexthour -->
 	<tr>
-		<th>
-			<!--#if bowner "== 1" -->
-			<a href="{ hoururl }">{ hour }</a>
-			<!--#else bowner -->
-			{ hour }
-			<!--#endif bowner -->
+		<th valign="top">
+			<!--#in getnexthour -->
+			<div>{ hour }</div>
+			<!--#endin getnexthour -->
 		</th>
 
-		<!--#in getnextcal -->
+		<td class="day">
+		<table class="innertable">
+			<thead>
+				<tr>
+					<!--#in getnextcal -->
+					<td colspan="{ cols }" <!--#if cindex "> 1" --> class="notfirst"<!--#endif cindex -->>{ fullname }</td>
+					<!--#endin getnextcal -->
+				</tr>
+			</thead>
+			<tbody>
+				<!--#in getnexthour -->
+				<tr>
+				<!--#in getnextcal -->
+				<!--#in getnexteventcol -->
+				<!--#if bevent -->
+				<td class="event" style="background-color:#{ bgcolor }" onclick="bab_popup('{ vieweventurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
+					<!--#if first -->
+					<!--#if allow_modify -->
+					<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+					<!--#endif allow_modify -->
+					{ titleten }
+					<div id="calevent{ idcal }{ idevent }" class="bab_tooltip" style="background-color:#{ bgcolor }">
+						<h3>{ title }</h3>
+						<h5>
+							<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
+							<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
+							<!--#if id_creator -->
+							<p><strong>{ t_creator } : </strong> { creatorname }</p>
+							<!--#endif id_creator -->
+							<!--#if category -->
+							<p><strong>{ t_category } : </strong> { category }</p>
+							<!--#endif category -->
+						</h5>
+						<div class="description">{ description }</div>
+					</div>
+					<!--#if nbowners -->
+					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+					<!--#if bstatus -->
+					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
+					<!--#if bstatuswc -->
+					<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
+					<!--#else bstatuswc -->
+					<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
+					<!--#endif bstatuswc -->
+					</a>
+					<!--#endif bstatus -->
+					<!--#endif nbowners -->
+					<!--#else first -->
+					&nbsp;
+					<!--#endif first -->
+				</td>
+				<!--#else bevent -->
+				<!--#if allow_create -->		
+				<td class="free" onmouseover="this.className='freeover'" onmouseout="this.className='free'" onclick="bab_popup('{ hoururl }',5)">{ h_start }</td>
+				<!--#else allow_create -->		
+				<td>&nbsp;</td>
+				<!--#endif allow_create -->		
+				<!--#endif bevent -->
+				<!--#endin getnexteventcol -->
 
-		<!--#in getnexteventcol -->
-		<!--#if bevent -->
-		<td class="event" style="background-color:#{ bgcolor }" onclick="bab_popup('{ vieweventurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
-			<!--#if first -->
-			<!--#if allow_modify -->
-			<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
-			<!--#endif allow_modify -->
-			{ titleten }
-			<div id="calevent{ idcal }{ idevent }" class="bab_tooltip" style="background-color:#{ bgcolor }">
-				<h3>{ title }</h3>
-				<h5>
-					<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
-					<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
-					<!--#if id_creator -->
-					<p><strong>{ t_creator } : </strong> { creatorname }</p>
-					<!--#endif id_creator -->
-					<!--#if category -->
-					<p><strong>{ t_category } : </strong> { category }</p>
-					<!--#endif category -->
-				</h5>
-				<div class="description">{ description }</div>
-			</div>
-			<!--#if nbowners -->
-			<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
-			<!--#if bstatus -->
-			<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
-			<!--#if bstatuswc -->
-			<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
-			<!--#else bstatuswc -->
-			<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
-			<!--#endif bstatuswc -->
-			</a>
-			<!--#endif bstatus -->
-			<!--#endif nbowners -->
-			<!--#else first -->
-			&nbsp;
-			<!--#endif first -->
+			<!--#endin getnextcal -->
+			</tr>
+			<!--#endin getnexthour -->
+			</tbody>
+		
+		</table>
 		</td>
-		<!--#else bevent -->
-		<!--#if allow_create -->		
-		<td class="free" onmouseover="this.className='freeover'" onmouseout="this.className='free'" onclick="bab_popup('{ hoururl }',5)">&nbsp;</td>
-		<!--#else allow_create -->		
-		<td>&nbsp;</td>
-		<!--#endif allow_create -->		
-		<!--#endif bevent -->
-		<!--#endin getnexteventcol -->
-
-	<!--#endin getnextcal -->
 	</tr>
 	</tbody>
-<!--#endin getnexthour -->
 </table>
 
-<br />
-<div class="bab_buttons" align="center">
+
+
+<div class="bab_cal_buttons">
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
@@ -142,6 +155,17 @@ document.onmousemove = bab_tooltipPosition;
 <style type="text/css">
 @import url('{ babInstallPath }styles/calendar.css');
 </style>
+
+<div class="bab_cal_buttons">
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
+	<a class="calendars" href="javascript:bab_popup('{ searcheventurl }')">{ t_search }</a>
+</div>
+
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
 	<tr class="BabCalendarMenuBackground"> 
 		<td class="prev" width="25%">
@@ -217,8 +241,7 @@ document.onmousemove = bab_tooltipPosition;
 <!--#endin getnexthour -->
 </table>
 
-<br />
-<div class="bab_buttons" align="center">
+<div class="bab_cal_buttons">
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->

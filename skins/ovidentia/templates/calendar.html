@@ -105,6 +105,9 @@
 
 function optionInGroup(grp,optvalue)
 	{
+	if (typeof grp == 'undefined')
+		return true;
+
 	var option = grp.getElementsByTagName('option');
 
 	for (var j = 0; j < option.length ; j++)
@@ -112,6 +115,7 @@ function optionInGroup(grp,optvalue)
 		if (option.item(j).value == optvalue)
 			return true;
 		}
+
 	return false;
 	}
 
@@ -198,7 +202,8 @@ function moveOptions(src,dest)
 		var loop = false;
 		for (i=0 ; i < dest.options.length ; i++ )
 			{
-			destgroups[assoc[dest.options[i].value]].appendChild(dest.options[i]);
+			if (destgroups[assoc[dest.options[i].value]])
+				destgroups[assoc[dest.options[i].value]].appendChild(dest.options[i]);
 			if (!optionInGroup(destgroups[assoc[dest.options[i].value]],dest.options[i].value))
 				loop = true;
 			}

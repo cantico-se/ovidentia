@@ -8,6 +8,15 @@ document.onmousemove = bab_tooltipPosition;
 @import url('{ babInstallPath }styles/calendar.css');
 </style>
 
+<div class="bab_cal_buttons">
+		<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
+</div>
+
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
 	<tr class="BabCalendarMenuBackground"> 
 		<td class="prev" width="25%">
@@ -69,7 +78,7 @@ document.onmousemove = bab_tooltipPosition;
 			<!--#in getnexthour -->
 			<div>{ hour }</div>
 			<!--#endin getnexthour -->
-		</td>
+		</th>
 
 		<!--#in getnextday -->
 		<td class="day">
@@ -77,11 +86,7 @@ document.onmousemove = bab_tooltipPosition;
 				<thead>
 					<tr>
 						<!--#in getnextcal -->
-						<!--#if nbCalEvents -->
 						<td colspan="{ cols }" <!--#if cindex "> 1" --> class="notfirst"<!--#endif cindex -->>{ fullname }</td>
-						<!--#else nbCalEvents -->
-						<td colspan="{ cols }">&nbsp;</td>
-						<!--#endif nbCalEvents -->
 						<!--#endin getnextcal -->
 					<tr>
 				</thead>
@@ -130,7 +135,7 @@ document.onmousemove = bab_tooltipPosition;
 						</td>
 						<!--#else bevent -->
 						<!--#if allow_create -->		
-						<td class="free" onmouseover="this.className='freeover'" onmouseout="this.className='free'" onclick="bab_popup('{ hoururl }',5)">&nbsp;</td>
+						<td class="free" onmouseover="this.className='freeover';" onmouseout="this.className='free';" onclick="bab_popup('{ hoururl }',5)">{ h_start }</td>
 						<!--#else allow_create -->		
 						<td>&nbsp;</td>
 						<!--#endif allow_create -->		
@@ -147,8 +152,7 @@ document.onmousemove = bab_tooltipPosition;
 	</tbody>
 </table>
 
-<br />
-<div class="bab_buttons" align="center">
+<div class="bab_cal_buttons">
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->
@@ -167,6 +171,16 @@ document.onmousemove = bab_tooltipPosition;
 <style type="text/css">
 @import url('{ babInstallPath }styles/calendar.css');
 </style>
+
+<div class="bab_cal_buttons">
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
+	<a class="calendars" href="javascript:bab_popup('{ searcheventurl }')">{ t_search }</a>
+</div>
 
 <table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
 	<tr class="BabCalendarMenuBackground"> 
@@ -266,8 +280,7 @@ document.onmousemove = bab_tooltipPosition;
 	</tbody>
 </table>
 
-<br />
-<div class="bab_buttons" align="center">
+<div class="bab_cal_buttons">
 	<!--#if print -->
 	<a class="print" href="javascript:window.print()">{ t_print }</a>
 	<!--#else print -->

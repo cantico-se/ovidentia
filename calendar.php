@@ -24,7 +24,7 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/calincl.php";
 include_once $babInstallPath."utilit/evtincl.php";
-
+ 
 function displayAttendees($evtid, $idcal)
 {
 	global $babBodyPopup;

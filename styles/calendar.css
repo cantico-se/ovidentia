@@ -81,7 +81,7 @@ a img {
 	white-space:nowrap;
 	}
 
-#bab_calday tbody tr, #bab_calweek .innertable tbody tr, .bab_calendar th div {
+.bab_calendar .innertable tbody tr, .bab_calendar th div {
 	height:30px;
 	}
 
@@ -90,7 +90,12 @@ a img {
 	cursor:pointer;
 	}
 
+.bab_calendar .free {
+	color:#fff;
+	}
+
 .bab_calendar .freeover {
+	color:#000;
 	background-color:#eee;
 	}
 
@@ -151,6 +156,19 @@ a img {
 	font-size:11px;
 	font-family:verdana;
 	}
+
+.HeaderDayCalendar a.dayview {
+	background-image:url('../skins/ovidentia/images/Puces/PuceMoreEvent.png');
+	}
+
+.HeaderDayCalendar a.insert {
+	background-image:url('../skins/ovidentia/images/Puces/PuceNewEvent.png');
+	}
+
+.HeaderDayCalendar a.dayview img, .HeaderDayCalendar a.insert img {
+	visibility:hidden;
+	}
+
 	
 .HeaderDayCalendar a.dayview {
 	margin:4px;
@@ -179,23 +197,23 @@ a img {
 	margin-bottom:2px;
 	}
 	
-#bab_calweek td.day {
+#bab_calweek td.day, #bab_calday td.day {
 	padding:0;
 	border-left:#000 1px solid;
 	}
 	
-#bab_calweek .innertable {
+.bab_calendar .innertable {
 	border-collapse:collapse;
 	width:100%;
 	margin:0;
 	padding:0;
 	}
 	
-#bab_calweek .innertable td.notfirst {
+.bab_calendar .innertable td.notfirst {
 	border-left:#000 1px solid;
 	}
 	
-#bab_calweek .innertable thead td {
+.bab_calendar .innertable thead td {
 	border:0;
 	border-bottom:#000 1px solid;
 	white-space:nowrap;
@@ -203,17 +221,22 @@ a img {
 	height:20px;
 	}
 
-#bab_calweek .innertable td.event span, 
-#bab_calweek .innertable td.freeevent span,
-#bab_calweek .innertable td.used span {
+.bab_calendar .innertable td.event span, 
+.bab_calendar .innertable td.freeevent span,
+.bab_calendar .innertable td.used span {
 	white-space:nowrap;
 	}
 	
-#bab_calweek tbody th {
-	padding-top:20px;
+#bab_calweek tbody th, #bab_calday tbody th {
+	padding-top:10px;
 	}
 
-.bab_buttons a {
+.bab_cal_buttons {
+	text-align:center;
+	padding:.4em;
+	}
+
+.bab_cal_buttons a {
 	margin:5px;
 	text-decoration:none;
 	background-position:0 50%;
@@ -221,17 +244,22 @@ a img {
 	padding-left:15px;
 	}
 
-.bab_buttons a:hover {
+.bab_cal_buttons a:hover {
 	text-decoration:underline;
 	}
 
-.bab_buttons a.print {
+.bab_cal_buttons a.print {
+	voice-family: "\"}\"";
+	voice-family:inherit;
 	background-image:url('../skins/ovidentia/images/Puces/Print.gif');
 	}
 
-.bab_buttons a.calendars {
+.bab_cal_buttons a.calendars {
+	voice-family: "\"}\"";
+	voice-family:inherit;
 	background-image:url('../skins/ovidentia/images/Puces/popupselect.gif');
 	}
+
 
 .BabTodayEvent .HeaderDayCalendar {
    border-bottom:#f00 2px solid;
