@@ -470,7 +470,10 @@ class bab_icalendars
 				{
 				$this->endtime = '23:59:59';
 				}
-			$this->dispdays = $arr['dispdays'];
+
+			if (!empty($arr['dispdays']))
+				$this->dispdays = $arr['dispdays'];
+
 			if (!empty($arr['workdays'])) 
 				$this->workdays = $arr['workdays'];
 			
