@@ -149,11 +149,31 @@
 <table border="0" cellpadding="0" cellspacing="3" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
-<img src="{ urlimg }" border="0" alt="{ name }">
+<img name="photo" src="{ urlimg }" border="0" alt="{ name }">
 </td>
 </tr>
 </table>
 </center>
+<script type="text/javascript">
+<!--
+function redimimg()
+{
+var w = 200;
+var photo = document.images['photo'];
+if (photo.width == 0)
+	{
+	setTimeout('redimimg()',50);
+	return;
+	}
+if (photo.width > w)
+	{
+	photo.height = (w*photo.height)/photo.width;
+	photo.width = w;
+	}
+}
+redimimg();
+//-->
+</script>
 <!--#endif showph -->
 <br>
 <table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
