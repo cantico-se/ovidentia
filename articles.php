@@ -184,12 +184,22 @@ function listArticles($topics, $approver)
 			{
 			$this->listArticles($topics);
 			$this->db = $GLOBALS['babDB'];
-			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
-			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and confirmed='Y' and archive='N'";
-			if( count($langFilterValues) > 0 )
-				$req .= " and SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
 
-			$req .= " order by date desc";
+			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL."";
+			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
+			switch($langFilterValue)
+				{
+					case 2:
+						$req .= " where id_topic='$topics' and confirmed='Y' and archive='N' and lang='".$GLOBALS['babLanguage']."' order by date desc";
+						break;
+					case 1:
+						$req .= " where id_topic='$topics' and confirmed='Y' and archive='N' and (lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%') order by date desc";
+						break;
+					case 0:
+					default:
+						$req .= " where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
+				}
+				
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserCommentApprover($topics))
