@@ -153,7 +153,8 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$arr2 = $this->db->db_fetch_array($res2);
 					$this->access = $arr2['access'];
-					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+					//$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
 					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if(!$this->mbox)
 						{
@@ -326,6 +327,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 		var $criteria;
 		var $reverse;
 		var $start;
+		var $toval;
 
 		var $replyname;
 		var $replyaname;
@@ -371,7 +373,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 				if( $res2 && $db->db_num_rows($res2) > 0 )
 					{
 					$arr2 = $db->db_fetch_array($res2);
-					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
 					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if(!$this->mbox)
 						{
@@ -385,25 +387,50 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 						$this->fromval = '';
 						for($i=0; $i < count($arr); $i++)
 							{
-							$mhc = imap_mime_header_decode($arr[$i]->personal);
-							$this->fromval .= $mhc[0]->text . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
-							$this->arrfrom[] = array( $mhc[0]->text, $arr[$i]->mailbox . "@" . $arr[$i]->host);
+							if( isset($arr[$i]->personal))
+								{
+								$mhc = imap_mime_header_decode($arr[$i]->personal);
+								$mhtext = $mhc[0]->text;
+								}
+							else
+								{
+								$mhtext ='';
+								}
+							$this->fromval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
+							$this->arrfrom[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 							}
 
 						$arr = isset($headinfo->to) ? $headinfo->to : array();
+						$this->toval = '';
 						for($i=0; $i < count($arr); $i++)
 							{
-							$mhc = imap_mime_header_decode($arr[$i]->personal);
-							$this->toval .= $mhc[0]->text . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
-							$this->arrto[] = array( $mhc[0]->text, $arr[$i]->mailbox . "@" . $arr[$i]->host);
+							if( isset($arr[$i]->personal))
+								{
+								$mhc = imap_mime_header_decode($arr[$i]->personal);
+								$mhtext = $mhc[0]->text;
+								}
+							else
+								{
+								$mhtext ='';
+								}
+							$this->toval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
+							$this->arrto[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 							}
 
 						$arr = isset($headinfo->cc) ? $headinfo->cc : array();
 						for($i=0; $i < count($arr); $i++)
 							{
-							$mhc = imap_mime_header_decode($arr[$i]->personal);
-							$this->ccval .= $mhc[0]->text . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
-							$this->arrcc[] = array( $mhc[0]->text, $arr[$i]->mailbox . "@" . $arr[$i]->host);
+							if( isset($arr[$i]->personal))
+								{
+								$mhc = imap_mime_header_decode($arr[$i]->personal);
+								$mhtext = $mhc[0]->text;
+								}
+							else
+								{
+								$mhtext ='';
+								}
+							$this->ccval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
+							$this->arrcc[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 							}
 
 						$mhc = imap_mime_header_decode($headinfo->subject);
@@ -463,8 +490,8 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					}
 				else
 					{
-					$firstn = $arr[0];
-					$lastn = $arr[1];
+					$firstn = isset($arr[0])? $arr[0]: '';
+					$lastn = isset($arr[1])? $arr[1]: '';
 					}
 				$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrto[$i][1]."&bliste=0";
 				$this->addname = $this->arrto[$i][0]. " &lt;" . $this->arrto[$i][1] . "&gt;";
@@ -518,8 +545,8 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					}
 				else
 					{
-					$firstn = $arr[0];
-					$lastn = $arr[1];
+					$firstn = isset($arr[0])? $arr[0]: '';
+					$lastn = isset($arr[1])? $arr[1]: '';
 					}
 				$this->addurl = $GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrcc[$i][1]."&bliste=0";
 				$this->addname = $this->arrcc[$i][0]. " &lt;" . $this->arrcc[$i][1] . "&gt;";
@@ -667,7 +694,7 @@ function showPart($accid, $msg, $cid)
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
 			$arr2 = $db->db_fetch_array($res2);
-			$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
 			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
@@ -698,7 +725,7 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
 			$arr2 = $db->db_fetch_array($res2);
-			$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
 			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
@@ -763,7 +790,7 @@ function deleteMails($item, $accid, $criteria, $reverse)
 		if( $res2 && $db->db_num_rows($res2)> 0)
 			{
 			$arr2 = $db->db_fetch_array($res2);
-			$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access']."}INBOX";
 			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
