@@ -2358,6 +2358,17 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "SELECT * FROM ".BAB_ADDONS_TBL;
+$res = $db->db_query($req);
+while ($arr = $db->db_fetch_array($res))
+	{
+	if (is_file($GLOBALS['babInstallPath']."addons/".$arr['title']."/addonini.php"))
+		{
+		$arr_ini = @parse_ini_file( $GLOBALS['babInstallPath']."addons/".$arr['title']."/addonini.php");
+		$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$arr['id']."'";
+		}
+	}
+
 return $ret;
 }
 
@@ -2432,7 +2443,7 @@ $req .= "id_closed_nodes text NOT NULL,";
 $req .= "PRIMARY KEY  (id),";
 $req .= "KEY id_dgowner (id_dgowner),";
 $req .= "KEY id_directory (id_directory)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2452,7 +2463,7 @@ $req .= "id_group tinyint(10) NOT NULL default '0',";
 $req .= "UNIQUE KEY id (id),";
 $req .= "KEY id_object (id_object),";
 $req .= "KEY id_group (id_group)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2468,7 +2479,7 @@ $req .= "id_group tinyint(10) NOT NULL default '0',";
 $req .= "UNIQUE KEY id (id),";
 $req .= "KEY id_object (id_object),";
 $req .= "KEY id_group (id_group)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2489,7 +2500,7 @@ $req .= "PRIMARY KEY  (id),";
 $req .= "KEY id_oc (id_oc),";
 $req .= "KEY id_node (id_node),";
 $req .= "KEY id_group (id_group)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2509,7 +2520,7 @@ $req .= "cardinality enum('N','Y') NOT NULL default 'N',";
 $req .= "PRIMARY KEY  (id),";
 $req .= "KEY id_oc (id_oc),";
 $req .= "KEY id_entity (id_entity)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2525,7 +2536,7 @@ $req .= "id_user int(11) unsigned NOT NULL default '0',";
 $req .= "isprimary enum('N','Y') NOT NULL default 'N',";
 $req .= "PRIMARY KEY  (id),";
 $req .= "KEY id_role (id_role,id_user)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2547,7 +2558,7 @@ $req .= "KEY lr (lr),";
 $req .= "KEY id_parent (id_parent),";
 $req .= "KEY id_user (id_user),";
 $req .= "KEY info_user (info_user)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2588,7 +2599,7 @@ $req .= "id_node int(11) unsigned NOT NULL default '0',";
 $req .= "PRIMARY KEY  (id),";
 $req .= "KEY id_cat (id_cat,id_node),";
 $req .= "KEY id_node (id_node)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
@@ -2610,7 +2621,7 @@ $req .= "KEY lr (lr),";
 $req .= "KEY id_parent (id_parent),";
 $req .= "KEY id_user (id_user),";
 $req .= "KEY info_user (info_user)";
-$req .= ");";
+$req .= ")";
 
 $res = $db->db_query($req);
 if( !$res)
