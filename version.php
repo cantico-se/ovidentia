@@ -202,16 +202,15 @@ switch($idx)
 					{
 					$new .= "<string id=\"$tab[$i]\">".$tab[$i]."</string>"."\r\n";
 					}
-				else
-					{
-					$old .= "<string id=\"$tab[$i]\">".$m[1]."</string>"."\r\n";
-					}
 				}
 			}
 		$file = @fopen($filename, "w");
 		if( $file )
 			{
-			fputs($file, "<".$cmd.">\r\n".$old.$new."</".$cmd.">");
+			$reg = "/<".$cmd.">(.*)<\/".$cmd.">/s";
+			preg_match($reg, $txt, $m);
+			$txt = "<".$cmd.">".$m[1].$new."</".$cmd.">";
+			fputs($file, $txt);
 			fclose($file);
 			$str = bab_translate("You language file has been updated") ."( ".$filename." )";
 			}

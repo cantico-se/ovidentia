@@ -338,6 +338,27 @@ if( !$res)
 	return $ret;
 	}
 
+$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+$res=$db->db_query($req);
+if( $res && $db->db_num_rows($res) == 1 )
+	{
+	$arr = $db->db_fetch_array($res);
+	if( $arr['skin'] == "" )
+		{
+		if( empty($GLOBALS['babSkin']) )
+			$req = "update ".BAB_SITES_TBL." set skin='".$GLOBALS['babSkin']."' where id='".$arr['id']."'";
+		else
+			$req = "update ".BAB_SITES_TBL." set skin='ovidentia' where id='".$arr['id']."'";
+		$res = $db->db_query($req);
+		}
+
+	if( empty($GLOBALS['babStyle']) )
+		$req = "update ".BAB_SITES_TBL." set style='ovidentia.css' where id='".$arr['id']."'";
+	else
+		$req = "update ".BAB_SITES_TBL." set style='".$GLOBALS['babStyle']."' where id='".$arr['id']."'";
+	$res = $db->db_query($req);
+	}
+
 
 $req = "select id, bwrite from ".BAB_CALACCESS_USERS_TBL;
 $res = $db->db_query($req);

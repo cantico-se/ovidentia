@@ -1473,6 +1473,23 @@ function bab_updateSiteSettings()
 			$GLOBALS['babLanguage'] = $arr['lang'];
 			}
 		}
+	else
+		{
+		if( empty($GLOBALS['babSiteName']))
+			$GLOBALS['babSiteName'] = "ovidentia";
+
+		if( empty($GLOBALS['babSkin']))
+			$GLOBALS['babSkin'] = "ovidentia";
+
+		if( empty($GLOBALS['babStyle']))
+			$GLOBALS['babStyle'] = "ovidentia.css";
+		
+		if( empty($GLOBALS['babLanguage']))
+			$GLOBALS['babLanguage'] = "en";
+
+		$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang, skin, style ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "', '" . $GLOBALS['babSkin']. "', '" . $GLOBALS['babStyle']. "')";
+		$res = $this->db->db_query($req);
+		}
 }
 
 $babDB = new babDatabase();
