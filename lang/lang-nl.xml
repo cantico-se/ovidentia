@@ -1,4 +1,4 @@
-<nl-be>
+<nl>
 <string id="Whole day">Volledige dag</string>
 <string id="Morning">Voormiddag</string>
 <string id="Afternoon">Namiddag</string>
@@ -768,4 +768,4 @@
 <string id="ERROR: You must provide a FAQ name !!">ERROR: You must provide a FAQ name !!</string>
 <string id="Delete FAQ">Delete FAQ</string>
 <string id="Modify FAQ">Modify FAQ</string>
-</nl-be>
+</nl>
