@@ -782,6 +782,12 @@ if(!isset($idx))
 	$idx = "list";
 	}
 
+if (!function_exists('imap_open'))
+	{
+	$babBody->msgerror = bab_translate("Server must have imap functions on");
+	return;
+	}
+
 if( !isset($criteria))
 	$criteria=SORTARRIVAL;
 

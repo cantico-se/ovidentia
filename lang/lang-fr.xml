@@ -1203,4 +1203,5 @@
 <string id="Keywords (separated by spaces)">Mots clés (Séparés par des espaces)</string>
 <string id="Update personnal informations">Mise à jour des informations personnelles</string>
 <string id="Your password has been modified">Votre mot de passe à été modifié</string>
+<string id="Server must have imap functions on">Les fonctions imap doivent être activées sur le serveur</string>
 </fr>
