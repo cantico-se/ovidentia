@@ -3,6 +3,8 @@
 <head>
 <title>{ title }</title>
 <script type="text/javascript">
+<!--
+window.focus();
 
 function _CloseOnEsc() {
   if (event.keyCode == 27) { window.close(); return; }
@@ -48,7 +50,7 @@ function ValidateColor(string) {                // return valid color code
   if (out.length != 6) { return null; }            // check length
   return out;
 }
-
+//-->
 </script>
 </head>
 <body style="background:ButtonFace; margin:0px; padding:0px" onload="Init()">
