@@ -133,7 +133,7 @@ href="{ url }">{ name }</a></td>
 { fileimage }
 </td>          
                 <td class="BabSiteAdminFontBackground">&nbsp; <a 
-class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
+class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
                   name }</a>&nbsp; 
                   <!--#if bmanager -->
                   <!--#if bconfirmed "== 1" -->
@@ -223,7 +223,7 @@ alt="{ paste }" border="0" align="top"></a>
 <!--#endif bdel -->
 </form>
 <br>
-<center><a class="BabSiteAdminListLink" href="javascript: Start('{ urldiskspace }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ diskspace }</a></center>
+<center><a class="BabSiteAdminListLink" href="javascript: Start('{ urldiskspace }', 'OviFile2', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ diskspace }</a></center>
 <!--#endif bmanager -->
 <br>
 </td>
@@ -280,6 +280,7 @@ value="{ restore }">
 { babCss }
 <script type="text/javascript">
 <!--
+window.focus();
 //-->
 </script>
 </HEAD>
@@ -349,6 +350,11 @@ value="{ restore }">
 <TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
 </HEAD>
 <BODY class="BabBackground">
 <br>
@@ -444,6 +450,17 @@ value="{ restore }">
 <input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
 </td>
 </tr>
+<!--#if bviewnf -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ notify }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="bnotify">
+  <option value="N" { nonfselected }>{ no }</option>
+  <option value="Y" { yesnfselected }>{ yes }</option>
+</select>
+</td>
+</tr>
+<!--#endif bviewnf -->
 <!--#endif bupdate -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
@@ -491,6 +508,7 @@ value="{ restore }">
 { babCss }
 <script type="text/javascript">
 <!--
+window.focus();
 //-->
 </script>
 
@@ -542,6 +560,7 @@ function dd2(idf, txt)
 self.opener.onInsertFile(idf,txt);
 window.close();
 }
+window.focus();
 //-->
 </script>
 </HEAD>
