@@ -57,10 +57,10 @@ function notesList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->editurl = $GLOBALS[babUrl]."index.php?tg=note&idx=Modify&item=".$this->arr[id];
+				$this->editurl = $GLOBALS['babUrl']."index.php?tg=note&idx=Modify&item=".$this->arr['id'];
 				$this->editname = babTranslate("Edit");
-				$this->arr[content] = $this->arr[content];// nl2br($this->arr[content]);
-				$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
+				$this->arr['content'] = $this->arr['content'];// nl2br($this->arr['content']);
+				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
 				$i++;
 				return true;
 				}
@@ -102,8 +102,8 @@ switch($idx)
 	case "Create":
 		$body->title = babTranslate("Create a note");
 		notesCreate();
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=notes&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=notes&idx=Create");
+		$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=notes&idx=List");
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=notes&idx=Create");
 		break;
 
 	default:
@@ -111,9 +111,9 @@ switch($idx)
 		$body->title = babTranslate("Notes list");
 		if( notesList() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=notes&idx=List");
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=notes&idx=List");
 			}
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=notes&idx=Create");
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=notes&idx=Create");
 		break;
 	}
 

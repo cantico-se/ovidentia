@@ -99,9 +99,9 @@ function categoryCalDelete($userid, $id)
 			$this->message = babTranslate("Are you sure you want to delete this calendar category");
 			$this->title = getCategoryCalName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the category with all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=confcal&idx=delcat&category=".$id."&action=Yes&userid=".$userid;
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=confcal&idx=delcat&category=".$id."&action=Yes&userid=".$userid;
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifycat&item=".$id."&userid=".$userid;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifycat&item=".$id."&userid=".$userid;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -131,9 +131,9 @@ function resourceCalDelete($userid, $id)
 			$this->message = babTranslate("Are you sure you want to delete this calendar resource");
 			$this->title = getResourceCalName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the resource with all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=confcal&idx=delres&resource=".$id."&action=Yes&userid=".$userid;
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=confcal&idx=delres&resource=".$id."&action=Yes&userid=".$userid;
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifyres&item=".$id."&userid=".$userid;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifyres&item=".$id."&userid=".$userid;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -253,7 +253,7 @@ else
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		//while( $arr = $db->db_fetch_array($res))
-		//	array_push($grpid, $arr[id]);
+		//	array_push($grpid, $arr['id']);
 		}
 	else
 		{
@@ -266,35 +266,35 @@ switch($idx)
 	case "delcat":
 		categoryCalDelete($userid, $item);
 		$body->title = babTranslate("Delete calendar category");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("modifycat", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifycat&item=".$item);
-		$body->addItemMenu("delcat", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=delcat&item=".$item."&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=".$userid);
+		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
+		$body->addItemMenu("modifycat", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifycat&item=".$item);
+		$body->addItemMenu("delcat", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=delcat&item=".$item."&userid=".$userid);
+		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
 		break;
 	case "delres":
 		resourceCalDelete($userid, $item);
 		$body->title = babTranslate("Delete calendar resource");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=".$userid);
-		$body->addItemMenu("modifyres", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifyres&item=".$item);
-		$body->addItemMenu("delres", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=delres&item=".$item."&userid=".$userid);
+		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
+		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
+		$body->addItemMenu("modifyres", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifyres&item=".$item);
+		$body->addItemMenu("delres", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=delres&item=".$item."&userid=".$userid);
 		break;
 	case "modifyres":
 		resourceCalModify($userid, $item);
 		$body->title = getResourceCalName($item) . " ". babTranslate("resource");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=".$userid);
-		$body->addItemMenu("modifyres", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifyres&item=".$item);
-		$body->addItemMenu("delres", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=delres&item=".$item."&userid=".$userid);
+		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
+		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
+		$body->addItemMenu("modifyres", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifyres&item=".$item);
+		$body->addItemMenu("delres", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=delres&item=".$item."&userid=".$userid);
 		break;
 	case "modifycat":
 	default:
 		categoryCalModify($userid, $item);
 		$body->title = getCategoryCalName($item) . " ". babTranslate("category");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("modifycat", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifycat&item=".$item);
-		$body->addItemMenu("delcat", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=confcal&idx=delcat&item=".$item."&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=".$userid);
+		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
+		$body->addItemMenu("modifycat", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifycat&item=".$item);
+		$body->addItemMenu("delcat", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=confcal&idx=delcat&item=".$item."&userid=".$userid);
+		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
 		break;
 	}
 

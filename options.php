@@ -30,7 +30,7 @@ function changePassword()
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
-	if( $arr[changepwd] != 0)
+	if( $arr['changepwd'] != 0)
 		{
 		$tempb = new tempb();
 		$body->babecho(	babPrintTemplate($tempb,"options.html", "changepassword"));
@@ -112,17 +112,17 @@ function changeLanguage()
             if( $res && $db->db_num_rows($res) > 0 )
                 {
     			$arr = $db->db_fetch_array($res);
-                $this->userlang = $arr[lang];
+                $this->userlang = $arr['lang'];
                 }
             else
                 $this->userlang = "";
            
             if( $this->userlang == "")
-                $this->userlang = $GLOBAL[babLanguage];
+                $this->userlang = $GLOBAL['babLanguage'];
 
             $this->title .= " : ".$this->userlang;
 
-            $h = opendir($GLOBALS[babInstallPath]."lang/"); 
+            $h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
                 { 
                 if ($file != "." && $file != "..")
@@ -241,7 +241,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 				}
 			}
 
-		if( $arr[firstname] != $firstname || $arr[lastname] != $lastname )
+		if( $arr['firstname'] != $firstname || $arr['lastname'] != $lastname )
 			{
 			if( getUserId($firstname. " " . $lastname) == 0)
 				{
@@ -320,10 +320,10 @@ if( !isset($firstname) &&  !isset($lastname) && !isset($nickname) && !isset($ema
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$firstname = $arr[firstname];
-		$lastname = $arr[lastname];
-		$nickname = $arr[nickname];
-		$email = $arr[email];
+		$firstname = $arr['firstname'];
+		$lastname = $arr['lastname'];
+		$nickname = $arr['nickname'];
+		$email = $arr['email'];
 		}
 	}
 
@@ -344,13 +344,13 @@ switch($idx)
 		changeUserInfo($firstname, $lastname, $nickname, $email);
 		changePassword();
 		changeLanguage();
-		$body->addItemMenu("global", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=options&idx=global");
+		$body->addItemMenu("global", babTranslate("Options"), $GLOBALS['babUrl']."index.php?tg=options&idx=global");
 		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
-			$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options");
+			$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=options");
 		}
 		if( mailAccessLevel())
-			$body->addItemMenu("options", babTranslate("Mail"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
+			$body->addItemMenu("options", babTranslate("Mail"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
 		break;
 	}
 $body->setCurrentItemMenu($idx);

@@ -70,21 +70,21 @@ function listThreads($forum, $active, $pos)
 				{
 				if( $pos > 0)
 					{
-					$this->topurl = $GLOBALS[babUrl]."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=0";
+					$this->topurl = $GLOBALS['babUrl']."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=0";
 					$this->topname = "&lt;&lt;";
 					}
 
 				$next = $pos - $babMaxRows;
 				if( $next >= 0)
 					{
-					$this->prevurl = $GLOBALS[babUrl]."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$next;
+					$this->prevurl = $GLOBALS['babUrl']."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$next;
 					$this->prevname = "&lt;";
 					}
 
 				$next = $pos + $babMaxRows;
 				if( $next < $total)
 					{
-					$this->nexturl = $GLOBALS[babUrl]."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$next;
+					$this->nexturl = $GLOBALS['babUrl']."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$next;
 					$this->nextname = "&gt;";
 					if( $next + $babMaxRows < $total)
 						{
@@ -92,7 +92,7 @@ function listThreads($forum, $active, $pos)
 						}
 					else
 						$bottom = $next;
-					$this->bottomurl = $GLOBALS[babUrl]."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$bottom;
+					$this->bottomurl = $GLOBALS['babUrl']."index.php?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$bottom;
 					$this->bottomname = "&gt;&gt;";
 					}
 				}
@@ -114,33 +114,33 @@ function listThreads($forum, $active, $pos)
 			if( $i < $this->count)
 				{
 				$this->arrthread = $this->db->db_fetch_array($this->res);
-				$req = "select * from posts where id_thread='".$this->arrthread[id]."' and id='".$this->arrthread[post]."'";
+				$req = "select * from posts where id_thread='".$this->arrthread['id']."' and id='".$this->arrthread['post']."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$this->arrpost = $this->db->db_fetch_array($res);
-					$this->subjecturl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->arrthread[id]."&views=1";
-					$this->subjectname = $this->arrpost[subject];
+					$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->arrthread['id']."&views=1";
+					$this->subjectname = $this->arrpost['subject'];
 					$this->replies = $this->db->db_num_rows($res);
-					$req = "select * from posts where id_thread='".$this->arrthread[id]."' and id='".$this->arrthread[lastpost]."'";
+					$req = "select * from posts where id_thread='".$this->arrthread['id']."' and id='".$this->arrthread['lastpost']."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
 				
-					$tmp = explode(" ", $arr[date]);
+					$tmp = explode(" ", $arr['date']);
 					$arr0 = explode("-", $tmp[0]);
 					$arr1 = explode(":", $tmp[1]);
 					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
-					//$this->lastpostdate = bab_strftime(bab_mktime($arr[date]));
+					//$this->lastpostdate = bab_strftime(bab_mktime($arr['date']));
 
-					$req = "select count(*) as total from posts where id_thread='".$this->arrthread[id]."' and confirmed='Y'";
+					$req = "select count(*) as total from posts where id_thread='".$this->arrthread['id']."' and confirmed='Y'";
 					$res = $this->db->db_query($req);
 					$row = $this->db->db_fetch_array($res);
 					$this->replies = $row["total"];
 					}
-				$req = "select count(*) as total from posts where id_thread='".$this->arrthread[id]."' and confirmed='N'";
+				$req = "select count(*) as total from posts where id_thread='".$this->arrthread['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($res);
-				if( $this->arrthread[active] != "N" && $ar[total] > 0)
+				if( $this->arrthread['active'] != "N" && $ar['total'] > 0)
 					$this->status = "*";
 				else
 					$this->status = "";
@@ -262,7 +262,7 @@ function getClosedThreads($forum)
 	$req = "select count(*) as total from threads where forum='$forum' and active='N'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
-	return $arr[total];
+	return $arr['total'];
 	}
 
 /* main */
@@ -286,8 +286,8 @@ switch($idx)
 			{
 			$body->title = getForumName($forum);
 			newThread($forum);
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=threads&idx=List&forum=".$forum);
-			$body->addItemMenu("newthread", babTranslate("New thread"), $GLOBALS[babUrl]."index.php?tg=threads&idx=newthread&forum=".$forum);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=threads&idx=List&forum=".$forum);
+			$body->addItemMenu("newthread", babTranslate("New thread"), $GLOBALS['babUrl']."index.php?tg=threads&idx=newthread&forum=".$forum);
 
 			}		
 		break;
@@ -296,14 +296,14 @@ switch($idx)
 		$body->title = getForumName($forum);
 		if( isAccessValid("forumsview_groups", $forum))
 			{
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=threads&idx=List&forum=".$forum);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=threads&idx=List&forum=".$forum);
 			$count = listThreads($forum, "N", $pos);
 			if( $count > 0)
-				$body->addItemMenu("ListC", babTranslate("Closed"), $GLOBALS[babUrl]."index.php?tg=threads&idx=ListC&forum=".$forum);
+				$body->addItemMenu("ListC", babTranslate("Closed"), $GLOBALS['babUrl']."index.php?tg=threads&idx=ListC&forum=".$forum);
 
 			if( isAccessValid("forumspost_groups", $forum))
 				{
-				$body->addItemMenu("newthread", babTranslate("New thread"), $GLOBALS[babUrl]."index.php?tg=threads&idx=newthread&forum=".$forum);
+				$body->addItemMenu("newthread", babTranslate("New thread"), $GLOBALS['babUrl']."index.php?tg=threads&idx=newthread&forum=".$forum);
 				}
 			}
 		break;
@@ -315,13 +315,13 @@ switch($idx)
 			{
 			$count = listThreads($forum, "Y", $pos);
 			//if( $count > 0)
-				$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=threads&idx=List&forum=".$forum);
+				$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=threads&idx=List&forum=".$forum);
 			if( getClosedThreads($forum) > 0)
-				$body->addItemMenu("ListC", babTranslate("Closed"), $GLOBALS[babUrl]."index.php?tg=threads&idx=ListC&forum=".$forum);
+				$body->addItemMenu("ListC", babTranslate("Closed"), $GLOBALS['babUrl']."index.php?tg=threads&idx=ListC&forum=".$forum);
 
 			if( isAccessValid("forumspost_groups", $forum))
 				{
-				$body->addItemMenu("newthread", babTranslate("New thread"), $GLOBALS[babUrl]."index.php?tg=threads&idx=newthread&forum=".$forum);
+				$body->addItemMenu("newthread", babTranslate("New thread"), $GLOBALS['babUrl']."index.php?tg=threads&idx=newthread&forum=".$forum);
 				}
 			}
 		break;

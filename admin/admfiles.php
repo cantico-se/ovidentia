@@ -43,22 +43,22 @@ function listGroups()
 				{
 				$this->burl = true;
 				$this->arr = $this->db->db_fetch_array($this->res);
-				if( $this->arr[id] == 1 || $this->arr[id] == 2)
+				if( $this->arr['id'] == 1 || $this->arr['id'] == 2)
 					$this->burl = false;
 
-				if( $this->arr[gstorage] == "Y")
+				if( $this->arr['gstorage'] == "Y")
 					$this->gstorage = "checked";
 				else
 					$this->gstorage = "";
-				if( $this->arr[ustorage] == "Y")
+				if( $this->arr['ustorage'] == "Y")
 					$this->ustorage = "checked";
 				else
 					$this->ustorage = "";
-				$this->url = $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$this->arr[id];
-				if( $this->arr[id] < 3 )
-					$this->urlname = getGroupName($this->arr[id]);
+				$this->url = $GLOBALS['babUrl']."index.php?tg=group&idx=Modify&item=".$this->arr['id'];
+				if( $this->arr['id'] < 3 )
+					$this->urlname = getGroupName($this->arr['id']);
 				else
-					$this->urlname = $this->arr[name];
+					$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
 				}
@@ -79,16 +79,16 @@ function updateGroups($groups, $ugroups )
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if( count($ugroups) > 0 && in_array($row[id], $ugroups))
+		if( count($ugroups) > 0 && in_array($row['id'], $ugroups))
 			$us = "Y";
 		else
 			$us = "N";
 
-		if( count($groups) > 0 && in_array($row[id], $groups))
+		if( count($groups) > 0 && in_array($row['id'], $groups))
 			$gs = "Y";
 		else
 			$gs = "N";
-		$req = "update groups set gstorage='".$gs."', ustorage='".$us."' where id='".$row[id]."'";
+		$req = "update groups set gstorage='".$gs."', ustorage='".$us."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}

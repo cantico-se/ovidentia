@@ -58,8 +58,8 @@ function listUsers($pos, $grp)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=&grp=".$this->grp;
-			$this->groupurl = $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$this->grp;
+			$this->allurl = $GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=&grp=".$this->grp;
+			$this->groupurl = $GLOBALS['babUrl']."index.php?tg=group&idx=Members&item=".$this->grp;
 
 			}
 
@@ -69,26 +69,26 @@ function listUsers($pos, $grp)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=user&idx=Modify&item=".$this->arr[id]."&pos=".$this->pos."&grp=".$this->grp;
-				$this->urlname = composeName($this->arr[firstname],$this->arr[lastname]);
-				$this->userid = $this->arr[id];
-				$req = "select * from users_log where id_user='".$this->arr[id]."'";
+				$this->url = $GLOBALS['babUrl']."index.php?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->pos."&grp=".$this->grp;
+				$this->urlname = composeName($this->arr['firstname'],$this->arr['lastname']);
+				$this->userid = $this->arr['id'];
+				$req = "select * from users_log where id_user='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				if( $arr2[islogged] == "Y")
+				if( $arr2['islogged'] == "Y")
 					$this->status ="*";
 				else
 					$this->status ="";
 
-				$req = "select * from users_groups where id_object='".$this->arr[id]."' and id_group='".$this->grp."'";
+				$req = "select * from users_groups where id_object='".$this->arr['id']."' and id_group='".$this->grp."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$this->checked = "checked";
 					if( empty($this->userst))
-						$this->userst = $this->arr[id];
+						$this->userst = $this->arr['id'];
 					else
-						$this->userst .= ",".$this->arr[id];
+						$this->userst .= ",".$this->arr['id'];
 					}
 				else
 					{
@@ -111,7 +111,7 @@ function listUsers($pos, $grp)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$this->selectname."&grp=".$this->grp;
+				$this->selecturl = $GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=".$this->selectname."&grp=".$this->grp;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -226,8 +226,8 @@ switch($idx)
 	case "Create":
 		$body->title = babTranslate("Create a user");
 		userCreate($firstname, $lastname, $nickname, $email);
-		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create&pos=".$pos);
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=users&idx=Create&pos=".$pos);
 		break;
 	case "Updateg":
 		updateGroup($grp, $users, $userst);
@@ -236,10 +236,10 @@ switch($idx)
 	case "List":
 		$body->title = babTranslate("Users list");
 		$cnt = listUsers($pos, $grp);
-		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=users&idx=List");
+		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS['babUrl']."index.php?tg=users&idx=List");
 		if( $cnt > 0 )
 			$body->addItemMenu("Upadteg", babTranslate("Update"), "javascript:(submitForm('Updateg'))");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 		break;
 	default:
 		break;

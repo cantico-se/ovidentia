@@ -14,7 +14,7 @@ function getSectionName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[title];
+		return $arr['title'];
 		}
 	else
 		{
@@ -59,8 +59,8 @@ function sectionsList()
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$this->arr[id];
-				$this->urltitle = $this->arr[title];
+				$this->url = $GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$this->arr['id'];
+				$this->urltitle = $this->arr['title'];
 				$i++;
 				return true;
 				}
@@ -110,14 +110,14 @@ function sectionsOrder()
 			if( $i < $this->countleft)
 				{
 				$arr = $this->db->db_fetch_array($this->resleft);
-				if( $arr[private] == "Y" )
-					$req = "select * from private_sections where id ='".$arr[id_section]."'";
+				if( $arr['private'] == "Y" )
+					$req = "select * from private_sections where id ='".$arr['id_section']."'";
 				else
-					$req = "select * from sections where id ='".$arr[id_section]."'";
+					$req = "select * from sections where id ='".$arr['id_section']."'";
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
-				$this->listleftsecval = $arr2[title];
-				$this->secid = $arr[id];
+				$this->listleftsecval = $arr2['title'];
+				$this->secid = $arr['id'];
 				$i++;
 				return true;
 				}
@@ -131,14 +131,14 @@ function sectionsOrder()
 			if( $j < $this->countright)
 				{
 				$arr = $this->db->db_fetch_array($this->resright);
-				if( $arr[private] == "Y" )
-					$req = "select * from private_sections where id ='".$arr[id_section]."'";
+				if( $arr['private'] == "Y" )
+					$req = "select * from private_sections where id ='".$arr['id_section']."'";
 				else
-					$req = "select * from sections where id ='".$arr[id_section]."'";
+					$req = "select * from sections where id ='".$arr['id_section']."'";
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
-				$this->listrightsecval = $arr2[title];
-				$this->secid = $arr[id];
+				$this->listrightsecval = $arr2['title'];
+				$this->secid = $arr['id'];
 				$j++;
 				return true;
 				}
@@ -265,29 +265,29 @@ switch($idx)
 	case "Order":
 		$body->title = babTranslate("Create section");
 		sectionsOrder();
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Create");
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
+		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Create");
 		break;
 	case "Create":
 		$body->title = babTranslate("Create section");
 		sectionCreate();
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Create");
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
+		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Create");
 		break;
 	case "List":
 	default:
 		$body->title = babTranslate("Sections list");
 		if( sectionsList() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
+			$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
 			}
 		else
 			$body->title = babTranslate("There is no section");
 
-		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Create");
+		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
+		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Create");
 		break;
 	}
 

@@ -14,7 +14,7 @@ function getSectionName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[title];
+		return $arr['title'];
 		}
 	else
 		{
@@ -66,11 +66,11 @@ function sectionModify($id)
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->titleval = $arr[title];
-				$this->pos = $arr[position];
-				$this->descval = $arr[description];
-				$this->contentval = $arr[content];
-				if( $arr[script] == "Y")
+				$this->titleval = $arr['title'];
+				$this->pos = $arr['position'];
+				$this->descval = $arr['description'];
+				$this->contentval = $arr['content'];
+				if( $arr['script'] == "Y")
 					$this->ischecked = "checked";
 				else
 					$this->ischecked = "";
@@ -115,9 +115,9 @@ function sectionDelete($id)
 			$this->message = babTranslate("Are you sure you want to delete this section");
 			$this->title = getSectionName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the section and all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=section&idx=Delete&section=".$id."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=section&idx=Delete&section=".$id."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$id;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$id;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -136,9 +136,9 @@ function sectionUpdate($id, $title, $pos, $desc, $content, $script)
 	$query = "select * from sections where id='".$id."'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
-	if( $arr[position] != $pos)
+	if( $arr['position'] != $pos)
 		{
-		$query = "select max(ordering) from sections_order where private='N' and position='".$arr[position]."'";
+		$query = "select max(ordering) from sections_order where private='N' and position='".$arr['position']."'";
 		$res = $db->db_query($query);
 		$arr = $db->db_fetch_array($res);
 		$query = "update sections_order set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";
@@ -189,27 +189,27 @@ switch($idx)
 	case "Delete":
 		$body->title = getSectionName($item);
 		sectionDelete($item);
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=section&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=section&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=section&idx=Delete&item=".$item);
 		break;
 	case "Groups":
 		$body->title = getSectionName($item) . babTranslate(" is visible by groups");
 		aclGroups("section", "Modify", "sections_groups", $item, "aclsec");
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=section&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=section&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=section&idx=Delete&item=".$item);
 		break;
 	default:
 	case "Modify":
 		$body->title = getSectionName($item);
 		sectionModify($item);
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=section&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS[babUrl]."index.php?tg=section&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=section&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=section&idx=Delete&item=".$item);
 		break;
 	}
 

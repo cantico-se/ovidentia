@@ -47,9 +47,9 @@ function listComments($topics, $article, $newc)
 				else
 					$this->alternate = 0;
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
-				$this->subjecturl = $GLOBALS[babUrl]."index.php?tg=comments&idx=read&topics=".$this->topics."&article=".$this->article."&com=".$this->arr[id]."&newc=".$this->newc;
-				$this->subjectname = $this->arr[subject];
+				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
+				$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=comments&idx=read&topics=".$this->topics."&article=".$this->article."&com=".$this->arr['id']."&newc=".$this->newc;
+				$this->subjectname = $this->arr['subject'];
 				$i++;
 				return true;
 				}
@@ -109,7 +109,7 @@ function addComment($topics, $article, $subject, $com="")
 			$req = "select * from articles where id='$article'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
-			$this->titleval = $arr[title];
+			$this->titleval = $arr['title'];
 			if( strtolower(browserAgent()) == "msie")
 				$this->msie = 1;
 			else
@@ -145,13 +145,13 @@ function readComment($topics, $article, $com)
 			$req = "select * from comments where id='$com'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
-			$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
+			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
 			}
 		}
 
 	$ctp = new ctp($topics, $article, $com);
 	$body->babecho(	babPrintTemplate($ctp,"comments.html", "commentread"));
-	addComment($topics, $article, "RE: ".$ctp->arr[subject], $com);
+	addComment($topics, $article, "RE: ".$ctp->arr['subject'], $com);
 	}
 
 
@@ -176,9 +176,9 @@ function deleteComment($topics, $article, $com, $newc)
 			$this->message = babTranslate("Are you sure you want to delete this comment");
 			$this->title = getCommentTitle($com);
 			$this->warning = babTranslate("WARNING: This operation will delete the comment with all its replys"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -271,8 +271,8 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-        $top = $arr[category];
-		$req = "select * from users where id='$arr[id_approver]'";
+        $top = $arr['category'];
+		$req = "select * from users where id='".$arr['id_approver']."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -280,9 +280,9 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 			$req = "select * from articles where id='$article'";
 			$res = $db->db_query($req);
 			$arr3 = $db->db_fetch_array($res);
-			//$message = babTranslate("A new Comment is waiting for you on topic: \n  "). $arr[category];
-			//mail ($arr2[email],'New waiting article',$message,"From: ".$babAdminEmail);
-            notifyApprover($top, $arr3[title], $subject, $arr2[email]);
+			//$message = babTranslate("A new Comment is waiting for you on topic: \n  "). $arr['category'];
+			//mail ($arr2['email'],'New waiting article',$message,"From: ".$babAdminEmail);
+            notifyApprover($top, $arr3['title'], $subject, $arr2['email']);
 			}
 		}
 	}
@@ -321,8 +321,8 @@ switch($idx)
 		if( isAccessValid("topicscom_groups", $topics) || $approver)
 			{
 			addComment($topics, $article, "");
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-			$body->addItemMenu("addComment", babTranslate("Add Comment"), $GLOBALS[babUrl]."index.php?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+			$body->addItemMenu("addComment", babTranslate("Add Comment"), $GLOBALS['babUrl']."index.php?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
 			}
 		break;
 
@@ -331,11 +331,11 @@ switch($idx)
 		if( isAccessValid("topicscom_groups", $topics) || $approver)
 			{
 			readComment($topics, $article, $com);
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-			$body->addItemMenu("addComment", babTranslate("Add Comment"), $GLOBALS[babUrl]."index.php?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+			$body->addItemMenu("addComment", babTranslate("Add Comment"), $GLOBALS['babUrl']."index.php?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
 			if( $approver)
 				{
-				$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com."&newc=".$newc);
+				$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com."&newc=".$newc);
 				}
 			}
 		break;
@@ -345,7 +345,7 @@ switch($idx)
 		if( $approver)
 			{
 			deleteComment($topics, $article, $com, $newc);
-			$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com);
+			$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com);
 			}
 		break;
 
@@ -355,10 +355,10 @@ switch($idx)
 		if( isAccessValid("topicscom_groups", $topics) || $approver)
 			{
 			$count = listComments($topics, $article, $newc);
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-			$body->addItemMenu("AddComment", babTranslate("Add Comment"), $GLOBALS[babUrl]."index.php?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+			$body->addItemMenu("AddComment", babTranslate("Add Comment"), $GLOBALS['babUrl']."index.php?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
 			if( isset($newc) && $newc > 0)
-				$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);				
+				$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);				
 			if( $count < 1)
 				$body->title = babTranslate("Today, there is no comment on this article");
 			else

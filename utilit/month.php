@@ -80,12 +80,12 @@ function printout()
 	$todayyear = date("Y"); 
 	if( $todayyear >= $this->currentYear - $this->ymin && $todayyear <= $this->currentYear + $this->ymax )
 		{
-		$this->today = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=";
+		$this->today = "<a href=\"".$GLOBALS['babUrl']."index.php?tg=month&callback=".$this->callback."&ymin=";
 		$this->today .= ($todayyear - $this->currentYear + $this->ymin)."&ymax=".($this->currentYear + $this->ymax - $todayyear)."&month=".$todaymonth."&year=".($todayyear)."\">today</a>";
 		}
 
 	if( $this->currentYear > $this->currentYear - $this->ymin)
-		$this->prevyear = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin-1)."&ymax=".($this->ymax+1)."&month=".$this->currentMonth."&year=".($this->currentYear-1)."\"><<</a>";
+		$this->prevyear = "<a href=\"".$GLOBALS['babUrl']."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin-1)."&ymax=".($this->ymax+1)."&month=".$this->currentMonth."&year=".($this->currentYear-1)."\"><<</a>";
 	else
 		$this->prevyear = "&nbsp;";
 
@@ -93,12 +93,12 @@ function printout()
 		{
 		if( $this->currentMonth == 1)
 			{
-			$this->prevmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin-1)."&ymax=".($this->ymax+1)."&month=";
+			$this->prevmonth = "<a href=\"".$GLOBALS['babUrl']."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin-1)."&ymax=".($this->ymax+1)."&month=";
 			$this->prevmonth .= "12&year=".($this->currentYear-1);
 			}
 		else
 			{
-			$this->prevmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=";
+			$this->prevmonth = "<a href=\"".$GLOBALS['babUrl']."index.php?tg=month&callback=".$this->callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=";
 			$this->prevmonth .= ($this->currentMonth - 1)."&year=".$this->currentYear;
 			}
 		$this->prevmonth .= "\"><</a>";
@@ -110,12 +110,12 @@ function printout()
 		{
 		if( $this->currentMonth == 12)
 			{
-			$this->nextmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin+1)."&ymax=".($this->ymax-1)."&month=";
+			$this->nextmonth = "<a href=\"".$GLOBALS['babUrl']."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin+1)."&ymax=".($this->ymax-1)."&month=";
 			$this->nextmonth .= "1&year=".($this->currentYear+1);
 			}
 		else
 			{
-			$this->nextmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=";
+			$this->nextmonth = "<a href=\"".$GLOBALS['babUrl']."index.php?tg=month&callback=".$this->callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=";
 			$this->nextmonth .= ($this->currentMonth+1)."&year=".$this->currentYear;
 			}
 		$this->nextmonth .= "\">></a>";
@@ -125,7 +125,7 @@ function printout()
 
 
 	if( $this->currentYear < $this->currentYear + $this->ymax)
-		$this->nextyear = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin+1)."&ymax=".($this->ymax-1)."&month=".$this->currentMonth."&year=".($this->currentYear+1)."\">>></a>";
+		$this->nextyear = "<a href=\"".$GLOBALS['babUrl']."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin+1)."&ymax=".($this->ymax-1)."&month=".$this->currentMonth."&year=".($this->currentYear+1)."\">>></a>";
 	else
 		$this->nextyear = "&nbsp;";
 

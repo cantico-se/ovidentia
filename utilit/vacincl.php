@@ -14,7 +14,7 @@ function getVacationName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -30,7 +30,7 @@ function getStatusName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[status];
+		return $arr['status'];
 		}
 	else
 		{

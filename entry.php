@@ -37,14 +37,14 @@ function oldListArticles()
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(isAccessValid("topicsview_groups", $row[id]))
+				if(isAccessValid("topicsview_groups", $row['id']))
 					{
-					$req = "select * from articles where id_topic='".$row[id]."' and confirmed='Y' order by date desc";
+					$req = "select * from articles where id_topic='".$row['id']."' and confirmed='Y' order by date desc";
 					$res2 = $this->db->db_query($req);
 
 					if( $res2 && $this->db->db_num_rows($res2) > 0)
 						{
-						array_push($this->arrid, $row[id]);
+						array_push($this->arrid, $row['id']);
 						}
 					}
 				}
@@ -67,20 +67,20 @@ function oldListArticles()
 				if( $this->res && $this->db->db_num_rows($this->res) > 0)
 					{
 					$this->arr = $this->db->db_fetch_array($this->res);
-					$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr[id]). " - ". getArticleDate($this->arr[id]);
-					$this->content = $this->arr[head];
+					$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr['id']). " - ". getArticleDate($this->arr['id']);
+					$this->content = $this->arr['head'];
 
 					if( $this->com)
 						{
-						$req = "select count(id) as total from comments where id_article='".$this->arr[id]."' and confirmed='Y'";
+						$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='Y'";
 						$res = $this->db->db_query($req);
 						$ar = $this->db->db_fetch_array($res);
-						$total = $ar[total];
-						$req = "select count(id) as total from comments where id_article='".$this->arr[id]."' and confirmed='N'";
+						$total = $ar['total'];
+						$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='N'";
 						$res = $this->db->db_query($req);
 						$ar = $this->db->db_fetch_array($res);
-						$totalw = $ar[total];
-						$this->commentsurl = $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$this->arrid[$i]."&article=".$this->arr[id];
+						$totalw = $ar['total'];
+						$this->commentsurl = $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$this->arrid[$i]."&article=".$this->arr['id'];
 						if( isset($new) && $new > 0)
 							$this->commentsurl .= "&new=".$new;
 						$this->commentsurl .= "&newc=".$this->newc;
@@ -95,7 +95,7 @@ function oldListArticles()
 						$this->commentsname = "";
 						}
 
-					$this->moreurl = $GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$this->arrid[$i]."&article=".$this->arr[id];
+					$this->moreurl = $GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$this->arrid[$i]."&article=".$this->arr['id'];
 					if( isset($new) && $new > 0)
 						$this->moreurl .= "&new=".$new;
 
@@ -133,18 +133,18 @@ function ListArticles($idgroup)
 		function temp($idgroup)
 			{
 			$this->db = new db_mysql();
-			$req = "select * from sites where name='".$GLOBALS[babSiteName]."'";
+			$req = "select * from sites where name='".$GLOBALS['babSiteName']."'";
 			$res = $this->db->db_query($req);
 			if( !$res || $this->db->db_num_rows($res) < 1)
 				{
-				$req = "insert into sites ( name, adminemail, lang ) values ('" .$GLOBALS[babSiteName]. "', '" . $GLOBALS[babAdminEmail]. "', '" . $GLOBALS[babLanguage]. "')";
+				$req = "insert into sites ( name, adminemail, lang ) values ('" .$GLOBALS['babSiteName']. "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
 				$res = $this->db->db_query($req);
 				$idsite = $this->db->db_insert_id();
 				}
 			else
 				{
 				$arr = $this->db->db_fetch_array($res);
-				$idsite = $arr[id];
+				$idsite = $arr['id'];
 				}
 			$req = "select * from homepages where id_group='".$idgroup."' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
 			$this->res = $this->db->db_query($req);
@@ -159,13 +159,13 @@ function ListArticles($idgroup)
 			if( $i < $this->countres)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from articles where id='".$arr[id_article]."'";
+				$req = "select * from articles where id='".$arr['id_article']."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
-				$this->title = $arr[title];
-				$this->content = $arr[head];
-				$this->author = babTranslate("by") . " ". getArticleAuthor($arr[id]). " - ". getArticleDate($arr[id]);
-				$this->moreurl = $GLOBALS[babUrl]."index.php?tg=entry&idx=more&article=".$arr[id];
+				$this->title = $arr['title'];
+				$this->content = $arr['head'];
+				$this->author = babTranslate("by") . " ". getArticleAuthor($arr['id']). " - ". getArticleDate($arr['id']);
+				$this->moreurl = $GLOBALS['babUrl']."index.php?tg=entry&idx=more&article=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -176,7 +176,6 @@ function ListArticles($idgroup)
 	
 	$temp = new temp($idgroup);
 	$body->babecho(	babPrintTemplate($temp,"entry.html", "homepage0"));
-	return $temp->count;
 	}
 
 function readMore($article)
@@ -206,8 +205,8 @@ function readMore($article)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->content = $arr[body];
-				$this->title = $arr[title];
+				$this->content = $arr['body'];
+				$this->title = $arr['title'];
 				$i++;
 				return true;
 				}
@@ -238,14 +237,14 @@ switch($idx)
 	{
 	case "more":
 		readMore($article);
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=entry");
-		$body->addItemMenu("more", babTranslate("Article"), $GLOBALS[babUrl]."index.php?tg=entry&idx=more");
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=entry");
+		$body->addItemMenu("more", babTranslate("Article"), $GLOBALS['babUrl']."index.php?tg=entry&idx=more");
 		break;
 
 	default:
 	case "list":
 		$body->title = babTranslate("List of articles");
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=entry");
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=entry");
 		listArticles($idg);
 		break;
 	}

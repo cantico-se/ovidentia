@@ -50,20 +50,20 @@ function calendarGroups()
 			if( $i < $this->count)
 				{
 				$this->arrgroups = $this->db->db_fetch_array($this->res);
-				if($this->arrgroups[owner] == 1)
+				if($this->arrgroups['owner'] == 1)
 					{
-					$this->arrgroups[name] = /*$this->users*/babTranslate("Registered users");
+					$this->arrgroups['name'] = /*$this->users*/babTranslate("Registered users");
 					}
 				else
-					$this->arrgroups[name] = getGroupName($this->arrgroups[owner]);
+					$this->arrgroups['name'] = getGroupName($this->arrgroups['owner']);
 
-				if($this->arrgroups[actif] == "Y")
+				if($this->arrgroups['actif'] == "Y")
 					{
-					$this->arrgroups[select] = "selected";
+					$this->arrgroups['select'] = "selected";
 					}
 				else
 					{
-					$this->arrgroups[select] = "";
+					$this->arrgroups['select'] = "";
 					}
 				$i++;
 				return true;
@@ -122,9 +122,9 @@ switch($idx)
 	case "groups":
 		calendarGroups();
 		$body->title = babTranslate("Groups List");
-		$body->addItemMenu("groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admcals&idx=groups");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=0");
-		$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=0");
+		$body->addItemMenu("groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=admcals&idx=groups");
+		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=0");
+		$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=0");
 		break;
 	}
 

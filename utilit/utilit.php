@@ -86,9 +86,9 @@ function browserVersion()
 function babTranslate($str)
 {
 	static $langcontent;
-	if( empty($GLOBALS[babLanguage]) || empty($str))
+	if( empty($GLOBALS['babLanguage']) || empty($str))
 		return $str;
-	$filename = $GLOBALS[babInstallPath]."lang/lang-".$GLOBALS[babLanguage].".xml";
+	$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
 	if( empty($langcontent))
 		{
 		if( !file_exists($filename))
@@ -100,16 +100,16 @@ function babTranslate($str)
 		$langcontent = fread($file, filesize($filename));
 		fclose($file);
 		}
-	$reg = "/<".$GLOBALS[babLanguage].">(.*)<string\s+id=\"".$str."\">(.*?)<\/string>(.*)<\/".$GLOBALS[babLanguage].">/s";
+	$reg = "/<".$GLOBALS['babLanguage'].">(.*)<string\s+id=\"".$str."\">(.*?)<\/string>(.*)<\/".$GLOBALS['babLanguage'].">/s";
 	if( preg_match($reg, $langcontent, $m))
 		return $m[2];
 	else
 		{
-		$reg = "/<".$GLOBALS[babLanguage].">(.*)<\/".$GLOBALS[babLanguage].">/s";
+		$reg = "/<".$GLOBALS['babLanguage'].">(.*)<\/".$GLOBALS['babLanguage'].">/s";
 		preg_match($reg, $langcontent, $m);
-		$langcontent = "<".$GLOBALS[babLanguage].">".$m[1];
+		$langcontent = "<".$GLOBALS['babLanguage'].">".$m[1];
 		$langcontent .= "<string id=\"".$str."\">".$str."</string>\r\n";
-		$langcontent .= "</".$GLOBALS[babLanguage].">";
+		$langcontent .= "</".$GLOBALS['babLanguage'].">";
 		$file = fopen($filename, "w");
 		fputs($file, $langcontent);
 		fclose($file);
@@ -121,7 +121,7 @@ class babSection
 {
 var $title;
 var $content;
-var $hidden;
+var $hiddenz;
 var $position;
 var $close;
 var $boxurl;
@@ -132,7 +132,7 @@ function babSection($title = "Section", $content="<br>This is a sample of conten
 	global $HTTP_GET_VARS;
 	$this->title = $title;
 	$this->content = $content;
-	$this->hidden = false;
+	$this->hiddenz = false;
 	$this->position = 0;
 	$this->close = 0;
 	$this->boxurl = "";
@@ -160,18 +160,20 @@ function setPosition($pos)
 
 function isVisible()
 {
-
-	return !$this->hidden;
+	if( $this->hiddenz == true)
+		return false;
+	else
+		return true;
 }
 
 function show()
 {
-	$this->hidden = false;
+	$this->hiddenz = false;
 }
 
 function hide()
 {
-	$this->hidden = true;
+	$this->hiddenz = true;
 }
 
 function close()
@@ -245,17 +247,17 @@ var $titlebgnd;
 function adminSection()
 	{
 	$this->babSectionTemplate("adminsection.html", "template");
-	$this->array_urls[babTranslate("Sites")] = $GLOBALS[babUrl]."index.php?tg=sites";
-	$this->array_urls[babTranslate("Sections")] = $GLOBALS[babUrl]."index.php?tg=sections";
-	$this->array_urls[babTranslate("Users")] = $GLOBALS[babUrl]."index.php?tg=users";
-	$this->array_urls[babTranslate("Groups")] = $GLOBALS[babUrl]."index.php?tg=groups";
-	$this->array_urls[babTranslate("Faq")] = $GLOBALS[babUrl]."index.php?tg=admfaqs";
-	$this->array_urls[babTranslate("Topics")] = $GLOBALS[babUrl]."index.php?tg=topics";
-	$this->array_urls[babTranslate("Forums")] = $GLOBALS[babUrl]."index.php?tg=forums";
-	$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=admvacs";
-	$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=admcals";
-	$this->array_urls[babTranslate("Mail")] = $GLOBALS[babUrl]."index.php?tg=maildoms&userid=0&bgrp=y";
-	$this->array_urls[babTranslate("File manager")] = $GLOBALS[babUrl]."index.php?tg=admfiles";
+	$this->array_urls[babTranslate("Sites")] = $GLOBALS['babUrl']."index.php?tg=sites";
+	$this->array_urls[babTranslate("Sections")] = $GLOBALS['babUrl']."index.php?tg=sections";
+	$this->array_urls[babTranslate("Users")] = $GLOBALS['babUrl']."index.php?tg=users";
+	$this->array_urls[babTranslate("Groups")] = $GLOBALS['babUrl']."index.php?tg=groups";
+	$this->array_urls[babTranslate("Faq")] = $GLOBALS['babUrl']."index.php?tg=admfaqs";
+	$this->array_urls[babTranslate("Topics")] = $GLOBALS['babUrl']."index.php?tg=topics";
+	$this->array_urls[babTranslate("Forums")] = $GLOBALS['babUrl']."index.php?tg=forums";
+	$this->array_urls[babTranslate("Vacation")] = $GLOBALS['babUrl']."index.php?tg=admvacs";
+	$this->array_urls[babTranslate("Calendar")] = $GLOBALS['babUrl']."index.php?tg=admcals";
+	$this->array_urls[babTranslate("Mail")] = $GLOBALS['babUrl']."index.php?tg=maildoms&userid=0&bgrp=y";
+	$this->array_urls[babTranslate("File manager")] = $GLOBALS['babUrl']."index.php?tg=admfiles";
 	$this->title = babTranslate("Administration");
 	$this->head = babTranslate("This section is for Administration");
 	$this->foot = babTranslate("");
@@ -302,7 +304,7 @@ function userSection()
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if(isAccessValid("faqcat_groups", $row[id]))
+		if(isAccessValid("faqcat_groups", $row['id']))
 			{
 			$faq = true;
 			break;
@@ -313,7 +315,7 @@ function userSection()
 	$mtopics = false;
 	$bemail = false;
 	$idcal = 0;
-	if( !empty($GLOBALS[BAB_SESS_USER]))
+	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
 		$this->blogged = true;
 		$req = "select * from vacationsman_groups where id_object='".$BAB_SESS_USERID."' or supplier='".$BAB_SESS_USERID."'";
@@ -334,40 +336,40 @@ function userSection()
 
 	$this->babSectionTemplate("usersection.html", "template");
 	if( $mtopics )
-		$this->array_urls[babTranslate("Topics")] = $GLOBALS[babUrl]."index.php?tg=topics&userid=".$GLOBALS[BAB_SESS_USERID];
+		$this->array_urls[babTranslate("Topics")] = $GLOBALS['babUrl']."index.php?tg=topics&userid=".$GLOBALS['BAB_SESS_USERID'];
 
-	if( !empty($GLOBALS[BAB_SESS_USER]))
+	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		$this->array_urls[babTranslate("Summary")] = $GLOBALS[babUrl]."index.php?tg=calview";
-		$this->array_urls[babTranslate("Options")] = $GLOBALS[babUrl]."index.php?tg=options";
-		$this->array_urls[babTranslate("Notes")] = $GLOBALS[babUrl]."index.php?tg=notes";
+		$this->array_urls[babTranslate("Summary")] = $GLOBALS['babUrl']."index.php?tg=calview";
+		$this->array_urls[babTranslate("Options")] = $GLOBALS['babUrl']."index.php?tg=options";
+		$this->array_urls[babTranslate("Notes")] = $GLOBALS['babUrl']."index.php?tg=notes";
 		}
 
 	if( $faq )
 		{
-		$this->array_urls[babTranslate("Faq")] = $GLOBALS[babUrl]."index.php?tg=faq";
+		$this->array_urls[babTranslate("Faq")] = $GLOBALS['babUrl']."index.php?tg=faq";
 		$babSearchUrl .= "c";
 		}
 	if( $vac )
-		$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=vacation";
+		$this->array_urls[babTranslate("Vacation")] = $GLOBALS['babUrl']."index.php?tg=vacation";
 	if( (getCalendarId(1, 2) != 0  || getCalendarId($pgrpid, 2) != 0) &&  $idcal != 0 )
-		$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&calid=".$idcal;
+		$this->array_urls[babTranslate("Calendar")] = $GLOBALS['babUrl']."index.php?tg=calendar&idx=viewm&calid=".$idcal;
 	if( $bemail )
-		$this->array_urls[babTranslate("Mail")] = $GLOBALS[babUrl]."index.php?tg=inbox";
-	if( !empty($GLOBALS[BAB_SESS_USER]))
+		$this->array_urls[babTranslate("Mail")] = $GLOBALS['babUrl']."index.php?tg=inbox";
+	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		$this->array_urls[babTranslate("Contacts")] = $GLOBALS[babUrl]."index.php?tg=contacts";
+		$this->array_urls[babTranslate("Contacts")] = $GLOBALS['babUrl']."index.php?tg=contacts";
 		$babSearchUrl .= "f";
 		}
 	if( count(fileManagerAccessLevel()) > 0 )
 		{
-		$this->array_urls[babTranslate("File manager")] = $GLOBALS[babUrl]."index.php?tg=fileman";
+		$this->array_urls[babTranslate("File manager")] = $GLOBALS['babUrl']."index.php?tg=fileman";
 		$babSearchUrl .= "e";
 		}
 	$this->title = babTranslate("User's section");
 	$this->head = babTranslate("You are logged on as").":<br><center><b>";
-	if( !empty($GLOBALS[BAB_SESS_USER]))
-		$this->head .= $GLOBALS[BAB_SESS_USER];
+	if( !empty($GLOBALS['BAB_SESS_USER']))
+		$this->head .= $GLOBALS['BAB_SESS_USER'];
 	else
 		$this->head .= babTranslate("Anonymous");
 	$this->head .= "</b></center><br>";
@@ -401,17 +403,17 @@ function getnextnew()
 			case 0:
 				$this->newcount = $body->newarticles;
 				$this->newtext = babTranslate("Articles");
-				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=art";
+				$this->newurl = $GLOBALS['babUrl']."index.php?tg=calview&idx=art";
 				break;
 			case 1:
 				$this->newcount = $body->newcomments;
 				$this->newtext = babTranslate("Comments");
-				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=com";
+				$this->newurl = $GLOBALS['babUrl']."index.php?tg=calview&idx=com";
 				break;
 			case 2:
 				$this->newcount = $body->newposts;
 				$this->newtext = babTranslate("Replies");
-				$this->newurl = $GLOBALS[babUrl]."index.php?tg=calview&idx=for";
+				$this->newurl = $GLOBALS['babUrl']."index.php?tg=calview&idx=for";
 				break;
 			}
 		$i++;
@@ -459,25 +461,25 @@ function topicsSection()
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
-		if(isAccessValid("topicsview_groups", $row[id]) )
+		if(isAccessValid("topicsview_groups", $row['id']) )
 			{
-			array_push($this->arrid, $row[id]);
+			array_push($this->arrid, $row['id']);
 
-			$req = "select count(*) as total from articles where id_topic='".$row[id]."' and confirmed='Y' and date >= '".$body->lastlog."'";
+			$req = "select count(*) as total from articles where id_topic='".$row['id']."' and confirmed='Y' and date >= '".$body->lastlog."'";
 			$res2 = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res2);
-			if( $arr[total] > 0)
-				$body->newarticles += $arr[total];
+			if( $arr['total'] > 0)
+				$body->newarticles += $arr['total'];
 			
-			$req = "select count(*) as total from comments where id_topic='".$row[id]."' and confirmed='Y' and date >= '".$body->lastlog."'";
+			$req = "select count(*) as total from comments where id_topic='".$row['id']."' and confirmed='Y' and date >= '".$body->lastlog."'";
 			$res2 = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res2);
-			if( $arr[total] > 0)
-				$body->newcomments += $arr[total];
+			if( $arr['total'] > 0)
+				$body->newcomments += $arr['total'];
 			}
-		else if( isUserApprover($row[id]) )
+		else if( isUserApprover($row['id']) )
 			{
-			array_push($this->arrid, $row[id]);
+			array_push($this->arrid, $row['id']);
 			}
 		}
 	$this->count = count($this->arrid);
@@ -498,13 +500,13 @@ function topicsGetNext()
 		if( $res && $this->db->db_num_rows($res) > 0)
 			{
 			$this->arr = $this->db->db_fetch_array($res);
-			if( $BAB_SESS_USERID == $this->arr[id_approver])
+			if( $BAB_SESS_USERID == $this->arr['id_approver'])
 				{
-				$req = "select * from articles where id_topic='".$this->arr[id]."' and confirmed='N'";
+				$req = "select * from articles where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newartcount = $this->db->db_num_rows($res);
 
-				$req = "select * from comments where id_topic='".$this->arr[id]."' and confirmed='N'";
+				$req = "select * from comments where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newcomcount = $this->db->db_num_rows($res);
 				
@@ -527,8 +529,8 @@ function topicsGetNext()
 				}
 			else
 				$this->new = "";
-			$this->text = $this->arr[category];
-			$this->url = $GLOBALS[babUrl]."index.php?tg=articles&topics=".$this->arr[id]."&new=".$this->newartcount."&newc=".$this->newcomcount;
+			$this->text = $this->arr['category'];
+			$this->url = $GLOBALS['babUrl']."index.php?tg=articles&topics=".$this->arr['id']."&new=".$this->newartcount."&newc=".$this->newcomcount;
 			}
 		$i++;
 		return true;
@@ -560,14 +562,14 @@ function forumsSection()
 	$res = $this->db->db_query($req);
 	while( $row = $this->db->db_fetch_array($res))
 		{
-		if(isAccessValid("forumsview_groups", $row[id]))
+		if(isAccessValid("forumsview_groups", $row['id']))
 			{
-			array_push($this->arrid, $row[id]);
-			$req = "select count(posts.id) as total from posts, threads where posts.date >= '".$body->lastlog."' and posts.id_thread=threads.id and threads.forum='".$row[id]."'";
+			array_push($this->arrid, $row['id']);
+			$req = "select count(posts.id) as total from posts, threads where posts.date >= '".$body->lastlog."' and posts.id_thread=threads.id and threads.forum='".$row['id']."'";
 			$res2 = $this->db->db_query($req);
 			$arr = $this->db->db_fetch_array($res2);
-			if( $arr[total] > 0)
-				$body->newposts += $arr[total];
+			if( $arr['total'] > 0)
+				$body->newposts += $arr['total'];
 			}
 		}
 	$this->count = count($this->arrid);
@@ -585,16 +587,16 @@ function forumsGetNext()
 		if( $res && $this->db->db_num_rows($res) > 0)
 			{
 			$this->arr = $this->db->db_fetch_array($res);
-			$this->text = $this->arr[name];
-			$this->url = $GLOBALS[babUrl]."index.php?tg=threads&forum=".$this->arr[id];
+			$this->text = $this->arr['name'];
+			$this->url = $GLOBALS['babUrl']."index.php?tg=threads&forum=".$this->arr['id'];
 			$this->waiting = "";
 			if( $BAB_SESS_USERID == $this->arr["moderator"])
 				{
-				$req = "select count(posts.id) as total from posts join threads where threads.active='Y' and threads.forum='".$this->arr[id];
+				$req = "select count(posts.id) as total from posts join threads where threads.active='Y' and threads.forum='".$this->arr['id'];
 				$req .= "' and posts.confirmed='N' and threads.id=posts.id_thread";
 				$res = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($res);
-				if( $ar[total] > 0)
+				if( $ar['total'] > 0)
 					{
 					$this->waiting = "*";
 					}
@@ -691,17 +693,17 @@ function loadSection($title, $pos=-1)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$add = isAccessValid("sections_groups", $arr[id]);
+		$add = isAccessValid("sections_groups", $arr['id']);
 		}
 	if( $add )
 		{
-		if( $arr[script] == "Y")
-			eval("\$arr[content] = \"$arr[content]\";");
-		$sec = new babSection($arr[title], $arr[content]);
+		if( $arr['script'] == "Y")
+			eval("\$arr['content'] = \"".$arr['content']."\";");
+		$sec = new babSection($arr['title'], $arr['content']);
 		if($pos != -1)
 			$sec->setPosition($pos);
 		else
-			$sec->setPosition($arr[position]);
+			$sec->setPosition($arr['position']);
 		$body->addSection($sec);
 		}
 }
@@ -716,9 +718,9 @@ function loadSections()
 	while( $arr =  $db->db_fetch_array($res))
 		{
 		$add = false;
-		if( $arr[private] == "Y")
+		if( $arr['private'] == "Y")
 			{
-			switch( $arr[id_section] )
+			switch( $arr['id_section'] )
 				{
 				case 1: // admin
 					if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
@@ -759,17 +761,17 @@ function loadSections()
 			}
 		else
 			{
-			$add = isAccessValid("sections_groups", $arr[id_section]);
+			$add = isAccessValid("sections_groups", $arr['id_section']);
 			if( $add )
 				{
-				$req = "select * from sections where id='".$arr[id_section]."'";
+				$req = "select * from sections where id='".$arr['id_section']."'";
 				$res2 = $db->db_query($req);
 				if( $res2 && $db->db_num_rows($res2) > 0)
 					{
 					$arr2 = $db->db_fetch_array($res2);
-					if( $arr2[script] == "Y")
-						eval("\$arr2[content] = \"$arr2[content]\";");
-					$sec = new babSection($arr2[title], $arr2[content]);
+					if( $arr2['script'] == "Y")
+						eval("\$arr2['content'] = \"".$arr2['content']."\";");
+					$sec = new babSection($arr2['title'], $arr2['content']);
 					}
 				else
 					$add = false;
@@ -777,27 +779,27 @@ function loadSections()
 			}
 		if( $add )
 			{
-			$sec->setPosition($arr[position]);
-			$req = "select * from sections_states where id_section='".$arr[id_section]."' and id_user='".$BAB_SESS_USERID."' and private='".$arr[private]."'";
+			$sec->setPosition($arr['position']);
+			$req = "select * from sections_states where id_section='".$arr['id_section']."' and id_user='".$BAB_SESS_USERID."' and private='".$arr['private']."'";
 			$res2 = $db->db_query($req);
 			$sec->bbox = 1;
 			if( $res2 && $db->db_num_rows($res2) > 0)
 				{
 				$arr2 = $db->db_fetch_array($res2);
-				if( $arr2[closed] == "Y")
+				if( $arr2['closed'] == "Y")
 					{
 					$sec->close = 1;
-					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=options&idx=ob&s=".$arr[id_section]."&w=".$arr[private];
+					$sec->boxurl = $GLOBALS['babUrl']."index.php?tg=options&idx=ob&s=".$arr['id_section']."&w=".$arr['private'];
 					}
 				else
 					{
-					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=options&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
+					$sec->boxurl = $GLOBALS['babUrl']."index.php?tg=options&idx=cb&s=".$arr['id_section']."&w=".$arr['private'];
 					$sec->close = 0;
 					}
 				}
 			else if(!empty($BAB_SESS_USERID))
 				{
-				$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=options&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
+				$sec->boxurl = $GLOBALS['babUrl']."index.php?tg=options&idx=cb&s=".$arr['id_section']."&w=".$arr['private'];
 				$sec->close = 0;
 				}
 			else
@@ -899,7 +901,7 @@ function babMonthA($month = "", $year = "")
 		{
 		$this->currentMonth = $month;
 		}
-	$this->callback = $callback;
+	//$this->callback = $callback;
 	
 	if(empty($year))
 		{
@@ -918,7 +920,7 @@ function babMonthA($month = "", $year = "")
 		if( $res && $this->db->db_num_rows($res) > 0)
 			{
 			$arr = $this->db->db_fetch_array($res);
-			$this->babCalendarStartDay = $arr[startday];
+			$this->babCalendarStartDay = $arr['startday'];
 			}
 		}
 	else
@@ -1006,7 +1008,7 @@ function printout()
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$this->event = 1;
-					$this->dayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idcal;
+					$this->dayurl = $GLOBALS['babUrl']."index.php?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idcal;
 					$this->day = "<b>".$total."</b>";
 					}
 				else
@@ -1017,7 +1019,7 @@ function printout()
 					if( $res && $this->db->db_num_rows($res) > 0)
 						{
 						$this->event = 1;
-						$this->dayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idgrpcal;
+						$this->dayurl = $GLOBALS['babUrl']."index.php?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idgrpcal;
 						$this->day = "<b>".$total."</b>";
 						}
 					}
@@ -1055,9 +1057,9 @@ function updateUserSettings()
         if( $res && $db->db_num_rows($res) > 0 )
             {
             $arr = $db->db_fetch_array($res);
-            if( $arr[lang] != "")
+            if( $arr['lang'] != "")
                 {
-                $GLOBALS[babLanguage] = $arr[lang];
+                $GLOBALS['babLanguage'] = $arr['lang'];
                 }
             /*
             $req="select * from users_log where id_user='$BAB_SESS_USERID'";
@@ -1065,7 +1067,7 @@ function updateUserSettings()
             if( $res && $db->db_num_rows($res) > 0)
                 {
                 $arr = $db->db_fetch_array($res);
-                if( time() - bab_mktime($arr[dateact]) > $babTimeOut*60)
+                if( time() - bab_mktime($arr['dateact']) > $babTimeOut*60)
                     {
                     }
                 }
@@ -1076,7 +1078,7 @@ function updateUserSettings()
 			$req="select * from users_log where id_user='$BAB_SESS_USERID'";
 			$res=$db->db_query($req);
 			$arr = $db->db_fetch_array($res);
-			$body->lastlog = $arr[datelog];
+			$body->lastlog = $arr['datelog'];
             }
 		}
 }
@@ -1086,15 +1088,15 @@ function updateSiteSettings()
 	global $body;
 	$db = new db_mysql();
 
-	$req="select * from sites where name='".$GLOBALS[babSiteName]."'";
+	$req="select * from sites where name='".$GLOBALS['babSiteName']."'";
 	$res=$db->db_query($req);
 
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $arr[skin] != "")
+		if( $arr['skin'] != "")
 			{
-			$GLOBALS[babSkin] = $arr[skin];
+			$GLOBALS['babSkin'] = $arr['skin'];
 			}
 		}
 }

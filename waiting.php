@@ -39,8 +39,8 @@ function listArticles($topics)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr[head]);
-				$this->moreurl = $GLOBALS[babUrl]."index.php?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr[id];
+				$this->content = locateArticle($this->arr['head']);
+				$this->moreurl = $GLOBALS['babUrl']."index.php?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 				if( isset($new) && $new > 0)
 					$this->more .= "&new=".$new;
 
@@ -87,7 +87,7 @@ function readMore($topics, $article)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr[body]);
+				$this->content = locateArticle($this->arr['body']);
 				$i++;
 				return true;
 				}
@@ -137,9 +137,9 @@ function modifyArticle($topics, $article)
 			if( $this->count > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->headval = htmlentities($this->arr[head]);
-				$this->bodyval = htmlentities($this->arr[body]);
-				$this->titleval = $this->arr[title];
+				$this->headval = htmlentities($this->arr['head']);
+				$this->bodyval = htmlentities($this->arr['body']);
+				$this->titleval = $this->arr['title'];
 				}
 			if( strtolower(browserAgent()) == "msie")
 				$this->msie = 1;
@@ -203,11 +203,11 @@ function confirmArticle($article, $topics)
 			if( $this->count > 0)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from users where id='".$arr[id_author]."'";
+				$req = "select * from users where id='".$arr['id_author']."'";
 				$this->res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($this->res);
-				$this->fullname = composeName($arr2[firstname], $arr2[lastname]);
-				$this->author = $arr[id_author];
+				$this->fullname = composeName($arr2['firstname'], $arr2['lastname']);
+				$this->author = $arr['id_author'];
 				}
 			}
 		}
@@ -256,12 +256,12 @@ function listWaitingComments($topics, $article, $newc)
 				else
 					$this->alternate = 0;
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
-				$this->subjecturl = $GLOBALS[babUrl]."index.php?tg=waiting&idx=ReadC&topics=".$this->topics."&article=".$this->article."&com=".$this->arr[id]."&newc=".$this->newc;
-				if( empty($this->arr[subject]))
+				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
+				$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=waiting&idx=ReadC&topics=".$this->topics."&article=".$this->article."&com=".$this->arr['id']."&newc=".$this->newc;
+				if( empty($this->arr['subject']))
 					$this->subjectname = "-oOo-";
 				else
-					$this->subjectname = $this->arr[subject];
+					$this->subjectname = $this->arr['subject'];
 				$i++;
 				return true;
 				}
@@ -298,7 +298,7 @@ function readComment($topics, $article, $com)
 			$req = "select * from comments where id='$com'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
-			$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
+			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
 			}
 		}
 
@@ -356,8 +356,8 @@ function confirmComment($article, $topics, $com, $newc)
 			if( $this->count > 0)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fullname = $arr[name];
-				$this->author = $arr[name];
+				$this->fullname = $arr['name'];
+				$this->author = $arr['name'];
 				}
 			}
 		}
@@ -418,8 +418,8 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	$query = "select * from articles where id='$article'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
-	$filename = $arr[filename];
-	$title = $arr[title];
+	$filename = $arr['filename'];
+	$title = $arr['title'];
 
 	$query = "select * from users where id='$author'";
 	$res = $db->db_query($query);
@@ -429,7 +429,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	$res = $db->db_query($query);
 	$arr2 = $db->db_fetch_array($res);
 
-	$query = "select * from users where id='$arr2[id_approver]'";
+	$query = "select * from users where id='$arr2['id_approver']'";
 	$res = $db->db_query($query);
 	$arr2 = $db->db_fetch_array($res);
 
@@ -439,20 +439,20 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		$subject = babTranslate("Your article has been accepted");
 		$res = $db->db_query($query);
 
-		$query = "select * from sites where name='".$GLOBALS[babSiteName]."'";
+		$query = "select * from sites where name='".$GLOBALS['babSiteName']."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr3 = $db->db_fetch_array($res);
 			if( $homepage0 == "2")
 				{
-				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3[id]. "', '" . $homepage0. "')";
+				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage0. "')";
 				$res = $db->db_query($query);
 				}
 
 			if( $homepage1 == "1")
 				{
-				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3[id]. "', '" . $homepage1. "')";
+				$query = "insert into homepages (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage1. "')";
 				$res = $db->db_query($query);
 				}
 			}
@@ -470,8 +470,8 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		$msg = nl2br($message);
 		if(get_cfg_var("magic_quotes_gpc"))
 			$msg = stripslashes($msg);
-        notifyArticleAuthor($subject, $msg, $title, $arr2[email], $arr[email]);
-		//mail ($arr[email],$subject,$title . "\n". $msg,"From: ".$arr2[email]);
+        notifyArticleAuthor($subject, $msg, $title, $arr2['email'], $arr['email']);
+		//mail ($arr['email'],$subject,$title . "\n". $msg,"From: ".$arr2['email']);
 		}
 
 	$new--;
@@ -572,8 +572,8 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 		$msg = nl2br($message);
 		if(get_cfg_var("magic_quotes_gpc"))
 			$msg = stripslashes($msg);
-		//mail ($arr[email], babTranslate("About your comment"), $msg,"From: ".$arr2[email]);
-        notifyCommentAuthor($subject, $msg, empty($BAB_SESS_USER)? $babAdminEmail: $BAB_SESS_USER, $arr[email]);
+		//mail ($arr['email'], babTranslate("About your comment"), $msg,"From: ".$arr2['email']);
+        notifyCommentAuthor($subject, $msg, empty($BAB_SESS_USER)? $babAdminEmail: $BAB_SESS_USER, $arr['email']);
 		}
 
 	$newc--;
@@ -608,52 +608,52 @@ switch($idx)
 	case "More":
 		$body->title = getCategoryTitle($topics);
 		readMore($topics, $article);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
-		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
 	case "Modify":
 		$body->title = getArticleTitle($article);
 		modifyArticle($topics, $article);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
-		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
 	case "Confirm":
 		$body->title = getArticleTitle($article);
 		confirmArticle($article, $topics);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
-		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
 	case "WaitingC":
 		$body->title = babTranslate("Waiting comments");
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
 		listWaitingComments($topics, $article, $newc);
 		break;
 
 	case "ReadC":
 		$body->title = babTranslate("Waiting Comment");
-		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
-		$body->addItemMenu("ConfirmC", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com);
+		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$body->addItemMenu("ConfirmC", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com);
 		readComment($topics, $article, $com);
 		break;
 
 	case "ConfirmC":
 		$body->title = babTranslate("Confirm a comment");
 		confirmComment($article, $topics, $com, $newc);
-		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
-		$body->addItemMenu("ConfirmC", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$body->addItemMenu("ConfirmC", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc);
 		break;
 
 	default:
 	case "Waiting":
 		$body->title = getCategoryTitle($topics);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
 		listArticles($topics);
 		break;
 	}

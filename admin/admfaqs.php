@@ -14,7 +14,7 @@ function getFaqName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[category];
+		return $arr['category'];
 		}
 	else
 		{
@@ -83,9 +83,9 @@ function listCategories()
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr[description] = $this->arr[description];// nl2br($this->arr[description]);
-				$this->urlcategory = $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$this->arr[id];
-				$this->namecategory = $this->arr[category];
+				$this->arr['description'] = $this->arr['description'];// nl2br($this->arr['description']);
+				$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$this->arr['id'];
+				$this->namecategory = $this->arr['category'];
 				$i++;
 				return true;
 				}
@@ -151,8 +151,8 @@ switch($idx)
 	case "Add Category":
 		$body->title = babTranslate("Add a new category");
 		addCategory();
-		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
-		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Add Category");
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
+		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add Category");
 		break;
 
 	default:
@@ -160,9 +160,9 @@ switch($idx)
 		$body->title = babTranslate("List of all categories");
 		if( listCategories() > 0 )
 			{
-			$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
+			$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
 			}
-		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Add Category");
+		$body->addItemMenu("Add Category", babTranslate("Add Category"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add Category");
 
 		break;
 	}

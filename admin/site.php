@@ -14,7 +14,7 @@ function getSiteName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -66,13 +66,13 @@ function siteModify($id)
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->nameval = $arr[name];
-				$this->descriptionval = $arr[description];
-				$this->langsite = $arr[lang];
-				$this->skinsite = $arr[skin];
-				$this->siteemailval = $arr[adminemail];
+				$this->nameval = $arr['name'];
+				$this->descriptionval = $arr['description'];
+				$this->langsite = $arr['lang'];
+				$this->skinsite = $arr['skin'];
+				$this->siteemailval = $arr['adminemail'];
 				}
-			$h = opendir($GLOBALS[babInstallPath]."lang/"); 
+			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
                 { 
                 if ($file != "." && $file != "..")
@@ -87,12 +87,12 @@ function siteModify($id)
             closedir($h);
 			$this->count = count($this->arrfiles);
 
-			$h = opendir($GLOBALS[babInstallPath]."skins/"); 
+			$h = opendir($GLOBALS['babInstallPath']."skins/"); 
             while ( $file = readdir($h))
                 { 
                 if ($file != "." && $file != "..")
                     {
-					if( is_dir($GLOBALS[babInstallPath]."skins/".$file))
+					if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
 						$this->arrdir[] = $file; 
                     } 
                 }
@@ -184,11 +184,11 @@ function siteHomePage0($id)
 			if( $i < $this->counthome0 )
 				{
 				$arr = $this->db->db_fetch_array($this->reshome0 );
-				$this->home0id = $arr[id_article];
+				$this->home0id = $arr['id_article'];
 				$req = "select * from articles where id='".$this->home0id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
-				$this->home0val = $arr[title];
+				$this->home0val = $arr['title'];
 				$i++;
 				return true;
 				}
@@ -202,11 +202,11 @@ function siteHomePage0($id)
 			if( $k < $this->countpage0 )
 				{
 				$arr = $this->db->db_fetch_array($this->respage0 );
-				$this->page0id = $arr[id_article];
+				$this->page0id = $arr['id_article'];
 				$req = "select * from articles where id='".$this->page0id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
-				$this->page0val = $arr[title];
+				$this->page0val = $arr['title'];
 				$k++;
 				return true;
 				}
@@ -264,11 +264,11 @@ function siteHomePage1($id)
 			if( $i < $this->counthome1 )
 				{
 				$arr = $this->db->db_fetch_array($this->reshome1 );
-				$this->home1id = $arr[id_article];
+				$this->home1id = $arr['id_article'];
 				$req = "select * from articles where id='".$this->home1id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
-				$this->home1val = $arr[title];
+				$this->home1val = $arr['title'];
 				$i++;
 				return true;
 				}
@@ -282,11 +282,11 @@ function siteHomePage1($id)
 			if( $k < $this->countpage1 )
 				{
 				$arr = $this->db->db_fetch_array($this->respage1 );
-				$this->page1id = $arr[id_article];
+				$this->page1id = $arr['id_article'];
 				$req = "select * from articles where id='".$this->page1id."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
-				$this->page1val = $arr[title];
+				$this->page1val = $arr['title'];
 				$k++;
 				return true;
 				}
@@ -320,9 +320,9 @@ function sectionDelete($id)
 			$this->message = babTranslate("Are you sure you want to delete this site");
 			$this->title = getSiteName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the site and all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=site&idx=Delete&site=".$id."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=site&idx=Delete&site=".$id."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=site&idx=modify&item=".$id;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$id;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -428,9 +428,9 @@ switch($idx)
 	case "Delete":
 		$body->title = getSiteName($item);
 		sectionDelete($item);
-		$body->addItemMenu("List", babTranslate("Sites"),$GLOBALS[babUrl]."index.php?tg=sites&idx=list");
-		$body->addItemMenu("modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=site&idx=modify&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=site&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
+		$body->addItemMenu("modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=site&idx=Delete&item=".$item);
 		break;
 	default:
 	case "modify":
@@ -438,9 +438,9 @@ switch($idx)
 		siteModify($item);
 		siteHomePage0($item);
 		siteHomePage1($item);
-		$body->addItemMenu("List", babTranslate("Sites"),$GLOBALS[babUrl]."index.php?tg=sites&idx=list");
-		$body->addItemMenu("modify", babTranslate("Modify"),$GLOBALS[babUrl]."index.php?tg=site&idx=modify&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS[babUrl]."index.php?tg=site&idx=Delete&item=".$item);
+		$body->addItemMenu("List", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
+		$body->addItemMenu("modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=site&idx=Delete&item=".$item);
 		break;
 	}
 

@@ -12,7 +12,7 @@ function getCategoryCalName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -28,7 +28,7 @@ function getResourceCalName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -44,7 +44,7 @@ function getCalendarid($iduser, $type)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[id];
+		return $arr['id'];
 		}
 	else
 		{
@@ -60,7 +60,7 @@ function getCalendarType($idcal)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[type];
+		return $arr['type'];
 		}
 	else
 		{
@@ -76,7 +76,7 @@ function getCalendarOwner($idcal)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[owner];
+		return $arr['owner'];
 		}
 	else
 		{
@@ -92,7 +92,7 @@ function getEventTitle($evtid)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[title];
+		return $arr['title'];
 		}
 	else
 		{
@@ -111,26 +111,26 @@ function getCalendarOwnerName($idcal, $type)
 		if( $type == 1)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from users where id='".$arr[owner]."'";
+			$query = "select * from users where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
-			$ret = composeName( $arr[firstname], $arr[lastname]);
+			$ret = composeName( $arr['firstname'], $arr['lastname']);
 			}
 		else if( $type == 2)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from groups where id='".$arr[owner]."'";
+			$query = "select * from groups where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
-			$ret = $arr[name];
+			$ret = $arr['name'];
 			}
 		else if( $type == 3)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from resourcescal where id='".$arr[owner]."'";
+			$query = "select * from resourcescal where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
-			$ret = $arr[name];
+			$ret = $arr['name'];
 			}
 		return $ret;
 		}

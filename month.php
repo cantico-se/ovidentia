@@ -6,7 +6,7 @@
 <META NAME="Author" CONTENT="">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
-<LINK rel="stylesheet" title="Default" href="<?php echo $GLOBALS[babUrl];?>styles/<?php echo $GLOBALS[babStyle]; ?>" type="text/css">
+<LINK rel="stylesheet" title="Default" href="<?php echo $GLOBALS['babUrl'];?>styles/<?php echo $GLOBALS['babStyle']; ?>" type="text/css">
 </HEAD>
 <BODY>
 <br><br><br>

@@ -79,7 +79,7 @@ function listAddress($pos)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS[babUrl]."index.php?tg=address&idx=list&pos=";
+			$this->allurl = $GLOBALS['babUrl']."index.php?tg=address&idx=list&pos=";
 			$req = "select distinct p3.id, p3.firstname, p3.lastname, p3.email from users as p3, users_groups as p1,  users_groups as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->resgrpm = $this->db->db_query($req);
 			$this->countgrpm = $this->db->db_num_rows($this->resgrpm);
@@ -96,8 +96,8 @@ function listAddress($pos)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->nameval = composeName($this->arr[firstname],$this->arr[lastname]);
-				$this->emailval = $this->arr[email];
+				$this->nameval = composeName($this->arr['firstname'],$this->arr['lastname']);
+				$this->emailval = $this->arr['email'];
 				$this->checkval = $this->nameval;
 				$i++;
 				return true;
@@ -115,8 +115,8 @@ function listAddress($pos)
 			if( $j < $this->countgrpm)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrpm);
-				$this->nameval = composeName($arr[firstname],$arr[lastname]);
-				$this->emailval = $arr[email];
+				$this->nameval = composeName($arr['firstname'],$arr['lastname']);
+				$this->emailval = $arr['email'];
 				$this->checkval = $this->nameval."(g)";
 				$j++;
 				return true;
@@ -134,7 +134,7 @@ function listAddress($pos)
 			if( $j < $this->countgrp)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrp);
-				$this->nameval = $arr[name];
+				$this->nameval = $arr['name'];
 				$this->emailval = "";
 				$this->checkval = $this->nameval."(g)";
 				$j++;
@@ -155,7 +155,7 @@ function listAddress($pos)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS[babUrl]."index.php?tg=address&idx=list&pos=".$this->selectname;
+				$this->selecturl = $GLOBALS['babUrl']."index.php?tg=address&idx=list&pos=".$this->selectname;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -213,8 +213,8 @@ switch($idx)
 	case "list":
 		$body->title = babTranslate("Users list");
 		listAddress($pos);
-		$body->addItemMenu("list", babTranslate("Users"),$GLOBALS[babUrl]."index.php?tg=address&idx=list");
-		//$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS[babUrl]."index.php?tg=users&idx=Find");
+		$body->addItemMenu("list", babTranslate("Users"),$GLOBALS['babUrl']."index.php?tg=address&idx=list");
+		//$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS['babUrl']."index.php?tg=users&idx=Find");
 		break;
 	default:
 		break;

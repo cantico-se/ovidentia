@@ -12,7 +12,7 @@ function getDomainName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -55,7 +55,7 @@ function domainModify($userid, $id, $bgrp)
 			$req = "select * from mail_domains where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			if( strtolower($this->arr[access]) == "pop3")
+			if( strtolower($this->arr['access']) == "pop3")
 				{
 				$this->popselected = "selected";
 				$this->imapselected = "";
@@ -94,9 +94,9 @@ function domainDelete($userid, $id, $bgrp)
 			$this->message = babTranslate("Are you sure you want to delete this mail domain");
 			$this->title = getDomainName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the domain with all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=maildom&idx=del&domain=".$id."&action=Yes&userid=".$userid."&bgrp=".$bgrp;
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=maildom&idx=del&domain=".$id."&action=Yes&userid=".$userid."&bgrp=".$bgrp;
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=maildom&idx=modify&item=".$id."&userid=".$userid."&bgrp=".$bgrp;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=maildom&idx=modify&item=".$id."&userid=".$userid."&bgrp=".$bgrp;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -199,19 +199,19 @@ switch($idx)
 	case "del":
 		domainDelete($userid, $item, $bgrp);
 		$body->title = babTranslate("Delete doamain mail");
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
-		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=maildom&idx=modify&item=".$item."&bgrp=".$bgrp);
-		$body->addItemMenu("del", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=maildom&idx=del&item=".$item."&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=maildom&idx=modify&item=".$item."&bgrp=".$bgrp);
+		$body->addItemMenu("del", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=maildom&idx=del&item=".$item."&userid=".$userid."&bgrp=".$bgrp);
 		break;
 	case "modify":
 	default:
 		domainModify($userid, $item, $bgrp);
 		$body->title = getDomainName($item) . " ". babTranslate("mail domain");
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
-		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=maildom&idx=modify&item=".$item."&bgrp=".$bgrp);
-		$body->addItemMenu("del", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=maildom&idx=del&item=".$item."&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=maildom&idx=modify&item=".$item."&bgrp=".$bgrp);
+		$body->addItemMenu("del", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=maildom&idx=del&item=".$item."&userid=".$userid."&bgrp=".$bgrp);
 		break;
 	}
 

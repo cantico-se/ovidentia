@@ -51,32 +51,32 @@ function aclGroups($target, $index, $table, $id, $return)
 			$this->listgroups = babTranslate("Groups List");
 			$this->db = new db_mysql();
 			$this->id = $id;
-			$this->what[everybody] = "";
-			$this->what[users] = "";
-			$this->what[guests] = "";
-			$this->what[disabled] = "";
+			$this->what['everybody'] = "";
+			$this->what['users'] = "";
+			$this->what['guests'] = "";
+			$this->what['disabled'] = "";
 			
 			$req = "select * from ".$table." where id_object='$id'";
 			$this->res1 = $this->db->db_query($req);
 			$this->count1 = $this->db->db_num_rows($this->res1);
 			if( $this->count1 < 1 )
-				$this->what[disabled] = "selected";			
+				$this->what['disabled'] = "selected";			
 			else if( $this->count1 == 1)
 				{
 				$arr = $this->db->db_fetch_array($this->res1);
-				if( $arr[id_group] < 3)
+				if( $arr['id_group'] < 3)
 					{
 					$this->count1 = 0;
-					switch($arr[id_group])
+					switch($arr['id_group'])
 						{
 						case 0:
-							$this->what[everybody] = "selected";
+							$this->what['everybody'] = "selected";
 							break;
 						case 1:
-							$this->what[users] = "selected";
+							$this->what['users'] = "selected";
 							break;
 						case 2:
-							$this->what[guests] = "selected";
+							$this->what['guests'] = "selected";
 							break;
 						}
 					}
@@ -97,13 +97,13 @@ function aclGroups($target, $index, $table, $id, $return)
 				if($this->count1 > 0)
 					{
 					$this->db->db_data_seek($this->res1, 0);
-					$this->arrgroups[select] = "";
+					$this->arrgroups['select'] = "";
 					for( $j = 0; $j < $this->count1; $j++)
 						{
 						$this->groups = $this->db->db_fetch_array($this->res1);
-						if( $this->groups[id_group] == $this->arrgroups[id])
+						if( $this->groups['id_group'] == $this->arrgroups['id'])
 							{
-							$this->arrgroups[select] = "selected";
+							$this->arrgroups['select'] = "selected";
 							break;
 							}
 						}

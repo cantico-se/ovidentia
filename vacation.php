@@ -16,17 +16,17 @@ function getApproverEmail($userid, $order)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from vacationsman_groups where id_group='".$arr[id_group]."' and ordering='".$order."'";
+		$query = "select * from vacationsman_groups where id_group='".$arr['id_group']."' and ordering='".$order."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$query = "select * from users where id='".$arr[id_object]."'";
+			$query = "select * from users where id='".$arr['id_object']."'";
 			$res = $db->db_query($query);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				return $arr[email];
+				return $arr['email'];
 				}
 			}
 		}
@@ -42,12 +42,12 @@ function getApproverStatus($userid, $order)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from vacationsman_groups where id_group='".$arr[id_group]."' and ordering='".$order."'";
+		$query = "select * from vacationsman_groups where id_group='".$arr['id_group']."' and ordering='".$order."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			return $arr[status];
+			return $arr['status'];
 			}
 		}
 	return 0;
@@ -94,13 +94,13 @@ function listVacations()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->datebegin = bab_strftime(bab_mktime($this->arr[datebegin]), false) . "  " . $babDayType[$this->arr[daybegin]];
-				$this->dateend = bab_strftime(bab_mktime($this->arr[dateend]), false) . "  " . $babDayType[$this->arr[dayend]];
-				$this->statusval = getStatusName($this->arr[status]);
-				$req = "select * from vacations_types where id='".$this->arr[type]."'";
+				$this->datebegin = bab_strftime(bab_mktime($this->arr['datebegin']), false) . "  " . $babDayType[$this->arr['daybegin]'];
+				$this->dateend = bab_strftime(bab_mktime($this->arr['dateend']), false) . "  " . $babDayType[$this->arr['dayend]'];
+				$this->statusval = getStatusName($this->arr['status']);
+				$req = "select * from vacations_types where id='".$this->arr['type']."'";
 				$r = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($r);
-				$this->typename = $ar[name];
+				$this->typename = $ar['name'];
 				$i++;
 				return true;
 				}
@@ -144,9 +144,9 @@ function newVacation()
 			{
 			global $body;
 			$this->yearbegin = date("Y");
-			$this->datebegin = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=month&callback=dateBegin&ymin=0&ymax=2');";
+			$this->datebegin = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=month&callback=dateBegin&ymin=0&ymax=2');";
 			$this->datebegintxt = babTranslate("Begin date");
-			$this->dateend = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=month&callback=dateEnd&ymin=0&ymax=2');";
+			$this->dateend = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=month&callback=dateEnd&ymin=0&ymax=2');";
 			$this->dateendtxt = babTranslate("End date");
 			$this->vactype = babTranslate("Vacation type");
 			$this->addvac = babTranslate("Add Vacation");
@@ -258,8 +258,8 @@ EOD;
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->vacid = $arr[id];
-				$this->vacname = $arr[name] . " (".$arr[days]." ". babTranslate("days"). ")";
+				$this->vacid = $arr['id'];
+				$this->vacname = $arr['name'] . " (".$arr['days']." ". babTranslate("days"). ")";
 				$i++;
 				return true;
 				}
@@ -362,7 +362,7 @@ function confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			if( $res )
 				{
 				$arr = $db->db_fetch_array($res);
-				$this->typename = $arr[name];
+				$this->typename = $arr['name'];
 				}
 			$this->vactype = $vactype;
 			$this->halfdayfrom = $babDayType[$halfdaybegin];
@@ -414,38 +414,38 @@ if( isset($addvacation) && $addvacation == "add")
 switch($idx)
 	{
 	case "confirmvac":
-		if( useVacation($GLOBALS[BAB_SESS_USERID]))
+		if( useVacation($GLOBALS['BAB_SESS_USERID']))
 			{
-			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=vacation&idx=listvac");
-			$body->addItemMenu("newvac", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=vacation&idx=newvac");
-			$body->addItemMenu("confirmvac", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=vacation");
+			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=vacation&idx=listvac");
+			$body->addItemMenu("newvac", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=vacation&idx=newvac");
+			$body->addItemMenu("confirmvac", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=vacation");
 			confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $vactype, $remarks);
 			}
 		if( isUserVacationApprover())
-			$body->addItemMenu("approver", babTranslate("Approver"), $GLOBALS[babUrl]."index.php?tg=vacapp&idx=listvac");
+			$body->addItemMenu("approver", babTranslate("Approver"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=listvac");
 		break;
 
 	case "newvac";
-		if( useVacation($GLOBALS[BAB_SESS_USERID]))
+		if( useVacation($GLOBALS['BAB_SESS_USERID']))
 			{
-			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=vacation&idx=listvac");
-			$body->addItemMenu("newvac", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=vacation&idx=newvac");
+			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=vacation&idx=listvac");
+			$body->addItemMenu("newvac", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=vacation&idx=newvac");
 			newVacation();
 			}
 		if( isUserVacationApprover())
-			$body->addItemMenu("approver", babTranslate("Approver"), $GLOBALS[babUrl]."index.php?tg=vacapp&idx=listvac");
+			$body->addItemMenu("approver", babTranslate("Approver"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=listvac");
 		break;
 
 	case "listvac":
 	default:
-		if( useVacation($GLOBALS[BAB_SESS_USERID]))
+		if( useVacation($GLOBALS['BAB_SESS_USERID']))
 			{
-			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=vacation&idx=listvac");
-			$body->addItemMenu("newvac", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=vacation&idx=newvac");
+			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=vacation&idx=listvac");
+			$body->addItemMenu("newvac", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=vacation&idx=newvac");
 			listVacations();
 			}
 		if( isUserVacationApprover())
-			$body->addItemMenu("approver", babTranslate("Approver"), $GLOBALS[babUrl]."index.php?tg=vacapp&idx=listvac");
+			$body->addItemMenu("approver", babTranslate("Approver"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=listvac");
 		break;
 	}
 $body->setCurrentItemMenu($idx);

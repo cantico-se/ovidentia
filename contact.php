@@ -101,7 +101,7 @@ function contactUnload($pos, $bliste)
 			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			$this->message = babTranslate("Your contacts list has been updated");
 			$this->close = babTranslate("Close");
-			$this->url = $GLOBALS[babUrl]."index.php?tg=contacts&idx=list&pos=".$pos;
+			$this->url = $GLOBALS['babUrl']."index.php?tg=contacts&idx=list&pos=".$pos;
 			$this->bliste = $bliste;
 			}
 		}
@@ -119,7 +119,7 @@ function contactUpdate($id)
 	if( $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		contactCreate($id, $arr[firstname], $arr[lastname], $arr[email], $arr[compagny], $arr[hometel], $arr[mobiletel], $arr[businesstel], $arr[businessfax], $arr[jobtitle], $arr[businessaddress], $arr[homeaddress], $bliste);
+		contactCreate($id, $arr['firstname'], $arr['lastname'], $arr['email'], $arr['compagny'], $arr['hometel'], $arr['mobiletel'], $arr['businesstel'], $arr['businessfax'], $arr['jobtitle'], $arr['businessaddress'], $arr['homeaddress'], $bliste);
 		}
 }
 

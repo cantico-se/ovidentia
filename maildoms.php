@@ -55,9 +55,9 @@ function domainCreate($userid, $grpid, $bgrp)
 				$res = $this->db->db_query($req);
 				$this->arrgroups = $this->db->db_fetch_array($res);
 				if( $i == 0 )
-					$this->arrgroups[select] = "selected";
+					$this->arrgroups['select'] = "selected";
 				else
-					$this->arrgroups[select] = "";
+					$this->arrgroups['select'] = "";
 				$i++;
 				return true;
 				}
@@ -149,22 +149,22 @@ function domainsList($userid, $grpid, $bgrp)
 			if( $i < $this->countadm)
 				{
 				$this->arr = $this->db->db_fetch_array($this->resadm);
-				if( $this->arr[owner] == 1 && $this->arr[bgroup] == "Y")
+				if( $this->arr['owner'] == 1 && $this->arr['bgroup'] == "Y")
 					$this->groupname = babTranslate("Registered users");
 				else
 					$this->groupname = "";
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)
 					{
-					if( $this->idgrp[$k] == $this->arr[owner])
+					if( $this->idgrp[$k] == $this->arr['owner'])
 						{
 						$this->burl = 1;
-						$this->url = $GLOBALS[babUrl]."index.php?tg=maildom&idx=modify&item=".$this->arr[id]."&userid=".$this->userid."&bgrp=y";
+						$this->url = $GLOBALS['babUrl']."index.php?tg=maildom&idx=modify&item=".$this->arr['id']."&userid=".$this->userid."&bgrp=y";
 						break;
 						}
 					}
 
-				$this->urlname = $this->arr[name];
+				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
 				}
@@ -182,21 +182,21 @@ function domainsList($userid, $grpid, $bgrp)
 			if( $m < $this->countgrp)
 				{
 				$this->arr = $this->db->db_fetch_array($this->resgrp);
-				if( $this->arr[owner] != 1 && $this->arr[bgroup] == "Y")
-					$this->groupname = getGroupName($this->arr[owner]);
+				if( $this->arr['owner'] != 1 && $this->arr['bgroup'] == "Y")
+					$this->groupname = getGroupName($this->arr['owner']);
 				else
 					$this->groupname = "";
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)
 					{
-					if( $this->idgrp[$k] == $this->arr[owner])
+					if( $this->idgrp[$k] == $this->arr['owner'])
 						{
 						$this->burl = 1;
-						$this->url = $GLOBALS[babUrl]."index.php?tg=maildom&idx=modify&item=".$this->arr[id]."&userid=".$this->userid."&bgrp=y";
+						$this->url = $GLOBALS['babUrl']."index.php?tg=maildom&idx=modify&item=".$this->arr['id']."&userid=".$this->userid."&bgrp=y";
 						break;
 						}
 					}
-				$this->urlname = $this->arr[name];
+				$this->urlname = $this->arr['name'];
 				$m++;
 				return true;
 				}
@@ -216,13 +216,13 @@ function domainsList($userid, $grpid, $bgrp)
 				$this->arr = $this->db->db_fetch_array($this->resusr);
 				$this->groupname = "";
 				$this->burl = 0;
-				if( $this->arr[owner] == $BAB_SESS_USERID)
+				if( $this->arr['owner'] == $BAB_SESS_USERID)
 					{
 					$this->burl = 1;
-					$this->url = $GLOBALS[babUrl]."index.php?tg=maildom&idx=modify&item=".$this->arr[id]."&userid=".$this->userid."&bgrp=n";
+					$this->url = $GLOBALS['babUrl']."index.php?tg=maildom&idx=modify&item=".$this->arr['id']."&userid=".$this->userid."&bgrp=n";
 					}
 
-				$this->urlname = $this->arr[name];
+				$this->urlname = $this->arr['name'];
 				$k++;
 				return true;
 				}
@@ -340,7 +340,7 @@ if( $bgrp == "y")
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			while( $arr = $db->db_fetch_array($res))
-				array_push($grpid, $arr[id]);
+				array_push($grpid, $arr['id']);
 			}
 		}
 }
@@ -360,9 +360,9 @@ switch($idx)
 		{
 			$body->title = babTranslate("Create a private mail domain");
 		}
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
-		$body->addItemMenu("create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;
 
 	case "list":
@@ -379,9 +379,9 @@ switch($idx)
 		{
 			$body->title = babTranslate("Private domains list");
 		}
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
-		$body->addItemMenu("create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
+		$body->addItemMenu("create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;
 	}
 

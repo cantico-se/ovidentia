@@ -14,7 +14,7 @@ function isUserManager($item)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $BAB_SESS_USERID == $arr[id_manager])
+		if( $BAB_SESS_USERID == $arr['id_manager'])
 			return true;
 		}
 	return false;
@@ -52,9 +52,9 @@ function listCategories()
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$this->arr = $this->db->db_fetch_array($res);
-					$this->arr[description] = $this->arr[description];// nl2br($this->arr[description]);
-					$this->urlcategory = $GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=".$this->arr[id];
-					$this->namecategory = $this->arr[category];
+					$this->arr['description'] = $this->arr['description'];// nl2br($this->arr['description']);
+					$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$this->arr['id'];
+					$this->namecategory = $this->arr['category'];
 					}
 				$i++;
 				return true;
@@ -68,9 +68,9 @@ function listCategories()
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if(isAccessValid("faqcat_groups", $row[id]))
+		if(isAccessValid("faqcat_groups", $row['id']))
 			{
-			array_push($arrid, $row[id]);
+			array_push($arrid, $row['id']);
 			}
 		}
 
@@ -109,9 +109,9 @@ function listQuestions($idcat)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->question = $this->arr[question];
-				$this->questionurl = $GLOBALS[babUrl]."index.php?tg=faq&idx=viewq&item=".$this->idcat."&idq=".$this->arr[id];
-				//$this->arr[response] = nl2br($this->arr[response]);
+				$this->question = $this->arr['question'];
+				$this->questionurl = $GLOBALS['babUrl']."index.php?tg=faq&idx=viewq&item=".$this->idcat."&idq=".$this->arr['id'];
+				//$this->arr['response'] = nl2br($this->arr['response']);
 				$i++;
 				return true;
 				}
@@ -141,7 +141,7 @@ function viewQuestion($idcat, $id)
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->returnurl = $GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=".$idcat;
+			$this->returnurl = $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$idcat;
 			$this->return = babTranslate("Return to Questions");
 			}
 
@@ -263,7 +263,7 @@ function listAdmQuestions($idcat)
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->editurl = $GLOBALS[babUrl]."index.php?tg=faq&idx=ModifyQ&item=".$this->idcat."&idq=".$this->arr[id];
+				$this->editurl = $GLOBALS['babUrl']."index.php?tg=faq&idx=ModifyQ&item=".$this->idcat."&idq=".$this->arr['id'];
 				$this->editname = babTranslate("Edit");
 				$i++;
 				return true;
@@ -366,9 +366,9 @@ function deleteQuestion($item, $idq)
 			$this->message = babTranslate("Are you sure you want to delete this question");
 			$this->title = "";
 			$this->warning = babTranslate("WARNING: This operation will delete question and its response"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=".$item."&idq=".$idq."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$item."&idq=".$idq."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -441,13 +441,13 @@ switch($idx)
 		if( isAccessValid("faqcat_groups", $item))
 			{
 			listQuestions($item);
-			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS[babUrl]."index.php?tg=faq&idx=Categories");
-			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS[babUrl]."index.php?tg=faq&idx=Print&item=$item");
+			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Categories");
+			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Print&item=$item");
 			$body->addItemMenuAttributes("Print Friendly", "target=_blank");
-			$body->addItemMenu("questions", babTranslate("Questions"),$GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=".$item);
+			$body->addItemMenu("questions", babTranslate("Questions"),$GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$item);
 			if( isUserManager($item))
-				$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Add Question&item=$item");
-			//	$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Questions&item=".$item);
+				$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Add Question&item=$item");
+			//	$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
 
@@ -456,13 +456,13 @@ switch($idx)
 		if( isAccessValid("faqcat_groups", $item))
 			{
 			viewQuestion($item, $idq);
-			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS[babUrl]."index.php?tg=faq&idx=Categories");
-			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS[babUrl]."index.php?tg=faq&idx=Print&item=$item");
+			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Categories");
+			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Print&item=$item");
 			$body->addItemMenuAttributes("Print Friendly", "target=_blank");
-			$body->addItemMenu("questions", babTranslate("Questions"),$GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=".$item);
+			$body->addItemMenu("questions", babTranslate("Questions"),$GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$item);
 			if( isUserManager($item))
-				$body->addItemMenu("ModifyQ", babTranslate("Edit"),$GLOBALS[babUrl]."index.php?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq);
-			//	$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Questions&item=".$item);
+				$body->addItemMenu("ModifyQ", babTranslate("Edit"),$GLOBALS['babUrl']."index.php?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq);
+			//	$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
 
@@ -471,7 +471,7 @@ switch($idx)
 		if( isUserManager($item))
 			{
 			deleteQuestion($item, $idq);
-			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Delete&item=$item&idq=$idq");
+			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Delete&item=$item&idq=$idq");
 			}
 		break;
 	/*
@@ -479,8 +479,8 @@ switch($idx)
 		$body->title = babTranslate("List of questions");
 		if(isUserManager($item) && listAdmQuestions($item))
 			{
-			$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Questions&item=$item");
-			$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Add Question&item=$item");
+			$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Questions&item=$item");
+			$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Add Question&item=$item");
 			}		
 		break;
 	*/
@@ -490,8 +490,8 @@ switch($idx)
 		if( isUserManager($item))
 			{
 			addQuestion($item);
-			$body->addItemMenu("questions", babTranslate("Questions"), $GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=$item");
-			$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Add Question&item=$item");
+			$body->addItemMenu("questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=$item");
+			$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Add Question&item=$item");
 			}
 		break;
 
@@ -500,8 +500,8 @@ switch($idx)
 		if( isUserManager($item))
 			{
 			modifyQuestion($item, $idq);
-			$body->addItemMenu("questions", babTranslate("Questions"), $GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=$item");
-			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=faq&idx=Delete&item=$item&idq=$idq");
+			$body->addItemMenu("questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=$item");
+			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Delete&item=$item&idq=$idq");
 			}
 		break;
 
@@ -516,7 +516,7 @@ switch($idx)
 		$body->title = babTranslate("List of all faqs");
 		if( listCategories() > 0 )
 			{
-			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS[babUrl]."index.php?tg=faq&idx=Categories");
+			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Categories");
 			}
 		break;
 	}

@@ -13,7 +13,7 @@ function getForumName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -29,7 +29,7 @@ function isForumModerated($forum)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $arr[moderation] == "Y")
+		if( $arr['moderation'] == "Y")
 			return true;
 		else
 			return false;
@@ -45,7 +45,7 @@ function isThreadOpen($thread)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $arr[active] == "Y")
+		if( $arr['active'] == "Y")
 			return true;
 		else
 			return false;
@@ -61,12 +61,12 @@ function getThreadTitle($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from posts where id='".$arr[post]."'";
+		$query = "select * from posts where id='".$arr['post']."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			return $arr[subject];
+			return $arr['subject'];
 			}
 		return "";
 		}

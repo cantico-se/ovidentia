@@ -59,9 +59,9 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 			$this->yearmin = $year - $this->ymin;
 			$this->daybegin = $day;
 			$this->monthbegin = $month;
-			$this->datebegin = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year."');";
+			$this->datebegin = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year."');";
 			$this->datebegintxt = babTranslate("Begin date");
-			$this->dateend = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year."');";
+			$this->dateend = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$month."&year=".$year."');";
 			$this->dateendtxt = babTranslate("Until date");
 			$this->private = babTranslate("Private");
 			$this->type = babTranslate("Type");
@@ -85,7 +85,7 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 			if( $res && $this->db->db_num_rows($res))
 				{
 				$arr = $this->db->db_fetch_array($res);
-				if( $arr[allday] == "Y")
+				if( $arr['allday'] == "Y")
 					$this->daytypechecked = "checked";
 				}
 
@@ -107,8 +107,8 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 						for( $i = 0; $i < $this->countgroups; $i++)
 							{
 							$arr = $this->db->db_fetch_array($this->resgroups);
-							$req .= " or id_group='".$arr[id]."'"; 
-							$req2 .= " or id_group='".$arr[id]."'"; 
+							$req .= " or id_group='".$arr['id']."'"; 
+							$req2 .= " or id_group='".$arr['id']."'"; 
 							}
 						$this->db->db_data_seek($this->resgroups, 0);
 						}
@@ -123,7 +123,7 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 					$req = "select * from calendar where id='".$calendarid."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from categoriescal where id_group='1' or id_group='".$arr[owner]."'";
+					$req = "select * from categoriescal where id_group='1' or id_group='".$arr['owner']."'";
 					$this->rescat = $this->db->db_query($req);
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
@@ -319,8 +319,8 @@ EOD;
 			if( $i < $this->countcat)
 				{
 				$arr = $this->db->db_fetch_array($this->rescat);
-				$this->catid = $arr[id];
-				$this->catname = $arr[name];
+				$this->catid = $arr['id'];
+				$this->catname = $arr['name'];
 				$i++;
 				return true;
 				}
@@ -338,8 +338,8 @@ EOD;
 			if( $i < $this->countgroups)
 				{
 				$arr = $this->db->db_fetch_array($this->resgroups);
-				$this->groupname = $arr[name];
-				$this->groupcalid = getCalendarId($arr[id], 2);
+				$this->groupname = $arr['name'];
+				$this->groupcalid = getCalendarId($arr['id'], 2);
 				$i++;
 				return true;
 				}
@@ -406,20 +406,20 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 
 			$this->ymin = 2;
 			$this->ymax = 5;
-			$this->yearbegin = substr($this->evtarr[start_date], 0,4 );
+			$this->yearbegin = substr($this->evtarr['start_date'], 0,4 );
 			$this->yearmin = $this->yearbegin - $this->ymin;
-			$this->daybegin = substr($this->evtarr[start_date], 8, 2);
-			$this->monthbegin = substr($this->evtarr[start_date], 5, 2);
+			$this->daybegin = substr($this->evtarr['start_date'], 8, 2);
+			$this->monthbegin = substr($this->evtarr['start_date'], 5, 2);
 			$this->nbdaysbegin = date("t", mktime(0,0,0, $this->monthbegin, $this->daybegin,$this->yearbegin));
-			$this->yearend = substr($this->evtarr[end_date], 0,4 );
-			$this->dayend = substr($this->evtarr[end_date], 8, 2);
-			$this->monthend = substr($this->evtarr[end_date], 5, 2);
+			$this->yearend = substr($this->evtarr['end_date'], 0,4 );
+			$this->dayend = substr($this->evtarr['end_date'], 8, 2);
+			$this->monthend = substr($this->evtarr['end_date'], 5, 2);
 			$this->nbdaysend = date("t", mktime(0,0,0, $this->monthend, $this->dayend,$this->yearend));
-			$this->timebegin = substr($this->evtarr[start_time], 0, 5);
-			$this->timeend = substr($this->evtarr[end_time], 0, 5);
-			$this->datebegin = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin."');";
+			$this->timebegin = substr($this->evtarr['start_time'], 0, 5);
+			$this->timeend = substr($this->evtarr['end_time'], 0, 5);
+			$this->datebegin = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthbegin."&year=".$this->yearbegin."');";
 			$this->datebegintxt = babTranslate("Begin date");
-			$this->dateend = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend."');";
+			$this->dateend = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend."');";
 			$this->dateendtxt = babTranslate("End date");
 			$this->modify = babTranslate("Update Event");
 			$this->from = babTranslate("From");
@@ -450,7 +450,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 						for( $i = 0; $i < $this->countgroups; $i++)
 							{
 							$arr = $this->db->db_fetch_array($this->resgroups);
-							$req2 .= " or id_group='".$arr[id]."'"; 
+							$req2 .= " or id_group='".$arr['id']."'"; 
 							}
 						$this->db->db_data_seek($this->resgroups, 0);
 						}
@@ -462,7 +462,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 					$req = "select * from calendar where id='".$calendarid."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from categoriescal where id_group='1' or id_group='".$arr[owner]."'";
+					$req = "select * from categoriescal where id_group='1' or id_group='".$arr['owner']."'";
 					$this->rescat = $this->db->db_query($req);
 					$this->countcat = $this->db->db_num_rows($this->rescat); 
 					break;
@@ -490,7 +490,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 					for( $i = 0; $i < $this->countgroups; $i++)
 						{
 						$arr = $this->db->db_fetch_array($this->resgroups);
-						$req2 .= " or id_group='".$arr[id]."'"; 
+						$req2 .= " or id_group='".$arr['id']."'"; 
 						}
 					$this->db->db_data_seek($this->resgroups, 0);
 					}
@@ -677,9 +677,9 @@ EOD;
 			if( $i < $this->countcat)
 				{
 				$arr = $this->db->db_fetch_array($this->rescat);
-				$this->catid = $arr[id];
-				$this->catname = $arr[name];
-				if( $this->evtarr[id_cat] == $arr[id])
+				$this->catid = $arr['id'];
+				$this->catname = $arr['name'];
+				if( $this->evtarr['id_cat'] == $arr['id'])
 					$this->selected = "selected";
 				else
 					$this->selected = "";
@@ -722,9 +722,9 @@ function deleteEvent($calid, $evtid, $day, $month, $year, $view)
 			$this->message = babTranslate("Are you sure you want to delete this event");
 			$this->title = getEventTitle($evtid);
 			$this->warning = babTranslate("WARNING: This operation will delete event permanently"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=event&idx=viewm&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&action=Yes&view=".$view;
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=event&idx=viewm&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&action=Yes&view=".$view;
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&view=".$view;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&view=".$view;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -758,10 +758,10 @@ function viewEvent($calid, $evtid)
 			$req = "select * from cal_events where id='".$evtid."'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
-			$this->title = $arr[title];
-			$this->description = $arr[description];
-			$this->startdate = bab_strftime(bab_mktime($arr[start_date]), false) . " " . substr($arr[start_time], 0 ,5);
-			$this->enddate = bab_strftime(bab_mktime($arr[end_date]), false) . " " . substr($arr[end_time], 0 ,5);
+			$this->title = $arr['title'];
+			$this->description = $arr['description'];
+			$this->startdate = bab_strftime(bab_mktime($arr['start_date']), false) . " " . substr($arr['start_time'], 0 ,5);
+			$this->enddate = bab_strftime(bab_mktime($arr['end_date']), false) . " " . substr($arr['end_time'], 0 ,5);
 			}
 		}
 
@@ -996,11 +996,11 @@ switch($idx)
 		deleteEvent($calid, $evtid, $day, $month, $year, $view);
 		if( isUserGroupManager())
 			{
-			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 			}
-		$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
-		$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=event&idx=delete&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid. "&evtid=".$evtid);
+		$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS['babUrl']."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
+		$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=event&idx=delete&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid. "&evtid=".$evtid);
 		break;
 		break;
 
@@ -1036,12 +1036,12 @@ switch($idx)
 
 		if( isUserGroupManager())
 			{
-			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 			}
-		$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
+		$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS['babUrl']."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
 		if( $bmodif )
-			$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=event&idx=delete&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid. "&evtid=".$evtid."&view=".$view);
+			$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=event&idx=delete&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid. "&evtid=".$evtid."&view=".$view);
 		break;
 
 	case "newevent":
@@ -1049,10 +1049,10 @@ switch($idx)
 		newEvent($calid, $day, $month, $year, $view, $title, $description);
 		if( isUserGroupManager())
 			{
-			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+			$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+			$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 			}
-		$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
+		$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS['babUrl']."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
 		break;
 	}
 $body->setCurrentItemMenu($idx);

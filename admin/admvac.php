@@ -71,9 +71,9 @@ function deleteVacation($id)
 			$this->message = babTranslate("Are you sure you want to delete this vacation");
 			$this->title = getVacationName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the vacation and all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=admvac&idx=delete&vacation=".$id."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=admvac&idx=delete&vacation=".$id."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=admvac&idx=modify&item=".$id;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=admvac&idx=modify&item=".$id;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -137,9 +137,9 @@ function deleteStatus($id)
 			$this->message = babTranslate("Are you sure you want to delete this status");
 			$this->title = getStatusName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete the status and all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=admvac&idx=deletestatus&status=".$id."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=admvac&idx=deletestatus&status=".$id."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=admvac&idx=modifystatus&item=".$id;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=admvac&idx=modifystatus&item=".$id;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -273,39 +273,39 @@ switch($idx)
 	case "groups":
 		$body->title = babTranslate("List of groups");
 		aclGroups("vacation", "modify", "vacationsview_groups", $item, "aclview");
-		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=modify&item=".$item);
-		//$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=delete&item=".$item);
+		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=modify&item=".$item);
+		//$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=delete&item=".$item);
 		break;
 
 	case "delete":
 		$body->title = babTranslate("Delete vacation");
 		deleteVacation($item);
-		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=modify&item=".$item);
-		$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=delete&item=".$item);
+		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=modify&item=".$item);
+		$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=delete&item=".$item);
 		break;
 
 	case "modifystatus":
 		$body->title = babTranslate("Modify status");
 		modifyStatus($item);
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=liststatus");
-		$body->addItemMenu("modifystatus", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=modifystatus&item=".$item);
+		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
+		$body->addItemMenu("modifystatus", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=modifystatus&item=".$item);
 		break;
 
 	/*
 	case "deletestatus":
 		$body->title = babTranslate("delete status");
 		deleteStatus($item);
-		$body->addItemMenu("modifystatus", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=modifystatus&item=".$item);
-		$body->addItemMenu("deletestatus", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=deletestatus&item=".$item);
+		$body->addItemMenu("modifystatus", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=modifystatus&item=".$item);
+		$body->addItemMenu("deletestatus", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=deletestatus&item=".$item);
 		break;
 	*/
 	default:
 	case "modify":
 		$body->title = babTranslate("Modify vacation");
 		modifyVacation($item);
-		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=list");
-		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=modify&item=".$item);
-		$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admvac&idx=delete&item=".$item);
+		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
+		$body->addItemMenu("modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=modify&item=".$item);
+		$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admvac&idx=delete&item=".$item);
 		break;
 	}
 $body->setCurrentItemMenu($idx);

@@ -13,7 +13,7 @@ function getDomainName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -29,7 +29,7 @@ function getAccountAccount($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[account];
+		return $arr['account'];
 		}
 	else
 		{
@@ -75,9 +75,9 @@ function accountsList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->domnameval = getDomainName($this->arr[domain]);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=mailopt&idx=modacc&item=".$this->arr[id];
-				if( $this->arr[prefered] == "Y")
+				$this->domnameval = getDomainName($this->arr['domain']);
+				$this->url = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc&item=".$this->arr['id'];
+				if( $this->arr['prefered'] == "Y")
 					$this->prefered = "P";
 				else
 					$this->prefered = "";
@@ -172,8 +172,8 @@ function accountCreate()
 			if( $i < $this->countadm)
 				{
 				$arr = $this->db->db_fetch_array($this->resadm);
-				$this->domid = $arr[id];
-				$this->domname = $arr[name];
+				$this->domid = $arr['id'];
+				$this->domname = $arr['name'];
 				$i++;
 				return true;
 				}
@@ -187,8 +187,8 @@ function accountCreate()
 			if( $i < $this->countgrp)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrp);
-				$this->domid = $arr[id];
-				$this->domname = $arr[name];
+				$this->domid = $arr['id'];
+				$this->domname = $arr['name'];
 				$i++;
 				return true;
 				}
@@ -202,8 +202,8 @@ function accountCreate()
 			if( $i < $this->countusr)
 				{
 				$arr = $this->db->db_fetch_array($this->resusr);
-				$this->domid = $arr[id];
-				$this->domname = $arr[name];
+				$this->domid = $arr['id'];
+				$this->domname = $arr['name'];
 				$i++;
 				return true;
 				}
@@ -284,12 +284,12 @@ function accountModify($item)
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($res);
-				if( $this->arr[prefered] == "Y")
+				if( $this->arr['prefered'] == "Y")
 					$this->accselect = "selected";
 				else
 					$this->accselect = "";
 
-				if( $this->arr[format] == "plain")
+				if( $this->arr['format'] == "plain")
                     {
 					$this->plainselect = "selected";
 					$this->htmlselect = "";
@@ -322,9 +322,9 @@ function accountModify($item)
 			if( $i < $this->countadm)
 				{
 				$arr = $this->db->db_fetch_array($this->resadm);
-				$this->domid = $arr[id];
-				$this->domname = $arr[name];
-				if( $arr[id] == $this->arr[domain])
+				$this->domid = $arr['id'];
+				$this->domname = $arr['name'];
+				if( $arr['id'] == $this->arr['domain'])
 					$this->domselect = "selected";
 				else
 					$this->domselect = "";
@@ -344,9 +344,9 @@ function accountModify($item)
 			if( $i < $this->countgrp)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrp);
-				$this->domid = $arr[id];
-				$this->domname = $arr[name];
-				if( $arr[id] == $this->arr[domain])
+				$this->domid = $arr['id'];
+				$this->domname = $arr['name'];
+				if( $arr['id'] == $this->arr['domain'])
 					$this->domselect = "selected";
 				else
 					$this->domselect = "";
@@ -366,9 +366,9 @@ function accountModify($item)
 			if( $i < $this->countusr)
 				{
 				$arr = $this->db->db_fetch_array($this->resusr);
-				$this->domid = $arr[id];
-				$this->domname = $arr[name];
-				if( $arr[id] == $this->arr[domain])
+				$this->domid = $arr['id'];
+				$this->domname = $arr['name'];
+				if( $arr['id'] == $this->arr['domain'])
 					$this->domselect = "selected";
 				else
 					$this->domselect = "";
@@ -407,9 +407,9 @@ function accountDelete($item)
 			$this->message = babTranslate("Are you sure you want to delete this mail account");
 			$this->title = getAccountAccount($item) /* :o) */;
 			$this->warning = babTranslate("WARNING: This operation will delete the account and all references"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc&item=".$item."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc&item=".$item."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=mailopt&idx=modacc&item=".$item;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc&item=".$item;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -453,12 +453,12 @@ function signaturesList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-                if( $this->arr[html] == "Y")
-                    $this->content = $this->arr[text];
+                if( $this->arr['html'] == "Y")
+                    $this->content = $this->arr['text'];
                 else
-                    $this->content = nl2br($this->arr[text]);
-				$this->editurl = $GLOBALS[babUrl]."index.php?tg=mailopt&idx=modsig&sigid=".$this->arr[id];
-				$this->delurl = $GLOBALS[babUrl]."index.php?tg=mailopt&idx=delsig&sigid=".$this->arr[id];
+                    $this->content = nl2br($this->arr['text']);
+				$this->editurl = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modsig&sigid=".$this->arr['id'];
+				$this->delurl = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=delsig&sigid=".$this->arr['id'];
 				$i++;
 				return true;
 				}
@@ -566,9 +566,9 @@ function signatureModify($sigid, $signature, $name, $html)
 	            $req = "select * from mail_signatures where id='".$sigid."'";
 				$res = $db->db_query($req);
 				$this->arr = $db->db_fetch_array($res);
-				$this->signatureval = $this->arr[text];
-				$this->nameval = $this->arr[name];
-				$html = $this->arr[html];
+				$this->signatureval = $this->arr['text'];
+				$this->nameval = $this->arr['name'];
+				$html = $this->arr['html'];
 				}
 			else
 				{
@@ -773,54 +773,54 @@ switch($idx)
 		$body->title = babTranslate("Delete account");
 		$bemail = mailAccessLevel();
 		accountDelete($item);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addacc");
-		$body->addItemMenu("modacc", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=modacc&item=".$item);
-		$body->addItemMenu("delacc", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=delacc&item=".$item);
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
+		$body->addItemMenu("modacc", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc&item=".$item);
+		$body->addItemMenu("delacc", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=delacc&item=".$item);
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
 	case "addacc":
 		$body->title = babTranslate("Add account");
 		$bemail = mailAccessLevel();
 		accountCreate();
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addacc");
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 	
 	case "modacc":
 		$body->title = babTranslate("Modify account");
 		$bemail = mailAccessLevel();
 		accountModify($item);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addacc");
-		$body->addItemMenu("modacc", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=modacc");
-		$body->addItemMenu("delacc", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=delacc&item=".$item);
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
+		$body->addItemMenu("modacc", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc");
+		$body->addItemMenu("delacc", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=delacc&item=".$item);
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
 	case "modsig":
 		$body->title = babTranslate("Modify Signature");
 		$bemail = mailAccessLevel();
 		signatureModify($sigid,$signature, $name, $html);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listsig");
-		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addsig");
-		$body->addItemMenu("modsig", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=modsig");
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
+		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
+		$body->addItemMenu("modsig", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
 
@@ -828,13 +828,13 @@ switch($idx)
 		$body->title = babTranslate("Add Signature");
 		$bemail = mailAccessLevel();
 		signatureAdd($signature, $name, $html);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listsig");
-		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addsig");
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
+		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
     case "delsig":
@@ -844,13 +844,13 @@ switch($idx)
 		$body->title = babTranslate("Signatures");
 		$bemail = mailAccessLevel();
 		signaturesList();
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listsig");
-		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addsig");
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
+		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
     default:
@@ -858,13 +858,13 @@ switch($idx)
 		$body->title = babTranslate("Mail options");
 		$bemail = mailAccessLevel();
 		accountsList();
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=addacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listsig");
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
+		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 	}
 if( empty($body->msgerror))

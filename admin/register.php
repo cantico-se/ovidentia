@@ -76,10 +76,10 @@ function notifyAdminRegistration($name, $useremail)
 		{
 		while( $arr = $db->db_fetch_array($result))
 			{
-			$sql = "select * from users where id='".$arr[id_object]."'";
+			$sql = "select * from users where id='".$arr['id_object']."'";
 			$res=$db->db_query($sql);
 			$r = $db->db_fetch_array($res);
-			$mail->mailTo($r[email]);
+			$mail->mailTo($r['email']);
 			}
 		}
 
@@ -197,24 +197,24 @@ function userLogin($nickname,$password)
 		{
 		$arr = $db->db_fetch_array($result);
 		/*
-		if( isUserAlreadyLogged($arr[id]))
+		if( isUserAlreadyLogged($arr['id']))
 			{
 			$body->msgerror = babTranslate("Sorry, this account is already used elsewhere");
 			return false;
 			}
 		*/
-		if( $arr[disabled] == '1')
+		if( $arr['disabled'] == '1')
 			{
 			$body->msgerror = babTranslate("Sorry, your account is disabled. Please contact your adminsitrator");
 			return false;
 			}
-		if ($arr[is_confirmed] == '1')
+		if ($arr['is_confirmed'] == '1')
 			{
-			$BAB_SESS_NICKNAME = $arr[nickname];
-			$BAB_SESS_USER = composeName($arr[firstname], $arr[lastname]);
-			$BAB_SESS_EMAIL = $arr[email];
-			$BAB_SESS_USERID = $arr[id];
-			$BAB_SESS_HASHID = $arr[confirm_hash];
+			$BAB_SESS_NICKNAME = $arr['nickname'];
+			$BAB_SESS_USER = composeName($arr['firstname'], $arr['lastname']);
+			$BAB_SESS_EMAIL = $arr['email'];
+			$BAB_SESS_USERID = $arr['id'];
+			$BAB_SESS_HASHID = $arr['confirm_hash'];
 			$body->msgerror =  babTranslate("SUCCESS - You Are Now Logged In");
 			return true;
 			}
@@ -274,7 +274,7 @@ function userChangePassword($oldpwd, $newpwd)
 		{
 		$arr = $db->db_fetch_array($result);
 		$oldpwd2 = md5(strtolower($oldpwd));
-		if( $oldpwd2 == $arr[password])
+		if( $oldpwd2 == $arr['password'])
 			{
 			$sql="update users set password='". md5(strtolower($newpwd)). "' ".
 				"where id='". $BAB_SESS_USERID . "'";
@@ -324,8 +324,8 @@ function sendPassword ($nickname)
 			//send a simple email with the new password
 			echo "pwd = ".$new_pass;
 			$message = babTranslate("Your password has been reset to")." : ". $new_pass;
-			mail ($arr[email], babTranslate("Password Reset"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
-			$body->msgerror = babTranslate("Your new password has been emailed to you.") ." &lt;".$arr[email]."&gt;";
+			mail ($arr['email'], babTranslate("Password Reset"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+			$body->msgerror = babTranslate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
 			return true;
 			}
 		}

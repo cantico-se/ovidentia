@@ -27,6 +27,7 @@ function db_mysql()
 	$this->babDBPasswd= $babDBPasswd;
 	$this->babDBName = $babDBName;
 	$this->db_die_on_fail = false;
+	$this->idlink = false;
 	}
 
 function db_print_error($text)
@@ -64,7 +65,7 @@ function db_connect()
 function db_query($query)
     {
 	$res = false;
-	if( !$this->idlink )
+	if( $this->idlink == false)
 		$this->idlink= $this->db_connect();
 
 	if( $this->idlink )

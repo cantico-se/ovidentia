@@ -64,7 +64,7 @@ function signOn( $nickname, $password)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$req="update users_log set datelog=now(), lastlog='".$arr[datelog]."', dateact=now(),islogged='Y' where id_user='$BAB_SESS_USERID'";
+		$req="update users_log set datelog=now(), lastlog='".$arr['datelog']."', dateact=now(),islogged='Y' where id_user='$BAB_SESS_USERID'";
 		}
 	else
 		{
@@ -166,26 +166,26 @@ switch($cmd)
 	case "register":
 		$body->title = babTranslate("Please provide a valid email.") . "<br>";
 		$body->title .= babTranslate("We will send you an email for confirmation before you can use our services") . "<br>";
-		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
-		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
-		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
+		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS['babUrl']."index.php?tg=login&cmd=signon");
+		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS['babUrl']."index.php?tg=login&cmd=register");
+		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS['babUrl']."index.php?tg=login&cmd=emailpwd");
 		userCreate($firstname, $lastname, $nickname, $email);
 		break;
 
 	case "emailpwd":
 		$body->title = babTranslate("Email a new password");
-		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
-		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
-		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
+		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS['babUrl']."index.php?tg=login&cmd=signon");
+		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS['babUrl']."index.php?tg=login&cmd=register");
+		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS['babUrl']."index.php?tg=login&cmd=emailpwd");
 		emailPassword();
 		break;
 
 	case "signon":
 	default:
 		$body->title = babTranslate("Login");
-		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS[babUrl]."index.php?tg=login&cmd=signon");
-		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS[babUrl]."index.php?tg=login&cmd=register");
-		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS[babUrl]."index.php?tg=login&cmd=emailpwd");
+		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS['babUrl']."index.php?tg=login&cmd=signon");
+		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS['babUrl']."index.php?tg=login&cmd=register");
+		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS['babUrl']."index.php?tg=login&cmd=emailpwd");
 		displayLogin();
 		break;
 	}

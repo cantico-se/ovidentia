@@ -50,20 +50,20 @@ function listArticles($topics, $newc)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr[id]). " - ". getArticleDate($this->arr[id]);
-				$this->content = locateArticle($this->arr[head]);
+				$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr['id']). " - ". getArticleDate($this->arr['id']);
+				$this->content = locateArticle($this->arr['head']);
 
 				if( $this->com)
 					{
-					$req = "select count(id) as total from comments where id_article='".$this->arr[id]."' and confirmed='Y'";
+					$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='Y'";
 					$res = $this->db->db_query($req);
 					$ar = $this->db->db_fetch_array($res);
-					$total = $ar[total];
-					$req = "select count(id) as total from comments where id_article='".$this->arr[id]."' and confirmed='N'";
+					$total = $ar['total'];
+					$req = "select count(id) as total from comments where id_article='".$this->arr['id']."' and confirmed='N'";
 					$res = $this->db->db_query($req);
 					$ar = $this->db->db_fetch_array($res);
-					$totalw = $ar[total];
-					$this->commentsurl = $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr[id];
+					$totalw = $ar['total'];
+					$this->commentsurl = $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
 					if( isset($new) && $new > 0)
 						$this->commentsurl .= "&new=".$new;
 					$this->commentsurl .= "&newc=".$this->newc;
@@ -78,7 +78,7 @@ function listArticles($topics, $newc)
 					$this->commentsname = "";
 					}
 
-				$this->moreurl = $GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr[id];
+				$this->moreurl = $GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 				if( isset($new) && $new > 0)
 					$this->moreurl .= "&new=".$new;
 
@@ -127,7 +127,7 @@ function readMore($topics, $article)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr[body]);
+				$this->content = locateArticle($this->arr['body']);
 				$i++;
 				return true;
 				}
@@ -192,9 +192,9 @@ function deleteArticle($topics, $article, $new, $newc)
 			$this->message = babTranslate("Are you sure you want to delete the article");
 			$this->title = getArticleTitle($article);
 			$this->warning = babTranslate("WARNING: This operation will delete the article with all its comments"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=articles&idx=Articles&topics=".$topics."&article=".$article."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=articles&idx=Articles&topics=".$topics."&article=".$article."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno =$GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc;
+			$this->urlno =$GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -241,9 +241,9 @@ function modifyArticle($topics, $article)
 			if( $this->count > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->headval = htmlentities($this->arr[head]);
-				$this->bodyval = htmlentities($this->arr[body]);
-				$this->titleval = $this->arr[title];
+				$this->headval = htmlentities($this->arr['head']);
+				$this->bodyval = htmlentities($this->arr['body']);
+				$this->titleval = $this->arr['title'];
 				}
 			if( strtolower(browserAgent()) == "msie")
 				$this->msie = 1;
@@ -309,9 +309,9 @@ function articlePrint($topics, $article)
 			if( $this->count > 0 )
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr[body]);
-				$this->title = getArticleTitle($this->arr[id]);
-				$this->url = "<a href=\"$GLOBALS[babUrl]\">".$GLOBALS[babSiteName]."</a>";
+				$this->content = locateArticle($this->arr['body']);
+				$this->title = getArticleTitle($this->arr['id']);
+				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
 			}
 		}
@@ -416,15 +416,15 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-        $top = $arr[category];
-		$req = "select * from users where id='$arr[id_approver]'";
+        $top = $arr['category'];
+		$req = "select * from users where id='".$arr['id_approver']."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
 			//$message = babTranslate("A new article is waiting for you"). ":\n". $title ."\n";
-            notifyApprover($top, stripslashes($title), $arr[email]);
-			//mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
+            notifyApprover($top, stripslashes($title), $arr['email']);
+			//mail ($arr['email'],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
 			}
 		}
 	}
@@ -458,14 +458,14 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-        $top = $arr[category];
-		$req = "select * from users where id='$arr[id_approver]'";
+        $top = $arr['category'];
+		$req = "select * from users where id='".$arr['id_approver']."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-            notifyApprover($top, stripslashes($title), $arr[email]);
-			//mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
+            notifyApprover($top, stripslashes($title), $arr['email']);
+			//mail ($arr['email'],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
 			}
 		}
 	}
@@ -533,8 +533,8 @@ switch($idx)
 		if( isAccessValid("topicssub_groups", $topics) || $approver)
 			{
 			submitArticle($topics);
-			$body->addItemMenu("Submit", babTranslate("Submit"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Submit&topics=".$topics);
-			$body->addItemMenu("subfile", babTranslate("File"), $GLOBALS[babUrl]."index.php?tg=articles&idx=subfile&topics=".$topics);
+			$body->addItemMenu("Submit", babTranslate("Submit"), $GLOBALS['babUrl']."index.php?tg=articles&idx=Submit&topics=".$topics);
+			$body->addItemMenu("subfile", babTranslate("File"), $GLOBALS['babUrl']."index.php?tg=articles&idx=subfile&topics=".$topics);
 			}
 		break;
 
@@ -543,8 +543,8 @@ switch($idx)
 		if( isAccessValid("topicssub_groups", $topics) || $approver)
 			{
 			submitArticleByFile($topics);
-			$body->addItemMenu("Submit", babTranslate("Submit"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Submit&topics=".$topics);
-			$body->addItemMenu("subfile", babTranslate("File"), $GLOBALS[babUrl]."index.php?tg=articles&idx=subfile&topics=".$topics);
+			$body->addItemMenu("Submit", babTranslate("Submit"), $GLOBALS['babUrl']."index.php?tg=articles&idx=Submit&topics=".$topics);
+			$body->addItemMenu("subfile", babTranslate("File"), $GLOBALS['babUrl']."index.php?tg=articles&idx=subfile&topics=".$topics);
 			}
 		break;
 
@@ -559,19 +559,19 @@ switch($idx)
 			readMore($topics, $article);
 			if( isAccessValid("topicssub_groups", $topics) || $approver)
 				{
-				$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Articles&topics=".$topics."&new=".$new."&newc=".$newc);
-				//$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+				$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=articles&idx=Articles&topics=".$topics."&new=".$new."&newc=".$newc);
+				//$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 				if( $approver)
 					{
-					$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Delete&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
-					$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Modify&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
+					$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=articles&idx=Delete&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
+					$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=articles&idx=Modify&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
 					}
 				}
 			if( isAccessValid("topicscom_groups", $topics) || $approver)
 				{
-				$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+				$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 				}
-			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS[babUrl]."index.php?tg=articles&idx=Print&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
+			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS['babUrl']."index.php?tg=articles&idx=Print&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
 			$body->addItemMenuAttributes("Print Friendly", "target=_blank");
 			}
 		break;
@@ -581,7 +581,7 @@ switch($idx)
 		if( $approver)
 			{
 			deleteArticle($topics, $article, $new, $newc);
-			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=comments&idx=Delete&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
+			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=comments&idx=Delete&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
 			}
 		break;
 
@@ -590,8 +590,8 @@ switch($idx)
 		if( $approver)
 			{
 			modifyArticle($topics, $article);
-			$body->addItemMenu("Cancel", babTranslate("Cancel"), $GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
-			$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Modify&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
+			$body->addItemMenu("Cancel", babTranslate("Cancel"), $GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
+			$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=articles&idx=Modify&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
 			}
 		break;
 
@@ -612,9 +612,9 @@ switch($idx)
 				if( $approver)
 					{
 					if( isset($new) && $new > 0)
-						$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new."&newc=".$newc);
+						$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new."&newc=".$newc);
 					}
-				$body->addItemMenu("Submit", babTranslate("Submit"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Submit&topics=".$topics);
+				$body->addItemMenu("Submit", babTranslate("Submit"), $GLOBALS['babUrl']."index.php?tg=articles&idx=Submit&topics=".$topics);
 				}
 			if( $count < 1)
 				$body->title = babTranslate("Today, there is no articles");

@@ -50,11 +50,11 @@ function accessCalendar($calid)
 			if( $k < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from users where id='".$arr[id_user]."'";
+				$req = "select * from users where id='".$arr['id_user']."'";
 				$res = $this->db->db_query($req);
 				$this->arr = $this->db->db_fetch_array($res);
-				$this->fullnameval = composeName($this->arr[firstname], $this->arr[lastname]);
-				if( $arr[bwrite] == "Y")
+				$this->fullnameval = composeName($this->arr['firstname'], $this->arr['lastname']);
+				if( $arr['bwrite'] == "Y")
 					$this->yesno = babTranslate("Yes");
 				else
 					$this->yesno = babTranslate("No");
@@ -95,9 +95,9 @@ function addAccessUsers( $users, $calid, $baccess, $del )
 				{
 				$rr = $db->db_fetch_array($res);
 				if( $del )
-					$req = "delete from calaccess_users where id='".$rr[id]."'";
+					$req = "delete from calaccess_users where id='".$rr['id']."'";
 				else
-					$req = "update calaccess_users set id_user='".$iduser."', bwrite='".$acc."' where id='".$rr[id]."'";
+					$req = "update calaccess_users set id_user='".$iduser."', bwrite='".$acc."' where id='".$rr['id']."'";
 				$res = $db->db_query($req);
 				}
 			else if($del == false)
@@ -152,7 +152,7 @@ function calendarOptions($calid)
 			static $i = 0;
 			if( $i < 7 )
 				{
-				if( $i == $this->arr[startday])
+				if( $i == $this->arr['startday'])
 					$this->selected = "selected";
 				else
 					$this->selected = "";
@@ -224,14 +224,14 @@ switch($idx)
 		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
 			accessCalendar($idcal);
-			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options");
-			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=options&idx=access&idcal=".$idcal);
+			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=options");
+			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS['babUrl']."index.php?tg=options&idx=access&idcal=".$idcal);
 			if( isUserGroupManager())
 				{
-				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 				}
-			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&calendarid=0");
+			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS['babUrl']."index.php?tg=event&idx=newevent&calendarid=0");
 		}
 		break;
 	default:
@@ -241,14 +241,14 @@ switch($idx)
 		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
 			calendarOptions($calid);
-			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options");
-			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=access&idcal=".$idcal);
+			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=options");
+			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=access&idcal=".$idcal);
 			if( isUserGroupManager())
 				{
-				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 				}
-			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&calendarid=0");
+			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS['babUrl']."index.php?tg=event&idx=newevent&calendarid=0");
 		}
 		break;
 	}

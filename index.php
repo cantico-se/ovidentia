@@ -70,7 +70,7 @@ function printBody()
 		function tpl()
 			{
 			global $body, $LOGGED_IN, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
-			$this->version = $GLOBALS[babVersion];
+			$this->version = $GLOBALS['babVersion'];
 			$this->babLogoLT = "";
 			$this->babLogoRT = "";
 			$this->babLogoLB = "";
@@ -87,22 +87,22 @@ function printBody()
 			$this->babMeta = babPrintTemplate($this, "config.html", "babMeta");
 			$this->script = $body->script;
 			$this->home = babTranslate("Home");
-			$this->homeurl = $GLOBALS[babUrl]."index.php?tg=entry";
+			$this->homeurl = $GLOBALS['babUrl']."index.php?tg=entry";
 			if( isset($LOGGED_IN) && $LOGGED_IN == true )
 				{
 				$this->login = babTranslate("Logout");
-				$this->logurl = $GLOBALS[babUrl]."index.php?tg=login&cmd=signoff";
+				$this->logurl = $GLOBALS['babUrl']."index.php?tg=login&cmd=signoff";
 				}
 			else
 				{
 				$this->login = babTranslate("Login");
-				$this->logurl = $GLOBALS[babUrl]."index.php?tg=login&cmd=signon";
+				$this->logurl = $GLOBALS['babUrl']."index.php?tg=login&cmd=signon";
 				}
 
 			$this->search = babTranslate("Search");
 			if( !empty($babSearchUrl))
 				{
-				$this->searchurl = $GLOBALS[babUrl]."index.php?tg=search&pat=".$babSearchUrl;
+				$this->searchurl = $GLOBALS['babUrl']."index.php?tg=search&pat=".$babSearchUrl;
 				$this->bsearch = 1;
 				}
 			else

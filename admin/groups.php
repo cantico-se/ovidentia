@@ -74,13 +74,13 @@ function groupList()
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=group&idx=Modify&item=".$this->arr[id];
-				$this->urlname = $this->arr[name];
-				$this->managername = getUserName($this->arr[manager]);
-				if( $this->arr[mail] == "Y")
-					$this->arr[mail] = babTranslate("Yes");
+				$this->url = $GLOBALS['babUrl']."index.php?tg=group&idx=Modify&item=".$this->arr['id'];
+				$this->urlname = $this->arr['name'];
+				$this->managername = getUserName($this->arr['manager']);
+				if( $this->arr['mail'] == "Y")
+					$this->arr['mail'] = babTranslate("Yes");
 				else
-					$this->arr[mail] = babTranslate("No");
+					$this->arr['mail'] = babTranslate("No");
 				$i++;
 				return true;
 				}
@@ -147,15 +147,15 @@ switch($idx)
 	case "Create":
 		groupCreate();
 		$body->title = babTranslate("Create a group");
-		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=groups&idx=Create");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=groups&idx=List");
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=groups&idx=Create");
 		break;
 	case "List":
 	default:
 		groupList();
 		$body->title = babTranslate("Groups list");
-		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=groups&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=groups&idx=Create");
+		$body->addItemMenu("List", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=groups&idx=List");
+		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=groups&idx=Create");
 		break;
 	}
 

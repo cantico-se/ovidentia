@@ -69,8 +69,8 @@ function listVacations()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=admvac&idx=modify&item=".$this->arr[id];
-				$this->urlname = $this->arr[name];
+				$this->url = $GLOBALS['babUrl']."index.php?tg=admvac&idx=modify&item=".$this->arr['id'];
+				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
 				}
@@ -118,8 +118,8 @@ function listStatus()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=admvac&idx=modifystatus&item=".$this->arr[id];
-				$this->urlname = $this->arr[status];
+				$this->url = $GLOBALS['babUrl']."index.php?tg=admvac&idx=modifystatus&item=".$this->arr['id'];
+				$this->urlname = $this->arr['status'];
 				$i++;
 				return true;
 				}
@@ -251,28 +251,28 @@ switch($idx)
 	/*
 	case "addstatus":
 		$body->title = babTranslate("Add a new vacation status");
-		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=list");
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=liststatus");
-		$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addstatus");
+		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
+		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
+		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
+		$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
 		createStatus();
 		break;
 	*/
 	case "addvacation":
 		$body->title = babTranslate("Add a new vacation");
-		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=list");
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=liststatus");
-		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addstatus");
+		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
+		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
+		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
+		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
 		addVacation();
 		break;
 
 	case "liststatus":
 		$body->title = babTranslate("List of all status");
-		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=list");
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=liststatus");
-		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addstatus");
+		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
+		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
+		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
+		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
 		listStatus();
 		break;
 
@@ -281,14 +281,14 @@ switch($idx)
 		$body->title = babTranslate("List of all vacations");
 		if( listVacations() > 0 )
 			{
-			$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=list");
+			$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
 			}
 		else
 			$body->title = babTranslate("There is no vacation definition");
 
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=liststatus");
-		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS[babUrl]."index.php?tg=admvacs&idx=addstatus");
+		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
+		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
+		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
 		break;
 	}
 $body->setCurrentItemMenu($idx);

@@ -13,7 +13,7 @@ function getCategoryTitle($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[category];
+		return $arr['category'];
 		}
 	else
 		{
@@ -29,7 +29,7 @@ function getArticleTitle($article)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[title];
+		return $arr['title'];
 		}
 	else
 		{
@@ -45,7 +45,7 @@ function getArticleDate($article)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return bab_strftime(bab_mktime($arr[date]));
+		return bab_strftime(bab_mktime($arr['date']));
 		}
 	else
 		{
@@ -61,12 +61,12 @@ function getArticleAuthor($article)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from users where id='".$arr[id_author]."'";
+		$query = "select * from users where id='".$arr['id_author']."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			return composeName($arr[firstname], $arr[lastname]);
+			return composeName($arr['firstname'], $arr['lastname']);
 			}
 		else
 			return babTranslate("Anonymous");
@@ -85,7 +85,7 @@ function getCommentTitle($com)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[subject];
+		return $arr['subject'];
 		}
 	else
 		{
@@ -102,7 +102,7 @@ function confirmDeleteCategory($id)
 	while( $arr = $db->db_fetch_array($res))
 		{
 		// delete article and comments
-		confirmDeleteArticle($id, $arr[id]);
+		confirmDeleteArticle($id, $arr['id']);
 		}
 	$req = "delete from topicscom_groups where id_object='$id'";
 	$res = $db->db_query($req);
@@ -141,7 +141,7 @@ function deleteComments($com)
 		{
 		while( $arr = $db->db_fetch_array($res))
 			{
-			deleteComments($arr[id]);
+			deleteComments($arr['id']);
 			}
 		}
 	$req = "delete from comments where id='$com'";
@@ -161,10 +161,10 @@ function locateArticle( $txt )
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			if(isAccessValid("topicsview_groups", $arr[id_topic])) 
-				$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$arr[id_topic]."&article=".$arr[id]."\">".$arr[title]."</a>", $txt);
+			if(isAccessValid("topicsview_groups", $arr['id_topic'])) 
+				$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']."\">".$arr['title']."</a>", $txt);
 			else
-				$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr[title], $txt);
+				$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr['title'], $txt);
 			}
 		}
 	return $txt;

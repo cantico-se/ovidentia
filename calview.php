@@ -48,10 +48,10 @@ function upComingEvents($idcal)
 			if( $k < $this->countevent)
 				{
 				$arr = $this->db->db_fetch_array($this->resevent);
-				$this->time = substr($arr[start_time], 0 ,5). " " . substr($arr[end_time], 0 ,5);
-				$this->date = bab_strftime(bab_mktime($arr[start_date]), false);
-				$this->title = $arr[title];
-				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid. "&evtid=".$arr[id];
+				$this->time = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5);
+				$this->date = bab_strftime(bab_mktime($arr['start_date']), false);
+				$this->title = $arr['title'];
+				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -72,10 +72,10 @@ function upComingEvents($idcal)
 			if( $k < $this->countgrpevent)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrpevent);
-				$this->time = substr($arr[start_time], 0 ,5). " " . substr($arr[end_time], 0 ,5);
-				$this->date = bab_strftime(bab_mktime($arr[start_date]), false);
-				$this->title = $arr[title] . " ( ". $this->grpname ." )";
-				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id];
+				$this->time = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5);
+				$this->date = bab_strftime(bab_mktime($arr['start_date']), false);
+				$this->title = $arr['title'] . " ( ". $this->grpname ." )";
+				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -124,9 +124,9 @@ function newArticles($days)
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(isAccessValid("topicsview_groups", $row[id]))
+				if(isAccessValid("topicsview_groups", $row['id']))
 					{
-					array_push($this->arrid, $row[id]);
+					array_push($this->arrid, $row['id']);
 					}
 				}
 			$this->count = count($this->arrid);
@@ -174,11 +174,11 @@ function newArticles($days)
 			if( $k < $this->countarticles)
 				{
 				$arr = $this->db->db_fetch_array($this->resarticles);
-				$this->title = $arr[title];
-				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$arr[id_topic]."&article=".$arr[id];
-				$this->author = getArticleAuthor($arr[id]);
-				$this->date = getArticleDate($arr[id]);
-				$req = "select * from comments where id_article='".$arr[id]."' and confirmed='Y' and date >= ";
+				$this->title = $arr['title'];
+				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
+				$this->author = getArticleAuthor($arr['id']);
+				$this->date = getArticleDate($arr['id']);
+				$req = "select * from comments where id_article='".$arr['id']."' and confirmed='Y' and date >= ";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$body->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else
@@ -226,10 +226,10 @@ function newArticles($days)
 			if( $k < $this->countcomments)
 				{
 				$arr = $this->db->db_fetch_array($this->rescomments);
-				$this->title = $arr[subject];
-				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=comments&idx=read&topics=".$arr[id_topic]."&article=".$arr[id_article]."&com=".$arr[id];
-				$this->author = $arr[name];
-				$this->date = bab_strftime(bab_mktime($arr[date]));
+				$this->title = $arr['subject'];
+				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id'];
+				$this->author = $arr['name'];
+				$this->date = bab_strftime(bab_mktime($arr['date']));
 				$k++;
 				return true;
 				}
@@ -273,9 +273,9 @@ function newThreads($nbdays)
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(isAccessValid("forumsview_groups", $row[id]))
+				if(isAccessValid("forumsview_groups", $row['id']))
 					{
-					array_push($this->arrid, $row[id]);
+					array_push($this->arrid, $row['id']);
 					}
 				}
 			$this->count = count($this->arrid);
@@ -312,7 +312,7 @@ function newThreads($nbdays)
 				{
 				$this->total = 0;
 				$arr = $this->db->db_fetch_array($this->resthread);
-				$req = "select * from posts where id_thread='".$arr[id]."' and confirmed='Y' and date >=";
+				$req = "select * from posts where id_thread='".$arr['id']."' and confirmed='Y' and date >=";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$body->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else
@@ -320,10 +320,10 @@ function newThreads($nbdays)
 				$this->resposts = $this->db->db_query($req);
 				$this->total = $this->db->db_num_rows($this->resposts);
 
-				$req = "select * from posts where id='".$arr[post]."' and confirmed='Y'";
+				$req = "select * from posts where id='".$arr['post']."' and confirmed='Y'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				$this->posts = $arr2[subject];
+				$this->posts = $arr2['subject'];
 				$m++;
 				return true;
 				}
@@ -340,9 +340,9 @@ function newThreads($nbdays)
 				{
 				$arr = $this->db->db_fetch_array($this->resposts);
 				$this->total--;
-				$this->date = bab_strftime(bab_mktime($arr[date]));
-				$this->title = $arr[subject];
-				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$this->forum."&thread=".$arr[id_thread]."&post=".$arr[id];
+				$this->date = bab_strftime(bab_mktime($arr['date']));
+				$this->title = $arr['subject'];
+				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=posts&idx=List&forum=".$this->forum."&thread=".$arr['id_thread']."&post=".$arr['id'];
 				return true;
 				}
 			else
@@ -388,7 +388,7 @@ function newEmails()
 			if( $i < $this->count )
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from mail_domains where id='".$arr[domain]."'";
+				$req = "select * from mail_domains where id='".$arr['domain']."'";
 				$res2 = $this->db->db_query($req);
 				$this->domain = "";
 				$this->nbemails = "";
@@ -396,12 +396,12 @@ function newEmails()
 				if( $res2 && $this->db->db_num_rows($res2) > 0 )
 					{
 					$arr2 = $this->db->db_fetch_array($res2);
-					$this->domain = $arr2[name];
-					$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-					$mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
+					$this->domain = $arr2['name'];
+					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
+					$mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
 					if($mbox)
 						{
-						$this->domainurl = $GLOBALS[babUrl]."index.php?tg=inbox&&accid=".$arr[id];
+						$this->domainurl = $GLOBALS['babUrl']."index.php?tg=inbox&&accid=".$arr['id'];
 						$nbmsg = imap_num_recent($mbox); 
 						$this->nbemails = "( ". $nbmsg. " )";
 						imap_close($mbox);
@@ -450,11 +450,11 @@ switch($idx)
 		{
 			upComingEvents($idcal);
 			/*
-			$body->addItemMenu("viewm", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&calid=".$idcal);
+			$body->addItemMenu("viewm", babTranslate("Calendar"), $GLOBALS['babUrl']."index.php?tg=calendar&idx=viewm&calid=".$idcal);
 			if( isUserGroupManager())
 				{
-				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 				}
 			*/
 		}

@@ -81,9 +81,9 @@ function listForums()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->moderatorname = getUserName($this->arr[moderator]);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=forum&idx=Modify&item=".$this->arr[id];
-				$this->urlname = $this->arr[name];
+				$this->moderatorname = getUserName($this->arr['moderator']);
+				$this->url = $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$this->arr['id'];
+				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
 				}
@@ -157,8 +157,8 @@ switch($idx)
 	{
 	case "addforum":
 		$body->title = babTranslate("Add a new forum");
-		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
-		$body->addItemMenu("addforum", babTranslate("Add"), $GLOBALS[babUrl]."index.php?tg=forums&idx=addforum");
+		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
+		$body->addItemMenu("addforum", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=forums&idx=addforum");
 		addForum($name, $description, $moderator, $nbmsgdisplay);
 		break;
 
@@ -167,12 +167,12 @@ switch($idx)
 		$body->title = babTranslate("List of all forums");
 		if( listForums() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS[babUrl]."index.php?tg=forums&idx=List");
+			$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 			}
 		else
 			$body->title = babTranslate("There is no forum");
 
-		$body->addItemMenu("addforum", babTranslate("Add"), $GLOBALS[babUrl]."index.php?tg=forums&idx=addforum");
+		$body->addItemMenu("addforum", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=forums&idx=addforum");
 		break;
 	}
 $body->setCurrentItemMenu($idx);

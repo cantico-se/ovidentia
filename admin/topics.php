@@ -80,18 +80,18 @@ function listCategories($adminid)
 					$this->select = "";
 					
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr[description] = $this->arr[description];//nl2br($this->arr[description]);
-				$this->urlcategory = $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$this->arr[id];
-				$this->namecategory = $this->arr[category];
-				$req = "select * from users where id='".$this->arr[id_approver]."'";
+				$this->arr['description'] = $this->arr['description'];//nl2br($this->arr['description']);
+				$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=topic&idx=Modify&item=".$this->arr['id'];
+				$this->namecategory = $this->arr['category'];
+				$req = "select * from users where id='".$this->arr['id_approver']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				$this->approver = composeName($arr2[firstname], $arr2[lastname]);
-				$req = "select count(*) as total from articles where id_topic='".$this->arr[id]."'";
+				$this->approver = composeName($arr2['firstname'], $arr2['lastname']);
+				$req = "select count(*) as total from articles where id_topic='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				$this->nbarticles = $arr2[total];
-				$this->urlarticles = $GLOBALS[babUrl]."index.php?tg=topic&idx=Articles&item=".$this->arr[id];
+				$this->nbarticles = $arr2['total'];
+				$this->urlarticles = $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$this->arr['id'];
 				$i++;
 				return true;
 				}
@@ -159,8 +159,8 @@ switch($idx)
 		if( $adminid > 0)
 		{
 		addCategory();
-		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=topics&idx=list");
-		$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=topics&idx=addtopic");
+		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list");
+		$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=topics&idx=addtopic");
 		}
 		break;
 
@@ -169,13 +169,13 @@ switch($idx)
 		$body->title = babTranslate("List of all topics");
 		if( listCategories($adminid) > 0 )
 			{
-			$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=topics&idx=list");
+			$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list");
 			}
 		else
 			$body->title = babTranslate("There is no topic");
 
 		if( $adminid > 0)
-			$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=topics&idx=addtopic");
+			$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=topics&idx=addtopic");
 		break;
 	}
 $body->setCurrentItemMenu($idx);

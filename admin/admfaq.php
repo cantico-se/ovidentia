@@ -14,7 +14,7 @@ function getFaqName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[category];
+		return $arr['category'];
 		}
 	else
 		{
@@ -55,10 +55,10 @@ function modifyCategory($id)
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
 
-			$req = "select * from users where id='".$this->arr[id_manager]."'";
+			$req = "select * from users where id='".$this->arr['id_manager']."'";
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
-			$this->managername = composeName( $this->arr2[firstname], $this->arr2[lastname]);
+			$this->managername = composeName( $this->arr2['firstname'], $this->arr2['lastname']);
 			if( strtolower(browserAgent()) == "msie")
 				$this->msie = 1;
 			else
@@ -89,9 +89,9 @@ function deleteCategory($id)
 			$this->message = babTranslate("Are you sure you want to delete this faq");
 			$this->title = getFaqName($id);
 			$this->warning = babTranslate("WARNING: This operation will delete category with all questions/responses"). "!";
-			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$id."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Delete&item=".$id."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$id;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$id;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -173,38 +173,38 @@ switch($idx)
 	case "Modify":
 		$body->title = babTranslate("Modify a category");
 		modifyCategory($item);
-		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Groups&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Delete&item=".$item);
 		break;
 
 	case "Groups":
 		$body->title = babTranslate("List of groups");
 		aclGroups("admfaq", "Modify", "faqcat_groups", $item, "aclfaq");
-		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Groups&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Delete&item=".$item);
 		break;
 
 	case "Delete":
 		$body->title = babTranslate("Delete a category");
 		deleteCategory($item);
-		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Groups&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Delete&item=".$item);
 		break;
 
 	default:
 	case "Modify":
 		$body->title = babTranslate("Modify a category");
 		modifyCategory($item);
-		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS[babUrl]."index.php?tg=admfaqs&idx=Categories");
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Groups&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=admfaq&idx=Delete&item=".$item);
+		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Groups&item=".$item);
+		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Delete&item=".$item);
 		break;
 	}
 $body->setCurrentItemMenu($idx);

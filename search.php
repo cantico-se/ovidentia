@@ -129,21 +129,21 @@ function startSearch($pat, $item, $what, $pos)
 				$res = $this->db->db_query($req);
 				while( $row = $this->db->db_fetch_array($res))
 					{
-					if(isAccessValid("topicsview_groups", $row[id]))
+					if(isAccessValid("topicsview_groups", $row['id']))
 						{
-						$req = "insert into artresults select id, id_topic, title from articles where title ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into artresults select id, id_topic, title from articles where title ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
 
-						$req = "insert into artresults select id, id_topic, title from articles where head ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into artresults select id, id_topic, title from articles where head ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
 
-						$req = "insert into artresults select id, id_topic, title from articles where body ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into artresults select id, id_topic, title from articles where body ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
 
-						$req = "insert into comresults select id, id_article, id_topic, subject from comments where subject ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into comresults select id, id_article, id_topic, subject from comments where subject ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
 
-						$req = "insert into comresults select id, id_article, id_topic, subject from comments where message ".$this->like." and confirmed='Y' and id_topic='".$row[id]."'";
+						$req = "insert into comresults select id, id_article, id_topic, subject from comments where message ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
 						}
 					}
@@ -159,7 +159,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->artpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->artnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->artnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -174,7 +174,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->compage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->comnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->comnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -198,16 +198,16 @@ function startSearch($pat, $item, $what, $pos)
 				$res = $this->db->db_query($req);
 				while( $row = $this->db->db_fetch_array($res))
 					{
-					if(isAccessValid("forumsview_groups", $row[id]))
+					if(isAccessValid("forumsview_groups", $row['id']))
 						{
-						$req = "select id from threads where forum='".$row[id]."'";
+						$req = "select id from threads where forum='".$row['id']."'";
 						$res2 = $this->db->db_query($req);
 						while( $r = $this->db->db_fetch_array($res2))
 							{
-							$req = "insert into forresults select id, id_thread, subject from posts where subject ".$this->like." and confirmed='Y' and id_thread='".$r[id]."'";
+							$req = "insert into forresults select id, id_thread, subject from posts where subject ".$this->like." and confirmed='Y' and id_thread='".$r['id']."'";
 							$this->db->db_query($req);
 
-							$req = "insert into forresults select id, id_thread, subject from posts where message ".$this->like." and confirmed='Y' and id_thread='".$r[id]."'";
+							$req = "insert into forresults select id, id_thread, subject from posts where message ".$this->like." and confirmed='Y' and id_thread='".$r['id']."'";
 							$this->db->db_query($req);
 							}
 						}
@@ -220,7 +220,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->forpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->fornext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->fornext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -243,12 +243,12 @@ function startSearch($pat, $item, $what, $pos)
 				$res = $this->db->db_query($req);
 				while( $row = $this->db->db_fetch_array($res))
 					{
-					if(isAccessValid("faqcat_groups", $row[id]))
+					if(isAccessValid("faqcat_groups", $row['id']))
 						{
-						$req = "insert into faqresults select * from faqqr where question ".$this->like." and idcat='".$row[id]."'";
+						$req = "insert into faqresults select * from faqqr where question ".$this->like." and idcat='".$row['id']."'";
 						$this->db->db_query($req);
 
-						$req = "insert into faqresults select * from faqqr where response ".$this->like." and idcat='".$row[id]."'";
+						$req = "insert into faqresults select * from faqqr where response ".$this->like." and idcat='".$row['id']."'";
 						$this->db->db_query($req);
 						}
 					}
@@ -260,7 +260,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->faqpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->faqnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->faqnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -281,20 +281,20 @@ function startSearch($pat, $item, $what, $pos)
 				$this->db->db_query($req);
 				$aclfm = fileManagerAccessLevel();
 				$private = false;
-				for( $i = 0; $i < count($aclfm[id]); $i++)
+				for( $i = 0; $i < count($aclfm['id']); $i++)
 					{
-					if( $aclfm[pu][$i] == 1)
+					if( $aclfm['pu'][$i] == 1)
 						{
-						$req = "insert into filresults select * from files where name ".$this->like." and id_owner='".$aclfm[id][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
+						$req = "insert into filresults select * from files where name ".$this->like." and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
 						$this->db->db_query($req);						
 
-						$req = "insert into filresults select * from files where description ".$this->like." and id_owner='".$aclfm[id][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
+						$req = "insert into filresults select * from files where description ".$this->like." and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
 						$this->db->db_query($req);						
 
-						$req = "insert into filresults select * from files where keywords ".$this->like." and id_owner='".$aclfm[id][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
+						$req = "insert into filresults select * from files where keywords ".$this->like." and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
 						$this->db->db_query($req);						
 						}
-					if( $aclfm[pr][$i] == 1)
+					if( $aclfm['pr'][$i] == 1)
 						$private = true;
 					}
 
@@ -315,7 +315,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->filpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->filnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->filnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -337,7 +337,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->notpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->notnext = $GLOBALS[babUrl]."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->notnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -404,8 +404,8 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countart)
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
-				$this->article = $arr[title];
-				$this->articleurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=a&id=".$arr[id]."&w=".$this->what."')";
+				$this->article = $arr['title'];
+				$this->articleurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=a&id=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -423,8 +423,8 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countcom)
 				{
 				$arr = $this->db->db_fetch_array($this->rescom);
-				$this->com = $arr[subject];
-				$this->comurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=ac&idt=".$arr[id_topic]."&ida=".$arr[id_article]."&idc=".$arr[id]."&w=".$this->what."')";
+				$this->com = $arr['subject'];
+				$this->comurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -442,8 +442,8 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countfor)
 				{
 				$arr = $this->db->db_fetch_array($this->resfor);
-				$this->post = $arr[subject];
-				$this->posturl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=b&idt=".$arr[id_thread]."&idp=".$arr[id]."&w=".$this->what."')";
+				$this->post = $arr['subject'];
+				$this->posturl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -460,8 +460,8 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countfaq)
 				{
 				$arr = $this->db->db_fetch_array($this->resfaq);
-				$this->question = $arr[question];
-				$this->questionurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=c&idc=".$arr[idcat]."&idq=".$arr[id]."&w=".$this->what."')";
+				$this->question = $arr['question'];
+				$this->questionurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -479,12 +479,12 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countfil)
 				{
 				$arr = $this->db->db_fetch_array($this->resfil);
-				$this->file = $arr[name];
-				if( !empty($arr[description]))
-					$this->filedesc = "( ".$arr[description]." )";
+				$this->file = $arr['name'];
+				if( !empty($arr['description']))
+					$this->filedesc = "( ".$arr['description']." )";
 				else
 					$this->filedesc = "";
-				$this->fileurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=e&id=".$arr[id]."&w=".$this->what."')";
+				$this->fileurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=e&id=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -502,8 +502,8 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countcon)
 				{
 				$arr = $this->db->db_fetch_array($this->rescon);
-				$this->fullname = composeName( $arr[firstname], $arr[lastname]);
-				$this->fullnameurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=search&idx=f&id=".$arr[id]."&w=".$this->what."')";;
+				$this->fullname = composeName( $arr['firstname'], $arr['lastname']);
+				$this->fullnameurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=f&id=".$arr['id']."&w=".$this->what."')";;
 				$i++;
 				return true;
 				}
@@ -521,7 +521,7 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countnot)
 				{
 				$arr = $this->db->db_fetch_array($this->resnot);
-				$this->content = $arr[content];
+				$this->content = $arr['content'];
 				$i++;
 				return true;
 				}
@@ -556,9 +556,9 @@ function viewArticle($article, $w)
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 	
-			$this->content = highlightWord( $w, locateArticle($arr[body]));
-			$this->title = highlightWord( $w, $arr[title]);
-			$this->topic =getCategoryTitle($arr[id_topic]);
+			$this->content = highlightWord( $w, locateArticle($arr['body']));
+			$this->title = highlightWord( $w, $arr['title']);
+			$this->topic =getCategoryTitle($arr['id_topic']);
 			}
 		}
 	
@@ -582,8 +582,8 @@ function viewComment($topics, $article, $com, $w)
 		function ctp($topics, $article, $com, $w)
 			{
 			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
-			$this->babUrl = $GLOBALS[babUrl];
-			$this->sitename = $GLOBALS[babSiteName];
+			$this->babUrl = $GLOBALS['babUrl'];
+			$this->sitename = $GLOBALS['babSiteName'];
 			$this->title = getArticleTitle($article);
 			$this->subject = babTranslate("Subject");
 			$this->by = babTranslate("By");
@@ -594,9 +594,9 @@ function viewComment($topics, $article, $com, $w)
 			$req = "select * from comments where id='$com'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
-			$this->arr[date] = bab_strftime(bab_mktime($this->arr[date]));
-			$this->arr[subject] = highlightWord( $w, $this->arr[subject]);
-			$this->arr[message] = highlightWord( $w, $this->arr[message]);
+			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
+			$this->arr['subject'] = highlightWord( $w, $this->arr['subject']);
+			$this->arr['message'] = highlightWord( $w, $this->arr['message']);
 			}
 		}
 
@@ -623,15 +623,15 @@ function viewPost($thread, $post, $w)
 			$db = new db_mysql();
 			$req = "select forum from threads where id='".$thread."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
-			$this->title = getForumName($arr[forum]);
+			$this->title = getForumName($arr['forum']);
 			$req = "select * from posts where id='".$post."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
-			$this->postdate = bab_strftime(bab_mktime($arr[date]));
-			$this->postauthor = $arr[author];
-			$this->postsubject = $arr[subject];
-			$this->postmessage = $arr[message];
-			$this->postsubject = highlightWord( $w, $arr[subject]);
-			$this->postmessage = highlightWord( $w, $arr[message]);
+			$this->postdate = bab_strftime(bab_mktime($arr['date']));
+			$this->postauthor = $arr['author'];
+			$this->postsubject = $arr['subject'];
+			$this->postmessage = $arr['message'];
+			$this->postsubject = highlightWord( $w, $arr['subject']);
+			$this->postmessage = highlightWord( $w, $arr['message']);
 			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			}
 		}
@@ -657,11 +657,11 @@ function viewQuestion($idcat, $id, $w)
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->arr[question] = highlightWord( $w, $this->arr[question]);
-			$this->arr[response] = highlightWord( $w, $this->arr[response]);
+			$this->arr['question'] = highlightWord( $w, $this->arr['question']);
+			$this->arr['response'] = highlightWord( $w, $this->arr['response']);
 			$req = "select category from faqcat where id='$idcat'";
 			$a = $this->db->db_fetch_array($this->db->db_query($req));
-			$this->title = highlightWord( $w,  $a[category]);
+			$this->title = highlightWord( $w,  $a['category']);
 			}
 
 		}
@@ -708,18 +708,18 @@ function viewFile($id, $w)
 			$access = false;
 			if( $this->arr['bgroup'] == "Y")
 				{
-				for( $i = 0; $i < count($aclfm[id]); $i++)
+				for( $i = 0; $i < count($aclfm['id']); $i++)
 					{
-					if( $aclfm[id][$i] == $this->arr[id_owner] && $aclfm[pu][$i] == 1)
+					if( $aclfm['id'][$i] == $this->arr['id_owner'] && $aclfm['pu'][$i] == 1)
 						{
 						$access = true;
 						break;
 						}
 					}
 				}
-			else if( !empty($BAB_SESS_USERID) && $this->arr[id_owner] == $BAB_SESS_USERID)
+			else if( !empty($BAB_SESS_USERID) && $this->arr['id_owner'] == $BAB_SESS_USERID)
 				{
-				if( in_array(1, $aclfm[pr]))
+				if( in_array(1, $aclfm['pr']))
 					{
 					$access = true;
 					break;
@@ -728,9 +728,9 @@ function viewFile($id, $w)
 
 			if( $access )
 				{
-				$this->title = $this->arr[name];
-				$this->arr[description] = highlightWord( $w, $this->arr[description]);
-				$this->arr[keywords] = highlightWord( $w, $this->arr[keywords]);
+				$this->title = $this->arr['name'];
+				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
+				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
 				$this->modified = date("d/m/Y H:i", bab_mktime($this->arr['modified']));
 				$this->postedby = getUserName($this->arr['author']);
 				$this->geturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".$this->arr['path']."&file=".$this->arr['name'];
@@ -743,8 +743,8 @@ function viewFile($id, $w)
 			else
 				{
 				$this->title = babTranslate("Access denied");
-				$this->arr[description] = "";
-				$this->arr[keywords] = "";
+				$this->arr['description'] = "";
+				$this->arr['keywords'] = "";
 				$this->modified = "";
 				$this->postedby = "";
 				$this->geturl = "";

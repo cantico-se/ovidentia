@@ -56,10 +56,10 @@ function isMemberOf($groupname, $userid="")
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			$req = "select * from users_groups where id_object='$userid' and id_group='$arr[id]'";
+			$req = "select * from users_groups where id_object='$userid' and id_group='".$arr['id']."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
-				return $arr[id];
+				return $arr['id'];
 			else
 				return 0;
 			}
@@ -126,7 +126,7 @@ function isAccessValid($table, $idobject)
 					{
 					while( $row = $db->db_fetch_array($res))
 						{
-						$req = "select * from users_groups where id_object=$BAB_SESS_USERID and id_group='$row[id_group]'"; //groups
+						$req = "select * from users_groups where id_object=$BAB_SESS_USERID and id_group='".$row['id_group']."'"; //groups
 						$res2 = $db->db_query($req);
 						if( $res2 && $db->db_num_rows($res2) > 0 )
 							{
@@ -150,7 +150,7 @@ function isUserAlreadyLogged($iduser)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		if( $arr[islogged] == "Y")
+		if( $arr['islogged'] == "Y")
 			return true;		
 		}
 	return false;
@@ -192,7 +192,7 @@ function getUserName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return composeName($arr[firstname], $arr[lastname]);
+		return composeName($arr['firstname'], $arr['lastname']);
 		}
 	else
 		{
@@ -230,7 +230,7 @@ function useVacation($iduser)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from groups where id='".$arr[id_group]."' and vacation='Y'";
+		$query = "select * from groups where id='".$arr['id_group']."' and vacation='Y'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -260,7 +260,7 @@ function getGroupName($id)
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				return $arr[name];
+				return $arr['name'];
 				}
 			else
 				{
@@ -277,7 +277,7 @@ function getPrimaryGroupId($userid)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[id_group];
+		return $arr['id_group'];
 		}
 	else
 		{
@@ -291,12 +291,12 @@ function mailAccessLevel()
 	$db = new db_mysql();
 
 	$bemail = 0;
-	$req = "select * from users_groups join groups where id_object='$GLOBALS[BAB_SESS_USERID]' and mail='Y'";
+	$req = "select * from users_groups join groups where id_object='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		$bemail = 1;
 
-	$req = "select * from groups where manager='$GLOBALS[BAB_SESS_USERID]' and mail='Y'";
+	$req = "select * from groups where manager='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
@@ -320,13 +320,13 @@ function fileManagerAccessLevel()
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
 		$arr = $db->db_fetch_array($res);
-		$aret[id][] = 2;
-		$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
-		$aret[pr][] = 0;
+		$aret['id'][] = 2;
+		$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+		$aret['pr'][] = 0;
 		if( $badmin )
-			$aret[ma][] = 1;
+			$aret['ma'][] = 1;
 		else
-			$aret[ma][] = 0;
+			$aret['ma'][] = 0;
 		}
 
 	if( !empty($BAB_SESS_USERID))
@@ -336,23 +336,23 @@ function fileManagerAccessLevel()
 		if( $res && $db->db_num_rows($res) > 0 )
 			{
 			$arr = $db->db_fetch_array($res);
-			$aret[id][] = 1;
-			$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
-			$aret[pr][] = $arr[ustorage] == "Y"? 1: 0;
+			$aret['id'][] = 1;
+			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
 			if( $badmin )
-				$aret[ma][] = 1;
+				$aret['ma'][] = 1;
 			else
-				$aret[ma][] = 0;
+				$aret['ma'][] = 0;
 			}
 
 		$req = "select groups.id, groups.gstorage, groups.ustorage from groups join users_groups where id_object='".$BAB_SESS_USERID."' and groups.id=users_groups.id_group and groups.manager !='".$BAB_SESS_USERID."' and (groups.ustorage ='Y' or groups.gstorage ='Y')";
 		$res = $db->db_query($req);
 		while( $arr = $db->db_fetch_array($res))
 			{
-			$aret[id][] = $arr[id];
-			$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
-			$aret[pr][] = $arr[ustorage] == "Y"? 1: 0;
-			$aret[ma][] = 0;
+			$aret['id'][] = $arr['id'];
+			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
+			$aret['ma'][] = 0;
 			}
 
 
@@ -360,10 +360,10 @@ function fileManagerAccessLevel()
 		$res = $db->db_query($req);
 		while( $arr = $db->db_fetch_array($res))
 			{
-			$aret[id][] = $arr[id];
-			$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
-			$aret[pr][] = $arr[ustorage] == "Y"? 1: 0;
-			$aret[ma][] = 1;
+			$aret['id'][] = $arr['id'];
+			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
+			$aret['ma'][] = 1;
 			}
 
 		
@@ -381,7 +381,7 @@ function getUserId( $name )
 	if( $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[id];
+		return $arr['id'];
 		}
 	else
 		return 0;

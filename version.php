@@ -39,7 +39,7 @@ function putVersion($version)
 function echoLang($path)
 {
 	$arr = array();
-	if( empty($GLOBALS[babLanguage]))
+	if( empty($GLOBALS['babLanguage']))
 		return $arr;
 	$handle = opendir($path); 
 	while (false !== ($filename = readdir($handle)))
@@ -91,8 +91,8 @@ switch($idx)
 		break;
 
 	case "lang":
-		$tab = array_unique(echoLang($GLOBALS[babInstallPath]));
-		$filename = "lang/lang-".$GLOBALS[babLanguage].".xml";
+		$tab = array_unique(echoLang($GLOBALS['babInstallPath']));
+		$filename = "lang/lang-".$GLOBALS['babLanguage'].".xml";
 		if( !file_exists($filename))
 			{
 			$txt = "";
@@ -121,7 +121,7 @@ switch($idx)
 				}
 			}
 		$file = fopen($filename, "w");
-		fputs($file, "<".$GLOBALS[babLanguage].">\r\n".$old.$new."</".$GLOBALS[babLanguage].">");
+		fputs($file, "<".$GLOBALS['babLanguage'].">\r\n".$old.$new."</".$GLOBALS['babLanguage'].">");
 		fclose($file);
 		$str = babTranslate("You language file has been updated") ."( ".$filename." )";
 		break;

@@ -303,10 +303,10 @@ function listFiles($id, $gr, $path, $bmanager)
 					$this->arrext[$ext] = babPrintTemplate($this, "config.html", ".unknown");				
 				$this->fileimage = $this->arrext[$ext];
 				$this->name = $arr['name'];
-				$this->url = $GLOBALS['babUrl']."index.php?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr[name];
-				$this->urlget = $GLOBALS['babUrl']."index.php?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr[name];
-				$this->cuturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr[name];				
-				$this->delurl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr[name];				
+				$this->url = $GLOBALS['babUrl']."index.php?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$this->urlget = $GLOBALS['babUrl']."index.php?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$this->cuturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
+				$this->delurl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
 				if( file_exists($this->fullpath.$arr['path']."/".$arr['name']))
 					{
 					$fstat = stat($this->fullpath.$arr['path']."/".$arr['name']);
@@ -789,7 +789,7 @@ function renameDirectory($dirname, $id, $gr, $path)
 			$res = $db->db_query($req);
 			while( $arr = $db->db_fetch_array($res))
 				{
-				if( substr($arr[path], 0, $len) == $path )
+				if( substr($arr['path'], 0, $len) == $path )
 					{
 					$req = "update files set path='".str_replace($path, $uppath.$dirname, $arr['path'])."' where id='".$arr['id']."'";
 					$db->db_query($req);
@@ -1256,29 +1256,29 @@ switch($idx)
 	case "trash":
 		$body->title = babTranslate("Trash");
 		listTrashFiles($id, $gr);
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
 		if( $upload)
-			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
 		if( $bmanager)
-			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
 		break;
 
 	case "upd":
 		$body->title = babTranslate("Update file");
 		updateFile($file, $id, $gr, $path, $aclfm);
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
-		$body->addItemMenu("upd", babTranslate("Update"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=upd&id=".$id."&gr=".$gr."&path=".$path);
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$body->addItemMenu("upd", babTranslate("Update"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=upd&id=".$id."&gr=".$gr."&path=".$path);
 		if( $bmanager)
-			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
 		break;
 	case "add":
 		$body->title = babTranslate("Upload file to")." /".$path;
 		addFile($id, $gr, $path, $description, $keywords);
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
 		if( $upload)
-			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
 		if( $bmanager)
-			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
 		break;
 
 	case "cut":
@@ -1287,11 +1287,11 @@ switch($idx)
 	default:
 	case "list":
 		$body->title = "";
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
 		if( $upload)
-			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+			$body->addItemMenu("add", babTranslate("Upload"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
 		if( $bmanager)
-			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS[babUrl]."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
 		listFiles($id, $gr, $path, $bmanager);
 		break;
 	}

@@ -13,7 +13,7 @@ function getSiteName($id)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr[name];
+		return $arr['name'];
 		}
 	else
 		{
@@ -57,8 +57,8 @@ function sitesList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS[babUrl]."index.php?tg=site&idx=modify&item=".$this->arr[id];
-				$this->urlname = $this->arr[name];
+				$this->url = $GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$this->arr['id'];
+				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
 				}
@@ -109,12 +109,12 @@ function siteCreate($name, $description, $siteemail)
 			$this->siteemail = babTranslate("Email site");
 			$this->create = babTranslate("Create");
 
-			$this->nameval = $name == ""? $GLOBALS[babSiteName]: $name;
+			$this->nameval = $name == ""? $GLOBALS['babSiteName']: $name;
 			$this->descriptionval = $description == ""? "": $description;
-			$this->langval = $lang == ""? $GLOBALS[babLanguage]: $lang;
-			$this->siteemailval = $siteemail == ""? $GLOBALS[babAdminEmail]: $siteemail;
+			$this->langval = $lang == ""? $GLOBALS['babLanguage']: $lang;
+			$this->siteemailval = $siteemail == ""? $GLOBALS['babAdminEmail']: $siteemail;
 
-			$h = opendir($GLOBALS[babInstallPath]."lang/"); 
+			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
                 { 
                 if ($file != "." && $file != "..")
@@ -129,12 +129,12 @@ function siteCreate($name, $description, $siteemail)
             closedir($h);
             $this->count = count($this->arrfiles);
 
-			$h = opendir($GLOBALS[babInstallPath]."skins/"); 
+			$h = opendir($GLOBALS['babInstallPath']."skins/"); 
             while ( $file = readdir($h))
                 { 
                 if ($file != "." && $file != "..")
                     {
-					if( is_dir($GLOBALS[babInstallPath]."skins/".$file))
+					if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
 						$this->arrdir[] = $file; 
                     } 
                 }
@@ -216,20 +216,20 @@ switch($idx)
 	case "create":
 		$body->title = babTranslate("Create site");
 		siteCreate($name, $description, $siteemail);
-		$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS[babUrl]."index.php?tg=sites&idx=list");
-		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sites&idx=create");
+		$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
+		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sites&idx=create");
 		break;
 	case "list":
 	default:
 		$body->title = babTranslate("Sites list");
 		if( sitesList() > 0 )
 			{
-			$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS[babUrl]."index.php?tg=sites&idx=list");
+			$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
 			}
 		else
 			$body->title = babTranslate("There is no site");
 
-		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sites&idx=create");
+		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sites&idx=create");
 		break;
 	}
 
