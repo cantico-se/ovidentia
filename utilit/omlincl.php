@@ -801,9 +801,11 @@ class bab_RecentFiles extends bab_handler
 		if( $this->folderid !== false )
 			$req .= " and f.id_owner='".$this->folderid."'";
 
-		$req .= " and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
+		$req .= " and ( f.id_owner='2'";
 		if( $BAB_SESS_USERID != "" )
-			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
+			{
+			$req .= " or f.id_owner='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."' and fmg.id_object=f.id_owner)";
+			}
 		$req .= ")";
 		
 		if( $this->nbdays !== false)
