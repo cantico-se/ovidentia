@@ -363,11 +363,14 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 			$this->collection = bab_translate("Collection");
 			$this->appschema = bab_translate("Approbation schema");
 			$this->addpersonnel = bab_translate("Add");
+			$this->g_addpersonnel = bab_translate("Add/Modify by group");
 			$this->deletealt = bab_translate("Delete");
 			$this->altlrbu = bab_translate("Rights");
 			$this->altcal = bab_translate("Calendar");
 			$this->addpurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addp&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
-			$this->db = $GLOBALS['babDB'];
+			$this->addgurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=addg&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa;
+
+			$this->db = & $GLOBALS['babDB'];
 
 			$this->idcol = $idcol;
 			$this->idsa = $idsa;
@@ -528,7 +531,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 	return $temp->count;
 	}
 
-function addVacationPersonnel($idcol, $idsa, $iduser)
+function addVacationPersonnel($idp = false)
 	{
 	global $babBody;
 	class temp
@@ -554,41 +557,42 @@ function addVacationPersonnel($idcol, $idsa, $iduser)
 		var $db;
 		var $orand;
 		var $reset;
-		var $what;
 
-		function temp($idcol, $idsa, $iduser)
+		function temp($idp)
 			{
 			$this->usertext = bab_translate("User");
-			$this->grouptext = bab_translate("Group");
 			$this->collection = bab_translate("Collection");
 			$this->appschema = bab_translate("Approbation schema");
-			$this->reset = bab_translate("Reset");
-			$this->orand = bab_translate("And / Or");
 			$this->delete = bab_translate("Delete");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=browu&cb=";
-			$this->groupsbrowurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=browg&cb=";
 
-			$this->db = $GLOBALS['babDB'];
-			if( !empty($iduser))
+			$this->db = & $GLOBALS['babDB'];
+
+			$this->idp = $idp;
+			if (isset($_POST['action']) && $_POST['action'] == 'changeuser')
+				{
+				$this->userid = $_POST['userid'];
+				$this->idsa = $_POST['idsa'];
+				$this->idcol = $_POST['idcol'];
+				$this->idp = $_POST['idp'];
+				}
+
+			if( !empty($this->idp))
 				{
 				$this->add = bab_translate("Modify");
-				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$iduser."'"));
-				$this->userval = bab_getUserName($iduser);
-				$this->userid = $iduser;
-				$this->bdel = true;
-				$this->what = "modp";
+				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->idp."'"));
+				$this->userid = $arr['id_user'];
+				$this->userval = bab_getUserName($this->userid);
 				$this->idcol = $arr['id_coll'];
 				$this->idsa = $arr['id_sa'];
 				}
 			else
 				{
 				$this->add = bab_translate("Add");
-				$this->idcol = $idcol;
-				$this->idsa = $idsa;
-				$this->userval = "";
-				$this->userid = "";
-				$this->bdel = false;
-				$this->what = "addp";
+				$this->idcol = '';
+				$this->idsa = '';
+				$this->userval = '';
+				$this->userid = '';
 				}
 
 			$this->groupval = "";
@@ -621,7 +625,12 @@ function addVacationPersonnel($idcol, $idsa, $iduser)
 				return true;
 				}
 			else
+				{
+				$j = 0;
+				if ($this->countsa > 0)
+					$this->db->db_data_seek($this->sares,0);
 				return false;
+				}
 			}
 
 		function getnextcol()
@@ -642,10 +651,196 @@ function addVacationPersonnel($idcol, $idsa, $iduser)
 			else
 				return false;
 			}
+
+		function printhtml()
+			{
+			$GLOBALS['babBody']->babecho(	bab_printTemplate($this,"vacadm.html", "personnelcreate"));
+			}
 		}
 
-	$temp = new temp($idcol, $idsa, $iduser);
-	$babBody->babecho(	bab_printTemplate($temp,"vacadm.html", "personnelcreate"));
+	$temp = new temp($idp);
+	$temp->printhtml();
+	}
+
+
+function addGroupVacationPersonnel()
+	{
+	global $babBody;
+	class temp
+		{
+
+		function temp()
+			{
+			$this->grouptext = bab_translate("Group");
+			$this->collection = bab_translate("Collection");
+			$this->appschema = bab_translate("Approbation schema");
+			$this->groupsbrowurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=browg&cb=";
+			$this->t_add = bab_translate("Add");
+			$this->t_modify = bab_translate("Modify");
+			$this->t_record = bab_translate("Record");
+			$this->t_add_modify = bab_translate("Add or modify users by group");
+
+			$this->db = & $GLOBALS['babDB'];
+
+			$this->idsa = $_REQUEST['idsa'];
+			$this->idcol = isset($_REQUEST['idcol']) ? $_REQUEST['idcol'] : '';
+
+
+			$this->groupval = "";
+			$this->groupid = "";
+
+			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+			if( !$this->sares )
+				$this->countsa = 0;
+			else
+				$this->countsa = $this->db->db_num_rows($this->sares);
+
+			$this->colres = $this->db->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
+			$this->countcol = $this->db->db_num_rows($this->colres);
+			}
+		
+		function getnextsa()
+			{
+			static $j= 0;
+			if( $j < $this->countsa )
+				{
+				$arr = $this->db->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->idsapp = $arr['id'];
+				$this->idsapp = $arr['id'];
+				if( $this->idsa == $this->idsapp )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$j++;
+				return true;
+				}
+			else
+				{
+				$j = 0;
+				if ($this->countsa > 0)
+					$this->db->db_data_seek($this->sares,0);
+				return false;
+				}
+			}
+
+		function getnextcol()
+			{
+			static $j= 0;
+			if( $j < $this->countcol )
+				{
+				$arr = $this->db->db_fetch_array($this->colres);
+				$this->collname = $arr['name'];
+				$this->idcollection = $arr['id'];
+				if( $this->idcol == $this->idcollection )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$j++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function printhtml()
+			{
+			$GLOBALS['babBody']->babecho(	bab_printTemplate($this,"vacadm.html", "grouppersonnelcreate"));
+			}
+		}
+
+	$temp = new temp();
+	$temp->printhtml();
+	}
+
+
+function changeucol($id_user,$newcol)
+	{
+	global $babBody;
+
+	class tempa
+		{
+		
+		function tempa($id_user,$newcol)
+			{
+			$this->t_oldcol = bab_translate("Old collection");
+			$this->t_newcol = bab_translate("New collection");
+			$this->t_record = bab_translate("Record");
+			$this->t_quantity = bab_translate("Quantity");
+			$this->t_nbdays = bab_translate("Day(s)");
+
+			$this->db = & $GLOBALS['babDB'];
+
+			$old_rights = bab_getRightsOnPeriod(false, false, $id_user);
+
+			$this->id_user = $id_user;
+			$this->id_coll = $newcol;
+
+			$req = "SELECT r.* FROM ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type = r.id_type AND t.id_coll='".$newcol."' ORDER BY r.description";
+			$res = $this->db->db_query($req);
+			
+			$new_rights = array();
+			while ($arr = $this->db->db_fetch_array($res))
+				{
+				$new_rights[] = array(
+							'id' =>			$arr['id'],
+							'date_begin' => $arr['date_begin'],
+							'date_end' =>   $arr['date_end'],
+							'quantity' =>   $arr['quantity'],
+							'description' =>$arr['description']
+							);
+				}
+			
+			$this->totaldays = 0;
+
+			$this->rights = array();
+
+			foreach ($old_rights as $v)
+				{
+				$this->rights[$v['id']] = array( 
+							'description' => $v['description'], 
+							'quantity' => $v['quantity'],
+							'quantitydays' => $v['quantitydays']
+							);
+				}
+
+			foreach ($new_rights as $v)
+				{
+				if (!isset($this->rights[$v['id']]))
+					{
+					$this->rights[$v['id']] = array( 
+							'description' => $v['description'], 
+							'quantity' => $v['quantity'],
+							'quantitydays' => 0
+							);
+					}
+				else
+					{
+					$this->rights[$v['id']]['description'] = $v['description'];
+					$this->rights[$v['id']]['description'] = $v['description'];
+					}
+				}
+			}
+
+		function getnext()
+			{
+			if (list($this->id,$this->right) = each($this->rights))
+				{
+				$default = $this->right['quantitydays'] > $this->right['quantity'] ? $this->right['quantity'] : $this->right['quantitydays'];
+				$this->newrightvalue = isset($_POST['right_'.$this->id]) ? $_POST['right_'.$this->id] : $default;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+		}
+
+
+	$tempa = new tempa($id_user,$newcol);
+	$babBody->babecho(	bab_printTemplate($tempa,"vacadm.html", "changeucol"));
+
 	}
 
 
@@ -1000,22 +1195,22 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids)
 	return true;
 	}
 
-function saveVacationPersonnel($userid, $groupid, $idcol, $idsa)
+function saveVacationPersonnel($userid,  $idcol, $idsa)
 	{
 	global $babBody, $babDB;
-	if( empty($userid) && empty($groupid) )
+	if( empty($userid) )
 		{
-		$babBody->msgerror = bab_translate("You must specify a user or group") ." !";
+		$babBody->msgerror = bab_translate("You must specify a user") ." !";
 		return false;
 		}
 
-	if( !isset($idcol) || empty($idcol) )
+	if( empty($idcol) )
 		{
 		$babBody->msgerror = bab_translate("You must specify a vacation collection") ." !";
 		return false;
 		}
 
-	if( !isset($idsa) || empty($idsa) )
+	if( empty($idsa) )
 		{
 		$babBody->msgerror = bab_translate("You must specify approbation schema") ." !";
 		return false;
@@ -1054,6 +1249,61 @@ function saveVacationPersonnel($userid, $groupid, $idcol, $idsa)
 	return true;
 	}
 
+function updateVacationPersonnelGroup($groupid, $addmodify,  $idcol, $idsa)
+{
+	global $babBody, $babDB;
+
+	if( empty($groupid) )
+		{
+		$babBody->msgerror = bab_translate("You must specify a group") ." !";
+		return false;
+		}
+
+	if( !in_array($addmodify,array('add','modify')) )
+		{
+		$babBody->msgerror = bab_translate("error") ." !";
+		return false;
+		}
+
+	if( empty($idcol) && $addmodify == 'add' )
+		{
+		$babBody->msgerror = bab_translate("You must specify a vacation collection") ." !";
+		return false;
+		}
+
+	if( empty($idsa) )
+		{
+		$babBody->msgerror = bab_translate("You must specify approbation schema") ." !";
+		return false;
+		}
+
+	if( !empty($groupid) )
+		{
+		if( $groupid == 1 )
+			$res = $babDB->db_query("select id as id_user from ".BAB_USERS_TBL." where is_confirmed='1'");
+		else
+			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$groupid."'");
+
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			$res2 = $babDB->db_query("select id, id_sa from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$arr['id_user']."'");
+			if( $res2 && $babDB->db_num_rows($res2) > 0 )
+				{
+				$row = $babDB->db_fetch_array($res2);
+				if ($addmodify == 'modify' && $row['id_sa'] != $idsa)
+					{
+					updateVacationUser($arr['id_user'], $idsa);
+					$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_sa='".$idsa."' where id_user='".$arr['id_user']."'");
+					}
+				}
+			else
+				$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$arr['id_user']."','".$idcol."','".$idsa."')");
+			}
+		}
+	
+	return true;
+}
+
 function updateVacationUser($userid, $idsa)
 {
 	global $babDB;
@@ -1070,29 +1320,29 @@ function updateVacationUser($userid, $idsa)
 		}
 }
 
-function updateVacationPersonnel($userid, $groupid, $idcol, $idsa)
+function updateVacationPersonnel($idp, $idsa)
 	{
 	global $babBody, $babDB;
 
-	if( empty($userid) && empty($groupid) )
+	if( empty($idp) || empty($idsa) )
 		{
-		$babBody->msgerror = bab_translate("You must specify a user or group") ." !";
+		$babBody->msgerror = bab_translate("You must specify an aprobation schema") ." !";
 		return false;
 		}
 
 	if( !empty($userid))
 		{
-		$res = $babDB->db_query("select id, id_sa from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'");
+		$res = $babDB->db_query("select id, id_sa,id_user from ".BAB_VAC_PERSONNEL_TBL." where id='".$idp."'");
 
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
 
-			$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_coll='".$idcol."', id_sa='".$idsa."' where id_user='".$userid."'");
+			$babDB->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_sa='".$idsa."' where id='".$idp."'");
 
 			if( $arr['id_sa'] != $idsa )
 				{
-				updateVacationUser($userid, $idsa);
+				updateVacationUser($arr['id_user'], $idsa);
 				}
 
 			}
@@ -1103,35 +1353,6 @@ function updateVacationPersonnel($userid, $groupid, $idcol, $idsa)
 			}
 		}
 
-	if( !empty($groupid))
-		{
-		if( $groupid == 1 )
-			{
-			$res = $babDB->db_query("select id_user, id_sa from ".BAB_VAC_PERSONNEL_TBL."");
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				if( $arr['id_sa'] != $idsa )
-					{
-					updateVacationUser($arr['id_user'], $idsa);
-					}
-				}
-			$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_coll='".$idcol."', id_sa='".$idsa."'");
-			}
-		else
-			{
-			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$groupid."'");
-
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				$row = $babDB->db_fetch_array($babDB->db_query("select id_sa from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$arr['id_user']."'"));
-				if( $row['id_sa'] != $idsa )
-					{
-					updateVacationUser($arr['id_user'], $idsa);
-					}
-				$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_coll='".$idcol."', id_sa='".$idsa."' where id_user='".$arr['id_user']."'");
-				}
-			}
-		}
 	
 	return true;
 	}
@@ -1197,6 +1418,52 @@ function updateVacationRightByUser($userid, $quantities, $idrights)
 		}
 }
 
+function updateUserColl()
+{
+	$db = & $GLOBALS['babDB'];
+
+	if (empty($_POST['idp']))
+		{
+		return false;
+		}
+
+	$users_rights = array();
+	$worked_ids = array();
+
+	$res = $db->db_query("SELECT id,id_right FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id_user='".$_POST['idp']."'");
+	while($arr = $db->db_fetch_array($res))
+		{
+		$users_rights[$arr['id_right']] = $arr['id'];
+		}
+
+	$prefix = 'right_';
+
+	foreach($_POST as $field => $value)
+		{
+		if (substr($field,0,strlen($prefix)) == $prefix)
+			{
+			list(,$id_right) = explode('_',$field);
+			if (isset($users_rights[$id_right]))
+				{
+				$db->db_query("UPDATE ".BAB_VAC_USERS_RIGHTS_TBL." SET quantity='".$value."' WHERE id='".$users_rights[$id_right]."'");
+				$worked_ids[] = $users_rights[$id_right];
+				}
+			else
+				{
+				$db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user,id_right,quantity) VALUES ('".$_POST['idp']."','".$id_right."','".$value."')");
+				$worked_ids[] = $db->db_insert_id();
+				}
+			}
+		}
+
+	$db->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id NOT IN(".implode(',',$worked_ids).") AND id_user= '".$_POST['idp']."'");
+
+	$db->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_coll='".$_POST['idcol']."' WHERE id_user='".$_POST['idp']."'");
+
+	return true;
+}
+
+
 /* main */
 $acclevel = bab_vacationsAccess();
 if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
@@ -1208,48 +1475,79 @@ if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
 if( !isset($idx))
 	$idx = "lvt";
 
-if( isset($add) )
+if( isset($_POST['add']) )
 	{
-	if( $add == "addvt" )
+	switch($_POST['add'])
 		{
-		if(!saveVacationType($tname, $description, $quantity, $tcolor, $cbalance))
-			$idx ='addvt';
-		}
-	else if( $add == "modvt")
-		{
-		if( isset($bdel))
-			deleteVacationType($vtid);
-		else if(!updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cbalance))
-			$idx ='addvt';
-		}
-	else if( $add == "addvc")
-		{
-		if(!saveVacationCollection($tname, $description, $vtypeids))
-			$idx ='addvc';
-		}
-	else if( $add == "modvc")
-		{
-		if( isset($bdel))
-			deleteVacationCollection($vcid);
-		else if(!updateVacationCollection($vcid, $tname, $description, $vtypeids))
-			$idx ='addvc';
-		}
-	else if( $add == "addp")
-		{
-		if(!saveVacationPersonnel($userid, $groupid, $idcol, $idsa))
-			$idx ='addp';
-		}
-	else if( $add == "modp")
-		{
-		if(!updateVacationPersonnel($userid, $groupid, $idcol, $idsa))
-			{
-			$idp = $userid;
-			$idx ='modp';
-			}
-		}
-	else if( $add == "modrbu")
-		{
-		updateVacationRightByUser($iduser, $quantities, $idrights);
+		case 'addvt':
+		
+			if(!saveVacationType($tname, $description, $quantity, $tcolor, $cbalance))
+				$idx ='addvt';
+
+			break;
+
+		case 'modvt':
+			if( isset($bdel))
+				deleteVacationType($vtid);
+			else if(!updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cbalance))
+				$idx ='addvt';
+
+			break;
+
+		case 'addvc':
+			if(!saveVacationCollection($tname, $description, $vtypeids))
+				$idx ='addvc';
+			
+			break;
+
+		case 'modvc':
+		
+			if( isset($bdel))
+				deleteVacationCollection($vcid);
+			else if(!updateVacationCollection($vcid, $tname, $description, $vtypeids))
+				$idx ='addvc';
+
+			break;
+
+
+		case 'changeuser':
+			if (!empty($_POST['idp']))
+				{
+				if(updateVacationPersonnel($_POST['idp'], $_POST['idsa']))
+					{
+					$idx ='changeucol';
+					}
+				else
+					{
+					$idx ='modp';
+					}
+				}
+			else
+				{
+				if(!saveVacationPersonnel($_POST['userid'], $_POST['idcol'], $_POST['idsa']))
+					{
+					$idx ='addp';
+					}
+				}
+			break;
+
+		case 'changegroup':
+			$idcol = isset($_POST['idcol']) ? $_POST['idcol'] : '';
+
+			if (!updateVacationPersonnelGroup($_POST['groupid'], $_POST['addmodify'],  $idcol, $_POST['idsa']))
+				{
+				$idx ='addg';
+				}
+			break;
+
+		case 'changeucol':
+			if (!updateUserColl())
+				$idx = $add;
+			break;
+
+		case 'modrbu':
+			updateVacationRightByUser($iduser, $quantities, $idrights);
+			break;
 		}
 	}
 else if( isset($action) && $action == "Yes")
@@ -1258,6 +1556,9 @@ else if( isset($action) && $action == "Yes")
 	$idx = "lper";
 	}
 
+if( !isset($pos)) $pos ="";
+if( !isset($idcol)) $idcol ="";
+if( !isset($idsa)) $idsa ="";
 
 switch($idx)
 	{
@@ -1296,25 +1597,19 @@ switch($idx)
 
 	case "modp":
 		$babBody->title = bab_translate("Modify user");
-		if( !isset($idp)) $idp ="";
-		if( !isset($idcol)) $idcol ="";
-		if( !isset($idsa)) $idsa ="";
-		addVacationPersonnel($idcol, $idsa, $idp);
+
+		addVacationPersonnel($_REQUEST['idp']);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
-		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos);
 		$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=modp");
-		$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+		$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos);
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
 		break;
 
 	case "addp":
-		if( !isset($pos)) $pos ="";
-		if( !isset($idcol)) $idcol ="";
-		if( !isset($idsa)) $idsa ="";
 		$babBody->title = bab_translate("Add users");
-		if( !isset($idp)) $idp ="";
-		addVacationPersonnel($idcol, $idsa, $idp);
+		addVacationPersonnel();
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
@@ -1323,11 +1618,27 @@ switch($idx)
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
 		break;
 
+	case 'changeucol':
+		$babBody->title = bab_translate("Change user collection");
+		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
+		$babBody->addItemMenu("changeucol", bab_translate("User collection"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=changeucol");
+		changeucol($_POST['idp'],$_POST['idcol']);
+		break;
+
+	case "addg":
+		$babBody->title = bab_translate("Add/Modify users by group");
+		addGroupVacationPersonnel();
+		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
+		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
+		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+		$babBody->addItemMenu("addg", bab_translate("Add/Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addg");
+		$babBody->addItemMenu("addd", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
+		break;
+
 	case "lper":
 		$babBody->title = bab_translate("Personnel");
-		if( !isset($pos)) $pos ="";
-		if( !isset($idcol)) $idcol ="";
-		if( !isset($idsa)) $idsa ="";
+		
 		if( isset($chg))
 		{
 			if( strlen($pos) > 0 && $pos[0] == "-" )
@@ -1344,9 +1655,7 @@ switch($idx)
 		break;
 
 	case "lcol":
-		if( !isset($pos)) $pos ="";
-		if( !isset($idcol)) $idcol ="";
-		if( !isset($idsa)) $idsa ="";
+		
 		$babBody->title = bab_translate("Vacations type's collections");
 		listVacationCollections();
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");

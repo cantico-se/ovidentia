@@ -83,21 +83,26 @@ function notifyVacationApprovers($id, $users)
 	}
 
 
-function bab_getRightsOnPeriod($begin, $end, $id_user = false)
+function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 	{
 	$return = array();
-	$begin = bab_mktime($begin);
-	$end = bab_mktime($end);
+	$begin = $begin ? bab_mktime( $begin ) : $begin;
+	$end = $end ? bab_mktime( $end ) : $end;
 
 	if (!$id_user) $id_user = $GLOBALS['BAB_SESS_USERID'];
 
 	$db = & $GLOBALS['babDB'];
 
-	$res = $db->db_query("select r.*, rules.*, ur.quantity ur_quantity from ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." c, ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_USERS_RIGHTS_TBL." ur, ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_RIGHTS_RULES_TBL." rules ON rules.id_right = r.id where t.id = c.id_type and c.id_coll=p.id_coll AND p.id_user='".$id_user."' AND r.active='Y' and ur.id_user='".$id_user."' and ur.id_right=r.id and r.id_type=t.id");
+	$res = $db->db_query("select r.*,r.id idright, rules.*, ur.quantity ur_quantity from ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." c, ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_USERS_RIGHTS_TBL." ur, ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_RIGHTS_RULES_TBL." rules ON rules.id_right = r.id where t.id = c.id_type and c.id_coll=p.id_coll AND p.id_user='".$id_user."' AND r.active='Y' and ur.id_user='".$id_user."' and ur.id_right=r.id and r.id_type=t.id GROUP BY r.id  ORDER BY r.description");
 	
 	while ( $arr = $db->db_fetch_array($res) )
 		{
-		$row = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status!='N' and el.id_type='".$arr['id_type']."' and el.id_entry=e.id"));
+		if (!$begin)
+			$begin = bab_mktime($arr['date_begin']);
+		if (!$end)
+			$end = bab_mktime($arr['date_end']);
+
+		$row = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id_type']."' and el.id_entry=e.id"));
 				
 		$qdp = isset($row['total'])? $row['total'] : 0;
 
@@ -121,10 +126,10 @@ function bab_getRightsOnPeriod($begin, $end, $id_user = false)
 			$nbdays = round(($end - $begin) / 86400);
 
 			if ($begin == -1 || $end == -1 || $period_start == -1 || $period_end == -1)
-				break;
+				continue;
 
 			if ($begin < bab_mktime($arr['date_begin']) || $end > bab_mktime($arr['date_end']))
-				break;
+				continue;
 
 			$access = false;
 
@@ -166,7 +171,7 @@ function bab_getRightsOnPeriod($begin, $end, $id_user = false)
 						break;
 					}
 				
-				list($nbdays) = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status!='N' and el.id_type='".$arr['id_type']."' and el.id_entry=e.id ".$req));
+				list($nbdays) = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id_type']."' and el.id_entry=e.id ".$req));
 
 
 				$access = false;
@@ -176,9 +181,12 @@ function bab_getRightsOnPeriod($begin, $end, $id_user = false)
 				}
 			
 			}
+
+		
 		
 		if ( $access )
 			$return[] = array(
+						'id' =>			$arr['idright'],
 						'date_begin' => $arr['date_begin'],
 						'date_end' =>   $arr['date_end'],
 						'quantity' =>   $arr['quantity'],

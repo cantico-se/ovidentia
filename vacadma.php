@@ -516,10 +516,15 @@ function addModifyVacationRigths($id = false)
 				$this->arr['idvr'] = $id;
 				}
 			
+			if (isset($_GET['idtype']))
+				$default = array('id_type' => $_GET['idtype']);
+			else
+				$default = array();
+			
 			foreach($el_to_init as $field)
 				{
-				if (!isset($this->arr[$field]))
-					$this->arr[$field] = '';
+				if ( !isset($this->arr[$field]) )
+					$this->arr[$field] = isset($default[$field]) ? $default[$field] : '';
 				}
 			
 			if( $this->arr['id_creditor'] != "" )

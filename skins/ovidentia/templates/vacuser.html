@@ -1,4 +1,3 @@
-<link href="../styles/standard.css" rel="stylesheet" type="text/css">
 <!--#begin newvacation -->
 <SCRIPT language="JavaScript">
 <!--
@@ -44,43 +43,6 @@ function validateDayField(field) {
 	}
 	document.vacform.elements['total'].value = total;
 	}
-}
-function updateDates(elemDay, elemMonth, elemYear)
-{
-	ds = elemDay.selectedIndex;
-	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
-	timeDifference = timeA - 86400000;
-	timeB = new Date(timeDifference);
-	var daysInMonth = timeB.getDate();
-	for (var i = 0; i < elemDay.length; i++)
-	{
-	elemDay.options[0] = null;
-	}
-	for (var i = 0; i < daysInMonth; i++)
-	{
-	elemDay.options[i] = new Option(i+1);
-	}
-	if( ds < daysInMonth )
-	elemDay.options[ds].selected = true;
-	else
-	elemDay.options[daysInMonth-1].selected = true;
-}
-
-function dateBegin(day, month, year)
-{
-	document.vacform.elements['daybegin'].options[day-1].selected = true;
-	document.vacform.elements['monthbegin'].options[month-1].selected = true;
-	document.vacform.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
-	updateDates(document.vacform.elements['daybegin'], document.vacform.elements['monthbegin'], document.vacform.elements['yearbegin']);
-}
-
-function dateEnd(day, month, year)
-{
-	document.vacform.elements['dayend'].options[day-1].selected = true;
-	document.vacform.elements['monthend'].options[month-1].selected = true;
-	document.vacform.elements['yearend'].options[year-{ yearend }].selected = true;
-	updateDates(document.vacform.elements['dayend'], document.vacform.elements['monthend'], document.vacform.elements['yearend']);
-
 }
 
 function validateForm(fr)
@@ -140,110 +102,70 @@ return true;
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
 <input type="hidden" name="tg" value="vacuser">
 <input type="hidden" name="idx" value="vunew">
-<input type="hidden" name="add" value="newvu">
-<table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
-<td valign="middle"> 
-<select name="daybegin">
-  <!--#in getnextday -->
-  <option value="{ dayid }" { selected }>{ dayid }</option>
-  <!--#endin getnextday -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-  <!--#in getnextmonth -->
-  <option value="{ monthid }" { selected }>{ monthname }</option>
-  <!--#endin getnextmonth -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-  <!--#in getnextyear -->
-  <option value="{ yearid }"  { selected }>{ yearidval }</option>
-  <!--#endin getnextyear -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="halfdaybegin">
-  <!--#in getnexthalf -->
-  <option value="{ halfid }" { selected }>{ halfname }</option>
-  <!--#endin getnexthalf -->
-</select>
-</td>
-</tr>
-<tr> 
-<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
-<td valign="middle"> 
-<select name="dayend">
-  <!--#in getnextday -->
-  <option value="{ dayid }"  { selected }>{ dayid }</option>
-  <!--#endin getnextday -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-  <!--#in getnextmonth -->
-  <option value="{ monthid }"  { selected }>{ monthname }</option>
-  <!--#endin getnextmonth -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-  <!--#in getnextyear -->
-  <option value="{ yearid }" { selected }>{ yearidval }</option>
-  <!--#endin getnextyear -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="halfdayend">
-  <!--#in getnexthalf -->
-  <option value="{ halfid }" { selected }>{ halfname }</option>
-  <!--#endin getnexthalf -->
-</select >
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="bottom">{ nbdaystxt }: 
-</td>
-<td class="BabLoginMenuBackground" colspan="4" valign="bottom"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >{ balancetxt }</td></tr>
-<!--#in getnexttype -->
-<!--#in getnextright -->
-<tr><td class="BabLoginMenuBackground" ><input type="text" name="{ nbdaysname }" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)"></td><td class="BabLoginMenuBackground" >{ typename }</td><td class="BabLoginMenuBackground" >{ quantitydays }</td></tr>
-<!--#endin getnextright -->
-<!--#endin getnexttype -->
-</table>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ totaltxt }: </td>
-<td class="BabLoginMenuBackground" colspan="4" valign="middle">
-<input type="text" name="total" size="5" maxlength="5" value="{ totalval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ remark }: </td>
-<td class="BabLoginMenuBackground" colspan="4" valign="middle">
-<textarea cols="40" rows="10" name="remarks">{ remarks }</textarea>
-</td>
-</tr>
-<tr> 
-<td>&nbsp;</td>
-<td colspan="4" valign="middle"> 
-<input type="submit" name="Submit" value="{ addvac }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+<input type="hidden" name="action" value="vacation_request">
+<input type="hidden" name="begin" value="{ begin }" />
+<input type="hidden" name="halfdaybegin" value="{ halfdaybegin }" />
+<input type="hidden" name="end" value="{ end }" />
+<input type="hidden" name="halfdayend" value="{ halfdayend }" />
+
+	<table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td> 
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4">
+		<tr> 
+			<td align="right">{ datebegintxt } : </td>
+			<td> 
+				{ datebegin }
+
+				
+			</td>
+		</tr>
+		<tr> 
+			<td align="right">{ dateendtxt } : </td>
+			<td> 
+				{ dateend }
+			</td>
+		</tr>
+		<tr> 
+			<td align="right">{ nbdaystxt }: </td>
+			<td> 
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td colspan="2">&nbsp;</td>
+						<td>{ balancetxt }</td>
+					</tr>
+					<!--#in getnextright -->
+					<tr>
+						<td>
+							<input type="text" name="nbdays{ right[id] }" size="5" maxlength="5" value="{ nbdays }" onKeyUp="validateDayField(this)" />
+						</td>
+						<td>{ right[description] }</td>
+						<td>{ right[quantitydays] }</td>
+					</tr>
+					<!--#endin getnextright -->
+				</table>
+			</td>
+		</tr>
+		<tr> 
+			<td align="right">{ totaltxt } : </td>
+			<td><input type="text" name="total" size="5" maxlength="5" value="{ totalval }" /></td>
+		</tr>
+		<tr> 
+			<td align="right">{ remark } : </td>
+			<td>
+				<textarea cols="40" rows="10" name="remarks">{ remarks }</textarea>
+			</td>
+		</tr>
+		<tr> 
+			<td>&nbsp;</td>
+			<td> 
+				<input type="submit" name="Submit" value="{ addvac }" />
+			</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	</table>
 </form>
 <br>
 <!--#end newvacation -->
@@ -515,82 +437,312 @@ window.focus();
 <!--#end ventrydetail -->
 
 <!--#begin calendarbyuser -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<body>
-<br>
-<br>
-<table width="100%" cellpadding="5" cellspacing="0" align="center">
-	<tr  class="BabLoginMenuBackground"> 
-		<td width="25%">&nbsp;<a href="{ previousyear }">&lt;&lt;</a>&nbsp;&nbsp;&nbsp;<a  href="{ previousmonth }">&lt; </a> </td>
-		<td width="20%" align="right">&nbsp;{ fullname }&nbsp;</td>
-		<td width="20%">{ yearname }</td>
-		<td  width="25%" align="right"><a href="{ nextmonth }">&gt;</a>&nbsp;&nbsp;&nbsp;<a href="{ nextyear }">&gt;&gt;</a>&nbsp; </td>
+
+<style type="text/css">
+@import url('{ babInstallPath }styles/vacation.css');
+</style>
+
+<table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0">
+	<tr class="BabLoginMenuBackground"> 
+		<td class="prev">
+			<a href="{ previousmonth }" title="{ t_previousmonth }" class="prev2"><strong>&lt;</strong></a> 
+			<a href="{ previousyear }" title="{ t_previousyear }" class="prev1"><strong>&lt;&lt;</strong></a>
+		</td>
+		<td align="center">{ fullname }&nbsp;{ yearname }</td>
+		<td align="right" class="next">
+			<a href="{ nextmonth }" title="{ t_nextmonth }" class="next2"><strong>&gt;</strong></a>
+			<a href="{ nextyear }" title="{ t_nextyear }" class="next1"><strong>&gt;&gt;</strong></a>
+		</td>
 	</tr>
 </table>
  
-<br>
- 
-<table width="1%" border="1" align="center" cellpadding="2" cellspacing="0" bordercolor="#000000" class="BabCalendarBodyBackground">
-<tr>
-<th class="BabCalendarDays"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="9" height="8" border="0"></th>
-<!--#in getdayname -->
-<th class="BabCalendarDays">{ dayname }</th>
-<!--#endin getdayname --> 
-</tr>
- 
-<!--#in getmonth -->
-<tr>
-<td valign="middle" class="BabMonthCalendarCurentDayBackground" width="0" height="0">{ monthname }</td> 
-<!--#in getday -->
-<!--#if bvac -->
-    <td height="0" align="center" valign="middle" bgcolor=#008800><img src="{ babSkinPath }images/Puces/VacOK.gif" border="0" alt="{ vacapprovedtxt }" align="absmiddle">
-      <!--#else bvac -->
-      <!--#if bwait -->
-    <td height="0" align="center" valign="middle" bgcolor=#C40000><img src="{ babSkinPath }images/Puces/VacWait.gif" border="0" alt="{ vacwaitingtxt }" align="absmiddle">
-      <!--#else bwait -->
-      <!--#if noday -->
-<td height="0" align="center" valign="middle" bgcolor="#000000"><img src="{ babSkinPath }images/Puces/VacND.gif" alt="N.A."  border="0">
-<!--#else noday -->
-<!--#if weekend -->
-<td height="0" align="center" valign="middle" bgcolor="#C0C0C0"><img src="{ babSkinPath }images/Puces/VacWE.gif" alt="WE" border="0">
-<!--#else weekend -->
-<td height="0" align="center" valign="middle" class="BabMonthCalendarCurentDayBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="20" height="1" border="0">
-<!--#endif weekend -->
-<!--#endif noday -->
-<!--#endif bwait -->
-<!--#endif bvac -->
-</td> 
-<!--#endin getday -->
- <!--#endin getmonth -->
-</tr></table>
-<br>
-<table>
-  <tr align="center" valign="middle">
-    <td><img src="{ babSkinPath }images/Puces/VacOK.gif" border="0" alt="{ vacapprovedtxt }" align="absmiddle"></td>
-    
-<td class="BabName">{ vacapprovedtxt }</td>
-    <td><img src="{ babSkinPath }images/Puces/VacWait.gif" border="0" alt="{ vacwaitingtxt }" align="absmiddle"></td>
-    
-<td class="BabName">{ vacwaitingtxt }</td>
-  </tr>
-  <tr align="left" valign="middle">
-    <td colspan="4"><a class="BabTopicsFooterLink" href="javascript:window.print()"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ print }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ print }</a></td>
-  </tr>
+<div id="vacationcalendar" <!--#if popup --> class="popup" <!--#endif popup -->>
+
+<table class="calendar">
+<thead>
+	<tr>
+		<td>&nbsp;</td>
+		<!--#in getdayname -->
+		<td>{ dayname }</td>
+		<!--#endin getdayname --> 
+	</tr>
+</thead>
+<tbody id="vac_calendar_body">
+	<!--#in getmonth -->
+	<tr>
+		<th>{ monthname }</th> 
+		<!--#in getday -->
+		<!--#if bvac -->
+		<td class="vac" title="{ vacapprovedtxt }">ok
+		<!--#else bvac -->
+			<!--#if bwait -->
+			<td class="wait" title="{ vacwaitingtxt }">?
+			<!--#else bwait -->
+				<!--#if noday -->
+				<td class="noday">
+				<!--#else noday -->
+					<!--#if nonworking -->
+					<td class="nonworking" title="{ t_nonworking }">
+					<!--#else nonworking -->
+						<!--#if weekend -->
+						<td  class="weekend" title="{ t_weekend }">
+						<!--#else weekend -->
+						<td <!--#if period --> class="free" onclick="setPeriod(this)" <!--#else period --> class="default" <!--#endif period -->  id="{ date }" title="{ titledate }">
+						<!--#endif weekend -->
+					<!--#endif nonworking -->
+				<!--#endif noday -->
+			<!--#endif bwait -->
+		<!--#endif bvac -->
+		</td> 
+		<!--#endin getday -->
+	</tr>
+	<!--#endin getmonth -->
+</tbody>
 </table>
-<center>
-<a href="javascript:window.close()" class="BabSiteAdminListLink">{ close }</a> 
-</center>
-</body>
-</HTML>
+
+
+
+<table class="legend">
+	<tr>
+		<td class="vac">ok</td>
+		<th>{ vacapprovedtxt }</th>
+	<tr>
+	</tr>
+		<td class="wait">?</td>
+		<th>{ vacwaitingtxt }</th>
+	</tr>
+	</tr>
+		<td class="nonworking">&nbsp;</td>
+		<th>{ t_nonworking }</th>
+	</tr>
+	</tr>
+		<td class="weekend">&nbsp;</td>
+		<th>{ t_weekend }</th>
+	</tr>
+</table>
+
+</div>
+
+<!--#if popup -->
+<div align="center">
+<a href="javascript:window.print()"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ print }" align="absmiddle" />&nbsp;{ print }</a>&nbsp; &nbsp; &nbsp;
+	<a href="#" onclick="window.close();return false;">{ close }</a>
+</div>
+<!--#endif popup -->
+
+
+
 <!--#end calendarbyuser -->
+
+
+<!--#begin period -->
+<script language="JavaScript">
+<!--
+
+var begindate = false;
+
+function setPeriod(obj)
+	{
+	if (begindate == false)
+		{
+		var setbegin = true;
+		begindate = obj.id;
+		}
+
+	var arr1 = begindate.split('-');
+	var arr2 = obj.id.split('-');
+
+	dateBegin(arr1[2], arr1[1], arr1[0]);
+	dateEnd(arr2[2], arr2[1], arr2[0]);
+
+	var tdlist = document.getElementById('vac_calendar_body').getElementsByTagName('td');
+
+	for (var i = 0 ; i < tdlist.length ; i++)
+		{
+		var td = tdlist[i];
+		if (td.id >= begindate && td.id <= obj.id && (td.className == 'free' || td.className == 'selected'))
+			{
+			td.className = 'period';
+			}
+		else if (td.className == 'period' || td.className == 'selected' )
+			{
+			td.className = 'free';
+			}
+		}
+	obj.className = 'selected';
+	if (!setbegin)
+		begindate = obj.id;
+	}
+
+function addevent(td, evname, func) {
+	if (document.all) {
+		td.attachEvent("on" + evname, func);
+	} else {
+		td.addEventListener(evname, func, true);
+	}
+};
+
+
+
+function updateDates(elemDay, elemMonth, elemYear)
+{
+	ds = elemDay.selectedIndex;
+	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < elemDay.length; i++)
+	{
+	elemDay.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+	elemDay.options[i] = new Option(i+1);
+	}
+	if( ds < daysInMonth )
+	elemDay.options[ds].selected = true;
+	else
+	elemDay.options[daysInMonth-1].selected = true;
+}
+
+
+function dateBegin(day, month, year)
+{
+	var f = document.forms['vacform'];
+	f.elements['daybegin'].options[day-1].selected = true;
+	f.elements['monthbegin'].options[month-1].selected = true;
+	f.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
+	updateDates(f.elements['daybegin'], f.elements['monthbegin'], f.elements['yearbegin']);
+}
+
+function dateEnd(day, month, year)
+{
+	var f = document.forms['vacform'];
+	f.elements['dayend'].options[day-1].selected = true;
+	f.elements['monthend'].options[month-1].selected = true;
+	f.elements['yearend'].options[year-{ yearend }].selected = true;
+	updateDates(f.elements['dayend'], f.elements['monthend'], f.elements['yearend']);
+
+}
+
+function validateForm(fr)
+{
+var ret = true;
+if( fr.yearbegin.selectedIndex > fr.yearend.selectedIndex )
+	{
+	ret = false;
+	}
+else if( fr.yearbegin.selectedIndex == fr.yearend.selectedIndex )
+	{
+		if( fr.monthbegin.selectedIndex > fr.monthend.selectedIndex )
+		{
+		ret = false;
+		}
+		else if( fr.monthbegin.selectedIndex == fr.monthend.selectedIndex ) 
+		{
+		if( fr.daybegin.selectedIndex > fr.dayend.selectedIndex )
+			{
+			ret = false;
+			}
+		}
+	}
+
+if( ret == false)
+	{
+	var d1;
+	alert ('{ invaliddate }');
+	return false;
+	}
+
+return true;
+}
+//-->
+</script>
+
+<form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
+<input type="hidden" name="tg" value="vacuser">
+<input type="hidden" name="idx" value="vunew">
+<input type="hidden" name="action" value="period">
+
+<table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4">
+	<tr> 
+	<td align="right">
+		<a href="javascript:Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: 
+	</td>
+	<td> 
+		<select name="daybegin">
+		  <!--#in getnextday -->
+		  <option value="{ dayid }" { selected }>{ dayid }</option>
+		  <!--#endin getnextday -->
+		</select>
+	</td>
+	<td> 
+		<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+		  <!--#in getnextmonth -->
+		  <option value="{ monthid }" { selected }>{ monthname }</option>
+		  <!--#endin getnextmonth -->
+		</select>
+	</td>
+	<td> 
+		<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+		  <!--#in getnextyear -->
+		  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+		  <!--#endin getnextyear -->
+		</select>
+	</td>
+	<td> 
+		<select name="halfdaybegin">
+		  <!--#in getnexthalf -->
+		  <option value="{ halfid }" { selected }>{ halfname }</option>
+		  <!--#endin getnexthalf -->
+		</select>
+	</td>
+</tr>
+<tr> 
+	<td align="right">
+		<a href="javascript:Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: 
+	</td>
+	<td> 
+		<select name="dayend">
+		  <!--#in getnextday -->
+		  <option value="{ dayid }"  { selected }>{ dayid }</option>
+		  <!--#endin getnextday -->
+		</select>
+	</td>
+	<td> 
+		<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+		  <!--#in getnextmonth -->
+		  <option value="{ monthid }"  { selected }>{ monthname }</option>
+		  <!--#endin getnextmonth -->
+		</select>
+	</td>
+	<td> 
+		<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+		  <!--#in getnextyear -->
+		  <option value="{ yearid }" { selected }>{ yearidval }</option>
+		  <!--#endin getnextyear -->
+		</select>
+	</td>
+	<td> 
+		<select name="halfdayend">
+		  <!--#in getnexthalf -->
+		  <option value="{ halfid }" { selected }>{ halfname }</option>
+		  <!--#endin getnexthalf -->
+		</select>
+	</td>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+		<td colspan="4"> 
+		<input type="submit" name="Submit" value="{ addvac }" />
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end period -->

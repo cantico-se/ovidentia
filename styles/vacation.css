@@ -1,0 +1,118 @@
+.bab_calnavbar a strong {
+	display:none;
+	}
+
+
+.bab_calnavbar .prev a, .bab_calnavbar .next a {
+	display:block;
+	width:10px;
+	height:20px;
+	float:left;
+	background-repeat:no-repeat;
+	margin:0 3px 0 3px;
+	}
+
+.bab_calnavbar .next a {
+	float:right;
+	}
+
+
+.bab_calnavbar a.prev3 {background-image:url('../skins/ovidentia/images/Puces/arrowPrev3a.gif');}
+.bab_calnavbar a.prev3:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev3b.gif');}
+.bab_calnavbar a.prev2 {background-image:url('../skins/ovidentia/images/Puces/arrowPrev2a.gif');}
+.bab_calnavbar a.prev2:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev2b.gif');}
+.bab_calnavbar a.prev1 {background-image:url('../skins/ovidentia/images/Puces/arrowPrev1a.gif');}
+.bab_calnavbar a.prev1:hover {background-image:url('../skins/ovidentia/images/Puces/arrowPrev1b.gif');}
+
+.bab_calnavbar a.next3 {background-image:url('../skins/ovidentia/images/Puces/arrowNext3a.gif');}
+.bab_calnavbar a.next3:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext3b.gif');}
+.bab_calnavbar a.next2 {background-image:url('../skins/ovidentia/images/Puces/arrowNext2a.gif');}
+.bab_calnavbar a.next2:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext2b.gif');}
+.bab_calnavbar a.next1 {background-image:url('../skins/ovidentia/images/Puces/arrowNext1a.gif');}
+.bab_calnavbar a.next1:hover {background-image:url('../skins/ovidentia/images/Puces/arrowNext1b.gif');}
+
+
+/* calendar */
+
+
+#vacationcalendar {
+	font-size:9px;
+	}
+
+#vacationcalendar.popup {
+	font-size:11px;
+	}
+
+#vacationcalendar .calendar {
+	margin:.5em auto;
+	border-collapse:collapse;
+	font-family:Arial;
+	font-size:1em;
+	}
+
+#vacationcalendar .legend {
+	margin:.5em auto;
+	font-size:1em;
+	}
+
+#vacationcalendar .legend th {
+	font-weight:normal;
+	font-size:1.2em;
+	text-align:left;
+	}
+
+#vacationcalendar .calendar tbody th {
+	text-align:right;
+	font-size:1em;
+	border:#000 1px solid;
+	}
+
+#vacationcalendar td {
+	font-size:.92em;
+	width:9px;
+	text-align:center;
+	border:#000 1px solid;
+	}
+
+#vacationcalendar .vac {
+	background-color:#080;
+	color:#fff;
+	}
+
+#vacationcalendar .wait {
+	background-color:#C40000;
+	color:#fff;
+	}
+
+#vacationcalendar .noday {
+	background-color:#000;
+	
+	}
+
+#vacationcalendar .nonworking {
+	background-color:#ff6;
+	}
+
+#vacationcalendar .weekend {
+	background-color:#ccc;
+	background-image:url('../skins/ovidentia/images/Puces/stripsbackground.gif');
+	}
+
+#vacationcalendar .default {
+	background-color:#fff;
+	}
+
+#vacationcalendar .free {
+	background-color:#fff;
+	cursor:pointer;
+	}
+
+#vacationcalendar .period {
+	background-color:blue;
+	cursor:pointer;
+	}
+
+#vacationcalendar .selected {
+	background-color:red;
+	cursor:pointer;
+	}

@@ -148,38 +148,37 @@ valign="middle">{ name }:</td>
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
-valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="tname" size="20" maxlength="20" value="{ tnameval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="50" maxlength="255" value="{ descriptionval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ vactypes }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<!--#in getnext -->
-<br><input type="checkbox" name="vtypeids[]" { vtcheck } value="{ vtid }">&nbsp;&nbsp;{ vtypename }
-<!--#endin getnext -->
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="Submit" value="{ add }">
-<!--#if bdel -->
-&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }">
-<!--#endif bdel -->
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td align="right">{ name }:</td>
+		<td> 
+		<input type="text" name="tname" size="20" maxlength="20" value="{ tnameval }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ description }:</td>
+		<td> 
+		<input type="text" name="description" size="50" maxlength="255" value="{ descriptionval }">
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ vactypes }:</td>
+		<td> 
+		<!--#in getnext -->
+		<br><input type="checkbox" name="vtypeids[]" { vtcheck } value="{ vtid }">&nbsp;&nbsp;{ vtypename }
+		<!--#endin getnext -->
+		</td>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+		<td> 
+		<input type="submit" name="Submit" value="{ add }">
+		<!--#if bdel -->
+		&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }">
+		<!--#endif bdel -->
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -192,87 +191,99 @@ valign="middle">{ name }:</td>
 <input type="hidden" name="tg" value="vacadm">
 <input type="hidden" name="idx" value="lper">
 <input type="hidden" name="pos" value="{ pos }">
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td class="BabMailBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td colspan="5" nowrap class="BabLetterlists">
-<!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp;
-<!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
-<!--#endif allselected -->
-<!--#in getnextselect -->
-<!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp;
-<!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
-<!--#endif selected -->
-<!--#endin getnextselect -->
-</td>
-<td width="1" align="left" valign="middle" nowrap class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><a class="BabAlphabetLink" href="{ addpurl }">{ addpersonnel }</a></td></tr>
-<tr> 
-<td> 
-<tr>         
-<td class="BabSiteAdminSmall" width="1%"><a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap><a class="BabNameEmailLink" href="{ fullnameurl }">{ fullname }</a></td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap>{ collection }</td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap>{ appschema }</td>
-            <td align="center" valign="middle" nowrap class="BabSiteAdminSmall">{ altlrbu }</td>
-            <td align="center" valign="middle" nowrap class="BabSiteAdminSmall">{ altcal }</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td valign="middle" width="1%"> 
-<input type="checkbox" name="userids[]" value="{ userid }">
-</td>
-<td valign="middle" width="20%" nowrap><a class="BabNameEmailLink" href="{ url }">{ urlname }</a></td>
-<td valign="middle" nowrap>{ collname }</td>
-<td valign="middle" nowrap>{ saname }</td>
-<td align="center" valign="middle" nowrap><a href="javascript: Start('{ lrbuurl }', 'VacationWindow', 'width=700,height=380,status=no,resizable=yes,top=200,left=200');"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
-<td align="center" valign="middle" nowrap><a href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=880,height=490,status=no,resizable=yes,top=10,left=10');"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
-</tr> 
-<!--#endin getnext -->
-<tr> 
-<td width="1%" height="37" align="center" class="BabSiteAdminSmall"><a href="javascript:submitForm('delu','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
-<td colspan="5" class="BabSiteAdminSmall"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-</tr></table>
-</td>
+	<td class="BabLoginCadreBackground"> 
+	<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td colspan="4" class="BabLetterlists" style="white-space:nowrap">
+				<!--#if allselected "== 1" -->
+				{ allname }&nbsp;
+				<!--#else allselected -->
+				<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;
+				<!--#endif allselected -->
+				<!--#in getnextselect -->
+				<!--#if selected "== 1" -->
+				{ selectname }&nbsp;
+				<!--#else selected -->
+				<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;
+				<!--#endif selected -->
+				<!--#endin getnextselect -->
+			</td>
+			<td align="right" class="BabLetterlists" colspan="2">
+				<a href="{ addpurl }">{ addpersonnel }</a>&nbsp|&nbsp
+				<a href="{ addgurl }">{ g_addpersonnel }</a>
+			</td>
+		</tr>
+
+		<tr class="BabSiteAdminTitleFontBackground">         
+			<td width="1%">
+				<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a></td>
+			<td><a href="{ fullnameurl }">{ fullname }</a></td>
+			<td>{ collection }</td>
+			<td>{ appschema }</td>
+			<td>{ altlrbu }</td>
+			<td>{ altcal }</td>
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td width="1%"> 
+			<input type="checkbox" name="userids[]" value="{ userid }" />
+			</td>
+			<td width="20%"><a class="BabNameEmailLink" href="{ url }">{ urlname }</a></td>
+			<td>{ collname }</td>
+			<td>{ saname }</td>
+			<td><a href="javascript: Start('{ lrbuurl }', 'VacationWindow', 'width=700,height=380,status=no,resizable=yes,top=200,left=200');"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
+			<td><a href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=880,height=490,status=no,resizable=yes,top=10,left=10');"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
+		</tr> 
+		<!--#endin getnext -->
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td align="center">
+				<a href="javascript:submitForm('delu','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
+			</td>
+			<td colspan="5">&nbsp;</td>
+		</tr>
+	</table>
+	</td>
 </tr>
 </table>
 </form>
-<br>
+<br />
+
 <form name="filterform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="vacadm">
 <input type="hidden" name="idx" value="lper">
 <input type="hidden" name="pos" value="{ pos }">
-  <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+  <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
     <tr>
-      <td>
-<table border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
-          <tr align="left">
-            <td valign="middle" class="BabBodyTitleBackground">&nbsp;</td>
-            <td valign="middle" class="BabBodyTitleBackground">{ collection }
-            </td>
-            <td valign="middle" class="BabBodyTitleBackground">{ appschema }</td>
+      <td class="BabLoginCadreBackground">
+		<table border="0" width="100%" cellpadding="5" cellspacing="0" class="BabLoginMenuBackground">
+          <tr>
+            <td>&nbsp;</td>
+            <td>{ collection }</td>
+            <td>{ appschema }</td>
           </tr>
-          <tr align="left">
-            <td valign="middle" class="BabBodyTitleBackground"><input type="submit" name="submit" value="{ filteron }"></td>
-            <td valign="middle" class="BabBodyTitleBackground"><select name="idcol">
+          <tr>
+            <td><input type="submit" name="submit" value="{ filteron }" /></td>
+            <td>
+			<select name="idcol">
                 <option value=""></option>
                 <!--#in getnextcol -->
                 <option value="{ idcollection }" { selected }>{ collname }</option>
                 <!--#endin getnextcol -->
-              </select></td>
-            <td valign="middle" class="BabBodyTitleBackground"><select name="idsa">
+              </select>
+			</td>
+            <td>
+			<select name="idsa">
                 <option value=""></option>
                 <!--#in getnextsa -->
                 <option value="{ idsapp }" { selected }>{ saname }</option>
                 <!--#endin getnextsa -->
-              </select></td>
+              </select>
+			</td>
           </tr>
-        </table></td>
+        </table>
+	</td>
     </tr>
   </table>
 </form>
@@ -283,8 +294,8 @@ valign="middle">{ name }:</td>
 <!--
 function onUser(id, fn)
 {
-document.forms.gcreate.user.value=fn;
-document.forms.gcreate.userid.value=id;
+document.forms['user'].user.value=fn;
+document.forms['user'].userid.value=id;
 this.focus();
 op.close();
 }
@@ -298,10 +309,79 @@ else
 	op.focus();
 }
 
+//-->
+</script>
+
+<form name="user" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadm" />
+<input type="hidden" name="idx" value="lper" />
+<input type="hidden" name="add" value="changeuser" />
+<input type="hidden" name="idp" value="{ idp }" />
+
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+		<!--#if idp -->
+		<tr> 
+			<td  align="right">{ usertext }:</td>
+			<td> 
+				{ userval }
+			</td>
+		</tr>
+		<!--#else idp -->
+		<tr> 
+			<td  align="right"><a href="javascript: openPopup('{ usersbrowurl }');">{ usertext }</a>:</td>
+			<td> 
+				<input type="text" name="user" size="45" maxlength="255" value="{ userval }" disabled="disabled" />
+				<input type="hidden" name="userid" value="{ userid }" />
+			</td>
+		</tr>
+		<!--#endif idp -->
+		<tr> 
+			<td align="right">{ collection }:</td>
+			<td> 
+				<select name="idcol">
+				<!--#in getnextcol -->
+				<option value="{ idcollection }" { selected }>{ collname }</option>
+				<!--#endin getnextcol -->
+				</select>
+			</td>
+		</tr>
+		<tr> 
+			<td align="right">{ appschema }:</td>
+			<td> 
+				<select name="idsa">
+				<!--#in getnextsa -->
+				<option value="{ idsapp }" { selected }>{ saname }</option>
+				<!--#endin getnextsa -->
+				</select>
+			</td>
+		</tr>
+		<tr> 
+		<td>&nbsp;</td>
+		<td> 
+		<input type="submit" name="submit" value="{ add }" />
+		<br>
+		</td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<br />
+<br />
+<!--#end personnelcreate -->
+
+<!--#begin grouppersonnelcreate -->
+<script type="text/javascript">
+<!--
+
 function onGroup(id, fn)
 {
-document.forms.gcreate.group.value=fn;
-document.forms.gcreate.groupid.value=id;
+document.forms['group'].group.value=fn;
+document.forms['group'].groupid.value=id;
 this.focus();
 op2.close();
 }
@@ -315,79 +395,147 @@ else
 	op2.focus();
 }
 
-function babReset()
+function radiochange(obj)
 {
-document.forms['gcreate'].userid.value ='';
-document.forms['gcreate'].user.value ='';
-document.forms['gcreate'].groupid.value ='';
-document.forms['gcreate'].group.value ='';
+	if (obj.value == 'modify')
+		document.forms['group'].idcol.disabled = true;
+	else
+		document.forms['group'].idcol.disabled = false;
 }
+
+
 //-->
 </script>
-
-<form name="gcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="vacadm">
-<input type="hidden" name="idx" value="lper">
-<input type="hidden" name="add" value="{ what }">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<form name="group" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadm" />
+<input type="hidden" name="idx" value="lper" />
+<input type="hidden" name="add" value="changegroup" />
+<table  width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ usertext }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="user" size="45" maxlength="255" value="{ userval }" disabled>
-<input type="hidden" name="userid" value="{ userid }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">{ orand }</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopupG('{ groupsbrowurl }');">{ grouptext }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="group" size="45" maxlength="255" value="{ groupval }" disabled>
-<input type="hidden" name="groupid" value="{ groupid }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ collection }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="idcol">
-<!--#in getnextcol -->
-<option value="{ idcollection }" { selected }>{ collname }</option>
-<!--#endin getnextcol -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ appschema }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="idsa">
-<!--#in getnextsa -->
-<option value="{ idsapp }" { selected }>{ saname }</option>
-<!--#endin getnextsa -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ add }">&nbsp;&nbsp;<input type="button" name="breset" value="{ reset }" onclick="babReset()">
-<!--#if bdel -->
-&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ delete }">
-<!--#endif bdel -->
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+		<tr> 
+			<td align="right"><a href="javascript: openPopupG('{ groupsbrowurl }');">{ grouptext }</a>:</td>
+			<td> 
+				<input type="text" name="group" size="35" maxlength="255" value="{ groupval }" disabled="disabled" />
+				<input type="hidden" name="groupid" value="{ groupid }" />
+			</td>
+		</tr>
+		<tr>
+			<td align="right">&nbsp;</td>
+			<td> 
+				<dl>
+					<dt>{ t_add_modify }</dt>
+					<dd><input type="radio" name="addmodify" value="add" onclick="radiochange(this)" checked="checked" />{ t_add }</dd>
+					<dd><input type="radio" name="addmodify" value="modify" onclick="radiochange(this)" />{ t_modify }<dd>
+				</dl>
+			</td>
+		</tr>
+		<tr>
+			<td align="right">{ collection }:</td>
+			<td> 
+				<select name="idcol">
+				<!--#in getnextcol -->
+				<option value="{ idcollection }" { selected }>{ collname }</option>
+				<!--#endin getnextcol -->
+				</select>
+			</td>
+		</tr>
+		<tr> 
+			<td align="right">{ appschema }:</td>
+			<td> 
+				<select name="idsa">
+				<!--#in getnextsa -->
+				<option value="{ idsapp }" { selected }>{ saname }</option>
+				<!--#endin getnextsa -->
+				</select>
+			</td>
+		</tr>
+		<tr> 
+			<td>&nbsp;</td>
+			<td> 
+				<input type="submit" name="submit" value="{ t_record }" />
+			</td>
+		</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<br>
-<!--#end personnelcreate -->
+<!--#end grouppersonnelcreate -->
+
+<!--#begin changeucol -->
+<script type="text/javascript">
+<!--
+
+function computeRights(obj,max)
+{
+	if (ParseInt(obj.value) > max)
+		obj.value = max;
+
+	var f = document.forms['changeucol'];
+	var prefix = 'right_';
+
+	var sum = 0;
+
+	for (var i = 0 ; i < f.elements.length ; i++ )
+		{
+		if (f.elements[i].name.substring(0,prefix.length) == prefix)
+			{
+			if (!isNaN(f.elements[i].value))
+				sum += parseInt(f.elements[i].value);
+			}
+		}
+	
+	f.days.value = parseInt(f.total.value) - sum;
+}
+
+
+
+//-->
+</script>
+
+<form name="changeucol" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadm" />
+<input type="hidden" name="idx" value="lper" />
+<input type="hidden" name="add" value="changeucol" />
+<input type="hidden" name="idp" value="{ id_user }" />
+<input type="hidden" name="idcol" value="{ id_coll }" />
+<table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+		<tr> 
+			<td>&nbsp;</td>
+			<td colspan="2"> 
+				<h5>{ t_oldcol }</h5>
+			</td>
+			<td colspan="2"> 
+				<h5>{ t_newcol }</h5>
+			</td>
+		</tr>
+		<!--#in getnext -->
+		<tr>
+			<td>{ right[description] }</td>
+			<td>{ right[quantity] }</td>
+			<td>{ right[quantitydays] }</td>
+
+			<td>{ right[quantity] }</td>
+			<td><input type="text" name="right_{ id }" value="{ newrightvalue }" size="4" maxlength="5" onKeyUp="computeRights()" /></td>
+
+		</tr>
+		<!--#endin getnext -->
+		<tr> 
+			<td colspan="5" align="center"> 
+				<input type="submit" name="submit" value="{ t_record }" />
+			</td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end changeucol -->
 
 <!--#begin rlistbyuser -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
