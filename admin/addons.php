@@ -456,10 +456,10 @@ function import()
 		if( !get_cfg_var('safe_mode'))
 			set_time_limit(0);
 
-		if (!is_dir($GLOBALS['babUploadPath'].'tmp/'))
-		bab_mkdir($GLOBALS['babUploadPath'].'tmp/',$GLOBALS['babMkdirMode']);
+		if (!is_dir($GLOBALS['babUploadPath'].'/tmp/'))
+		bab_mkdir($GLOBALS['babUploadPath'].'/tmp/',$GLOBALS['babMkdirMode']);
 
-		$ul = $GLOBALS['babUploadPath'].'tmp/'.$_FILES['uploadf']['name'];
+		$ul = $GLOBALS['babUploadPath'].'/tmp/'.$_FILES['uploadf']['name'];
 		move_uploaded_file($_FILES['uploadf']['tmp_name'],$ul);
 		
 		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
