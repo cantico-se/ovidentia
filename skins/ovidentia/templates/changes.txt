@@ -39,6 +39,7 @@ contacts.html					        changed action="index.php" to action="{ babPhpSelf }"
 entry.html
 event.html					            changed action="index.php" to action="{ babPhpSelf }"
 faq.html					            changed action="index.php" to action="{ babPhpSelf }"
+                                        Addded popupquestion section
 faqprint.html
 fileman.html					        changed action="index.php" to action="{ babPhpSelf }"
 forums.html					            changed action="index.php" to action="{ babPhpSelf }"
