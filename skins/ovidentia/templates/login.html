@@ -27,6 +27,22 @@
               <input type="password" name="password" size="20" maxlength="30">
             </td>
     </tr>
+	<!--#if babCookieIdent -->
+	    <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              life } : </td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+            <select name="lifetime">
+				<option value="0" selected>{ nolife }</option>
+				<option value="86400">{ oneday }</option>
+				<option value="604800">{ oneweek }</option>
+				<option value="2678400">{ onemonth }</option>
+				<option value="31536000">{ oneyear }</option>
+				<option value="3153600000">{ infinite }</option>
+			</select>
+            </td>
+    </tr>
+	<!--#endif babCookieIdent -->
     <tr valign="middle"> 
       <td class="BabLoginMenuBackground" colspan="2" align="center"> 
         <input type="submit" name="submit" value="{ login }">
