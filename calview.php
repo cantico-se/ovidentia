@@ -168,6 +168,112 @@ function newArticles()
 	$body->babecho(	babPrintTemplate($temp,"calview.html", "articleslist"));
 }
 
+function newThreads()
+{
+	global $body;
+
+	class temp3
+		{
+
+		var $db;
+		var $arrid = array();
+		var $count;
+		var $resthread;
+		var $countarticles;
+		var $lastlog;
+		var $newposts;
+		var $posts;
+
+		function temp3()
+			{
+			global $BAB_SESS_USERID;
+			$this->db = new db_mysql();
+			$req = "select * from users_log where id_user='".$BAB_SESS_USERID."'";
+			$res = $this->db->db_query($req);
+			$row = $this->db->db_fetch_array($res);
+			$this->lastlog = $row[lastlog];
+
+			$req = "select * from forums";
+			$res = $this->db->db_query($req);
+			while( $row = $this->db->db_fetch_array($res))
+				{
+				if(isAccessValid("forumsview_groups", $row[id]))
+					{
+					array_push($this->arrid, $row[id]);
+					}
+				}
+			$this->count = count($this->arrid);
+			$this->newposts = babTranslate("New posts");
+			}
+
+		function getnextforum()
+			{
+			static $k=0;
+			if( $k < $this->count)
+				{
+				$req = "select * from threads where forum='".$this->arrid[$k]."' order by date desc";
+				$this->resthread = $this->db->db_query($req);
+				$this->countthreads = $this->db->db_num_rows($this->resthread);
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+
+		function getnextthread()
+			{
+			static $k=0;
+			if( $k < $this->countthreads)
+				{
+				$this->total = 0;
+				$arr = $this->db->db_fetch_array($this->resthread);
+				$req = "select count(*) as total from posts where id_thread='".$arr[id]."' and confirmed='Y' and date >= '".$this->lastlog."'";
+				$res = $this->db->db_query($req);
+				$arr2 = $this->db->db_fetch_array($res);
+				$this->total = $arr2[total];
+				$req = "select * from posts where id='".$arr[lastpost]."' and confirmed='Y'";
+				$res = $this->db->db_query($req);
+				$arr2 = $this->db->db_fetch_array($res);
+				$this->date = bab_strftime(bab_mktime($arr2[date]));
+				$req = "select * from posts where id='".$arr[post] ."'";
+				$res = $this->db->db_query($req);
+				$arr2 = $this->db->db_fetch_array($res);
+				$this->title = $arr2[subject];
+				$this->titleurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$arr[forum]."&thread=".$arr[id]."&views=1";
+				$this->posts = $this->total . " ". babTranslate("Post")."(s)";
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+
+		function getpost()
+			{
+			if( $this->total > 0)
+				{
+				$this->total--;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new temp3();
+	$body->babecho(	babPrintTemplate($temp,"calview.html", "threadslist"));
+}
+
 /* main */
 if(!isset($idx))
 	{
@@ -192,6 +298,7 @@ switch($idx)
 			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&calendarid=0");
 		}
 		newArticles();
+		newThreads();
 		break;
 	}
 $body->setCurrentItemMenu($idx);
