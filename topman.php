@@ -590,14 +590,7 @@ function viewArticleProperties($item, $idart)
 				$this->elapstime = 5;
 				$this->ampm = $babBody->ampm;
 
-				$this->datepubtitle = bab_translate("Date of publication");
-				$this->datepuburl = $GLOBALS['babUrlScript']."?tg=month&callback=datePub&ymin=0&ymax=2";
-				$this->datepubtxt = bab_translate("Publication date");
-				$this->dateendurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=2";
-				$this->dateendtxt = bab_translate("Archiving date");
-				$this->invaliddate = bab_translate("ERROR: End date must be older");
-				$this->invaliddate = str_replace("'", "\'", $this->invaliddate);
-				$this->invaliddate = str_replace('"', "'+String.fromCharCode(34)+'",$this->invaliddate);
+
 				$this->cdateecheck = '';
 				if( $arrart['date_publication'] != '0000-00-00 00:00:00' )
 					{
@@ -639,11 +632,25 @@ function viewArticleProperties($item, $idart)
 					$this->timeend = "00:00";
 					}
 
+				$this->yearmin = min($this->yearpub, $this->yearend);
+				$this->yearmin = min($this->yearmin, date("Y"));
+				$this->yearmax = max($this->yearpub, $this->yearend);
+				$this->yearmax = max($this->yearmax, date("Y"));
+
 				$this->daysel = $this->daypub;
 				$this->monthsel = $this->monthpub;
-				$this->yearsel = $this->yearpub - date("Y") + 1;
+				$this->yearsel = $this->yearpub - $this->yearmin + 1;
 				$this->timesel = $this->timepub;
 
+				$this->datepubtitle = bab_translate("Date of publication");
+				$this->datepuburl = $GLOBALS['babUrlScript']."?tg=month&callback=datePub&ymin=".abs($this->yearmin-date("Y"))."&ymax=".abs($this->yearmax+2-date("Y"));
+				$this->datepubtxt = bab_translate("Publication date");
+				$this->dateendurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".abs($this->yearmin-date("Y"))."&ymax=".abs($this->yearmax+2-date("Y"));
+				$this->dateendtxt = bab_translate("Archiving date");
+				$this->invaliddate = bab_translate("ERROR: End date must be older");
+				$this->invaliddate = str_replace("'", "\'", $this->invaliddate);
+				$this->invaliddate = str_replace('"', "'+String.fromCharCode(34)+'",$this->invaliddate);
+				
 				$rr = $babDB->db_fetch_array($babDB->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$arrart['id_topic']."'"));
 				if( $arrart['restriction'] != '' || (isset($rr['restrict_access']) && $rr['restrict_access'] == 'Y'))
 					{
@@ -825,10 +832,10 @@ function viewArticleProperties($item, $idart)
 		function getnextyear()
 			{
 			static $i = 0, $p;
-			if( $i < 3)
+			if( $i < ($this->yearmax - $this->yearmin) + 3)
 				{
 				$this->yearid = $i+1;
-				$this->yearidval = date("Y") + $i;
+				$this->yearidval = $this->yearmin + $i;
 				if( $this->yearsel == $this->yearid )
 					{
 					$this->selected = "selected";
@@ -844,7 +851,7 @@ function viewArticleProperties($item, $idart)
 				{
 				if( $p == 0 )
 					{
-					$this->yearsel = $this->yearend - date("Y") + 1;
+					$this->yearsel = $this->yearend - $this->yearmin + 1;
 					$p++;
 					}
 				$i = 0;
@@ -1133,7 +1140,7 @@ function saveOrderArticles($id, $listarts)
 
 function saveArticleProperties()
 {
-	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $item, $topicid, $cdatep, $yearbegin, $yearpub, $monthpub, $daypub, $timepub, $cdatee, $yearend, $yearend, $monthend, $dayend, $timeend, $restriction, $operator, $grpids;
+	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $item, $topicid, $cdatep, $yearbegin, $yearpub, $monthpub, $daypub, $timepub, $cdatee, $yearend, $yearend, $monthend, $dayend, $timeend, $restriction, $operator, $grpids, $ymin, $ymax;
 
 	if( isset($cdatep) || isset($cdatee) || isset($topicid) || isset($restriction))
 	{
@@ -1143,15 +1150,15 @@ function saveArticleProperties()
 		$arrreq = array();
 
 		$arrart = $babDB->db_fetch_array($res);
-		if( isset($cdates)) 
+		if( isset($cdatep)) 
 			{
-			$date_pub = sprintf("%04d-%02d-%02d %s:00", date("Y") + $yearpub - 1, $monthpub, $daypub, $timepub);
+			$date_pub = sprintf("%04d-%02d-%02d %s:00", $ymin + $yearpub - 1, $monthpub, $daypub, $timepub);
 			$arrreq[] = "date_publication='".$date_pub."'";
 			}
 
 		if( isset($cdatee)) 
 			{
-			$date_end = sprintf("%04d-%02d-%02d %s:00", date("Y") + $yearend - 1, $monthend, $dayend, $timeend);
+			$date_end = sprintf("%04d-%02d-%02d %s:00", $ymin + $yearend - 1, $monthend, $dayend, $timeend);
 			$arrreq[] = "date_archiving='".$date_end."'";
 			}
 
