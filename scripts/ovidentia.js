@@ -84,7 +84,8 @@ function bab_popup(url,divisor)
 		var h = screen.height-hd;
 		var l = Math.round(wd/2);
 		var t = Math.round(hd/2);
-		bab_popup_obj = window.open(url,'bab_popup','status=yes,menubar=no,personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+		var name = 'bab_popup'+Math.floor(Math.random() * 99999999);
+		bab_popup_obj = window.open(url,name,'status=yes,menubar=no,personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
 		}
 	else
 		{
