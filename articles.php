@@ -1114,7 +1114,8 @@ function confirmModifyArticle($topics, $article, $comment, $bupdmod)
 	}
 	else
 	{
-		if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics)))
+		list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+		if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) || ( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics)))
 		{
 			$idart = bab_newArticleDraft($topics, $article);
 			if( $idart != 0 )
