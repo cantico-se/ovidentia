@@ -59,6 +59,7 @@ function db_connect()
 
 function db_query($query)
     {
+	$res = false;
 	if( !$this->idlink )
 		$this->idlink= $this->db_connect();
 
