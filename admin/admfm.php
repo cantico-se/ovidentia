@@ -429,7 +429,7 @@ function updateFolder($fid, $fname, $managerid, $active, $said, $notification, $
 function confirmDeleteFolder($fid)
 {
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-	bab_deleteFolder($id);
+	bab_deleteFolder($fid);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	exit;
 }

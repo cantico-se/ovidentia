@@ -246,7 +246,7 @@ function bab_deleteUploadUserFiles($gr, $id)
 	}
 
 
-function bab_deleteFolder($id)
+function bab_deleteFolder($fid)
 {
 	global $babDB;
 	// delete files owned by this group

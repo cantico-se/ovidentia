@@ -359,7 +359,7 @@ switch($idx)
 			$babBody->title = bab_translate("Users list");
 			$cnt = listUsers($pos, $grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-			if( $babBody->isSuperAdmin)
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 			}
 		else

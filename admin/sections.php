@@ -228,22 +228,17 @@ function sectionsOrder()
 						break;
 					case "3":
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && $rr['id_dgowner'] == 0)
-							{
-							if( $arr['position'] == 0 )
-								$this->arrleft[] = $arr['id'];
-							else
-								$this->arright[] = $arr['id'];
-							}
-						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
-							{
-							if( $arr['position'] == 0 )
-								$this->arrleft[] = $arr['id'];
-							else
-								$this->arright[] = $arr['id'];
-							}
-						else if( $babBody->isSuperAdmin && ($babBody->currentAdmGroup != $rr['id_dgowner']) )
+						if( $babBody->currentAdmGroup == 0  && $babBody->isSuperAdmin)
 						{
+							if( $rr['id_dgowner'] == 0 )
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+							else
+							{
 							if( $arr['position'] == 0 && !in_array($rr['id_dgowner']."-0", $this->arrleft))
 								{
 								$this->arrleft[] = $rr['id_dgowner']."-0";
@@ -252,6 +247,16 @@ function sectionsOrder()
 								{
 								$this->arright[] = $rr['id_dgowner']."-1";
 								}
+							}
+
+						}
+						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
+						{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							
 						}
 						break;
 					case "4":
@@ -265,22 +270,17 @@ function sectionsOrder()
 						break;
 					default:
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && $rr['id_dgowner'] == 0)
-							{
-							if( $arr['position'] == 0 )
-								$this->arrleft[] = $arr['id'];
-							else
-								$this->arright[] = $arr['id'];
-							}
-						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
-							{
-							if( $arr['position'] == 0 )
-								$this->arrleft[] = $arr['id'];
-							else
-								$this->arright[] = $arr['id'];
-							}
-						else if( $babBody->isSuperAdmin && ($babBody->currentAdmGroup != $rr['id_dgowner']) )
+						if( $babBody->currentAdmGroup == 0  && $babBody->isSuperAdmin)
 						{
+							if( $rr['id_dgowner'] == 0 )
+							{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							}
+							else
+							{
 							if( $arr['position'] == 0 && !in_array($rr['id_dgowner']."-0", $this->arrleft))
 								{
 								$this->arrleft[] = $rr['id_dgowner']."-0";
@@ -289,6 +289,16 @@ function sectionsOrder()
 								{
 								$this->arright[] = $rr['id_dgowner']."-1";
 								}
+							}
+
+						}
+						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
+						{
+							if( $arr['position'] == 0 )
+								$this->arrleft[] = $arr['id'];
+							else
+								$this->arright[] = $arr['id'];
+							
 						}
 						break;
 					}
@@ -567,6 +577,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 		}
 	}
 
+
 function saveSectionsOrder($listleft, $listright)
 	{
 		global $babBody;
@@ -577,7 +588,7 @@ function saveSectionsOrder($listleft, $listright)
 		{
 			for( $k = 0; $k < 2; $k++ )
 			{
-				$pos = 1;
+				$pos = 0;
 				$tab = func_get_arg($k);
 
 				for( $i = 0; $i < count($tab); $i++)
@@ -614,68 +625,56 @@ function saveSectionsOrder($listleft, $listright)
 		{
 			$apos = array();
 
-			for( $k = 0; $k < 2; $k++ )
+			$arridsec = array();
+
+			$arrtot = array_merge($listleft, $listright);
+
+			if( count($arrtot) > 0 )
 			{
-				$res = $db->db_query("select min(so.ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s, ".BAB_TOPICS_CATEGORIES_TBL." tc where so.position='".$k."' and (( so.id_section=s.id and type='2' and s.id_dgowner='".$babBody->currentAdmGroup."') or ( so.id_section=tc.id and type='3' and tc.id_dgowner='".$babBody->currentAdmGroup."')) order by so.ordering asc");
-				$arr = $db->db_fetch_array($res);
-				if( isset($arr[0]) )
+				for( $k = 0; $k < 2; $k++ )
 				{
-					$apos[$k] = $arr[0];
-
-				}
-				else
-				{
-					$res = $db->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='".$k."'");
-					$arr = $db->db_fetch_array($res);
-					if( empty($arr[0]))
-						$apos[$k] = 1;
-					else
-						$apos[$k] = $arr[0]+1;
-				}
-
-			}
-
-			$db->db_query("create temporary table bab_sec_ord select * from ".BAB_SECTIONS_ORDER_TBL." where 0");
-			$db->db_query("alter table bab_sec_ord add unique (id)");
-			$db->db_query("insert into bab_sec_ord select distinct so.* from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s, ".BAB_TOPICS_CATEGORIES_TBL." tc where ( so.id_section=s.id and type='2' and s.id_dgowner='".$babBody->currentAdmGroup."') or ( so.id_section=tc.id and type='3' and tc.id_dgowner='".$babBody->currentAdmGroup."') order by so.ordering asc");
-
-			$res = $db->db_query("select id from bab_sec_ord");
-			while($arr = $db->db_fetch_array($res))
-				$db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id='".$arr['id']."'");	
-
-
-			for( $k = 0; $k < 2; $k++ )
-			{
-				$ord = 1;
-				$res = $db->db_query("select id from ".BAB_SECTIONS_ORDER_TBL." where position='".$k."'");
-				while($arr = $db->db_fetch_array($res))
+					$res = $db->db_query("select id from ".BAB_SECTIONS_ORDER_TBL." where position='".$k."' order by ordering asc");
+					$i = 0;
+					while($arr = $db->db_fetch_array($res))
 					{
-					$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering='".$ord."' where id='".$arr['id']."'");
-					$ord += 1;
-					}
-			}
-
-
-			for( $k = 0; $k < 2; $k++ )
-			{
-				$tab = func_get_arg($k);
-				for( $i = 0; $i < count($tab); $i++)
-				{
-				$res = $db->db_query("select * from bab_sec_ord where id='".$tab[$i]."'");
-				if( $res && $db->db_num_rows($res) > 0 )
-					{
-					$arr = $db->db_fetch_array($res);
-					$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='".$k."' and ordering >= '".$apos[$k]."'");
-					$db->db_query("insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$arr['id_section']. "', '" . $k. "', '".$arr['type']."', '" . ($apos[$k]). "')");
-					$apos[$k] += 1;
-					if( $arr['type'] == "2")
+						if( in_array($arr['id'], $arrtot) )
 						{
-						$db->db_query("update ".BAB_SECTIONS_TBL." set position='".$k."' where id='".$db->db_insert_id()."'");
+							if(!isset($apos[$k]))
+								$apos[$k] = $i;
 						}
+						else
+							{
+							$arridsec[$k][] = $arr['id'];
+							$i++;
+							}
+					}
+
+					if( !isset($apos[$k]))
+						$apos[$k] = $i;
+				}
+
+				
+				for( $k = 0; $k < 2; $k++ )
+				{
+					$tab = func_get_arg($k);
+					if( count($arridsec[$k]) > 0 )
+						$arrs = array_merge(array_slice($arridsec[$k], 0, $apos[$k]), $tab, array_slice($arridsec[$k], $apos[$k]));
+					else
+						$arrs = $tab;
+
+					$pos = 0;
+					for( $i = 0; $i < count($arrs); $i++)
+					{
+						$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set position='".$k."', ordering='".($pos+1)."' where id='".$arrs[$i]."'");
+						$arr = $db->db_fetch_array($db->db_query("select id, type from ".BAB_SECTIONS_ORDER_TBL." where id='".$arrs[$i]."'"));
+						if( $arr['type'] == "2")
+							{
+							$db->db_query("update ".BAB_SECTIONS_TBL." set position='".$k."' where id='".$arrs[$i]."'");
+							}
+						$pos++;
 					}
 				}
 			}
-
 		}
 	}
 
