@@ -326,7 +326,7 @@ if( !isset($pos))
 
 if( isset($add) && $add == "addthread")
 	{
-	saveThread($forum, $name, $subject, $message, $notifyme);
+	saveThread($forum, $uname, $subject, $message, $notifyme);
 	}
 
 $babLevelTwo = bab_getForumName($forum);
