@@ -832,15 +832,18 @@ function bab_replace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if (trim($m[2][$k]) == "")
-					{$message = $arr['question'];}
-				if (trim($m[3][$k]) == 1)
+				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['idcat']))
 					{
-					$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".trim($m[1][$k])."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$message."</a>", $txt);
-					}
-				else
-					{
-					$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".trim($m[1][$k])."\">".$message."</a>", $txt);
+					if (trim($m[2][$k]) == "")
+						{$message = $arr['question'];}
+					if (trim($m[3][$k]) == 1)
+						{
+						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".trim($m[1][$k])."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$message."</a>", $txt);
+						}
+					else
+						{
+						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".trim($m[1][$k])."\">".$message."</a>", $txt);
+						}
 					}
 				$repl = true;
 				}
