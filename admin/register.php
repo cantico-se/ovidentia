@@ -93,10 +93,11 @@ function notifyAdminRegistration($name, $useremail, $warning)
 		{
 		while( $arr = $db->db_fetch_array($result))
 			{
-			$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
+			$sql = "select email, firstname, lastname, disabled from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
 			$res=$db->db_query($sql);
 			$r = $db->db_fetch_array($res);
-			$mail->mailTo($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
+			if( $r['disabled'] != 1 )
+				$mail->mailTo($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
 			}
 		}
     $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
