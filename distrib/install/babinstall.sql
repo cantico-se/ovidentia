@@ -824,3 +824,15 @@ CREATE TABLE bab_ini (
 INSERT INTO bab_ini VALUES ('ver_major', '3');
 INSERT INTO bab_ini VALUES ('ver_minor', '3');
 INSERT INTO bab_ini VALUES ('ver_build', '1');
+
+#
+# Structure de la table `bab_images_temp`
+#
+
+CREATE TABLE bab_images_temp (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  id_owner int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id)
+);
+

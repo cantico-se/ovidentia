@@ -24,6 +24,7 @@ define("BAB_FORUMSREPLY_GROUPS_TBL", "bab_forumsreply_groups");
 define("BAB_FORUMSVIEW_GROUPS_TBL", "bab_forumsview_groups");
 define("BAB_GROUPS_TBL", "bab_groups");
 define("BAB_HOMEPAGES_TBL", "bab_homepages");
+define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");
 define("BAB_INI_TBL", "bab_ini");
 define("BAB_MAIL_ACCOUNTS_TBL", "bab_mail_accounts");
 define("BAB_MAIL_DOMAINS_TBL", "bab_mail_domains");
