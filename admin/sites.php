@@ -173,6 +173,32 @@ function siteCreate($name, $description, $siteemail)
 	}
 
 
+function viewVersion()
+	{
+	global $body;
+	class temp
+		{
+		var $urlphpinfo;
+		var $phpinfo;
+		var $srcversiontxt;
+		var $baseversiontxt;
+		var $srcversion;
+		var $baseversion;
+
+		function temp()
+			{
+			$this->srcversiontxt = babTranslate("Php version");
+			$this->srcversion = phpversion();//$GLOBALS['CurrentVersion'];
+			$this->baseversiontxt = babTranslate("Database server version");
+			$this->baseversion = @mysql_get_server_info();
+			$this->urlphpinfo = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=sites&idx=phpinfo');";
+			$this->phpinfo = "phpinfo";
+			}
+		}
+
+	$temp = new temp();
+	$body->babecho(	babPrintTemplate($temp,"sites.html", "versions"));
+	}
 
 function siteSave($name, $description, $lang, $siteemail, $skin)
 	{
@@ -219,11 +245,24 @@ if( !isset($idx))
 
 switch($idx)
 	{
+	case "phpinfo":
+		phpinfo();
+		exit;
+		break;
+
+	case "version":
+		$body->title = babTranslate("Ovidentia info");
+		viewVersion();
+		$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
+		$body->addItemMenu("version", babTranslate("Versions"),$GLOBALS['babUrl']."index.php?tg=sites&idx=version");
+		break;
+
 	case "create":
 		$body->title = babTranslate("Create site");
 		siteCreate($name, $description, $siteemail);
 		$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
 		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sites&idx=create");
+		$body->addItemMenu("version", babTranslate("Versions"),$GLOBALS['babUrl']."index.php?tg=sites&idx=version");
 		break;
 	case "list":
 	default:
@@ -236,6 +275,7 @@ switch($idx)
 			$body->title = babTranslate("There is no site");
 
 		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sites&idx=create");
+		$body->addItemMenu("version", babTranslate("Versions"),$GLOBALS['babUrl']."index.php?tg=sites&idx=version");
 		break;
 	}
 
