@@ -482,6 +482,18 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admcal";
 		break;
+	case "admocs":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Organization chart");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
+			$incl = "admin/admocs";
+		break;
+	case "admoc":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Organization chart");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
+			$incl = "admin/admoc";
+		break;
 	case "sites":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Sites");
@@ -679,6 +691,35 @@ switch($tg)
 		break;
 	case "waiting":
 		$incl = "waiting";
+		break;
+	case "charts":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Charts");
+		$incl = "charts";
+		break;
+	case "chart":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Charts");
+		include $babInstallPath."chart.php";
+		exit;
+		break;
+	case "frchart":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Charts");
+		include $babInstallPath."frchart.php";
+		exit;
+		break;
+	case "fltchart":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Charts");
+		include $babInstallPath."fltchart.php";
+		exit;
+		break;
+	case "flbchart":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Charts");
+		include $babInstallPath."flbchart.php";
+		exit;
 		break;
 	case "faq":
 		$babLevelOne = bab_translate("User's section");

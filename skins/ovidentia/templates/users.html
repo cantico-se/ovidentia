@@ -74,7 +74,11 @@
               <!--#endif primary -->
               <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
             <td class="BabSiteAdminFontBackground" valign="middle"><a class="BabAdminMembersList" href="{ groupurl }">{ 
-              groupname }</a> </td>
+              groupname }</a>
+              <!--#if ocentity -->
+			  &nbsp;&nbsp;&nbsp;(&nbsp;{ ocentity }&nbsp;)
+              <!--#endif ocentity -->
+			  </td>
           </tr>
           <!--#endin getnextgroup -->
         </table></td>

@@ -112,6 +112,76 @@
 </tr>
 </table>
 <!--#end adbrowse -->
+<!--#begin uadbrowse -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+
+</HEAD>
+<BODY>
+<br>
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr valign="middle"> 
+<td colspan="3" class="BabLetterlists"> 
+<!--#if allselected "== 1" -->
+{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+<!--#else allselected -->
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+<!--#else selected -->
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+<!--#endif selected -->
+<!--#endin getnextselect -->
+</td>
+<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+<tr>
+
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr> 
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#in getnextcol -->
+          <td class="BabSiteAdminSmall" valign="middle" nowrap ><b><a class="BabAlphabetLink" href="{ colurl }">{ coltxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></b></td>
+          <!--#endin getnextcol -->
+        </tr>
+        <!--#in getnext -->
+        <!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+          <td align="center" valign="middle" width="1%" >&nbsp;</td>
+          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }({ userid }, '{ firstlast }')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <!--#in getnextcolval -->
+          <td align="left" valign="middle">{ coltxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#endin getnextcolval -->
+        </tr>
+        <!--#endin getnext -->
+      </table>
+</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+<!--#end uadbrowse -->
 <br>xxxx
 <br>
 <br>
@@ -324,7 +394,7 @@ xxxhier <br>
 <TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
-<script type="text/javascript">
+<script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
 //-->
 </script>
@@ -368,6 +438,39 @@ xxxhier <br>
 </tr>
 </table>
 <br>
+<!--#if orgcount -->
+<script type="text/javascript">
+<!--
+function openWinOrg(idx)
+{
+var dummy;
+Start('{ vieworgurl }'+idx, 'OrgChartWin', 'status=no,resizable=yes,scrollbars=yes');
+this.close();
+}
+
+//-->
+</script>
+<form name="ocstart" method="post" action="{ babPhpSelf }">
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td><a class="BabSiteAdminListLink" href="javascript:openWinOrg(document.ocstart.ocid.options[document.ocstart.ocid.selectedIndex].value) ;" nowrap>{ vieworg }</a></td>
+<td align="center">
+<select name="ocid">
+<!--#in getnextorg -->
+<option value="{ orgid }">{ orgn }</option>
+<!--#endin getnextorg -->
+</select>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#endif orgcount -->
 </BODY>
 </HTML>
 <!--#end summarydbcontact -->

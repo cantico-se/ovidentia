@@ -185,6 +185,15 @@ function listGroups($id, $pos, $grp)
 							}
 						}
 					}
+
+				if( $this->arrgroups['id_ocentity'] )
+					{
+					list($this->ocentity) = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_OC_ENTITIES." where id='".$this->arrgroups['id_ocentity']."'"));
+					}
+				else
+					{
+					$this->ocentity = false;
+					}
 				$i++;
 				return true;
 				}
@@ -328,16 +337,14 @@ function updateGroups($id, $groups, $groupst)
 	{
 		if( count($groups) < 1  || !in_array($tab[$i], $groups))
 		{
-			$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$tab[$i]."' and id_object='".$id."'";
-			$res = $db->db_query($req);
+			bab_removeUserFromGroup($id, $tab[$i]);
 		}
 	}
 	for( $i = 0; $i < count($groups); $i++)
 	{
 		if( count($tab) < 1 || !in_array($groups[$i], $tab))
 		{
-			$req = "insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$groups[$i]. "', '" . $id. "')";
-			$res = $db->db_query($req);
+			bab_addUserToGroup($id, $groups[$i]);
 		}
 	}
 
@@ -369,11 +376,7 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 		$arr2 = $db->db_fetch_array($db->db_query("select idgroup from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 		if( $arr2['idgroup'] != 0)
 			{
-			$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$id."' and id_group='".$arr2['idgroup']."'");
-			if( !$res || $db->db_num_rows($res) < 1)
-				{
-				$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$arr2['idgroup']. "', '" . $id. "')");
-				}
+			bab_addUserToGroup( $id, $arr2['idgroup']);
 			}
 		notifyUserconfirmation( bab_composeUserName($r['firstname'] , $r['lastname']), $r['email']);
 		}

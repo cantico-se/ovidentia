@@ -1,0 +1,39 @@
+<!--#begin oclist -->
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle"	nowrap>{ 
+name }</td>
+<td class="BabSiteAdminTitleFontBackground" 
+valign="middle">{ description }</td>
+<td class="BabSiteAdminTitleFontBackground" 
+valign="middle" align="center" colspan="1">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" valign="middle" 
+nowrap><a class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', 'OrgChartWin{ ocid }', 'status=no,resizable=yes,scrollbars=yes');" nowrap>{ urlname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">
+<!--#if bedit -->
+<!--#if bediturl -->
+<a class="BabSiteAdminListLink" href="javascript: Start('{ editurl }', 'OrgChartWin{ ocid }', 'status=no,resizable=yes,scrollbars=yes');" nowrap>{ edit }</a>
+<!--#if lock "== Y" -->
+&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ unlockurl }" nowrap>{ unlock }</a>
+<!--#endif lock -->
+<!--#else bediturl -->
+{ edit }
+<!--#endif bediturl -->
+<!--#else bedit -->&nbsp;
+<!--#endif bedit -->
+</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end oclist -->

@@ -328,7 +328,7 @@ function confirmUser($hash, $nickname)
 				$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['id']."' and id_group='".$arr2['idgroup']."'");
 				if( !$res || $db->db_num_rows($res) < 1)
 					{
-					$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$arr2['idgroup']. "', '" . $arr['id']. "')");
+					bab_addUserToGroup($arr['id'], $arr2['idgroup']);
 					}
 				}
 			return true;

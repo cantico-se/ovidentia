@@ -120,7 +120,7 @@ else
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Deletem">
 <input type="hidden" name="item" value="{ grpid }">
-<table border="0" width="10%" cellpadding="3" cellspacing="0" align="center">
+<table border="0" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabAdminMembers" align="center" valign="middle">{ group }</td>
 </tr>
@@ -131,41 +131,51 @@ else
 <td> 
 
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-          <tr> 
-            <td class="BabTitleSmallFontBg" width="1%" colspan="2"><a 
-href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" 
-alt="{ checkall }" width="10" height="10" border="0"></a><a 
-href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" 
-alt="{ uncheckall }" width="10" height="10" border="0"></a> </td>
-            <td class="BabTitleSmallFontBg" valign="middle">&nbsp;</td>
-            <td class="BabTitleSmallFontBg" valign="middle">{ fullname } </td>
-          </tr>
-          <!--#in getnext -->
-          <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-            <td valign="middle" width="1%"> <input type="checkbox" name="users[]" value="{ arr[id] }"> 
-            </td>
-            <td valign="middle" width="1%">&nbsp;</td>
-            <td valign="middle" nowrap> 
-              <!--#if primary "== Y" -->
-              <img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }" border="0"> 
-              <!--#endif primary -->
-              &nbsp;</td>
-            <td valign="middle">
-			<!--#if bmodname -->
-			<a class="BabAdminMembersList" href="{ url }">{ urlname }</a>
-			<!--#else bmodname -->
-			{ urlname }
-			<!--#endif bmodname -->
-			</td>
-          </tr>
-          <!--#endin getnext -->
-          <tr> 
-            <td class="BabTitleSmallFontBg" colspan="2" align="center" width="20"><a href="javascript:submitForm('Deletem','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
-            <td class="BabTitleSmallFontBg" valign="middle">&nbsp;</td>
-            <td class="BabTitleSmallFontBg" valign="middle">&nbsp;</td>
-          </tr>
-        </table>
-
+<tr> 
+<td class="BabTitleSmallFontBg" width="1%" colspan="2">
+<!--#if identity -->&nbsp;
+<!--#else identity -->
+<a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a 
+href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a>
+<!--#endif identity -->
+</td>
+<td class="BabTitleSmallFontBg" valign="middle">&nbsp;</td>
+<td class="BabTitleSmallFontBg" valign="middle">{ fullname } </td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td valign="middle" width="1%">
+<!--#if identity -->&nbsp;
+<!--#else identity -->
+<input type="checkbox" name="users[]" value="{ arr[id] }"> 
+<!--#endif identity -->
+</td>
+<td valign="middle" width="1%">&nbsp;</td>
+<td valign="middle" nowrap> 
+<!--#if primary "== Y" -->
+<img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }" border="0"> 
+<!--#endif primary -->
+&nbsp;</td>
+<td valign="middle">
+<!--#if bmodname -->
+<a class="BabAdminMembersList" href="{ url }">{ urlname }</a>
+<!--#else bmodname -->
+{ urlname }
+<!--#endif bmodname -->
+</td>
+</tr>
+<!--#endin getnext -->
+<tr> 
+<td class="BabTitleSmallFontBg" colspan="2" align="center" width="20">
+<!--#if identity -->&nbsp;
+<!--#else identity -->
+<a href="javascript:submitForm('Deletem','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
+<!--#endif identity -->
+</td>
+<td class="BabTitleSmallFontBg" valign="middle">&nbsp;</td>
+<td class="BabTitleSmallFontBg" valign="middle">&nbsp;</td>
+</tr>
+</table>
 </td></tr></table>
 </form>
 <br>

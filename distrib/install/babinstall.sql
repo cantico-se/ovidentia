@@ -65,6 +65,7 @@ CREATE TABLE bab_faqcat (
    description text NOT NULL,
    lang varchar(10) NOT NULL default '',
    id_dgowner int(11) unsigned NOT NULL default '0',
+   id_root int(11) unsigned NOT NULL default '0',
    PRIMARY KEY  (id),
    KEY id_dgowner (id_dgowner)
 );
@@ -93,6 +94,7 @@ CREATE TABLE bab_faqcat_groups (
 CREATE TABLE bab_faqqr (
    id int(11) unsigned NOT NULL auto_increment,
    idcat int(11) unsigned DEFAULT '0' NOT NULL,
+   id_subcat int(11) unsigned DEFAULT '0' NOT NULL,
    question text NOT NULL,
    response text NOT NULL,
    PRIMARY KEY (id)
@@ -183,15 +185,16 @@ CREATE TABLE bab_groups (
    pcalendar enum('Y','N') NOT NULL default 'Y',
    id_dggroup int(11) unsigned NOT NULL default '0',
    id_dgowner int(11) unsigned NOT NULL default '0',
+   id_entity int(11) unsigned NOT NULL default '0',
    PRIMARY KEY (id),
    KEY manager (manager),
    KEY id_dggroup (id_dggroup),
    KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0', 'N', 'Y', 'Y', 'Y', 'Y', '0', '0');
-INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0', 'N', 'N', 'N', 'N', 'N', '0', '0');
-INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0', 'N', 'Y', 'Y', 'N', 'Y', '0', '0');
+INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0', 'N', 'Y', 'Y', 'Y', 'Y', '0', '0', '0');
+INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0', 'N', 'N', 'N', 'N', 'N', '0', '0', '0');
+INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0', 'N', 'Y', 'Y', 'N', 'Y', '0', '0', '0');
 
 
 # --------------------------------------------------------
@@ -927,8 +930,10 @@ CREATE TABLE bab_flow_approvers (
   forder enum('N','Y') NOT NULL default 'N',
   refcount int(11) unsigned NOT NULL default '0',
   id_dgowner int(11) unsigned NOT NULL default '0',
+  satype tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
-  KEY id_dgowner (id_dgowner)
+  KEY id_dgowner (id_dgowner),
+  KEY satype (satype)
 );
 
 #
@@ -939,6 +944,7 @@ CREATE TABLE bab_fa_instances (
   id int(11) unsigned NOT NULL auto_increment,
   idsch int(11) unsigned NOT NULL default '0',
   extra tinytext NOT NULL,
+  iduser int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY idsch (idsch)
 );
@@ -1030,7 +1036,7 @@ CREATE TABLE bab_db_directories (
   KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_db_directories (name, description, id_group, id_dgowner) values ('Ovidentia', 'Ovidentia directory', '1', '0');
+INSERT INTO bab_db_directories (id, name, description, id_group, id_dgowner) values (1, 'Ovidentia', 'Ovidentia directory', '1', '0');
 
 #
 # Structure de la table `bab_dbdir_entries`
@@ -1464,4 +1470,156 @@ CREATE TABLE bab_dg_users_groups (
   PRIMARY KEY  (id),
   KEY id_object (id_object),
   KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table `bab_org_charts`
+#
+
+CREATE TABLE bab_org_charts (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  isprimary enum('N','Y') NOT NULL default 'N',
+  edit enum('N','Y') NOT NULL default 'N',
+  edit_author int(11) unsigned NOT NULL default '0',
+  edit_date datetime NOT NULL default '0000-00-00 00:00:00',
+  id_dgowner int(11) unsigned NOT NULL default '0',
+  id_directory int(11) unsigned NOT NULL default '0',
+  type smallint(5) unsigned NOT NULL default '0',
+  id_first_node int(11) unsigned NOT NULL default '0',
+  id_closed_nodes text NOT NULL,
+  PRIMARY KEY  (id),
+  KEY id_dgowner (id_dgowner),
+  KEY id_directory (id_directory)
+);
+
+INSERT INTO bab_org_charts VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 'N', 0, '0000-00-00 00:00:00', 0, 1, 0, 0, '');
+
+#
+# Structure de la table `bab_ocupdate_groups`
+#
+
+CREATE TABLE bab_ocupdate_groups (
+  id tinyint(10) NOT NULL auto_increment,
+  id_object tinyint(10) NOT NULL default '0',
+  id_group tinyint(10) NOT NULL default '0',
+  UNIQUE KEY id (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table `bab_ocview_groups`
+#
+
+CREATE TABLE bab_ocview_groups (
+  id tinyint(10) NOT NULL auto_increment,
+  id_object tinyint(10) NOT NULL default '0',
+  id_group tinyint(10) NOT NULL default '0',
+  UNIQUE KEY id (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table `bab_oc_entities`
+#
+
+CREATE TABLE bab_oc_entities (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  id_oc int(11) unsigned NOT NULL default '0',
+  id_node int(11) unsigned NOT NULL default '0',
+  e_note text NOT NULL,
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_oc (id_oc),
+  KEY id_node (id_node),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table `bab_oc_roles`
+#
+
+CREATE TABLE bab_oc_roles (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(225) NOT NULL default '',
+  description tinytext NOT NULL,
+  id_oc int(11) unsigned NOT NULL default '0',
+  id_entity int(11) NOT NULL default '0',
+  type tinyint(3) unsigned NOT NULL default '0',
+  cardinality enum('N','Y') NOT NULL default 'N',
+  PRIMARY KEY  (id),
+  KEY id_oc (id_oc),
+  KEY id_entity (id_entity)
+);
+
+#
+# Structure de la table `bab_oc_roles_users`
+#
+
+CREATE TABLE bab_oc_roles_users (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_role int(11) unsigned NOT NULL default '0',
+  id_user int(11) unsigned NOT NULL default '0',
+  isprimary enum('N','Y') NOT NULL default 'N',
+  PRIMARY KEY  (id),
+  KEY id_role (id_role,id_user)
+);
+
+#
+# Structure de la table `bab_oc_trees`
+#
+
+CREATE TABLE bab_oc_trees (
+  id int(11) unsigned NOT NULL auto_increment,
+  lf int(11) unsigned NOT NULL default '0',
+  lr int(11) unsigned NOT NULL default '0',
+  id_parent int(11) unsigned NOT NULL default '0',
+  id_user int(11) unsigned NOT NULL default '0',
+  info_user varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id),
+  KEY lf (lf),
+  KEY lr (lr),
+  KEY id_parent (id_parent),
+  KEY id_user (id_user),
+  KEY info_user (info_user)
+);
+
+#
+# Structure de la table `bab_faq_subcat`
+#
+
+CREATE TABLE bab_faq_subcat (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_cat int(11) unsigned NOT NULL default '0',
+  name text NOT NULL,
+  id_node int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_cat (id_cat,id_node),
+  KEY id_node (id_node)
+);
+
+#
+# Structure de la table `bab_faq_trees`
+#
+
+CREATE TABLE bab_faq_trees (
+  id int(11) unsigned NOT NULL auto_increment,
+  lf int(11) unsigned NOT NULL default '0',
+  lr int(11) unsigned NOT NULL default '0',
+  id_parent int(11) unsigned NOT NULL default '0',
+  id_user int(11) unsigned NOT NULL default '0',
+  info_user varchar(255) NOT NULL default '',
+  PRIMARY KEY  (id),
+  KEY lf (lf),
+  KEY lr (lr),
+  KEY id_parent (id_parent),
+  KEY id_user (id_user),
+  KEY info_user (info_user)
 );

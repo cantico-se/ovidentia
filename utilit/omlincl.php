@@ -2717,8 +2717,8 @@ class bab_FaqQuestions extends bab_handler
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response'],'OVML'));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
-			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
-			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2760,8 +2760,8 @@ class bab_FaqQuestion extends bab_handler
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response'],'OVML'));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
-			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
-			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;

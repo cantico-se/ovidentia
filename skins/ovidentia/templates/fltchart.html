@@ -1,0 +1,177 @@
+<!--#begin roleslist -->
+<!--#if superiortitle -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+	<tr> 
+		<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ superiorentity }</b></td>
+	</tr>
+	<tr class="BabSiteAdminFontBackground"> 
+		<td width="90%" align="left" valign="middle">
+			&nbsp;&nbsp;&nbsp;<a class="BabNameEmailLink" href="#" onclick="top.flb.document.location.href='{ superiorurl }'">{ superiortitle }</a>
+		</td>
+	</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endif superiortitle -->
+<!--#if temporarytitle -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+	<tr> 
+		<td class="BabTopicsAdminListTitle" valign="middle"><b>{ temporaryentity }</b></td>
+	</tr>
+	<tr class="BabSiteAdminFontBackground"> 
+		<td width="90%" align="left" valign="middle">
+			&nbsp;&nbsp;&nbsp;<a class="BabNameEmailLink" href="#" onclick="top.flb.document.location.href='{ temporaryurl }'">{ temporarytitle }</a>
+		</td>
+	</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endif temporarytitle -->
+<!--#if countroles -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr> 
+<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ collaboratortxt }</b></td>
+</tr>
+<!--#in getnextrole -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td width="90%" align="left" valign="middle">
+			<b>{ collaboratorentity }</b>
+<!--#in getnext -->
+			<br>
+			&nbsp;&nbsp;&nbsp;<a class="BabNameEmailLink" href="#" onclick="top.flb.document.location.href='{ collaboratorurl }'">{ collaboratortitle }</a>
+<!--#endin getnext -->
+		</td>
+	</tr>
+<!--#endin getnextrole -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endif countroles -->
+<!--#end roleslist -->
+
+
+<!--#begin usermore -->
+<br>
+<!--#if update -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="fltchart">
+<input type="hidden" name="idx" value="listr">
+<input type="hidden" name="ocid" value="{ ocid }">
+<input type="hidden" name="oeid" value="{ oeid }">
+<input type="hidden" name="iduser" value="{ iduser }">
+<input type="hidden" name="updr" value="updr">
+<!--#endif update -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr> 
+<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ username }</b></td>
+<td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;</td>
+</tr>
+<!--#in getnextentity -->
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td width="90%" align="left" valign="middle"><b>{ entity }</b></td>
+<td width="1%" align="left" valign="middle">&nbsp;</td>
+</tr>
+<!--#in getnextrole -->
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td>&nbsp;&nbsp;&nbsp;{ role }</td>
+<td>
+<!--#if update -->
+<input type="radio" name="prole" value="{ roleid }" { rchecked }>
+<!--#else update -->
+<!--#if rchecked -->
+<img src="{ babSkinPath }images/Puces/head.gif" alt="{ primaryrole }" border="0">
+<!--#else rchecked -->
+&nbsp;
+<!--#endif rchecked -->
+<!--#endif update -->
+</td>
+</tr>
+<!--#endin getnextrole -->
+<!--#endin getnextentity -->
+<tr> 
+<td class="BabTopicsAdminListTitle" valign="middle" >&nbsp;
+<!--#if update -->
+<a class="BabTopicsAdminTitleLink" href="javascript:submitForm('more', 'listform')">{ updatename }</a>
+<!--#endif update -->
+</td>
+<td width="1%" align="center" valign="middle" class="BabTopicsAdminListTitle">
+&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<!--#if update -->
+</form>
+<!--#endif update -->
+<br>
+<!--#end usermore -->
+
+<!--#begin userdetail -->
+<!--#if showph -->
+<br>
+<center>
+<table border="0" cellpadding="0" cellspacing="3" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<img src="{ urlimg }" border="0" alt="{ name }">
+</td>
+</tr>
+</table>
+</center>
+<!--#endif showph -->
+<br>
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr> 
+<td class="BabTopicsAdminListTitle" valign="middle" ><b>{ name }</b></td>
+</tr>
+<!--#in getnextfield -->
+<!--#if bfieldv -->
+<tr class="BabSiteAdminFontBackground">
+		<td width="90%" align="left" valign="middle">
+			<b>{ fieldn }</b>
+		</td>
+		</tr>
+<tr class="BabForumBackground1">
+		<td width="90%" align="left" valign="middle">
+			&nbsp;&nbsp;&nbsp;{ fieldv }
+		</td>
+	</tr>
+<!--#endif bfieldv -->
+<!--#endin getnextfield -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+<!--#end userdetail -->

@@ -1,0 +1,671 @@
+<!--#begin orgjavascript -->
+<script type="text/javascript">
+<!--
+function changestyle(ent,oldstyle,newstyle)
+{
+	var ctrlPrefix = 'ENT';
+	var obj = document.getElementById(ent);
+	var objtag = obj.tagName;
+	var tas = document.getElementsByTagName(objtag);
+	for (i = 0; i < tas.length; i++)
+		{
+		if (tas.item(i).id.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			{
+			var el = document.getElementById(tas.item(i).id);
+			el.className = oldstyle;
+			}
+		}
+obj.className = newstyle;
+}
+
+function updateFlbFrame(more)
+{
+var dummy;
+top.flb.document.location.href='{ updateurlb }' + more;
+}
+
+function updateFltFrame(more)
+{
+var dummy;
+top.flt.document.location.href='{ updateurlt }' + more;
+}
+
+//-->
+</script>
+<!--#end orgjavascript -->
+
+<!--#begin oedirectorylist_disp1 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+{ babMeta }
+{ babCss }
+{ javascript }
+</HEAD>
+<BODY>
+<br>
+<table width="99%" class="BabForumTopicsNavTreeBody" border="0" cellpadding="0" cellspacing="0" align="center">
+<!--#in getnext -->
+<tr>
+<td align="center">
+</td>
+<td>
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<!--#in getnextpad -->
+<!--#if vert "== 1" -->
+<TD <!--#if babIE "== 1" --> style="background-image: url({ babSkinPath }images/Puces/PostV.gif);background-repeat: no-repeat;background-position: center center"<!--#endif babIE -->>
+<img src="{ babSkinPath }images/Puces/Puce-v.gif" width="12" height="21" border="0" alt=""></TD>
+<!--#else vert -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="21" border="0" alt=""></TD>
+<!--#endif vert -->
+<!--#endin getnextpad -->
+
+<!--#if first "== 1" -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="12" height="21" border="0" alt=""></TD>
+<!--#else first -->
+<!--#if leaf "== 1" -->
+<TD <!--#if babIE "== 1" --> style="background-image: url({ babSkinPath }images/Puces/PostL.gif);background-repeat: no-repeat;background-position: center center"<!--#endif babIE -->>
+<img src="{ babSkinPath }images/Puces/Puce-l.gif" width="12" height="21" border="0" alt=""></TD>
+<!--#else leaf -->
+<TD <!--#if babIE "== 1" --> style="background-image: url({ babSkinPath }images/Puces/PostV.gif);background-repeat: no-repeat;background-position: center center"<!--#endif babIE -->>
+<img src="{ babSkinPath }images/Puces/Puce-t.gif" width="12" height="21" border="0" alt=""></TD>
+<!--#endif leaf -->
+<!--#endif first -->
+
+<!--#if parent "== 1" -->
+<TD <!--#if babIE "== 1" --> style="background-image: url({ babSkinPath }images/Puces/PostM.gif);background-repeat: no-repeat;background-position: center center"<!--#endif babIE -->>
+<a class="BabForumTopicsNavContribution" title="{ closenode }" href="{ closenodeurl }"><img src="{ babSkinPath }images/Puces/Puce-m.gif" width="9" height="21" border="0" alt=""></a></TD>
+<!--#else parent -->
+<!--#if bparent -->
+<TD><a class="BabForumTopicsNavContribution" title="{ opennode }" href="{ opennodeurl }"><img src="{ babSkinPath }images/Puces/Puce-p.gif" width="9" height="9" border="0" alt=""></a></TD>
+<!--#else bparent -->
+<TD><img src="{ babSkinPath }images/Puces/Puce-h.gif" width="9" height="21" border="0" alt=""></TD>
+<!--#endif bparent -->
+<!--#endif parent -->
+<TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="21" border="0" alt=""></TD>
+<td class="BabForumTopicsNavTreeLive">
+<!--#if update -->
+<a id="ENT{ oeid }" name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');javascript:updateFlbFrame('{ oeid }&idx=mode'); updateFltFrame('{ oeid }$idx=listr')" class="BabForumTopicsNavContribution" >
+{ entity }</a>
+<!--#else update -->
+<a id="ENT{ oeid }" name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');javascript:updateFltFrame('{ oeid }$idx=listr')" class="BabForumTopicsNavContribution" >
+{ entity }</a>
+<!--#endif update -->
+<!--#if current -->
+<script type="text/javascript">
+<!--
+changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');
+//-->
+</script>
+<!--#endif current -->
+
+<!--#if update -->
+&nbsp;<a class="BabForumTopicsNavContribution" title="{ roles }" href="javascript:updateFltFrame('{ oeid }&idx=listr');updateFlbFrame('{ oeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ roles }" border="0"></a>
+<!--#endif update -->
+<!--#if first -->
+<!--#else first -->
+<a class="BabForumTopicsNavContribution" title="{ startnode }" href="{ startnodeurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceArrowDown.gif" alt="{ startnode }" border="0"></a>
+<!--#endif first -->
+<!--#if bupbutton -->
+<a class="BabForumTopicsNavContribution" title="{ startnode }" href="{ startupnodeurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceArrowUp.gif" alt="{ startnode }" border="0"></a>
+<!--#endif bupbutton -->
+<!--#if update -->
+<a class="BabForumTopicsNavContribution" title="{ delete }" href="javascript:updateFlbFrame('{ oeid }&idx=dele');updateFltFrame('{ oeid }&idx=listr')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ delete }" border="0"></a>
+<!--#endif update -->
+
+
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!--#endin getnext -->
+</table>
+<br>
+<script type="text/javascript">
+<!--
+<!--#if update -->
+updateFlbFrame('{ currentoe }&idx=mode'); 
+<!--#endif update -->
+updateFltFrame('{ currentoe }&idx=listr'); 
+//-->
+</script>
+</BODY>
+</HTML>
+<!--#end oedirectorylist_disp1 -->
+
+<!--#begin nodecell -->
+<TABLE border="0" cellspacing="0" cellpadding="0" height="65" width="100%">
+<TR nowrap>
+<TD align="center" width="100%">
+<!--#if update -->
+<a id="ENT{ oeid }" name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFlbFrame('{ oeid }&idx=mode'); updateFltFrame('{ oeid }$idx=listr');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');">{ entity }</a>
+<!--#else update -->
+<a id="ENT{ oeid }" name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFltFrame('{ oeid }$idx=listr');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');">{ entity }</a>
+<!--#endif update -->
+<br>{ description }</TD>
+</TR>
+<TR nowrap>
+<TD align="center" width="100%"  valign="bottom">
+<TABLE cellspacing="0" width="100%" cellpadding="5" border=0>
+<TR>
+<!--#if update -->
+<TD nowrap>
+<a class="BabForumTopicsNavContribution" title="{ roles }" href="javascript:updateFltFrame('{ oeid }&idx=listr');updateFlbFrame('{ oeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ roles }" border="0"></a>
+</td>
+<!--#endif update -->
+<!--#if first -->
+<!--#else first -->
+<TD>
+<a class="BabForumTopicsNavContribution" title="{ startnode }" href="{ startnodeurl }"><img src="{ babSkinPath }images/Puces/PuceArrowDown.gif" alt="{ startnode }" border="0"></a>
+</td>
+<!--#endif first -->
+<!--#if bupbutton -->
+<TD>
+<a class="BabForumTopicsNavContribution" title="{ startnode }" href="{ startupnodeurl }"><img src="{ babSkinPath }images/Puces/PuceArrowUp.gif" alt="{ startnode }" border="0"></a>
+</td>
+<!--#endif bupbutton -->
+<!--#if parent -->
+<TD>
+<a class="BabForumTopicsNavContribution" title="{ closenode }" href="{ closenodeurl }"><img src="{ babSkinPath }images/Puces/close_oc.gif" alt="{ closenode }" border="0"></a>
+</td>
+<!--#else parent -->
+<!--#if bparent -->
+<TD>
+<a class="BabForumTopicsNavContribution" title="{ opennode }" href="{ opennodeurl }"><img src="{ babSkinPath }images/Puces/open_oc.gif" alt="{ opennode }" border="0"></a>
+</td>
+<!--#endif bparent -->
+<!--#endif parent -->
+<!--#if update -->
+<TD>
+<a class="BabForumTopicsNavContribution" title="{ delete }" href="javascript:updateFlbFrame('{ oeid }&idx=dele');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ delete }" border="0"></a>
+</td>
+<!--#endif update -->
+<td width="100%">
+&nbsp;
+</td>
+</tr>
+</table>
+</TD>
+</TR>
+</TABLE>
+<!--#end nodecell -->
+
+<!--#begin oedirectorylist_disp2 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+{ javascript }
+
+</HEAD>
+<BODY>
+<br>
+<TABLE border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td>&nbsp;</td>
+<td>
+<!--#in getnext -->
+<TABLE border="0" cellspacing="0" cellpadding="0">
+	<tr>
+	<!--#in getnextpad -->
+	<!--#if vert "== 1" -->
+	<td background="" style="background-image:url({ babSkinPath }images/Puces/vI.gif);background-repeat:repeat-y;">
+	<!--#else vert -->
+	<td >
+	<!--#endif vert -->
+	<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="25" height="70" border="0">
+	</td>
+	<!--#endin getnextpad -->
+	<!--#if first "!= 1" -->
+	<td valign="bottom">
+		<TABLE border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td background="{ babSkinPath }images/Puces/vI.gif">
+				<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0">
+				</td>
+			</tr>
+		<tr>
+			<td>
+			<!--#if leaf "== 1" -->
+			<IMG  align=absbottom src="{ babSkinPath }images/Puces/vL.gif" border=0 >
+			<!--#else leaf -->
+			<IMG  align=absbottom src="{ babSkinPath }images/Puces/vF.gif" border=0 >
+			<!--#endif leaf -->
+			</td>
+		</tr>
+		</table>
+	</td>
+	<!--#endif first -->
+	<td valign="bottom">
+	<TABLE border="0" height="65" width="240" cellspacing="0" cellpadding="0" >
+	<TR>
+	<TD width="100%" class="BabSectionBackground">
+		<TABLE cellspacing="1" height="65" width="240" cellpadding="0" border="0">
+		<TR id="ENT{ oeid }" class="BabForumNavigationBackground">
+			<TD>
+			{ nodecell }
+		</TD></TR>
+		</TABLE>
+	</TD></TR>
+	</TABLE>
+	</td>
+	</tr>
+</table>
+<!--#if current -->
+<script type="text/javascript">
+<!--
+changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');
+//-->
+</script>
+<!--#endif current -->
+<!--#endin getnext -->
+	
+</td></tr>
+</table>
+<br>
+<script type="text/javascript">
+<!--
+<!--#if update -->
+updateFlbFrame('{ currentoe }&idx=mode'); 
+<!--#endif update -->
+updateFltFrame('{ currentoe }&idx=listr'); 
+//-->
+</script>
+</BODY>
+</HTML>
+<!--#end oedirectorylist_disp2 -->
+
+
+<!--#begin display_node -->
+<table width="100%" border="0" cellspacing="0" cellpadding="1">
+  <tr> 
+	<!--#if firstchild -->
+	<td width="50%">
+	<!--#else firstchild -->
+	<td style="border-top:#000000 1px solid; " width="50%">&nbsp;</td>
+	<!--#endif firstchild -->
+	<!--#if first -->
+	<td width="50%">&nbsp;</td>
+	<!--#else first -->
+		<!--#if lastchild -->
+		<td style="border-left:#000000 1px solid;" width="50%">&nbsp;</td>
+		<!--#else lastchild -->
+		<td style="border-left:#000000 1px solid; border-top:#000000 1px solid; " width="50%">&nbsp;</td>
+		<!--#endif lastchild -->
+	<!--#endif first -->
+  </tr>
+  <tr align="center"> 
+    <td colspan="2"> 
+      <table width="180" border="0" cellspacing="0" cellpadding="1"  style="border:#000000 1px solid;">
+        <tr  id="ENT{ oeid }"  class="BabForumNavigationBackground"> 
+          <td width="100%">{ nodecell }</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr> 
+    <td width="50%">&nbsp;</td>
+	<!--#if parent -->
+    <td style="border-left:#000000 1px solid;" width="50%">&nbsp;</td>
+	<!--#else parent -->
+	<td width="50%">&nbsp;</td>
+	<!--#endif parent -->
+  </tr>
+  <tr> 
+    <td colspan="2">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+	<!--#in getnextchild -->
+	<td valign="top">{ child }</td>
+	<!--#endin getnextchild -->
+	</tr>
+	</table>	
+	</td>
+  </tr>
+</table>
+<!--#if current -->
+<script type="text/javascript">
+<!--
+changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');
+//-->
+</script>
+<!--#endif current -->
+<!--#end display_node -->
+
+<!--#begin oedirectorylist_disp3 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+{ javascript }
+
+</HEAD>
+<BODY>
+<br>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> <td>
+	{ content }
+  </td></tr>
+</table>
+<script type="text/javascript">
+<!--
+<!--#if update -->
+updateFlbFrame('{ currentoe }&idx=mode'); 
+<!--#endif update -->
+updateFltFrame('{ currentoe }&idx=listr'); 
+//-->
+</script>
+
+</BODY>
+</HTML>
+<!--#end oedirectorylist_disp3 -->
+
+<!--#begin frtframe -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+function updateFrFrame(idx)
+{
+var dummy;
+top.fr.document.location.href='{ updatefrurl }&disp=' + idx;
+}
+
+//-->
+</script>
+
+</HEAD>
+<BODY>
+<TABLE border="0" height="100%" width="100%" cellspacing="0" cellpadding="0" >
+	<TR>
+	<TD class="BabLoginMenuBackground" width="5" align="left">
+	&nbsp;
+	</TD>
+	<TD class="BabLoginMenuBackground" align="left">
+	{ charttitle }
+	</TD>
+	<TD class="BabLoginMenuBackground" align="right" valign="middle">
+	&nbsp;<a href="javascript:updateFrFrame('disp1')"><img alt="{ chart_disp1_title }" src="{ babSkinPath }images/Puces/chart_disp1.gif" alt="" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp2')"><img alt="{ chart_disp2_title }" src="{ babSkinPath }images/Puces/chart_disp2.gif" alt="" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp3')"><img alt="{ chart_disp3_title }" src="{ babSkinPath }images/Puces/chart_disp3.gif" alt="" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp4')"><img alt="{ chart_disp4_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" alt="" border="0"></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp5')"><img alt="{ chart_disp5_title }" src="{ babSkinPath }images/Puces/chart_disp5.gif" alt="" border="0"></a>
+	</TD>
+	<TD class="BabLoginMenuBackground" width="5" align="left">
+	&nbsp;
+	</TD>
+	</TR>
+</TABLE>
+</BODY>
+</HTML>
+<!--#end frtframe -->
+
+<!--#begin adbrowse -->
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr valign="middle"> 
+<td colspan="3" class="BabLetterlists"> 
+<!--#if allselected "== 1" -->
+{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+<!--#else allselected -->
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+<!--#else selected -->
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+<!--#endif selected -->
+<!--#endin getnextselect -->
+</td>
+<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+<!--#if badd -->
+<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">{ addname }</a>
+<!--#endif badd -->
+</td>
+</tr>
+</table>
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr> 
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#in getnextcol -->
+          <td class="BabSiteAdminSmall" valign="middle" nowrap ><b><a class="BabAlphabetLink" href="{ colurl }">{ coltxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></b></td>
+          <!--#endin getnextcol -->
+        </tr>
+        <!--#in getnext -->
+        <!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+          <td align="center" valign="middle" width="1%" > 
+            <!--#if accid "!= 0" -->
+            <a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=600,height=700,status=no,resizable=yes,top=20,left=200,scrollbars=yes');">
+            <!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>
+            <!--#endif accid -->
+            <img src="{ babSkinPath }images/Puces/mail.png" border="0"></a></td>
+          <td valign="middle" width="1%" ><a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <!--#in getnextcolval -->
+          <td align="left" valign="middle">{ coltxt 
+            }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#endin getnextcolval -->
+        </tr>
+        <!--#endin getnext -->
+      </table>
+</td>
+</tr>
+</table>
+<!--#end adbrowse -->
+<!--#begin oedirectorylist_disp4 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+{ javascript }
+
+</HEAD>
+<BODY>
+<br>
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr valign="middle"> 
+<td colspan="3" class="BabLetterlists"> 
+<!--#if allselected "== 1" -->
+{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+<!--#else allselected -->
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+<!--#else selected -->
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+<!--#endif selected -->
+<!--#endin getnextselect -->
+</td>
+<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+<tr>
+
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr> 
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#in getnextcol -->
+          <td class="BabSiteAdminSmall" valign="middle" nowrap ><b>
+		  <!--#if colurl -->
+		  <a class="BabAlphabetLink" href="{ colurl }">{ coltxt }</a>
+		  <!--#else colurl -->
+		  { coltxt }
+		  <!--#endif colurl -->
+		  <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></b></td>
+          <!--#endin getnextcol -->
+        </tr>
+        <!--#in getnext -->
+        <!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+          <td align="center" valign="middle" width="1%" >&nbsp;</td>
+          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <!--#in getnextcolval -->
+          <td align="left" valign="middle">{ coltxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#endin getnextcolval -->
+        </tr>
+        <!--#endin getnext -->
+      </table>
+</td>
+</tr>
+</table>
+<script type="text/javascript">
+<!--
+updateFlbFrame('{ cuoeid }&idx=detr&iduser={ cuserid }'); 
+updateFltFrame('{ cuoeid }&idx=listr'); 
+//-->
+</script>
+</BODY>
+</HTML>
+<!--#end oedirectorylist_disp4 -->
+
+<!--#begin browseroles -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+{ javascript }
+
+<script type="text/javascript">
+<!--
+function org_mm()
+{
+  document.forms.eorgform.eid.value=document.eorgform.sentity.options[document.eorgform.sentity.selectedIndex].value;
+  document.forms.eorgform.role.value=document.eorgform.srole.options[document.eorgform.srole.selectedIndex].value;
+  document.forms.eorgform.submit();
+}
+//-->
+</script>
+</HEAD>
+<BODY>
+<br>
+<!--#if count -->
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+<tr> 
+<td class="BabLoginCadreBackground"> 
+
+<form name="eorgform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="frchart">
+<input type="hidden" name="idx" value="browr">
+<input type="hidden" name="ocid" value="{ ocid }">
+<input type="hidden" name="eid" value="{ oeid }">
+<input type="hidden" name="type" value="{ type }">
+<input type="hidden" name="vpos" value="{ vpos }">
+<input type="hidden" name="role" value="{ role }">
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr valign="middle"> 
+<td align="right" class="BabLetterlists">{ roletxt }&nbsp;&nbsp;
+<select name="srole" onchange="org_mm()">
+<option value="0"></option>
+<option value="1" { oneroles }>{ provided }</option>
+<option value="2" { tworoles }>{ notprovided }</option>
+</select>
+</td>
+<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+</td>
+<td align="right" class="BabLetterlists">{ entitytxt }&nbsp;&nbsp;
+<select name="sentity" onchange="org_mm()">
+<option value="0"></option>
+<!--#in getnextentity -->
+<option value="{ entityid }" { selected }>{ entityname }</option>
+<!--#endin getnextentity -->
+</select>
+</td>
+<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+</td>
+</tr>
+</table>
+</form>
+
+</td>
+</tr>
+
+
+<tr> 
+<td class="BabLoginCadreBackground"> 
+
+<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr valign="middle"> 
+<td colspan="3" class="BabLetterlists"> 
+<a href="{ topurl }">{ topname }</a>&nbsp;&nbsp;<a href="{ prevurl }">{ prevname }</a>&nbsp;&nbsp;<a href="{ nexturl }">{ nextname }</a>&nbsp;&nbsp;<a href="{ bottomurl }">{ bottomname }</a>&nbsp;&nbsp;</td>
+<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ roletxt }</b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ entitytxt }</b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ usernametxt }</b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+</tr>
+<!--#in getnextrow -->
+<!--#if altbg -->
+<tr class="BabFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg --> 
+<td align="center" valign="middle" width="1%" >&nbsp;</td>
+<td align="center" valign="middle" width="1%" ><!--#if userid --><a class="BabNameEmailLink" href="#" onclick="javascript:
+updateFlbFrame('{ entityid }&idx=detr&iduser={ userid }');updateFltFrame('{ entityid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a><!--#endif userid -->&nbsp;</td>
+
+<td align="left" valign="middle">{ rolename }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td align="left" valign="middle">{ entityname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td align="left" valign="middle">{ username }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+
+</tr>
+<!--#endin getnextrow -->
+</table>
+</td>
+</tr>
+</table>
+<script type="text/javascript">
+<!--
+updateFlbFrame('{ cuoeid }&idx=detr&iduser={ cuserid }'); 
+updateFltFrame('{ cuoeid }&idx=listr'); 
+//-->
+</script>
+<!--#endif count -->
+</BODY>
+</HTML>
+<!--#end browseroles -->

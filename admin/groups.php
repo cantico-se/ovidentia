@@ -337,42 +337,13 @@ function groupsOptions()
 function addGroup($name, $description, $managerid, $bemail, $grpdg)
 	{
 	global $babBody;
-	if( empty($name))
+	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+	if( !bab_addGroup($name, $description, $managerid, $grpdg))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return;
-		}
-
-	$db = $GLOBALS['babDB'];
-
-	$req = "select * from ".BAB_GROUPS_TBL." where name='$name'";	
-	$res = $db->db_query($req);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("This group already exists");
 		return false;
 		}
-	else
-		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$description = addslashes($description);
-			$name = addslashes($name);
-			}
-		if( empty($managerid))
-			$managerid = 0;
-		if( empty($grpdg))
-			$grpdg = 0;
-		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "', '".$grpdg. "', 'N', 'N', 'N','".$babBody->currentAdmGroup."')";
-		$db->db_query($req);
-		$id = $db->db_insert_id();
-
-		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
-		bab_callAddonsFunction('onGroupCreate', $id);
-		$db->db_query($req);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$id);
-		return true;
-		}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$id);
+	return true;
 	}
 
 function saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids, $calperids)

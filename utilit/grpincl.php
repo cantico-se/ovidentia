@@ -107,4 +107,133 @@ function getGroupsMembers($id_grp)
 	else
 		return false;
 	}
+
+function bab_addGroup($name, $description, $managerid, $grpdg)
+	{
+	global $babBody;
+	if( empty($name))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
+		return 0;
+		}
+
+	$db = $GLOBALS['babDB'];
+
+	$req = "select * from ".BAB_GROUPS_TBL." where name='$name'";	
+	$res = $db->db_query($req);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("This group already exists");
+		return 0;
+		}
+	else
+		{
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$description = addslashes($description);
+			$name = addslashes($name);
+			}
+		if( empty($managerid))
+			$managerid = 0;
+		if( empty($grpdg))
+			$grpdg = 0;
+		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "', '".$grpdg. "', 'N', 'N', 'N','".$babBody->currentAdmGroup."')";
+		$db->db_query($req);
+		$id = $db->db_insert_id();
+		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
+		bab_callAddonsFunction('onGroupCreate', $id);
+		$db->db_query($req);
+		return $id;
+		}
+	}
+
+function confirmDeleteAdmGroup($id, $action)
+	{
+	global $babDB;
+
+	if( $id <= 3)
+		return;
+
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	if( $action == 1 )
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+		$res = $babDB->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteSection($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteTopicCategory($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteApprobationSchema($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteForum($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteFaq($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteFolder($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteLdapDirectory($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteDbDirectory($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteOrgChart($arr['id']);
+			}
+
+		$res = $babDB->db_query("select id from ".BAB_GROUPS_TBL." where id_dgowner='".$id."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			bab_deleteGroup($arr['id']);
+			}
+		}
+	else
+		{
+		$db->db_query("update ".BAB_GROUPS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		$db->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
+		}
+
+	bab_deleteGroup($id);
+	}
+
+
 ?>

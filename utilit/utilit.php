@@ -575,6 +575,8 @@ function babAdminSection($close)
 		$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['directories'] == 'Y')
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['orgchart'] == 'Y')
+		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=admocs";
 	
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
@@ -800,6 +802,11 @@ function babUserSection($close)
 
 	if( $bdiradd )
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
+
+	if( count($babBody->ocids) > 0 )
+		{
+		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=charts";
+		}
 
 		reset($babBody->babaddons);
 		while( $row=each($babBody->babaddons) ) 
@@ -1217,6 +1224,7 @@ var $dgAdmGroups; /* all groups administrated by current user */
 var $ovgroups; /* all ovidentia groups */
 var $babsite;
 var $babmanagertopics;
+var $ocids; /* orgnization chart ids */
 
 //var $aclfm;
 //var $babsite;
@@ -1253,6 +1261,7 @@ function babBody()
 		$arr['primary'] = 'N';
 		$this->ovgroups[$arr['id']] = $arr;
 	}
+
 }
 
 function resetContent()
@@ -1827,6 +1836,8 @@ function bab_updateUserSettings()
 				}
 			}
 		}
+
+	$babBody->ocids = bab_orgchartAccess();
 
 	if(!empty($babBody->topcatview))
 		{

@@ -382,6 +382,28 @@ function bab_getUserName($id)
 	return $arrnames[$id];
 	}
 
+function bab_getDbUserName($id)
+	{
+	static $arrnames = array();
+
+	if( isset($arrnames[$id]) )
+		return $arrnames[$id];
+
+	$db = $GLOBALS['babDB'];
+	$query = "select sn, givenname, mn from ".BAB_DBDIR_ENTRIES_TBL." where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		$arrnames[$id] = bab_composeUserName($arr['givenname'], $arr['sn']);
+		}
+	else
+		{
+		$arrnames[$id] = "";
+		}
+	return $arrnames[$id];
+	}
+
 function bab_getUserEmail($id)
 	{
 	$db = $GLOBALS['babDB'];
@@ -535,6 +557,21 @@ function bab_notesAccess()
 	return false;
 	}
 
+function bab_orgchartAccess()
+	{
+	global $babBody, $babDB;
+
+	$ret = array();
+	$res = $babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL."");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		if(bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $row['id']) || bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $row['id']))
+			{
+			$ret[] = $row['id'];
+			}
+		}
+	return $ret;
+	}
 
 function bab_contactsAccess()
 	{
@@ -841,6 +878,103 @@ function bab_getGroupEmails($id)
 		}
 }
 
+function bab_getOrgChartRoleUsers($idroles)
+{
+	global $babDB;
+	$roles =  is_array($idroles)? implode(',', $idroles): $idroles;
+	$arr = array();
+	$res = $babDB->db_query("select det.sn, det.givenname, det.id_user, ocrut.id_role from ".BAB_DBDIR_ENTRIES." det left join ".BAB_OC_ROLES_USERS." ocrut on det.id=ocrut.id_user where ocrut.id_role IN (".$roles.")");
+	while( $row = $babDB->db_fetch_array($res))
+	{
+		$arr['iduser'][] = $row['id_user'];
+		$arr['idrole'][] = $row['id_role'];
+		$arr['name'][] = bab_composeUserName($row['givenname'], $row['sn']);
+	}
+	return $arr;
+}
+
+function bab_getSuperior($iduser, $iddirectory=0)
+{
+	global $babDB;
+
+	/* find user primary role */
+	$res = $babDB->db_query("SELECT ocet.id_node, ocet.id as id_entity, ocrut.id_role, ocrt.type  FROM ".BAB_DBDIR_ENTRIES_TBL." det LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity WHERE det.id_user IN ( ".$iduser."  )  AND det.id_directory = '0' and ocrut.isprimary='Y'");
+	while( $arr = $babDB->db_fetch_array($res) )
+	{
+		if( $arr['type'] == 0 ) /* not responsable */
+		{
+			/* find user's responsable */
+			$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_entity IN (".$arr['id_entity'].")  AND ocrt.type = '1'");
+
+			while( $row = $babDB->db_fetch_array($res) )
+			{
+				$arroles[]= $row['id_role'];
+			}
+			if( count($arroles) > 0 )
+				{
+				return bab_getOrgChartRoleUsers($arroles);
+				}
+		}
+
+		if( $arr['type'] != 2 )
+		{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_TREES_TBL." where id='".$arr['id_node']."'"));
+			$res = $babDB->db_query("SELECT ocrut.* FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT  JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocrt.id_entity = ocet.id LEFT  JOIN ".BAB_OC_TREES_TBL." oct ON oct.id = ocet.id_node and oct.id_user='1' WHERE oct.lf <  '".$rr['lf']."' AND oct.lr >  '".$rr['lr']."' AND ocrut.isprimary='Y' and ocrt.type = 1 ORDER  BY oct.lf desc limit 0,1");
+
+			while( $row = $babDB->db_fetch_array($res) )
+			{
+				$arroles[]= $row['id_role'];
+			}
+			if( count($arroles) > 0 )
+				{
+				return bab_getOrgChartRoleUsers($arroles);
+				}
+		}		
+	}
+	return array();
+}
+
+function bab_addUserToGroup($iduser, $idgroup, $oc = true)
+{
+	global $babDB;
+
+	if( $oc )
+	{
+		list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));
+		if( $identity )
+		{
+			list($idrole) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity='".$identity."' and type='3'"));
+			list($idduser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$iduser."'"));
+			$req = "insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$idrole."','".$idduser."','Y')";
+			$babDB->db_query($req);
+		}
+	}
+
+	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."' and id_object='".$iduser."'"));
+	if( !$total )
+		{
+		$res = $babDB->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$idgroup. "', '" . $iduser. "')");
+		}
+}
+
+function bab_removeUserFromGroup($iduser, $idgroup)
+{
+	global $babDB;
+
+	$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."' and id_object='".$iduser."'";
+	$res = $babDB->db_query($req);
+	list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));
+	if( $identity )
+		{
+		$res = $babDB->db_query("select ocrut.id FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrut.id_role = ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON ocrut.id_user = det.id WHERE ocrt.id_entity =  '".$identity."' AND det.id_directory =  '0' AND det.id_user =  '".$iduser."'");
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$row['id']."'");
+			}
+		}
+}
+
+
 function bab_replace( $txt, $remove = '' )
 {
 	global $babBody;
@@ -1058,7 +1192,7 @@ function bab_replace( $txt, $remove = '' )
 					if( $res && $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$m[2][$k]."</a>", $txt);
+						$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$m[2][$k]."</a>", $txt);
 						$repl = true;
 						}
 					}
@@ -1088,7 +1222,7 @@ function bab_replace( $txt, $remove = '' )
 						{$message = $arr['question'];}
 					if (trim($m[3][$k]) == 1)
 						{
-						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".trim($m[1][$k])."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$message."</a>", $txt);
+						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".trim($m[1][$k])."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$message."</a>", $txt);
 						}
 					else
 						{

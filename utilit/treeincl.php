@@ -1,0 +1,780 @@
+<?php
+/************************************************************************
+ * OVIDENTIA http://www.ovidentia.org                                   *
+ ************************************************************************
+ * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
+ *                                                                      *
+ * This file is part of Ovidentia.                                      *
+ *                                                                      *
+ * Ovidentia is free software; you can redistribute it and/or modify    *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
+include_once "base.php";
+
+class bab_dbtree
+{
+	var $iduser;
+	var $userinfo;
+	var $table;
+	var $where;
+	var $rootid;
+
+	function bab_dbtree($table, $id, $userinfo = "")
+	{
+		$this->table = $table;
+		$this->iduser = $id;
+		$this->userinfo = $userinfo;
+
+		$this->where = "id_user='".$id."'";
+		if( !empty($userinfo))
+			$this->where .= " and info_user='".$userinfo."'";
+	}
+
+	function getWhereClause($table='')
+	{
+		if( empty($table))
+		{
+			return $this->where;
+		}
+		else
+		{
+			$where = $table.".id_user='".$this->iduser."'";
+			if( !empty($this->userinfo))
+				$this->where .= " and ".$table.".info_user='".$this->userinfo."'";
+			return $where;
+		}
+	}
+	function getNodeInfo($id)
+	{
+		global $babDB;
+		$res = $babDB->db_query("SELECT * from ".$this->table." where ".$this->getWhereClause()." and id='".$id."'" );
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			return $babDB->db_fetch_array($res);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	function getRootInfo()
+	{
+		global $babDB;
+		$res = $babDB->db_query("SELECT * from ".$this->table." where ".$this->getWhereClause()." order by lf asc limit 0,1" );
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			return $babDB->db_fetch_array($res);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	function update($lr, $offset=1, $positive=true)
+	{
+		global $babDB;
+
+		$offset *= 2; 
+
+		if( $positive )
+		{
+			$babDB->db_query("UPDATE ".$this->table." set lr = lr+".$offset." where lr > '".$lr."' and ".$this->getWhereClause());
+		}
+		else
+		{
+			$babDB->db_query("UPDATE ".$this->table." set lr = lr-".$offset." where lr > '".$lr."' and ".$this->getWhereClause());
+		}
+		
+		if( $positive )
+		{
+			$babDB->db_query("UPDATE ".$this->table." set lf = lf+".$offset." where lf > '".$lr."' and ".$this->getWhereClause());
+		}
+		else
+		{
+			$babDB->db_query("UPDATE ".$this->table." set lf = lf-".$offset." where lf > '".$lr."' and ".$this->getWhereClause());
+		}
+	}
+
+	function getPreviousSibling($id)
+	{
+		global $babDB;
+        $res = $babDB->db_query("SELECT p1.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$this->getWhereClause('p1')." and p2.lf=p1.lr+1 AND p2.id_parent=p1.id_parent AND p2.id='".$id."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			return $babDB->db_fetch_array($res);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	function getNextSibling($id)
+	{
+		global $babDB;
+		$res = $babDB->db_query("SELECT p1.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$this->getWhereClause('p1')." and p2.lr=p1.lf-1 AND p2.id_parent=p1.id_parent AND p2.id='".$id."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			return $babDB->db_fetch_array($res);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+
+	function getChilds($id, $all = 0)
+	{
+		global $babDB;
+		$arr = array();
+		if( !$all )
+		{
+			$res = $babDB->db_query("SELECT p2.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$this->getWhereClause('p1')." and p1.id=p2.id_parent AND p1.id='".$id."' order by p2.lf asc");
+		}
+		else
+		{
+			$nodeinfo = $this->getNodeInfo($id);
+			if( !$nodeinfo )
+			{
+				return false;
+			}
+			if( $nodeinfo['lr'] == ($nodeinfo['lf'] + 1) )
+			{
+				return $arr;
+			}
+			$res = $babDB->db_query("SELECT * FROM ".$this->table." WHERE ".$this->getWhereClause()." and lf > '".$nodeinfo['lf']."' and lr < '".$nodeinfo['lr']."'");
+		}
+
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			while($row = $babDB->db_fetch_array($res))
+			{
+				$arr[] = $row;
+			}
+			return $arr;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	function getFirstChild($id)
+	{
+		global $babDB;
+		$arr = $this->getChilds($id);
+		if( $arr === false )
+		{
+			return false;
+		}
+		return $arr[0];
+	}
+	
+	function getLastChild($id)
+	{
+		global $babDB;
+		$arr = $this->getChilds($id);
+		if( $arr === false )
+		{
+			return false;
+		}
+		return $arr[count($arr) -1];
+	}
+
+	function add($parentId = 0, $previousId=0, $bprev=true)
+	{
+		global $babDB;
+		$rowdata = array();
+		$lr = 0;
+
+		if( $parentId || $previousId )
+		{
+			if( $previousId )
+			{
+				$previnfo = $this->getNodeInfo($previousId);
+				if( !$previnfo )
+				{
+					return false;
+				}
+
+				$rowdata['id_parent'] = $previnfo['id_parent'];
+				if( $rowdata['id_parent'] == 0 )
+				{
+					$rowdata['id_parent'] = $previousId;					
+					$lastchild = $this->getLastChild($previousId);
+					if( $lastchild )
+					{
+						$lr = $lastchild['lr'];
+					}
+					else
+					{
+						$lr = $previnfo['lf'];
+					}
+				}
+				else
+				{
+					if( $bprev )
+					{
+						$lr = $previnfo['lr'];
+					}
+					else 
+					{
+						$idprev = $this->getPreviousSibling($previousId);
+						if( $idprev )
+							{
+							$previousId = $idprev['id'];
+							$lr = $previnfo['lr'];
+							}
+						else
+							{
+							$parentinfo = $this->getNodeInfo($rowdata['id_parent']);
+							$lr = $parentinfo['lf'];
+							}
+					}
+				}
+			}
+			else 
+			{
+				$parentinfo = $this->getNodeInfo($parentId);
+				if( !$parentinfo )
+				{
+					return false;
+				}
+				$rowdata['id_parent'] = $parentId;
+				$lastchild = $this->getLastChild($parentId);
+				if( $lastchild )
+				{
+					$lr = $lastchild['lr'];
+				}
+				else
+				{
+					$lr = $parentinfo['lf'];
+				}
+			}
+		}
+		else
+		{
+			$rootinfo = $this->getRootInfo();
+			if( !$rootinfo )
+			{
+				$rowdata['id_parent'] = 0;
+				$lr = 0;
+			}
+			else
+			{
+			$rowdata['id_parent'] = $rootinfo['id'];
+			$lastchild = $this->getLastChild($rootinfo['id']);
+			if( $lastchild )
+				{
+				$lr = $lastchild['lr'];
+				}
+			else
+				{
+				$lr = $rootinfo['lf'];
+				}
+			}
+		}
+
+		$this->update($lr);
+
+		$rowdata['lf'] = $lr + 1;
+		$rowdata['lr'] = $lr + 2;
+
+		$res = $babDB->db_query("INSERT INTO ".$this->table." (lf, lr, id_parent, id_user, info_user) values ('".$rowdata['lf']."','".$rowdata['lr']."','".$rowdata['id_parent']."','".$this->iduser."','".$this->userinfo."')");
+		if( $res )
+		{
+			$rowdata['id'] = $babDB->db_insert_id();
+			return $rowdata['id'];
+		}
+
+		return 0;
+	}
+
+	function remove($id)
+	{
+		global $babDB;
+
+
+		$nodeinfo = $this->getNodeInfo($id);
+		if( !$nodeinfo )
+			return false;
+
+		if( $nodeinfo['id_parent'] == 0 &&  ($nodeinfo['lr'] - $nodeinfo['lf']) > 1 )
+			return false;
+
+		$lf = $nodeinfo['lf'];
+		$lr = $nodeinfo['lr'];
+		
+		if(  $lr - $lf > 1 )
+		{
+			$babDB->db_query("UPDATE ".$this->table." set lr = lr-1, lf=lf-1 where lf > '".$lf."' and lr < '".$lr."' and ".$this->getWhereClause());
+
+			$babDB->db_query("UPDATE ".$this->table." set id_parent='".$nodeinfo['id_parent']."' where ".$this->getWhereClause()." and id_parent='".$id."'");
+
+		}
+		$this->update(	$lr, 1, false);
+		$babDB->db_query("DELETE from ".$this->table." where id='".$id."' and ".$this->getWhereClause());
+
+		return true;
+	}
+
+	/* remove id and all childs and childs of childs ... */
+	function removeTree($id)
+	{
+		global $babDB;
+
+		$nodeinfo = $this->getNodeInfo($id);
+		if( !$nodeinfo )
+			return false;
+
+		$lf = $nodeinfo['lf'];
+		$lr = $nodeinfo['lr'];
+		
+		if(  $lr - $lf > 1 )
+		{
+			$babDB->db_query("DELETE from ".$this->table." where lf between ".$lf." and ".$lr." and ".$this->getWhereClause());
+			$this->update($lr, ($lr-$lf + 1)/2, false);
+		}
+		else
+		{
+			return $this->remove($id);
+		}
+
+		return true;
+	}
+
+	function move($id, $parentId, $previousId =0, $bprev=true )
+	{
+		global $babDB;
+
+		$nodeinfo = $this->getNodeInfo($id);
+		if( !$nodeinfo )
+			return false;
+
+		if( $parentId || $previousId )
+		{
+			if( $previousId )
+			{
+				$previousinfo = $this->getNodeInfo($previousId);
+				if( !$previousinfo || $previousinfo['id_parent'] == 0)
+					return false;
+
+			}
+			else
+			{
+				$parentinfo = $this->getNodeInfo($parentId);
+				if( !$parentinfo || $nodeinfo['id_parent'] == $parentId)
+					return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+
+		$lf = $nodeinfo['lf'];
+		$lr = $nodeinfo['lr'];
+		
+		if(  $lr - $lf > 1 )
+		{
+			$babDB->db_query("UPDATE ".$this->table." set lr = lr-1, lf=lf-1 where lf > '".$lf."' and lr < '".$lr."' and ".$this->getWhereClause());
+
+			$babDB->db_query("UPDATE ".$this->table." set id_parent='".$nodeinfo['id_parent']."' where ".$this->getWhereClause()." and id_parent='".$id."'");
+
+		}
+		$this->update($lr, 1, false);
+
+		//delete
+		if( $previousId )
+		{
+			$previousinfo = $this->getNodeInfo($previousId);
+			$parentId = $previousinfo['id_parent'];
+			if( !$bprev )
+			{
+				$idprev = $this->getPreviousSibling($previousId);
+				if( $idprev )
+					{
+					$lr = $idprev['lr'];
+					}
+				else
+					{
+					$parentinfo = $this->getNodeInfo($parentId);
+					$lr = $parentinfo['lf'];
+					}
+
+			}
+			else
+			{
+				$lr = $previousinfo['lr'];
+			}
+		}
+		else
+		{
+			$parentinfo = $this->getNodeInfo($parentId);
+			$lastchild = $this->getLastChild($parentId);
+			if( $lastchild )
+				{
+				$lr = $lastchild['lr'];
+				}
+			else
+				{
+				$lr = $parentinfo['lf'];
+				}
+
+		}
+		$this->update($lr);
+
+		$res = $babDB->db_query("UPDATE ".$this->table." set lf='".($lr + 1)."', lr='".($lr + 2)."', id_parent='". $parentId."' where id='".$id."'");
+		return true;
+	}
+
+
+	function moveTree($id, $parentId, $previousId =0, $bprev=true )
+	{
+		global $babDB;
+
+		$nodeinfo = $this->getNodeInfo($id);
+		if( !$nodeinfo )
+			return false;
+
+		if( $parentId || $previousId )
+		{
+			if( $previousId )
+			{
+				if( !$bprev )
+				{
+					$idprev = $this->getPreviousSibling($previousId);
+					if( $idprev )
+						{
+						$previousId = $idprev['id'];
+						}
+
+				}
+				if( $id == $previousId )
+					return true;
+
+				$previnfo = $this->getNodeInfo($previousId);
+				if( !$previnfo || $previousinfo['id_parent'] == 0)
+					return false;
+
+				$parentId = $previnfo['id_parent'];
+				$lr = $previnfo['lr'];
+
+				$parentinfo = $this->getNodeInfo($parentId);
+				if( !$parentinfo )
+					return false;
+			}
+			else 
+			{
+				if( $id == $parentId )
+					return true;
+
+				$parentinfo = $this->getNodeInfo($parentId);
+				if( !$parentinfo || $nodeinfo['id_parent'] == $parentId)
+					return false;
+
+				$lastchild = $this->getLastChild($parentId);
+				if( $lastchild )
+				{
+					$lr = $lastchild['lr'];
+				}
+				else
+				{
+					$lr = $parentinfo['lf'];
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		if( $parentinfo['lf'] > $nodeinfo['lf'] && $parentinfo['lr'] < $nodeinfo['lr'] )
+		{
+			return false;
+		}
+
+        $nbchilds = ($nodeinfo['lr'] - $nodeinfo['lf']+1)/2;
+		$this->update($lr, $nbchilds);
+
+		$nodeinfo = $this->getNodeInfo($id);
+
+		if( $previousId)
+		{
+			$previnfo = $this->getNodeInfo($previousId);
+			$offset = $previnfo['lr'];
+		}
+		else
+		{
+			$lastchild = $this->getLastChild($parentId);
+			if( $lastchild )
+				{
+				$offset = $lastchild['lr'];
+				}
+			else
+				{
+				$parentinfo = $this->getNodeInfo($parentId);
+				$offset = $parentinfo['lf'];
+				}
+		}
+		$offset = $offset - $nodeinfo['lf'];
+        $offset++;
+
+		$lf = $nodeinfo['lf'];
+		$lr = $nodeinfo['lr'];
+		$babDB->db_query("UPDATE ".$this->table." set lr = lr+$offset, lf=lf+$offset where lf > '".($lf-1)."' and lr < '".($lr+1)."' and ".$this->getWhereClause());
+
+		$offset = $lr - $lf + 1;
+		$babDB->db_query("UPDATE ".$this->table." set lr = lr-$offset, lf=lf-$offset where lf > '".$lf."' and ".$this->getWhereClause());
+		$babDB->db_query("UPDATE ".$this->table." set lr = lr-$offset where lf < '".$lf."' and lr > '".$lr."' and ".$this->getWhereClause());
+		$babDB->db_query("UPDATE ".$this->table." set id_parent ='".$parentId."' where ".$this->getWhereClause()." and id='".$id."'");
+		return true;
+	}
+
+}
+
+
+class bab_arraytree
+{
+	var $nodes = array();
+	var $rootid;
+	var $iduser;
+	var $userinfo;
+	var $table;
+	var $where;
+
+	function bab_arraytree($table, $id, $userinfo = "", $rootid = 0)
+	{
+		global $babDB;
+		$this->table = $table;
+		$this->iduser = $id;
+
+		$this->where = "id_user='".$id."'";
+		if( !empty($userinfo))
+			$this->where .= " and info_user='".$userinfo."'";
+
+		if( $rootid )
+		{
+		$res = $babDB->db_query("select * from ".$this->table." where ".$this->where." and id='".$rootid."'");
+		if( $res && $babDB->db_num_rows($res) > 0)
+			{
+			$arr = $babDB->db_fetch_array($res);
+			$req = "select * from ".$this->table." where ".$this->where." and lf between ".$arr['lf']." and ".$arr['lr']." order by lf asc";
+			}
+		else
+			{
+			$req = "select * from ".$this->table." where ".$this->where." order by lf asc";
+			}
+		}
+		else
+		{
+			$req = "select * from ".$this->table." where ".$this->where." order by lf asc";
+		}
+		$res = $babDB->db_query($req);
+		$parents = array();
+		$k = 0;
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			if( $k == 0)
+				{
+				$this->rootid = $arr['id'];
+				}
+			$k++;
+			$row['id']= $arr['id'];
+			$row['lf']= $arr['lf'];
+			$row['lr']= $arr['lr'];
+			$row['id_parent']= $arr['id_parent'];
+			$row['lastChild']= 0;
+			$row['previousSibling'] = 0;
+			$row['nextSibling'] = 0;
+			$row['firstChild']= 0;
+			$row['lastChild']= 0;
+			if( count($parents) > 0 )
+				{
+				while(  count($parents)> 0 && ($arr['lr'] > $this->nodes[$parents[count($parents)-1]]['lr']))
+					{
+					array_pop($parents);
+					}
+
+				}
+			$row['level'] = count($parents);
+			$this->nodes[$arr['id']] = $row;
+			if( count($parents) > 0 )
+				{
+				$this->appendChild($parents[count($parents)-1], $arr['id']);
+				}
+			$parents[] = $arr['id'];
+			}
+	
+	}
+
+	function appendChild($parentid, $child)
+	{
+		if( isset( $this->nodes[$parentid]) && isset( $this->nodes[$child]))
+		{
+			$this->nodes[$child]['previousSibling'] = $this->nodes[$parentid]['lastChild'];
+			$this->nodes[$child]['nextSibling'] = 0;
+			if( $this->nodes[$parentid]['lastChild'] != 0 )
+			{
+				$this->nodes[$this->nodes[$parentid]['lastChild']]['nextSibling'] = $this->nodes[$child]['id'];
+			}
+			else
+			{
+				$this->nodes[$parentid]['firstChild'] = $child;
+			}
+
+			$this->nodes[$parentid]['lastChild'] = $child;
+			$this->nodes[$child]['firstChild']= 0;
+			$this->nodes[$child]['lastChild']= 0;
+			$this->nodes[$child]['level']= $this->nodes[$parentid]['level'] + 1;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+
+	function hasChildren($id)
+	{
+		if( isset($this->nodes[$id]) && ($this->nodes[$id]['lr'] - $this->nodes[$id]['lf']) > 1 )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	function getParentId($id)
+	{
+		if( isset($this->nodes[$id]) )
+		{
+			return $this->nodes[$id]['id_parent'];
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	function getLeftValue($id)
+	{
+		return $this->nodes[$id]['lf'];
+	}
+
+	function getRightValue($id)
+	{
+		return $this->nodes[$id]['lr'];
+	}
+
+	function getFirstChild($id)
+	{
+		return $this->nodes[$id]['firstChild'];
+	}
+
+	function getLastChild($id)
+	{
+		return $this->nodes[$id]['lastChild'];
+	}
+
+	function getNextSibling($id)
+	{
+		return $this->nodes[$id]['nextSibling'];
+	}
+
+	function getPreviousSibling($id)
+	{
+		return $this->nodes[$id]['previousSibling'];
+	}
+
+	function getChilds($id)
+	{
+		if( !isset($this->nodes[$id] ))
+		{
+			return false;
+		}
+
+		$lf = $this->nodes[$id]['lf'];
+		$lr = $this->nodes[$id]['lr'];
+
+		reset($this->nodes);
+		$arr = array();
+		while( $row=each($this->nodes) ) 
+			{
+			if( $row[1]['lf'] > $lf && $row[1]['lf'] < $lr )
+				{
+				$arr[] = $row[1]['id'];
+				}
+			}
+		return $arr;
+	}
+
+	function removeChilds($id)
+	{
+		if( !isset($this->nodes[$id] ))
+		{
+			return false;
+		}
+
+		$lf = $this->nodes[$id]['lf'];
+		$lr = $this->nodes[$id]['lr'];
+
+		if( $this->hasChildren($id))
+		{
+			reset($this->nodes);
+			$arr = array();
+			while( $row=each($this->nodes) ) 
+				{
+				if( $row[1]['lf'] > $lf && $row[1]['lf'] < $lr )
+					{
+					$arr[] = $row[1]['id'];
+					}
+				}
+			for( $i = 0; $i < count($arr); $i++)
+			{
+				unset($this->nodes[$arr[$i]]);
+			}
+
+			$offset = $lr-$lf - 1;
+
+			reset($this->nodes);
+			while( $arr=each($this->nodes) ) 
+			{
+				if( $arr[1]['lr'] > $lf )
+					$this->nodes[$arr[1]['id']]['lr'] = $arr[1]['lr'] - $offset;
+			}
+			
+			reset($this->nodes);
+			while( $arr=each($this->nodes) ) 
+			{
+				if( $arr[1]['lf'] > $lf )
+				{
+					$this->nodes[$arr[1]['id']]['lf'] = $arr[1]['lf'] - $offset;
+				}
+			}
+			$this->nodes[$id]['firstChild'] = 0;
+			$this->nodes[$id]['lastChild'] = 0;
+
+		}
+	}
+}
+?>

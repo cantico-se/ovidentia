@@ -2416,6 +2416,236 @@ function upgrade408to409()
 $ret = "";
 $db = $GLOBALS['babDB'];
 
+$req = "CREATE TABLE ".BAB_ORG_CHARTS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "isprimary enum('N','Y') NOT NULL default 'N',";
+$req .= "edit enum('N','Y') NOT NULL default 'N',";
+$req .= "edit_author int(11) unsigned NOT NULL default '0',";
+$req .= "edit_date datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "id_dgowner int(11) unsigned NOT NULL default '0',";
+$req .= "id_directory int(11) unsigned NOT NULL default '0',";
+$req .= "type smallint(5) unsigned NOT NULL default '0',";
+$req .= "id_first_node int(11) unsigned NOT NULL default '0',";
+$req .= "id_closed_nodes text NOT NULL,";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_dgowner (id_dgowner),";
+$req .= "KEY id_directory (id_directory)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ORG_CHARTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+list($iddir) = $db->db_fetch_row($db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+$req = "INSERT INTO ".BAB_ORG_CHARTS_TBL." VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 'N', 0, '0000-00-00 00:00:00', 0, ".$iddir.", 0, 0, '')";
+$db->db_query($req);
+
+$req = "CREATE TABLE ".BAB_OCUPDATE_GROUPS_TBL." (";
+$req .= "id tinyint(10) NOT NULL auto_increment,";
+$req .= "id_object tinyint(10) NOT NULL default '0',";
+$req .= "id_group tinyint(10) NOT NULL default '0',";
+$req .= "UNIQUE KEY id (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_OCUPDATE_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_OCVIEW_GROUPS_TBL." (";
+$req .= "id tinyint(10) NOT NULL auto_increment,";
+$req .= "id_object tinyint(10) NOT NULL default '0',";
+$req .= "id_group tinyint(10) NOT NULL default '0',";
+$req .= "UNIQUE KEY id (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_OCVIEW_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_OC_ENTITIES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "id_oc int(11) unsigned NOT NULL default '0',";
+$req .= "id_node int(11) unsigned NOT NULL default '0',";
+$req .= "e_note text NOT NULL,";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_oc (id_oc),";
+$req .= "KEY id_node (id_node),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_OC_ENTITIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_OC_ROLES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(225) NOT NULL default '',";
+$req .= "description tinytext NOT NULL,";
+$req .= "id_oc int(11) unsigned NOT NULL default '0',";
+$req .= "id_entity int(11) NOT NULL default '0',";
+$req .= "type tinyint(3) unsigned NOT NULL default '0',";
+$req .= "cardinality enum('N','Y') NOT NULL default 'N',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_oc (id_oc),";
+$req .= "KEY id_entity (id_entity)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_OC_ROLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_OC_ROLES_USERS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_role int(11) unsigned NOT NULL default '0',";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "isprimary enum('N','Y') NOT NULL default 'N',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_role (id_role,id_user)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_OC_ROLES_USERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_OC_TREES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "lf int(11) unsigned NOT NULL default '0',";
+$req .= "lr int(11) unsigned NOT NULL default '0',";
+$req .= "id_parent int(11) unsigned NOT NULL default '0',";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "info_user varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY lf (lf),";
+$req .= "KEY lr (lr),";
+$req .= "KEY id_parent (id_parent),";
+$req .= "KEY id_user (id_user),";
+$req .= "KEY info_user (info_user)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_OC_TREES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FLOW_APPROVERS_TBL." ADD satype tinyint(3) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FLOW_APPROVERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FA_INSTANCES_TBL." ADD iduser INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FA_INSTANCES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_GROUPS_TBL." ADD id_ocentity INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FAQ_SUBCAT_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_cat int(11) unsigned NOT NULL default '0',";
+$req .= "name text NOT NULL,";
+$req .= "id_node int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_cat (id_cat,id_node),";
+$req .= "KEY id_node (id_node)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FAQ_SUBCAT_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FAQ_TREES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "lf int(11) unsigned NOT NULL default '0',";
+$req .= "lr int(11) unsigned NOT NULL default '0',";
+$req .= "id_parent int(11) unsigned NOT NULL default '0',";
+$req .= "id_user int(11) unsigned NOT NULL default '0',";
+$req .= "info_user varchar(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY lf (lf),";
+$req .= "KEY lr (lr),";
+$req .= "KEY id_parent (id_parent),";
+$req .= "KEY id_user (id_user),";
+$req .= "KEY info_user (info_user)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FAQ_TREES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FAQCAT_TBL." ADD id_root INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FAQCAT_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FAQQR_TBL." ADD id_subcat INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FAQQR_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$res = $db->db_query("select id from ".BAB_FAQCAT_TBL);
+while($arr = $db->db_fetch_array($res))
+{
+	$db->db_query("insert into ".BAB_FAQ_TREES_TBL." (lf, lr, id_parent, id_user, info_user) values ('1', '2', '0', '".$arr['id']."','')");
+	$idnode = $db->db_insert_id();
+	$db->db_query("insert into ".BAB_FAQ_SUBCAT_TBL." (id_cat, name, id_node) values ('".$arr['id']."','', '".$idnode."')");
+	$idscat = $db->db_insert_id();
+	$db->db_query("update ".BAB_FAQQR_TBL." set id_subcat='".$idscat."' where idcat='".$arr['id']."'");
+	$db->db_query("update ".BAB_FAQCAT_TBL." set id_root='".$idscat."' where id='".$arr['id']."'");
+}
+
 return $ret;
 }
 ?>

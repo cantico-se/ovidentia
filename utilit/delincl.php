@@ -338,6 +338,8 @@ function bab_deleteGroup($id)
 	// delete group directory
 	$db->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$id."'");	
 
+	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");	
+
 	// delete group
 	$db->db_query("delete from ".BAB_GROUPS_TBL." where id='".$id."'");
 	bab_callAddonsFunction('onGroupDelete', $id);
@@ -408,5 +410,42 @@ function bab_deleteUser($id)
 	$res = $db->db_query("delete from ".BAB_USERS_TBL." where id='$id'");
 	bab_callAddonsFunction('onUserDelete', $id);
 	}
+
+function bab_deleteOrgChart($id)
+{
+	global $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/treeincl.php";
+
+	$ocinfo = $babDB->db_fetch_array($babDB->db_query("select oct.*, ddt.id as id_dir, ddt.id_group from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where oct.id='".$ocid."'"));
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$id."'"));
+	if( $ocinfo['isprimary'] == 'Y' && $ocinfo['id_group'] == 1)
+	{
+		return;
+	}
+
+	$ru = array();
+	$res = 	$db->db_query("select id from ".BAB_OC_ROLES_TBL." where id_oc='".$id."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$ru[] = $arr['id'];
+	}
+	if( count($ru) > 0 )
+	{
+		$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id_role IN (".implode(',', $ru).")");
+	}
+	$babDB->db_query("delete from ".BAB_OC_ROLES_TBL." where id_oc='".$id."'");
+	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id_oc='".$id."'");
+	$babDB->db_query("delete from ".BAB_OCUPDATE_GROUPS_TBL." where id_object='".$id."'");
+	$babDB->db_query("delete from ".BAB_OCVIEW_GROUPS_TBL." where id_object='".$id."'");
+	$babDB->db_query("delete from ".BAB_ORG_CHARTS_TBL." where id='".$id."'");
+
+	$babTree = new bab_dbtree(BAB_OC_TREES_TBL, $id);
+	$rootinfo = $babTree->getRootInfo();
+	if( !$rootinfo)
+	{
+		return;
+	}
+	$babTree->removeTree($rootinfo['id']);
+}
 
 ?>

@@ -549,12 +549,20 @@ function summaryDbContact($id, $idu)
 					$this->delurl = $GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu;
 					}
 
+				$this->resorg = $this->db->db_query("SELECT distinct oct.name, oct.id from ".BAB_ORG_CHARTS_TBL." oct left join ".BAB_OC_ROLES_TBL." ocrt on oct.id=ocrt.id_oc left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrt.id=ocrut.id_role where ocrut.id_user='".$idu."'");
+				$this->orgcount = $this->db->db_num_rows($this->resorg);
+				if( $this->orgcount > 0 )
+					{
+					$this->vieworg = bab_translate("View this organizational chart");
+					$this->vieworgurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=";
+					}
 				}
 			else
 				{
 				$this->name = "";
 				$this->urlimg = "";
 				}
+			
 			}
 		
 		function getnextfield()
@@ -576,6 +584,26 @@ function summaryDbContact($id, $idu)
 				return false;
 			}
 
+		function getnextorg(&$skip)
+			{
+			static $i = 0;
+			if( $i < $this->orgcount)
+				{
+				$arr = $this->db->db_fetch_array($this->resorg);
+				if( !bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $arr['id']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+				$this->orgn = $arr['name'];
+				$this->orgid = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
 		}
 
 	$temp = new temp($id, $idu);
@@ -1223,7 +1251,9 @@ function processImportDbFile( $pfile, $id, $separ )
 							$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$iduser."', '1')");
 							$db->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$iduser."' where id='".$idu."'");
 							if( $idgroup > 1 )
-								$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$iduser."', '".$idgroup."')");
+								{
+								bab_addUserToGroup($iduser, $idgroup);
+								}
 							}
 						}
 					break;
@@ -1432,7 +1462,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			return false;
 		if( $idgroup > 1 )
 			{
-			$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$iduser."','".$idgroup."')");
+			bab_addUserToGroup($iduser, $idgroup);
 			}
 		
 		if( $notifyuser == "Y" )
@@ -1669,6 +1699,11 @@ switch($idx)
 		else
 			$babBody->msgerror = bab_translate("Access denied");
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
+		break;
+
+	case "usdb":
+		UBrowseDbDirectory($id, $pos, $xf, $cb);
+		exit;
 		break;
 
 	case "sdb":

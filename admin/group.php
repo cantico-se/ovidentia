@@ -79,6 +79,7 @@ function groupModify($id)
 			$this->grpid = $id;
 			$this->grpname = $this->arr['name'];
 			$this->grpdesc = $this->arr['description'];
+			$this->identity = $this->arr['id_ocentity'];
 			if( $this->arr['mail'] == "Y")
 				{
 				$this->noselected = "";
@@ -103,9 +104,13 @@ function groupModify($id)
 				$this->managerval = "";
 				}
 			if( $id > 3 )
+				{
 				$this->bdel = true;
+				}
 			else
+				{
 				$this->bdel = false;
+				}
 			$this->tgval = "group";
 			$this->selected = "";
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
@@ -161,6 +166,7 @@ function groupMembers($id)
 		var $count;
 		var $res;
 		var $bmodname;
+		var $bdel;
 
 		function temp($id)
 			{
@@ -174,6 +180,8 @@ function groupMembers($id)
 			$this->idgroup = $id;
 			$this->group = bab_getGroupName($id);
 			$this->db = $GLOBALS['babDB'];
+			//list($this->identity) = $this->db->db_fetch_row($this->db->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$id."'"));
+			$this->identity = 0;
 			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group= '$id'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -181,6 +189,7 @@ function groupMembers($id)
 				$this->bmodname = true;
 			else
 				$this->bmodname = false;
+
 			}
 
 		function getnext()
@@ -242,7 +251,7 @@ function groupDelete($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho( bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 function groupAdmDelete($id)
@@ -376,10 +385,19 @@ function confirmDeleteMembers($item, $names)
 		$arr = explode(",", $names);
 		$cnt = count($arr);
 		$db = $GLOBALS['babDB'];
+		list($identity) = $db->db_fetch_row($db->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$item."'"));
 		for($i = 0; $i < $cnt; $i++)
 			{
-			$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr[$i]."' and id_group='".$item."'";	
+			$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr[$i]."' and id_group='".$item."'";
 			$res = $db->db_query($req);
+			if( $identity )
+				{
+				$res = $db->db_query("select ocrut.id FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrut.id_role = ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON ocrut.id_user = det.id WHERE ocrt.id_entity =  '".$identity."' AND det.id_directory =  '0' AND det.id_user =  '".$arr[$i]."'");
+				while( $row = $db->db_fetch_row($res))
+					{
+					$db->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$row['id']."'");
+					}
+				}
 			}
 	}
 }
@@ -464,86 +482,6 @@ function confirmDeleteGroup($id)
 	bab_deleteGroup($id);
 	}
 
-function confirmDeleteAdmGroup($id, $action)
-	{
-	global $babDB;
-
-	if( $id <= 3)
-		return;
-
-	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-	if( $action == 1 )
-		{
-		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-		$res = $babDB->db_query("select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteSection($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteTopicCategory($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteApprobationSchema($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteForum($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_FAQCAT_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteFaq($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteFolder($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteLdapDirectory($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteDbDirectory($arr['id']);
-			}
-
-		$res = $babDB->db_query("select id from ".BAB_GROUPS_TBL." where id_dgowner='".$id."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			bab_deleteGroup($arr['id']);
-			}
-		}
-	else
-		{
-		$db->db_query("update ".BAB_GROUPS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		$db->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$id."'");	
-		}
-
-	bab_deleteGroup($id);
-	}
 
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['groups'] != 'Y')

@@ -119,6 +119,7 @@ function listUsers($pos, $grp)
 			else
 				$this->bmodname = false;
 
+			$this->userst = '';
 			}
 
 		function getnext()
@@ -273,16 +274,14 @@ function updateGroup( $grp, $users, $userst)
 	{
 		if( count($users) < 1 || !in_array($tab[$i], $users))
 		{
-			$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$grp."' and id_object='".$tab[$i]."'";
-			$res = $db->db_query($req);
+			bab_removeUserFromGroup($tab[$i], $grp);
 		}
 	}
 	for( $i = 0; $i < count($users); $i++)
 	{
 		if( count($tab) < 1 || !in_array($users[$i], $tab))
 		{
-			$req = "insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$grp. "', '" . $users[$i]. "')";
-			$res = $db->db_query($req);
+			bab_addUserToGroup($users[$i], $grp);
 		}
 	}
 }
