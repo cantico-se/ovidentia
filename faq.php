@@ -430,8 +430,8 @@ function saveQuestion($item, $question, $response)
 		}
 	if( !bab_isMagicQuotesGpcOn())
 		{
-		$question = addslashes($question);
-		$response = addslashes($response);
+		$question = addslashes(bab_stripDomainName($question));
+		$response = addslashes(bab_stripDomainName($response));
 		}
 	$db = $GLOBALS['babDB'];
 	$query = "insert into ".BAB_FAQQR_TBL." (idcat, question, response) values ('" .$item. "', '" .$question. "', '" . $response. "')";
@@ -448,8 +448,8 @@ function updateQuestion($idq, $question, $response)
 		}
 	if( !bab_isMagicQuotesGpcOn())
 		{
-		$question = addslashes($question);
-		$response = addslashes($response);
+		$question = addslashes(bab_stripDomainName($question));
+		$response = addslashes(bab_stripDomainName($response));
 		}
 
 	$db = $GLOBALS['babDB'];

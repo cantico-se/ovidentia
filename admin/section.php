@@ -138,21 +138,11 @@ function sectionUpdate($id, $title, $desc, $content, $script)
 	$query = "select * from ".BAB_SECTIONS_TBL." where id='".$id."'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
-	/*
-	if( $arr['position'] != $pos)
-		{
-		$query = "select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where private='N' and position='".$arr['position']."'";
-		$res = $db->db_query($query);
-		$arr = $db->db_fetch_array($res);
-		$query = "update ".BAB_SECTIONS_ORDER_TBL." set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";
-		$db->db_query($query);
-		}
-	*/
-	//$query = "update ".BAB_SECTIONS_TBL." set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
+
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$desc = addslashes($desc);
-		$content = addslashes($content);
+		$content = addslashes(bab_stripDomainName($content));
 		$title = addslashes($title);
 		}
 			

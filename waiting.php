@@ -531,11 +531,11 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	$headtext = imagesReplace($headtext, $article."_art_", $ar);
 	$bodytext = imagesReplace($bodytext, $article."_art_", $ar);
 
-	$headtext = addslashes($headtext);
-	$bodytext = addslashes($bodytext);
+	$headtext = addslashes(bab_stripDomainName($headtext));
+	$bodytext = addslashes(bab_stripDomainName($bodytext));
 	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext', date=now() where id='$article'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='".$headtext."', body='".$bodytext."', date=now() where id='$article'";
 	$res = $db->db_query($req);		
 	}
 

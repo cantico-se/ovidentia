@@ -88,7 +88,7 @@ function saveNotes($content)
 		}
 	if( !bab_isMagicQuotesGpcOn())
 		{
-		$content = addslashes($content);
+		$content = addslashes(bab_stripDomainName($content));
 		}
 
 	$db = $GLOBALS['babDB'];

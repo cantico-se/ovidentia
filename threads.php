@@ -277,9 +277,9 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed) values ";
 	$req .= "('" .$idthread. "', now(), '";
 	if( !bab_isMagicQuotesGpcOn())
-		$req .= addslashes($subject). "', '" . addslashes($message). "', '". addslashes($name);
+		$req .= addslashes(bab_stripDomainName($subject)). "', '" . addslashes(bab_stripDomainName($message)). "', '". addslashes($name);
 	else
-		$req .= $subject. "', '" . $message. "', '". $name;
+		$req .= bab_stripDomainName($subject). "', '" . bab_stripDomainName($message). "', '". $name;
 
 	$req .= "', '". $confirmed. "')";
 	$res = $db->db_query($req);

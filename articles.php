@@ -718,7 +718,7 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	$headtext = imagesReplace($headtext, $id."_art_", $ar);
 	$bodytext = imagesReplace($bodytext, $id."_art_", $ar);
 
-	$req = "update ".BAB_ARTICLES_TBL." set head='".addslashes($headtext)."', body='".addslashes($headtext)."', body='".addslashes($bodytext)."', title='".addslashes($title)."' where id='".$id."'";
+	$req = "update ".BAB_ARTICLES_TBL." set head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', title='".addslashes($title)."' where id='".$id."'";
 	$res = $db->db_query($req);
 
 	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
@@ -761,11 +761,9 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext)
 	$headtext = imagesReplace($headtext, $article."_art_", $ar);
 	$bodytext = imagesReplace($bodytext, $article."_art_", $ar);
 
-	$headtext = addslashes($headtext);
-	$bodytext = addslashes($bodytext);
 	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext', date=now() where id='$article'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now() where id='".$article."'";
 	$res = $db->db_query($req);
 
 	}

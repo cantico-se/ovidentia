@@ -50,7 +50,7 @@ function updateNotes($id, $content)
 	$db = $GLOBALS['babDB'];
 	if( !bab_isMagicQuotesGpcOn())
 		{
-		$content = addslashes($content);
+		$content = addslashes(bab_stripDomainName($content));
 		}
 	$query = "update ".BAB_NOTES_TBL." set content='$content' where id = '$id'";
 	$db->db_query($query);

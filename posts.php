@@ -507,9 +507,9 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, author, confirmed, id_parent) values ";
 	$req .= "('" .$thread. "', now(), '";
 	if( !bab_isMagicQuotesGpcOn())
-		$req .= addslashes($subject). "', '" . addslashes($message). "', '". addslashes($name);
+		$req .= addslashes(bab_stripDomainName($subject)). "', '" . addslashes(bab_stripDomainName($message)). "', '". addslashes($name);
 	else
-		$req .= $subject. "', '" . $message. "', '". $name;
+		$req .= bab_stripDomainName($subject). "', '" . bab_stripDomainName($message). "', '". $name;
 	$req .= "', '". $confirmed."', '". $post. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
@@ -575,7 +575,11 @@ function updateReply($forum, $thread, $subject, $message, $post)
 
 	$db = $GLOBALS['babDB'];
 
-	$req = "update ".BAB_POSTS_TBL." set message='$message', subject='$subject', dateupdate=now() where id='$post'";
+	if( !bab_isMagicQuotesGpcOn())
+		$req = "update ".BAB_POSTS_TBL." set message='".addslashes(bab_stripDomainName($message))."', subject='".addslashes(bab_stripDomainName($subject))."', dateupdate=now() where id='$post'";
+	else
+		$req = "update ".BAB_POSTS_TBL." set message='".bab_stripDomainName($message)."', subject='".bab_stripDomainName($subject)."', dateupdate=now() where id='$post'";
+
 	$res = $db->db_query($req);
 
 	}

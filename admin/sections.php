@@ -310,7 +310,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		if( !bab_isMagicQuotesGpcOn())
 			{
 			$desc = addslashes($desc);
-			$content = addslashes($content);
+			$content = addslashes(bab_stripDomainName($content));
 			$title = addslashes($title);
 			}
 		
