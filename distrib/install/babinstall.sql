@@ -866,11 +866,12 @@ INSERT INTO bab_mime_types VALUES ('zip', 'application/zip');
 # Structure de la table 'bab_addons'
 #
 
-CREATE TABLE bab_addons (
-  id int(11) unsigned NOT NULL auto_increment,
-  title varchar(255) NOT NULL default '',
-  enabled enum('Y','N') NOT NULL default 'Y',
-  PRIMARY KEY  (id)
+CREATE TABLE `bab_addons` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `title` varchar(255) NOT NULL default '',
+  `enabled` enum('Y','N') NOT NULL default 'Y',
+  `version` varchar(127) NOT NULL default '',
+  PRIMARY KEY  (`id`)
 );
 
     

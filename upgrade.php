@@ -2349,6 +2349,15 @@ function upgrade406to407()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_ADDONS_TBL." ADD `version` varchar(127) DEFAULT '' NOT NULL ";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ADDONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 
