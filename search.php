@@ -830,7 +830,34 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$crit_fields .= " and ".finder($dirfield,$dirselect);
 					}
 				if ($this->like || $this->like2)
-					$likedir = "(".finder($this->like,"sn",$option,$this->like2)." or ".finder($this->like,"givenname",$option,$this->like2)." or ".finder($this->like,"mn",$option,$this->like2)." or ".finder($this->like,"organisationname",$option,$this->like2)." or ".finder($this->like,"bcity",$option,$this->like2).") and ";
+					{
+					$likedir = "(".finder($this->like,"cn",$option,$this->like2).
+								" or ".finder($this->like,"sn",$option,$this->like2).
+								" or ".finder($this->like,"mn",$option,$this->like2).
+								" or ".finder($this->like,"givenname",$option,$this->like2).
+								" or ".finder($this->like,"email",$option,$this->like2).
+								" or ".finder($this->like,"btel",$option,$this->like2).
+								" or ".finder($this->like,"mobile",$option,$this->like2).
+								" or ".finder($this->like,"htel",$option,$this->like2).
+								" or ".finder($this->like,"bfax",$option,$this->like2).
+								" or ".finder($this->like,"title",$option,$this->like2).
+								" or ".finder($this->like,"departmentnumber",$option,$this->like2).
+								" or ".finder($this->like,"organisationname",$option,$this->like2).
+								" or ".finder($this->like,"bstreetaddress",$option,$this->like2).
+								" or ".finder($this->like,"bcity",$option,$this->like2).
+								" or ".finder($this->like,"bpostalcode",$option,$this->like2).
+								" or ".finder($this->like,"bstate",$option,$this->like2).
+								" or ".finder($this->like,"bcountry",$option,$this->like2).
+								" or ".finder($this->like,"hstreetaddress",$option,$this->like2).
+								" or ".finder($this->like,"hcity",$option,$this->like2).
+								" or ".finder($this->like,"hpostalcode",$option,$this->like2).
+								" or ".finder($this->like,"hstate",$option,$this->like2).
+								" or ".finder($this->like,"hcountry",$option,$this->like2).
+								" or ".finder($this->like,"user1",$option,$this->like2).
+								" or ".finder($this->like,"user2",$option,$this->like2).
+								" or ".finder($this->like,"user3",$option,$this->like2).
+								") and ";
+					}
 				$req = "create temporary table dirresults select *,sn name from ".BAB_DBDIR_ENTRIES_TBL." where 0";
 				$this->db->db_query($req);
 				$req = "alter table dirresults add unique (id)";
