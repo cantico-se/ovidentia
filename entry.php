@@ -153,6 +153,7 @@ function ListArticles($idgroup)
 			$this->res = $this->db->db_query($req);
 			$this->countres = $this->db->db_num_rows($this->res);
 			$this->morename = bab_translate("Read More");
+			$this->printable = bab_translate("Print Friendly");
 			}
 
 		function getnext()
@@ -162,7 +163,7 @@ function ListArticles($idgroup)
 			if( $i < $this->countres)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select id, title, head , LENGTH(body) as blen  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
+				$req = "select id, id_topic ,title, head , LENGTH(body) as blen  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->blen = $arr['blen'];
@@ -172,6 +173,7 @@ function ListArticles($idgroup)
 				$this->articledate = bab_getArticleDate($arr['id']);
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id'];
+				$this->printurl = $GLOBALS['babUrlScript']."?tg=entry&idx=print&topics=".$arr['id_topic']."&article=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -229,6 +231,40 @@ function readMore($article)
 	$babBody->babecho(	bab_printTemplate($temp,"entry.html", "readmore"));
 	}
 
+function articlePrint($topics, $article, $idg)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $content;
+		var $head;
+		var $title;
+		var $url;
+
+		function temp($topics, $article)
+			{
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->topics = $topics;
+			if( $this->count > 0 )
+				{
+				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->head = bab_replace($this->arr['head']);
+				$this->content = bab_replace($this->arr['body']);
+				$this->title = bab_getArticleTitle($this->arr['id']);
+				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
+				}
+			}
+		}
+	
+	$temp = new temp($topics, $article);
+	echo bab_printTemplate($temp,"articleprint.html");
+	}
+	
 /* main */
 if(!isset($idx))
 	{
@@ -243,8 +279,33 @@ if(!isset($idg))
 if( $BAB_SESS_LOGGED)
 	$idg = 1; // registered users
 
+$access = false;
+$db = $GLOBALS['babDB'];
+$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+$res = $db->db_query($req);
+if( $res &&  $db->db_num_rows($res) > 0)
+	{
+	$arr = $db->db_fetch_array($res);
+	$res = $db->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idg."' and id_site='".$arr['id']."' and id_article='".$article."' and ordering!='0'");
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		$access = true;
+		}
+	}
+
+if( !$access )
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 switch($idx)
 	{
+	case "print":
+		articlePrint($topics, $article, $idg);
+		exit();
+		break;
+
 	case "more":
 		readMore($article);
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=entry");
