@@ -287,7 +287,7 @@ function newReply($forum, $thread, $post)
 			{
 			global $BAB_SESS_USER;
 			$this->subject = babTranslate("Subject");
-			$this->name = babTranslate("Name");
+			$this->name = babTranslate("Your Name");
 			$this->message = babTranslate("Message");
 			$this->add = babTranslate("New reply");
 			$this->forum = $forum;
