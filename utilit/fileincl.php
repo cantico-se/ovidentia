@@ -100,6 +100,7 @@ function bab_formatSizeFile($size, $roundoff = true)
 				{
 				$txt = substr( $size, 0, $l % 3);
 				}
+			else $txt = '';
 			for( $i = 0; $i < ($l / 3); $i++)
 				{
 				$txt .= " ". substr($size, $l%3 + $i*3, 3);

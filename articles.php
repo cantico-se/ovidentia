@@ -863,7 +863,7 @@ function modifyArticle($topics, $article)
 			$this->db = $GLOBALS['babDB'];
 			$res = $this->db->db_query("select lang, restrict_access  from ".BAB_TOPICS_TBL." where id='".$topics."'");
 			$arrtopic = $this->db->db_fetch_array($res);
-			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
+			if(isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
 				if($arrtopic['lang'] != '*')
 				{
@@ -1349,8 +1349,12 @@ if( isset($modify) && $approver)
 	$idx = "Articles";
 	}
 
-$uaapp = bab_isUserArticleApprover($topics);
-$ucapp = bab_isUserCommentApprover($topics);
+if( isset($topics ) && $BAB_SESS_USERID != "")
+	{
+	$uaapp = bab_isUserArticleApprover($topics);
+	$ucapp = bab_isUserCommentApprover($topics);
+	}
+
 if( $approver || $uaapp || $ucapp )
 	$access = true;
 else

@@ -159,7 +159,7 @@ class listFiles
 					$p = "";
 				else
 					$p = substr( $path, 0, $i);
-				if (is_array($this->arrudir))
+				if (isset($this->arrudir) && is_array($this->arrudir))
 					{
 					array_unshift ($this->arrdir,". .");
 					array_unshift ($this->arrudir, $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p);
@@ -2255,6 +2255,8 @@ switch($idx)
 	case "add":
 		$babBody->title = bab_translate("Upload file to")." /".$path. " ( ".bab_formatSizeFile($GLOBALS['babMaxFileSize'])." ".bab_translate("Kb") . " ".bab_translate("Max")." )";
 		$upath = urlencode($path);
+		if (!isset($description)) $description='';
+		if (!isset($keywords)) $keywords='';
 		addFile($id, $gr, $path, $description, $keywords);
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $upload)
