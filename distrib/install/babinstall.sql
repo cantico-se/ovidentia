@@ -232,6 +232,7 @@ CREATE TABLE bab_sections (
    script enum('N','Y') DEFAULT 'N' NOT NULL,
    jscript enum('N','Y') DEFAULT 'N' NOT NULL,
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
+   template varchar(255),
    PRIMARY KEY (id)
 );
 
@@ -365,6 +366,7 @@ CREATE TABLE bab_topics_categories (
    title varchar(60),
    description varchar(200),
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
+   template varchar(255),
    PRIMARY KEY (id)
 );
 

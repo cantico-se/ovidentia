@@ -41,8 +41,8 @@ function bab_formatDate($format, $time)
 				case 'D': /* day */
 					$val = $babDays[date("w", $time)];
 					break;
-				case 'j': /* Day of the month without leading zeros */ 
-					$val = date("j", $time);
+				case 'j': /* Day of the month with leading zeros */ 
+					$val = date("d", $time);
 					break;
 				case 'm': /* A short textual representation of a month, three letters */
 					$val = substr($babMonths[date("n", $time)], 0 , 3);
@@ -50,8 +50,8 @@ function bab_formatDate($format, $time)
 				case 'M': /* Month */
 					$val = $babMonths[date("n", $time)];
 					break;
-				case 'n': /* Numeric representation of a month, without leading zeros */
-					$val = date("n", $time);
+				case 'n': /* Numeric representation of a month, with leading zeros */
+					$val = date("m", $time);
 					break;
 				case 'Y': /* A full numeric representation of a year, 4 digits */
 					$val = date("Y", $time);
@@ -457,6 +457,90 @@ class bab_Article extends bab_handler
 }
 
 
+class bab_Forums extends bab_handler
+{
+	var $ctx;
+	var $count;
+	var $arrid = array();
+
+	function bab_Forums( &$ctx)
+	{
+		global $babDB;
+		$this->bab_handler($ctx);
+
+		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." order by ordering asc");
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
+				{
+				array_push($this->arrid, $row['id']);
+				}
+			}
+		$this->count = count($this->arrid);
+
+	}
+
+	function getnext()
+	{
+		global $babDB;
+
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$this->arrid[$i]."'"));
+			$this->ctx->curctx->push('ForumName', $arr['name']);
+			$this->ctx->curctx->push('ForumDescription', $arr['description']);
+			$this->ctx->curctx->push('ForumId', $arr['id']);
+			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			$i++;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+class bab_Forum extends bab_handler
+{
+	var $arrid = array();
+
+	function bab_Forum( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$ctx->get_value('forumid')."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		else
+			$this->count = 0;
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('ForumName', $arr['name']);
+			$this->ctx->curctx->push('ForumDescription', $arr['description']);
+			$this->ctx->curctx->push('ForumId', $arr['id']);
+			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			$i++;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
 class bab_RecentArticles extends bab_handler
 {
 	var $ctx;
@@ -468,6 +552,7 @@ class bab_RecentArticles extends bab_handler
 	var $lastlog;
 	var $nbdays;
 	var $last;
+	var $topicid;
 
 	function bab_RecentArticles($ctx)
 		{
@@ -475,14 +560,18 @@ class bab_RecentArticles extends bab_handler
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
+		$this->topicid = $ctx->get_value('topicid');
 
-		if( count($babBody->topview) > 0 )
+		if( count($babBody->topview) > 0 && ( $this->topicid === false || in_array($this->topicid, $babBody->topview)))
 			{
 			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y'";
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-			$req .= " and id_topic IN (".implode(',', $babBody->topview).")";
+			if( $this->topicid !== false )
+				$req .= " and id_topic='".$this->topicid."'";
+			else
+				$req .= " and id_topic IN (".implode(',', $babBody->topview).")";
 			$req .= " order by date desc";
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
@@ -490,7 +579,9 @@ class bab_RecentArticles extends bab_handler
 			$this->countarticles = $babDB->db_num_rows($this->resarticles);
 			}
 		else
+			{
 			$this->countarticles = 0;
+			}
 		}
 
 	function getnext()
@@ -529,6 +620,7 @@ class bab_RecentComments extends bab_handler
 	var $lastlog;
 	var $nbdays;
 	var $last;
+	var $articleid;
 
 	function bab_RecentComments($ctx)
 		{
@@ -536,10 +628,14 @@ class bab_RecentComments extends bab_handler
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
+		$this->articleid = $ctx->get_value('articleid');
 
 		if( count($babBody->topview) > 0 )
 			{
-			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y'";
+			if( $this->articleid !== false )
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$this->articleid."' and confirmed='Y'";
+			else
+				$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y'";
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
@@ -591,6 +687,7 @@ class bab_RecentPosts extends bab_handler
 	var $lastlog;
 	var $nbdays;
 	var $last;
+	var $forumid;
 
 	function bab_RecentPosts($ctx)
 		{
@@ -598,12 +695,19 @@ class bab_RecentPosts extends bab_handler
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
+		$this->forumid = $ctx->get_value('forumid');
 
-		$req = "select id, id_thread from ".BAB_POSTS_TBL." where confirmed='Y'";
+		if( $this->forumid !== false )
+			{
+			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p,  ".BAB_THREADS_TBL." t where p.id_thread=t.id and t.forum=".$this->forumid." and p.confirmed='Y'";
+			}
+		else
+			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p where p.confirmed='Y'";
+
 		if( $this->nbdays !== false)
-			$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+			$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-		$req .= " order by date desc";
+		$req .= " order by p.date desc";
 		if( $this->last !== false)
 			$req .= " limit 0, ".$this->last;
 
@@ -727,9 +831,13 @@ class bab_context
 	function get($var)
 	{
 		if( isset($this->variables[$var]))
+			{
 			return $this->variables[$var];
+			}
 		else
+			{
 			return false;
+			}
 	}
 }
 
@@ -770,7 +878,7 @@ function pop_ctx()
 	{
 	if( count($this->contexts) > 1 )
 		{
-		array_pop($this->contexts);
+		$tmp = array_pop($this->contexts);
 		$this->curctx =& $this->contexts[count($this->contexts)-1];
 		return $this->curctx;
 		}
@@ -836,7 +944,9 @@ function format_output($val, $matches)
 		switch(strtolower(trim($matches[1][$j])))
 			{
 			case 'strlen':
-				$val = substr($val, 0, $matches[3][$j]);
+				$arr = explode(',', $matches[3][$j] );
+				if( strlen($val) > $arr[0] )
+					$val = substr($val, 0, $matches[3][$j]).$arr[1];
 				break;
 			case 'striptags':
 				if( $matches[3][$j] == '1')
