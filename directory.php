@@ -185,6 +185,7 @@ function browseLdapDirectory($id, $pos)
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
+				$GLOBALS['babWebStat']->addLdapDirectory($id);
 				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
@@ -303,6 +304,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
+				$GLOBALS['babWebStat']->addDatabaseDirectory($id);
 				$this->idgroup = $arr['id_group'];
 				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
 				$this->countcol = $this->db->db_num_rows($this->rescol);

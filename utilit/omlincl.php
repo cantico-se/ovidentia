@@ -3996,6 +3996,43 @@ function bab_Translate($args)
 	return '';
 	}
 
+/* Web statistic */
+function bab_WebStat($args)
+	{
+	if($this->match_args($args, $mm))
+		{
+		$name = '';
+		$value = '';
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					$name = $mm[3][$j];
+					break;
+				case 'value':
+					$value = $mm[3][$j];
+					break;
+				}
+			}
+		if( !empty($name) && !empty($value))
+			{
+			if( substr($name, 0, 4) == "bab_" )
+				{	
+				$arr = explode(',', $value);
+				for( $k = 0; $k < count($arr); $k++ )
+					{
+					$GLOBALS['babWebStat']->addArrayInfo($name, $arr[$k]);
+					}
+				}
+			else
+				{
+				$GLOBALS['babWebStat']->addInfo($name, $value);
+				}
+			}
+		}
+	}
+
 /* save a variable to global space */
 function bab_PutVar($args)
 	{

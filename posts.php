@@ -112,6 +112,7 @@ function listPosts($forum, $thread, $post)
 					}
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
+				$GLOBALS['babWebStat']->addForumPost($this->postid);
 				$this->postdate = bab_strftime(bab_mktime($arr['date']));
 				$this->postauthor = $arr['author'];
 				$this->postsubject = $arr['subject'];
@@ -405,6 +406,7 @@ function listPostsFlat($forum, $thread, $open)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
+				$GLOBALS['babWebStat']->addForumPost($arr['id']);
 				$this->what = $arr['confirmed'];
 				$this->postdate = bab_strftime(bab_mktime($arr['date']));
 				$this->postauthor = $arr['author'];
@@ -649,6 +651,7 @@ function viewPost($thread, $post)
 			$this->postsubject = bab_replace($arr['subject']);
 			$this->postmessage = bab_replace($arr['message']);
 			$this->close = bab_translate("Close");
+			$GLOBALS['babWebStat']->addForumPost($post);
 			}
 		}
 	
@@ -1006,6 +1009,7 @@ switch($idx)
 		$open = bab_isForumThreadOpen($forum, $thread);
 		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
+			$GLOBALS['babWebStat']->addForumThread($thread);
 			if( $flat == "1")
 				{
 				$count = listPostsFlat($forum, $thread, $open);

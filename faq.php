@@ -464,6 +464,7 @@ function listSubCategoryQuestions($idcat, $idscat)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->question = $arr['question'];
 				$this->idq = $arr['id'];
+				$GLOBALS['babWebStat']->addFaqsQuestion($arr['id']);
 				$i++;
 				$this->index++;
 				return true;
@@ -555,6 +556,7 @@ function viewPopupQuestion($id)
 			$this->arr = $this->db->db_fetch_array($res);
 			if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $this->arr['idcat']) || isUserManager())
 				{
+				$GLOBALS['babWebStat']->addFaqsQuestion($id);
 				$this->arr['response'] = bab_replace($this->arr['response']);
 				}
 			else
@@ -615,6 +617,7 @@ function faqPrint($idcat, $idscat)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->idq = $arr['id'];
 				$this->question = $arr['question'];
+				$GLOBALS['babWebStat']->addFaqsQuestion($arr['id']);
 				$i++;
 				$this->index++;
 				return true;
@@ -1109,8 +1112,8 @@ switch($idx)
 		$babBody->title = bab_translate("Contents");
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
+			$GLOBALS['babWebStat']->addFaq($item);
 			FaqTableOfContents($item);
-			//listQuestions($item, $idscat);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			$babBody->addItemMenu("Print Friendly", bab_translate("Print Friendly"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item);
@@ -1127,6 +1130,7 @@ switch($idx)
 		$babBody->title = $faqinfo['category'];
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
+			$GLOBALS['babWebStat']->addFaq($item);
 			listSubCategoryQuestions($item, $idscat);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);

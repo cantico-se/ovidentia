@@ -96,14 +96,20 @@ if( !isset($GLOBALS['babUmaskMode']))
 	$GLOBALS['babUmaskMode'] = 0;
 	}
 
-$babSiteName = substr($babSiteName, 0, 30);
-include_once "base.php";
-include $babInstallPath."utilit/utilit.php";
-unset($BAB_SESS_LOGGED);
-
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
+$babSiteName = substr($babSiteName, 0, 30);
+
+include_once "base.php";
+include_once $babInstallPath."utilit/defines.php";
+include_once $babInstallPath."utilit/dbutil.php";
+$babDB = new babDatabase();
+include_once $babInstallPath."utilit/statincl.php";
+$babWebStat =& new bab_WebStatEvent();
+
+include $babInstallPath."utilit/utilit.php";
+unset($BAB_SESS_LOGGED);
 
 if( !isset($tg))
 	$tg = '';
@@ -551,6 +557,12 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
 			$incl = "admin/delegat";
 		break;
+	case "admstats":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Statistics");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
+			$incl = "admin/admstats";
+		break;
 	case "aclug":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = "";
@@ -701,6 +713,10 @@ switch($tg)
 		$babLevelTwo = "";
 		if( $BAB_SESS_LOGGED)
     		$incl = "lusers";
+		break;
+	case "statboard":
+		$babLevelOne = bab_translate("Statistics");
+		$incl = "statboard";
 		break;
 	case "threads":
 		$babLevelOne = bab_translate("Forums");
@@ -873,6 +889,7 @@ switch($tg)
 		$babLevelOne = "";
 		$babLevelTwo = "";
 		$incl = "entry";
+		$babWebStat->module($incl);
 		$arr = explode("/", $tg);
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")
 			{
@@ -901,6 +918,8 @@ switch($tg)
 							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 							$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
+							$babWebStat->addon($row['title']);
+							$babWebStat->module($module);
 							$incl .= $module;
 							}
 						else

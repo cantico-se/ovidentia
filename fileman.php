@@ -1634,6 +1634,7 @@ function getFile( $file, $id, $gr, $path, $inl)
 		return;
 		}
 
+	$GLOBALS['babWebStat']->addFilesManagerFile($arr['id']);
 	$mime = "application/octet-stream";
 	if ($ext = strrchr($file,"."))
 		{
@@ -2326,6 +2327,10 @@ switch($idx)
 		if( $bmanager)
 			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
 		listFiles($id, $gr, $path, $bmanager);
+		if( !empty($id))
+			{
+			$GLOBALS['babWebStat']->addFolder($id);
+			}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

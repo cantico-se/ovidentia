@@ -22,8 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."utilit/defines.php";
-include_once $babInstallPath."utilit/dbutil.php";
 include_once $babInstallPath."utilit/template.php";
 include_once $babInstallPath."utilit/userincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
@@ -294,6 +292,7 @@ function bab_printOvmlTemplate( $file, $args=array())
 	if( !file_exists( $filepath ) )
 		return "<!-- ERROR filename: ".$filepath." -->";
 
+	$GLOBALS['babWebStat']->addOvmlFile($filepath);
 	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
 	$tpl = new babOvTemplate($args);
 	return $tpl->printout(implode("", file($filepath)));
@@ -794,6 +793,7 @@ function babAdminSection($close)
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
 	
+	$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=admstats";
 	$this->head = bab_translate("Currently you administer ");
 	if( $babBody->currentAdmGroup == 0 )
 		$this->head .= bab_translate("all site");
@@ -1042,28 +1042,33 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=charts";
 		}
 
-		reset($babBody->babaddons);
-		while( $row=each($babBody->babaddons) ) 
+	if( bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1))
+		{
+		$this->array_urls[bab_translate("Statistics")] = $GLOBALS['babUrlScript']."?tg=statboard";
+		}
+
+	reset($babBody->babaddons);
+	while( $row=each($babBody->babaddons) ) 
+		{
+		$row = $row[1];
+		$acces =false;
+		if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+		else $acces =true;
+		if($row['access'] && (($arr_ini['version'] == $row['version']) || $acces))
 			{
-			$row = $row[1];
-			$acces =false;
-			if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
-				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-			else $acces =true;
-			if($row['access'] && (($arr_ini['version'] == $row['version']) || $acces))
+			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+			if( is_dir($addonpath))
 				{
-				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
-				if( is_dir($addonpath))
+				$arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
+				reset ($arr);
+				while (list ($txt, $url) = each ($arr))
 					{
-					$arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
-					reset ($arr);
-					while (list ($txt, $url) = each ($arr))
-						{
-						$this->addon_urls[$txt] = $url;
-						}
+					$this->addon_urls[$txt] = $url;
 					}
 				}
 			}
+		}
 
 	}
 
@@ -2606,7 +2611,6 @@ class babLanguageFilter
 
 	} //class LanguageFilter
 
-$babDB = new babDatabase();
 $babBody = new babBody();
 $BAB_HASH_VAR='aqhjlongsmp';
 $babLangFilter = new babLanguageFilter();

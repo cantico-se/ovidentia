@@ -3353,7 +3353,15 @@ if( !$res)
 return $ret;
 }
 
-function upgrade502to510()
+function upgrade502to503()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+return $ret;
+}
+
+function upgrade503to510()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
@@ -3517,4 +3525,50 @@ while( $arr = $db->db_fetch_array($resf))
 return $ret;
 }
 
+function upgrade510to520()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "CREATE TABLE ".BAB_STATSMAN_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATSMAN_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_STATS_EVENTS_TBL." (";
+$req .= "id bigint(20) unsigned NOT NULL auto_increment,";
+$req .= "evt_id_site tinyint(2) unsigned NOT NULL default '0',";
+$req .= "evt_time datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "evt_tg varchar(255) NOT NULL default '',";
+$req .= "evt_referer varchar(255) NOT NULL default '',";
+$req .= "evt_ip varchar(15) NOT NULL default '',";
+$req .= "evt_host varchar(255) NOT NULL default '',";
+$req .= "evt_client varchar(255) NOT NULL default '',";
+$req .= "evt_url varchar(255) NOT NULL default '',";
+$req .= "evt_session_id varchar(32) NOT NULL default '',";
+$req .= "evt_iduser int(11) unsigned NOT NULL default '0',";
+$req .= "evt_info text NOT NULL,";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_STATS_EVENTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
+}
 ?>

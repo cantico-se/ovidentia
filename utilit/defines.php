@@ -107,6 +107,8 @@ define("BAB_SITES_TBL", "bab_sites");
 define("BAB_SITES_HPMAN_GROUPS_TBL", "bab_sites_hpman_groups");
 define("BAB_SITES_FIELDS_REGISTRATION_TBL", "bab_sites_fields_registration");
 define("BAB_SITES_DISCLAIMERS_TBL", "bab_sites_disclaimers");
+define("BAB_STATS_EVENTS_TBL", "bab_stats_events");
+define("BAB_STATSMAN_GROUPS_TBL", "bab_statsman_groups");
 define("BAB_THREADS_TBL", "bab_threads");
 define("BAB_TOPCAT_ORDER_TBL", "bab_topcat_order");
 define("BAB_TOPICS_TBL", "bab_topics");

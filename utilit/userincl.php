@@ -1391,7 +1391,7 @@ function bab_replace_ref( &$txt, $remove = '')
 							$url_object = $param[0];
 							$name_object = isset($param[1]) ? $param[1] : $url_object;
 							$popup = isset($param[2]) ? $param[2] : 2;
-							$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=link&idx=popup&url=".urlencode($url_object), $name_object, $popup);
+							$title_object = "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=link&idx=popup&url=".urlencode($url_object)."', '', '');\">".$name_object."</a>";
 							bab_replace_var($txt,$var,$title_object);
 							break;
 
@@ -1412,6 +1412,9 @@ function bab_replace_ref( &$txt, $remove = '')
 								case "adminname":
 									$title_object = $babBody->babsite[$title_object];
 									break;
+								default:
+									$title_object = '';
+									break;
 								}
 							bab_replace_var($txt,$var,$title_object);
 							break;
@@ -1428,6 +1431,5 @@ function bab_replace_ref( &$txt, $remove = '')
 				}
 			}
 		}
-	// return $txt;
 	}
 ?>

@@ -26,6 +26,7 @@ include_once "base.php";
 switch($idx)
 {
 	default:
+		$GLOBALS['babWebStat']->addExternalLink($url);
 		Header("Location: ". $url);
 		exit;
 }

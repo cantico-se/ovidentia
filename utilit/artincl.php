@@ -898,6 +898,7 @@ function bab_getDocumentArticle( $idf )
 		return;
 		}
 
+	$GLOBALS['babWebStat']->addArticleFile($idf);
 	$arr = $babDB->db_fetch_array($res);
 	$file = stripslashes($arr['name']);
 

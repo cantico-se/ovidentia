@@ -68,6 +68,10 @@ function ListArticles($idgroup)
 					return true;
 					}
 				$this->blen = $arr['blen'];
+				if( $arr['blen'] == 0 )
+					{
+					$GLOBALS['babWebStat']->addArticle($arr['id']);
+					}
 				$this->title = $arr['title'];
 				$this->content = bab_replace($arr['head']);
 				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
@@ -173,6 +177,7 @@ function readMore($article, $idg)
 				{
 				$this->battachments = false;
 				}
+			$GLOBALS['babWebStat']->addArticle($article);
 			}
 
 		function getnextdoc()
@@ -222,6 +227,7 @@ function articlePrint($topics, $article)
 			$this->topics = $topics;
 			if( $this->count > 0 )
 				{
+				$GLOBALS['babWebStat']->addArticle($article);
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);

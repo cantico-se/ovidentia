@@ -1697,6 +1697,7 @@ function viewArticle($article)
 			$this->countcom = 0;
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
+				$GLOBALS['babWebStat']->addArticle($this->arr['id']);
 				$this->content = bab_replace($this->arr['body']);
 				$this->head = bab_replace($this->arr['head']);
 
@@ -2199,6 +2200,8 @@ switch($idx)
 		$babBody->title = bab_translate("Search");
 		searchKeyword( $item , $option);
 		$order = str_replace (","," ".$order." ,",$field)." ".$order;
+		if( !isset($navitem)) { $navitem = '';}
+		$GLOBALS['babWebStat']->addSearchWord($what);
 		startSearch( $item, $what, $order, $option,$navitem,$navpos);
 		break;
 

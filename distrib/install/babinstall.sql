@@ -943,7 +943,7 @@ CREATE TABLE bab_ini (
 );
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
-INSERT INTO bab_ini VALUES ('ver_minor', '1');
+INSERT INTO bab_ini VALUES ('ver_minor', '2');
 INSERT INTO bab_ini VALUES ('ver_build', '0');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
@@ -1986,3 +1986,38 @@ CREATE TABLE bab_dbdir_entries_extra (
   KEY id_fieldx (id_fieldx),
   KEY id_entry (id_entry)
 );
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_statsman_groups'
+#
+
+CREATE TABLE bab_statsman_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+#
+# Table structure for table `bab_stats_events`
+#
+
+CREATE TABLE bab_stats_events (
+  id bigint(20) unsigned NOT NULL auto_increment,
+  evt_id_site tinyint(2) unsigned NOT NULL default '0',
+  evt_time datetime NOT NULL default '0000-00-00 00:00:00',
+  evt_tg varchar(255) NOT NULL default '',
+  evt_referer varchar(255) NOT NULL default '',
+  evt_ip varchar(15) NOT NULL default '',
+  evt_host varchar(255) NOT NULL default '',
+  evt_client varchar(255) NOT NULL default '',
+  evt_url varchar(255) NOT NULL default '',
+  evt_session_id varchar(32) NOT NULL default '',
+  evt_iduser int(11) unsigned NOT NULL default '0',
+  evt_info text NOT NULL,
+  PRIMARY KEY  (id)
+);
+    

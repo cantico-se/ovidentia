@@ -244,6 +244,10 @@ function listArticles($topics)
 					{
 					$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 					}
+				else
+					{
+					$GLOBALS['babWebStat']->addArticle($this->arr['id']);
+					}
 
 				list($totalc) = $this->db->db_fetch_row($this->db->db_query("select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='Y'"));
 
@@ -402,6 +406,10 @@ function listArchiveArticles($topics, $pos)
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
 				$this->bbody = $this->arr['blen'];
+				if( $this->bbody == 0 )
+					{
+					$GLOBALS['babWebStat']->addArticle($this->arr['id']);
+					}
 				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 
@@ -592,6 +600,7 @@ function readMore($topics, $article)
 					$i++;
 					return true;
 					}
+				$GLOBALS['babWebStat']->addArticle($this->arr['id']);
 				$this->title = bab_replace($this->arr['title']);
 				if( !empty($this->arr['body']))
 					{
@@ -640,7 +649,10 @@ function readMore($topics, $article)
 				}
 			else
 				{
-				$this->db->db_data_seek($this->resart,0);
+				if( $this->countart > 0 )
+					{
+					$this->db->db_data_seek($this->resart,0);
+					}
 				$i=0;
 				return false;
 				}
@@ -661,7 +673,10 @@ function readMore($topics, $article)
 				}
 			else
 				{
-				$this->db->db_data_seek($this->rescom,0);
+				if( $this->countcom > 0 )
+					{
+					$this->db->db_data_seek($this->rescom,0);
+					}
 				$i=0;
 				return false;
 				}
@@ -752,6 +767,7 @@ function articlePrint($topics, $article)
 			$this->topics = $topics;
 			if( $this->count > 0)
 				{
+				$GLOBALS['babWebStat']->addArticle($article);
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
@@ -1049,6 +1065,7 @@ function viewArticle($article)
 
 				$this->rescom = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y' order by date desc");
 				$this->countcom = $this->db->db_num_rows($this->rescom);
+				$GLOBALS['babWebStat']->addArticle($article);
 				}
 			else
 				{
@@ -1092,7 +1109,10 @@ function viewArticle($article)
 				}
 			else
 				{
-				$this->db->db_data_seek($this->rescom,0);
+				if( $this->countcom > 0 )
+					{
+					$this->db->db_data_seek($this->rescom,0);
+					}
 				$i=0;
 				return false;
 				}
