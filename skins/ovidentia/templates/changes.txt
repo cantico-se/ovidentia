@@ -38,6 +38,7 @@ articles.html					        changed action="index.php" to action="{ babPhpSelf }"
 calendar.html					        changed action="index.php" to action="{ babPhpSelf }"
 calopt.html					            changed action="index.php" to action="{ babPhpSelf }"
 calview.html                            Added template fileslist
+                                        Added <!--#if ipost "== 1" --> ... <!--#endif ipost -->
 comments.html					        changed action="index.php" to action="{ babPhpSelf }"
                         commentcreate   Removed Javascript <script language="javascript">...</script>
                                         Added <center><a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ urlsee }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center>                                        
@@ -142,7 +143,6 @@ sites.html					            changed action="index.php" to action="{ babPhpSelf }"
 
 threads.html					        changed action="index.php" to action="{ babPhpSelf }"
                         threadlist      added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
-                                        Added <!--#if ipost "== 1" --> ... <!--#endif ipost -->
                         threadcreate    Added { noteforum }
                         
 topcats.html					        changed action="index.php" to action="{ babPhpSelf }"
