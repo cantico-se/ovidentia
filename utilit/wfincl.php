@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."utilit/afincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
 function bab_WFMakeInstance($idsch, $extra)
 {
@@ -72,7 +72,7 @@ function bab_WFGetWaitingInstances($iduser, $update=false)
 
 function bab_WFGetApprobationsList()
 {
-	$global $babDB, $babBody;
+	global $babDB, $babBody;
 	$result = array();
 	$res = $abDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
 	while( $arr = $babDB->db_fetch_array($res))
