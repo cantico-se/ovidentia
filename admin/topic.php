@@ -244,7 +244,10 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 
 			$req = "select * from ".BAB_FLOW_APPROVERS_TBL."";
 			$this->sares = $this->db->db_query($req);
-			$this->sacount = $this->db->db_num_rows($this->sares);
+			if( !$this->sares )
+				$this->sacount = 0;
+			else
+				$this->sacount = $this->db->db_num_rows($this->sares);
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
@@ -301,7 +304,8 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				}
 			else
 				{
-				$this->db->db_data_seek($this->sares, 0);
+				if( $this->sacount > 0 )
+					$this->db->db_data_seek($this->sares, 0);
 				$i = 0;
 				$j++;
 				return false;
