@@ -81,12 +81,12 @@ class babLDAP
 	{
 		if( !empty($bind) || !empty($pass))
 			{
-			$ret = ldap_bind($this->idlink, $bind, $pass);
+			$ret = @ldap_bind($this->idlink, $bind, $pass);
 			}
 		else
 			{
 			/* bind as anonymous */
-			$ret = ldap_bind($this->idlink);
+			$ret = @ldap_bind($this->idlink);
 			}
 
 		if($ret === false)
