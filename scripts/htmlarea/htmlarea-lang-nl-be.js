@@ -29,6 +29,7 @@ HTMLArea.I18N = {
 		textindicator:  "Huidige stijl",
 		babimage:		"Ovidentia afbeelding tussenvoegen",
 		bablink:		"Web link tussenvoegen",
+		unlink:			"Remove Web Link",
 		cleanhtml:		"HTML code oppoetsen",
 		copy:			"Kopieer",
 		cut:			"Knip",
@@ -40,7 +41,22 @@ HTMLArea.I18N = {
 		babfaq:			"Ovidentia FAQ link",
 		babovml:		"Ovidentia OVML link",
 		babcontdir:		"Ovidentia Contacts, directory"
-	}
+	},
+	formatblock : {
+		"Heading 1": "h1",
+		"Heading 2": "h2",
+		"Heading 3": "h3",
+		"Heading 4": "h4",
+		"Heading 5": "h5",
+		"Heading 6": "h6",
+		"Normal": "p",
+		"Address": "address",
+		"Formatted": "pre"
+		},
+	babstyle : {
+		"Normal": "Font style",
+		"Remove format": "Remove format"
+		}
 };
 
 

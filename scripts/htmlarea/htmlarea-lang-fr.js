@@ -29,6 +29,7 @@ HTMLArea.I18N = {
 		textindicator:  "Style",
 		babimage:		"Insérer une image Ovidentia",
 		bablink:		"Insérer un lien web",
+		unlink:			"Enlever un lien web",
 		cleanhtml:		"Nettoyer le code HTML",
 		copy:			"Copier",
 		cut:			"Couper",
@@ -51,6 +52,10 @@ HTMLArea.I18N = {
 		"Normal": "p",
 		"Adresse": "address",
 		"Formaté": "pre"
+		},
+	babstyle : {
+		"Normal": "Style de police",
+		"Remove format": "Enlever le format"
 		}
 };
 
