@@ -476,6 +476,12 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	else
 		$confirmed = "Y";
 
+	if(!get_cfg_var("magic_quotes_gpc"))
+		{
+		$subject = addslashes($subject);
+		$message = addslashes($message);
+		}
+
 	$req = "insert into posts (id_thread, date, subject, message, author, confirmed, id_parent) values ";
 	$req .= "('" .$thread. "', now(), '" . $subject. "', '" . $message. "', '". $name. "', '". $confirmed."', '". $post. "')";
 	$res = $db->db_query($req);
