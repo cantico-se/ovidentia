@@ -28,13 +28,17 @@ include_once $babInstallPath."utilit/template.php";
 include_once $babInstallPath."utilit/userincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 
-function bab_mkdir($path, $mode)
+function bab_mkdir($path, $mode='')
 {
 	if( substr($path, -1) == "/" )
 		{
 		$path = substr($path, 0, -1);
 		}
 	$umask = umask($GLOBALS['babUmaskMode']);
+	if( $mode === '' )
+	{
+		$mode = $GLOBALS['babMkdirMode'];
+	}
 	$res = mkdir($path, $mode);
 	umask($umask);
 	return $res;
@@ -497,6 +501,7 @@ function bab_callAddonsFunction($func)
 				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
 				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+				$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
 				require_once( $addonpath."/init.php" );
 				$call = $row['title']."_".$func;
 				if( !empty($call)  && function_exists($call) )
@@ -526,6 +531,7 @@ function bab_getAddonsMenus($row, $what)
 		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
 		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 		$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
 		require_once( $addonpath."/init.php" );
 		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
@@ -1594,6 +1600,7 @@ function loadSections()
 							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$sectionid."/";
 							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$arr2['title']."/";
 							$GLOBALS['babAddonHtmlPath'] = "addons/".$arr2['title']."/";
+							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$arr2['title']."/";
 							require_once( $GLOBALS['babAddonsPath'].$arr2['title']."/init.php" );
 							$func = $arr2['title']."_onSectionCreate";
 							if(function_exists($func))

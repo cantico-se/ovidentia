@@ -104,6 +104,10 @@ unset($BAB_SESS_LOGGED);
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
+if( !is_dir($GLOBALS['babUploadPath']."/addons/"))
+{
+	bab_mkdir($GLOBALS['babUploadPath']."/addons/", $GLOBALS['babMkdirMode']);
+}
 
 if( !isset($tg))
 	$tg = '';
@@ -888,6 +892,7 @@ switch($tg)
 							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
 							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 							$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
+							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
 							}
 						else
 							$incl = "entry";
