@@ -1022,7 +1022,16 @@ function bab_newArticleDraft($idtopic, $idarticle)
 		$idanonymous = 0;
 		}
 
-	$babDB->db_query("insert into ".BAB_ART_DRAFTS_TBL." (id_author, id_topic, id_article, title, date_creation, date_modification, id_anonymous) values ('" .$BAB_SESS_USERID. "', '".$idtopic. "', '".$idarticle."', '".bab_translate("New article")."', now(), now(), '".$idanonymous."')");
+	if( !empty($idtopic))
+		{
+		list($notify) = $babDB->db_fetch_row($babDB->db_query("select notify from ".BAB_TOPICS_TBL." where id='".$idtopic."'"));
+		}
+	else
+		{
+		$notify = 'Y';
+		}
+
+	$babDB->db_query("insert into ".BAB_ART_DRAFTS_TBL." (id_author, id_topic, id_article, title, date_creation, date_modification, id_anonymous, notify_members) values ('" .$BAB_SESS_USERID. "', '".$idtopic. "', '".$idarticle."', '".bab_translate("New article")."', now(), now(), '".$idanonymous."', '".$notify."')");
 	$id = $babDB->db_insert_id();
 
 	if( $idarticle != 0 )
