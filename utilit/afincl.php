@@ -285,80 +285,18 @@ function getApproversFlow($formula)
 	return $result;
 }
 
-function isUserApproverFlow($idsa, $iduser)
+function isUserApproverFlow($idsa, $iduser, $update=false)
 {
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$idsa."'");
-	if( $res && $db->db_num_rows($res) > 0)
+
+	$arr = getWaitingApprobations($iduser, $update);
+	for( $i=0; $i < count($arr['idsch']); $i++)
+	{
+		if( $arr['idsch'][$i] == $idsa )
 		{
-		$arr = $db->db_fetch_array($res);
-		$result = getApproversFlow($arr['formula']);
-		if( count($result) > 0 )
-			{
-			switch($arr['satype'])
-				{
-				case 0:
-					if( in_array($iduser, $result))
-						{
-						$res = $db->db_query("select fait.* from ".BAB_FAR_INSTANCES_TBL." fait left join ".BAB_FA_INSTANCES_TBL." fat on fait.idschi=fat.id where fait.iduser='".$iduser."' and fait.result='' and fait.notified='Y' and fat.idsch='".$idsa."' ");
-						if( $res && $db->db_num_rows($res) > 0 )
-							{
-							return true;
-							}
-						else
-							{
-							return false;
-							}
-						}
-					break;
-				case 1;
-					$res = $db->db_query("select fait.*, fat.id_user as fat_userid from ".BAB_FAR_INSTANCES_TBL." fait left join ".BAB_FA_INSTANCES_TBL." fat on fait.idschi=fat.id where fait.iduser IN (".implode(',', $result).") and fait.result='' and fait.notified='Y' and fat.idsch='".$idsa."'");
-					if( $res && $babDB->db_num_rows($res) > 0 )
-						{
-						$idroles = array();
-						while($row= $db->db_fetch_array($res))
-							{
-							if( $row['iduser'] == 0 )
-								{
-								if( $row['fat_userid'] != 0 )
-									{
-									$rr = bab_getSuperir($row['fat_userid']);
-									if( count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
-										{
-										return true;
-										}
-									}
-								}
-							else
-								{
-								$idroles[] = $row['iduser'];
-								}
-							}
-						}
-					else
-						{
-						return false;
-						}
-
-					if( count($idroles) > 0 )
-					{
-						$rusers = bab_getOrgChartRoleUsers($result);
-						for( $i = 0; $i < count($rusers['iduser']); $i++ )
-						{
-							if( $rusers['iduser'][$i] == $iduser )
-							{
-								return true;
-							}
-						}
-					}
-					break;
-				default:
-					break;
-				}
-			}
+			return true;
 		}
+	}
 	return false;
-
 }
 
 function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
@@ -446,5 +384,70 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 
 	return $result;
 }
+
+function getWaitingApprobations($iduser, $update=false)
+{
+	static $wauser = array();
+	if( isset($wauser[$iduser]) && !$update )
+	{
+		return $wauser[$iduser];
+	}
+
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where (frit.iduser='".$iduser."' or frit.iduser='0') and frit.result='' and frit.notified='Y'");
+	$result = array();
+	while( $row = $db->db_fetch_array($res))
+		{
+		switch($row['satype'])
+			{
+			case 0:
+				if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
+					{
+					$result['idsch'][] = $row['idsch'];
+					$result['idschi'][] = $row['idschi'];
+					}
+				break;
+			case 1:
+				if( $row['iduser'] == 0 )
+				{
+					if( $row['fit_iduser'] != 0 )
+						{
+						$rr = bab_getSuperior($row['fit_iduser']);
+						if( count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
+							{
+							if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
+								{
+								$result['idsch'][] = $row['idsch'];
+								$result['idschi'][] = $row['idschi'];
+								}
+							}
+						}
+				}
+				else
+				{
+					$rusers = bab_getOrgChartRoleUsers($row['iduser']);
+					for( $i = 0; $i < count($rusers['iduser']); $i++ )
+					{
+						if( $rusers['iduser'][$i] == $iduser )
+						{
+							if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
+								{
+								$result['idsch'][] = $row['idsch'];
+								$result['idschi'][] = $row['idschi'];
+								}
+						}
+					}
+				}
+				
+				break;
+			default:
+				break;
+			}
+		}
+	$wauser[$iduser] = $result;
+	return $result;
+
+}
+
 
 ?>
