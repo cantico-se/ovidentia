@@ -33,6 +33,8 @@ function OrgChartPage($ocid, $oeid, $iduser)
 			$this->frurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
 			$this->frturl = $GLOBALS['babUrlScript']."?tg=frchart&idx=frt&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
 			$this->flturl = $GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
+
+			$this->unlockurl = $GLOBALS['babUrlScript']."?tg=charts&idx=unlock&ocid=".$ocid;
 			}
 
 		}
