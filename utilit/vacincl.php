@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
 
 
 define("VAC_MAX_REQUESTS_LIST", 20);
@@ -247,8 +248,10 @@ function viewVacationCalendar($users, $period = false )
 
 			$this->t_nonworking = bab_translate("Non-working day");
 			$this->t_weekend = bab_translate("Week-end");
+			
+			$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
 
-			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx'];
+			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&id=".$id;
 			if (!empty($_REQUEST['popup']))
 				{
 				$urltmp .= '&popup=1';
@@ -307,14 +310,18 @@ function viewVacationCalendar($users, $period = false )
 						$colors[] = $arr['color'];
 					}
 
-				$this->entries[] = array(
-									'id'=> $row['id'],
-									'id_user' => $row['id_user'],
-									'db'=> $row['date_begin'],
-									'de'=> $row['date_end'],
-									'st' => $row['status'],
-									'color' => $colors
-									);
+				if (!$this->period || !isset($_REQUEST['id']) || $_REQUEST['id'] != $row['id'])
+					{
+
+					$this->entries[] = array(
+										'id'=> $row['id'],
+										'id_user' => $row['id_user'],
+										'db'=> $row['date_begin'],
+										'de'=> $row['date_end'],
+										'st' => $row['status'],
+										'color' => $colors
+										);
+					}
 				}
 
 			$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
@@ -567,6 +574,7 @@ function listVacationRequests($id_user)
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->statustxt = bab_translate("Status");
 			$this->calendar = bab_translate("Planning");
+			$this->t_edit = bab_translate("Edit");
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1";
 			$this->topurl = "";
 			$this->bottomurl = "";
@@ -576,6 +584,7 @@ function listVacationRequests($id_user)
 			$this->bottomname = "";
 			$this->nextname = "";
 			$this->prevname = "";
+			$this->personal = $id_user == $GLOBALS['BAB_SESS_USERID'];
 			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
 			$this->db = $GLOBALS['babDB'];
 			$req = "".BAB_VAC_ENTRIES_TBL." where id_user='".$id_user."'";
@@ -633,22 +642,33 @@ function listVacationRequests($id_user)
 				$this->url = $GLOBALS['babUrlScript']."?tg=vacuser&idx=morve&id=".$arr['id'];
 				list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
 				$this->urlname = bab_getUserName($arr['id_user']);
-				$this->begindate = bab_shortDate(bab_mktime($arr['date_begin']." 00:00:00"), false);
+
+				$begin_ts = bab_mktime($arr['date_begin']." 00:00:00");
+				$end_ts = bab_mktime($arr['date_end']." 00:00:00");
+
+				$this->begindate = bab_shortDate($begin_ts, false);
 				if( $arr['day_begin'] != 1)
 					$this->begindate .= " ". $babDayType[$arr['day_begin']];
-				$this->enddate = bab_shortDate(bab_mktime($arr['date_end']." 00:00:00"), false);
+
+				$this->enddate = bab_shortDate($end_ts, false);
 				if( $arr['day_begin'] != 1)
 					$this->enddate .= " ". $babDayType[$arr['day_end']];
+
+				$this->urledit = $GLOBALS['babUrlScript']."?tg=vacuser&idx=period&id=".$arr['id']."&year=".date('Y',$begin_ts)."&month=".date('n',$begin_ts);
+
 				switch($arr['status'])
 					{
 					case 'Y':
 						$this->status = $this->statarr[1];
+						$this->modify = !$this->personal;
 						break;
 					case 'N':
 						$this->status = $this->statarr[2];
+						$this->modify = false;
 						break;
 					default:
 						$this->status = $this->statarr[0];
+						$this->modify = $this->personal;
 						break;
 					}
 				$i++;
@@ -664,4 +684,35 @@ function listVacationRequests($id_user)
 	$babBody->babecho(	bab_printTemplate($temp, "vacuser.html", "vrequestslist"));
 	return $temp->count;
 }
+
+
+function bab_IsUserUnderSuperior($id_user)
+{
+	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
+		return true;
+
+	$user_entities = & bab_OCGetUserEntities($id_user);
+	$user_entities = array_merge($user_entities['superior'], $user_entities['temporary'], $user_entities['members']);
+	foreach($user_entities as $entity)
+		{
+		$user_entities_id[$entity['id']] = $entity['id'];
+		}
+
+	$arr = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+	$childs = array();
+	foreach ($arr['superior'] as $entity)
+		{
+		$childs[] = $entity;
+		$tmp = & bab_OCGetChildsEntities($entity['id']);
+		$childs = array_merge($childs, $tmp);
+		}
+
+	foreach($childs as $entity)
+		{
+		if (isset($user_entities_id[$entity['id']]))
+			return true;
+		}
+	return false;
+}
+
 ?>

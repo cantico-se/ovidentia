@@ -25,7 +25,6 @@ include_once "base.php";
 include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
-define("VAC_MAX_REQUESTS_LIST", 20);
 
 function listVacationPersonnel($pos, $cb)
 	{
@@ -149,7 +148,7 @@ function listVacationPersonnel($pos, $cb)
 	}
 
 
-function listVacationRequests($idstatus, $userid, $dateb, $datee, $vpos)
+function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 {
 	global $babBody;
 
@@ -1328,7 +1327,7 @@ switch($idx)
 		if( !isset($idstatus)) $idstatus ="";
 		if( !isset($userid)) $userid ="";
 		if( !isset($vpos)) $vpos =0;
-		listVacationRequests($idstatus, $userid, $dateb, $datee, $vpos);
+		listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);

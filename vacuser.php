@@ -25,17 +25,46 @@ include_once "base.php";
 include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
-include_once $babInstallPath."utilit/ocapi.php";
 
 
-function requestVacation($begin,$end, $halfdaybegin, $halfdayend)
+function bab_isRequestEditable($id)
+	{
+	if ($id == 0)
+		{
+		return true;
+		}
+	$db = & $GLOBALS['babDB'];
+	list($id_user,$status) = $db->db_fetch_array($db->db_query("SELECT id_user,status FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id."'"));
+
+	
+
+	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
+		{
+		if (empty($status))
+			return $id_user;
+		else
+			return false;
+		}
+	elseif($status == 'Y')
+		{
+		if (bab_IsUserUnderSuperior($id_user))
+			return $id_user;
+		else
+			return false;
+		}
+	else
+		return false;
+	}
+
+
+function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 	{
 	global $babBody;
 	class temp
 		{
 		
 
-		function temp($begin,$end, $halfdaybegin, $halfdayend)
+		function temp($begin,$end, $halfdaybegin, $halfdayend, $id)
 			{
 			global $babBody;
 			$this->datebegintxt = bab_translate("Begin date");
@@ -61,14 +90,17 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend)
 			$this->calendar = bab_translate("Planning");
 			$this->totalval = 0;
 			$this->maxallowed = 0;
-			$this->db = & $GLOBALS['babDB'];
+			$this->id = $id;
+			$this->id_user = $_POST['id_user'];
+			$this->username = bab_getUserName($this->id_user);
+			$this->t_period = bab_translate("The period contain");
+			$this->t_days = bab_translate("working days");
+			$this->period_nbdays = $_POST['period_nbdays'];
 
+			$this->db = & $GLOBALS['babDB'];
 
 			list($yearbegin, $monthbegin, $daybegin) = explode('-',$begin);
 			list($yearend, $monthend, $dayend) = explode('-',$end);
-
-			$yearbegin = date("Y") + $yearbegin - 1;
-			$yearend = date("Y") + $yearend - 1;
 
 			$begin = mktime(0, 0, 0, $monthbegin, $daybegin, $yearbegin );
 			$end = mktime(0, 0, 0, $monthend, $dayend, $yearend);
@@ -80,15 +112,26 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend)
 			$this->halfdaybegin = $halfdaybegin;
 			$this->halfdayend = $halfdayend;
 
-			$this->rights = bab_getRightsOnPeriod($this->begin, $this->end);
+			$this->rights = bab_getRightsOnPeriod($this->begin, $this->end, $this->id_user);
 
-			
+			$this->recorded = array();
+			if (!empty($this->id))
+				{
+				$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$this->id."'");
+				while($arr = $this->db->db_fetch_array($res))
+					{
+					$this->recorded[$arr['id_type']] = $arr['quantity'];
+					}
+				}
 
 			$this->datebegin = bab_longdate($begin,false);
 			$this->dateend = bab_longdate($end,false);
 
 			$this->remarks = isset($_POST['remarks']) ? stripslashes($_POST['remarks']) : '';
-			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$GLOBALS['BAB_SESS_USERID']."&popup=1";
+			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->id_user."&popup=1";
+
+			
+
 			}
 
 
@@ -97,7 +140,34 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend)
 
 			if (list(,$this->right) = each($this->rights))
 				{
-				$this->nbdays = isset($_POST['nbdays'.$this->right['id']]) ? $_POST['nbdays'.$this->right['id']] : 0;
+				if (isset($_POST['nbdays'.$this->right['id']]))
+					{
+					$this->nbdays = $_POST['nbdays'.$this->right['id']];
+					}
+				elseif( count($this->recorded) > 0)
+					{
+					if (isset($this->recorded[$this->right['id']]))
+						$this->nbdays = $this->recorded[$this->right['id']];
+					else
+						$this->nbdays = 0;
+					}
+				elseif ( isset($_POST['period_nbdays']) && $_POST['period_nbdays']>0 && $this->right['quantitydays'] > 0)
+					{
+					if ($_POST['period_nbdays'] >= $this->right['quantitydays'])
+						{
+						$this->nbdays = $this->right['quantitydays'];
+						$_POST['period_nbdays'] -= $this->right['quantitydays'];
+						}
+					elseif ($this->right['quantitydays'] > 0)
+						{
+						$this->nbdays = $_POST['period_nbdays'];
+						$_POST['period_nbdays'] = 0;
+						}
+					}
+				else
+					{
+					$this->nbdays = 0;
+					}
 				$this->totalval += $this->nbdays;
 				return true;
 				}
@@ -108,19 +178,19 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend)
 
 		}
 
-	$temp = new temp($begin,$end, $halfdaybegin, $halfdayend);
+	$temp = new temp($begin,$end, $halfdaybegin, $halfdayend, $id);
 	$babBody->babecho(	bab_printTemplate($temp,"vacuser.html", "newvacation"));
 	}
 
 
 
-function period()
+function period($id_user, $id = 0)
 	{
 	class ptemp
 		{
 
 
-		function ptemp()
+		function ptemp($id_user, $id)
 			{
 			global $babBody;
 			$this->datebegin = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=2";
@@ -148,59 +218,48 @@ function period()
 			$this->calendar = bab_translate("Planning");
 			$this->totalval = 0;
 			$this->maxallowed = 0;
-			$this->db = $GLOBALS['babDB'];
+			$this->db = & $GLOBALS['babDB'];
+			$this->id = $id;
+			$this->id_user = $id_user;
 
-			if( empty($_REQUEST['daybegin']))
+			$this->year = isset($_REQUEST['year']) ? $_REQUEST['year'] : date('Y');
+
+			if (!empty($this->id) && !isset($_POST['daybegin']))
+				{
+				$res = $this->db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$this->id."'");
+				$arr = $this->db->db_fetch_array($res);
+				list($this->yearbegin, $this->monthbegin, $this->daybegin) = explode('-',$arr['date_begin']);
+				list($this->yearend, $this->monthend, $this->dayend) = explode('-',$arr['date_end']);
+				$this->halfdaybegin = $arr['day_begin'];
+				$this->halfdayend = $arr['day_end'];
+				}
+			elseif (isset($_POST['daybegin']))
+				{
+				$this->daybegin = $_POST['daybegin'];
+				$this->dayend = $_POST['dayend'];
+				$this->monthbegin = $_POST['monthbegin'];
+				$this->monthend = $_POST['monthend'];
+				$this->yearbegin = $this->year+ $_POST['yearbegin']-1;
+				$this->yearend = $this->year+ $_POST['yearend']-1;
+				$this->halfdaybegin = $_POST['halfdaybegin'];
+				$this->halfdayend = $_POST['halfdayend'];
+				}
+			else
+				{
 				$this->daybegin = date("j");
-			else
-				$this->daybegin = $_REQUEST['daybegin'];
-			$this->daysel = $this->daybegin;
-
-			if( empty($_REQUEST['dayend']) )
 				$this->dayend = date("j");
-			else
-				$this->dayend = $_REQUEST['dayend'];
-
-			if( empty($_REQUEST['monthbegin']) )
 				$this->monthbegin = date("n");
-			else
-				$this->monthbegin = $_REQUEST['monthbegin'];
-			$this->monthsel = $this->monthbegin;
-
-			if( empty($_REQUEST['monthend']) )
 				$this->monthend = date("n");
-			else
-				$this->monthend = $_REQUEST['monthend'];
-
-			if( empty($_REQUEST['yearbegin']) )
-				$this->yearbegin = date("Y");
-			else
-				$this->yearbegin = date("Y")+ $_REQUEST['yearbegin']-1;
-
-			$this->yearsel = $this->yearbegin - date("Y") + 1;
-
-			if( empty($_REQUEST['yearend']))
-				$this->yearend = date("Y");
-			else
-				$this->yearend = date("Y")+ $_REQUEST['yearend']-1;
-
-			if( empty($_REQUEST['halfdaybegin']) )
+				$this->yearbegin = $this->year;
+				$this->yearend = $this->year;
 				$this->halfdaybegin = 1;
-			else
-				$this->halfdaybegin = $_REQUEST['halfdaybegin'];
+				$this->halfdayend = 1;
+				}
+
 			$this->halfdaysel = $this->halfdaybegin;
 
-			if( empty($_REQUEST['halfdayend']) )
-				$this->halfdayend = 1;
-			else
-				$this->halfdayend = $_REQUEST['halfdayend'];
-
-
-			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$GLOBALS['BAB_SESS_USERID'];
+			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user;
 			}
-
-
-		
 
 
 		function getnextday()
@@ -210,19 +269,11 @@ function period()
 			if( $i <= date("t"))
 				{
 				$this->dayid = $i;
-				if( $this->daysel == $i)
-					{
-					$this->selected = "selected";
-					}
-				else
-					$this->selected = "";
-				
 				$i++;
 				return true;
 				}
 			else
 				{
-				$this->daysel = $this->dayend;
 				$i = 1;
 				return false;
 				}
@@ -238,19 +289,11 @@ function period()
 				{
 				$this->monthid = $i;
 				$this->monthname = $babMonths[$i];
-				if( $this->monthsel == $i)
-					{
-					$this->selected = "selected";
-					}
-				else
-					$this->selected = "";
-
 				$i++;
 				return true;
 				}
 			else
 				{
-				$this->monthsel = $this->monthend;
 				$i = 1;
 				return false;
 				}
@@ -262,17 +305,12 @@ function period()
 			if( $i < 3)
 				{
 				$this->yearid = $i+1;
-				$this->yearidval = date("Y") + $i;
-				if( $this->yearsel == $this->yearid )
-					$this->selected = "selected";
-				else
-					$this->selected = "";
+				$this->yearidval = $this->year + $i;
 				$i++;
 				return true;
 				}
 			else
 				{
-				$this->yearsel = $this->yearend - date("Y") + 1;
 				$i = 0;
 				return false;
 				}
@@ -304,7 +342,7 @@ function period()
 			}
 
 		}
-		$temp = new ptemp();
+		$temp = new ptemp($id_user, $id);
 		$GLOBALS['babBody']->babecho(bab_printTemplate($temp, "vacuser.html", "period"));
 	}
 
@@ -328,15 +366,15 @@ function vedUnload()
 	echo bab_printTemplate($temp,"vacuser.html", "vedunload");
 	}
 
-function addNewVacation($begin,$end, $halfdaybegin, $halfdayend, $remarks, $total)
+function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $halfdayend, $remarks, $total)
 {
 	global $babBody, $babDB;
 	$nbdays = array();
 
 
-	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id_user."'"));
 
-	$rights = bab_getRightsOnPeriod($begin, $end);
+	$rights = bab_getRightsOnPeriod($begin, $end, $id_user);
 
 	$ntotal = 0;
 	foreach($rights as $arr)
@@ -384,8 +422,24 @@ function addNewVacation($begin,$end, $halfdaybegin, $halfdayend, $remarks, $tota
 		$remarks = addslashes($remarks);
 		}
 
-	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." (id_user, date_begin, date_end, day_begin, day_end, comment, date, idfai) values  ('" .$GLOBALS['BAB_SESS_USERID']. "', '" . $begin. "', '" . $end. "', '" . $halfdaybegin. "', '" . $halfdayend. "', '" . $remarks. "', curdate(), '0')");
-	$id = $babDB->db_insert_id();
+	if (empty($id_request))
+		{
+		$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." (id_user, date_begin, date_end, day_begin, day_end, comment, date, idfai) values  ('" .$id_user. "', '" . $begin. "', '" . $end. "', '" . $halfdaybegin. "', '" . $halfdayend. "', '" . $remarks. "', curdate(), '0')");
+		$id = $babDB->db_insert_id();
+		}
+	else
+		{
+		$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$id_request."'");
+
+		list($idfai) = $babDB->db_fetch_array($babDB->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'"));
+		
+		if ($idfai > 0)
+			deleteFlowInstance($idfai);
+
+		$babDB->db_query("UPDATE ".BAB_VAC_ENTRIES_TBL." SET date_begin =  '".$begin."', date_end = '".$end."', day_begin = '" . $halfdaybegin. "', day_end = '" . $halfdayend. "', comment = '" . $remarks. "', date = curdate(), idfai = '0' WHERE id='".$id_request."'");
+
+		$id = $id_request;
+		}
 
 	for( $i = 0; $i < count($nbdays['id']); $i++)
 		{
@@ -528,7 +582,8 @@ if (!isset($_POST['daybegin']) ||
 	!isset($_POST['dayend']) || 
 	!isset($_POST['monthend']) ||
 	!isset($_POST['yearend']) || 
-	!isset($_POST['halfdayend'])
+	!isset($_POST['halfdayend']) ||
+	!isset($_POST['id_user'])
 	)
 	{
 	$babBody->msgerror = bab_translate("Error");
@@ -550,7 +605,9 @@ if (!isset($_POST['daybegin']) ||
 	$date_begin = sprintf("%04d-%02d-%02d", $yearbegin, $_POST['monthbegin'], $_POST['daybegin']);
 	$date_end = sprintf("%04d-%02d-%02d", $yearend, $_POST['monthend'], $_POST['dayend']);
 
-	$res = $db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."'))");
+	$id_entry = isset($_POST['id']) ? $_POST['id'] : 0;
+
+	$res = $db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$_POST['id_user']."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."')) AND id <> '".$id_entry."'");
 
 	if ($db->db_num_rows($res) > 0)
 		{
@@ -585,7 +642,7 @@ switch ($_POST['action'])
 		break;
 
 	case 'vacation_request':
-		if(!addNewVacation($begin, $end, $halfdaybegin, $halfdayend, $remarks, $total))
+		if(!addNewVacation($_POST['id_user'], $_POST['id'], $begin, $end, $halfdaybegin, $halfdayend, $remarks, $total))
 		$idx = "vunew";
 	else
 		{
@@ -623,18 +680,37 @@ switch($idx)
 
 		$babBody->title = bab_translate("Request vacation");
 
-		viewVacationCalendar(array($GLOBALS['BAB_SESS_USERID']), true);
-		period();
+		if (!empty($_REQUEST['id']))
+			{
+			$id_user = bab_isRequestEditable($_REQUEST['id']);
+			if (!$id_user)
+				{
+				$babBody->msgerror = bab_translate("Access denied");
+				}
+			else
+				{
+				viewVacationCalendar(array($id_user), true);
+				period($id_user, $_REQUEST['id']);
+				}
+			}
+		else
+			{
+			viewVacationCalendar(array($GLOBALS['BAB_SESS_USERID']), true);
+			period($GLOBALS['BAB_SESS_USERID']);
+			}
+
 		break;
 
 	case "vunew":
 		$babBody->title = bab_translate("Request vacation");
-		if( $acclevel['user'] == true )
+		if( bab_isRequestEditable($_POST['id']) )
 			{
 			if (isset($_POST['daybegin']))
 				{
-				$begin = $_POST['yearbegin'].'-'.$_POST['monthbegin'].'-'.$_POST['daybegin'];
-				$end = $_POST['yearend'].'-'.$_POST['monthend'].'-'.$_POST['dayend'];
+				$yearbegin = $_POST['year'] + $_POST['yearbegin'] -1;
+				$yearend = $_POST['year'] + $_POST['yearend'] -1;
+				$begin = $yearbegin.'-'.$_POST['monthbegin'].'-'.$_POST['daybegin'];
+				$end = $yearend.'-'.$_POST['monthend'].'-'.$_POST['dayend'];
 				}
 			else
 				{
@@ -642,7 +718,7 @@ switch($idx)
 				$end = $_POST['end'];
 				}
 
-			requestVacation($begin , $end, $_POST['halfdaybegin'], $_POST['halfdayend']);
+			requestVacation($begin , $end, $_POST['halfdaybegin'], $_POST['halfdayend'],$_POST['id']);
 			if( $countt > 0 )
 				$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
 			$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");

@@ -107,11 +107,21 @@ return true;
 <input type="hidden" name="halfdaybegin" value="{ halfdaybegin }" />
 <input type="hidden" name="end" value="{ end }" />
 <input type="hidden" name="halfdayend" value="{ halfdayend }" />
+<input type="hidden" name="period_nbdays" value="{ period_nbdays }" />
+<input type="hidden" name="id" value="{ id }" />
+<input type="hidden" name="id_user" value="{ id_user }" />
 
 	<table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 	<td> 
 		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4">
+		<tr> 
+
+			<td colspan="2" align="center"> 
+				{ username }
+			</td>
+		</tr>
+		
 		<tr> 
 			<td align="right">{ datebegintxt } : </td>
 			<td> 
@@ -148,7 +158,10 @@ return true;
 		</tr>
 		<tr> 
 			<td align="right">{ totaltxt } : </td>
-			<td><input type="text" name="total" size="5" maxlength="5" value="{ totalval }" /></td>
+			<td>
+				<input type="text" name="total" size="5" maxlength="5" value="{ totalval }" />
+				&nbsp; { t_period } { period_nbdays } { t_days }
+			</td>
 		</tr>
 		<tr> 
 			<td align="right">{ remark } : </td>
@@ -216,18 +229,24 @@ return true;
 			<td>{ enddatetxt }</td>
 			<td>{ quantitytxt }</td>
 			<td>{ statustxt }</td>
+			<td>&nbsp;</td>
 		</tr>
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
-			<td><a href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
+			<td><a href="{ url }" onclick="bab_popup(this.href,2);return false;">{ urlname }</a></td>
 			<td>{ begindate }</td>
 			<td>{ enddate }</td>
 			<td>{ quantity }</td>
 			<td>{ status }</td>
+			<td>
+				<!--#if modify -->
+				<a href="{ urledit }" title="{ t_edit }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ t_edit }" /></a>
+				<!--#endif modify -->
+			</td>
 		</tr>
 		<!--#endin getnext -->
 		<tr>
-			<td colspan="8" class="BabSiteAdminTitleFontBackground"> 
+			<td colspan="9" class="BabSiteAdminTitleFontBackground"> 
 				<table border="0" cellpadding="0" cellspacing="0" align="right">
 				<tr> 
 					<td width="1%" nowrap>&nbsp;</td>
@@ -262,64 +281,64 @@ window.focus();
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right">&nbsp;</td>
-<td class="BabSiteAdminFontBackground" align="left"><strong>{ fullname }</strong></td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left"> 
-<!--#in getnexttype -->
-{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
-<!--#endin getnexttype -->
-</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ totaltxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ totalval }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt 
-}:</b></td>
-<td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
-</tr>
-</table>
+<td class="BabLoginCadreBackground"> 
+	<table class="BabSiteAdminFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr> 
+		<td>&nbsp;</td>
+		<td>{ fullname }</td>
+	</tr>
+	<tr> 
+		<td align="right">{ datebegintxt }:</td>
+		<td>{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
+	</tr>
+	<tr> 
+		<td align="right">{ dateendtxt }:</td>
+		<td>{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
+	</tr>
+	<tr> 
+		<td align="right">{ nbdaystxt }:</td>
+		<td> 
+			<!--#in getnexttype -->
+			{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
+			<!--#endin getnexttype -->
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ totaltxt }:</td>
+		<td>{ totalval }</td>
+	</tr>
+	<tr> 
+		<td align="right">{ remarktxt }:</td>
+		<td>{ remark }</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
-<br>
+<br />
 <form method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
 <input type="hidden" name="tg" value="vacuser">
 <input type="hidden" name="idx" value="unload">
 <input type="hidden" name="add" value="vven">
 <input type="hidden" name="veid" value="{ veid }">
-<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">{ commenttxt }: </td>
-</tr> 
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">
-<textarea cols="40" rows="10" name="remarks"></textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" valign="middle">
-<div align="center"><input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
-</td>
-</tr>
-</table>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+	<table class="BabLoginMenuBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td align="center">{ commenttxt }: </td>
+	</tr> 
+	<tr> 
+		<td align="center">
+			<textarea cols="40" rows="10" name="remarks"></textarea>
+		</td>
+	</tr>
+	<tr> 
+		<td align="center">
+		<div align="center"><input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -327,6 +346,7 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end vwdetail -->
+
 <!--#begin vedunload -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -570,6 +590,7 @@ function setPeriod(obj)
 
 	var arr1 = begindate.split('-');
 	var arr2 = obj.id.split('-');
+	var nbd = 0;
 
 	dateBegin(arr1[2], arr1[1], arr1[0]);
 	dateEnd(arr2[2], arr2[1], arr2[0]);
@@ -582,6 +603,7 @@ function setPeriod(obj)
 		if (td.id >= begindate && td.id <= obj.id && (td.className == 'free' || td.className == 'selected'))
 			{
 			td.className = 'period';
+			nbd++;
 			}
 		else if (td.className == 'period' || td.className == 'selected' )
 			{
@@ -591,6 +613,8 @@ function setPeriod(obj)
 	obj.className = 'selected';
 	if (!setbegin)
 		begindate = obj.id;
+
+	document.forms['vacform'].period_nbdays.value = nbd;
 	}
 
 function addevent(td, evname, func) {
@@ -682,6 +706,10 @@ return true;
 <input type="hidden" name="tg" value="vacuser">
 <input type="hidden" name="idx" value="vunew">
 <input type="hidden" name="action" value="period">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="year" value="{ year }">
+<input type="hidden" name="period_nbdays" value="0">
+<input type="hidden" name="id_user" value="{ id_user }">
 
 <table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -694,21 +722,21 @@ return true;
 	<td> 
 		<select name="daybegin">
 		  <!--#in getnextday -->
-		  <option value="{ dayid }" { selected }>{ dayid }</option>
+		  <option value="{ dayid }">{ dayid }</option>
 		  <!--#endin getnextday -->
 		</select>
 	</td>
 	<td> 
 		<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 		  <!--#in getnextmonth -->
-		  <option value="{ monthid }" { selected }>{ monthname }</option>
+		  <option value="{ monthid }">{ monthname }</option>
 		  <!--#endin getnextmonth -->
 		</select>
 	</td>
 	<td> 
 		<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 		  <!--#in getnextyear -->
-		  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+		  <option value="{ yearid }">{ yearidval }</option>
 		  <!--#endin getnextyear -->
 		</select>
 	</td>
@@ -727,21 +755,21 @@ return true;
 	<td> 
 		<select name="dayend">
 		  <!--#in getnextday -->
-		  <option value="{ dayid }"  { selected }>{ dayid }</option>
+		  <option value="{ dayid }">{ dayid }</option>
 		  <!--#endin getnextday -->
 		</select>
 	</td>
 	<td> 
 		<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 		  <!--#in getnextmonth -->
-		  <option value="{ monthid }"  { selected }>{ monthname }</option>
+		  <option value="{ monthid }">{ monthname }</option>
 		  <!--#endin getnextmonth -->
 		</select>
 	</td>
 	<td> 
 		<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
 		  <!--#in getnextyear -->
-		  <option value="{ yearid }" { selected }>{ yearidval }</option>
+		  <option value="{ yearid }">{ yearidval }</option>
 		  <!--#endin getnextyear -->
 		</select>
 	</td>
@@ -764,4 +792,29 @@ return true;
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+<!--
+function initialize()
+{
+var daybegin = parseInt('{ daybegin }');
+var monthbegin = parseInt('{ monthbegin }');
+var yearbegin = parseInt('{ yearbegin }');
+
+var dayend = parseInt('{ dayend }');
+var monthend = parseInt('{ monthend }');
+var yearend = parseInt('{ yearend }');
+
+dateBegin( daybegin, monthbegin, yearbegin);
+dateEnd( dayend, monthend, yearend);
+
+}
+
+
+if (td = document.getElementById('{ yearbegin }-{ monthbegin }-{ daybegin }'))
+	setPeriod(td);
+if (td = document.getElementById('{ yearend }-{ monthend }-{ dayend }'))
+	setPeriod(td);
+
+-->
+</script>
 <!--#end period -->
