@@ -3337,4 +3337,12 @@ if( !$res)
 return $ret;
 }
 
+
+function upgrade501to502()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+return $ret;
+}
+
 ?>
