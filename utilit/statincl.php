@@ -62,7 +62,10 @@ class bab_WebStatEvent
 		$this->client = $_SERVER["HTTP_USER_AGENT"];
 		$this->url = $_SERVER["REQUEST_URI"];
 		$this->tg = isset($GLOBALS['tg'])?$GLOBALS['tg']:'';
-		$this->logEvent();
+		if( $this->tg != 'version' )
+			{
+			$this->logEvent();
+			}
 		$this->module($this->tg); 
 		$GLOBALS['babUrlStatInfo'] = $GLOBALS['babUrlScript']."?tg=statinfo&statevt=".$this->idevt."";
 	}
