@@ -703,7 +703,16 @@ function bab_replace( $txt )
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
 			$var = trim($m[1][$k]);
-			$txt = preg_replace("/\\\$VAR\(".preg_quote($var)."\)/", $GLOBALS[$var], $txt);
+			switch($var)
+				{
+				case "BAB_SESS_NICKNAME":
+				case "BAB_SESS_USER":
+				case "BAB_SESS_EMAIL":
+					$txt = preg_replace("/\\\$VAR\(".preg_quote($var)."\)/", $GLOBALS[$var], $txt);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
