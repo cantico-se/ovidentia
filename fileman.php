@@ -1115,7 +1115,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	return true;
 	}
 
-function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder)
+function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup)
 	{
 	global $babBody, $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
@@ -1220,8 +1220,9 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			$idcreator = 0;
 		else
 			$idcreator = $BAB_SESS_USERID;
-
-		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."'";
+	
+		if( $descup )
+			$req = "description='".$description."', keywords='".$keywords."'";
 		if( $bmodified)
 			$req .= ", modified=now(), modifiedby='".$idcreator."'";
 		if( $frename)
@@ -1244,8 +1245,10 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				$arr['id_owner'] = $newfolder;
 				}
 			}
-		$req .= " where id='".$idf."'";
-		$res = $db->db_query($req);
+
+		if( $req != "" )
+			$db->db_query("update ".BAB_FILES_TBL." set ".$req." where id='".$idf."'");
+
 		if( empty($bnotify))
 			{
 			$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
@@ -2000,7 +2003,11 @@ if( isset($addf))
 
 if( isset($updf) && $updf == "upd")
 	{
-	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder))
+	if( isset($description ))
+		$descup = true;
+	else
+		$descup = false;
+	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder, $descup))
 		$idx = "viewfile";
 	else
 		$idx = "unload";
