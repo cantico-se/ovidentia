@@ -226,6 +226,8 @@ function listTrashFiles($id, $gr)
 			$this->sizetxt = bab_translate("Size");
 			$this->modifiedtxt = bab_translate("Modified");
 			$this->postedtxt = bab_translate("Posted by");
+			$this->checkall = bab_translate("Check all");
+			$this->uncheckall = bab_translate("Uncheck all");
 			$this->fullpath = bab_getUploadFullPath($gr, $id);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='D' order by name asc";

@@ -248,31 +248,32 @@ class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/P
 <input type="hidden" name="cdel" value="update">
 <table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
-<td class="BabMailBackground" align="center">
-<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;{ nametxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ sizetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ modifiedtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ postedtxt }</td>
-</tr>
-<!--#in getnextfile --><tr> 
-<td class="BabSiteAdminFontBackground" width="1%" align="right" nowrap valign="middle"><input type="checkbox" name="items[]" value="{ idfile }"></td>          
-<td class="BabSiteAdminFontBackground" width="1%" align="right" nowrap valign="middle">{ fileimage }&nbsp;</td>          
-<td class="BabSiteAdminFontBackground" nowrap>&nbsp;{ name }</td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ sizef }&nbsp;{ bytes }</td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ modified }</td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ postedby }</td>
-</tr><!--#endin getnextfile -->
-</table>
-<div align ="center"><br>
-<input type="submit" name="delete" value="{ delete }">&nbsp;&nbsp;<input type="submit" name="restore" 
-value="{ restore }">
-<br>
-</div>
-</td>
+	<td class="BabMailBackground" align="center">
+		<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr class="BabSiteAdminTitleFontBackground">
+		<td>
+			<a href="javascript:onCheckAll('items', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }"  border="0" /></a><a href="javascript:onCheckAll('items', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0" /></a>
+		</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;{ nametxt }</td>
+		<td align="right">&nbsp;{ sizetxt }</td>
+		<td align="right">&nbsp;{ modifiedtxt }</td>
+		<td align="right">&nbsp;{ postedtxt }</td>
+		</tr>
+		<!--#in getnextfile --><tr class="BabSiteAdminFontBackground"> 
+		<td  width="1%"><input type="checkbox" name="items[]" value="{ idfile }"></td>          
+		<td align="right">{ fileimage }&nbsp;</td>          
+		<td>&nbsp;{ name }</td>
+		<td align="right">&nbsp;{ sizef }&nbsp;{ bytes }</td>
+		<td align="right">&nbsp;{ modified }</td>
+		<td align="right">&nbsp;{ postedby }</td>
+		</tr><!--#endin getnextfile -->
+		</table>
+	<div align ="center"><br>
+	<input type="submit" name="delete" value="{ delete }" />&nbsp;&nbsp;<input type="submit" name="restore" value="{ restore }" />
+	<br />
+	</div>
+	</td>
 </tr>
 </table>
 </form>
