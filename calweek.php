@@ -294,7 +294,7 @@ class cal_weekCls extends cal_wmdbaseCls
 
 						if( $this->allow_modify )
 							{
-							$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
+							$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewq&date=".$this->currentdate;
 							}
 						elseif( $this->allow_view )
 							{
