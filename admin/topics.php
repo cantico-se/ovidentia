@@ -555,7 +555,7 @@ function listCategories($cat)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod)
+function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts)
 	{
 	global $babBody;
 	if( empty($category))
@@ -580,7 +580,12 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $saupd, $bn
 		return false;
 		}
 
-	$query = "insert into ".BAB_TOPICS_TBL." ( category, description, id_cat, idsaart, idsacom, idsa_update, notify, lang, article_tmpl, display_tmpl, restrict_access, allow_hpages, allow_pubdates, allow_attachments, allow_update, allow_manupdate) values ('".$category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $saupd. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "', '" .$disptid. "', '" .$restrict. "', '" .$bhpages. "', '" .$bpubdates. "', '" .$battachment. "', '" .$bartupdate. "', '" .$bmanmod. "')";
+	if( empty($maxarts))
+		{
+		$maxarts = 10;
+		}
+
+	$query = "insert into ".BAB_TOPICS_TBL." ( category, description, id_cat, idsaart, idsacom, idsa_update, notify, lang, article_tmpl, display_tmpl, restrict_access, allow_hpages, allow_pubdates, allow_attachments, allow_update, allow_manupdate, max_articles) values ('".$category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $saupd. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "', '" .$disptid. "', '" .$restrict. "', '" .$bhpages. "', '" .$bpubdates. "', '" .$battachment. "', '" .$bartupdate. "', '" .$bmanmod. "', '".$maxarts."')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 
@@ -610,7 +615,7 @@ if(!isset($idx))
 
 if( isset($add) )
 	{
-	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod))
+	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts))
 		$idx = "addtopic";
 	else
 		{

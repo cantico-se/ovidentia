@@ -775,7 +775,7 @@ function warnRestrictionArticle($topics)
 	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
 	}
 
-function updateCategory($id, $category, $description, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod)
+function updateCategory($id, $category, $description, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -789,6 +789,11 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 		{
 		$category = addslashes($category);
 		$description = addslashes($description);
+		}
+
+	if( empty($maxarts))
+		{
+		$maxarts = 10;
 		}
 
 	$db = $GLOBALS['babDB'];
@@ -876,7 +881,7 @@ function updateCategory($id, $category, $description, $cat, $saart, $sacom, $sau
 		$db->db_query($query);
 	}
 
-	$query = "update ".BAB_TOPICS_TBL." set category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', idsa_update='".$saupd."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."', restrict_access='".$restrict."', allow_hpages='".$bhpages."', allow_pubdates='".$bpubdates."', allow_attachments='".$battachment."', allow_update='".$bartupdate."', allow_manupdate='".$bmanmod."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', idsa_update='".$saupd."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."', restrict_access='".$restrict."', allow_hpages='".$bhpages."', allow_pubdates='".$bpubdates."', allow_attachments='".$battachment."', allow_update='".$bartupdate."', allow_manupdate='".$bmanmod."', max_articles='".$maxarts."' where id = '".$id."'";
 	$db->db_query($query);
 
 	if( $arr['id_cat'] != $cat )
@@ -950,7 +955,7 @@ if( isset($add) )
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $topdesc, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod))
+		if(!updateCategory($item, $category, $topdesc, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -1057,7 +1062,7 @@ switch($idx)
 		if( !isset($battachment)) { $battachment='';}
 		if( !isset($bartupdate)) { $bartupdate='';}
 		if( !isset($bmanmod)) { $bmanmod='';}
-		if( !isset($maxarts)) { $maxarts='10';}
+		if( !isset($maxarts)) { $maxarts='';}
 		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
