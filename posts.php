@@ -179,7 +179,6 @@ function listPosts($forum, $thread, $post)
 				{
 				$tab = $this->arrresult["schema"][$iparent];
 				$p = $this->arrresult["iparent"][$iparent];
-				if (!isset($this->arrresult["delta"][$p])) $this->arrresult["delta"][$p] = 0;
 				if( $this->arrresult["leaf"][$iparent] == 1)
 					$tab[$this->arrresult["delta"][$p]] = 0;
 				else
