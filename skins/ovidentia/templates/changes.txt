@@ -1,4 +1,37 @@
 /****************************/
+version 3.3.3 / 3.4.0b
+/****************************/
+Files changed:
+    addons.html
+    address.html
+    admfaqs.html
+    admfiles.html
+    articleprint.html
+    articles.html
+    calendar.html
+    calopt.html
+    contact.html
+    event.html
+    faq.html
+    forums.html
+    groups.html
+    mail.html
+    mailinfo.html
+    month.html
+    search.html
+    sections.html
+    sites.html
+    topcats.html
+    topics.html
+    topman.html
+    users.html
+    waiting.html
+
+Files added:
+    apprflow.html
+    lusers.html
+
+/****************************/
 version 3.3.2 / 3.3.3
 /****************************/
 --------------------------------------------------------------------------------
