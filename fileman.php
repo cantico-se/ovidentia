@@ -1113,7 +1113,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	return true;
 	}
 
-function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify)
+function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder)
 	{
 	global $babBody, $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
@@ -1222,9 +1222,25 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 		if( $bmodified)
 			$req .= ", modified=now(), modifiedby='".$idcreator."'";
 		if( $frename)
+			{
 			$req .= ", name='".$fname."'";
+			}
+		else
+			$osfname = $arr['name'];
+
 		if( !empty($readonly))
 			$req .= ", readonly='".$readonly."'";
+		if( !empty($newfolder))
+			{
+			$pathxnew = bab_getUploadFullPath($arr['bgroup'], $newfolder);
+
+			if( rename( $pathx.$osfname, $pathxnew.$osfname))
+				{
+				$req .= ", id_owner='".$newfolder."'";
+				$req .= ", path=''";
+				$arr['id_owner'] = $newfolder;
+				}
+			}
 		$req .= " where id='".$idf."'";
 		$res = $db->db_query($req);
 		if( empty($bnotify))
@@ -1648,6 +1664,7 @@ function viewFile( $idf)
 		var $fmodifiedby;
 		var $fsizetxt;
 		var $fsize;
+		var $movetofolder;
 
 		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload)
 			{
@@ -1741,13 +1758,38 @@ function viewFile( $idf)
 						$this->nonfselected = "";
 						}
 					$this->bviewnf = true;
+
+					$this->movetofolder = bab_translate("Move to folder");
+					$this->resfm = $db->db_query("select id, folder from ".BAB_FM_FOLDERS_TBL." where manager='".$GLOBALS['BAB_SESS_USERID']."' and id !='".$arr['id_owner']."'");
+					$this->countfm = $db->db_num_rows($this->resfm);
 					}
+				else
+					$this->countfm = 0;
+				
 				}
 			else
 				{
 				$this->title = bab_translate("Access denied");
 				}
 			}
+
+		function getnextfm()
+			{
+			global $babDB;
+			static $i=0;
+			if( $i < $this->countfm )
+				{
+				$arr = $babDB->db_fetch_array($this->resfm);
+				$this->folder = $arr['folder'];
+				$this->folderid = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+
 		}
 	echo $babBody->msgerror;
 	$access = false;
@@ -1800,6 +1842,12 @@ function viewFile( $idf)
 						}
 					break;
 					}
+				}
+
+			if( $bconfirm )
+				{
+				$bupdate = false;
+				$bmanager = false;
 				}
 			}
 		}
@@ -1949,7 +1997,7 @@ if( isset($addf))
 
 if( isset($updf) && $updf == "upd")
 	{
-	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify))
+	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $newfolder))
 		$idx = "viewfile";
 	else
 		$idx = "unload";
