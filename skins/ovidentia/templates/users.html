@@ -38,6 +38,49 @@
 
 
 
+<!--#begin usersgroups -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="user">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="pos" value="{ pos }">
+<input type="hidden" name="grp" value="{ grp }">
+<input type="hidden" name="updategroups" value="update">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+          <tr> 
+            <td class="BabTitleSmallFontBg" width="2%" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+            <td class="BabTitleSmallFontBg" width="10%" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+            <td class="BabTitleSmallFontBg" width="88%" valign="middle"> { group } </td>
+          </tr>
+          <!--#in getnextgroup -->
+          <tr> 
+            <td class="BabSiteAdminFontBackground" width="2%" align="center" valign="middle"> 
+              <input type="checkbox" name="groups[]" value="{ groupid  }" { checked }> 
+            </td>
+            <td class="BabSiteAdminFontBackground" align="center" valign="middle" nowrap> 
+              <!--#if primary "== Y" -->
+              <img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }" align="absmiddle"> 
+              <!--#endif primary -->
+              <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+            <td class="BabSiteAdminFontBackground" valign="middle"><a class="BabAdminMembersList" href="{ groupurl }">{ 
+              groupname }</a> </td>
+          </tr>
+          <!--#endin getnextgroup -->
+        </table></td>
+</tr>
+</table>
+<input type="hidden" name="groupst" value="{ groupst }">
+<br><center><input type="submit" name="Updateg" value="{ updategroups }"></center>
+</form>
+<!--#end usersgroups -->
+
+
+
+
+
+
 <!--#begin usercreate -->
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="users">
