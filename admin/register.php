@@ -234,6 +234,11 @@ function userLogin($nickname,$password)
 				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
 				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
 				$_SESSION['BAB_SESS_HASHID'] = $arr['confirm_hash'];
+				$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
+				$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
+				$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
+				$GLOBALS['BAB_SESS_USERID'] = $_SESSION['BAB_SESS_USERID'];
+				$GLOBALS['BAB_SESS_HASHID'] = $_SESSION['BAB_SESS_HASHID'];
 				}
 			else
 				{
