@@ -220,9 +220,9 @@ a.BabForumNavigation:Hover {COLOR: #009933; font : 12px Verdana, Arial, sans-ser
 .BabForumTopicsNavDate { background: #E6E6F7; COLOR: #FF3333; font : 10px Verdana, Arial, sans-serif ;  FONT-WEIGHT: bold}
 .BabForumTopicsNavAuthor {  background: #E6E6F7; COLOR: #111166; font : 10px Verdana, Arial, sans-serif ; FONT-WEIGHT: bold}
 
-a.BabForumTopicsConfirm:Link { COLOR: #111166  ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
-a.BabForumTopicsConfirm:Visited { COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
-a.BabForumTopicsConfirm:Hover { COLOR: #009933 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabForumTopicsConfirm:Link { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabForumTopicsConfirm:Visited { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabForumTopicsConfirm:Hover {COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
 
 a.BabForumTopicsNavContribution:Link { COLOR: #000000  ; font : 10px Verdana, Arial, sans-serif  }
 a.BabForumTopicsNavContribution:Visited { COLOR: #000000 ; font : 10px Verdana, Arial, sans-serif}
