@@ -154,9 +154,9 @@ CREATE TABLE groups (
    PRIMARY KEY (id)
 );
 
-INSERT INTO groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0');
-INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0');
-INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0');
+INSERT INTO groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0');
+INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0');
+INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0');
 
 # --------------------------------------------------------
 #
@@ -315,7 +315,7 @@ CREATE TABLE users (
    PRIMARY KEY (id)
 );
 
-INSERT INTO users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0');
+INSERT INTO users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '781e5e245d69b566979b86e28d23f2c7', '0', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '');
 
 # --------------------------------------------------------
 #
