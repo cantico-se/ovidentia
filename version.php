@@ -240,7 +240,7 @@ switch($idx)
 
 	case "addons":
 		if( !bab_isUserAdministrator())
-			exit;
+			die(bab_translate("You must be logged as administrator"));
 		if (!isset($to)) $to = $GLOBALS['babInstallPath'];
 		if (isset($from))
 			cpaddons($from,$to);
