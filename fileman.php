@@ -819,75 +819,6 @@ function notifyApprover($grpname, $file, $path, $approveremail)
 	$mail->send();
 	}
 
-function notifyMembers($file, $path, $idgrp, $bnew)
-	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
-
-	class tempb
-		{
-		var $filename;
-		var $message;
-        var $author;
-        var $path;
-        var $pathname;
-        var $file;
-        var $site;
-        var $date;
-        var $dateval;
-		var $group;
-		var $groupname;
-
-
-		function tempb($file, $path, $idgrp, $bnew)
-			{
-            $this->filename = $file;
-			if( $bnew )
-	            $this->message = bab_translate("A new file has been uploaded");
-			else
-	            $this->message = bab_translate("File has been updated");
-
-            $this->path = bab_translate("Path");
-            $this->file = bab_translate("File");
-            $this->group = bab_translate("Group");
-            $this->pathname = $path == ""? "/": $path;
-            $this->groupname = bab_getGroupName($idgrp);
-            $this->site = bab_translate("Web site");
-            $this->date = bab_translate("Date");
-            $this->dateval = bab_strftime(mktime());
-			}
-		}
-    $mail = bab_mail();
-	if( $mail == false )
-		return;
-
-	$db = $GLOBALS['babDB'];
-	if( $idgrp == 1)
-		$res = $db->db_query("select id as idu from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-	else
-		$res = $db->db_query("select id_object as idu from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgrp."'");
-
-	while( $row = $db->db_fetch_array($res))
-		{
-	    $mail->mailTo(bab_getUserEmail($row['idu']));
-		}
-
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
-	if( $bnew )
-	    $mail->mailSubject(bab_translate("New waiting file"));
-	else
-		$mail->mailSubject(bab_translate("File has been updated"));
-
-	$tempa = new tempb($file, $path, $idgrp, $bnew);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
-    $mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
-    $mail->mailAltBody($message);
-
-	$mail->send();
-	}
-
 function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywords, $readonly)
 	{
 	global $babBody, $BAB_SESS_USERID, $aclfm;
@@ -967,8 +898,12 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else if( !empty($path))
 		$pathx .= $path."/";	
 
+	$osfname = $filename;
+	if( bab_isMagicQuotesGpcOn())
+		$osfname = stripslashes($osfname);
+
 	if( isset($GLOBALS['babFileNameTranslation']))
-		$filename = strtr($filename, $GLOBALS['babFileNameTranslation']);
+		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 
 	$name = $filename;
 	if( !bab_isMagicQuotesGpcOn())
@@ -980,7 +915,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 	$db = $GLOBALS['babDB'];
 	$bexist = false;
-	if( file_exists($pathx.$filename))
+	if( file_exists($pathx.$osfname))
 		{
 		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and name='".$name."' and path='".$path."'");
 		if( $res && $db->db_num_rows($res) > 0)
@@ -1001,7 +936,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 	if( !get_cfg_var('safe_mode'))
 		set_time_limit(0);
-	if( !move_uploaded_file($tmp, $pathx.$filename))
+	if( !move_uploaded_file($tmp, $pathx.$osfname))
 		{
 		$babBody->msgerror = bab_translate("The file could not be uploaded");
 		return false;
@@ -1012,14 +947,11 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else
 		$idcreator = $BAB_SESS_USERID;
 
-	$bnotify = false;
 	if( $gr == "Y" )
 		{
-		$rr = $db->db_fetch_array($db->db_query("select moderate, filenotify from ".BAB_GROUPS_TBL." where id='".$id."'"));
+		$rr = $db->db_fetch_array($db->db_query("select moderate from ".BAB_GROUPS_TBL." where id='".$id."'"));
 		if( $rr['moderate'] == "N" )
 			$confirmed = "Y";
-		if( $rr['filenotify'] == "Y" )
-			$bnotify = true;
 		}
 
 	if( $bexist)
@@ -1052,12 +984,10 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 			}
 		}
 
-	if( $gr == "Y" && $confirmed == "Y" && $bnotify )
-		notifyMembers($filename, $path, $id, true);
 	return true;
 	}
 
-function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify)
+function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm)
 	{
 	global $babBody, $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
@@ -1114,11 +1044,14 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			}
 
 		$frename = false;
-		if( !empty($fname) && strcmp($arr['name'], $fname))
+		$osfname = $fname;
+		if( bab_isMagicQuotesGpcOn())
+			$osfname = stripslashes($osfname);
+		if( !empty($fname) && strcmp($arr['name'], $osfname))
 			{
 			if( isset($GLOBALS['babFileNameTranslation']))
-				$fname = strtr($fname, $GLOBALS['babFileNameTranslation']);
-			if( rename($pathx.$arr['name'], $pathx.$fname))
+				$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
+			if( rename($pathx.$arr['name'], $pathx.$osfname))
 				$frename = true;
 			}
 
@@ -1145,10 +1078,6 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			$req .= ", confirmed='".$confirm."'";
 		$req .= " where id='".$idf."'";
 		$res = $db->db_query($req);
-		if( $arr['bgroup'] == "Y" && $confirm == "Y" && $bnotify == "Y")
-			{
-			notifyMembers($arr['name'], $arr['path'], $arr['id_owner'], false);
-			}
 		return true;
 		}
 	}
@@ -1483,7 +1412,6 @@ function viewFile( $idf, $aclfm)
 
 				$this->description = bab_translate("Description");
 				$this->keywords = bab_translate("Keywords");
-				$this->notify = bab_translate("Notify members group");
 
 				$this->id = $arr['id_owner'];
 				$this->gr = $arr['bgroup'];
@@ -1541,25 +1469,6 @@ function viewFile( $idf, $aclfm)
 				$this->update= bab_translate("Update");
 				$this->yes = bab_translate("Yes");
 				$this->no = bab_translate("No");
-				$this->bviewnf = false;
-
-				if( $arr['bgroup'] == "Y" && $arr['id_owner'] != 2 && $this->update)
-					{
-					$db = $GLOBALS['babDB'];
-					$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_GROUPS_TBL." where id='".$arr['id_owner']."'"));
-					if( $rr['filenotify'] == "N" )
-						{
-						$this->nonfselected = "selected";
-						$this->yesnfselected = "";
-						}
-					else
-						{
-						$this->yesnfselected = "selected";
-						$this->nonfselected = "";
-						}
-					$this->bviewnf = true;
-
-					}
 				}
 			else
 				{
@@ -1759,7 +1668,8 @@ if( isset($addf))
 
 if( isset($updf) && $updf == "upd")
 	{
-	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm, $bnotify))
+	//saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keywords, $readonly, $confirm);
+	if( !saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $description, $keywords, $readonly, $confirm))
 		$idx = "viewfile";
 	else
 		$idx = "unload";
