@@ -19,14 +19,46 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 </table>
 <br>
 <!--#endin getnext -->
-
 <!--#end categorylist -->
+
 <br><br><br><br><br>
 <!--#begin questionlist -->
 <table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<!--#in getnextparent -->
+<tr> 
+<!--#if burl -->
+<td valign="top">
+<a class="BabFaqLink" href="{ parenturl }">{ parentname }</a>
+<!--#else burl -->
+<td valign="top">
+<b>--> { parentname }</b>
+<!--#endif burl -->
+</td>
+</tr>
+<!--#endin getnextparent -->
+<tr class="BabForumBackground1"> 
+<td valign="top"><b>{ subcategoriesname }:</b></td>
+</tr>
+<!--#in getnextchild -->
+<tr> 
+<td valign="top">
+<!--#if update -->
+<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>&nbsp
+<!--#endif update -->
+<a class="BabFaqLink" href="{ childurl }">{ childname }</a></td>
+</tr>
+<!--#endin getnextchild -->
+<tr class="BabForumBackground1"> 
+<td valign="top"><b>{ questionsname }:</b></td>
+</tr>
 <!--#in getnext -->
 <tr> 
-<td colspan="2" valign="top"><a class="BabFaqLink" href="{ questionurl }">{ question }</a></td>
+<td valign="top">
+<!--#if update -->
+<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a>&nbsp
+<!--#endif update -->
+<a href="javascript: Start('{ questionurl }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ question }</a>
+</td>
 </tr>
 <!--#endin getnext -->
 </table>
@@ -35,24 +67,12 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 
 <br><br><br><br><br>
 
-<!--#begin admquestionlist -->
-<!--#in getnext -->
-<table class="BabFaqBodyFontBg" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="" valign="top">{ arr[question] }</td>
-<td class="" valign="top" width="20%"><a class="BabFaqLink" href="{ editurl }">{ 
-editname }</a></td>
-</tr>
-</table>
-<br>
-<!--#endin getnext -->
-<!--#end admquestionlist -->
-
 <!--#begin admquestioncreate -->
 <form name="qcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="faq">
 <input type="hidden" name="idx" value="questions">
 <input type="hidden" name="item" value="{ idcat }">
+<input type="hidden" name="idscat" value="{ idscat }">
 <input type="hidden" name="addquestion" value="addquestion">
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -179,15 +199,14 @@ savef(document.qcreate.response);
 </script>
 <!--#endif msie -->
 <!--#end admquestioncreate -->
-<br><br><br><br><br>
-<!--#begin admquestionmodify -->
-<!--#endif msie -->
-<form name="qmod" method="post" action="{ babPhpSelf }">
+
+<!--#begin admsubcatcreate -->
+<form name="qcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="faq">
 <input type="hidden" name="idx" value="questions">
 <input type="hidden" name="item" value="{ idcat }">
-<input type="hidden" name="idq" value="{ arr[id] }">
-<input type="hidden" name="updatequestion" value="updatequestion">
+<input type="hidden" name="idscat" value="{ idscat }">
+<input type="hidden" name="addsc" value="addscat">
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -196,11 +215,94 @@ savef(document.qcreate.response);
 <td>&nbsp; </td>
 </tr>
 <tr> 
-<td align="center" valign="middle"> { question }</td>
+<td align="center" valign="middle"> { subcat }</td>
 </tr>
 <tr> 
 <td align="center" valign="middle"> 
-<input type="text" name="question" size="80" value="{ arr[question] }">
+<input type="text" name="subcat" size="80">
+</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<input type="submit" name="submit" value="{ add }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end admsubcatcreate -->
+
+<!--#begin admsubcatmodify -->
+<form name="qcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="faq">
+<input type="hidden" name="idx" value="questions">
+<input type="hidden" name="item" value="{ idcat }">
+<input type="hidden" name="idscat" value="{ idscat }">
+<input type="hidden" name="modsc" value="modscat">
+<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td>&nbsp; </td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> { subcat }</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<input type="text" name="subcat" size="80" value="{ subcatval }">
+</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<input type="submit" name="submit" value="{ add }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end admsubcatmodify -->
+
+
+<br><br><br><br><br>
+<!--#begin admquestionmodify -->
+<!--#endif msie -->
+<form name="qmod" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="faq">
+<input type="hidden" name="idx" value="questions">
+<input type="hidden" name="item" value="{ idcat }">
+<input type="hidden" name="idscat" value="{ idscat }">
+<input type="hidden" name="idq" value="{ idq }">
+<input type="hidden" name="updatequestion" value="updatequestion">
+<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td align="center" valign="middle">{ subcattxt }</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<select name="newidscat">
+<!--#in getnextsubcat -->
+<option value="{ idsubcat }" { selected }>{ subcatname }</option>
+<!--#endin getnextsubcat -->
+</select>
+</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> { questiontxt }</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<input type="text" name="question" size="80" value="{ question }">
 </td>
 </tr>
 <!--#if msie "!= 1" -->
@@ -227,7 +329,7 @@ savef(document.qcreate.response);
 </tr>
 <tr> 
 <td> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="response">{ arr[response] }</textarea>
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="response">{ response }</textarea>
 </td>
 </tr>
 <!--#else babOldEditor -->
@@ -245,7 +347,7 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <!--#endif babOldEditor -->
 <!--#endif msie -->
 <tr> 
-<td align="center" valign="middle">{ response }</td>
+<td align="center" valign="middle">{ responsetxt }</td>
 </tr>
 <tr> 
 <td width="91%" align="center" valign="middle"> 
@@ -257,10 +359,10 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <!--#else babOldEditor -->
 <iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1','response')">
 </iframe>
-<textarea id="response" name="response"  onfocus="savef(document.qmod.response)" style="width:100%" rows="20">{ arr[response] }</textarea>
+<textarea id="response" name="response"  onfocus="savef(document.qmod.response)" style="width:100%" rows="20">{ response }</textarea>
 <!--#endif babOldEditor -->
 <!--#else msie -->
-<textarea rows="20" style="width:100%" id="response" name="response" onblur="this.focus()"  onfocus="savef(document.qmod.response)">{ arr[response] }</textarea>
+<textarea rows="20" style="width:100%" id="response" name="response" onblur="this.focus()"  onfocus="savef(document.qmod.response)">{ response }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
