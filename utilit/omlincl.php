@@ -730,7 +730,22 @@ class bab_Articles extends bab_handler
 
 			}
 
-			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' ".$archive." and id_topic IN (".implode(',', $topicid).") order by date desc";
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' ".$archive." and id_topic IN (".implode(',', $topicid).")";
+
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				$order = "asc";
+
+			switch(strtoupper($order))
+			{
+				case "ASC": $order = "date ASC"; break;
+				case "RAND": $order = "rand()"; break;
+				case "DESC":
+				default: $order = "date DESC"; break;
+			}
+
+			$req .= " order by ".$order;
+
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
 			if( $rows === false || $rows === '')
@@ -1041,7 +1056,20 @@ class bab_Post extends bab_handler
 		if( count($arr) > 0 )
 			{
 			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p,  ".BAB_THREADS_TBL." t where p.id_thread=t.id and p.id IN (".implode(',', $arr).") and p.confirmed='Y'";
-			$req .= " order by p.date desc";
+
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				$order = "asc";
+
+			switch(strtoupper($order))
+			{
+				case "ASC": $order = "p.date ASC"; break;
+				case "RAND": $order = "rand()"; break;
+				case "DESC":
+				default: $order = "p.date DESC"; break;
+			}
+
+			$req .= " order by ".$order;
 
 			$res = $babDB->db_query($req);
 
@@ -1109,7 +1137,20 @@ class bab_Thread extends bab_handler
 		if( count($arr) > 0 )
 			{
 			$req = "select id, forum from ".BAB_THREADS_TBL." WHERE id IN (".implode(',', $arr).") and active='Y'";
-			$req .= " order by date desc";
+
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				$order = "asc";
+
+			switch(strtoupper($order))
+			{
+				case "ASC": $order = "date ASC"; break;
+				case "RAND": $order = "rand()"; break;
+				case "DESC":
+				default: $order = "date DESC"; break;
+			}
+
+			$req .= " order by ".$order;
 
 			$res = $babDB->db_query($req);
 
@@ -1611,7 +1652,21 @@ class bab_RecentArticles extends bab_handler
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
 			$req .= " and id_topic IN (".implode(',', $this->topicid).")";
-			$req .= " order by date desc";
+
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				$order = "asc";
+
+			switch(strtoupper($order))
+			{
+				case "ASC": $order = "date ASC"; break;
+				case "RAND": $order = "rand()"; break;
+				case "DESC":
+				default: $order = "date DESC"; break;
+			}
+
+			$req .= " order by ".$order;
+
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
 
@@ -1695,7 +1750,19 @@ class bab_RecentComments extends bab_handler
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-			$req .= " order by date desc";
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				$order = "asc";
+
+			switch(strtoupper($order))
+			{
+				case "ASC": $order = "date ASC"; break;
+				case "RAND": $order = "rand()"; break;
+				case "DESC":
+				default: $order = "date DESC"; break;
+			}
+
+			$req .= " order by ".$order;
 
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
@@ -1771,7 +1838,21 @@ class bab_RecentPosts extends bab_handler
 		if( $this->nbdays !== false)
 			$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-		$req .= " order by p.date desc";
+
+		$order = $ctx->get_value('order');
+		if( $order === false || $order === '' )
+			$order = "asc";
+
+		switch(strtoupper($order))
+		{
+			case "ASC": $order = "p.date ASC"; break;
+			case "RAND": $order = "rand()"; break;
+			case "DESC":
+			default: $order = "p.date DESC"; break;
+		}
+
+		$req .= " order by ".$order;
+		
 		if( $this->last !== false)
 			$req .= " limit 0, ".$this->last;
 
@@ -1854,7 +1935,20 @@ class bab_RecentThreads extends bab_handler
 		if( $this->nbdays !== false)
 			$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-		$req .= " order by p.date desc";
+		$order = $ctx->get_value('order');
+		if( $order === false || $order === '' )
+			$order = "asc";
+
+		switch(strtoupper($order))
+		{
+			case "ASC": $order = "p.date ASC"; break;
+			case "RAND": $order = "rand()"; break;
+			case "DESC":
+			default: $order = "p.date DESC"; break;
+		}
+
+		$req .= " order by ".$order;
+
 		if( $this->last !== false)
 			$req .= " limit 0, ".$this->last;
 
@@ -1949,7 +2043,21 @@ class bab_RecentFiles extends bab_handler
 			if( $this->nbdays !== false)
 				$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-			$req .= " order by f.modified desc";
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				$order = "asc";
+
+			switch(strtoupper($order))
+			{
+				case "ASC": $order = "f.modified ASC"; break;
+				case "RAND": $order = "rand()"; break;
+				case "DESC":
+				default: $order = "f.modified DESC"; break;
+			}
+
+			$req .= " order by ".$order;
+			
+			
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
 			$this->res = $babDB->db_query($req);
