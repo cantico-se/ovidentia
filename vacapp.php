@@ -6,6 +6,7 @@
  ***********************************************************************/
 include_once "base.php";
 include $babInstallPath."utilit/vacincl.php";
+include $babInstallPath."utilit/mailincl.php";
 
 
 function findVacations()
@@ -316,33 +317,42 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		$req = "select * from ".BAB_VACATIONS_TBL." where id='".$vacid."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
-
+		
 		$subject = bab_translate("Vacation request"); 
 		$username = bab_getUserName($arr['userid']);
-	
-		$message = "Site : ";
-		$message .= $GLOBALS['babSiteName'];
-		$message .= "\n";
-		$message .= $GLOBALS['babUrl'];
-		$message .= "\n";
-		$message .= "\n";	
-		$message .= bab_translate("Mr")."/".bab_translate("Mrs")." ". $username . " " .bab_translate("request a vacation")." :\n";
-		//$message .= bab_translate("Request date") .": " . bab_strftime(bab_mktime($arr['date']), false) ."\n";
-		$message .= "\n";
-		//$message .= bab_translate("Vacation").":\n";
-		$message .= bab_translate("from"). " " . bab_strftime(bab_mktime($arr['datebegin']), false). " ". $babDayType[$arr['daybegin']] . "\n";
-		$message .= bab_translate("until"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend']] . "\n";
-		$message .= "\n";
+
+		class tempa
+			{
+			var $message;
+			var $from;
+			var $site;
+			var $until;
+			var $begindate;
+			var $enddate;
 
 
-		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['userid']."'";
-		$res = $db->db_query($req);
-		$arr = $db->db_fetch_array($res);
-		$email = $arr['email'];
+			function tempa($userid, $begindate, $enddate, $halfdaybegin, $halfdayend, $status, $more)
+				{
+				global $babDayType;
+				$this->message = bab_translate("Vacation request");
+				$this->fromuser = bab_translate("User");
+				$this->from = bab_translate("from");
+				$this->until = bab_translate("until");
+				$this->username = bab_getUserName($userid);
+				$this->status = bab_translate("Status");
+				$this->more = bab_translate("Information");
+				$this->begindate = bab_strftime(bab_mktime($begindate), false). " ". bab_translate($babDayType[$halfdaybegin]);
+				$this->enddate = bab_strftime(bab_mktime($enddate), false). " ". bab_translate($babDayType[$halfdayend]);
+				$this->statustxt = $status;
+				$this->moretxt = $more;
+				}
+			}
+
+		$idto = $arr['userid'];
 
 		if( $status == 0) // refused
 		{
-			$result = bab_translate("Vacation has been refused");
+			$status = bab_translate("Vacation has been refused");
 			$newstatus = 1;
 			if( $ordering == 0 )
 				{
@@ -353,7 +363,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$groupid."' and ordering >= '1' and ordering < '".$ordering."' and id_object!='".$BAB_SESS_USERID."'";
 				}
 
-			$result .= "\n". $comref;
+			$more = $comref;
 		}
 		else // accepted
 		{
@@ -361,7 +371,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 				{
 				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$groupid."' and id_object!='".$BAB_SESS_USERID."'";
 				$newstatus = 2;
-				$result = bab_translate("Vacation has been accepted");
+				$status = bab_translate("Vacation has been accepted");
 				}
 			else
 				{
@@ -369,36 +379,65 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 				$res = $db->db_query($req);
 				$r = $db->db_fetch_array($res);
 				$newstatus = $r['status'];
-				$result = bab_translate("status")." :" . bab_getStatusName($newstatus);
+				$status = bab_getStatusName($newstatus);
 			}
+			$more = "";
 		}
 
-		$res = $db->db_query($req);
 
+		$mail = bab_mail();
+		if( $mail == false )
+			return;
+
+		$mail->mailTo(bab_getUserEmail($idto), bab_getUserName($idto));
+
+		$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+		$mail->mailSubject(bab_translate("Vacation request"));
+
+		$tempa = new tempa($arr['userid'], $arr['datebegin'], $arr['dateend'], $arr['daybegin'], $arr['dayend'], $status, $more);
+		$message = bab_printTemplate($tempa,"mailinfo.html", "vacationupdate");
+		$mail->mailBody($message, "html");
+
+		$message = bab_printTemplate($tempa,"mailinfo.html", "vacationupdatetxt");
+		$mail->mailAltBody($message);
+
+
+
+		$res = $db->db_query($req);
 		$arrrecipients = array();
 		while( $ar = $db->db_fetch_array($res))
 		{
-			$req = "select * from ".BAB_USERS_TBL." where id='".$ar['id_object']."'";
-			$res2 = $db->db_query($req);
-			$r = $db->db_fetch_array($res2);
-			array_push($arrrecipients, $r['email']);
+			array_push($arrrecipients, $ar['id_object']);
 		}
 
-		$header = "From: ".$babAdminEmail ."\r\n";
 		if( $status != 0 && $ordering != 0)
 		{
-			mail($email, $subject, $message.$result, $header);
-			$result = bab_translate("Vacation is waiting to be validated");
-			$email = implode($arrrecipients, " ");
-			mail($email, $subject, $message.$result, $header);
+			$mail->send();	
+			$mail->clearBcc();
+			$mail->clearTo();
+			$status = bab_translate("Vacation is waiting to be validated");
+			$tempa = new tempa($arr['userid'], $arr['datebegin'], $arr['dateend'], $arr['daybegin'], $arr['dayend'], $status, $more);
+			$message = bab_printTemplate($tempa,"mailinfo.html", "vacationupdate");
+			$mail->mailBody($message, "html");
+			$message = bab_printTemplate($tempa,"mailinfo.html", "vacationupdatetxt");
+			$mail->mailAltBody($message);
+			for( $i=0; $i < count($arrrecipients); $i++)
+				$mail->mailTo(bab_getUserEmail($arrrecipients[$i]), bab_getUserName($arrrecipients[$i]));
+			$mail->send();	
+			$mail->clearBcc();
+			$mail->clearTo();
 		}
 		else
 		{
-			$header .= "CC: ";
-			$header .= implode($arrrecipients, ",");
-			mail($email, $subject, $message.$result, $header);
+			for( $i=0; $i < count($arrrecipients); $i++)
+				$mail->mailCc(bab_getUserEmail($arrrecipients[$i]), bab_getUserName($arrrecipients[$i]));
+			$mail->send();	
 		}
 
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$comref = addslashes($comref);
+			}
 		$req = "update ".BAB_VACATIONS_TBL." set ";
 		if( $status == 0)
 			$req .= "comref='".$comref."',";

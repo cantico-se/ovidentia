@@ -6,10 +6,10 @@
  ***********************************************************************/
 include_once "base.php";
 include $babInstallPath."utilit/vacincl.php";
+include $babInstallPath."utilit/mailincl.php";
 
 function getApproverEmail($userid, $order)
 	{
-	$email = "";
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
 	$res = $db->db_query($query);
@@ -21,17 +21,10 @@ function getApproverEmail($userid, $order)
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
-			$arr = $db->db_fetch_array($res);
-			$query = "select * from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
-			$res = $db->db_query($query);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				return $arr['email'];
-				}
+			return $arr['id_object'];
 			}
 		}
-	return $email;
+	return 0;
 	}
 
 function getApproverStatus($userid, $order)
@@ -375,6 +368,7 @@ function confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 	$babBody->babecho(	bab_printTemplate($temp,"vacation.html", "confirmvacation"));
 	}
 
+
 function confirmAddVacation($begindate, $enddate, $halfdaybegin, $halfdayend, $vactype, $remarks)
 	{
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_USER, $babAdminEmail;
@@ -383,23 +377,50 @@ function confirmAddVacation($begindate, $enddate, $halfdaybegin, $halfdayend, $v
 	$req = "insert into ".BAB_VACATIONS_TBL." (userid, datebegin, dateend, daybegin, dayend, type, status, comment, date) values ";
 	$req .= "('" .$BAB_SESS_USERID. "', '" . $begindate. "', '" . $enddate. "', '" . $halfdaybegin. "', '" . $halfdayend. "', '" . $vactype. "', '" . $idstatus. "', '" . $remarks. "', now())";
 	$res = $db->db_query($req);
-	$emailapprover = getApproverEmail($BAB_SESS_USERID, 1);
-	if( !empty($emailapprover))
+	$idapprover = getApproverEmail($BAB_SESS_USERID, 1);
+	if( $idapprover != 0)
 		{
-		$subject = bab_translate("Vacation request is waiting to be validated");
-	
-		$message = "Site : ";
-		$message .= $GLOBALS['babSiteName'];
-		$message .= "\n";
-		$message .= $GLOBALS['babUrl'];
-		$message .= "\n";
-		$message .= "\n";
-		$message .= bab_translate("Mr")."/".bab_translate("Mrs")." ". $BAB_SESS_USER . " " .bab_translate("request a vacation")." :\n";
-		$message .= "\n";
-		$message .= bab_translate("from"). " " . bab_strftime(bab_mktime($begindate), false). " ". bab_translate($half[$halfdaybegin]) . "\n";
-		$message .= bab_translate("until"). " " . bab_strftime(bab_mktime($enddate), false). " ". bab_translate($half[$halfdayend]) . "\n";
 
-		mail($emailapprover,$subject,$message,"From: ".$babAdminEmail);
+		class tempa
+			{
+			var $message;
+			var $from;
+			var $site;
+			var $until;
+			var $begindate;
+			var $enddate;
+
+
+			function tempa($begindate, $enddate, $halfdaybegin, $halfdayend)
+				{
+				global $babDayType;
+				$this->message = bab_translate("Vacation request is waiting to be validated");
+				$this->fromuser = bab_translate("User");
+				$this->from = bab_translate("from");
+				$this->until = bab_translate("until");
+				$this->username = $GLOBALS['BAB_SESS_USER'];
+				$this->begindate = bab_strftime(bab_mktime($begindate), false). " ". bab_translate($babDayType[$halfdaybegin]);
+				$this->enddate = bab_strftime(bab_mktime($enddate), false). " ". bab_translate($babDayType[$halfdayend]);
+				}
+			}
+
+		$mail = bab_mail();
+		if( $mail == false )
+			return;
+
+		$mail->mailTo(bab_getUserEmail($idapprover), bab_getUserName($idapprover));
+
+		$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+		$mail->mailSubject(bab_translate("Vacation request is waiting to be validated"));
+
+		$tempa = new tempa($begindate, $enddate, $halfdaybegin, $halfdayend);
+		$message = bab_printTemplate($tempa,"mailinfo.html", "vacationnew");
+		$mail->mailBody($message, "html");
+
+		$message = bab_printTemplate($tempa,"mailinfo.html", "vacationnewtxt");
+		$mail->mailAltBody($message);
+
+		$mail->send();
 		}
 
 	}
