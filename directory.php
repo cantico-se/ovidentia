@@ -1803,16 +1803,16 @@ function exportDbDirectory($id, $wsepar, $separ)
 		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 			{
 			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-			$this->fieldn = translateDirectoryField($rr['description']);
+			$fieldn = translateDirectoryField($rr['description']);
 			$arrnamef[] = $rr['name'];
 			}
 		else
 			{
 			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
-			$this->fieldn = translateDirectoryField($rr['name']);
+			$fieldn = translateDirectoryField($rr['name']);
 			$arridfx[] = $arr['id'];
 			}
-		$output .= translateDirectoryField($this->fieldn).$separ;
+		$output .= translateDirectoryField($fieldn).$separ;
 		}
 
 	$output = substr($output, 0, -1);
