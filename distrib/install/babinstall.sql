@@ -159,6 +159,7 @@ CREATE TABLE bab_groups (
    gstorage enum('N','Y') DEFAULT 'N' NOT NULL,
    ustorage enum('N','Y') DEFAULT 'N' NOT NULL,
    moderate enum('Y','N') DEFAULT 'Y' NOT NULL,
+   filenotify enum('N','Y') DEFAULT 'N' NOT NULL,
    notes enum('Y','N') NOT NULL default 'Y',
    contacts enum('Y','N') NOT NULL default 'Y',
    PRIMARY KEY (id)
