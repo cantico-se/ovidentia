@@ -219,7 +219,7 @@ if( isset($login) && $login == "login")
 	{
 	if(!signOn($email, $password))
 		return;
-	Header("Location: index.php");
+	Header("Location: index.php?tg=calview");
 	}
 
 if( isset($update) && $update == "update")
