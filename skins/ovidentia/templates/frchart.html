@@ -30,6 +30,11 @@ var dummy;
 top.flt.document.location.href='{ updateurlt }' + more;
 }
 
+function flbhref(url)
+{
+top.flb.document.location.href=url;
+}
+
 //-->
 </script>
 <!--#end orgjavascript -->
@@ -135,6 +140,8 @@ updateFlbFrame('{ currentoe }&idx=mode');
 updateFlbFrame('{ currentoe }&idx=detr'); 
 <!--#endif update -->
 updateFltFrame('{ currentoe }&idx=listr'); 
+location.href = '#ENT{ coeid }';
+
 //-->
 </script>
 </BODY>
@@ -151,7 +158,7 @@ updateFltFrame('{ currentoe }&idx=listr');
 <a id="ENT{ oeid }" name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFltFrame('{ oeid }&idx=listr');javascript:updateFlbFrame('{ oeid }&idx=detr');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');">{ entity }</a>
 <!--#endif update -->
 <br>{ description }
-<br><b><a class="BabSiteAdminListLink" href="#" onclick="top.flb.document.location.href='{ superiorurl }'">{ superior }</a></b>
+<br><b><a class="BabSiteAdminListLink" href="javascript:flbhref('{ superiorurl }');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');updateFltFrame('{ oeid }&idx=listr');">{ superior }</a></b>
 </TD>
 </TR>
 <TR nowrap>
@@ -283,6 +290,7 @@ updateFlbFrame('{ currentoe }&idx=mode');
 updateFlbFrame('{ currentoe }&idx=detr'); 
 <!--#endif update -->
 updateFltFrame('{ currentoe }&idx=listr'); 
+location.href = '#ENT{ coeid }';
 //-->
 </script>
 </BODY>
@@ -374,6 +382,7 @@ if (w == 0)
 	
 }
 center_chart();
+location.href = '#ENT{ coeid }';
 //-->
 </script>
 <!--#endif first -->
