@@ -14,4 +14,5 @@ January 2002: Version 3.2b
 - Change topics behavior when user is also administrator: List only manager's topics
 - Fixed : claen sections_states table when a section is deleted
 - Fixed some minors bugs
-
+- Change: to customize templates ( like config.html ) you must copy it to skins/skin-name/templates
+  under your site directory. Skin-name is the name of the skin witch own the file. 
