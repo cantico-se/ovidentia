@@ -214,7 +214,6 @@ function showHistoricFile($idf, $pos)
 		var $version;
 		var $bmanager;
 		var $cleantxt;
-		var $date;
 		var $cleanmsg;
 
 		var $topname;
