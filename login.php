@@ -39,8 +39,8 @@ function displayLogin()
 			$this->login = bab_translate("Login");
 
 			// ajout cookie
-			$this->life = bab_translate("Automatic connection time");
-			$this->nolife = bab_translate("no automatic connection");
+			$this->life = bab_translate("Remmember my login");
+			$this->nolife = bab_translate("No");
 			$this->oneday = bab_translate("one day");
 			$this->oneweek = bab_translate("one week");
 			$this->onemonth = bab_translate("one month");
