@@ -650,70 +650,70 @@ switch($idx)
 	case "gview":
 		$babBody->title = getDirectoryName($id);
 		aclGroups($GLOBALS['babAddonTarget']."/admin", "list", ADDON_DIRVIEW_GROUPS_TBL, $id, "aclview");
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("gview", "View", $GLOBALS['babAddonUrl']."admin&idx=gview&id=".$id);
-		$babBody->addItemMenu("gmodify", "Modify", $GLOBALS['babAddonUrl']."admin&idx=gmodify&id=".$id);
-		$babBody->addItemMenu("gadd", "Add", $GLOBALS['babAddonUrl']."admin&idx=gadd&id=".$id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("gview", ad_translate("View"), $GLOBALS['babAddonUrl']."admin&idx=gview&id=".$id);
+		$babBody->addItemMenu("gmodify", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=gmodify&id=".$id);
+		$babBody->addItemMenu("gadd", ad_translate("Add"), $GLOBALS['babAddonUrl']."admin&idx=gadd&id=".$id);
 		break;
 
 	case "gmodify":
 		$babBody->title = getDirectoryName($id);
 		aclGroups($GLOBALS['babAddonTarget']."/admin", "list", ADDON_DIRUPDATE_GROUPS_TBL, $id, "aclview");
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("gview", "View", $GLOBALS['babAddonUrl']."admin&idx=gview&id=".$id);
-		$babBody->addItemMenu("gmodify", "Modify", $GLOBALS['babAddonUrl']."admin&idx=gmodify&id=".$id);
-		$babBody->addItemMenu("gadd", "Add", $GLOBALS['babAddonUrl']."admin&idx=gadd&id=".$id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("gview", ad_translate("View"), $GLOBALS['babAddonUrl']."admin&idx=gview&id=".$id);
+		$babBody->addItemMenu("gmodify", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=gmodify&id=".$id);
+		$babBody->addItemMenu("gadd", ad_translate("Add"), $GLOBALS['babAddonUrl']."admin&idx=gadd&id=".$id);
 		break;
 	
 	case "gadd":
 		$babBody->title = getDirectoryName($id);
 		aclGroups($GLOBALS['babAddonTarget']."/admin", "list", ADDON_DIRADD_GROUPS_TBL, $id, "aclview");
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("gview", "View", $GLOBALS['babAddonUrl']."admin&idx=gview&id=".$id);
-		$babBody->addItemMenu("gmodify", "Modify", $GLOBALS['babAddonUrl']."admin&idx=gmodify&id=".$id);
-		$babBody->addItemMenu("gadd", "Add", $GLOBALS['babAddonUrl']."admin&idx=gadd&id=".$id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("gview", ad_translate("View"), $GLOBALS['babAddonUrl']."admin&idx=gview&id=".$id);
+		$babBody->addItemMenu("gmodify", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=gmodify&id=".$id);
+		$babBody->addItemMenu("gadd", ad_translate("Add"), $GLOBALS['babAddonUrl']."admin&idx=gadd&id=".$id);
 		break;
 
 	case "del":
-		$babBody->title = "Delete directory";
+		$babBody->title = ad_translate("Delete directory");
 		deleteAd($id);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("del", "Delete", $GLOBALS['babAddonUrl']."admin&idx=del&id=".$id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("del", ad_translate("Delete"), $GLOBALS['babAddonUrl']."admin&idx=del&id=".$id);
 		break;
 
 	case "mldap":
-		$babBody->title = "Modify directory";
+		$babBody->title = ad_translate("Modify directory");
 		modifyLdap($id);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("mldap", "Modify", $GLOBALS['babAddonUrl']."admin&idx=mldap&id=".$id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("mldap", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=mldap&id=".$id);
 		break;
 
 	case "mdb":
-		$babBody->title = "Modify directory";
+		$babBody->title = ad_translate("Modify directory");
 		modifyDb($id);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("mdb", "Modify", $GLOBALS['babAddonUrl']."admin&idx=mdb&id=".$id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("mdb", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=mdb&id=".$id);
 		break;
 
 	case "ldap":
-		$babBody->title = "Add new ldap directory";
+		$babBody->title = ad_translate("Add new ldap directory");
 		addAdLdap($adname, $description, $host, $basedn, $userdn);
 		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
 		$babBody->addItemMenu("ldap", "New", $GLOBALS['babAddonUrl']."admin&idx=ldap");
 		break;
 
 	case "db":
-		$babBody->title = "Add new database directory";
+		$babBody->title = ad_translate("Add new database directory");
 		addAdDb($adname, $description);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
-		$babBody->addItemMenu("db", "New", $GLOBALS['babAddonUrl']."admin&idx=db");
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("db", ad_translate("New"), $GLOBALS['babAddonUrl']."admin&idx=db");
 		break;
 
 	case "list":
 	default:
-		$babBody->title = "Ldap Directories list";
+		$babBody->title = ad_translate("Ldap Directories list");
 		listAds();
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
 		break;
 	}
 
