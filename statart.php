@@ -195,7 +195,7 @@ function summaryArticles($col, $order, $pos, $startday, $endday)
 	}
 
 
-function showReferentsArticle($col, $order, $pos, $item)
+function showReferentsArticle($col, $order, $pos, $item, $date)
 	{
 	global $babBody, $babBodyPopup;
 	class showReferentsArticleCls extends summaryBaseCls
@@ -207,7 +207,7 @@ function showReferentsArticle($col, $order, $pos, $item)
 		var $urlname;
 		var $altbg = true;
 
-		function showReferentsArticleCls($col, $order, $pos, $item)
+		function showReferentsArticleCls($col, $order, $pos, $item, $date)
 			{
 			global $babBody, $babDB, $babBodyPopup;
 			$this->fullname = bab_translate("Modules");
@@ -272,14 +272,14 @@ function showReferentsArticle($col, $order, $pos, $item)
 			usort($this->arrinfo, array($this, 'compare'));
 			$this->count = count($this->arrinfo);
 
-			$this->urlordmod = "idx=refart&order=".($col == 'module'? $this->sortord: $order)."&col=module&pos=".$pos;
-			$this->urlordhits = "idx=refart&order=".($col == 'hits'? $this->sortord: $order)."&col=hits&pos=".$pos;
+			$this->urlordmod = $GLOBALS['babUrlScript']."?tg=stat&idx=refart&order=".($col == 'module'? $this->sortord: $order)."&col=module&pos=".$pos."&item=".$item."&date=".$date;
+			$this->urlordhits = $GLOBALS['babUrlScript']."?tg=stat&idx=refart&order=".($col == 'hits'? $this->sortord: $order)."&col=hits&pos=".$pos."&item=".$item."&date=".$date;
 			if( $this->bnavigation )
 				{
-				$this->prevpageurl = "idx=refart&order=".$order."&col=".$col."&pos=".$prev;
-				$this->nextpageurl = "idx=refart&order=".$order."&col=".$col."&pos=".$next;
-				$this->toppageurl = "idx=refart&order=".$order."&col=".$col."&pos=".$top;
-				$this->bottompageurl = "idx=refart&order=".$order."&col=".$col."&pos=".$bottom;
+				$this->prevpageurl = $GLOBALS['babUrlScript']."?tg=stat&idx=refart&order=".$order."&col=".$col."&pos=".$prev."&item=".$item."&date=".$date;
+				$this->nextpageurl = $GLOBALS['babUrlScript']."?tg=stat&idx=refart&order=".$order."&col=".$col."&pos=".$next."&item=".$item."&date=".$date;
+				$this->toppageurl = $GLOBALS['babUrlScript']."?tg=stat&idx=refart&order=".$order."&col=".$col."&pos=".$top."&item=".$item."&date=".$date;
+				$this->bottompageurl = $GLOBALS['babUrlScript']."?tg=stat&idx=refart&order=".$order."&col=".$col."&pos=".$bottom."&item=".$item."&date=".$date;
 				}
 			$this->summaryBaseCls();
 			}
@@ -316,7 +316,7 @@ function showReferentsArticle($col, $order, $pos, $item)
 
 			}
 		}
-	$temp = new showReferentsArticleCls($col, $order, $pos, $item);
+	$temp = new showReferentsArticleCls($col, $order, $pos, $item, $date);
 	$babBodyPopup->babecho(	bab_printTemplate($temp, "statart.html", "summaryarticlereflist"));
 	}
 

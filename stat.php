@@ -329,7 +329,7 @@ switch($idx)
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
-		showReferentsArticle($col, $order, $pos, $item);
+		showReferentsArticle($col, $order, $pos, $item, $date);
 		$babBodyPopup->addItemMenu("sart", bab_translate("Statistic"), $GLOBALS['babUrlScript']."?tg=stat&idx=sart&item=".$item."&date=".$date);
 		$babBodyPopup->addItemMenu("refart", bab_translate("Referents"), $GLOBALS['babUrlScript']."?tg=stat&idx=refart&item=".$item."&date=".$date);
 		$babBodyPopup->setCurrentItemMenu($idx);
