@@ -1006,6 +1006,8 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$babBody->msgerror = bab_translate("Please select a file to upload");
 		return false;
 		}
+	else 
+		$filename = trim($filename);
 
 	if( $size > $GLOBALS['babMaxFileSize'])
 		{
