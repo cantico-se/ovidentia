@@ -1292,6 +1292,67 @@ class bab_Post extends bab_handler
 }
 
 
+class bab_PostFiles extends bab_handler
+{
+	var $IdEntries = array();
+	var $res;
+	var $index;
+	var $count;
+
+	function bab_PostFiles( &$ctx)
+	{
+		global $babDB;
+		$this->bab_handler($ctx);
+		$postid = $ctx->get_value('postid');
+		if( $postid === false || $postid === '' )
+			$this->count = 0;
+		else
+		{
+			$baseurl = $GLOBALS['babUploadPath'].'/forums/';
+			if (is_dir($baseurl) && $h = opendir($baseurl))
+				{
+				$req = "SELECT t.forum FROM ".BAB_THREADS_TBL." t,".BAB_POSTS_TBL." p WHERE t.id = p.id_thread AND p.id='".$postid."'";
+				list($forum) = $babDB->db_fetch_array($babDB->db_query($req));
+
+				$this->arr = array();
+				while (false !== ($file = readdir($h))) 
+					{
+					if (substr($file,0,strpos($file,',')) == $postid)
+						{
+						$name = substr($file,strstr(',',$file)+2);
+						$this->arr[] = array(
+								'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($name),
+								'name' => $name
+								);
+						}
+					}
+				$this->count = count($this->arr);
+				}
+		}
+		
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count)
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('PostFileName', $this->arr[$this->idx]['name']);
+			$this->ctx->curctx->push('PostFileUrlGet', $this->arr[$this->idx]['url']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
 class bab_Thread extends bab_handler
 {
 	var $arrid = array();
