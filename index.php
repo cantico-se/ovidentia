@@ -59,6 +59,7 @@ function printBody()
 		var $logurl;
 		var $babLogoLB;
 		var $babLogoRB;
+		var $babMeta;
 		var $enabled;
 		var $menuclass;
 		var $menuattribute;
@@ -83,12 +84,14 @@ function printBody()
 			$this->babLogoLB = "";
 			$this->babLogoRB = "";
 			$this->babBanner = "";
+			$this->babMeta = "";
 
 			$this->babLogoLT = babPrintTemplate($this, "config.html", "babLogoLT");
 			$this->babLogoRT = babPrintTemplate($this, "config.html", "babLogoRT");
 			$this->babLogoLB = babPrintTemplate($this, "config.html", "babLogoLB");
 			$this->babLogoRB = babPrintTemplate($this, "config.html", "babLogoRB");
 			$this->babBanner = babPrintTemplate($this, "config.html", "babBanner");
+			$this->babMeta = babPrintTemplate($this, "config.html", "babMeta");
 			$this->sitename = $babSiteName;
 			$this->style = $babStyle;
 			$this->script = $body->script;
