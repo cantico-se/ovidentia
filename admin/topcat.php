@@ -140,7 +140,7 @@ function confirmDeleteTopcat($id)
 	// delete all topics/articles/comments
 	$res = $db->db_query("select * from ".BAB_TOPICS_TBL." where id_cat='".$id."'");
 	while( $arr = $db->db_fetch_array($res))
-		bab_confirmDeleteCategory($arr['id']);
+		bab_confirmDeleteTopic($arr['id']);
 
 	// delete topic category
 	$req = "delete from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";

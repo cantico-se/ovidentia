@@ -110,7 +110,7 @@ function bab_getCommentTitle($com)
 		}
 	}
 
-function bab_confirmDeleteCategory($id)
+function bab_confirmDeleteTopic($id)
 	{
 
 	$db = $GLOBALS['babDB'];
