@@ -196,5 +196,52 @@
 </table>
 </center>
 <!--#end confirmarticle -->
+<!--#begin confirmcomment -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="waiting">
+<input type="hidden" name="idx" value="{ idxval }">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="comment" value="{ com }">
+<input type="hidden" name="new" value="{ new }">
+<input type="hidden" name="author" value="{ author }">
+<input type="hidden" name="confirm" value="{ confval }">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">{ name }:</td>
+<td nowrap><b>{ fullname }</b></td>
+</tr>
+<tr>
+<td align="right">{ action }:</td>
+<td>
+<select name="action">
+<option value="1" selected>{ confirm }</option>
+<option value="0" >{ refuse }</option>
+</select>
+</td>
+<tr>
+<td align="right"></td>
+<td nowrap><input type="checkbox" name="send" value="1">&nbsp;{ what }</td>
+</tr>
+<tr>
+<td align="right">{ message }:</td>
+<td ><textarea cols="50" rows="10" name="message"></textarea></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end confirmcomment -->
 </BODY>
 </HTML>

@@ -364,7 +364,7 @@ function confirmComment($article, $topics, $com, $newc)
 		}
 	
 	$temp = new temp($topics, $article, $com, $newc);
-	$body->babecho(	babPrintTemplate($temp,"waiting.html", "confirmarticle"));
+	$body->babecho(	babPrintTemplate($temp,"waiting.html", "confirmcomment"));
 	}
 
 function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1)
