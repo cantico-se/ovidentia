@@ -241,6 +241,7 @@ savef(document.qcreate.response);
 <input type="hidden" name="idx" value="questions">
 <input type="hidden" name="item" value="{ idcat }">
 <input type="hidden" name="idscat" value="{ idscat }">
+<input type="hidden" name="ids" value="{ ids }">
 <input type="hidden" name="modsc" value="modscat">
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -260,6 +261,9 @@ savef(document.qcreate.response);
 <tr> 
 <td align="center" valign="middle"> 
 <input type="submit" name="submit" value="{ add }">
+<!--#if bdelete -->
+<input type="submit" name="bdel" value="{ del }">
+<!--#endif bdelete -->
 <br>
 </td>
 </tr>

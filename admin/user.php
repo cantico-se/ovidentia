@@ -188,7 +188,7 @@ function listGroups($id, $pos, $grp)
 
 				if( $this->arrgroups['id_ocentity'] )
 					{
-					list($this->ocentity) = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_OC_ENTITIES." where id='".$this->arrgroups['id_ocentity']."'"));
+					list($this->ocentity) = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_OC_ENTITIES_TBL." where id='".$this->arrgroups['id_ocentity']."'"));
 					}
 				else
 					{

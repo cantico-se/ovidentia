@@ -395,7 +395,8 @@ function getWaitingApprobations($iduser, $update=false)
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select frit.*, fit.idsch, fat.satype, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where (frit.iduser='".$iduser."' or frit.iduser='0') and frit.result='' and frit.notified='Y'");
-	$result = array();
+	$result['idsch'] = array();
+	$result['idschi'] = array();
 	while( $row = $db->db_fetch_array($res))
 		{
 		switch($row['satype'])

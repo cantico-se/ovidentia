@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>{ sitename }</TITLE>
+<TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
 <script type="text/javascript">
@@ -15,25 +15,25 @@ window.focus();
 <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
   <tr>
     <td>
-<H2>{ arr1[category] }</H2>
+<H2>{ faqname }</H2>
 <HR>
 <A name="top"></A>
 <H2>{ indexquestions }</H2>
       <UL>
 <!--#in getnext -->
-<LI><A href="#{ index }">{ arr[question] }</A></LI> 
+<LI><A href="#{ index }">{ question }</A></LI> 
 <!--#endin getnext -->
 </UL>
       <hr>
       <br>
 <!--#in getnextbis -->
 <DL><A name="{ index }"></A></DL>
-      <DT><strong><font size="3">{ arr[question] }</font></strong></DT>
-<DD><BR>{ arr[response] }</DD>
+      <DT><strong><font size="3">{ question }</font></strong></DT>
+<DD><BR>{ response }</DD>
 <BR>
 <P align="right"><A href="#top">{ return }</A></P>
 <!--#endin getnextbis -->
-<a href="{ urlsite }">{ sitename }</a>&nbsp;&nbsp;{ babUrl }</td>
+<a href="{ urlsite }">{ babSiteName }</a>&nbsp;&nbsp;{ babUrl }</td>
   </tr>
 </table>
 

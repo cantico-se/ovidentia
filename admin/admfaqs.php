@@ -121,6 +121,8 @@ function listCategories()
 		var $namecategory;
 		var $access;
 		var $accessurl;
+		var $managername;
+		var $description;
 
 		function temp()
 			{
@@ -163,10 +165,11 @@ function listCategories()
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr['description'] = $this->arr['description'];
+				$this->description = $this->arr['description'];
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$this->arr['id'];
 				$this->accessurl = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$this->arr['id'];
 				$this->namecategory = $this->arr['category'];
+				$this->managername = bab_getUserName($this->arr['id_manager']);
 				$i++;
 				return true;
 				}
@@ -205,6 +208,13 @@ function saveCategory($category, $description, $managerid, $lang)
 		}
 	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description, lang, id_dgowner) values ('" .$managerid. "', '" .$category. "', '" . $description. "', '" .$lang. "', '" .$babBody->currentAdmGroup. "')";
 	$db->db_query($query);
+	$idcat = $db->db_insert_id();
+
+	$db->db_query("insert into ".BAB_FAQ_TREES_TBL." (lf, lr, id_parent, id_user, info_user) values ('1', '2', '0', '".$idcat."','')");
+	$idnode = $db->db_insert_id();
+	$db->db_query("insert into ".BAB_FAQ_SUBCAT_TBL." (id_cat, name, id_node) values ('".$idcat."','', '".$idnode."')");
+	$idscat = $db->db_insert_id();
+	$db->db_query("update ".BAB_FAQCAT_TBL." set id_root='".$idscat."' where id='".$idcat."'");
 
 	}  // saveCategory
 
