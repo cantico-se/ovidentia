@@ -25,12 +25,15 @@ function listCategories($cat)
 		var $waiting;
 		var $newa;
 		var $newc;
+		var $urlsubmit;
+		var $txtsubmit;
 
 		function temp($cat)
 			{
 			global $body, $BAB_SESS_USERID;
 			$this->articles = babTranslate("Article") ."(s)";
 			$this->waiting = babTranslate("Waiting");
+			$this->txtsubmit = babTranslate("Submit");
 			$this->db = new db_mysql();
 			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and  topics.id_cat='".$cat."'";
 			$res = $this->db->db_query($req);
@@ -50,6 +53,7 @@ function listCategories($cat)
 			static $i = 0;
 			if( $i < $this->count)
 				{			
+				$this->urlsubmit = "";
 				$this->arr = $this->db->db_fetch_array($this->db->db_query("select * from topics where id='".$this->arrid[$i]."'"));
 				$this->arr['description'] = $this->arr['description'];
 				$this->namecategory = $this->arr['category'];
@@ -57,6 +61,8 @@ function listCategories($cat)
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
+				if( $this->nbarticles == 0 )
+					$this->urlsubmit = $GLOBALS['babUrl']."index.php?tg=articles&idx=Submit&topics=".$this->arr['id'];
 
 				$req = "select * from articles where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
