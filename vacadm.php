@@ -1052,7 +1052,7 @@ function updateVacationPersonnel($userid, $groupid, $idcol, $idsa)
 
 	if( !empty($userid))
 		{
-		$res = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'");
+		$res = $babDB->db_query("select id, id_sa from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'");
 
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
