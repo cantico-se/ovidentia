@@ -161,7 +161,7 @@ class listFiles
 				
 				foreach ( $this->arrdir as $f )
 					{
-					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
+					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".urlencode($path.($path ==""?"":"/").$f);
 					}
 				}
 
@@ -175,12 +175,12 @@ class listFiles
 				if (isset($this->arrudir) && is_array($this->arrudir))
 					{
 					array_unshift ($this->arrdir,". .");
-					array_unshift ($this->arrudir, $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p);
+					array_unshift ($this->arrudir, $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".urlencode($p));
 					}
 				else
 					{
 					$this->arrdir[] = ". .";
-					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p;
+					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".urlencode($p);
 					}
 				}
 			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='Y'";
@@ -447,18 +447,13 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			$this->nametxt = bab_translate("Name");
 			$this->close = bab_translate("Close");
 			$this->listFiles($id, $gr, $path, $bmanager, "brow");
-			/*
-			$this->upfolderimg = bab_printTemplate($this, "config.html", "parentfolder");
-			$this->usrfolderimg = bab_printTemplate($this, "config.html", "userfolder");
-			$this->grpfolderimg = bab_printTemplate($this, "config.html", "groupfolder");
-			$this->manfolderimg = bab_printTemplate($this, "config.html", "managerfolder");
-			*/
+
 			if( $gr == "Y")
 				$this->rootpath = bab_getFolderName($id);
 			else
 				$this->rootpath = "";
 			$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$BAB_SESS_USERID."&gr=N&path=&editor=".$this->editor;
-			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$id."&gr=".$gr."&path=".$path."&editor=".$this->editor;
+			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$id."&gr=".$gr."&path=".urlencode($path)."&editor=".$this->editor;
 			$this->id = $id;
 			}
 
@@ -470,7 +465,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 				$this->altbg = !$this->altbg;
 				$this->name = $this->arrdir[$i];
 				$this->url = $this->arrudir[$i]."&editor=".$this->editor;
-				$this->folderpath = empty($this->path) ? $this->name : $this->path.'/'.$this->name;
+				$this->folderpath = empty($this->path) ? urlencode($this->name) : urlencode($this->path.'/'.$this->name);
 				$this->folderid = $this->id;
 				$i++;
 				return true;
@@ -614,7 +609,7 @@ function listFiles($id, $gr, $path, $bmanager)
             $this->altreadonly =  bab_translate("Read only");
 
 			$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list";
-			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
+			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path);
 			$this->urldiskspace = $GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".$this->jpath;
 
 			$this->upfolderimg = bab_printTemplate($this, "config.html", "parentfolder");
@@ -2140,6 +2135,8 @@ else
 
 	if( bab_isMagicQuotesGpcOn())
 		$path = stripslashes($path);
+
+	$path = urldecode($path);
 	}
 
 
