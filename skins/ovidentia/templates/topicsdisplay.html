@@ -1,27 +1,32 @@
 <!--#begin head_default -->
 <!--#if parentscount -->
-<table border="0" width="100%" cellpadding="1" cellspacing="0">
-<tr>
-<td class="BabCategTitleNavigation">
-<!--#in getnextparent -->
-<!--#if burl -->
-<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-<!--#else burl -->
-{ parentname }
-<!--#endif burl -->
-<!--#endin getnextparent -->
-</td>
-<!--#if bsubmit -->
-<td class="BabCategTitleNavigation" align="right">
-<b><a class="BabCategTitleNavigation" href="javascript: bab_popup('{ bsubmiturl }',6)">{ submittxt }</a></b>
-</td>
-<!--#endif bsubmit -->
-</tr></table>
-<TABLE>
-<TR>
-<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
+<div id="BabCategTitleNavigation">
+	<table border="0" width="99%" cellpadding="1" cellspacing="0">
+		<tr class="BabCategTitleNavigation">
+			<td>
+				<!--#in getnextparent -->
+				<!--#if burl -->
+				<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+				<!--#else burl -->
+				{ parentname }
+				<!--#endif burl -->
+				<!--#endin getnextparent -->
+			</td>
+		<!--#if bsubmit -->
+			<td align="right">
+				<span class="bab_buttons">
+					<a class="BabCategTitleNavigation" href="javascript: bab_popup('{ bsubmiturl }',6)">{ submittxt }</a>
+				</span>
+			</td>
+		<!--#endif bsubmit -->
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td class="BabArticleSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></td>
+		</tr>
+	</table>
+</div>
 <!--#endif parentscount -->
 
 <!--#if bnavigation -->
@@ -35,66 +40,70 @@
           <td width="1%" nowrap><a class="BabForumNavigation" href="{ nexturl }">{ nextname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
           </td>
           <td width="1%" nowrap><a class="BabForumNavigation" href="{ bottomurl }">{ bottomname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-<td width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-</tr>
-</table>
-</td></tr>
+			<td width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+		</tr>
+	</table>
+	</td>
+	</tr>
 </table>
 <!--#endif bnavigation -->
+
 <!--#in getnext -->
-<table   border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
-  <tr class="BabTopicsTitleBackground"> 
-    <td><a name="art{ articleid }"></a>{ title }</td>
-	<td align="right">
-<!--#if battachments -->
-<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0">
-<!--#else battachments -->
-&nbsp;
-<!--#endif battachments -->
-</td>
+<div class="bab_repeat">
+<table border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabTopicsTitleBackground"><a name="art{ articleid }"></a>{ title }</td>
   </tr>
   <tr> 
-    <td class="BabTopicsBackground" colspan="2">{ content }</td>
+    <td class="BabTopicsBackground">{ content }</td>
   </tr>
 <!--#if battachments -->
   <tr> 
-    <td class="BabTopicsBackground" colspan="2"><b>{ attachmentxt }:</b><br>
-<!--#in getnextdoc -->
-<a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;<!--#if docdesc -->({ docdesc })<!--#endif docdesc --><br>
-<!--#endin getnextdoc -->
+    <td class="BabTopicsBackground">
+	<div class="bab_buttons">
+		<div class="bab_title">{ attachmentxt }:</div>
+		<ul>
+		<!--#in getnextdoc -->
+		<li><a href="{ docurl }">{ docname }</a>&nbsp;&nbsp;<!--#if docdesc -->({ docdesc })<!--#endif docdesc --></li>
+		<!--#endin getnextdoc -->
+		</ul>
+	</div>
 	</td>
   </tr>
 <!--#endif battachments -->
   <tr>
-      <td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
+      <td class="BabTopicsButtonBackground" align="right">
       <!--#if bmodify -->
-	  <!--#if bmodifyurl -->
-      <a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
-	  <!--#else bmodifyurl -->
-      <a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit_disabled.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
-	  <!--#endif bmodifyurl -->
+		  <!--#if bmodifyurl -->
+		  <a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
+		  <!--#else bmodifyurl -->
+		  <a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit_disabled.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
+		  <!--#endif bmodifyurl -->
       <!--#endif bmodify -->
 	  &nbsp;&nbsp;
       <a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a>
 	  <!--#if commentstxt -->
 	  &nbsp;&nbsp;<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ commentsurl }', 6)"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a>
 	  <!--#endif commentstxt -->
-		&nbsp;&nbsp;
-    </td>
+		</td>
   </tr>
-  <tr class="BabTopicsAuthorBackground" valign="middle"> 
-    <td nowrap width="80%">{ author }</td>
-    <td align="right" nowrap width="20%"> 
-      <!--#if bbody "> 0" -->
-      <a class="BabTopicsFooterMoreLink" href="{ moreurl }">{ moretxt }</a> 
-      <!--#endif bbody -->
-    </td>
+  <tr> 
+    <td class="BabTopicsAuthorBackground">
+	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+		<tr>
+		<td><span class="articleauthor">{ articleauthor }</span> - <span class="articledate">{ articledate }</span></td>
+		<td align="right"><!--#if bbody "> 0" --><a class="BabTopicsFooterMoreLink" href="{ moreurl }">{ moretxt }</a><!--#endif bbody --></td>
+		</tr>
+	</table>
+	</td>
   </tr>
 </table>
+</div>
+
 <table>
-<tr>
-<td class="BabArticleSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></td>
-</tr>
+	<tr>
+	<td class="BabArticleSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt=""></td>
+	</tr>
 </table>
 <!--#endin getnext -->
 <!--#end head_default -->
@@ -102,81 +111,79 @@
 
 <!--#begin body_default -->
 <!--#if parentscount -->
-<table border="0" width="100%" cellpadding="1" cellspacing="0">
-<tr>
-<td class="BabCategTitleNavigation">
-<!--#in getnextparent -->
-<!--#if burl -->
-<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-<!--#else burl -->
-{ parentname }
-<!--#endif burl -->
-<!--#endin getnextparent -->
-</td>
-<!--#if bsubmit -->
-<td class="BabCategTitleNavigation" align="right">
-<b><a class="BabCategTitleNavigation" href="javascript: bab_popup('{ bsubmiturl }',6)">{ submittxt }</a></b>
-</td>
-<!--#endif bsubmit -->
-</tr>
-</table>
+<div id="BabCategTitleNavigation">
+	<table border="0" width="99%" cellpadding="1" cellspacing="0">
+		<tr>
+		<td class="BabCategTitleNavigation">
+		<!--#in getnextparent -->
+			<!--#if burl -->
+			<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+			<!--#else burl -->
+			{ parentname }
+			<!--#endif burl -->
+		<!--#endin getnextparent -->
+		</td>
+		<!--#if bsubmit -->
+		<td class="BabCategTitleNavigation" align="right">
+			<a class="BabCategTitleNavigation" href="javascript: bab_popup('{ bsubmiturl }',6)">{ submittxt }</a>
+		</td>
+		<!--#endif bsubmit -->
+		</tr>
+	</table>
 
-<TABLE>
-<TR>
-<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
+	<table>
+		<tr>
+		<td class="BabArticleSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+		</tr>
+	</table>
+</div>
 <!--#endif parentscount -->
 
 <!--#in getnext -->
+<div class="bab_repeat">
 <table  border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
-
 <tr>
 <td width="99%" valign="top">
-<table  border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<table  border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<tr> 
+	<td class="BabTopicsTitleBackground" valign="middle">{ title }</td>
+	</tr>
 
-<tr> 
-<td class="BabTopicsTitleBackground" valign="middle">{ title }</td>
-	<td class="BabTopicsTitleBackground" align="right">
-<!--#if battachments -->
-<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0">
-<!--#else battachments -->
-&nbsp;
-<!--#endif battachments -->
+	<tr>
+		<td class="BabTopicsBackground">{ content }</td>
+	</tr>
+
+	<!--#if battachments -->
+	  <tr> 
+		<td class="BabTopicsBackground">
+			<div class="bab_buttons">
+				<div class="bab_title">{ attachmentxt }:</div>
+				<ul>
+				<!--#in getnextdoc -->
+				<li><a href="{ docurl }">{ docname }</a>&nbsp;&nbsp;<!--#if docdesc -->({ docdesc })<!--#endif docdesc --></li>
+				<!--#endin getnextdoc -->
+				</ul>
+			</div>
+		</td>
+	</tr>
+	<!--#endif battachments -->
+
+	<tr>
+		<td class="BabTopicsButtonBackground" align="right" valign="middle">
+			<!--#if bmodify -->
+			<!--#if bmodifyurl -->
+			<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
+			<!--#else bmodifyurl -->
+			<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit_disabled.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
+			<!--#endif bmodifyurl -->
+			<!--#endif bmodify -->
+			&nbsp;&nbsp;
+			<a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a><!--#if commentstxt -->&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ commentsurl }', 6)"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a><!--#endif commentstxt -->
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
-
-<tr>
-<td class="BabTopicsBackground" colspan="2">{ content }</td>
-</tr>
-
-<!--#if battachments -->
-  <tr> 
-    <td class="BabTopicsBackground" colspan="2"><b>{ attachmentxt }:</b><br>
-<!--#in getnextdoc -->
-<a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;<!--#if docdesc -->({ docdesc })<!--#endif docdesc --><br>
-<!--#endin getnextdoc -->
-	</td>
-  </tr>
-<!--#endif battachments -->
-
-<tr>
-<td class="BabTopicsButtonBackground" align="right" valign="middle" colspan="2">
-<!--#if bmodify -->
-<!--#if bmodifyurl -->
-<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
-<!--#else bmodifyurl -->
-<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ modifyurl }',6)"><img src="{ babSkinPath }images/Puces/edit_disabled.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
-<!--#endif bmodifyurl -->
-<!--#endif bmodify -->
-&nbsp;&nbsp;
-<a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a><!--#if commentstxt -->&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="javascript: bab_popup('{ commentsurl }', 6)"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a><!--#endif commentstxt --></td>
-</tr>
-
-</table>
-</td>
-</tr>
-
 
 <tr>
 <td  valign="top">
@@ -215,19 +222,19 @@
 <!--#end commentslist -->
 </td>
 </tr>
-
 <tr>
-<td class="BabTopicsTitleNavigation" valign="top">
-<br />
-{ topictxt }:
-	<ul>
-	<!--#in getnextart -->
-		<li><a class="BabTopicsTitleNavigationLink" href="{ urlreadmore }">{ titlearticle }</a></li>
-	<!--#endin getnextart -->
-	</ul>
-</td>
+	<td class="BabTopicsTitleNavigation" valign="top">
+		<div class="bab_buttons">
+		<div class="bab_title">{ topictxt }:</div>
+			<ul>
+			<!--#in getnextart -->
+				<li><a class="BabTopicsTitleNavigationLink" href="{ urlreadmore }">{ titlearticle }</a></li>
+			<!--#endin getnextart -->
+			</ul>
+		</div>
+	</td>
 </tr>
 </table>
+</div>
 <!--#endin getnext -->
-<br />
 <!--#end body_default -->
