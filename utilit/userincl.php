@@ -1087,350 +1087,239 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 }
 
 
-function bab_replace( $txt, $remove = '' )
-{
+function bab_replace_var(&$txt,$var,$new)
+	{
+	$txt = preg_replace("/".preg_quote($var,"/")."/", $new, $txt);
+	}
+	
+function bab_replace_make_link($url,$text,$popup = false,$url_popup = false)
+	{
+	$url = $popup && $url_popup != false ? $url_popup : $url;
+	return $popup ? '<a href="javascript:Start(\''.$url.'\',\'ovidentia_content\',\'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes\')">'.$text.'</a>' : '<a href="'.$url.'">'.$text.'</a>';
+	}
+	
+function bab_replace( $txt, $remove = '')
+	{
+	bab_replace_ref( $txt, $remove);
+	return $txt;
+	}
+
+function bab_replace_ref( &$txt, $remove = '')
+	{
 	global $babBody;
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	$exclude = array();
 	$exclude = explode(',',$remove);
-
-	$artarray = array("ARTICLEPOPUP", "ARTICLE");
-	for( $i = 0; $i < count($artarray); $i++)
-	{
-	$reg = "/\\\$".$artarray[$i]."\((.*?)\)/";
-	if( !in_array($artarray[$i],$exclude) && preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			unset($idtopic);
-			$tab = preg_split("/(\"[\s]*,)|(,[\s]*\")|(\"[\s]*,[\s]*\")+/", $m[1][$k]);
-			if( sizeof($tab) > 1)
-				{
-				$topic = trim($tab[0]);
-				if( $topic[0] == '"' )
-					$topic = substr($topic, 1);
-				if( $topic[strlen($topic)-1] == '"' )
-					$topic = substr($topic, 0, -1);
-
-				$article = trim($tab[1]);
-				if( $article[0] == '"' )
-					$article = substr($article, 1);
-				if( $article[strlen($article)-1] == '"' )
-					$article = substr($article, 0, -1);
-				$req = "select * from ".BAB_TOPICS_TBL." where category='".addslashes($topic)."'";
-				$res = $db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0)
-					{
-					$arr = $db->db_fetch_array($res);
-					$idtopic = $arr['id'];
-					}
-				}
-			else
-				{
-				$tab = preg_split("/[,]+/", $m[1][$k]);
-				if( sizeof( $tab ) > 1 )
-					{
-					$article = trim($tab[1]);
-					$req = "select * from ".BAB_TOPICS_TBL." where category='".addslashes(trim($tab[0]))."'";
-					$res = $db->db_query($req);
-					if( $res && $db->db_num_rows($res) > 0)
-						{
-						$arr = $db->db_fetch_array($res);
-						$idtopic = $arr['id'];
-						}
-					}
-				else
-					{
-					$article = trim($m[1][$k]);
-					}
-				}
-
-			if( isset($idtopic))
-				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$idtopic."' and title= '".addslashes($article)."'";
-			else
-				{
-				$req = "select * from ".BAB_ARTICLES_TBL." where title like '%".addslashes($article)."%'";
-				}
-
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				if(in_array($arr['id_topic'], $babBody->topview) && bab_articleAccessByRestriction($arr['restriction']))
-					{
-					if( $i == 0 )
-						$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$arr['title']."</a>", $txt);
-					else
-						$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k],"/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$arr['title']."</a>", $txt);
-					}
-				else
-					$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k],"/")."\)/", $arr['title'], $txt);
-				}
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$".$artarray[$i]."\(.*\)/","",$txt);
-	}
-
-	$reg = "/\\\$ARTICLEID\((.*?),(.*?),(.*?)\)/";
-	if(!in_array('ARTICLEID',$exclude) &&  preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$repl = false;
-			if (isset($m[1][$k]) && is_numeric($m[1][$k]) )
-				{
-				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$m[1][$k]."'";
-				$res = $db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0)
-					{
-					$arr = $db->db_fetch_array($res);
-					if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
-						{
-						if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
-							{
-							$repl = true;
-							if ($m[2][$k] == '0')
-								{
-								$titre = $arr['title'];
-								}
-							else
-								{
-								$titre = $m[2][$k];
-								}
-							if ($m[3][$k] == '0')
-								{
-								$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$titre."</a>", $txt);
-								}
-							else
-								{
-								$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$titre."</a>", $txt);
-								}
-							}
-						}
-					}
-				}
-
-			if( $repl == false )
-				{
-				$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", $m[2][$k] , $txt);
-				}
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$ARTICLEID\(.*\)/","",$txt);
-
-	$reg = "/\\\$CONTACT\((.*?),(.*?)\)/";
-	if(!in_array('CONTACT',$exclude) && preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$req = "select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and firstname like '%".addslashes(trim($m[1][$k]))."%' and lastname like '%".addslashes(trim($m[2][$k]))."%'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
-				}
-			else
-				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[1][$k]." ".$m[2][$k], $txt);
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$CONTACT\(.*\)/","",$txt);
-
-	$reg = "/\\\$CONTACTID\((.*?),(.*?)\)/";
-	if(!in_array('CONTACTID',$exclude) && preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$title = $m[2][$k];
-			$req = "select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and id= '".trim($m[1][$k])."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				if (trim($m[2][$k]) == '')
-					$title = bab_composeUserName($arr['firstname'],$arr['lastname']);
-				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
-				}
-			else
-				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$CONTACTID\(.*\)/","",$txt);
-
-	$reg = "/\\\$DIRECTORYID\((.*?),(.*?)\)/";
-	if(!in_array('DIRECTORYID',$exclude) &&  preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$title = $m[2][$k];
-			$req = "select id,sn,givenname,id_directory from ".BAB_DBDIR_ENTRIES_TBL." where id= '".trim($m[1][$k])."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				if ( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id_directory']) || $arr['id_directory'] == 0 )
-					{
-					if (trim($m[2][$k]) == '')
-						{
-						$title = bab_composeUserName($arr['sn'],$arr['givenname']);
-						}
-					else
-						{
-						$title = trim($m[2][$k]);
-						}
-					$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$arr['id_directory']."&idu=".$arr['id']."', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$title."</a>", $txt);
-					}
-				else
-					{
-					$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
-					}
-				}
-			else
-				{
-				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
-				}
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$DIRECTORYID\(.*\)/","",$txt);
-
-	$reg = "/\\\$FAQ\((.*?),(.*?)\)/";
-	if(!in_array('FAQ',$exclude) && preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$req = "select * from ".BAB_FAQCAT_TBL." where category='".addslashes(trim($m[1][$k]))."'";
-			$res = $db->db_query($req);
-			$repl = false;
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['id']))
-					{
-					$req = "select * from ".BAB_FAQQR_TBL." where question='".addslashes(trim($m[2][$k]))."'";
-					$res = $db->db_query($req);
-					if( $res && $db->db_num_rows($res) > 0)
-						{
-						$arr = $db->db_fetch_array($res);
-						$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$m[2][$k]."</a>", $txt);
-						$repl = true;
-						}
-					}
-				}
-			if( $repl == false )
-				$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$FAQ\(.*\)/","",$txt);
 	
-	$reg = "/\\\$FAQID\((.*?),(.*?),(.*?)\)/";
-	if(!in_array('FAQID',$exclude) && preg_match_all($reg, $txt, $m))
+	$reg = "/\\\$([A-Z]*?)\((.*?)\)/";
+	if (preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$req = "select * from ".BAB_FAQQR_TBL." where id='".trim($m[1][$k])."'";
-			$res = $db->db_query($req);
-			$repl = false;
-			$message = trim($m[2][$k]);
-			if( $res && $db->db_num_rows($res) > 0)
+			if (!in_array($m[1][$k],$exclude))
 				{
-				$arr = $db->db_fetch_array($res);
-				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['idcat']))
+				$var = $m[0][$k];
+				$varname = $m[1][$k];
+				$param = explode(',',$m[2][$k]);
+
+				if (count($param) > 0)
 					{
-					if (trim($m[2][$k]) == "")
-						{$message = $arr['question'];}
-					if (trim($m[3][$k]) == 1)
+					switch ($varname)
 						{
-						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".trim($m[1][$k])."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$message."</a>", $txt);
-						}
-					else
-						{
-						$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".trim($m[1][$k])."#".trim($m[1][$k])."\">".$message."</a>", $txt);
+						case 'ARTICLEPOPUP':
+							$popup = true;
+						case 'ARTICLE':
+							$title_topic = count($param) > 1 ? trim($param[0],'"') : false;
+							$title_object = count($param) > 1 ? trim($param[1],'"') : trim($param[0],'"');
+							if (!isset($popup)) $popup = false;
+							if ($title_topic)
+								{
+								$res = $db->db_query("select a.id,a.id_topic,a.title,a.restriction from ".BAB_TOPICS_TBL." t, ".BAB_ARTICLES_TBL." a where t.category='".addslashes($title_topic)."' AND a.id_topic=t.id AND a.title='".addslashes($title_object)."'");
+								if( $res && $db->db_num_rows($res) > 0)
+									$arr = $db->db_fetch_array($res);
+								else
+									$title_topic = false;
+								}
+							if (!$title_topic)
+								{
+								$res = $db->db_query("select id,id_topic,title,restriction from ".BAB_ARTICLES_TBL." where title LIKE '%".addslashes($title_object)."%'");
+								if( $res && $db->db_num_rows($res) > 0)
+									$arr = $db->db_fetch_array($res);
+								}
+							if(in_array($arr['id_topic'], $babBody->topview) && bab_articleAccessByRestriction($arr['restriction']))
+								{
+								$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'ARTICLEID':
+							if (!is_numeric($param[0]))
+								break;
+							$id_object = $param[0];
+							$title_object = isset($param[1]) ? $param[1] : '';
+							$popup = isset($param[2]) ? $param[2] : false;
+							$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$id_object."'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
+									{
+									$title_object = empty($title_object) ? $arr['title'] : $title_object;
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
+									}
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'CONTACT':
+							$title_object = $param[0].' '.$param[1];
+							$res = $db->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and firstname LIKE '%".addslashes($param[0])."%' and lastname LIKE '%".addslashes($param[1])."%'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								$title_object = bab_replace_make_link($GLOBALS['babUrlScript'].'?tg=contact&idx=modify&item='.$arr['id'].'&bliste=0',$title_object,true);
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'CONTACTID':
+							$id_object = $param[0];
+							$title_object = isset($param[1]) ? $param[1] : '';
+							$res = $db->db_query("select * from ".BAB_CONTACTS_TBL." where  owner='".$GLOBALS['BAB_SESS_USERID']."' and id= '".$id_object."'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								$title_object = empty($title_object) ? bab_composeUserName($arr['firstname'],$arr['lastname']) : $title_object;
+								$title_object = bab_replace_make_link($GLOBALS['babUrlScript'].'?tg=contact&idx=modify&item='.$arr['id'].'&bliste=0',$title_object,true);
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'DIRECTORYID':
+							$id_object = $param[0];
+							$title_object = isset($param[1]) ? $param[1] : '';
+							$res = $db->db_query("select id,sn,givenname,id_directory from ".BAB_DBDIR_ENTRIES_TBL." where id= '".$id_object."'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								if ( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id_directory']) || $arr['id_directory'] == 0 )
+									{
+									$title_object = empty($title_object) ? bab_composeUserName($arr['sn'],$arr['givenname']) : $title_object;
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$arr['id_directory']."&idu=".$arr['id'],$title_object,true);
+									}
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'FAQ':
+							$title_object = $param[1];
+							$res = $db->db_query("select * from ".BAB_FAQCAT_TBL." where category='".addslashes($param[0])."'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['id']))
+									{
+									$req = "select * from ".BAB_FAQQR_TBL." where question='".addslashes($param[1])."'";
+									$res = $db->db_query($req);
+									if( $res && $db->db_num_rows($res) > 0)
+										{
+										$arr = $db->db_fetch_array($res);
+										$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".$arr['id'],$title_object,true);
+										}
+									}
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'FAQID':
+							$id_object = $param[0];
+							$title_object = isset($param[1]) ? $param[1] : '';
+							$popup = isset($param[2]) ? $param[2] : false;
+							$res = $db->db_query("select * from ".BAB_FAQQR_TBL." where id='".$id_object."'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['idcat']))
+									{
+									$title_object = empty($title_object) ? $arr['question'] : $title_object;
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$id_object."#".$id_object,$title_object,$popup,$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".$id_object);
+									
+									}
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'FILE':
+							$id_object = $param[0];
+							$title_object = isset($param[1]) ? $param[1] : '';
+							include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+							$res = $db->db_query("select * from ".BAB_FILES_TBL." where id='".$id_object."' and state='' and confirmed='Y'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								if (bab_isAccessFileValid($arr['bgroup'], $arr['id_owner']))
+									{
+									$title_object = empty($title_object) ? $arr['name'] : $title_object;
+									$inl = empty($GLOBALS['files_as_attachment']) ? '&inl=1' : '';
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']),$title_object);
+									}
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'FOLDER':
+							$id_object = $param[0];
+							$path_object = isset($param[1]) ? $param[1] : '';
+							$title_object = '';
+							include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+							$res = $db->db_query("select id,name from ".BAB_FM_FOLDERS_TBL." where id='".$id_object."' and active='Y'");
+							if( $res && $db->db_num_rows($res) > 0)
+								{
+								$arr = $db->db_fetch_array($res);
+								if (bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arr['id']))
+									{
+									$title_object = empty($title_object) ? $arr['name'] : $title_object;
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id']."&gr=Y&path=".urlencode($path_object),$title_object);
+									}
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'VAR':
+							$title_object = $param[0];
+							switch($title_object)
+								{
+								case "BAB_SESS_USERID":
+								case "BAB_SESS_NICKNAME":
+								case "BAB_SESS_USER":
+								case "BAB_SESS_FIRSTNAME":
+								case "BAB_SESS_LASTNAME":
+								case "BAB_SESS_EMAIL":
+									$title_object = $GLOBALS[$title_object];
+									break;
+								case "babslogan":
+								case "adminemail":
+								case "adminname":
+									$title_object = $babBody->babsite[$title_object];
+									break;
+								}
+							bab_replace_var($txt,$var,$title_object);
+							break;
+							
+						case 'OVML':
+							bab_replace_var($txt,$var,preg_replace("/\\\$OVML\(.*\)/","",bab_printOvmlTemplate($param[0])));
+							break;
 						}
 					}
-				$repl = true;
-				}
-
-			if( $repl == false )
-				$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", $message, $txt);
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$FAQID\(.*\)/","",$txt);
-
-	$reg = "/\\\$FILE\((.*?),(.*?)\)/";
-	if(!in_array('FILE',$exclude) && preg_match_all($reg, $txt, $m))
-		{
-		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$req = "select * from ".BAB_FILES_TBL." where id='".trim($m[1][$k])."' and state='' and confirmed='Y'";
-			$res = $db->db_query($req);
-			$access = false;
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				$access = bab_isAccessFileValid($arr['bgroup'], $arr['id_owner']);
-				}
-
-			$urltxt = trim($m[2][$k]);
-			if( empty($urltxt) && $access )
-				$urltxt = $arr['name'];
-
-			if( $access )
-				{
-				$inl = empty($GLOBALS['files_as_attachment']) ? '&inl=1' : '';
-				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name'])."\" target=_blank>".$urltxt."</a>", $txt);
 				}
 			else
-				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", $urltxt, $txt);
-			}
-		}
-	else
-		$txt = preg_replace("/\\\$FILE\(.*\)/","",$txt);
-
-	$reg = "/\\\$VAR\((.*?)\)/";
-	if(!in_array('VAR',$exclude) && preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$var = trim($m[1][$k]);
-			switch($var)
 				{
-				case "BAB_SESS_NICKNAME":
-				case "BAB_SESS_USER":
-				case "BAB_SESS_EMAIL":
-					$txt = preg_replace("/\\\$VAR\(".preg_quote($var,"/")."\)/", $GLOBALS[$var], $txt);
-					break;
-				default:
-					break;
+				bab_replace_var($txt,$m[1][$k],'');
 				}
 			}
 		}
-	else
-		$txt = preg_replace("/\\\$VAR\(.*\)/","",$txt);
-
-	$reg = "/\\\$OVML\((.*?)\)/";
-	if(!in_array('OVML',$exclude) && preg_match_all($reg, $txt, $m))
-		{
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$tmp = bab_printOvmlTemplate($m[1][$k]);
-			$tmp = preg_replace("/\\\$OVML\(.*\)/","",$tmp);
-			$txt = preg_replace("/\\\$OVML\(".preg_quote($m[1][$k], "/")."\)/",$tmp , $txt);
-			
-			}
-		
-		}
-	else
-		$txt = preg_replace("/\\\$OVML\(.*\)/","",$txt);
-
-	return $txt;
-}
+	// return $txt;
+	}
 ?>
