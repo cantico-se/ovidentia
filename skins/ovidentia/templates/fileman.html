@@ -33,6 +33,15 @@
 <input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }">
 </td>
 </tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="readonly">
+<option value="N" selected>{ no }</option>
+<option value="Y" >{ yes }</option>
+</select>
+</td>
+</tr>
 <tr>
 <td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
@@ -47,15 +56,6 @@
 </form>
 <!--#end addfile -->
 <!--#begin fileslist -->
-<script type="text/javascript">
-<!--
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=650,height=500,status=no,resizable=yes,top=200,left=200, scrollbars=yes");
-}
-//-->
-</script>
 <br>
 <table width="98%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabMailBackground">
 <tr>
@@ -77,6 +77,7 @@ href="{ refreshurl }">{ refresh }</a></td>
 <table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr>
 <td class="BabSiteAdminTitleFontBackground" colspan="2" align="center">&nbsp;{ nametxt }&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="right">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" align="right">&nbsp;{ sizetxt }</td>
 <td class="BabSiteAdminTitleFontBackground" align="center">{ modifiedtxt }&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground">{ postedtxt }&nbsp;</td>
@@ -86,7 +87,8 @@ href="{ refreshurl }">{ refresh }</a></td>
 <td class="BabSiteAdminTitleFontBackground" align="center" width="1%">&nbsp;{ hitstxt }</td>
 <!--#endif bmanager -->
 </tr>
-<!--#in getnextdir --> <tr> 
+<!--#in getnextdir -->
+<tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
 <!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name -->
 </td>          
@@ -124,17 +126,18 @@ href="{ url }">{ name }</a></td>
 <!--#endin getnextmgrpdir -->
 <!--#in getnextfile --> <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-{ fileimage }</td>          
+{ fileimage }
+</td>          
 <td class="BabSiteAdminFontBackground" valign="top">&nbsp; 
+<a 
+class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ name }</a>&nbsp; 
 <!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
 <!--#if bconfirmed "== 1" -->
 * 
 <!--#endif bconfirmed -->
-<!--#else bmanager -->
-{ name } 
 <!--#endif bmanager -->
 </td>
+<td class="BabSiteAdminFontBackground" valign="top" align="right">&nbsp;{ readonly }</td>
 <td class="BabSiteAdminFontBackground" valign="top" align="right">&nbsp;{ sizef }</td>
 <td class="BabSiteAdminFontBackground" valign="top" align="center">{ modified }</td>
 <td class="BabSiteAdminFontBackground" valign="top">{ postedby }&nbsp;</td>
@@ -214,77 +217,14 @@ alt="{ paste }"></a>
 <br><input type="submit" name="bdel" value="{ delete }">
 <!--#endif bdel -->
 </form>
-<!--#endif bmanager -->
 <br>
 <center><a class="BabSiteAdminListLink" href="javascript: Start('{ urldiskspace }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ diskspace }</a></center>
+<!--#endif bmanager -->
 <br>
 </td>
 </tr>
 </table>
 <!--#end fileslist -->
-
-
-<!--#begin updatefile -->
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="fileman">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="updf" value="upd">
-<input type="hidden" name="id" value="{ id }">
-<input type="hidden" name="gr" value="{ gr }">
-<input type="hidden" name="path" value="{ path }">
-<input type="hidden" name="file" value="{ file }">
-<input type="hidden" name="idf" value="{ idf }">
-<input type="hidden" name="readonly" value="N">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">
-<input type="text" name="name" size="30" maxlength="255" value="{ nameval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle">&nbsp;{ sizef }
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="description" size="60" maxlength="255" value="{ descval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
-</td>
-</tr>
-<!--#if bmanager -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ confirm }</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<select name="confirm">
-  <option value="N" { confirmno }>{ no }</option>
-  <option value="Y" { confirmyes }>{ yes }</option>
-</select>
-</td>
-</tr>
-<!--#endif bmanager -->
-<tr>
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="Submit" value="{ add }">
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</form>
-<!--#end updatefile -->
 
 <!--#begin trashfiles -->
 
@@ -400,3 +340,186 @@ value="{ restore }">
 </BODY>
 </HTML>
 <!--#end diskspace -->
+
+<!--#begin viewfile -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground" align="center">
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center"> { title } </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<!--#if access -->
+<br>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground" align="center">
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabSiteAdminFontBackground" width="30%" >{ description }</td>
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ descval }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ keywords }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ keysval }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ fsizetxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ fsize }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ fmodifiedtxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ fmodified }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ fmodifiedbytxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ fmodifiedby }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ fcreatedtxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ fcreated }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ fpostedbytxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ fpostedby }</td>
+</tr>
+</table>
+<a class="BabFaqLink" href="{ geturl }"><br>
+{ download }</a> <br>
+</td>
+</tr>
+</table>
+<br>
+<form method="post" name="fupdate" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }">
+<input type="hidden" name="tg" value="fileman">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="updf" value="upd">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="gr" value="{ gr }">
+<input type="hidden" name="path" value="{ path }">
+<input type="hidden" name="file" value="{ file }">
+<input type="hidden" name="idf" value="{ idf }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#if bupdate -->
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<input type="file" name="uploadf" size="30" maxlength="255" value="">
+</td>
+</tr>
+<!--#if bmanager -->
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<input type="text" name="fname" size="30" maxlength="255" value="{ nameval }">
+</td>
+</tr>
+<!--#endif bmanager -->
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="text" name="description" size="60" maxlength="255" value="{ descval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
+</td>
+</tr>
+<!--#endif bupdate -->
+<!--#if bmanager -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="readonly">
+  <option value="N" { noselected }>{ no }</option>
+  <option value="Y" { yesselected }>{ yes }</option>
+</select>
+</td>
+</tr>
+<!--#if bconfirm -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ confirm }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="confirm">
+  <option value="N" { confirmno }>{ no }</option>
+  <option value="Y" { confirmyes }>{ yes }</option>
+</select>
+</td>
+</tr>
+<!--#endif bconfirm -->
+<!--#endif bmanager -->
+<tr>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="submit" name="submit" value="{ update }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#endif access -->
+</body>
+</html>
+<!--#end viewfile -->
+
+<!--#begin fileunload -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+
+</HEAD>
+<BODY onUnload="this.opener.location.href='{ url }'">
+<br><br><br><br>
+
+<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+</tr>
+<tr align="left" valign="middle">
+<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
+close }</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+<script type="text/javascript">
+	setTimeout("this.close()","1000");
+</script>
+
+</BODY>
+</HTML>
+<!--#end fileunload -->
