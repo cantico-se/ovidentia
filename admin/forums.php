@@ -31,7 +31,7 @@ function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->moderator = bab_translate("Moderator");
-			$this->nbmsgdisplay = bab_translate("Messages Per Page");
+			$this->nbmsgdisplay = bab_translate("Threads Per Page");
 			$this->moderation = bab_translate("Moderation");
 			$this->notification = bab_translate("Notify moderator");
 			$this->yes = bab_translate("Yes");
@@ -83,7 +83,7 @@ function listForums()
 			$this->reply = bab_translate("Reply");
 			$this->posts = bab_translate("Post");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FORUMS_TBL." order by name asc";
+			$req = "select * from ".BAB_FORUMS_TBL." order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -114,6 +114,45 @@ function listForums()
 	return $temp->count;
 	}
 
+function orderForum()
+	{
+	global $babBody;
+	class temp
+		{		
+
+		function temp()
+			{
+			global $babBody, $BAB_SESS_USERID;
+			$this->forumtxt = "---- ".bab_translate("Forums order")." ----";
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->create = bab_translate("Modify");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_FORUMS_TBL." order by ordering asc";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->forumval = $arr['name'];
+				$this->forumid = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
+	$babBody->babecho(	bab_printTemplate($temp,"forums.html", "forumsorder"));
+	return $temp->count;
+	}
 
 function saveForum($name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active)
 	{
@@ -164,6 +203,16 @@ function saveForum($name, $description, $moderator, $moderation, $notification, 
 
 	}
 
+function saveOrderForums($listforums)
+	{
+	global $babBody;
+	$db = $GLOBALS['babDB'];
+	
+	for($i=0; $i < count($listforums); $i++)
+		{
+		$db->db_query("update ".BAB_FORUMS_TBL." set ordering='".$i."' where id='".$listforums[$i]."'");
+		}
+	}
 /* main */
 if(!isset($idx))
 	{
@@ -176,6 +225,11 @@ if( isset($addforum) && $addforum == "addforum" )
 		$idx = "addforum";
 	}
 
+if( isset($update) && $update == "order")
+	{
+	saveOrderForums($listforums);
+	}
+
 switch($idx)
 	{
 	case "addforum":
@@ -185,12 +239,20 @@ switch($idx)
 		addForum($name, $description, $moderator, $nbmsgdisplay);
 		break;
 
+	case "ord":
+		$babBody->title = bab_translate("Order forums");
+		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+		$babBody->addItemMenu("ord", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=forums&idx=ord");
+		$babBody->addItemMenu("addforum", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=forums&idx=addforum");
+		orderForum();
+		break;
 	default:
 	case "List":
 		$babBody->title = bab_translate("List of all forums");
 		if( listForums() > 0 )
 			{
 			$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+			$babBody->addItemMenu("ord", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=forums&idx=ord");
 			}
 		else
 			$babBody->title = bab_translate("There is no forum");
