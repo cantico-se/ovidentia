@@ -165,6 +165,20 @@ function siteModify($id)
 			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
 			$this->user_diskspace_title = bab_translate("File manager max user directory size");
 			$this->total_diskspace_title = bab_translate("File manager max total size");
+			$this->user_workdays_title = bab_translate("User can modifiy his working days");
+			$this->t_workdays = bab_translate("Working days");
+			$this->t_nonworking = bab_translate("Non-working days");
+			$this->t_add = bab_translate("Add");
+			$this->t_ok = bab_translate("Ok");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_load_date = bab_translate("Load date");
+
+			$this->t_type[101] = bab_translate("Day");
+			$this->t_type[102] = bab_translate("Repeat yearly");
+
+			$this->t_type[0] = bab_translate("Easter");
+			$this->t_type[1] = bab_translate("Rise");
+			$this->t_type[2] = bab_translate("Pentecost");
 
 			$this->id = $id;
 			$this->langfiltertxt = bab_translate("Language filter");
@@ -286,6 +300,9 @@ function siteModify($id)
 			$this->arrtime[] = "hh:mm:ss tt";
 			$this->arrtime[] = "HH:mm:ss";
 			$this->arrtime[] = "H:m:s";
+
+
+			$this->workdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['workdays']));
 
 			}
 		
@@ -453,6 +470,56 @@ function siteModify($id)
 			else
 				return false;
 			} //getnextlangfilter
+
+
+		function getnextshortday()
+			{
+			global $babDays;
+			static $i = 0;
+			if ($i < 7)
+				{
+				if( isset($this->workdays[$i] ))
+					{
+					$this->checked = "checked";
+					}
+				else
+					{
+					$this->checked = "";
+					}
+				$this->dayid = $i;
+				$this->shortday = $babDays[$i];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getnextnonworking_type()
+			{
+			static $i = 0;
+			if ($i < 100 && isset($this->t_type[$i]))
+				{
+				$this->type = $i;
+				$this->txt = $this->t_type[$i];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+
+		function getnextnonworking()
+			{
+			return false;
+			}
 
 		} // class temp
 
@@ -984,7 +1051,7 @@ function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $
 	}
 
 
-function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order)
+function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $user_workdays)
 	{
 	global $babBody;
 	if( !bab_isMagicQuotesGpcOn())
@@ -1004,7 +1071,7 @@ function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspa
 	list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
 	$req = "update ".BAB_SITES_TBL." set ";
 
-	$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', email_password='".$email_password."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."' where id='".$id."'";
+	$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', email_password='".$email_password."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."', user_workdays='".$user_workdays."' where id='".$id."'";
 	$db->db_query($req);
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -1025,6 +1092,14 @@ function siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat)
 	$req = "update ".BAB_SITES_TBL." set date_longformat='".$datelformat."', date_shortformat='".$datesformat."', time_format='".$timeformat."' where id='".$item."'";
 	$db->db_query($req);
 
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+	}
+
+function siteUpdate_bloc4($item, $workdays)
+	{
+	$db = & $GLOBALS['babDB'];
+	$req = "update ".BAB_SITES_TBL." set workdays='".implode(',',$workdays)."' where id='".$item."'";
+	$db->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
@@ -1169,45 +1244,59 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 	return;
 }
 
-if( isset($modify) && $modify=="bloc1")
+if (isset($_POST['modify']))
+{
+switch ($_POST['modify'])
 	{
-	if( !empty($Submit))
-		{
-		if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter), $adminname))
-			$idx = "modify";
-		}
-	else if( !empty($delete))
-		{
-		$idx = "Delete";
-		}
+
+	case 'bloc1':
+		if( !empty($Submit))
+			{
+			if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter), $adminname))
+				$idx = "modify";
+			}
+		else if( !empty($delete))
+			{
+			$idx = "Delete";
+			}
+		break;
+
+	case 'bloc2':
+		if( !empty($Submit))
+			{
+			if(!siteUpdate_bloc2($item,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password,  $change_password, $change_nickname, $name_order, $user_workdays))
+				$idx = "modify";
+			}
+		break;
+
+	case 'bloc3':
+		if( !empty($Submit))
+			{
+			if(!siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat))
+				$idx = "modify";
+			}
+		break;
+
+	case 'bloc4':
+		siteUpdate_bloc4($_POST['item'], $_POST['workdays']);
+
+		break;
+
+
+	case 'auth':
+		if( !empty($Submit))
+			{
+			if( !isset($passtype)) { $passtype='text';}
+			if( !isset($ldpapchkcnx)) { $ldpapchkcnx='N';}
+			if(!siteUpdate_authentification($item, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype))
+				$idx = "auth";
+			}
+		break;
 	}
-elseif( isset($modify) && $modify=="bloc2")
-	{
-	if( !empty($Submit))
-		{
-		if(!siteUpdate_bloc2($item,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password,  $change_password, $change_nickname, $name_order))
-			$idx = "modify";
-		}
-	}
-elseif( isset($modify) && $modify=="bloc3")
-	{
-	if( !empty($Submit))
-		{
-		if(!siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat))
-			$idx = "modify";
-		}
-	}
-elseif( isset($modify) && $modify =="auth")
-	{
-	if( !empty($Submit))
-		{
-		if( !isset($passtype)) { $passtype='text';}
-		if( !isset($ldpapchkcnx)) { $ldpapchkcnx='N';}
-		if(!siteUpdate_authentification($item, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype))
-			$idx = "auth";
-		}
-	}
-elseif( isset($update) )
+}
+
+
+if( isset($update) )
 	{
 	if( $update == "updisc" )
 		{

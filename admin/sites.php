@@ -194,6 +194,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
 			$this->user_diskspace_title = bab_translate("File manager max user directory size");
 			$this->total_diskspace_title = bab_translate("File manager max total size");
+			$this->user_workdays_title = bab_translate("User can modifiy his working days");
 
 
 			$this->dbvalue = $GLOBALS['HTTP_POST_VARS'];
@@ -460,7 +461,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname)
+function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname, $user_workdays)
 	{
 	global $babBody;
 	if( empty($name))
@@ -518,7 +519,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 			{
 			$imgsize = 50;
 			}
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, registration, mailfunc, smtpserver, smtpport, imgsize, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '". $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."')";
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, registration, mailfunc, smtpserver, smtpport, imgsize, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order, user_workdays) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '". $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."' , '".$user_workdays."')";
 		$db->db_query($query);
 		$idsite = $db->db_insert_id();
 		$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
@@ -988,7 +989,7 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname))
+	if(!siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname, $user_workdays))
 		$idx = "create";
 	}
 	

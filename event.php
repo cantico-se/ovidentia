@@ -1134,11 +1134,11 @@ function eventAvariabilityCheck(&$avariability_message)
 	$starttime_sec = 0;
 	$endtime_sec = 3600*24;
 
-	$res = $db->db_query("SELECT c.id,o.work_days, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$calid).") AND o.id_user = c.owner AND c.type='1'");
+	$res = $db->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$calid).") AND o.id_user = c.owner AND c.type='1'");
 
 	while ($arr = $db->db_fetch_array($res))
 		{
-		$calopt[$arr['id']] = explode( ',', $arr['work_days'] );
+		$calopt[$arr['id']] = explode( ',', $arr['workdays'] );
 		$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
 		
 		$s = time_to_sec($arr['start_time']);

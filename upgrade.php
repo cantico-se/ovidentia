@@ -4251,6 +4251,28 @@ if( !$res)
 	return $ret;
 	}
 
+$res = $db->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` CHANGE `work_days` `dispdays` VARCHAR( 20 ) NOT NULL");
+$res = $db->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD `workdays` VARCHAR( 20 ) NOT NULL");
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CAL_USER_OPTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$res = $db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `workdays` VARCHAR( 20 ) DEFAULT '1,2,3,4,5' NOT NULL");
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$res = $db->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `user_workdays` ENUM( 'Y', 'N' ) DEFAULT 'Y' NOT NULL");
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 

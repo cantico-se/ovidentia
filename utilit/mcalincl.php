@@ -793,7 +793,7 @@ if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 		}
 	else
 		{
-		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->icalendars->user_calendarids."')");
+		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, workdays, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->icalendars->user_calendarids."')");
 		}
 	}
 
@@ -889,11 +889,11 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			$starttime_sec = 0;
 			$endtime_sec = 3600*24;
 
-			$res = $db->db_query("SELECT c.id,o.work_days, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$this->idcals).") AND o.id_user = c.owner AND c.type='1'");
+			$res = $db->db_query("SELECT c.id,o.workdays, o.start_time, o.end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." o, ".BAB_CALENDAR_TBL." c WHERE c.id IN(".implode(',',$this->idcals).") AND o.id_user = c.owner AND c.type='1'");
 
 			while ($arr = $db->db_fetch_array($res))
 				{
-				$calopt[$arr['id']] = explode( ',', $arr['work_days'] );
+				$calopt[$arr['id']] = explode( ',', $arr['workdays'] );
 				$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
 				
 				$s = time_to_sec($arr['start_time']);

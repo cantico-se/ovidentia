@@ -546,3 +546,34 @@ document.forms.regsetform[edit].value = obj.value;
 </form>
 <br>
 <!--#end regionalsettings -->
+
+
+<!--#begin workdays -->
+<form name="workdays" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="options">
+<input type="hidden" name="update" value="workdays">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+		<tr>
+			<td style="padding:.5em 20%; text-align:left">
+			<dl>
+				<dt><h5>{ t_workdays }</h5><dt>
+				<!--#in getnextshortday -->
+				<dd ><input  type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label></dd>
+				<!--#endin getnextshortday -->
+			</dl>
+			<br />
+			<div align="center">
+				<input type="submit" value="{ t_submit }" />
+				</div>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end workdays -->

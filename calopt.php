@@ -318,7 +318,8 @@ function calendarOptions($calid, $urla)
 			global $BAB_SESS_USERID;
 			$this->calid = $calid;
 			$this->urla = $urla;
-			$this->calweekworktxt = bab_translate("Days to display");
+			$this->calweekdisptxt = bab_translate("Days to display");
+			$this->calweekworktxt = bab_translate("Working days");
 			$this->caloptionstxt = bab_translate("Calendar options");
 			$this->startdaytxt = bab_translate("First day of week");
 			$this->starttimetxt = bab_translate("Start time");
@@ -359,11 +360,20 @@ function calendarOptions($calid, $urla)
 				$this->arr['elapstime'] = 60;
 				}
 
-			if( empty($this->arr['work_days']))
+			if( empty($this->arr['dispdays']))
 				{
-				$this->arr['work_days'] = "1,2,3,4,5";
+				$this->arr['dispdays'] = "1,2,3,4,5";
 				}
-			$this->workdays = explode(',', $this->arr['work_days']);
+
+			$this->dispdays = explode(',', $this->arr['dispdays']);
+
+			if( empty($this->arr['workdays']))
+				{
+				$this->arr['workdays'] = $GLOBALS['babBody']->icalendars->workdays;
+				}
+
+			$this->workdays = explode(',', $this->arr['workdays']);
+
 			$this->sttime = $this->arr['start_time'];
 			}
 
@@ -374,10 +384,9 @@ function calendarOptions($calid, $urla)
 			static $i = 0;
 			if( $i < 7 )
 				{
-				if( in_array($i, $this->workdays))
-					$this->selected = "checked";
-				else
-					$this->selected = "";
+				$this->disp_selected = in_array($i, $this->dispdays) ? "checked" : "";
+				$this->work_selected = in_array($i, $this->workdays) ? "checked" : "";
+
 				$this->dayid = $i;
 				$this->shortday = $babDays[$i];
 				$i++;
@@ -567,19 +576,15 @@ function unload()
 
 	}
 
-function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $dispdays, $workdays)
 	{
 	global $BAB_SESS_USERID;
-	$db = $GLOBALS['babDB'];
+	$db = & $GLOBALS['babDB'];
 
-	if( count($workdays) == 0 )
-		{
-		$workdays = "1,2,3,4,5";
-		}
-	else
-		{
-		$workdays = implode(',', $workdays);
-		}
+
+	$dispdays = ( count($dispdays) > 0 ) ? implode(',', $dispdays) : "1,2,3,4,5" ;
+	$workdays = ( count($workdays) > 0 ) ? implode(',', $workdays) : "" ;
+
 
 	if( $starttime > $endtime )
 		{
@@ -592,12 +597,12 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$req = "update ".BAB_CAL_USER_OPTIONS_TBL." set startday='".$startday."', allday='".$allday."', start_time='".$starttime."', end_time='".$endtime."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', work_days='".$workdays."', week_numbers='Y' where id_user='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_CAL_USER_OPTIONS_TBL." set startday='".$startday."', allday='".$allday."', start_time='".$starttime."', end_time='".$endtime."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', dispdays='".$dispdays."', workdays='".$workdays."', week_numbers='Y' where id_user='".$BAB_SESS_USERID."'";
 		}
 	else
 		{
-		$req = "insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers) values ";
-		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$starttime."', '".$endtime."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$workdays."', 'Y')";
+		$req = "insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, dispdays, workdays, week_numbers) values ";
+		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$starttime."', '".$endtime."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$dispdays."', '".$workdays."', 'Y')";
 		}
 	$res = $db->db_query($req);
 	}
@@ -622,9 +627,13 @@ if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERI
 	updateAccessUsers($users, $idcal, $urla);
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
-	if( !isset($workdays)) { $workdays = array();}
-	updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays);
+	$dispdays = isset($_POST['dispdays']) ? $_POST['dispdays'] : array();
+	$workdays = isset($_POST['workdays']) ? $_POST['workdays'] : array();
+
+	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $dispdays, $workdays );
 	}
+
+$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 
 switch($idx)
 	{
@@ -662,8 +671,8 @@ switch($idx)
 		if( $idcal != 0 )
 		{
 			accessCalendar($idcal, $urla);
-			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
-			$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
+			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
+			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
 			if( isset($urla) && !empty($urla) )
 				{
 				$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
@@ -674,15 +683,20 @@ switch($idx)
 		break;
 	default:
 	case "options":
-		$babBody->title = bab_translate("Calendar Options");
+		$babBody->title = bab_translate("Calendar an Vacations Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
+
+		calendarOptions($idcal, $urla);
+
+		
+		$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 		{
-			calendarOptions($idcal, $urla);
-			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+			
 			if( $idcal != 0 )
 				{
-				$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));
+				$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));
 				}
 			if( isset($urla) && !empty($urla) )
 				{

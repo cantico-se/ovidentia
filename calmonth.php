@@ -36,7 +36,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 		
 		$this->w = 0;
 
-		$workdays = explode(',', $babBody->icalendars->workdays);
+		$dispdays = explode(',', $babBody->icalendars->dispdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
 		$this->totaldays = date("t", $time);
@@ -49,7 +49,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$a = $i + $babBody->icalendars->startday;
 			if( $a > 6)
 				$a -=  7;
-			if( in_array($a, $workdays ))
+			if( in_array($a, $dispdays ))
 				{
 				$this->workdays[] = $a;
 				$this->dworkdays[$a] = $i - $b +1;

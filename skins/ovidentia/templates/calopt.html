@@ -12,19 +12,28 @@
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
-	<tr > 
-		<td align="center">
-		<dl style="text-align:left;width:50%">
+	<tr valign="top"> 
+		<td>
+		<dl>
 			<dt><h5>{ calweekworktxt }</h5><dt>
 			<!--#in getnextshortday -->
-			<dd ><input  type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { selected } /><label for="{ dayid }">{ shortday }</label></dd>
+			<dd ><input  type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { work_selected } /><label for="{ dayid }">{ shortday }</label></dd>
+			<!--#endin getnextshortday -->
+		</dl>
+		</td>
+
+		<td>
+		<dl>
+			<dt><h5>{ calweekdisptxt }</h5><dt>
+			<!--#in getnextshortday -->
+			<dd ><input  type="checkbox" name="dispdays[]" id="{ dayid }" value="{ dayid }"  { disp_selected } /><label for="{ dayid }">{ shortday }</label></dd>
 			<!--#endin getnextshortday -->
 		</dl>
 		</td>
 	</tr>
 
 	<tr align="center"> 
-		<td>
+		<td colspan="2">
 			<table border="1" cellspacing="0" cellpadding="5" >
 				<tr align="center">
 				<td nowrap>{ startdaytxt }</td>

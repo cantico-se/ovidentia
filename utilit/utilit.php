@@ -2154,6 +2154,8 @@ function bab_updateUserSettings()
 				$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ;
 				}
 
+			
+
 			$babBody->lastlog = $arr['lastlog'];
 
 			if( count($babBody->topview) > 0 )

@@ -679,6 +679,7 @@ function changeProfiles()
 		}
 }
 
+
 function userChangePassword($oldpwd, $newpwd)
 	{
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
@@ -719,6 +720,9 @@ function userChangePassword($oldpwd, $newpwd)
 			}
 		}
 	}
+
+
+
 
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
@@ -891,6 +895,8 @@ function updateRegionalSettings($datelformat, $datesformat, $timeformat)
 	return true;
 }
 
+
+
 function updateProfiles()
 {
 	global $babBody, $babDB;
@@ -956,6 +962,8 @@ function updateProfiles()
 	}
 	return true;
 }
+
+
 
 /* main */
 if(!isset($idx))
@@ -1076,9 +1084,9 @@ switch($idx)
 	case "changePasswordUnload":
 		changePasswordUnload($msg);
 		break;
+
 	case "global":
 	default:
-		
 		$babBody->title = bab_translate("Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( !isset($nickname)) { $nickname = ""; }
@@ -1090,7 +1098,7 @@ switch($idx)
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 			{
-			$babBody->addItemMenu("calendar", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+			$babBody->addItemMenu("calendar", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 			}
 		if( bab_mailAccessLevel())
 			{

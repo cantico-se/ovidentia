@@ -800,6 +800,8 @@ CREATE TABLE `bab_sites` (
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',
   `stat_update_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `workdays` varchar(20) NOT NULL default '',
+  `user_workdays` enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -2152,7 +2154,8 @@ CREATE TABLE bab_cal_user_options (
   usebgcolor enum('Y','N') NOT NULL default 'Y',
   elapstime tinyint(2) unsigned NOT NULL default '30',
   defaultview tinyint(3) NOT NULL default '0',
-  work_days varchar(20) NOT NULL default '',
+  workdays varchar(20) NOT NULL default '',
+  dispdays varchar(20) NOT NULL default '',
   start_time time default NULL,
   end_time time default NULL,
   user_calendarids varchar(255) NOT NULL default '',
