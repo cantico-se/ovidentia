@@ -801,14 +801,16 @@ switch($tg)
 			{
 			$db = $GLOBALS['babDB'];
 			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr[1]))
-				{								// paul ajout version
+				{
 				$res = $db->db_query("select title,version from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
 				if( $res && $db->db_num_rows($res) > 0)
 					{
 					$row = $db->db_fetch_array($res);
-					// paul
-					$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-					if ($arr_ini['version'] == $row['version'])
+					$acces =false;
+					if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+					else $acces =true;
+					if (($arr_ini['version'] == $row['version']) || $acces)
 						{
 						$incl = "addons/".$row['title'];
 						if( is_dir( $GLOBALS['babInstallPath'].$incl))
