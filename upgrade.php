@@ -3770,7 +3770,7 @@ $db->db_query("ALTER TABLE ".BAB_CAL_CATEGORIES_TBL." DROP id_group");
 $res = $db->db_query("select * from ".BAB_CALOPTIONS_TBL."");
 while( $arr = $db->db_fetch_array($res))
 	{
-	$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers) values " "('".$arr['id_user']."', '".$arr['startday']."', '".$arr['allday']."', '08:00:00', '18:00:00', '".$arr['usebgcolor']."', '".$arr['elapstime']."', '".$arr['defaultview']."', '1,2,3,4,5', 'N')");
+	$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers) values ('".$arr['id_user']."', '".$arr['startday']."', '".$arr['allday']."', '08:00:00', '18:00:00', '".$arr['usebgcolor']."', '".$arr['elapstime']."', '".$arr['defaultview']."', '1,2,3,4,5', 'N')");
 	}
 
 $db->db_query("DROP table ".BAB_CALOPTIONS_TBL."");
