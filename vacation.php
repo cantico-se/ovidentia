@@ -1,4 +1,9 @@
 <?php
+/************************************************************************
+ * Ovidentia                                                            *
+ ************************************************************************
+ * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
+ ***********************************************************************/
 include $babInstallPath."utilit/vacincl.php";
 
 function getApproverEmail($userid, $order)

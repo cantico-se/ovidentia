@@ -1,4 +1,9 @@
 <?php
+/************************************************************************
+ * Ovidentia                                                            *
+ ************************************************************************
+ * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
+ ***********************************************************************/
 
 function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
 	{

@@ -1,4 +1,9 @@
 <?php
+/************************************************************************
+ * Ovidentia                                                            *
+ ************************************************************************
+ * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
+ ***********************************************************************/
 include $babInstallPath."utilit/forumincl.php";
 
 function listThreads($forum, $active, $pos)

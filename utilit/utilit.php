@@ -1,4 +1,9 @@
 <?php
+/************************************************************************
+ * Ovidentia                                                            *
+ ************************************************************************
+ * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
+ ***********************************************************************/
 include $babInstallPath."utilit/dbutil.php";
 include $babInstallPath."utilit/uiutil.php";
 include $babInstallPath."utilit/template.php";
