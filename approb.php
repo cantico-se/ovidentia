@@ -506,7 +506,7 @@ function listWaitingAddons()
 						{
 						$this->_setGlobals($row['id'],$row['title']);
 						require_once( $addonpath."/init.php" );
-
+						
 						if( function_exists($this->call) )
 							{
 							$this->arrAddons[$row['id']] = $row['title'];
@@ -527,22 +527,20 @@ function listWaitingAddons()
 			$GLOBALS['babAddonHtmlPath'] = "addons/".$title."/";
 			$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$title."/";
 
-			$this->call = $title."_getWaitingItem";
+			$this->call = $title."_getWaitingItems";
 			}
 
 		function getnextaddon()
 			{
-			$this->addonTitle = ''; 
-			$this->url = ''; 
-			$this->text = ''; 
-			$this->description = '';
+			$this->addonTitle = '';
+			$this->arr = array();
 			
-			
+
 			if (list($this->addonId, $title) = each($this->arrAddons))
 				{
 				$this->_setGlobals($this->addonId,$title);
-				call_user_func_array($this->call, array(&$this->addonTitle, &$this->url, &$this->text, &$this->description));
-				$this->firstcall = true;
+				call_user_func_array($this->call, array(&$this->addonTitle, &$this->arr));
+				
 				return true;
 				}
 			return false;
@@ -551,19 +549,7 @@ function listWaitingAddons()
 		function getnextitem()
 			{
 			$this->altbg = !$this->altbg;
-			if ($this->firstcall)
-				{
-				
-				$this->firstcall = false;
-				return true;
-				}
-
-			//$this->addonTitle = ''; 
-			$this->url = ''; 
-			$this->text = ''; 
-			$this->description = '';
-
-			return call_user_func_array($this->call, array(&$this->addonTitle, &$this->url, &$this->text, &$this->description));
+			return list( , list($this->text, $this->description, $this->url, $this->popup )) = each($this->arr);
 			}
 		}
 	
@@ -1106,7 +1092,7 @@ switch($idx)
 	default:
 		$babBody->title = bab_translate("Approbations");
 
-		if( $babBody->waitapprobations  || count($approbinit) > 0 )
+		if( bab_isWaitingApprobations()  || count($approbinit) > 0 )
 		{
 		listWaitingArticles();
 		listWaitingComments();
