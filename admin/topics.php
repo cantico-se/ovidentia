@@ -92,6 +92,8 @@ function listCategories($adminid)
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
 				$this->urlarticles = $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$this->arr['id'];
+				if( $this->adminid == 0)
+					$this->urlarticles = $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$this->arr['id']."&userid=".$GLOBALS['BAB_SESS_USERID'];
 				$i++;
 				return true;
 				}
@@ -141,6 +143,10 @@ function saveCategory($category, $description, $approver)
 
 /* main */
 $adminid = isUserAdministrator();
+if(isset($userid))
+	{
+	$adminid = 0;
+	}
 
 if(!isset($idx))
 	{

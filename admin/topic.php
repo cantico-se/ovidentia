@@ -7,7 +7,7 @@
 include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function listArticles($id)
+function listArticles($id, $userid)
 	{
 	global $body;
 
@@ -32,8 +32,9 @@ function listArticles($id)
 		var $bhomepage1;
 		var $addtohome;
 		var $siteid;
+		var $userid;
 
-		function temp($id)
+		function temp($id, $userid)
 			{
 			$this->titlename = babTranslate("Title");
 			$this->uncheckall = babTranslate("Uncheck all");
@@ -42,6 +43,7 @@ function listArticles($id)
 			$this->homepage1 = babTranslate("Registered users home page");
 			$this->deletea = babTranslate("Delete");
 
+			$this->userid = $userid;
 			$this->item = $id;
 			$this->db = new db_mysql();
 			$req = "select * from articles where id_topic='$id' order by date desc";
@@ -83,11 +85,11 @@ function listArticles($id)
 		
 		}
 
-	$temp = new temp($id);
+	$temp = new temp($id, $userid);
 	$body->babecho(	babPrintTemplate($temp,"topics.html", "articleslist"));
 	}
 
-function deleteArticles($art, $item)
+function deleteArticles($art, $item, $userid)
 	{
 	global $body, $idx;
 
@@ -101,7 +103,7 @@ function deleteArticles($art, $item)
 		var $yes;
 		var $no;
 
-		function tempa($art, $item)
+		function tempa($art, $item, $userid)
 			{
 			global $BAB_SESS_USERID;
 			$this->message = babTranslate("Are you sure you want to delete those articles");
@@ -122,9 +124,9 @@ function deleteArticles($art, $item)
 					$items .= ",";
 				}
 			$this->warning = babTranslate("WARNING: This operation will delete articles and their comments"). "!";
-			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=topic&idx=Deletea&item=".$item."&action=Yes&items=".$items;
+			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=topic&idx=Deletea&item=".$item."&action=Yes&items=".$items."&userid=".$userid;
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$item;
+			$this->urlno = $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$item."&userid=".$userid;
 			$this->no = babTranslate("No");
 			}
 		}
@@ -132,11 +134,11 @@ function deleteArticles($art, $item)
 	if( count($item) <= 0)
 		{
 		$body->msgerror = babTranslate("Please select at least one item");
-		listArticles($item);
+		listArticles($item, $userid);
 		$idx = "Articles";
 		return;
 		}
-	$tempa = new tempa($art, $item);
+	$tempa = new tempa($art, $item, $userid);
 	$body->babecho(	babPrintTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
@@ -377,12 +379,12 @@ if( isset($action) && $action == "Yes")
 	if( $idx == "Delete" && $adminid > 0 )
 		{
 		confirmDeleteCategory($category);
-		Header("Location: index.php?tg=topics&idx=list");
+		Header("Location: index.php?tg=topics&idx=list&userid=".$userid);
 		}
 	else if( $idx == "Deletea")
 		{
 		confirmDeleteArticles($items);
-		Header("Location: index.php?tg=topic&idx=Articles&item=".$item);
+		Header("Location: index.php?tg=topic&idx=Articles&item=".$item."&userid=".$userid);
 		}
 	}
 
@@ -393,19 +395,22 @@ switch($idx)
 		exit;
 	case "deletea":
 		$body->title = babTranslate("Delete articles");
-		deleteArticles($art, $item);
+		deleteArticles($art, $item, $userid);
 		if( $adminid > 0)
 		{
-		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list");
+		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&userid=".$userid);
 		}
-		$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$item);
+		$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$item."&userid=".$userid);
 		$body->addItemMenu("deletea", babTranslate("Delete"), "javascript:(submitForm('deletea'))");
 		break;
 
 	case "Articles":
 		$body->title = babTranslate("List of articles").": ".getCategoryTitle($item);
-		listArticles($item);
-		if( $adminid > 0)
+		listArticles($item, $userid);
+		if( isset($userid) && !empty($userid))
+		{
+			$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&userid=".$GLOBALS['BAB_SESS_USERID']);
+		} else if( $adminid > 0 )
 		{
 		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list");
 		}
