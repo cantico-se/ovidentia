@@ -38,7 +38,8 @@ HTMLArea.I18N = {
 		redo:			"Terug uitvoeren",
 		babarticle:		"Ovidentia Article link",
 		babfaq:			"Ovidentia FAQ link",
-		babovml:		"Ovidentia OVML link"
+		babovml:		"Ovidentia OVML link",
+		babcontdir:		"Ovidentia Contacts, directory"
 	}
 };
 

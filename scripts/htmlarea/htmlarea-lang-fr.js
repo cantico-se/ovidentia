@@ -38,7 +38,8 @@ HTMLArea.I18N = {
 		redo:			"Rétablir",
 		babarticle:		"Lien d'article Ovidentia",
 		babfaq:			"Lien de FAQ Ovidentia",
-		babovml:		"Lien OVML Ovidentia"
+		babovml:		"Lien OVML Ovidentia",
+		babcontdir:		"Contacts et annuaire Ovidentia"
 	},
 	formatblock : {
 		"Titre 1": "h1",
