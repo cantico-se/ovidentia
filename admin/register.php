@@ -141,7 +141,7 @@ function addUser( $nickname, $password1, $password2, $badmin)
 	global $babBody;
 	if( empty($password1) || empty($password2))
 		{
-		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		$babBody->msgerror = bab_translate( "Passwords not match !!");
 		return false;
 		}
 	if( $password1 != $password2)
@@ -200,21 +200,21 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 	{
 	global $BAB_HASH_VAR, $babBody, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
 
-	if( empty($firstname) && empty($lastname))
+	if( empty($firstname) )
 		{
-		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		$babBody->msgerror = bab_translate( "Firstname is required");
 		return false;
 		}
 
-	if ( empty($nickname) || strpos($nickname, ' ') !== false )
+	if( empty($firstname) && empty($lastname))
 		{
-		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
+		$babBody->msgerror = bab_translate( "Lastname is required");
 		return false;
 		}
 
 	if( empty($password1) || empty($password2))
 		{
-		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		$babBody->msgerror = bab_translate( "Passwords not match !!");
 		return false;
 		}
 	if( $password1 != $password2)
@@ -222,12 +222,13 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return;
 		}
+	/* removed by NA 01/10/2004 Version 5.4.4
 	if ( strlen($password1) < 6 )
 		{
 		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return false;
 		}
-
+	*/
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
 	$res = $db->db_query($query);

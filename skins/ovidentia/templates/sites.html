@@ -1104,16 +1104,29 @@ function hideShowCnx()
 	var sf = document.forms.formsiteauth;
 	var obj1 = document.getElementById('ldpapchkcnxid');
 	var obj2 = document.getElementById('ldpaptxtcnxid');
+	var obj3 = document.getElementById('ldpapdomainnameid');
+	var obj4 = document.getElementById('tdfieldid0');
 
 	if( sf.authtype[sf.authtype.selectedIndex].value == 0 )
 	{
 	if (obj1.style.display == '') obj1.style.display = 'none';
 	if (obj2.style.display == '') obj2.style.display = 'none';
+	if (obj3.style.display == '') obj3.style.display = 'none';
+	if (obj4.style.display == 'none') obj4.style.display = '';
+	}
+	else if( sf.authtype[sf.authtype.selectedIndex].value == 1 )
+	{
+	if (obj1.style.display == 'none') obj1.style.display = '';
+	if (obj2.style.display == 'none') obj2.style.display = '';
+	if (obj3.style.display == '') obj3.style.display = 'none';
+	if (obj4.style.display == 'none') obj4.style.display = '';
 	}
 	else
 	{
 	if (obj1.style.display == 'none') obj1.style.display = '';
 	if (obj2.style.display == 'none') obj2.style.display = '';
+	if (obj3.style.display == 'none') obj3.style.display = '';
+	if (obj4.style.display == '') obj4.style.display = 'none';
 	}
 	}
 //-->
@@ -1150,28 +1163,10 @@ function hideShowCnx()
 		<input type="text" name="host" size="50" value="{ ldaphost }" />
 		</td>
 	</tr>
-	<tr> 
-		<td align="right" nowrap>{ basedntxt }</td>
+	<tr id="ldpapdomainnameid"> 
+		<td align="right" nowrap>{ domainnametxt }&nbsp;<span style="color:red">*</span></td>
 		<td>
-		<input type="text" name="basedn" size="50" value="{ ldapbasednsite }" />
-		</td>
-	</tr>
-	<tr> 
-		<td align="right" nowrap>{ userdntxt }</td>
-		<td>
-		<input type="text" name="userdn" size="50" value="{ ldapuserdnsite }" />
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ authpasstxt }</td>
-		<td>
-		<input type="password" name="ldappass1" size="30" value="{ ldappasssite }" />
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ authpassconftxt }</td>
-		<td>
-		<input type="password" name="ldappass2" size="30" value="{ ldappasssite }" />
+		<input type="text" name="hostname" size="50" value="{ ldaphostname }" />
 		</td>
 	</tr>
 	<tr> 
@@ -1181,7 +1176,7 @@ function hideShowCnx()
 		</td>
 	</tr>
 	<!--#in getnextfield -->
-	<tr> 
+	<tr id="tdfieldid{ iindex }"> 
 		<td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span style="color:red">*</span><!--#endif required -->&nbsp;&nbsp;</td>
 		<td>
 		<select name="{ ofieldv }">
@@ -1204,6 +1199,11 @@ function hideShowCnx()
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+<!--
+hideShowCnx();
+//-->
+</script>
 <!--#endif showform -->
 <!--#end siteauthentification -->
 

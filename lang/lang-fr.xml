@@ -1635,4 +1635,6 @@
 <string id="Can't create forums directory in">Impossible de créer le répertoire forums dans</string>
 <string id="Non-working day">Jour non travaillé</string>
 <string id="Invalid date">Date invalide</string>
+<string id="Firstname is required">Le prénom est obligatoire</string>
+<string id="Lastname is required">Le nom est obligatoire</string>
 </fr>

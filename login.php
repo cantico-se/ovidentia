@@ -513,8 +513,7 @@ function userLogin($nickname,$password)
 		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
 		return false;
 		}
-
-	if( isset($babBody->babsite['authentification']) && $babBody->babsite['authentification'] == 1 )
+	if( isset($babBody->babsite['authentification']) && $babBody->babsite['authentification'] != 0 )
 		{
 		// ldap authentification
 		include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
@@ -575,16 +574,36 @@ function userLogin($nickname,$password)
 				{
 				$attributes[] = "givenname";
 				}
-
-			$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))", $attributes);
-
-			if( $entries === false )
+			switch($babBody->babsite['authentification'])
 				{
-				$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
-				$logok = false;
+				case '2': // Active Directory
+					$ret = $ldap->bind($nickname."@".$babBody->babsite['ldap_domainname'], $password);
+					if( !$ret )
+						{
+						$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+						$logok = false;
+						}
+					else
+						{
+						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(samaccountname=".$nickname."))", $attributes);
+						}
+					break;
+				default:
+					$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))", $attributes);
+
+					if( $entries !== false )
+						{
+						$ret = $ldap->bind($entries[0]['dn'], $password);
+						if( !$ret )
+							{
+							$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+							$logok = false;
+							}
+						}
+					break;
 				}
 
-			if( is_array($entries) && !isset($entries[0]['dn']) )
+			if( !isset($entries) || $entries === false )
 				{
 				$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
 				$logok = false;
@@ -592,40 +611,30 @@ function userLogin($nickname,$password)
 
 			if( $logok )
 				{
-				$ret = $ldap->bind($entries[0]['dn'], $password);
-				if( !$ret )
+				$req = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";
+				$res=$db->db_query($req);
+				if( $res && $db->db_num_rows($res) > 0 )
 					{
-					$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
-					$logok = false;
+					$arruser = $db->db_fetch_array($res);
+					$iduser = $arruser['id'];
+					if( $arruser['disabled'] == '1')
+						{
+						$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
+						return false;
+						}
 					}
-
-				if( $ret )
+				else
 					{
-					$req = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";
-					$res=$db->db_query($req);
-					if( $res && $db->db_num_rows($res) > 0 )
+					$givenname = isset($updattributes['givenname'])?$entries[0][$updattributes['givenname']][0]:$entries[0]['givenname'][0];
+					$sn = isset($updattributes['sn'])?$entries[0][$updattributes['sn']][0]:$entries[0]['sn'][0];
+					$mn = isset($updattributes['mn'])?$entries[0][$updattributes['mn']][0]:'';
+					$mail = isset($updattributes['email'])?$entries[0][$updattributes['email']][0]:$entries[0]['mail'][0];
+					$iduser = registerUser(utf8_decode($givenname), utf8_decode($sn), utf8_decode($mn), utf8_decode($mail),$nickname, $password, $password, true);
+					if( $iduser === false )
 						{
-						$arruser = $db->db_fetch_array($res);
-						$iduser = $arruser['id'];
-						if( $arruser['disabled'] == '1')
-							{
-							$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
-							return false;
-							}
+						return false;
 						}
-					else
-						{
-						$givenname = isset($updattributes['givenname'])?$entries[0][$updattributes['givenname']][0]:$entries[0]['givenname'][0];
-						$sn = isset($updattributes['sn'])?$entries[0][$updattributes['sn']][0]:$entries[0]['sn'][0];
-						$mn = isset($updattributes['mn'])?$entries[0][$updattributes['mn']][0]:'';
-						$mail = isset($updattributes['email'])?$entries[0][$updattributes['email']][0]:$entries[0]['mail'][0];
-						$iduser = registerUser(utf8_decode($givenname), utf8_decode($sn), utf8_decode($mn), utf8_decode($mail),$nickname, $password, $password, true);
-						if( $iduser === false )
-							{
-							return false;
-							}
-						$arruser = $db->db_fetch_array($db->db_query("select * from ".BAB_USERS_TBL." where id='".$iduser."'"));
-						}
+					$arruser = $db->db_fetch_array($db->db_query("select * from ".BAB_USERS_TBL." where id='".$iduser."'"));
 					}
 				}
 			}

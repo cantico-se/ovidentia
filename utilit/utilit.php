@@ -2348,7 +2348,7 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 
-	$req="select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_password, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldap_password  from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
 	if ($babDB->db_num_rows($res) == 0)
 		{

@@ -179,7 +179,7 @@ function siteModify($id)
 			$this->langfiltertxt = bab_translate("Language filter");
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_password, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldappass  from ".BAB_SITES_TBL." where id='$id'";
+			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
@@ -546,7 +546,7 @@ function siteAuthentification($id)
 			global $bab_ldapAttributes;
 			$this->db = $GLOBALS['babDB'];
 			$this->id = $id;
-			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_password, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldappass  from ".BAB_SITES_TBL." where id='$id'";
+			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
@@ -555,25 +555,18 @@ function siteAuthentification($id)
 				$this->modify = bab_translate("Modify");
 				$this->authsite = $arr['authentification'];
 				$this->ldaphost = $arr['ldap_host'];
-				$this->ldappasssite = $arr['ldappass'];
-				$this->ldapbasednsite = $arr['ldap_basedn'];
-				$this->ldapuserdnsite = $arr['ldap_userdn'];
+				$this->ldaphostname = $arr['ldap_domainname'];
 				$this->ldapsearchdnsite = $arr['ldap_searchdn'];
 				$this->ldapattributesite = $arr['ldap_attribute'];
-				$this->ldappasstypesite = $arr['ldap_passwordtype'];
 
 				$this->authentificationtxt = bab_translate("Authentification");
-				$this->arrayauth = array(0 => "OVIDENTIA", 1 => "LDAP");
+				$this->arrayauth = array(0 => "OVIDENTIA", 1 => "LDAP", 2 => "ACTIVE DIRECTORY");
 
 				$this->fieldrequiredtxt = bab_translate("Those fields are required");
-				$this->authpasstxt = bab_translate("Password");
-				$this->authpassconftxt = bab_translate("Confirm");
+				$this->domainnametxt = bab_translate("Domain name");
 				$this->hosttxt = bab_translate("Host");
-				$this->basedntxt = bab_translate("Base DN");
-				$this->userdntxt = bab_translate("Bind DN");
 				$this->searchbasetxt = bab_translate("Search base");
 				$this->attributetxt = bab_translate("Attribute");
-				$this->authpasstypetxt = bab_translate("Password encryption type");
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
 				if( $arr['ldap_allowadmincnx']  == 'Y' )
 					{
@@ -632,6 +625,7 @@ function siteAuthentification($id)
 			static $i = 0;
 			if( $i < $this->countf)
 				{
+				$this->iindex = $i;
 				if( 0  == $i )
 					{
 					$this->ofieldname = bab_translate("Nickname");
@@ -1128,7 +1122,7 @@ function siteUpdate_bloc4($item)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
-function siteUpdate_authentification($id, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype)
+function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 	{
 	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname;
 
@@ -1138,16 +1132,13 @@ function siteUpdate_authentification($id, $authtype, $host, $ldpapchkcnx, $based
 		return false;
 		}
 
-	if( $ldappass1 != $ldappass2)
+	if( $authtype == 1 )
 		{
-		$babBody->msgerror = bab_translate("ERROR: Passwords not match !!");
-		return false;
-		}
-
-	if( (!isset($nickname) || empty($nickname)) && (!isset($i_nickname) || empty($i_nickname)))
-		{
-		$babBody->msgerror = bab_translate("You must provide a nickname");
-		return false;
+		if( (!isset($nickname) || empty($nickname)) && (!isset($i_nickname) || empty($i_nickname)))
+			{
+			$babBody->msgerror = bab_translate("You must provide a nickname");
+			return false;
+			}
 		}
 
 	$ldapattr = empty($nickname) ? $i_nickname: $nickname;
@@ -1155,13 +1146,7 @@ function siteUpdate_authentification($id, $authtype, $host, $ldpapchkcnx, $based
 	$db = $GLOBALS['babDB'];
 
 	$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
-	if( $authtype == 1 )
-		{
-		$req .= ", ldap_host='".$host."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_basedn='".$basedn."', ldap_userdn='".$userdn."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_passwordtype='".$passtype."'";
-		if( !empty($ldappass1) )
-			$req .= ", ldap_password=ENCODE(\"".$ldappass1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
-
-		}
+	$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."'";
 	$req .= " where id='".$id."'";
 	$db->db_query($req);
 
@@ -1311,9 +1296,9 @@ switch ($_POST['modify'])
 	case 'auth':
 		if( !empty($Submit))
 			{
-			if( !isset($passtype)) { $passtype='text';}
+			if( !isset($hostname)) { $hostname='';}
 			if( !isset($ldpapchkcnx)) { $ldpapchkcnx='N';}
-			if(!siteUpdate_authentification($item, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype))
+			if(!siteUpdate_authentification($item, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn))
 				$idx = "auth";
 			}
 		break;

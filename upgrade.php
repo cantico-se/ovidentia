@@ -4341,6 +4341,21 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE ".BAB_SITES_TBL." DROP ldap_basedn, DROP ldap_userdn, DROP ldap_password, DROP ldap_passwordtype";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `ldap_domainname` VARCHAR( 255 ) NOT NULL AFTER `ldap_host`";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 
 return $ret;
 }
