@@ -52,6 +52,8 @@ function listPosts($forum, $thread, $post)
 		var $altflattxt;
 		var $flaturl;
 		var $noflaturl;
+		var $brecent;
+		var $altrecentposts;
 
 		function temp($forum, $thread, $post)
 			{
@@ -61,6 +63,7 @@ function listPosts($forum, $thread, $post)
 			$this->date = bab_translate("Date");
 			$this->altnoflattxt = bab_translate("View thread as hierarchical list");
 			$this->altflattxt = bab_translate("View thread as flat list");
+			$this->altrecentposts = bab_translate("Recent posts");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->alternate = 0;
@@ -211,33 +214,36 @@ function listPosts($forum, $thread, $post)
 				$this->replydate = "";
 				$req = "select * from ".BAB_POSTS_TBL." where id='".$this->arrresult['id'][$i]."'";
 				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				//$this->replydate = bab_strftime(bab_mktime($arr['date']));
+				$tmp = explode(" ", $arr['date']);
+				$arr0 = explode("-", $tmp[0]);
+				$arr1 = explode(":", $tmp[1]);
+				$this->replydate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
+				$this->replyauthor = $arr['author'];
+				$this->replysubject = $arr['subject'];
+				$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".bab_getUserId( $arr['author'])."'");
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
-					$arr = $this->db->db_fetch_array($res);
-					//$this->replydate = bab_strftime(bab_mktime($arr['date']));
-					$tmp = explode(" ", $arr['date']);
-					$arr0 = explode("-", $tmp[0]);
-					$arr1 = explode(":", $tmp[1]);
-					$this->replydate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
-					$this->replyauthor = $arr['author'];
-					$this->replysubject = $arr['subject'];
-					$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".bab_getUserId( $arr['author'])."'");
-					if( $res && $this->db->db_num_rows($res) > 0)
-						{
-						$r = $this->db->db_fetch_array($res);
+					$r = $this->db->db_fetch_array($res);
 
-						$this->replymail = $r['email']."?subject=";
-						if( substr($arr['subject'], 0, 3) != "RE:")
-							$this->replymail .= "RE: ";
-						$this->replymail .= $arr['subject'];
-						}
-					else
-						$this->replymail = 0;
+					$this->replymail = $r['email']."?subject=";
+					if( substr($arr['subject'], 0, 3) != "RE:")
+						$this->replymail .= "RE: ";
+					$this->replymail .= $arr['subject'];
 					}
+				else
+					$this->replymail = 0;
 				if( $arr['confirmed'] == "N")
 					$this->confirmed = "C";
 				else
 					$this->confirmed = "";
+
+				if( mktime() - bab_mktime($arr['date']) <= 86400 )
+					$this->brecent = true;
+				else
+					$this->brecent = false;
+
 				
 				if( $this->alternate == 0)
 					$this->alternate = 1;
@@ -332,6 +338,8 @@ function listPostsFlat($forum, $thread, $open)
 		var $backtotoptxt;
 		var $replytxt;
 		var $breply;
+		var $brecent;
+		var $altrecentposts;
 
 
 		function temp($forum, $thread, $open)
@@ -345,6 +353,7 @@ function listPostsFlat($forum, $thread, $open)
 			$this->altflattxt = bab_translate("View thread as flat list");
 			$this->backtotoptxt = bab_translate("Back to top");
 			$this->replytxt = bab_translate("Reply");
+			$this->altrecentposts = bab_translate("Recent posts");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->alternate = 0;
@@ -389,6 +398,11 @@ function listPostsFlat($forum, $thread, $open)
 				$this->postsubject = $arr['subject'];
 				$this->postmessage = bab_replace($arr['message']);
 				$this->more = "";
+
+				if( mktime() - bab_mktime($arr['date']) <= 86400 )
+					$this->brecent = true;
+				else
+					$this->brecent = false;
 
 				$dateupdate = bab_mktime($arr['dateupdate']);
 				if(  $arr['confirmed'] == "Y" && $dateupdate > 0)

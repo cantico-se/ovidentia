@@ -367,8 +367,8 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 <a class="BabForumTopicsNavContribution" href="{ replysubjecturl }"><IMG src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }"></a>
 <!--#endif current -->
     <!--#else confirmed -->
-    &nbsp;
-    <!--#endif confirmed -->
+<!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><!--#else brecent -->&nbsp;<!--#endif brecent -->
+<!--#endif confirmed -->
   </td>
 <td>
 <table class="BabForumTopicsNavTreeBody" cellspacing="0" cellpadding="0" border="0">
@@ -380,7 +380,8 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 <!--#else current -->
 <a class="BabForumTopicsNavContribution" href="{ replysubjecturl }"><IMG src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }"></a>
 <!--#endif current -->
-<!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
+<!--#else confirmed --><!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><!--#else brecent -->&nbsp;<!--#endif brecent -->
+<!--#endif confirmed --></td>
 <td>
 <table cellspacing="0" cellpadding="0" border="0">
 <!--#endif alternate -->
@@ -435,6 +436,7 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
       <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
         <tr valign="middle"> 
           <td class="BabForumTopicsNavTitle">
+<!--#if what "!= N" --><!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><!--#else brecent -->&nbsp;<!--#endif brecent --><!--#endif what -->
 <!--#if breply -->
 { postsubject }&nbsp;&nbsp;<a class="BabForumTopicsNavContribution" href="{ replysubjecturl }">[{ replytxt }]</a>
 <!--#else breply -->
