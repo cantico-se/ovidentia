@@ -33,12 +33,12 @@ function nbronline()
 			$this->res1 = $this->db->db_query("select * from bab_users_log where id_user = 0");
 			$this->nbranonymoussession = $this->db->db_num_rows($this->res1);
 			//Traduction
-			$this->LoggedSession = bab_translate('Logged Session');
-			$this->AnonymousSession = bab_translate('Anonymous Session');
-			$this->FirstnameLastname = bab_translate('Firstname Lastname');
-			$this->PrivateIP = bab_translate('Private IP');
-			$this->PublicIP = bab_translate('Public IP');
-			$this->NotAvailable = bab_translate('Not Available');
+			$this->LoggedSession = bab_translate('Logged Session', $GLOBALS['babAddonFolder']);
+			$this->AnonymousSession = bab_translate('Anonymous Session', $GLOBALS['babAddonFolder']);
+			$this->FirstnameLastname = bab_translate('Firstname Lastname', $GLOBALS['babAddonFolder']);
+			$this->PrivateIP = bab_translate('Private IP', $GLOBALS['babAddonFolder']);
+			$this->PublicIP = bab_translate('Public IP', $GLOBALS['babAddonFolder']);
+			$this->NotAvailable = bab_translate('Not Available', $GLOBALS['babAddonFolder']);
 		}
 		
 
@@ -92,9 +92,10 @@ switch($idx)
 	
 	case "online":
 	default:
-		$babBody->title = bab_translate('User\'s online');
+		$babBody->title = bab_translate('User\'s online',
+$GLOBALS['babAddonFolder']);
 		nbronline();
-		$babBody->addItemMenu("online", bab_translate('Online'),  $GLOBALS['babAddonUrl']."main&idx=online");
+		$babBody->addItemMenu("online", bab_translate('Online', $GLOBALS['babAddonFolder']),  $GLOBALS['babAddonUrl']."main&idx=online");
 		break;
 
 }
