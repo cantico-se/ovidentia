@@ -491,7 +491,7 @@ function bab_getGroupName($id)
 		case 2:
 			return bab_translate("Unregistered users");
 		default:
-			return $babBody->ovgroups[$id]['name'];
+			return isset($babBody->ovgroups[$id]) ? $babBody->ovgroups[$id]['name'] : '';
 		}
 	}
 
