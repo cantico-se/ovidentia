@@ -289,7 +289,7 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	$res = $db->db_query($req);
 
 	if( $arr['notification'] == "Y" && ($email = bab_getUserEmail($arr['moderator'])) != "")
-	    notifyModerator($subject, $email, $name, $arr['name']);
+	    notifyModerator(stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
 	}
 
 function getClosedThreads($forum)

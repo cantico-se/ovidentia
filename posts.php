@@ -531,7 +531,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FORUMS_TBL." where id='".$forum."'"));
 	if( $arr['notification'] == "Y" && ($email = bab_getUserEmail($arr['moderator'])) != "")
 		{
-	    notifyModerator($subject, $email, $name, $arr['name']);
+	    notifyModerator(stripslashes($subject), stripslashes($email), stripslashes($name), $arr['name']);
 		}
 	}
 
