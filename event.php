@@ -778,7 +778,13 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		$body->msgerror = babTranslate("You must provide a title")." !!";
 		return false;
 		}
-	
+
+	if(!get_cfg_var("magic_quotes_gpc"))
+		{
+		$description = addslashes($description);
+		$title = addslashes($title);
+		}
+		
 	$db = new db_mysql();
 
 
@@ -925,7 +931,13 @@ function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebe
 		$body->msgerror = babTranslate("You must provide a title")." !!";
 		return;
 		}
-	
+
+	if(!get_cfg_var("magic_quotes_gpc"))
+		{
+		$description = addslashes($description);
+		$title = addslashes($title);
+		}
+		
 	$db = new db_mysql();
 
 	if( empty($category))
