@@ -1,0 +1,201 @@
+<!--#begin editorcont -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+
+function func(contid,txt)
+	{
+	window.opener.EditorOnInsertCont(contid,txt);
+	window.close();
+	}
+//-->
+</script>
+</HEAD>
+<BODY>
+<table border="0" width="100%" cellpadding="10" cellspacing="0" align="left" >
+<tr><td>
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
+<tr class="BabContentBackground">
+<td class="BabCategTitleNavigation">
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
+	<tr>
+	<!--#if contactif -->
+	<td class="BabMenuActiveBackground" width="50%">{ conttitle }</td>
+	<td class="BabMenuTabBackground" width="50%"><a class="BabMenuLink" href="{ dirurl }">{ dirtitle }</a></td>
+	<!--#else contactif -->
+	<td class="BabMenuTabBackground" width="50%"><a class="BabMenuLink" href="{ conturl }">{ conttitle }</a></td>
+	<td class="BabMenuActiveBackground" width="50%">{ dirtitle }</td>
+	<!--#endif contactif -->
+	</tr>
+</table>
+</td>
+</tr>
+	<td>&nbsp;</td>
+<tr>
+</tr>
+<!--#in getnext -->
+<tr>
+<td align="left">
+<a href="javascript: func({ contid },'{ js_title }');">{ title }</a>
+</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td></tr>
+</table>
+</BODY>
+</HTML>
+<!--#end editorcont -->
+
+<!--#begin dirlist -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY>
+<table border="0" width="100%" cellpadding="10" cellspacing="0" align="left" >
+<tr><td>
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
+<tr class="BabContentBackground">
+<td class="BabCategTitleNavigation">
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
+	<tr>
+	<!--#if contactif -->
+	<td class="BabMenuActiveBackground" width="50%">{ conttitle }</td>
+	<td class="BabMenuTabBackground" width="50%"><a class="BabMenuLink" href="{ dirurl }">{ dirtitle }</a></td>
+	<!--#else contactif -->
+	<td class="BabMenuTabBackground" width="50%"><a class="BabMenuLink" href="{ conturl }">{ conttitle }</a></td>
+	<td class="BabMenuActiveBackground" width="50%">{ dirtitle }</td>
+	<!--#endif contactif -->
+	</tr>
+</table>
+</td>
+</tr>
+</tr>
+	<td>&nbsp;</td>
+<tr>
+<!--#in getnext -->
+<tr>
+<td align="left">
+<a alt="{ description }" href="{ dirurl }">{ title }</a>
+</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td></tr>
+</table>
+</BODY>
+</HTML>
+
+<!--#end dirlist -->
+
+<!--#begin editordir -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+
+function func(dirid,txt)
+	{
+	window.opener.EditorOnInsertDir(dirid,txt);
+	window.close();
+	}
+
+//-->
+</script>
+</HEAD>
+<BODY>
+<table border="0" width="100%" cellpadding="10" cellspacing="0" align="left" >
+<tr><td>
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
+<tr class="BabContentBackground">
+<td class="BabCategTitleNavigation">
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="left" >
+	<tr>
+	<!--#if contactif -->
+	<td class="BabMenuActiveBackground" width="50%">{ conttitle }</td>
+	<td class="BabMenuTabBackground" width="50%"><a class="BabMenuLink" href="{ dirurl }">{ dirtitle }</a></td>
+	<!--#else contactif -->
+	<td class="BabMenuTabBackground" width="50%"><a class="BabMenuLink" href="{ conturl }">{ conttitle }</a></td>
+	<td class="BabMenuActiveBackground" width="50%">{ dirtitle }</td>
+	<!--#endif contactif -->
+	</tr>
+</table>
+</td>
+</tr>
+</tr>
+	<td>&nbsp;</td>
+<tr>
+<tr>
+	<td>
+	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+	<tr valign="middle"> 
+	<td colspan="3" class="BabLetterlists"> 
+	<!--#if allselected "== 1" -->
+	{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+	<!--#else allselected -->
+	<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+	<!--#endif allselected -->
+	<!--#in getnextselect -->
+	<!--#if selected "== 1" -->
+	{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+	<!--#else selected -->
+	<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+	<!--#endif selected -->
+	<!--#endin getnextselect -->
+	</td>
+	<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+	</td>
+	</tr>
+	</table>
+	<tr>
+	<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr> 
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#in getnextcol -->
+          <td class="BabSiteAdminSmall" valign="middle" nowrap ><b><a class="BabAlphabetLink" href="{ colurl }">{ coltxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></b></td>
+          <!--#endin getnextcol -->
+        </tr>
+        <!--#in getnext -->
+        <tr> 
+          <td class="BabFontBackground" valign="middle" width="1%" ><a href="javascript: func({ js_id },'{ js_name }');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <!--#in getnextcolval -->
+          <td class="BabFontBackground" align="left" valign="middle">{ coltxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <!--#endin getnextcolval -->
+        </tr>
+        <!--#endin getnext -->
+      </table>
+	</td>
+	</tr>
+	</table>
+	</td>
+</tr>
+</table>
+</td></tr>
+</table>
+</BODY>
+</HTML>
+<!--#end editordir -->

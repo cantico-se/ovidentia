@@ -237,6 +237,17 @@ function EditorOnInsertOvml(txt)
 editor.insertHTML('$OVML('+txt+')');
 }
 
+function EditorOnInsertCont(id,txt)
+{
+editor.insertHTML('$CONTACTID('+id+','+txt+')');
+}
+
+function EditorOnInsertDir(id,txt)
+{
+editor.insertHTML('$DIRECTORYID('+id+','+txt+')');
+}
+
+
 </script>
 </head>
 <body scroll="no" onload="init()" onunload="update_parent()">

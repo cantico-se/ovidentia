@@ -97,11 +97,11 @@ HTMLArea.Config = function (babLanguage) {
 			 [ "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator" ],
 			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
 			 [ "forecolor", "backcolor", "separator" ],
-			 [ "horizontalrule", "inserttable", "htmlmode", "separator" ],
+			 [ "horizontalrule", "inserttable", "htmlmode","cleanhtml", "separator" ],
 			 [ "popupeditor","bablink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
-			 ["cleanhtml","babarticle","babfaq"]
+			 [ "babarticle","babfaq","babcontdir"]
 		];
 
 	this.fontname = {
@@ -174,7 +174,8 @@ HTMLArea.Config = function (babLanguage) {
 		babfile:		["babfile",				 "Insert Ovidentia File","ed_bab_file.gif",						false],
 		babarticle:		["babarticle",			"Ovidentia Article link","ed_bab_articleid.gif",				false],	
 		babfaq:			["babfaq",				"Ovidentia FAQ link",	"ed_bab_faqid.gif",						false],
-		babovml:		["babovml",				"Ovidentia OVML link",	"ed_bab_ovml.gif",						false]
+		babovml:		["babovml",				"Ovidentia OVML link",	"ed_bab_ovml.gif",						false],
+		babcontdir:		["babcontdir",			"Ovidentia Contacts, directory","ed_bab_contdir.gif",			false]
 	};
 
 	// initialize tooltips from the I18N module
@@ -746,6 +747,7 @@ HTMLArea.prototype.updateToolbar = function() {
 				} else {
 					span = range.startContainer.previousSibling;
 				}
+				//window.status=span.tagName;
 				try {with (span.attributes) {
 					var attrib = span.attributes.getNamedItem('class');
 					var value = attrib.value.toLowerCase();
@@ -1251,6 +1253,9 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 		case "bablink":
 		this._insertbablink();
 		break;
+		case "babcontdir":
+		this._babDialog(this.baburl+this.babPhpSelf+"?tg=editorcontdir", null, null,'toolbar=no,menubar=no,personalbar=no,width=600,height=500,scrollbars=yes,resizable=yes');
+		break;
 		case "babfile":
 		this._babDialog(this.baburl+this.babPhpSelf+"?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1", null, null,'toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
 		break;
@@ -1433,7 +1438,20 @@ HTMLArea.prototype._editorEvent = function(ev) {
 			HTMLArea._stopEvent(ev);
 		}
 	}
-	
+/*	
+	else if (keyEvent) {
+		// other keys here
+		
+		switch (ev.keyCode) {
+		    case 13: // KEY enter
+			// if (HTMLArea.is_ie) {
+			this.insertHTML("<br />");
+			HTMLArea._stopEvent(ev);
+			// }
+			break;
+			}
+		}
+*/
 	else if (keyEvent) {
 	try {
 		if ( (typeof fullview == 'object') && (fullview.focus()) )
@@ -1883,6 +1901,16 @@ function EditorOnInsertOvml(txt)
 editor.insertHTML('$OVML('+txt+')');
 }
 
+function EditorOnInsertCont(id,txt)
+{
+editor.insertHTML('$CONTACTID('+id+','+txt+')');
+}
+
+function EditorOnInsertDir(id,txt)
+{
+editor.insertHTML('$DIRECTORYID('+id+','+txt+')');
+}
+
 // bug ie 5.0
 function savef(obj) {}
 
@@ -1933,11 +1961,11 @@ function initEditor2(what,ta)
 			 [ "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator" ],
 			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
 			 [ "forecolor", "backcolor", "separator" ],
-			 [ "horizontalrule", "inserttable", "htmlmode", "separator" ],
+			 [ "horizontalrule", "inserttable", "htmlmode","cleanhtml", "separator" ],
 			 [ "popupeditor","bablink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
-			 ["cleanhtml","babimage","babfile","babarticle","babfaq","babovml"]
+			 [ "babimage","babfile","babarticle","babfaq","babovml","babcontdir"]
 		];
 		}
 
