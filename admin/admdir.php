@@ -285,7 +285,7 @@ function addAdDb($adname, $description)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = $arr['name'];
 				$this->fieldid = $arr['id'];
 				$this->reqchecked = "";
@@ -408,7 +408,7 @@ function modifyDb($id)
 					$this->disabled = false;
 
 				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = $arr['name'];
 				$i++;
 				return true;
@@ -461,7 +461,7 @@ function displayDb($id)
 				$arr = $babDB->db_fetch_array($this->resf);
 				$this->fid = $arr['id_field'];
 				$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->fieldval = bab_translate($arr['description']);
+				$this->fieldval = translateDirectoryField($arr['description']);
 				$i++;
 				return true;
 				}
@@ -478,7 +478,7 @@ function displayDb($id)
 				$arr = $babDB->db_fetch_array($this->resfd);
 				$this->fid = $arr['id_field'];
 				$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->fieldval = bab_translate($arr['description']);
+				$this->fieldval = translateDirectoryField($arr['description']);
 				$i++;
 				return true;
 				}
