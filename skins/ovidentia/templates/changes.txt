@@ -16,6 +16,7 @@ mailinfo.html                               Added articlewaittxt section
                                             Added filewaittxt section
                                             Added sendpasswordtxt section
                                             Added userconfirmationtxt section
+comments.html           commentcreate       Changed name="name" to name="cname"
 
 /****************************/
 version 3.3.0 / 3.3.1
