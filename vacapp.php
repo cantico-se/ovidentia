@@ -97,18 +97,16 @@ function listVacations( $group, $email)
 		var $type;
 		var $begin;
 		var $end;
-		var $status;
 		var $typename;
 		var $datebegin;
 		var $dateend;
-		var $statusval;
 
 		var $arr = array();
 		var $db;
 		var $count;
 		var $res;
 
-		function temp($group, $status, $email)
+		function temp($group, $email)
 			{
 			global $BAB_SESS_USERID;
 			$this->type = babTranslate("Type");
@@ -217,7 +215,7 @@ function listVacations( $group, $email)
 			}
 		}
 
-	$temp = new temp($group, $status, $email);
+	$temp = new temp($group, $email);
 	$body->babecho(	babPrintTemplate($temp, "vacapp.html", "vacationslist"));
 	return $temp->count;
 	}
