@@ -1010,11 +1010,11 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 
-	$name = $filename;
+	$name = $osfname;
 	$mqgo = bab_isMagicQuotesGpcOn();
 	if( !$mqgo)
 		{
-		$name = addslashes($filename);
+		$name = addslashes($osfname);
 		$description = addslashes($description);
 		$keywords = addslashes($keywords);
 		}
@@ -1122,7 +1122,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	if( $gr == "Y" && $confirmed == "N" )
 		{
 		if( notifyApprovers($idf, $id) && $bnotify)
-			fileNotifyMembers($filename, $path, $id, bab_translate("A new file has been uploaded"));
+			fileNotifyMembers($osfname, $path, $id, bab_translate("A new file has been uploaded"));
 		}
 
 	return true;
