@@ -16,6 +16,7 @@ function validateNum(field)
 function prepareSQL() 
 	{
 	var sf = document.forms.searchForm;
+	while(''+sf.what.value.charAt(sf.what.value.length-1)==' ')sf.what.value=sf.what.value.substring(0,sf.what.value.length-1);
 	<!--#if item "!= a" -->
 	<!--#if item "!= g" -->
 	<!--#if item "!= h" -->
@@ -33,6 +34,8 @@ function cleanFields()
 		objCtrl = sf.elements[i];
 		if (objCtrl.type == "text")
 			objCtrl.value = "";
+		if ((objCtrl.type == "hidden") && ((objCtrl.name == "after")||(objCtrl.name == "after_memo")||(objCtrl.name == "before")||(objCtrl.name == "before_memo")))
+            objCtrl.value = "";
 		}
 	}
 
@@ -95,6 +98,20 @@ function afterJs(day, month, year)
 	eval("sf.after_memo.value='"+day+"/"+month+"/"+year+"'");
 	}
 
+<!--#if item "== a" -->
+function cleanBefore() {
+	var sf = document.forms.searchForm;
+	sf.before_display.value='';
+	sf.before_memo.value='';
+	sf.before.value='';
+}
+function cleanAfter() {
+	var sf = document.forms.searchForm;
+	sf.after_display.value='';
+	sf.after_memo.value='';
+	sf.after.value='';
+}
+<!--#endif item -->
 </script>
 
 <form name="searchForm" method="post" action="{ babPhpSelf }" onSubmit="return (prepareSQL())">
@@ -187,7 +204,7 @@ function afterJs(day, month, year)
 	<td align="right" nowrap>
 	<a class="BabFaqLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
 	</td>
-	<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+	<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="javascript:cleanAfter();"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 	<input type="hidden" name="after" value="{ fields[after] }">
 	<input type="hidden" name="after_memo" value="{ fields[after_memo] }">
 	</td>
@@ -196,7 +213,7 @@ function afterJs(day, month, year)
 	<td align="right" nowrap>
 	<a class="BabFaqLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
 	</td>
-	<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="#" onclick="before_display.value='';before_memo.value='';before.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+	<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="javascript:cleanBefore()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
 	<input type="hidden" name="before" value="{ fields[before] }">
 	<input type="hidden" name="before_memo" value="{ fields[before_memo] }">
 	</td>

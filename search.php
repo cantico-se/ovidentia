@@ -57,7 +57,6 @@ return bab_replace(implode(" ",$arr));
 
 function finder($req2,$tablename,$option = "OR",$req1="")
 {
-//echo "req2:".$req2." req1:".$req1."<br>";
 if (trim($req1) != "")
 	$like = $tablename." like '%".$req1."%'";
 
