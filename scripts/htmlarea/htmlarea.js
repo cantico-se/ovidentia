@@ -54,7 +54,7 @@ function HTMLArea(textarea,baburl,babInstallPath, babLanguage,babPhpSelf,enabled
 		}
 		this._htmlArea = null;
 		this._textArea = textarea;
-		this._mode = "wysiwyg";
+		this._editMode = "wysiwyg";
 
 	}
 };
@@ -570,7 +570,7 @@ HTMLArea.prototype.generate = function () {
 	htmlarea.appendChild(textarea);
 
 	// remember it for later
-	this._textArea2 = textarea;
+	//this._textArea2 = textarea;
 
 	// IMPORTANT: we have to allow Mozilla a short time to recognize the
 	// new frame.  Otherwise we get a stupid exception.
@@ -623,18 +623,26 @@ HTMLArea.prototype.generate = function () {
 
 };
 
-// Switches editor mode; parameter can be "textmode" or "wysiwyg"
+// Switches editor mode; parameter can be "textmode" or "wysiwyg".  If no
+// parameter was passed this function toggles between modes.
 HTMLArea.prototype.setMode = function(mode) {
+	if (typeof mode == "undefined") {
+		mode = ((this._editMode == "textmode") ? "wysiwyg" : "textmode");
+	}
 	switch (mode) {
 	    case "textmode":
-		this._textArea2.value = this.getHTML();
+		this._textArea.value = this.getHTML();
 		this._iframe.style.display = "none";
-		this._textArea2.style.display = "block";
+		this._textArea.style.display = "block";
 		break;
 	    case "wysiwyg":
+		if (HTMLArea.is_gecko) {
+			// disable design mode before changing innerHTML
+			this._doc.designMode = "off";
+		}
 		this._doc.body.innerHTML = this.getHTML();
 		this._iframe.style.display = "block";
-		this._textArea2.style.display = "none";
+		this._textArea.style.display = "none";
 		if (HTMLArea.is_gecko) {
 			// we need to refresh that info for Moz-1.3a
 			this._doc.designMode = "on";
@@ -644,7 +652,7 @@ HTMLArea.prototype.setMode = function(mode) {
 		alert("Mode <" + mode + "> not defined!");
 		return false;
 	}
-	this._mode = mode;
+	this._editMode = mode;
 	this.focusEditor();
 };
 
@@ -654,16 +662,10 @@ HTMLArea.prototype.setMode = function(mode) {
 
 // focuses the iframe window.  returns a reference to the editor document.
 HTMLArea.prototype.focusEditor = function() {
-	switch (this._mode) {
-	    case "wysiwyg":
-		this._iframe.contentWindow.focus();
-		break;
-	    case "textmode":
-		this._textArea2.focus();
-		break;
-	    default:
-		alert("ERROR: mode " + this._mode + " is not defined");
-		break;
+	switch (this._editMode) {
+	    case "wysiwyg" : this._iframe.contentWindow.focus(); break;
+	    case "textmode": this._textArea.focus(); break;
+	    default	   : alert("ERROR: mode " + this._editMode + " is not defined");
 	}
 	return this._doc;
 };
@@ -671,7 +673,7 @@ HTMLArea.prototype.focusEditor = function() {
 // updates enabled/disable/active state of the toolbar elements
 HTMLArea.prototype.updateToolbar = function() {
 	var doc = this._doc;
-	var text = (this._mode == "textmode");
+	var text = (this._editMode == "textmode");
 	for (var i in this._toolbarObjects) {
 		var btn = this._toolbarObjects[i];
 		var cmd = btn.cmd;
@@ -1177,7 +1179,7 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 	}
 	switch (cmd.toLowerCase()) {
 	    case "htmlmode":
-		this.setMode(this._mode != "textmode" ? "textmode" : "wysiwyg");
+		this.setMode(); break;
 		break;
 	    case "forecolor":
 	    case "backcolor":
@@ -1385,7 +1387,7 @@ HTMLArea.prototype._formSubmit = function(ev) {
 
 // retrieve the HTML
 HTMLArea.prototype.getHTML = function() {
-	switch (this._mode) {
+	switch (this._editMode) {
 	    case "wysiwyg"  : return HTMLArea.getHTML(this._doc.body, false);
 	    case "textmode" : return this._textArea.value;
 	    default	    : alert("Mode <" + mode + "> not defined!");
@@ -1396,20 +1398,17 @@ HTMLArea.prototype.getHTML = function() {
 
 // retrieve the HTML (fastest version, but uses innerHTML)
 HTMLArea.prototype.getInnerHTML = function() {
-	switch (this._mode) {
-	    case "wysiwyg":
-		return this._doc.body.innerHTML;
-	    case "textmode":
-		return this._textArea2.value;
-	    default:
-		alert("Mode <" + mode + "> not defined!");
-		return false;
+	switch (this._editMode) {
+	    case "wysiwyg"  : return this._doc.body.innerHTML;
+	    case "textmode" : return this._textArea.value;
+	    default	    : alert("Mode <" + mode + "> not defined!");
 	}
+	return false;
 };
 
 // completely change the HTML inside
 HTMLArea.prototype.setHTML = function(html) {
-	switch (this._mode) {
+	switch (this._editMode) {
 	    case "wysiwyg"  : this._doc.body.innerHTML = html; break;
 	    case "textmode" : this._textArea.value = html; break;
 	    default	    : alert("Mode <" + mode + "> not defined!");
