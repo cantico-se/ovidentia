@@ -198,6 +198,14 @@ function babLoadLanguage($lang, $folder, &$arr)
 		{
 		$filename_m = "lang/lang-".$lang.".xml";
 		$filename = $GLOBALS['babInstallPath']."lang/lang-".$lang.".xml";
+		if (file_exists($filename) && file_exists($filename_m))
+			{
+			if (filesize($filename_m) > 30000 )
+				{
+				$filename = $filename_m;
+				unset($filename_m);
+				}
+			}
 		}
 	else
 		{
