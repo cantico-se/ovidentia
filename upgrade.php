@@ -3314,7 +3314,7 @@ if (is_dir($subdir))
 return $ret;
 }
 
-function upgrade410to500()
+function upgrade500to501()
 {
 $ret = true;
 $req = "ALTER TABLE `".BAB_SITES_TBL."` CHANGE `remember_login` `remember_login` ENUM( 'Y', 'N', 'L' ) DEFAULT 'N' NOT NULL";
