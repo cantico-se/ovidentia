@@ -163,27 +163,4 @@ function deleteComments($com)
 	$req = "delete from comments where id='$com'";
 	$res = $db->db_query($req);	
 	}
-
-function locateArticle( $txt )
-{
-	$reg = "/\\\$ARTICLE\((.*?)\)/";
-	if( preg_match_all($reg, $txt, $m))
-		{
-		$db = new db_mysql();
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$req = "select * from articles where title like '%".addslashes(trim($m[1][$k]))."%'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				if(isAccessValid("topicsview_groups", $arr['id_topic'])) 
-					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']."\">".$arr['title']."</a>", $txt);
-				else
-					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr['title'], $txt);
-				}
-			}
-		}
-	return $txt;
-}
 ?>
