@@ -55,7 +55,6 @@ function getResizedImage($img, $w, $h)
 		{
 		$wtmp = imagesx($tmp);
 		$htmp = imagesy($tmp);
-		//echo " wtmp = ".$wtmp. "htmp =". $htmp. "h =". $h. "w =". $w."<br>";
 		if( $wtmp > $htmp )
 			{
 			$wimg = $w;
@@ -71,7 +70,6 @@ function getResizedImage($img, $w, $h)
 			$himg = $h;  
 			$wimg = $w;  
 			}
-		//echo " wimg = ".$wimg. "himg =". $himg;
 		$out = imagecreate($wimg, $himg);
 		imagecopyresized($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
 		imagedestroy($tmp);
