@@ -60,7 +60,7 @@ window.focus();
 <br>
 <br>
 <form method="post" name="listcontact" action="{ babPhpSelf }">
-<center><a class="BabToChoiceMailPopupCloseLink"  href="{ closeurl }">{ closename }</a><br><br><a class="BabToChoiceMailPopupToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ tobccurl }">{ tobccname }</a>
+<center><a href="{ closeurl }">{ closename }</a><br><br><a class="BabToChoiceMailPopupToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ tobccurl }">{ tobccname }</a>
 </center><br>
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
 <tr> 
@@ -71,13 +71,13 @@ window.focus();
 		<!--#if allselected "== 1" -->
 		 { allname }&nbsp;&nbsp; 
 		<!--#else allselected -->
-		<a class="BabToChoiceMailPopupNavigLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
+		<a href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
 		<!--#endif allselected -->
 		<!--#in getnextselect -->
 		<!--#if selected "== 1" -->
 		 { selectname }&nbsp;&nbsp; 
 		<!--#else selected -->
-		<a class="BabToChoiceMailPopupNavigLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
+		<a href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
 		<!--#endif selected -->
 		<!--#endin getnextselect -->
 		</td>
@@ -126,7 +126,7 @@ window.focus();
 </table>
   <br />
 	<div align="center">
-		<a class="BabToChoiceMailPopupToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ tobccurl }">{ tobccname }</a><br><br><a class="BabToChoiceMailPopupCloseLink"  href="{ closeurl }">{ closename }</a>
+		<a class="BabToChoiceMailPopupToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ tobccurl }">{ tobccname }</a><br><br><a href="{ closeurl }">{ closename }</a>
 </div>
 </form>
 </BODY>

@@ -135,13 +135,7 @@ a.BabSummaryLinkColor:Hover,
 	color: #FF3333;
 	}
 
-/* in use on inbox*/
 
-.BabTitleSmallFontBg {
-	background-color: #D1D1D9;
-	color: #000000 ;  
-	font-weight: bold;
-	}
 
 /****** SECTIONS GENERAL ***************************/
 
@@ -208,36 +202,24 @@ a.BabSummaryLinkColor:Hover,
 	padding:.05em;
 	}
 
-
-.BabTitleSectionFont {
-	color: #000000; 
-	font-weight: bold;
-	}
-.BabSectionSpacing { 
-	height: 5px;
-	}
-
 /* font sections header footer */
 .BabBodySection {
 	font-size:.65em;
-	color: #FFFFFF;
+	color: #fff;
 	}
 	
 .BabHeaderBodySection,
 .BabFooterBodySection {
-	color: #FFFFFF;
+	color: #fff;
 	}
 	
 .bab_section .bab_content a,
-.bab_section .bab_content a:visited,
-a.BabSectionsLinkColor,
-a.BabSectionsLinkColor:Visited { 
-	color: #FFFFFF; 
+.bab_section .bab_content a:visited { 
+	color: #fff; 
 	}
 
-.bab_section .bab_content a:hover,
-a.BabSectionsLinkColor:Hover { 
-	color: #FFFF00; 
+.bab_section .bab_content a:hover { 
+	color: #ff0; 
 	}
 
 /******SECTION CALENDER**************************/
@@ -353,19 +335,7 @@ a.BabTopicsFooterMoreLink:Hover {
 	font-weight: bold ; 
 	text-decoration: underline;
 	}
-	
-	
-.BabMonthCalendarEventLegendFont,
-.BabMonthCalendarEventLegendTitleFont,
-a.BabTopicsTitleNavigationLink,
-a.BabTopicsTitleNavigationLink:Link,
-a.BabTopicsTitleNavigationLink:Visited { 
-	color: #FFFFFF;  
-	text-decoration: none;
-	}
-a.BabTopicsTitleNavigationLink:Hover {
-	text-decoration: underline;
-	}
+
 
 /********** AGENDA **** CALENDAR ******************************/
 
@@ -390,71 +360,18 @@ a.BabTopicsTitleNavigationLink:Hover {
 	color: #OO9933; 
 	}
 
-a.BabCalendarNavLinkColor,
-a.BabCalendarNavLinkColor:Link,
-a.BabCalendarNavLinkColor:Visited,
-a.BabDayCalendarHourLink:Link,
-a.BabDayCalendarHourLink:Visited { 
-	color: #111166; 
-	font-weight: bold;
-	}
-a.BabCalendarNavLinkColor:Hover,
-a.BabDayCalendarHourLink:Hover {
-	color: #009933; 
-	}
 
-a.BabDayCalendarNavigLink:Link,
-a.BabDayCalendarNavigLink:Visited {
-	color: #FFFFFF;
-	}
-a.BabDayCalendarNavigLink:Hover {
-	color: #6699CC;
-	}
-
-
-
-a.BabMonthCalendarDayNumber,
-a.BabMonthCalendarDayNumber:Link,
-a.BabMonthCalendarDayNumber:Visited { 
-	color: #0000CC; 
-	font-weight: bold;
-	}
-
-a.BabMonthCalendarDayNumber:Hover,
-a.BabDayCalendarEventLink:Link,
-a.BabDayCalendarEventLink:Visited { 
-	color: #009933; 
-	}
-
-a.BabMonthCalendarEventLink:Link,
-a.BabMonthCalendarEventLink:Visited { 
-	color: #000000;
-	}
-a.BabMonthCalendarEventLink:Hover,
-a.BabDayCalendarEventLink:Hover{
-	color: #FF3333;
-	}
 
 
 /***************** MAIL ******************************/
 
 /* white background  in use on inbox  groups  - plus links */
-.BabMailBackground,
-.BabMailText { 
+.BabMailBackground { 
 	background-color: #FFFFFF;
 	color: #000000;
 	font-weight: bold;
 	}
 
-a.BabMailLink,
-a.BabMailLink:Link,
-a.BabMailLink:Visited { 
-	color: #0000CC ; 
-	font-weight: bold;
-	}
-a.BabMailLink:Hover { 
-	color: #FF3333;
-	}
 
 /***************** FORUMS**********************************/
 
@@ -520,20 +437,7 @@ a.BabForumTopicsNavContribution:Hover {
 	color:#FF3333;
 	font-weight:bold;
 	}
-
-/***************** FAQ****************************/
-
 	
-a.BabFaqAdminTitleLink,
-a.BabFaqAdminTitleLink:Link,
-a.BabFaqAdminTitleLink:Visited { 
-	color: #111166; 
-	font-weight: bold;
-	}
-	
-a.BabFaqAdminTitleLink:Hover {
-	color: #009933;
-	}
 
 /************* ADMINISTRATION SITES*************/
 
@@ -585,102 +489,25 @@ a.BabFaqLink:Hover {
 	font-weight: bold;
 	}
 
-	
-
-
-/************ ADMINISTRATION GROUPS***********/
-.BabAdminMembers { 
-	background-color: #FFFFFF; 
-	color: #000000; 
-	font-weight: bold;
-	}
-	
-
-
-a.BabAdminMembersList:Link,
-a.BabAdminMembersList:Visited { 
-	color: #0000CC;
-	}
-	
-a.BabAdminMembersList:Hover { 
-	color: #FF3333;
-	}
 
 /********** ADMINISTRATION THEMES TOPICS **********/
 
+
 a.BabTopicsAdminTitleLink,
 a.BabTopicsAdminTitleLink:Link,
-a.BabTopicsAdminTitleLink:Visited,
-a.BabTopicsAdminNumberLink,
-a.BabTopicsAdminNumberLink:Link,
-a.BabTopicsAdminNumberLink:Visited { 
+a.BabTopicsAdminTitleLink:Visited { 
 	color: #111166; 
 	font-weight: bold;
 	}
 	
-a.BabTopicsAdminTitleLink:Hover,
-a.BabTopicsAdminNumberLink:Hover { 
+a.BabTopicsAdminTitleLink:Hover { 
 	color: #009933;
 	}
 
-/******* LIST EMAIL RECIPIENTS Popup address.html******************************/
-
-
-
-a.BabToChoiceMailPopupToLink:Link,
-a.BabToChoiceMailPopupToLink:Visited {
-	color: #000000;
-	font-weight: bold;
-	}
-
-a.BabToChoiceMailPopupNavigLink
-a.BabToChoiceMailPopupNavigLink:Link,
-a.BabToChoiceMailPopupNavigLink:Visited { 
-	color: #111166; 
-	font-weight: bold;
-	}
-
-a.BabToChoiceMailPopupCloseLink,
-a.BabToChoiceMailPopupCloseLink:Link,
-a.BabToChoiceMailPopupCloseLink:Visited,
-a.BabToChoiceMailPopupToLink:Hover,
-a.BabToChoiceMailPopupNavigLink:Hover { 
-	color: #FF3333; 
-	font-weight: bold;
-	}
-
-a.BabToChoiceMailPopupCloseLink:Hover {
-	color: #009933; 
-	}
-
-/**** FILE MANAGER **********************************************/
-
-a.BabSiteFileLink,
-a.BabSiteFileLink:Link,
-a.BabSiteFileLink:Visited { 
-	color: #000000 ; 
-	text-decoration: none;  
-	font-weight: bold;
-	}
-a.BabSiteFileLink:Hover { 
-	color: #009933 ;
-	text-decoration: underline;
-	}
-
-a.BabSiteAdminFileLink,
-a.BabSiteAdminFileLink:Link,
-a.BabSiteAdminFileLink:Visited { 
-	color: #4990B1;
-	text-decoration: none;
-	}
-a.BabSiteAdminFileLink:Hover {
-	color: #4990B1; 
-	text-decoration: underline;
-	}
 
 
 /*BAB_EDITOR_CSS_BEGIN*/
-.Editor_Titre1 { color: #aa0000;  font: 14px Verdana, Arial, sans-serif}
+.Editor_Titre1 { color: #aa0000;  font: 14px Verdana, Arial, sans-serif }
 .Editor_Titre2 { color: #0000FF;  font: 18px Verdana, Arial, sans-serif}
 .Big_Titre { color: #FF04A5;  font: 24px Verdana, Arial, sans-serif }
 .fond_gris {background-color: #D1D1D9; color: #111166 ; font : 11px Verdana, Arial, sans-serif; font-weight: bold }

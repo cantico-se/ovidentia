@@ -412,7 +412,7 @@ setselects(document.forms.searchForm.g_directory);
 	 { intro }<br />
 	 
 	<!--#if BAB_SESS_LOGGED -->
-	 <a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
+	 <a href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
 	 </p>
 	</li>
 	<!--#endin getnextart -->
@@ -439,7 +439,7 @@ setselects(document.forms.searchForm.g_directory);
 
 	 { intro }<br />
 	 
-	 <!--#if BAB_SESS_LOGGED --><a class="BabDayCalendarEventLink" href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
+	 <!--#if BAB_SESS_LOGGED --><a href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
 	 </p>
 	</li>
 	<!--#endin getnextcom -->
@@ -475,7 +475,7 @@ setselects(document.forms.searchForm.g_directory);
 	<a class="BabFaqLink" href="{ questionurl }">{ question }</a> 
 	[ <a href="javascript: Start('{ questionurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]</strong><br />
 	 { intro }<br />
-	 <!--#if BAB_SESS_LOGGED --><a class="BabDayCalendarEventLink" href="mailto:{ faqauthormail }"><!--#endif BAB_SESS_LOGGED -->{ faqauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED -->
+	 <!--#if BAB_SESS_LOGGED --><a href="mailto:{ faqauthormail }"><!--#endif BAB_SESS_LOGGED -->{ faqauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED -->
 	 </p>
 	</li>
 <!--#endin getnextfaq -->
@@ -489,7 +489,7 @@ setselects(document.forms.searchForm.g_directory);
 	<li>
 	<p>
 	 { content }<br />
-	 [ <a href="{ noteurl }">{ read_more }</a> ] <!--#if BAB_SESS_LOGGED --> <a class="BabDayCalendarEventLink" href="mailto:{ notauthormail }"><!--#endif BAB_SESS_LOGGED -->{ notauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED -->
+	 [ <a href="{ noteurl }">{ read_more }</a> ] <!--#if BAB_SESS_LOGGED --> <a href="mailto:{ notauthormail }"><!--#endif BAB_SESS_LOGGED -->{ notauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED -->
 	 </p>
 	</li>
 <!--#endin getnextnot -->
@@ -587,7 +587,7 @@ setselects(document.forms.searchForm.g_directory);
 	<strong>{ agecat } &gt; 
 	<a class="BabFaqLink" href="javascript:bab_popup('{ ageurl }')" title="{ agecatdesc }">{ agetitle }</a></strong><br /> 
 	 { agedescription }<br />
-	 <!--#if agecreator --><!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --><a class="BabDayCalendarEventLink" href="mailto:{ agecreatormail }"><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED -->{ agecreator }<!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --></a><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED --> -  <!--#endif agecreator --><em>{ agestart_date }</em> <span class="BabErrorMessage">&gt;</span> <em>{ ageend_date }</em>
+	 <!--#if agecreator --><!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --><a href="mailto:{ agecreatormail }"><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED -->{ agecreator }<!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --></a><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED --> -  <!--#endif agecreator --><em>{ agestart_date }</em> <span class="BabErrorMessage">&gt;</span> <em>{ ageend_date }</em>
 	  </p>
  </li>
 <!--#endin getnextage -->

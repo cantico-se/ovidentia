@@ -93,7 +93,7 @@
 				  { grpfolderimg }
 				   <!--#endif ma -->
 				  </td>
-                <td align="left" valign="middle" class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" href="{ url }">{ name }</a></td>
+                <td align="left" valign="middle" class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a href="{ url }">{ name }</a></td>
                 <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
               </tr>
               <!--#endin getnextgrpdir -->
@@ -106,8 +106,7 @@
                   { usrfolderimg }
                   <!--#endif name -->
                 </td>
-                <td align="left" valign="middle" class="BabSiteAdminFontBackground" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" 
-href="{ url }">{ name }</a></td>
+                <td align="left" valign="middle" class="BabSiteAdminFontBackground" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a href="{ url }">{ name }</a></td>
                 <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
                           </tr>
               <!--#endin getnextdir -->
@@ -115,8 +114,7 @@ href="{ url }">{ name }</a></td>
               <tr valign="middle"> 
                 <td width="1%" align="center" class="BabSiteAdminFontBackground"> 
                   { fileimage } </td>
-                <td align="left" class="BabSiteAdminFontBackground" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> <a 
-class="BabSiteFileLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=600,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ 
+                <td align="left" class="BabSiteAdminFontBackground" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> <a href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=600,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ 
                   name }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
                   <!--#if bmanager -->
                   <!--#if bconfirmed "== 1" -->
@@ -130,37 +128,37 @@ class="BabSiteFileLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width
 				  <!--#else readonly -->
                   <!--#if bversion -->
 				<!--#if bdownload -->
-					<a class="BabSiteFileLink" href="javascript: Start('{ ovfversurl }', 'OVFileH', 'width=650,height=370,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ lastversion }</a>
+					<a href="javascript: Start('{ ovfversurl }', 'OVFileH', 'width=650,height=370,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ lastversion }</a>
 				<!--#endif bdownload -->
 				<!--#if bupdate -->
-				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfhisturl }', 'OVFileH', 'width=700,height=450,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <a href="javascript: Start('{ ovfhisturl }', 'OVFileH', 'width=700,height=450,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
 				  <img src="{ babSkinPath }images/Puces/FileLog.gif" alt="{ altfilelog }" border="0" align="middle">
 				  </a>
                   <!--#if block -->
                   <!--#if blockauth -->
-				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
 				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle">
 				  </a>
                   <!--#else blockauth -->
                   <!--#if bmanager -->
-				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
 				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfileunlock }" border="0" align="middle">
                   <!--#else bmanager -->
 				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle">
                   <!--#endif bmanager -->
                   <!--#endif blockauth -->
                   <!--#else block -->
-				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <a href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
 				  <img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="{ altfilelock }" border="0" align="middle">
 				  </a>
                   <!--#endif block -->				  	
                   <!--#if bfvwait -->
-				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <a href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
 				  <img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ altfilewrite }" border="0" align="middle">
 				  </a>
                   <!--#else bfvwait -->
                   <!--#if blockauth -->
-				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <a href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
 				  <img src="{ babSkinPath }images/Puces/FileWrite.gif" alt="{ altfilewrite }" border="0" align="middle">
 				  </a>
                   <!--#endif blockauth -->
@@ -183,7 +181,7 @@ class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/P
 <!--#in getnextwfile -->
 <tr valign="middle"> 
 <td class="BabSiteAdminFontBackground" width="1%" align="center">{ fileimage }</td>
-<td class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> <a class="BabSiteFileLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ name }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bconfirmed "== 1" --><a href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a><!--#endif bconfirmed --></td>
+<td class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> <a href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ name }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bconfirmed "== 1" --><a href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a><!--#endif bconfirmed --></td>
 <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if readonly --><img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle"><!--#endif readonly --></td>
 <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ sizef } <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 <td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
@@ -229,8 +227,7 @@ class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/P
           <tr>
             
           <td align="right" valign="middle">
-		  <a class="BabSiteAdminFileLink" href="javascript: Start('{ urldiskspace }', 'OviFile2', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/driver.gif" alt="{ diskspace }" border="0" align="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
-            diskspace }</a> </td>
+		  <a href="javascript: Start('{ urldiskspace }', 'OviFile2', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/driver.gif" alt="{ diskspace }" border="0" align="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ diskspace }</a> </td>
           </tr>
         </table>
         
