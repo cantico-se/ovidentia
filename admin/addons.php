@@ -243,13 +243,42 @@ function disableAddons($addons)
 
 function upgrade($id)
 	{
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$id."'");
 	$row = $db->db_fetch_array($res);
 
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php") && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
 		$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+
+		$res = $db->db_query("select foption,fvalue from ".BAB_INI_TBL." where foption IN ('ver_major','ver_minor','ver_build')");
+		$coreversion = array();
+		while ($arr = $db->db_fetch_assoc($res))
+			{
+			switch ($arr['foption'])
+				{
+				case 'ver_major':
+					$coreversion[0] = $arr['fvalue'];
+					break;
+				case 'ver_minor':
+					$coreversion[1] = $arr['fvalue'];
+					break;
+				case 'ver_build':
+					$coreversion[2] = $arr['fvalue'];
+					break;
+				}
+			}
+
+		if (count($coreversion) == 3)
+			{
+			
+			$str = $coreversion[0].'.'.$coreversion[1].'.'.$coreversion[2];
+			if (!empty($arr_ini['ov_version']) && compare_versions($str, $arr_ini['ov_version']))
+				{
+				$GLOBALS['babBody']->msgerror = bab_translate("This module need ovidentia version").' '.$arr_ini['ov_version'].', '.bab_translate("the current version is").' '.$str;
+				return false;
+				}
+			}
 
 		if( !empty($arr_ini['version']))
 			{
@@ -269,11 +298,10 @@ function upgrade($id)
 					$db->db_query($req);
 					return true;
 					}
-				else
-					return false;
 				}
 			}
 		}
+	return false;
 	}
 
 function export($id)
