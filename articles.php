@@ -959,6 +959,12 @@ function notifyApprovers($id, $topics)
 		if( $arr['idsaart'] == 0 )
 			{
 			$db->db_query("update ".BAB_ARTICLES_TBL." set confirmed='Y' where id='".$id."'");
+			$rr = $db->db_fetch_array($db->db_query("select title, id_author from ".BAB_ARTICLES_TBL." where id='".$id."'"));
+		
+			if( $rr['id_author'] == 0 || (($artauthor = bab_getUserName($rr['id_author'])) == ''))
+				$artauthor = bab_translate("Anonymous");
+			if( $arr['notify'] == "Y" )
+				notifyArticleGroupMembers(bab_getCategoryTitle($topics), $topics, $rr['title'], $artauthor, 'add');
 			return true;
 			}
 
