@@ -102,20 +102,31 @@ function browseUsers($pos, $cb, $idcal)
 			else
 				$reqa = "select * from ".BAB_USERS_TBL." where is_confirmed ='1' and disabled='0'";
 
+			switch ($babBody->nameorder[0]) {
+				case "F":
+					$namesearch = "firstname";
+					$namesearch2 = "lastname";
+				break;
+				case "L":
+				default:
+					$namesearch = "lastname";
+					$namesearch2 = "firstname";
+				break; }
+
 			if( $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$reqa .= " and lastname like '".$this->pos."%' order by lastname, firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
+				$reqa .= " and ".$namesearch2." like '".$this->pos."%' order by ".$namesearch2.", ".$namesearch." asc";
+				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=brow&pos=".$this->pos."&cb=".$this->cb;
 				}
 			else
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$reqa .= " and firstname like '".$this->pos."%' order by firstname, lastname asc";
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
+				$reqa .= " and ".$namesearch." like '".$this->pos."%' order by ".$namesearch.", ".$namesearch2." asc";
+				$this->fullname = bab_composeUserName(bab_translate("Firstname"), bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
 				}
 			$this->res = $this->db->db_query($reqa);
