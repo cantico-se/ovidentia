@@ -144,6 +144,9 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
 			$this->fullnameten = htmlentities(substr($calname, 0, 16));
+			$this->evtarr = array();
+			$this->mcals->getEvents($this->idcals[$this->cindex], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
+			$this->countevent = count($this->evtarr);
 			return true;
 			}
 		else
@@ -153,12 +156,13 @@ class cal_monthCls  extends cal_wmdbaseCls
 			}
 		}
 
-	function getevent()
+	function getnextevent()
 		{
 		global $babBody;
-		$arr = array();
-		if( $this->mcals->getNextEvent($this->idcals[$this->cindex], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $arr))
+		static $i = 0;
+		if( $i < $this->countevent)
 			{
+			$arr = $this->evtarr[$i];
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
 			$this->bgcolor = $arr['color'];
@@ -179,14 +183,17 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->description = $arr['description'];
 			$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
 			$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+			$i++;
 			return true;
 			}
 		else
 			{
+			$i= 0;
 			$this->cindex++;
 			return false;
 			}
 		}
+
 
 	function getfreeevent()
 		{

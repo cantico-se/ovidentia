@@ -80,13 +80,39 @@ class bab_mcalendars
 		{
 		if( isset($this->objcals[$idcal]) )
 			{
-			return $this->objcals[$idcal]->getNextEvent($startdate, $enddate, &$arr);
+			return $this->objcals[$idcal]->getNextEvent($startdate, $enddate, $arr);
 			}
 		else
 			{
 			return false;
 			}
 		}
+
+	function getEvents($idcal, $startdate, $enddate, &$arr)
+		{
+		if( isset($this->objcals[$idcal]) )
+			{
+			return $this->objcals[$idcal]->getEvents($startdate, $enddate, $arr);
+			}
+		else
+			{
+			return 0;
+			}
+		}
+
+
+	function getHtmlArea($idcal, $startdate, $enddate, &$harray)
+		{
+		if( isset($this->objcals[$idcal]) )
+			{
+			return $this->objcals[$idcal]->getHtmlArea($startdate, $enddate, $harray);
+			}
+		else
+			{
+			return 0;
+			}
+		}
+
 
 	function enumCategories()
 		{
@@ -336,6 +362,54 @@ class bab_icalendar
 			$i = 0;
 			return false;
 			}
+		}
+
+	function getEvents($startdate, $enddate, &$arr) /* YYYY-MM-DD HH:MM:SS */
+		{
+		$arr = array();
+		$i = 0;
+		while( $i < count($this->events) )
+			{			
+			if( $enddate > $this->events[$i]['start_date'] && $startdate < $this->events[$i]['end_date'] )
+				{
+				$arr[] = $this->events[$i];
+				}
+			$i++;
+			}
+		return count($arr);
+		}
+
+	function getHtmlArea($startdate, $enddate, &$harray)
+		{
+		$arr = array();
+		$harray = array();
+		while( $this->getNextEvent($startdate, $enddate, $arr))
+			{
+			$done = false;
+			for( $k = 0; $k < count($harray); $k++ )
+				{
+				$append = true;
+				for( $m = 0; $m < count($harray[$k]); $m++ )
+					{
+					if( $harray[$k][$m]['end_date'] > $arr['start_date'] && $harray[$k][$m]['start_date'] < $arr['end_date'] )
+						{
+						$append = false;
+						break;
+						}
+					}
+
+				if( $append )
+					{
+					$done = true;
+					$harray[$k][] = $arr;
+					}
+				}
+			if( !$done)
+				{
+				$harray[][] = $arr;
+				}
+			}
+		return count($harray);
 		}
 }
 

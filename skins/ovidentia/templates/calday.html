@@ -25,7 +25,7 @@
 </tr>
 </table>
 
-<table class="BabMonthCalendarCurentDayBackground" width="98%" cellpadding="1" cellspacing="0" align="center">
+<table class="BabMonthCalendarCurentDayBackground" width="98%" cellpadding="1" cellspacing="0" align="center" border="1">
 
 <tr>
 <td width="1%" class="BabMonthCalendarCurentDayBackground" nowrap>&nbsp;</td>
@@ -51,14 +51,21 @@
 <!--#in getnextcal -->
 <td nowrap>
 <table width="100%" border="0"><tr>
+<!--#in getnexteventcol -->
 <!--#in getnextevent -->
-<td bgcolor="{ bgcolor }" nowrap cellpadding="0" >
+<!--#if bevent -->
+<td width="50%" bgcolor="{ bgcolor }" nowrap cellpadding="0" >
 <a class="BabDayCalendarEventLink" href="{ titletenurl }" title="{ title }" nowrap>{ titleten }</a>
 <!--#if nbowners -->
 <a class="BabDayCalendarEventLink" href="javascript:bab_popup('{ attendeesurl }',2)" title="{ attendeestxt }" nowrap><img src="{ babSkinPath }images/Puces/head.gif" border="0"></a>
 <!--#endif nbowners -->
 </td>
+<!--#else bevent -->
+<td  width="50%" nowrap cellpadding="0">&nbsp;
+</td>
+<!--#endif bevent -->
 <!--#endin getnextevent -->
+<!--#endin getnexteventcol -->
 </tr></table>
 </td>
 <!--#endin getnextcal -->
