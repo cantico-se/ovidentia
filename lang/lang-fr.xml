@@ -322,7 +322,7 @@
 <string id="Email site">Adresse e-mail du site</string>
 <string id="Unregistered users home page">Page d'accueil publique</string>
 <string id="---- Proposed Home articles ----">---- Articles proposés pour la page d'accueil ----</string>
-<string id="---- Home page articles ----">---- Articles séléctionnés pour la page d'accueil ----</string>
+<string id="---- Home page articles ----">---- Articles affichés sur la page d'accueil ----</string>
 <string id="Registered users home page">Page d'accueil privée</string>
 <string id="Are you sure you want to delete this site">Etes-vous certain de vouloir supprimer ce site</string>
 <string id="WARNING: This operation will delete the site and all references">ATTENTION: Cette opération va supprimer ce site et toutes ses références</string>
@@ -688,8 +688,8 @@
 <string id="Send email confirmation">Envoyer un email de confirmation</string>
 <string id="Activate Registration">Activer l'inscription</string>
 <string id="Only valid if registration is actif">Seulement valide si l'inscription est active</string>
-<string id="Registered users home page for site">Page d'accueil des utilisateurs enregistrés</string>
-<string id="Unregistered users home page for site">Page d'accueil des utilisateurs non enregistrés</string>
+<string id="Registered users home page for site">Page d'accueil privée (utilisateurs enregistrés)</string>
+<string id="Unregistered users home page for site">Page d'accueil publique (utilisateurs non enregistrés)</string>
 <string id="Home pages">Les pages d'accueil</string>
 <string id="Version">Version</string>
 <string id="Access to Add-on">Accès au module</string>
@@ -839,11 +839,11 @@
 <string id="Inbox">Boîte de réception</string>
 <string id="Opened threads">Sujets ouverts</string>
 <string id="Closed threads">Sujets fermés</string>
-<string id="Can't create directory: ">Can't create directory: </string>
-<string id="Move to folder">Move to folder</string>
+<string id="Can't create directory: ">Impossible de créer le répertoire: </string>
+<string id="Move to folder">Déplacer vers le répertoire</string>
 <string id="Information">Information</string>
-<string id="In the same topic">In the same topic</string>
-<string id="List of submitted articles">List of submitted articles</string>
-<string id="Submitted">Submitted</string>
-<string id="There are no submitted article">There are no submitted article</string>
+<string id="In the same topic">Dans le même thème d'articles</string>
+<string id="List of submitted articles">Liste des articles soumis et en attente de validation</string>
+<string id="Submitted">Soumis</string>
+<string id="There are no submitted article">Il n'y a pas d'article soumis en attente de validation</string>
 </fr>
