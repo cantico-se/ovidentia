@@ -548,6 +548,7 @@ CREATE TABLE bab_cal_events (
 	end_date DATE not null,
 	end_time TIME not null,
 	id_cat INT (11) UNSIGNED not null,
+	id_creator INT (11) UNSIGNED not null,
 	PRIMARY KEY (id)
 );
 
@@ -581,7 +582,7 @@ CREATE TABLE bab_calaccess_users (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	id_cal INT (11) UNSIGNED not null,
 	id_user INT (11) UNSIGNED not null,
-	bwrite enum('N','Y') DEFAULT 'N' NOT NULL,
+    bwrite smallint(2) unsigned NOT NULL,
 	PRIMARY KEY (id)
 );
 
