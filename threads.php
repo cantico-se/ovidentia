@@ -55,7 +55,7 @@ function listThreads($forum, $active, $pos)
 			$this->res = $this->db->db_query($req);
 			$row = $this->db->db_fetch_array($this->res);
 			$total = $row["total"];
-			if( $active == "N")
+			if( $active == "Y")
 				$idx = "List";
 			else
 				$idx = "ListC";
