@@ -1202,7 +1202,7 @@ function loadSections()
 	$res = $babDB->db_query($req);
 	while( $arr =  $babDB->db_fetch_array($res))
 		{
-		$bshow = false;
+		$bshow = true;
 		$close = 0;
 		$res2 = $babDB->db_query("select * from ".BAB_SECTIONS_STATES_TBL." where id_section='".$arr['id_section']."' and id_user='".$BAB_SESS_USERID."' and type='".$arr['type']."'");
 		if( $res2 && $babDB->db_num_rows($res2) > 0)
@@ -1212,10 +1212,12 @@ function loadSections()
 				{
 				$close = 1;
 				}		
-			if( $arrst['hidden'] == "N")
+			if( $arrst['hidden'] == "Y")
 				{
+				$bshow = false;
+				}
+			else
 				$bshow = true;
-				}		
 			}
 		else
 			$arrst = array();
@@ -1687,11 +1689,16 @@ function bab_updateUserSettings()
 					$arrfid[] = $babBody->aclfm['id'][$i];
 			}
 
-			$req = "select count(f.id) from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".implode(',', $arrfid).")";
-			$req .= " and f.modified >= '".$babBody->lastlog."'";
-			$req .= " order by f.modified desc";
+			if( count($arrfid) > 0 )
+				{
+				$req = "select count(f.id) from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".implode(',', $arrfid).")";
+				$req .= " and f.modified >= '".$babBody->lastlog."'";
+				$req .= " order by f.modified desc";
 
-			list($babBody->newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
+				list($babBody->newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
+				}
+			else
+				$babBody->newfiles = 0;
 
 			$res = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and id_group='3'");
 			if( $res && $babDB->db_num_rows($res) > 0)

@@ -1550,24 +1550,30 @@ class bab_RecentComments extends bab_handler
 		else
 			$arrid = explode(',', $this->articleid);
 
+		$req = '';
 		if( count($arrid) > 0 )
 			{
 			$req = "select * from ".BAB_COMMENTS_TBL." where id_article IN (".implode(',', $arrid).") and confirmed='Y'";
 			}
-		else
+		else if( count($babBody->topview) > 0 )
 			{
 			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y' and id_topic IN (".implode(',', $babBody->topview).")";
 			}
 		
-		if( $this->nbdays !== false)
-			$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+		if( $req != '' )
+			{
+			if( $this->nbdays !== false)
+				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-		$req .= " order by date desc";
+			$req .= " order by date desc";
 
-		if( $this->last !== false)
-			$req .= " limit 0, ".$this->last;
-		$this->rescomments = $babDB->db_query($req);
-		$this->count = $babDB->db_num_rows($this->rescomments);
+			if( $this->last !== false)
+				$req .= " limit 0, ".$this->last;
+			$this->rescomments = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->rescomments);
+			}
+		else
+			$this->count = 0;
 		$this->ctx->curctx->push('CCount', $this->count);
 		}
 

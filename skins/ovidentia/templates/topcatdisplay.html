@@ -7,9 +7,13 @@
 </TABLE>
 <table border="0" width="100%" cellpadding="1" cellspacing="0">
 <tr>
-<td class="BabBodyTitleBackground">
+<td class="BabCategTitleNavigation">
 <!--#in getnextparent -->
-<a class="BabTopicsAdminNumberLink" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
 <!--#endin getnextparent -->
 </td>
 </tr></table>
@@ -20,44 +24,26 @@
 </TABLE>
 <!--#endif parentscount -->
 
-<!--#if childscount -->
-<table  border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
-<tr>
-<td class="BabTopicsTitleNavigation" valign="top">
-<!--#in getnextchild -->
-<a class="BabTopicsTitleNavigationLink" href="{ childurl }">{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ childname }</a>
-<br>
-<!--#endin getnextchild -->
-</td>
-</tr>
+<table width="1%" border="0" align="left" cellpadding="0" cellspacing="0">
+  <tr>
+    <td>
+      <!--#if count -->
+      <table  border="0" width="1%" cellpadding="1" cellspacing="0" align="center">
+        <!--#in getnext -->
+        <!--#if istopcat -->
+        <tr>
+          <td valign="top" nowrap>{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
+        </tr>
+        <!--#else istopcat -->
+        <tr>
+          <td valign="top" nowrap>{ babsectionbullet }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
+        </tr>
+        <!--#endif istopcat -->
+        <!--#endin getnext -->
+      </table>
+      <!--#endif count -->
+    </td>
+  </tr>
 </table>
-<!--#endif childscount -->
 
-<!--#in getnexttopic -->
-<br>
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabTopicsAdminListTitle" nowrap>{ topicname }</td>
-<td align="right" nowrap class="BabTopicsAdminListTitle"> 
-<!--#if articlescount "== 0" -->
-{ articlescount }&nbsp;{ articlestxt }&nbsp;<a class="BabTopicsAdminNumberLink" href="{ submiturl }">{ submittxt }</a>  
-<!--#else articlescount -->
-<a class="BabTopicsAdminNumberLink" 
-href="{ articlesurl }">{ articlescount }&nbsp;{ articlestxt }&nbsp;{ waitingarticlescount }&nbsp;{ waitingtxt }</a> 
-<!--#endif articlescount -->
-</td>
-</tr>
-<tr colspan="2">
-<td colspan="2">{ topicdescription }
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<!--#endin getnexttopic -->
 <!--#end default -->

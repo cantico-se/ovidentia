@@ -952,8 +952,10 @@ CREATE TABLE bab_fm_folders (
   filenotify enum('N','Y') NOT NULL default 'N',
   active enum('Y','N') NOT NULL default 'Y',
   version enum('N','Y') NOT NULL default 'N',
+  id_dgowner int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
-  KEY folder (folder)
+  KEY folder (folder),
+  KEY id_dgowner (id_dgowner)
 );
 
 #
