@@ -1,5 +1,5 @@
 /************************************************************************/
-Juillet 2002: Version 3.3.4
+Juillet 2002: Version 3.4.0
 /************************************************************************/
 - Possibility to enable or disable mail, notes, calendar and contacts by group
 - Groups members can be notified when article has been submited or updated
@@ -11,11 +11,6 @@ Juillet 2002: Version 3.3.4
 - Improved performance
 - Improved security
 - Possibility to upload and link images to faq
-- Fixed some minors bugs
-
-/************************************************************************/
-Juillet 2002: Version 3.3.3
-/************************************************************************/
 - Possibility to upload and link images to articles
 - Added $FILE to reference a file 
 - Improved WysiWyg editor ( support images creation, table creation, ...) 
