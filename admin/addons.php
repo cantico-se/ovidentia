@@ -252,7 +252,7 @@ function upgrade($id)
 				require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
 				if ((function_exists($func_name) && $func_name($row['version'],$arr_ini['version'])) || !function_exists($func_name))
 					{
-					$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$id."'";
+					$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$_GET['item']."'";
 					$db->db_query($req);
 					return true;
 					}
