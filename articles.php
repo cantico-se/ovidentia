@@ -418,7 +418,7 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 			{
 			$arr = $db->db_fetch_array($res);
 			//$message = babTranslate("A new article is waiting for you"). ":\n". $title ."\n";
-            notifyApprover($top, $title, $arr[email]);
+            notifyApprover($top, stripslashes($title), $arr[email]);
 			//mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
 			}
 		}
@@ -435,14 +435,12 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		return;
 		}
 
-	if(get_cfg_var("magic_quotes_gpc"))
+	if(!get_cfg_var("magic_quotes_gpc"))
 		{
-		$headtext = stripslashes($headtext);
-		$bodytext = stripslashes($bodytext);
+		$headtext = addslashes($headtext);
+		$bodytext = addslashes($bodytext);
+		$title = addslashes($title);
 		}
-
-	$headtext = addslashes($headtext);
-	$bodytext = addslashes($bodytext);
 
 	$db = new db_mysql();
 	$req = "insert into articles (id_topic, id_author, date, title, body, head) values ";
@@ -450,7 +448,6 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
-	//##: mail to approver
 	$req = "select * from topics where id='$topics'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -462,13 +459,13 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-            notifyApprover($top, $title, $arr[email]);
+            notifyApprover($top, stripslashes($title), $arr[email]);
 			//mail ($arr[email],babTranslate("New waiting article"),$message,"From: ".$babAdminEmail);
 			}
 		}
 	}
 
-//##: warn this function is duplicated in waiting.php file 
+//@@: warn this function is duplicated in waiting.php file 
 function updateArticle($topics, $title, $article, $headtext, $bodytext)
 	{
 	global $body;
