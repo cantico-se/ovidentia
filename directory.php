@@ -1711,7 +1711,10 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		$db->db_data_seek($res, 0);
 		while( $arr = $db->db_fetch_array($res))
 			{
-			$req .= "'".addslashes($fields[$arr['name']])."',";
+			if( isset($fields[$arr['name']]))
+				{
+				$req .= "'".addslashes($fields[$arr['name']])."',";
+				}
 			}
 		if( !empty($cphoto))
 			$req .= "'".$cphoto."',";
