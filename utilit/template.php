@@ -4,74 +4,152 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-/*
-call to a function <!--var funcName --> defined funcName()
-$f = "funcName";
-$class->$f();
-*/
-
 class babTemplate
 {
 var $startPatternI = "<!--#";
 var $endPatternI = "-->";
-
-//var $startPatternV = "<!--#var";
-//var $endPatternV = "-->";
 
 var $startPatternV = "{";
 var $endPatternV = "}";
 
 function printTemplate(&$class, $file, $section="")
 	{
-	if( !is_readable($file))
+	static $arrfiles = array();
+
+	if( !isset($arrfiles[$file]))
 		{
-		echo "Cannot read file ( Permission denied ): ". $file;
-		die();
+		if( !is_readable($file))
+			{
+			echo "Cannot read file ( Permission denied ): ". $file;
+			die();
+			}
+		$arrfiles[$file] = implode("", @file($file));
 		}
-	$str = implode("", @file($file));
 
 	if( !empty($section))
 		{
-		$section = preg_quote($section);
-		$reg = "/".$this->startPatternI."begin\s+".$section."\s+".$this->endPatternI."(.*)".$this->startPatternI."end\s+".$section."\s+".$this->endPatternI."(.*)/s";
-		$res = preg_match($reg, $str, $m);
-		if( $res )
-			$str = $m[1];
+		$section = preg_quote($section);	if(preg_match("/".$this->startPatternI."begin\s+".$section."\s+".$this->endPatternI."(.*)".$this->startPatternI."end\s+".$section."\s+".$this->endPatternI."(.*)/s", $arrfiles[$file], $m))
+			return $this->processTemplate($class, $m[1]);
 		else
 			return "";
 		}
-	return $this->processTemplate($class, $str);
+	return $this->processTemplate($class, $arrfiles[$file]);
 	}
 
 function processTemplate(&$class, $str)
 	{
-	$reg = "/(.*?)".$this->startPatternI."(if|in)\s+(.*)/s";
-
-	while($ret = preg_match($reg, $str, $m) > 0 )
+	while( preg_match("/(.*?)".$this->startPatternI."(if|in)\s+(.*)/s", $str, $m) > 0 )
 		{
 		if ($m[2] == "if")
 			{
-			$str = $this->processIf($class, $str);
+			if(preg_match("/(.*?)".$this->startPatternI."if\s+(.*?)\s+".$this->endPatternI."/s", $str, $m))
+				{
+				$res = preg_match("/([^\"]*)\s+(.*)/s", $m[2], $m0);
+				if( $res )
+					$var = trim($m0[1]);
+				else
+					$var = trim($m[2]);
+
+				if( preg_match("/(.*?)\[([^\]]*)/", $var, $m2) > 0)
+					{
+					if( isset($class->{$m2[1]}[$m2[2]]))
+						$tvar = $class->{$m2[1]}[$m2[2]];
+					else
+						$tvar = $GLOBALS[$$m2[1][$m2[2]]];
+					}
+				else
+					{
+					if( isset($class->$var))
+						$tvar = $class->$var;
+					else
+						$tvar = $GLOBALS[$var];
+					}
+
+				if( $res )
+					{
+					preg_match("/\"\s*([^ ]*)\s+([^\"]*)\s*\"/s", $m0[2], $match);
+					if( isset($class->$match[2]))
+						$val = $class->$match[2];
+					else
+						$val = $match[2];
+
+					switch ($match[1])
+						{
+						case ">=":
+							$bool = ($tvar >= $val)?true:false;
+							break;
+						case "==":
+							$bool = ($tvar == $val)?true:false;
+							break;
+						case "!=":
+							$bool = ($tvar != $val)?true:false;
+							break;
+						case "<=":
+							$bool = ($tvar <= $val)?true:false;
+							break;
+						case ">":
+							$bool = ($tvar > $val)?true:false;
+							break;
+						case "<":
+							$bool = ($tvar < $val)?true:false;
+							break;
+						default:
+							$bool = $tvar?true:false;
+							echo ("<BR>unknown operator : <B>" .$match[1]."</B></BR>\n");
+							break;
+						}
+					}
+				else
+					{
+					$bool = $tvar?true:false;
+					}
+
+				if(!preg_match("/".$this->startPatternI."if\s+".preg_quote($m[2])."\s+".$this->endPatternI."(.*?)".$this->startPatternI."endif\s+".preg_quote($var)."\s+".$this->endPatternI."(.*)/s", $str, $m2))
+					die("<BR>if ".$m[2].".... endif : no matching </BR>");
+
+				$rep = "";
+				if(preg_match("/(.*)".$this->startPatternI."else\s+" . preg_quote($var) . "\s+".$this->endPatternI."(.*)/s", $m2[1], $m3))
+					{
+					if($bool)
+						$rep = $m3[1];
+					else
+						$rep = $m3[2];
+					}
+				else if ( $bool )
+					$rep = $m2[1];
+
+				if( strlen($rep) > 1 && $rep[strlen($rep)-1] == chr(10))
+					$rep = substr($rep, 0, strlen($rep)-1);
+
+				$str =  chop($m[1]). $rep .$m2[2];
+				}
 			}
 		if ($m[2] == "in")
 			{
-			$str = $this->processIn($class, $str);
+			if(preg_match("/(.*?)".$this->startPatternI."in\s+(.*?)\s+".$this->endPatternI."/s", $str, $m))
+				{
+				$ret = $m[1];
+				if(!preg_match("/".$this->startPatternI."in\s+".$m[2]."\s+".$this->endPatternI."(.*?)".$this->startPatternI."endin\s+".$m[2]."\s+".$this->endPatternI."(.*)/s", $str, $m2) )
+					die("<BR>in ".$m[2].".... endif ??? : no matching </BR>");
+				$rep = trim($m2[1]);
+				while( $class->$m[2]() )
+					{
+					$ret .= $this->processTemplate($class, $rep);
+					}
+
+				$str = $ret.$m2[2];
+				}
+
 			}
 		}
-	return $this->replaceVar($class, $str);
-	}
 
-function replaceVar(&$class, $str)
-	{
-	$reg = "/".$this->startPatternV."\s+(.*?)\s+".$this->endPatternV."/";
-	preg_match_all($reg, $str, $m);
+	preg_match_all("/".$this->startPatternV."\s+(.*?)\s+".$this->endPatternV."/", $str, $m);
 
 	for ($i = 0; $i < count($m[1]); $i++ )
 		{
 		$reg = "/".$this->startPatternV."\s+" . preg_quote($m[1][$i]). "\s+".$this->endPatternV."/";
-		$reg2 = "/(.*?)\[([^\]]*)/";
 		
-		if( $ret = preg_match($reg2, $m[1][$i], $m2) > 0)
+		if( preg_match("/(.*?)\[([^\]]*)/", $m[1][$i], $m2) > 0)
 			{
 			if( isset($class->{$m2[1]}[$m2[2]]))
 				$str = preg_replace($reg, $class->{$m2[1]}[$m2[2]], $str);
@@ -85,140 +163,6 @@ function replaceVar(&$class, $str)
 			}
 		}
 	return $str;
-	}
-
-
-function processIf(&$class, $str)
-	{
-	$reg = "/(.*?)".$this->startPatternI."if\s+(.*?)\s+".$this->endPatternI."/s";
-	$res = preg_match($reg, $str, $m);
-	if(!$res)
-		return $str;
-
-	$ret = "";
-	$ret = chop($m[1]);
-	
-	$condition = $m[2];
-	$reg = "/([^\"]*)\s+(.*)/s";
-	$res = preg_match($reg, $m[2], $m0);
-
-	if( $res )
-		$var = $m0[1];
-	else
-		$var = $m[2];
-
-	$var = trim($var);
-
-	$reg = "/(.*?)\[([^\]]*)/";
-	
-	if( preg_match($reg, $var, $m2) > 0)
-		{
-		$barray = 1;
-		if( isset($class->{$m2[1]}[$m2[2]]))
-			$tvar = $class->{$m2[1]}[$m2[2]];
-		else
-			$tvar = $GLOBALS[$$m2[1][$m2[2]]];
-		}
-	else
-		{
-		if( isset($class->$var))
-			$tvar = $class->$var;
-		else
-			$tvar = $GLOBALS[$var];
-		}
-
-	if( $res )
-		{
-		$cond = $m0[2];
-		$reg = "/\"\s*([^ ]*)\s+([^\"]*)\s*\"/s";
-		$res = preg_match($reg, $cond, $match);
-		if( isset($class->$match[2]))
-			$val = $class->$match[2];
-		else
-			$val = $match[2];
-
-		switch ($match[1])
-			{
-			case ">=":
-				$bool = ($tvar >= $val)?true:false;
-				break;
-			case "==":
-				$bool = ($tvar == $val)?true:false;
-				break;
-			case "!=":
-				$bool = ($tvar != $val)?true:false;
-				break;
-			case "<=":
-				$bool = ($tvar <= $val)?true:false;
-				break;
-			case ">":
-				$bool = ($tvar > $val)?true:false;
-				break;
-			case "<":
-				$bool = ($tvar < $val)?true:false;
-				break;
-			default:
-				$bool = $tvar?true:false;
-				echo ("<BR>unknown operator : <B>" .$match[1]."</B></BR>\n");
-				break;
-			}
-		}
-	else
-		{
-		$bool = $tvar?true:false;
-		}
-
-	$reg = "/".$this->startPatternI."if\s+".preg_quote($m[2])."\s+".$this->endPatternI."(.*?)".$this->startPatternI."endif\s+".preg_quote($var)."\s+".$this->endPatternI."(.*)/s";
-	$res = preg_match($reg, $str, $m2);
-	if( !$res )
-		die("<BR>if ".$m[2].".... endif : no matching </BR>");
-
-	$reg = "/(.*)".$this->startPatternI."else\s+" . preg_quote($var) . "\s+".$this->endPatternI."(.*)/s";
-	$res = preg_match($reg, $m2[1], $m3);
-
-	$rep = "";
-	if($res)
-		{
-		if($bool)
-			$rep = $m3[1];
-		else
-			$rep = $m3[2];
-		}
-	else if ( $bool )
-		$rep = $m2[1];
-
-	if( strlen($rep) > 1 && $rep[strlen($rep)-1] == chr(10))
-		$rep = substr($rep, 0, strlen($rep)-1);
-
-	$ret = $ret . $rep .$m2[2];
-	return $ret;
-	}
-
-function processIn(&$class, $str)
-	{
-	$reg = "/(.*?)".$this->startPatternI."in\s+(.*?)\s+".$this->endPatternI."/s";
-	$res = preg_match($reg, $str, $m);
-	if(!$res)
-		return $str;
-
-	$ret = "";
-	$ret = $m[1];
-	
-	$reg = "/".$this->startPatternI."in\s+".$m[2]."\s+".$this->endPatternI."(.*?)".$this->startPatternI."endin\s+".$m[2]."\s+".$this->endPatternI."(.*)/s";
-	$res = preg_match($reg, $str, $m2);
-	if( !$res )
-		die("<BR>in ".$m[2].".... endif ??? : no matching </BR>");
-
-	$rep = trim($m2[1]);
-	while( $class->$m[2]() )
-		{
-		$tmpstr = $rep;
-		$tmpstr = $this->processTemplate($class, $tmpstr);
-		$ret .= $this->replaceVar($class, $tmpstr);
-		}
-
-	$ret = $ret . $m2[2];
-	return $ret;
 	}
 }
 
