@@ -76,10 +76,10 @@ function browseUsers($pos, $cb)
 
 			if( strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = isset($pos[1]) ? $pos[1] : '';
 				$this->ord = $pos[0];
 				$reqa .= " and lastname like '".$this->pos."%' order by lastname, firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
+				$this->fullname = bab_composeUserName(bab_translate("Lastname"), bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->pos."&cb=".$this->cb;
 				}
 			else
@@ -87,7 +87,7 @@ function browseUsers($pos, $cb)
 				$this->pos = $pos;
 				$this->ord = "";
 				$reqa .= " and firstname like '".$this->pos."%' order by firstname, lastname asc";
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
+				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
 				}
 			$this->res = $this->db->db_query($reqa);
