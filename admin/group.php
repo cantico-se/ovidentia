@@ -402,19 +402,9 @@ function confirmDeleteMembers($item, $names)
 		$arr = explode(",", $names);
 		$cnt = count($arr);
 		$db = $GLOBALS['babDB'];
-		list($identity) = $db->db_fetch_row($db->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$item."'"));
 		for($i = 0; $i < $cnt; $i++)
 			{
-			$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr[$i]."' and id_group='".$item."'";
-			$res = $db->db_query($req);
-			if( $identity )
-				{
-				$res = $db->db_query("select ocrut.id FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrut.id_role = ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON ocrut.id_user = det.id WHERE ocrt.id_entity =  '".$identity."' AND det.id_directory =  '0' AND det.id_user =  '".$arr[$i]."'");
-				while( $row = $db->db_fetch_array($res))
-					{
-					$db->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$row['id']."'");
-					}
-				}
+			bab_removeUserFromGroup($arr[$i], $item);
 			}
 	}
 }
