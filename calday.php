@@ -174,7 +174,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					$this->block = $arr['block'];
 					$this->bfree = $arr['bfree'];
 					$this->description = $arr['description'];
-					$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
+					$this->title = $arr['title'];
 					$this->titleten = htmlentities(substr($arr['title'], 0, 10));
 					$this->nbowners = $arr['nbowners'];
 					$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];

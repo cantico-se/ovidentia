@@ -1,4 +1,77 @@
 <!--#begin calday -->
+<script type="text/javascript">
+<!--
+
+var tooltip_obj = false;
+
+
+function bab_showOnMouse(id,on)
+	{
+	var ie=document.all;
+	var ns6=document.getElementById && !document.all;
+	if (ie||ns6)
+		tooltip_obj = document.all? document.all[id] : document.getElementById? document.getElementById(id) : "";
+	else
+		return false;
+
+	if (!on)
+		{
+		tooltip_obj.style.visibility = 'hidden';
+		tooltip_obj = false;
+		return true;
+		}
+
+	}
+
+
+function positiontip(e)
+	{
+	if (!tooltip_obj)
+		return;
+	var obj = tooltip_obj;
+	var offsetxpoint=-60;
+	var offsetypoint=20;
+	var ie=document.all;
+	var ns6=document.getElementById && !document.all;
+
+	
+
+	var ietypebody = (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+	var curX=(ns6)? e.pageX : event.x + ietypebody.scrollLeft;
+	var curY=(ns6)? e.pageY : event.y + ietypebody.scrollTop;
+	var rightedge=ie&&!window.opera ? ietypebody.clientWidth-event.clientX-offsetxpoint : window.innerWidth-e.clientX-offsetxpoint-20
+	var bottomedge=ie&&!window.opera ? ietypebody.clientHeight-event.clientY-offsetypoint : window.innerHeight-e.clientY-offsetypoint-20
+
+	var leftedge=(offsetxpoint<0)? offsetxpoint*(-1) : -1000;
+
+	if (rightedge<obj.offsetWidth)
+		{
+		obj.style.left=ie? ietypebody.scrollLeft + event.clientX-obj.offsetWidth+'px' : window.pageXOffset+e.clientX-obj.offsetWidth+'px';
+		}
+	else if (curX<leftedge)
+		{
+		obj.style.left='5px';
+		}
+	else
+		{
+		obj.style.left=curX+offsetxpoint+'px';
+		}
+
+	if (bottomedge<obj.offsetHeight)
+		obj.style.top=ie? ietypebody.scrollTop+event.clientY-obj.offsetHeight-offsetypoint+"px" : window.pageYOffset+e.clientY-obj.offsetHeight-offsetypoint+"px"
+	else
+		{
+		obj.style.top=curY+offsetypoint+"px"
+		obj.style.visibility="visible";
+		}
+	return true;
+	}
+document.onmousemove=positiontip;
+-->
+</script>
+<style type="text/css">
+@import url('{ babInstallPath }skins/ovidentia/styles/calendar.css');
+</style>
 <table width="100%" cellpadding="5" cellspacing="0" align="center">
 	<tr> 
 		<td class="BabCalendarMenuBackground" width="25%" valign="middle">
@@ -29,51 +102,60 @@
  <br>
 <table class="BabCalendarBodyBackground" width="98%" cellpadding="2" cellspacing="0" align="center">
 	<tr>
-		<td width="98%" class="BabCalendarDays" align="center" colspan="{ colspan }" valign="middle">{ dayname }</td>
+		<td class="BabCalendarDays" align="center" colspan="{ colspan }" valign="middle">{ dayname }</td>
 	</tr>
 </table>
 
-<table width="98%" cellpadding="1" cellspacing="0" align="center" border="0">
-
-	<tr class="BabMonthCalendarCurentDayBackground">
-		<td width="1%"  nowrap>&nbsp;</td>
+<table id="bab_calday" class="bab_calendar" width="98%" align="center">
+	<thead>
+	<tr>
+		<th>&nbsp;</th>
 		<!--#in getnextcal -->
-		<td colspan="{ cols }" class="BabMonthAltCalendarCurentUserBackground" nowrap align="center">{ fullname }</td>
+		<td colspan="{ cols }">{ fullname }</td>
 		<!--#endin getnextcal -->
 	</tr>
-
+	</thead>
+	<tbody>
 <!--#in getnexthour -->
-	<tr class="BabMonthCalendarCurentDayBackground" height="30">
-		<td width="1%" valign="top" nowrap>
+	<tr>
+		<th>
 			<!--#if bowner "== 1" -->
-			<a class="BabDayCalendarHourLink" href="{ hoururl }">{ hour }</a>
+			<a href="{ hoururl }">{ hour }</a>
 			<!--#else bowner -->
 			{ hour }
 			<!--#endif bowner -->
-		</td>
+		</th>
 
 		<!--#in getnextcal -->
 
 		<!--#in getnexteventcol -->
 		<!--#if bevent -->
-		<td width="50%" bgcolor="{ bgcolor }" nowrap cellpadding="0" >
+		<td class="event" style="background-color:{ bgcolor }" onclick="bab_popup('{ editurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)" nowrap>
 			<!--#if first -->
-			<!--{ starttime }&nbsp;-->
-			<a class="BabMonthCalendarEventLink" href="{ titletenurl }" title="{ title }" nowrap>{ titleten }</a>
+			{ titleten }
+			<div id="calevent{ idcal }{ idevent }" class="bab_tooltip" style="background-color:{ bgcolor }">
+				<h3>{ title }</h3>
+				<h5>
+					<p><strong>{ t_date_from } : </strong>{ startdate } { starttime }</p>
+					<p><strong>{ t_date_to } : </strong>{ enddate } { endtime }</p>
+				</h5>
+				<div class="description">{ description }</div>
+			</div>
 			<!--#if nbowners -->
-			<a class="BabDayCalendarEventLink" href="javascript:bab_popup('{ attendeesurl }',2)" title="{ attendeestxt }" nowrap><img src="{ babSkinPath }images/Puces/head.gif" border="0"></a>
+			<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
 			<!--#endif nbowners -->
 			<!--#else first -->
 			&nbsp;
 			<!--#endif first -->
 		</td>
 		<!--#else bevent -->
-		<td width="50%" nowrap cellpadding="0">&nbsp;</td>
+		<td class="free" onmouseover="this.className='freeover'" onmouseout="this.className='free'" onclick="bab_popup('{ newurl }',5)">&nbsp;</td>
 		<!--#endif bevent -->
 		<!--#endin getnexteventcol -->
 
 	<!--#endin getnextcal -->
 	</tr>
+	</tbody>
 <!--#endin getnexthour -->
 </table>
 

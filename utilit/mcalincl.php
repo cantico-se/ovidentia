@@ -474,6 +474,8 @@ class cal_wmdbaseCls
 		$this->attendeestxt = bab_translate("Attendees");
 		$this->statustxt = bab_translate("Waiting event");
 		$this->t_calendarchoice = bab_translate('Calendars');
+		$this->t_date_from = bab_translate('From');
+		$this->t_date_to = bab_translate('To');
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$calids."&date=".$date."&backurl=".$backurl;

@@ -92,3 +92,5 @@ function bab_popup(url,divisor)
 		bab_popup_obj.location.href = url;
 		}
 	}
+
+
