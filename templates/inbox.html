@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/babstyle2.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin maillist -->
+<script language="javascript">
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		objCtrl = document.forms.listform.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="inbox">
+<input type="hidden" name="idx" value="">
+<input type="hidden" name="accid" value="{ accid }">
+<input type="hidden" name="criteria" value="{ criteria }">
+<input type="hidden" name="reverse" value="{ reverse }">
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<tr>
+<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('item', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a></td>
+<td class="BabListTitleBgnd" align="center"><a class=BabMenuLink href="{ fromurl }"><b>{ fromname }</b></a></td>
+<td class="BabListTitleBgnd" align="center"><a class=BabMenuLink href="{ subjecturl }"><b>{ subjectname }</b></a></td>
+<td class="BabListTitleBgnd" align="center"><a class=BabMenuLink href="{ dateurl }"><b>{ datename }</b></a></td>
+</tr>
+<!--#in getnext -->
+<tr>
+<td><input type="checkbox" name="item[]" value="{ msgid }">
+<!--#if attachment "== 1" -->
+<img src="images/attachment.gif">
+<!--#endif attachment -->
+<!--#if priority "== 1" -->
+<img src="images/priority.gif">
+<!--#endif priority -->
+</td>
+<td><a class=BabMenuLink href="{ msgfromurl }">{ msgfromurlname }</a></td>
+<td><a class=BabMenuLink href="{ msgsubjecturl }">{ msgsubjecturlname }</a></td>
+<td>{ msgdate }</td>
+<!--#endin getnext -->
+</tr>
+<tr>
+<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('item', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
+<td class="BabListTitleBgnd" colspan="3">
+&nbsp;
+<!--#in getnextpart -->
+<!--#if burl "== 1" -->
+{ partname }&nbsp;
+<!--#else burl -->
+<a class=BabMenuLink href="{ parturl }">{ partname }</a>&nbsp;
+<!--#endif burl -->
+<!--#endin getnextpart -->
+</td>
+</tr>
+</table>
+</td></tr>
+</table>
+</center>
+</form>
+<br>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="inbox">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="criteria" value="{ criteria }">
+<input type="hidden" name="reverse" value="{ reverse }">
+<input type="hidden" name="viewacc" value="view">
+<table border="0" width="95%" cellpadding="0" cellspacing="0">
+<tr>
+<td align="center">
+<select name="accid">
+<!--#in getnextacc -->
+<option value="{ accountid }" { selected }>{ accountname }</option>
+<!--#endin getnextacc -->
+</select>
+</td>
+</tr>
+<tr>
+<td align="center">&nbsp;</td>
+</tr>
+<tr>
+<td align="center">
+<input type="submit" name="Submit" value="{ viewthis }"></td>
+</tr>
+</table>
+</form>
+</center>
+<!--#end maillist -->
+<br><br><br><br><br>
+<!--#begin mailview -->
+<script language="javascript">
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200");
+}
+</script>
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<tr>
+<td class="BabListTitleBgnd"><b>{ fromname }</b></td>
+<td class="BabListTitleBgnd">
+<!--#in getnextfrom -->
+{ addname }&nbsp;&nbsp;<a class=BabMenuLink href="{ addurl }">{ addcontact }</a>&nbsp;
+<!--#endin getnextfrom -->
+</td>
+</tr>
+<tr>
+<td class="BabListTitleBgnd"><b>{ toname }</b></td>
+<td class="BabListTitleBgnd">
+<!--#in getnextto -->
+{ addname }&nbsp;&nbsp;<a class=BabMenuLink href="{ addurl }">{ addcontact }</a>
+<!--#endin getnextto -->
+</td>
+</tr>
+<tr>
+<td class="BabListTitleBgnd"><b>{ ccname }</b></td>
+<td class="BabListTitleBgnd">
+<!--#in getnextcc -->
+{ addname }&nbsp;&nbsp;<a class=BabMenuLink href="{ addurl }">{ addcontact }</a>&nbsp;
+<!--#endin getnextcc -->
+</td>
+</tr>
+<tr>
+<td class="BabListTitleBgnd"><b>{ datename }</b></td>
+<td class="BabListTitleBgnd">{ dateval }</td>
+</tr>
+<tr>
+<td class="BabListTitleBgnd"><b>{ subjectname }</b></td>
+<td class="BabListTitleBgnd">{ subjectval }</td>
+</tr>
+<!--#if count "!= 0" -->
+<tr>
+<td class="BabListTitleBgnd"><b>{ attachmentname }</b></td>
+<td class="BabListTitleBgnd"><!--#in getnextattachment -->
+<a class=BabMenuLink href="{ attachmenturl }">{ attachmentval }</a>&nbsp;
+<!--#endin getnextattachment --></td>
+</tr>
+<!--#endif count -->
+<tr>
+<td colspan="2">{ msgbody }</td>
+</tr>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end mailview -->
+<!--#begin mailcompose -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="inbox">
+<input type="hidden" name="idx" value="compose">
+<input type="hidden" name="accid" value="{ accid }">
+<input type="hidden" name="criteria" value="{ criteria }">
+<input type="hidden" name="reverse" value="{ reverse }">
+<input type="hidden" name="compose" value="message">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right" nowrap>{ from }</td>
+<td><input type="text" name="title" size="80"></td>
+</tr>
+<tr>
+<td align="right">{ to }</td>
+<td><input type="text" name="to" size="80"></td>
+</tr>
+<tr>
+<td align="right">{ cc }</td>
+<td><input type="text" name="to" size="80"></td>
+</tr>
+<tr>
+<td align="right">{ bcc }</td>
+<td><input type="text" name="to" size="80"></td>
+</tr>
+<tr>
+<td align="right">{ subject }</td>
+<td><input type="text" name="subject" size="80"></td>
+</tr>
+<tr>
+<td colspan="2"><textarea cols="70" rows="20" name="message"></textarea></td>
+</tr>
+<tr>
+<td colspan="2" align="center"><input type="submit" name="submit" value="{ send }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end mailcompose -->
+</BODY>
+</HTML>
