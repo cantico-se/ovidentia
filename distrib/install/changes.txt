@@ -1,4 +1,13 @@
 /************************************************************************/
+Juillet 2003: Version 4.0.7
+/************************************************************************/
+- Enhanced OvML : It is possible to imbricate the containers  
+- An improved add-ons management
+- Bug: "Empty database query" when you try to notify members when
+ an article is updated
+- Fixed some minors bugs
+
+/************************************************************************/
 Juillet 2003: Version 4.0.6
 /************************************************************************/
 - Enhanced OvML ( See documentation )
@@ -9,6 +18,7 @@ Juillet 2003: Version 4.0.6
         * Upload Path
         * Site slogan
         * etc ...
+- Bug: Administrator can' shared folder 
 - Bug: Administrator can register user with firstname and lastname blank
 - Bug: Some posts are marked modified and this is not true
 - Bug: Users imported in Ovidentia directory are always seen as Anonymous
