@@ -182,7 +182,8 @@ function processIf(&$class, $str)
 	else if ( $bool )
 		$rep = $m2[1];
 
-	if( $rep[strlen($rep)-1] == chr(10))
+	$rep = "";
+	if( strlen($rep) > 1 && $rep[strlen($rep)-1] == chr(10))
 		$rep = substr($rep, 0, strlen($rep)-1);
 
 	$ret = $ret . $rep .$m2[2];
