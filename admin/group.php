@@ -340,6 +340,45 @@ function confirmDeleteGroup($id)
 	$res = $db->db_query($req);	
 	$req = "delete from vacationsman_groups where id_group='$id'";
 	$res = $db->db_query($req);
+	$req = "delete from categoriescal where id_group='$id'";
+	$res = $db->db_query($req);
+
+	$req = "select * from resourcescal where id_group='$id'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		
+		while( $arr = $db->db_fetch_array($res))
+			{
+			$req = "select * from calendar where owner='".$arr[id]."' and type='3'";
+			$res = $db->db_query($req);
+			$r = $db->db_fetch_array($res);
+
+			// delete resource's events
+			$req = "delete from cal_events where id_cal='".$r[id]."'";
+			$res = $db->db_query($req);	
+
+			// delete resource from calendar
+			$req = "delete from calendar where owner='".$arr[id]."' and type='3'";
+			$res = $db->db_query($req);	
+
+			// delete resource
+			$req = "delete from resourcescal where id_group='$id'";
+			$res = $db->db_query($req);
+			}
+		}
+
+	$req = "select * from calendar where owner='$id' and type='2'";
+	$res = $db->db_query($req);
+	$arr = $db->db_fetch_array($res);
+
+	// delete group's events
+	$req = "delete from cal_events where id_cal='".$arr[id]."'";
+	$res = $db->db_query($req);	
+
+	// delete user from calendar
+	$req = "delete from calendar where owner='$id' and type='2'";
+	$res = $db->db_query($req);	
 
 	// delete group
 	$req = "delete from groups where id='$id'";

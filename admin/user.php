@@ -244,9 +244,25 @@ function confirmDeleteUser($id)
 	// delete user from groups
 	$req = "delete from users_groups where id_object='$id'";
 	$res = $db->db_query($req);	
+					
+	$req = "select * from calendar where owner='$id' and type='1'";
+	$res = $db->db_query($req);
+	$arr = $db->db_fetch_array($res);
+
+	// delete user's events
+	$req = "delete from cal_events where id_cal='".$arr[id]."'";
+	$res = $db->db_query($req);	
+
+	// delete user's access
+	$req = "delete from calaccess_users where id_user='".$id."'";
+	$res = $db->db_query($req);	
 
 	// delete user from calendar
 	$req = "delete from calendar where owner='$id' and type='1'";
+	$res = $db->db_query($req);	
+
+	// delete user from users_log
+	$req = "delete from users_log where id_user='$id'";
 	$res = $db->db_query($req);	
 
 	// delete user
