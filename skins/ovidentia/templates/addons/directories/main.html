@@ -82,7 +82,7 @@
 </td>
 <td class="BabLetterlists" align="right">&nbsp;
 <!--#if badd -->
-<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', 'AddonAdA', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addname }</a>
+<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addname }</a>
 <!--#endif badd -->
 </td>
 </tr><tr> 
@@ -92,8 +92,8 @@
 <td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ hteltxt }</b></td>
 </tr>
 <!--#in getnext -->
-<tr><td valign="middle"><a class="BabNameEmailLink" href="javascript: Start('{ url }', 'AddonAdB', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cn }</a></td>
-<td align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', 'AddonAdC', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
+<tr><td class="BabFontBackground"valign="middle"><a class="BabNameEmailLink" href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cn }</a></td>
+<td class="BabFontBackground" align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
 <td class="BabFontBackground" align="left" valign="middle">&nbsp;{ btel }</td>
 <td class="BabFontBackground" align="left" valign="middle">&nbsp;{ htel }</td>
 </tr>
@@ -113,7 +113,6 @@
 { babCss }
 <script type="text/javascript">
 <!--
-window.focus();
 //-->
 </script>
 </HEAD>
@@ -169,7 +168,6 @@ window.focus();
 { babCss }
 <script type="text/javascript">
 <!--
-window.focus();
 //-->
 </script>
 </HEAD>
@@ -332,9 +330,9 @@ window.focus();
 { babCss }
 <script type="text/javascript">
 <!--
-window.focus();
 //-->
 </script>
+
 </HEAD>
 <BODY onUnload="this.opener.location.reload()">
 <br><br><br><br>
