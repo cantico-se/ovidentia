@@ -297,6 +297,18 @@ a.BabToChoiceMailPopupNavigLink:Visited { COLOR: #111166 ; font : 10px Verdana, 
 a.BabToChoiceMailPopupNavigLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
 
 
+/**** FILE MANAGER **********************************************/
+
+a.BabSiteFileLink:Link { COLOR: #000000  ; font : 11px Verdana, Arial, sans-serif;text-decoration: none;  FONT-WEIGHT: bold }
+a.BabSiteFileLink:Visited { COLOR: #000000 ; font : 11px Verdana, Arial, sans-serif;text-decoration: none;  FONT-WEIGHT: bold }
+a.BabSiteFileLink:Hover { COLOR: #009933 ; font : 11px Verdana, Arial, sans-serif; text-decoration: underline;  FONT-WEIGHT: bold }
+
+a.BabSiteAdminFileLink:Link { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabSiteAdminFileLink:Visited { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabSiteAdminFileLink:Hover {COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
+
+
 /**** SCRIPT FOR FORMATTING MESSAGES WYSIWYG ********************/
 
 .ButtonNormal {
