@@ -1,4 +1,13 @@
 /************************************************************************/
+December 2004: Version 5.5.1
+/************************************************************************/
+- Vacation: improvement and fixe of bugs
+- Added possibility to disable statistics gathering
+- Added possibility to clean statistics log
+- Added search in entities view of charts
+- Fixed some minors bugs
+
+/************************************************************************/
 Novembre 2004: Version 5.5.0
 /************************************************************************/
 - Vacation: improvement and fixe of bugs

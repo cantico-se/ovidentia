@@ -957,7 +957,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
 INSERT INTO bab_ini VALUES ('ver_minor', '5');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '1');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -2287,6 +2287,11 @@ INSERT INTO bab_stats_imodules VALUES (15, 'Administration');
 INSERT INTO bab_stats_imodules VALUES (16, 'Vacation');
 INSERT INTO bab_stats_imodules VALUES (17, 'Mail');
 INSERT INTO bab_stats_imodules VALUES (18, 'Add-ons');
+INSERT INTO bab_stats_imodules VALUES (19, 'Login / Registration');
+INSERT INTO bab_stats_imodules VALUES (20, 'User options');
+INSERT INTO bab_stats_imodules VALUES (21, 'Workflow approbations');
+INSERT INTO bab_stats_imodules VALUES (22, 'Ovidentia Editor');
+INSERT INTO bab_stats_imodules VALUES (23, 'OvML');
 
 #
 # Table structure for table `bab_stats_ipages`

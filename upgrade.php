@@ -4480,10 +4480,10 @@ if( !$res)
 
 
 $db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (19, 'Login / Registration')");
-$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (20, 'User options'");
-$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (21, 'Workflow approbations'");
-$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (22, 'Ovidentia Editor'");
-$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (23, 'OvML'");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (20, 'User options')");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (21, 'Workflow approbations')");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (22, 'Ovidentia Editor')");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (23, 'OvML')");
 
 return $ret;
 }
