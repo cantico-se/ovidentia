@@ -492,6 +492,7 @@ switch($idx)
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item );
 		break;
 	case "Groups":
 		$babBody->title = bab_getUserName($item) . bab_translate(" is member of");
@@ -501,7 +502,7 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("User"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		break;
+		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item );	break;
 	case "Modify":
 		$babBody->title = bab_getUserName($item);
 		if( !isset($pos)) {$pos='';}
@@ -511,6 +512,7 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item );
 		break;
 	default:
 		break;

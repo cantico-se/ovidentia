@@ -680,6 +680,104 @@ function changeProfiles()
 }
 
 
+function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $firstname;
+
+		function temp($iduser, $fromdate, $todate, $id_substitute)
+			{
+			global $babDB;
+
+			$this->fromtxt = bab_translate("From");
+			$this->totxt = bab_translate("To");
+			$this->usertxt = bab_translate("Substitute");
+			$this->deletetxt = bab_translate("Delete");
+			$this->update = bab_translate("Update");
+			$this->browseurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&cb=onUser";
+			$this->urlfromdate = bab_calendarPopup("fdcb");
+			$this->urltodate = bab_calendarPopup("tdcb");
+
+			$this->iduser = $iduser;
+
+			$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$iduser."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arr = $babDB->db_fetch_array($res);
+			
+				$rr = explode('-', $arr['end_date']);
+				$this->enddate_val = sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]);
+				}
+			else
+				{
+				$arr['start_date'] = '';
+				$arr['end_date'] = '';
+				$arr['id_substitute'] = '';
+				}
+
+			if( empty($fromdate))
+				{
+				if( empty($arr['start_date']))
+					{
+					$this->fromdate_val = '';
+					}
+				else
+					{
+					$rr = explode('-', $arr['start_date']);
+					$this->fromdate_val = sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]);
+					}
+				}
+			else
+				{
+				$this->fromdate_val = $fromdate;
+				}
+
+			if( empty($todate))
+				{
+				if( empty($arr['end_date']))
+					{
+					$this->todate_val = '';
+					}
+				else
+					{
+					$rr = explode('-', $arr['end_date']);
+					$this->todate_val = sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]);
+					}
+				}
+			else
+				{
+				$this->todate_val = $todate;
+				}
+
+			if( empty($id_substitute))
+				{
+				if( empty($arr['id_substitute']))
+					{
+					$this->id_substitute_val = '';
+					$this->user_disp_val = '';
+					}
+				else
+					{
+					$this->id_substitute_val = $arr['id_substitute'];
+					$this->user_disp_val = bab_getUserName($arr['id_substitute']);
+					}
+				}
+			else
+				{
+				$this->id_substitute_val = $id_substitute;
+				$this->user_disp_val = bab_getUserName($id_substitute);
+				}
+			}
+		}
+
+	$temp = new temp($iduser, $fromdate, $todate, $id_substitute);
+	$babBody->babecho(bab_printTemplate($temp,"options.html", "unavailability"));
+	}
+
+
 function userChangePassword($oldpwd, $newpwd)
 	{
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
@@ -963,6 +1061,79 @@ function updateProfiles()
 	return true;
 }
 
+function updateStateSection($c, $w, $closed)
+	{
+	global $HTTP_REFERER, $BAB_SESS_USERID;
+
+	if( !empty($BAB_SESS_USERID))
+		{
+		$db = $GLOBALS['babDB'];
+		$req = "select * from ".BAB_SECTIONS_STATES_TBL." where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 )
+			$req = "update ".BAB_SECTIONS_STATES_TBL." set closed='".$closed."' where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		else
+			$req = "insert into ".BAB_SECTIONS_STATES_TBL." (id_section, closed, type, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
+
+		$db->db_query($req);
+		}
+
+	Header("Location: ". $HTTP_REFERER);
+	}
+
+function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
+	{
+	global $babBody, $babDB;
+
+	if( empty($fromdate) || empty($todate))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid date !!");
+		return false;
+		}
+
+	$rr = explode('/', $fromdate);
+	$dbegin = mktime( 0,0,0,$rr[1], $rr[0], $rr[2]);
+	$sqlstartdate = sprintf("%04s-%02s-%02s", $rr[2], $rr[1], $rr[0]);
+	$rr = explode('/', $todate);
+	$dend = mktime( 0,0,0,$rr[1], $rr[0], $rr[2]);
+	$sqlenddate = sprintf("%04s-%02s-%02s", $rr[2], $rr[1], $rr[0]);
+
+	if( $dbegin > $dend )
+		{
+		$babBody->msgerror = bab_translate("Begin date must be less than end date");
+		return false;
+		}
+
+	if( empty($id_substitute))
+		{
+		$id_substitute = 0;
+		}
+
+	if( $id_substitute == $iduser)
+		{
+		$babBody->msgerror = bab_translate("ERROR: invalid user");
+		return false;
+		}
+
+	$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$iduser."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+		$babDB->db_query("update ".BAB_USERS_UNAVAILABILITY_TBL." set start_date='".$sqlstartdate."', end_date='".$sqlenddate."', id_substitute='".$id_substitute."' where id_user='".$iduser."'");
+		}
+	else
+		{
+		$babDB->db_query("insert into ".BAB_USERS_UNAVAILABILITY_TBL." (id_user, start_date, end_date, id_substitute ) values ('".$iduser."','".$sqlstartdate."','".$sqlenddate."','".$id_substitute."')");
+		}
+	$babBody->msgerror = bab_translate("Update done");
+	return true;
+	}
+
+function deleteUnavailability($iduser)
+	{
+	global $babDB;
+
+	$babDB->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$iduser."'");
+	}
 
 
 /* main */
@@ -1026,28 +1197,25 @@ if( isset($update))
 				$idx = 'global';
 				}
             break;
+         case "unavailability":
+			if( isset($bdelete))
+			{
+				deleteUnavailability($iduser);
+				$fromdate ='';
+				$todate ='';
+				$id_substitute ='';
+				$idx = 'unav';
+
+			}else
+				{
+				updateUnavailability($iduser, $fromdate, $todate, $id_substitute);				
+				$idx = 'unav';
+				}
+            break;
        }
 	}
 
-function updateStateSection($c, $w, $closed)
-	{
-	global $HTTP_REFERER, $BAB_SESS_USERID;
 
-	if( !empty($BAB_SESS_USERID))
-		{
-		$db = $GLOBALS['babDB'];
-		$req = "select * from ".BAB_SECTIONS_STATES_TBL." where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 )
-			$req = "update ".BAB_SECTIONS_STATES_TBL." set closed='".$closed."' where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
-		else
-			$req = "insert into ".BAB_SECTIONS_STATES_TBL." (id_section, closed, type, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
-
-		$db->db_query($req);
-		}
-
-	Header("Location: ". $HTTP_REFERER);
-	}
 
 if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email) && $BAB_SESS_USERID != '')
 	{
@@ -1067,6 +1235,15 @@ if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($
 
 switch($idx)
 	{
+	case "unav":
+		$babBody->title = bab_getUserName($iduser);
+		if( !isset($fromdate)) { $fromdate ='';}
+		if( !isset($todate)) { $todate ='';}
+		if( !isset($id_substitute)) { $id_substitute ='';}
+		showUnavailability($iduser, $fromdate, $todate, $id_substitute);
+		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$iduser);
+		break;
+
 	case "cb":
 		updateStateSection($s, $w, "Y");
 		break;
@@ -1105,6 +1282,7 @@ switch($idx)
 			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 			}
 		$babBody->addItemMenu("list", bab_translate("Sections"), $GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
+		$babBody->addItemMenu("unav", bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".(isset($iduser)?$iduser:$BAB_SESS_USERID ));
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

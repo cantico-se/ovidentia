@@ -919,6 +919,21 @@ switch($tg)
 		include $babInstallPath."link.php";
 		exit;
 		break;
+	case "ocg":
+		include $babInstallPath."utilit/ocapi.php";
+		print_r(bab_OCGetEntities());
+		print_r(bab_OCGetUserEntities(6));
+		//print_r(bab_OCGetRootEntity(2));
+		//echo "<br>".bab_getUserName(bab_OCGetSuperior(3));
+		//echo "<br>".bab_getUserName(bab_OCGetTemporaryEmployee(3));
+		//$tab = bab_OCGetCollaborators(3);
+		$tab = bab_OCGetSuperiors();
+		for( $i=0; $i< count($tab); $i++)
+		{
+			echo "<br>".bab_getUserName($tab[$i]);
+		}
+		exit;
+		break;
 	case "oml":
 		$incl = "oml";
 		break;
@@ -929,17 +944,6 @@ switch($tg)
 		$babLevelOne = bab_translate("Home");
 		$babLevelTwo = bab_translate("");
 		$incl = "entry";
-		break;
-	case "soapsrv":
-		$babLevelOne = bab_translate("Home");
-		$babLevelTwo = bab_translate("");
-		include $babInstallPath."soapsrv.php";
-		exit;
-		break;
-	case "soapcli":
-		$babLevelOne = bab_translate("Home");
-		$babLevelTwo = bab_translate("");
-		include $babInstallPath."soapcli.php";
 		break;
 	default:
 		$babLevelOne = "";

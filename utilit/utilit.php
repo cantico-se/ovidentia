@@ -1478,6 +1478,8 @@ var $ocids; /* orgnization chart ids */
 var $ampm; /* true: use am/pm */
 var $waitapprobations; /* true if there are waiting approbations */
 var $acltables = array();
+var $idprimaryoc = 0; /* id of primary organizational chart */
+var $substitutes = array();
 
 //var $aclfm;
 //var $babsite;
@@ -2223,6 +2225,43 @@ function bab_updateUserSettings()
 				}
 			
 			}
+
+		$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
+			$superiors = array();
+			$entities = bab_OCGetUserEntities($BAB_SESS_USERID);
+			if( count($entities['temporary']) > 0 )
+				{
+				for( $i=0; $i < count($entities['temporary']); $i++ )
+					{
+					$idsup = bab_OCGetSuperior($entities['temporary'][$i]);
+					if( $idsup )
+						{
+						$superiors[] =  $idsup;
+						}
+					}
+				}		
+
+			while($arr = $babDB->db_fetch_array($res))
+				{
+				$idsup = 0;
+				if( count($superiors) && in_array($arr['id_user'], $superiors))
+					{
+					$idsup = $arr['id_user'];
+					}
+				elseif( $arr['id_substitute'] == $BAB_SESS_USERID)
+					{
+					$idsup = $arr['id_user'];
+					}
+				if( $idsup && (count($babBody->substitutes) == 0 || !in_array($idsup, $babBody->substitutes) ))
+					{
+					$babBody->substitutes[] = $idsup;
+					}
+				}
+			}
+
 		}
 	
 	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';

@@ -496,6 +496,8 @@ function bab_deleteUser($id)
 		$db->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$arr['id']."'");
 		$db->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$arr['id']."'");
 	}
+
+	$db->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$id."' or id_substitute='".$id."'");
 	
 	// delete user
 	$res = $db->db_query("delete from ".BAB_USERS_TBL." where id='$id'");

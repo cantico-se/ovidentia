@@ -176,8 +176,16 @@ function deleteFlowInstance($idschi)
 
 function updateFlowInstance($idschi, $iduser, $bool)
 {
+	global $babBody;
 
 	$db = $GLOBALS['babDB'];
+
+	$idusers = array($iduser);
+	for( $k=0; $k < count($babBody->substitutes); $k++)
+	{
+		$idusers[] = $babBody->substitutes[$k];
+	}
+
 	$scinfo = $db->db_fetch_array($db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." fat left join ".BAB_FA_INSTANCES_TBL." fait on fait.idsch=fat.id where fait.id='".$idschi."'"));
 
 	if( $scinfo['satype'] == 1 )
@@ -190,7 +198,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 			if( in_array(0, $roles ))
 			{
 				$rr = bab_getSuperior($scinfo['iduser']);
-				if( count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
+				if( count($rr['iduser']) > 0  && in_array($rr['iduser'][0], $idusers) )
 					{
 					$idroles[] = 0;
 					}
@@ -209,7 +217,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 				$arr = bab_getOrgChartRoleUsers($idnroles);
 				for( $i = 0; $i < count($arr['iduser']); $i++ )
 				{
-					if( $arr['iduser'][$i] == $iduser )
+					if( in_array($arr['iduser'][$i], $idusers) )
 					{
 						$idroles[] = $arr['idrole'][$i];
 					}
@@ -217,15 +225,13 @@ function updateFlowInstance($idschi, $iduser, $bool)
 			}
 
 		}
-		$iduser = $idroles;
+		$idusers = $idroles;
 
 	}
 
-	$idsu = is_array($iduser)? $iduser: array($iduser);
-
-	if( count($idsu) > 0 )
+	if( count($idusers) > 0 )
 	{
-		$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser IN (".implode(',', $idsu).")");
+		$res = $db->db_query("select * from ".BAB_FAR_INSTANCES_TBL." where idschi='".$idschi."' and iduser IN (".implode(',', $idusers).")");
 		while( $row = $db->db_fetch_array($res) )
 		{
 		if( $bool)
@@ -258,7 +264,7 @@ function updateFlowInstance($idschi, $iduser, $bool)
 						{
 						for( $k = 0; $k < count($rr); $k++)
 							{
-							if( !in_array($rr[$k], $idsu) )
+							if( !in_array($rr[$k], $idusers) )
 								$db->db_query("update ".BAB_FAR_INSTANCES_TBL." set result='x' where idschi='".$idschi."' and iduser='".$rr[$k]."'");
 							}
 						}
@@ -399,6 +405,8 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 
 function getWaitingApprobations($iduser, $update=false)
 {
+	global $babBody;
+
 	static $wauser = array();
 	if( isset($wauser[$iduser]) && !$update )
 	{
@@ -457,6 +465,30 @@ function getWaitingApprobations($iduser, $update=false)
 				break;
 			}
 		}
+/**/
+	if( $iduser == $GLOBALS['BAB_SESS_USERID'] )
+	{
+		for($i = 0; $i < count($babBody->substitutes); $i++ )
+		{
+			$rr = getWaitingApprobations($babBody->substitutes[$i], $update);
+			for( $k=0; $k < count($rr['idsch']); $k++ )
+			{
+				if( count($result['idsch']) == 0 || !in_array($rr['idsch'][$k], $result['idsch']))
+					{
+					$result['idsch'][] = $rr['idsch'][$k];
+					}
+			}
+			for( $k=0; $k < count($rr['idschi']); $k++ )
+			{
+				if( count($result['idschi']) == 0 || !in_array($rr['idschi'][$k], $result['idschi']))
+					{
+					$result['idschi'][] = $rr['idschi'][$k];
+					}
+			}
+			
+		}
+	}
+/**/
 	$wauser[$iduser] = $result;
 	return $result;
 
