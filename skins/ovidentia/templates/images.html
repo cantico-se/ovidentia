@@ -5,6 +5,36 @@
 <TITLE>{ babSiteName }</TITLE>
 { babMeta }
 { babCss }
+<script type="text/javascript">
+<!--
+function dd(id, url)
+{
+self.opener.EditorOnCreateImage(id, url,document.forms.fdummy.align.value);
+window.close();
+}
+
+function validateImage(fmname, msg)
+{
+pat = /\./
+txt = document.forms[fmname].uploadf.value;
+list = txt.split(pat);
+ext = new String("");
+if( list.length > 1 )
+	ext = list[list.length - 1];
+ext = ext.toLowerCase();
+if(  ext == "" || (ext != "jpg" && ext != "jpeg" && ext != "png" && ext != "gif") )
+	{
+	alert(msg + " < " + ext +" >");
+	return false;
+	}
+else
+	{
+	document.forms[fmname].submit();
+	return true;
+	}
+}
+//-->
+</script>
 </HEAD>
 <BODY>
 <br>
@@ -13,15 +43,20 @@
 <td class="BabErrorMessage" align="center" >{ msgerror }</td>
 </tr></table><br>
 </center>
-<form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<form name="fmadd" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maximagessize }">
 <input type="hidden" name="tg" value="images">
 <input type="hidden" name="idx" value="list">
+<input type="hidden" name="editor" value="{ editor }">
 <input type="hidden" name="addf" value="add">
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td  colspan="2" class="BabLoginMenuBackground" width="100%" align="center" nowrap valign="middle">{ maxsizetxt }</td>
+</td>
+</tr>
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
 <td class="BabLoginMenuBackground" width="70%" valign="middle"> 
@@ -42,7 +77,7 @@
 <tr>
 <td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="Submit" value="{ add }">
+<input type="button" value="{ add }" onClick="validateImage('fmadd', '{ invalidimg }')">
 </td>
 </tr>
 </table>
@@ -51,50 +86,90 @@
 </table>
 </form>
 <br>
-<center><a class="BabSiteAdminListLink" href="{ refurl }">{ refresh }</a></center>
+<form name="fdummy">
+<center><table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabLoginMenuBackground" ><a class="BabSiteAdminListLink" href="{ refurl }">{ refresh }</a></td>
+<td class="BabLoginMenuBackground" align="right" valign="middle">{ aligntxt }:</td>
+<td class="BabLoginMenuBackground" align="left" valign="middle">
+<select name="align">
+<option value="">none</option>
+<option value="left">left</option>
+<option value="right">right</option>
+</select>
+</td>
+</tr>
+</table>
+</form>
+</center>
 <br>
 <table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  border="2" cellspacing="0" cellpadding="5" align="center">
 <!--#in getnextfiles -->
 <tr>
 <!--#in getnextufile -->
-<td align="middle" valign="middle" width="50">
+<td><table width=100% height=100% cellspacing=1 cellpadding=2 border=0>
+<tr align=center> 
+<td class="BabLoginMenuBackground" valign=top>
+<table width=100% height=100% border=0>
+<tr align=center><td align=left nowrap><font size=1 face=Verdana>{ imgname }</font>
+</td>
+<td align=right width=1%><a class="BabSiteAdminListLink" href="{ delurl }"><font size=1 face=Verdana>X</font></a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr align=center>
+<td valign=middle>
 <!--#if gd -->
-<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank"><img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
+<!--#if gd -->
+<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
-<a class="BabSiteAdminListLink" href="{ srcurl }" target="_blank"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
+<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
 <!--#endif gd -->
+<!--#endif gd -->
+</td>
+</tr>
+</table>
 </td>
 <!--#endin getnextufile -->
 </tr>
 <!--#endin getnextfiles -->
 </table>
-</td>
-</tr>
-</table>
 <br>
 <table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  border="2" cellspacing="0" cellpadding="5" align="center">
 <!--#in getnextcomfiles -->
 <tr>
 <!--#in getnextcfile -->
-<td align="middle" valign="middle" width="50">
+<td><table width=100% height=100% cellspacing=1 cellpadding=2 border=0>
+<tr align=center>
+<td class="BabLoginMenuBackground" valign=top>
+<table width=100% height=100% border=0>
+<tr align=center><td align=left nowrap><font size=1 face=Verdana>{ imgname }</font>
+</td>
+<!--#if badmin -->
+<td align=right width=1%><a class="BabSiteAdminListLink" href="{ delurl }"><font size=1 face=Verdana>X</font></a>
+</td>
+<!--#endif badmin -->
+</tr>
+</table>
+</td>
+</tr>
+<tr align=center>
+<td valign=middle>
 <!--#if gd -->
-<a class="BabSiteAdminListLink" href="{ imgurl }" target="_blank"><img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
+<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')">
+<img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
 <!--#else gd -->
-<a class="BabSiteAdminListLink" href="{ srcurl }" target="_blank"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
+<a class="BabSiteAdminListLink" href="#" onclick="dd('{ editor }', '{ imgurl }')"><img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
 <!--#endif gd -->
+</td>
+</tr>
+</table>
 </td>
 <!--#endin getnextcfile -->
 </tr>
 <!--#endin getnextcomfiles -->
-</table>
-</td>
-</tr>
 </table>
 </BODY>
 </HTML>
