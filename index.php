@@ -48,11 +48,8 @@ function printBody()
 	{
 	class tpl
 	{
-		var $logoLT;
-		var $logoRT;
 		var $babLogoLT;
 		var $babLogoRT;
-		var $banner;
 		var $babBanner;
 		var $sitename;
 		var $style;
@@ -60,8 +57,6 @@ function printBody()
 		var $slogan;
 		var $login;
 		var $logurl;
-		var $logoLB;
-		var $logoRB;
 		var $babLogoLB;
 		var $babLogoRB;
 		var $enabled;
@@ -81,28 +76,19 @@ function printBody()
 
 		function tpl()
 			{
-			global $body, $LOGGED_IN, $babLogoLB, $babLogoRB, $babLogoLT, $babLogoRT, $babSiteName,$babBanner,$babSlogan,$babStyle;
-			$this->logoLT = 0;
-			$this->logoRT = 0;
-			$this->banner = 0;
-			$this->logoLB = 0;
-			$this->logoRB = 0;
+			global $body, $LOGGED_IN, $babSiteName,$babSlogan,$babStyle;
 			$this->version = $GLOBALS[babVersion];
-			if( isset($babLogoLT) && !empty($babLogoLT))
-				$this->logoLT = 1;
-			if( isset($babLogoRT) && !empty($babLogoRT))
-				$this->logoRT = 1;
-			if( isset($babBanner) && !empty($babBanner))
-				$this->banner = 1;
-			if( isset($babLogoLB) && !empty($babLogoLB))
-				$this->logoLB = 1;
-			if( isset($babLogoRB) && !empty($babLogoRB))
-				$this->logoRB = 1;
-			$this->babLogoLT = $babLogoLT;
-			$this->babLogoRT = $babLogoRT;
-			$this->babLogoLB = $babLogoLB;
-			$this->babLogoRB = $babLogoRB;
-			$this->babBanner = $babBanner;
+			$this->babLogoLT = "";
+			$this->babLogoRT = "";
+			$this->babLogoLB = "";
+			$this->babLogoRB = "";
+			$this->babBanner = "";
+
+			$this->babLogoLT = babPrintTemplate($this, "config.html", "babLogoLT");
+			$this->babLogoRT = babPrintTemplate($this, "config.html", "babLogoRT");
+			$this->babLogoLB = babPrintTemplate($this, "config.html", "babLogoLB");
+			$this->babLogoRB = babPrintTemplate($this, "config.html", "babLogoRB");
+			$this->babBanner = babPrintTemplate($this, "config.html", "babBanner");
 			$this->sitename = $babSiteName;
 			$this->style = $babStyle;
 			$this->script = $body->script;
