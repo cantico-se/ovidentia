@@ -313,6 +313,7 @@ function listPostsFlat($forum, $thread)
 		var $altnoflattxt;
 		var $noflaturl;
 		var $backtotoptxt;
+		var $replytxt;
 
 		function temp($forum, $thread)
 			{
@@ -324,6 +325,7 @@ function listPostsFlat($forum, $thread)
 			$this->altnoflattxt = bab_translate("View thread as hierarchical list");
 			$this->altflattxt = bab_translate("View thread as flat list");
 			$this->backtotoptxt = bab_translate("Back to top");
+			$this->replytxt = bab_translate("Reply");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->alternate = 0;
@@ -941,7 +943,7 @@ switch($idx)
 				$count = listPosts($forum, $thread, $post);
 			$babBody->addItemMenu("Threads", bab_translate("Threads"), $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
-			if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) && $open)
+			if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) && $open && $flat != 1)
 				{
 				$babBody->addItemMenu("reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
 				}
