@@ -10,7 +10,7 @@ session_register("BAB_SESS_HASHID");
 include $babInstallPath."utilit/utilit.php";
 
 userIsloggedin();
-updateActivity();
+updateUserSettings();
 
 if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 	{
@@ -277,29 +277,57 @@ switch($tg)
 		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admcal";
 		break;
+	case "options":
+		if( $LOGGED_IN)
+    		$incl = "options";
+		break;
+	case "mail":
+		if( $LOGGED_IN)
+    		$incl = "mail";
+		break;
+	case "mailopt":
+		if( $LOGGED_IN)
+    		$incl = "mailopt";
+		break;
+	case "maildoms":
+		if( $LOGGED_IN)
+    		$incl = "maildoms";
+		break;
+	case "maildom":
+		if( $LOGGED_IN)
+    		$incl = "maildom";
+		break;
 	case "confcals":
-		$incl = "confcals";
+		if( $LOGGED_IN)
+    		$incl = "confcals";
 		break;
 	case "confcal":
-		$incl = "confcal";
+		if( $LOGGED_IN)
+    		$incl = "confcal";
 		break;
 	case "calendar":
-		$incl = "calendar";
+		if( $LOGGED_IN)
+    		$incl = "calendar";
 		break;
 	case "event":
-		$incl = "event";
+		if( $LOGGED_IN)
+    		$incl = "event";
 		break;
 	case "calview":
-		$incl = "calview";
+		if( $LOGGED_IN)
+    		$incl = "calview";
 		break;
 	case "calopt":
-		$incl = "calopt";
+		if( $LOGGED_IN)
+    		$incl = "calopt";
 		break;
 	case "vacation":
-		$incl = "vacation";
+		if( $LOGGED_IN)
+    		$incl = "vacation";
 		break;
 	case "vacapp":
-		$incl = "vacapp";
+		if( $LOGGED_IN)
+    		$incl = "vacapp";
 		break;
 	case "threads":
 		$incl = "threads";
@@ -326,6 +354,22 @@ switch($tg)
 	case "note":
 		if( $LOGGED_IN)
 			$incl = "note";
+		break;
+	case "inbox":
+		if( $LOGGED_IN)
+			$incl = "inbox";
+		break;
+	case "contacts":
+		if( $LOGGED_IN)
+			$incl = "contacts";
+		break;
+	case "contact":
+		if( $LOGGED_IN)
+			{
+			$incl = "contact";
+			include $babInstallPath."$incl.php";
+			exit;
+			}
 		break;
 	case "month":
 		$incl = "month";
