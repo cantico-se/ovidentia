@@ -17,10 +17,13 @@
       <ul class="BabCategTitleNavigation">
         <!--#in getnext -->
         <li><a href="{ childurl }">{ childname }</a>
-			<!--#if childdescription -->
-			<p>{ childdescription }</p>
-			<!--#endif childdescription -->
+			
 		</li>
+		<!--#if childdescription -->
+		<ul>
+			<li>{ childdescription }</li>
+		</ul>
+		<!--#endif childdescription -->
         <!--#endin getnext -->
 	  <ul>
       <!--#endif count -->
