@@ -629,7 +629,7 @@ function bab_replace( $txt )
 
 			if( $access )
 				{
-				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".$arr['path']."&file=".$arr['name']."\">".$urltxt."</a>", $txt);
+				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=fileman&idx=get&inl=1&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".$arr['path']."&file=".$arr['name']."\" target=_blank>".$urltxt."</a>", $txt);
 				}
 			else
 				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", $urltxt, $txt);
