@@ -1,58 +1,43 @@
-
 <!--#begin calendargroups -->
 
 
-
 <form method="post" action="index.php">
-
 <input type="hidden" name="tg" value="admcals">
-
 <input type="hidden" name="idx" value="groups">
-
 <input type="hidden" name="calgroups" value="update">
-
-
-    
-  <table  width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-            <td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
-              <select name="what">
-                <option value="">{ listgroups }</option>
-                <option value="-1">{ all }</option>
-                <option value="0" >{ none }</option>
-              </select>
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" align="center" nowrap valign="middle">{ 
-              name }:</td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
-              <select multiple name="groups[]" size="10">
-                <!--#in getnextgroup -->
-                <option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] 
-                }</option>
-                <!--#endin getnextgroup -->
-              </select>
-            </td>
-          </tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="center" valign="middle"> 
-              <input type="submit" name="submit" value="{ updategroups }">
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<table width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
+<select name="what">
+<option value="">{ listgroups }</option>
+<option value="-1">{ all }</option>
+<option value="0" >{ none }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" nowrap valign="middle">{ name }:</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
+<select multiple name="groups[]" size="10">
+<!--#in getnextgroup -->
+<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+<!--#endin getnextgroup -->
+</select>
+</td>
+</tr>
+<tr valign="middle"> 
+<td class="BabLoginMenuBackground" align="center" valign="middle"> 
+<input type="submit" name="submit" value="{ updategroups }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 </form>
-
-
-
 <!--#end calendargroups -->
-
-

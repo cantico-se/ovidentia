@@ -1,74 +1,74 @@
+
 <!-- Définition de la section Utilisateur -->
 <!--#begin template -->
-<table class="BabSectionBackground" width="150" cellpadding="3" cellspacing="0" border="0">
-  <tr> 
-    <td> 
-      <table  width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td align="center" valign="middle"> 
-            <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr> 
-                <td width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceUsers.gif" width="15" height="15"></td>
-                <td class="BabTitleSectionFont" width="130" align="center" valign="middle"><b>{ 
-                  title }</b> </td>
-        <!--#if bbox "== 1" --> 
-        <!--#if close "== 0" --> 
-                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.gif" border="0"></a></td>
-        <!--#else close --> 
-                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.gif" border="0"></a></td>
-        <!--#endif close --> 
-        <!--#endif bbox --> 
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <!--#if close "== 0" --> 
-        <tr> 
-          <td  valign="middle" align="center" width="100%"> 
-            <table  width="100%" cellpadding="0" cellspacing="0">
-              <tr> 
-                <td class="BabHeaderBodySection" align="center"><br>
-                  { head }</td>
-              </tr>
-              <tr> 
-                <td > 
-				                  <table   width="100%" cellpadding="0" cellspacing="0" height="1">
-                    <!--#in addUrl -->
-                    <tr> 
-                      <td width="15"></td>
-                      <td align="left" valign="middle" width="1"><img src="{ babSkinPath }images/Puces/Puce3PxWhite.png" width="3" height="3" align="absmiddle"></td>
-                      <td width="5" align="left"></td>
-                      <td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{ 
-                        text }</a></td>
-                    </tr>
-                    <!--#endin addUrl -->
-                  </table>
-                </td>
-              </tr>
-        <!--#if blogged --> 
-              <tr> 
-                <td class="BabFooterBodySection" align="center"><br>
-				<table   width="100%" cellpadding="0" cellspacing="0" height="1">
-                    <!--#in getnextnew -->
-                    <tr> 
-                      <td width="15"></td>
-                      <td class="BabBodySection">{ newcount }&nbsp;<a class="BabSectionsLinkColor" href="{ newurl }">{ newtext }</a></td>
-                    </tr> 
-                    <!--#endin getnextnew -->
-				</table>
-              </tr>
-        <!--#endif blogged --> 
-              <tr> 
-                <td class="BabFooterBodySection" align="center"><br>
-                  { foot }</td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <!--#endif close --> 
-      </table>
-    </td>
-  </tr>
+
+<table width="150" cellpadding="3" cellspacing="0" border="0">
+<tr> 
+<td class="BabSectionBackground" > 
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr> 
+<td align="center" valign="middle"> 
+<table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr> 
+<td width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceUsers.gif" width="15" height="15" border="0" alt=""></td>
+<td class="BabTitleSectionFont" width="130" align="center" valign="middle">{ title } </td>
+<!--#if bbox "== 1" --> 
+<!--#if close "== 0" --> 
+<td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.gif" border="0" alt=""></a></td>
+<!--#else close --> 
+<td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.gif" border="0" alt=""></a></td>
+<!--#endif close --> 
+<!--#endif bbox --> 
+</tr>
+</table>
+</td>
+</tr>
+<!--#if close "== 0" --> 
+<tr> 
+<td valign="middle" align="center" width="100%"> 
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr> 
+<td class="BabHeaderBodySection" align="center"><br>
+{ head }</td>
+</tr>
+<tr> 
+<td > 
+<table width="100%" cellpadding="0" cellspacing="0">
+<!--#in addUrl -->
+<tr> 
+<td width="15"></td>
+<td valign="middle" width="1"><img src="{ babSkinPath }images/Puces/Puce3PxWhite.png" width="3" height="3" alt="" border="0"></td>
+<td width="5"></td>
+<td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{   text }</a></td>
+</tr>
+<!--#endin addUrl -->
+</table>
+</td>
+</tr>
+<!--#if blogged --> 
+<tr> 
+<td class="BabFooterBodySection" align="center"><br>
+<table width="100%" cellpadding="0" cellspacing="0">
+<!--#in getnextnew -->
+<tr> 
+<td width="15"></td>
+<td class="BabBodySection">{ newcount }&nbsp;<a class="BabSectionsLinkColor" href="{ newurl }">{ newtext }</a></td>
+</tr> 
+<!--#endin getnextnew -->
+</table>
+</tr>
+<!--#endif blogged --> 
+<tr> 
+<td class="BabFooterBodySection" align="center"><br>
+{ foot }</td>
+</tr>
+</table>
+</td>
+</tr>
+<!--#endif close --> 
+     </table>
+   </td>
+ </tr>
 </table>
 <br>
 <!--#end template -->

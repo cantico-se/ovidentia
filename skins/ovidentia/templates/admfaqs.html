@@ -6,182 +6,193 @@
 <input type="hidden" name="tg" value="admfaqs">
 <input type="hidden" name="idx" value="Categories">
 <input type="hidden" name="add" value="add">
-   <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-      <tr> 
-        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-            <tr> 
-              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-                category }</td>
-              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-                <input type="text" name="category" size="60" maxlength="60">
-              </td>
-            </tr>
-          <!-- Instanciation de la barre d'outils --> <!--#if msie "== 1" --> 
-          <script src="{ babScriptPath }SaisieFormatee.js"></script>
-          <tr align="left" valign="middle"> 
-              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabLoginMenuBackground" width="91%"> 
-              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description"></textarea>
-            </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabLoginMenuBackground" width="91%"> 
-              <script language="JavaScript"> 
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
+valign="middle">{ category } :</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="category" size="40" maxlength="60">
+</td>
+</tr>
+<!-- Toolbar instanciation script -->
+<!--#if msie "== 1" -->
+<script src="{ babScriptPath }SaisieFormatee.js"></script>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground"> 
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description"></textarea>
+</td>
+</tr>
+
+<tr> 
+<td class="BabLoginMenuBackground" colspan="2" align="center" valign="middle"> 
+<script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
-            </td>
-          </tr>
-          <!--#endif msie --> 
-            <tr> 
-              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-                description }</td>
-              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-<!--#if msie "== 1" --> 
-              <script language="JavaScript">
+</td>
+</tr>
+<!--#endif msie -->
+<tr> 
+<td class="BabLoginMenuBackground" colspan="2" align="center" valign="middle">{ description }</td>
+</tr>
+<tr align="center"> 
+<td class="BabLoginMenuBackground" nowrap valign="middle" colspan="2"> 
+<!--#if msie "== 1" -->
+<script language="JavaScript">
 	editor.InFrame(0, "description", "catcreate", "90%", "160");
 </script>
-              <!--#else msie -->
-			  <textarea cols="50" rows="10" name="description"></textarea>
-          <!--#endif msie --> 
-              </td>
-            </tr>
-            <tr> 
-              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-                manager }</td>
-              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-                <input type="text" name="manager" size="60">
-              </td>
-            </tr>
-            <tr valign="middle"> 
-              <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
-              <td class="BabLoginMenuBackground" align="center">
-          <!--#if msie "== 1" --> 
-              <input onClick=SetVals() type="submit" name="submit" value="{ add }">
-          <script language="JavaScript">
+<!--#else msie -->
+<textarea cols="45" rows="10" name="description"></textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap 
+valign="middle">{ manager } :</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="manager" size="40" maxlength="60">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp; </td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<!--#if msie "== 1" -->
+<input onClick=SetVals() type="submit" name="submit" value="{ add }">
+<script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
 </script>
-          <!--#else msie --> 
-                <input type="submit" name="submit" value="{ add }">
-          <!--#endif msie --> 
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </form>
+<!--#else msie -->
+<input type="submit" name="submit" value="{ add }">
+<br>
+<!--#endif msie -->
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</form>
 <!--#end categorycreate -->
 <br>
-<br><br><br><br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin categorylist -->
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="admfaqs">
 <input type="hidden" name="idx" value="Categories">
-<center>
 <!--#in getnext -->
-    <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-      <tr> 
-        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-            <tr> 
-              <td class="BabFaqAdminTitleBackground" align="left" nowrap valign="middle"><a class="BabFaqAdminTitleLink" href="{ urlcategory }">{ 
-                namecategory }</a></td>
-            </tr>
-            <tr valign="middle"> 
-              <td class="BabFaqAdminBodyFontBackground" align="left">{ arr[description] 
-                } </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-    <br>
+<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ urlcategory }">{ 
+namecategory }</a></td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" valign="middle">{ arr[description] } </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
 <!--#endin getnext -->
-</center>
 </form>
 <!--#end categorylist -->
-<br><br><br><br><br>
+<br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin categorymodify -->
-
 <form name="catmod" method="post" action="index.php">
 <input type="hidden" name="tg" value="admfaq">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
 <input type="hidden" name="update" value="update">
-        <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              category }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="category" size="60" maxlength="60" value="{ arr[category] }">
-            </td>
-          </tr>
-          <!-- Instanciation de la barre d'outils -->
-		  <!--#if msie "== 1" --> 
-          <script src="{ babScriptPath }SaisieFormatee.js"></script>
-          <tr align="left" valign="middle"> 
-              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabLoginMenuBackground" width="91%"> 
-              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description">{ arr[description] }</textarea>
-            </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabLoginMenuBackground" width="91%"> 
-              <script language="JavaScript"> 
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
+valign="middle">{ category } :</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="category" size="40" maxlength="60" value="{ arr[category] }">
+</td>
+</tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<script src="{ babScriptPath }SaisieFormatee.js"></script>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description">{ arr[description] }</textarea>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" colspan="2" align="center" valign="middle"> 
+<script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 </script>
-            </td>
-          </tr>
-          <!--#endif msie --> 
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              description }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-<!--#if msie "== 1" --> 
-              <script language="JavaScript">
+</td>
+</tr>
+<!--#endif msie -->
+<tr> 
+<td class="BabLoginMenuBackground" colspan="2" align="center" valign="middle">{ 
+description }</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" nowrap 
+valign="middle" colspan="2"> 
+<!--#if msie "== 1" -->
+<script language="JavaScript">
 	editor.InFrame(0, "description", "catmod", "90%", "160");
 </script>
-              <!--#else msie -->
-              <textarea cols="50" rows="10" name="description">{ arr[description] }</textarea>
-          <!--#endif msie --> 
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              manager }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="manager" size="60" value="{ managername }">
-            </td>
-          </tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
-            <td class="BabLoginMenuBackground" align="left"> 
-          <!--#if msie "== 1" --> 
-              <input onClick=SetVals() type="submit" name="submit" value="{ add }">
-          <script language="JavaScript">
+<!--#else msie -->
+<textarea cols="45" rows="10" name="description">{ arr[description] }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap 
+valign="middle">{ manager }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="manager" size="40" value="{ managername }" maxlength="60">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp; </td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<!--#if msie "== 1" -->
+<input onClick=SetVals() type="submit" name="submit" value="{ add }">
+<script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
 </script>
-          <!--#else msie --> 
-              <input type="submit" name="submit" value="{ add }">
-          <!--#endif msie --> 
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<!--#else msie -->
+<input type="submit" name="submit" value="{ add }">
+<br>
+<!--#endif msie -->
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
 </form>
-
 <!--#end categorymodify -->
+

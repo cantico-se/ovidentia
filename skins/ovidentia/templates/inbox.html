@@ -1,196 +1,146 @@
 
-
 <!--#begin maillist -->
-
 <script language="javascript">
-
 function onCheckAll(ctrlPrefix, state)
 
 {
-
 	var i;
-
 	var objCtrl;
-
-
-
 	for (i = 0; i < document.forms.listform.elements.length; i++)
-
 		{
-
 		objCtrl = document.forms.listform.elements[i];
-
 		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-
 			objCtrl.checked = state;
-
 		}
-
 }
-
 function submitForm(cmd) 
-
 { 
-
 if( typeof document.forms.listform != "object" ) return;
-
 document.forms.listform.idx.value = cmd;
-
 document.forms.listform.submit();
-
 }
-
 function Start(page)
 {
 	var dummy;
 	OpenWin = this.open(page, "", "width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
 }
+
 </script>
 
 <form method="post" action="index.php" name="listform">
-
 <input type="hidden" name="tg" value="inbox">
-
 <input type="hidden" name="idx" value="">
-
 <input type="hidden" name="accid" value="{ accid }">
-
 <input type="hidden" name="criteria" value="{ criteria }">
-
 <input type="hidden" name="reverse" value="{ reverse }">
 
-<center>
 
-<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
-
-          <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-            <tr> 
-              <td class="BabMailTitleBackground" colspan="3"><a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-              <td class="BabMailTitleBackground" align="left" valign="middle"><a class="BabInboxMessageTitleLinkColor" href="{ fromurl }">{ 
-                fromname }</a></td>
-              <td class="BabMailTitleBackground" align="left" valign="middle" width="10">&nbsp;</td>
-              <td class="BabMailTitleBackground" align="left" valign="middle"><a class="BabInboxMessageTitleLinkColor" href="{ subjecturl }">{ 
-                subjectname }</a></td>
-              <td class="BabMailTitleBackground" align="left" valign="middle" width="10">&nbsp;</td>
-              <td class="BabMailTitleBackground" align="left" valign="middle"><a class="BabInboxMessageTitleLinkColor" href="{ dateurl }">{ 
-                datename }</a></td>
-            </tr>
-            <!--#in getnext -->
-            <tr> 
-              <td align="left" valign="middle" width="1"> 
-                <input type="checkbox" name="item[]" value="{ msgid }">
-              </td>
-              <td align="right" valign="middle" width="1" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1"> 
-                <!--#if attachment "== 1" -->
-                <img src="{ babSkinPath }images/Puces/PuceTrombonne.gif"> 
-                <!--#endif attachment -->
-              </td>
-              <td align="right" valign="middle" width="1" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1">
-                <!--#if priority "== 1" -->
-                <img src="{ babSkinPath }images/Puces/PuceImportant.gif">  
-                <!--#endif priority -->
-              </td>
-              <td align="left" valign="middle"><a class="BabInboxMessageSendfromLinkColor" href="{ msgfromurl }">{ 
-                msgfromurlname }</a></td>
-              <td align="left" valign="middle" width="10">&nbsp;</td>
-              <td align="left" valign="middle"><a class="BabInboxMessageobjectLinkColor" href="{ msgsubjecturl }">{ 
-                msgsubjecturlname }</a></td>
-              <td align="left" valign="middle" width="10">&nbsp;</td>
-              <td class="BabInboxMessagedateFont" align="left" valign="middle">{ 
-                msgdate }</td>
-              <!--#endin getnext -->
-            </tr>
-            <tr valign="middle"> 
-              <td class="BabInboxCurrentPageFont" colspan="8" height="5"> &nbsp; 
-                <!--#in getnextpart -->
-                <!--#if burl "== 1" -->
-                { partname }&nbsp; 
-                <!--#else burl -->
-                <a class="BabInboxMessageSuiteLinkColor" href="{ parturl }">{ partname }</a>&nbsp; 
-                <!--#endif burl -->
-                <!--#endin getnextpart -->
-              </td>
-            </tr>
-          </table>
-
-</td></tr>
-
+<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr> 
+<td class="BabTitleBg" colspan="3"><a href="javascript:onCheckAll('item', true)"><img 
+src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a 
+href="javascript:onCheckAll('item', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" 
+alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td  class="BabTitleBg" valign="middle"><a class="BabTitleSmall" 
+href="{ fromurl }">{ fromname }</a></td>
+<td class="BabTitleBg" width="10">&nbsp;</td>
+<td class="BabTitleBg" valign="middle"><a class="BabTitleSmall" 
+href="{ subjecturl }">{ subjectname }</a></td>
+<td class="BabTitleBg" width="10">&nbsp;</td>
+<td class="BabTitleBg" valign="middle"><a class="BabTitleSmall" 
+href="{ dateurl }">{ datename }</a></td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td valign="middle" width="1"> 
+<input type="checkbox" name="item[]" value="{ msgid }">
+</td>
+<td valign="middle"nowrap width="1"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1"> 
+<!--#if attachment "== 1" -->
+<img src="{ babSkinPath }images/Puces/PuceTrombonne.gif"> 
+<!--#endif attachment -->
+</td>
+<td valign="middle" nowrap width="1"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="1" height="1"> 
+<!--#if priority "== 1" -->
+<img src="{ babSkinPath }images/Puces/PuceImportant.gif"> 
+<!--#endif priority -->
+</td>
+<td valign="middle"><a class="BabContentLinkColor" href="{ msgfromurl }">{ msgfromurlname 
+}</a></td>
+<td width="10">&nbsp;</td>
+<td valign="middle"><a class="BabContentLinkColor" href="{ msgsubjecturl }">{ 
+msgsubjecturlname }</a></td>
+<td width="10">&nbsp;</td>
+<td class="BabCalendarBodyFont" valign="middle">{ msgdate }</td>
+<!--#endin getnext -->
+</tr>
+<tr> 
+<td class="BabCalendarBodyFont" colspan="8" height="5"> &nbsp; 
+<!--#in getnextpart -->
+<!--#if burl "== 1" -->
+{ partname }&nbsp; 
+<!--#else burl -->
+<a class="BabContentLinkColor" href="{ parturl }">{ partname }</a>&nbsp; 
+<!--#endif burl -->
+<!--#endin getnextpart -->
+</td>
+</tr>
 </table>
-
-</center>
-
+</td>
+</tr>
+</table>
 </form>
-
 <br>
 
 <form method="post" action="index.php">
-
 <input type="hidden" name="tg" value="inbox">
-
 <input type="hidden" name="idx" value="list">
-
 <input type="hidden" name="criteria" value="{ criteria }">
-
 <input type="hidden" name="reverse" value="{ reverse }">
-
 <input type="hidden" name="viewacc" value="view">
-
-<table border="0" width="95%" cellpadding="0" cellspacing="0">
-
+<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
 <tr>
-
 <td align="center">
-
 <select name="accid">
-
 <!--#in getnextacc -->
-
 <option value="{ accountid }" { selected }>{ accountname }</option>
-
 <!--#endin getnextacc -->
-
 </select>
-
 </td>
-
 </tr>
-
 <tr>
-
 <td align="center">&nbsp;</td>
-
 </tr>
-
 <tr>
-
 <td align="center">
-
 <input type="submit" name="Submit" value="{ viewthis }"></td>
-
 </tr>
-
 </table>
-
 </form>
-
-
-
+<br>
 <!--#end maillist -->
 
 <br><br><br><br><br>
 
 <!--#begin mailview -->
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
+<META NAME="Generator" CONTENT="Ovidentia">
+<META NAME="Author" CONTENT="Ovidentia Community">
 <META NAME="Keywords" CONTENT="">
 <META NAME="Description" CONTENT="">
 { babCss }
+
+
 <script type="text/javascript">
+
 <!--
 function Start(page)
 {
@@ -200,76 +150,82 @@ function Start(page)
 //-->
 </script>
 </HEAD>
-<BODY class="BabBackground">
+
+<BODY>
+
 <center>
-<a class="BabMailViewLink" href="{ replyurl }">{ replyname }</a>&nbsp;&nbsp;<a class="BabMailViewLink" href="{ replyaurl }">{ replyaname }</a>&nbsp;&nbsp;<a class="BabMailViewLink" href="{ forwardurl }">{ forwardname }</a>
-</center><br>
-<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-  <tr> 
-    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-        <tr> 
-          <td class="BabMailViewFromFontBackground" width="10%" align="left" nowrap valign="top">{ 
-            fromname }</td>
-          <td class="BabMailViewFromFontBackground" width="90%" align="left" valign="middle"> 
-            <!--#in getnextfrom -->
-            { addname }&nbsp;&nbsp;<a class="BabMailViewLink" href="{ addurl }">{ 
-            addcontact }</a>&nbsp;<br>
-            <!--#endin getnextfrom -->&nbsp;
-          </td>
-        </tr>
-        <tr> 
-          <td class="BabMailViewToFontBackground" width="10%" align="left" nowrap valign="top">{ 
-            toname }</td>
-          <td class="BabMailViewToFontBackground" width="90%" align="left" valign="middle"> 
-            <!--#in getnextto -->
-            { addname }&nbsp;&nbsp;<a class="BabMailViewLink" href="{ addurl }">{ 
-            addcontact }</a>&nbsp;<br>
-            <!--#endin getnextto -->&nbsp;
-          </td>
-        </tr>
-        <tr> 
-          <td class="BabMailViewCCFontBackground" width="10%" align="left" nowrap valign="top">{ 
-            ccname }</td>
-          <td class="BabMailViewCCFontBackground" width="90%" align="left" valign="middle"> 
-            <!--#in getnextcc -->
-            { addname }&nbsp;&nbsp;<a class="BabMailViewLink" href="{ addurl }">{ 
-            addcontact }</a>&nbsp;<br>
-            <!--#endin getnextcc -->&nbsp;
-          </td>
-        </tr>
-        <tr> 
-          <td class="BabMailViewDateFontBackground" width="10%" align="left" nowrap valign="middle">{ 
-            datename }</td>
-          <td class="BabMailViewDateFontBackground" width="90%" align="left" valign="middle">{ 
-            dateval } &nbsp;</td>
-        </tr>
-        <tr> 
-          <td class="BabMailViewObjectFontBackground" width="10%" align="left" nowrap valign="middle">{ 
-            subjectname }</td>
-          <td class="BabMailViewObjectFontBackground" width="90%" align="left" valign="middle">{ 
-            subjectval }&nbsp; </td>
-        </tr><!--#if count "!= 0" -->
-        <tr> 
-          <td class="BabMailViewAttachementFontBackground" width="10%" align="left" nowrap valign="top">{ 
-            attachmentname }</td>
-          <td class="BabMailViewAttachementFontBackground" width="90%" align="left" valign="middle"> 
-            <!--#in getnextattachment -->
-            <a class="BabMailViewLink" href="{ attachmenturl }">{ attachmentval 
-            }</a>&nbsp; 
-            <!--#endin getnextattachment -->&nbsp;
-          </td>
-        </tr><!--#endif count -->
-        <tr> 
-          <td class="BabMailViewMessageFontBackground" colspan="2" align="left" valign="top">{ 
-            msgbody } </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-<center><br>
-<a class="BabMailViewLink" href="{ replyurl }">{ replyname }</a>&nbsp;&nbsp;<a class="BabMailViewLink" href="{ replyaurl }">{ replyaname }</a>&nbsp;&nbsp;<a class="BabMailViewLink" href="{ forwardurl }">{ forwardname }</a>
+<br>
+<a class="BabContentLinkColor" href="{ replyurl }">{ replyname }</a>&nbsp;&nbsp;<a class="BabContentLinkColor" href="{ replyaurl }">{ replyaname }</a>&nbsp;&nbsp;<a class="BabContentLinkColor" href="{ forwardurl }">{ forwardname }</a>
 </center>
+<br>
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td align="center" valign="middle" class="BabContentBackground"> 
+<table class="BabLoginCadreBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="15%" nowrap valign="top" align="right">{ 
+fromname }</td>
+<td class="BabSiteAdminTitleFontBackground" width="85%" valign="top"> 
+<!--#in getnextfrom -->
+{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ addurl }">{ addcontact 
+}</a>&nbsp;<br>
+<!--#endin getnextfrom -->
+&nbsp; </td>
+</tr>
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="top" align="right">{ toname }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="top"> 
+<!--#in getnextto -->
+{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ addurl }">{ addcontact 
+}</a>&nbsp;<br>
+<!--#endin getnextto -->
+&nbsp; </td>
+</tr>
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="top" align="right">{ ccname }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="top"> 
+<!--#in getnextcc -->
+{ addname }&nbsp;&nbsp;<a class="BabSiteAdminListLink" href="{ addurl }">{ addcontact 
+}</a>&nbsp;<br>
+<!--#endin getnextcc -->
+&nbsp;
+</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="top" align="right">{ datename }</td>
+<td class="BabSiteAdminTitleFontBackground" valign="top">{ dateval } &nbsp;</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="top" align="right">{ subjectname 
+}</td>
+<td class="BabSiteAdminTitleFontBackground" valign="top">{ subjectval }&nbsp; </td>
+</tr>
+<!--#if count "!= 0" -->
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="top" align="right">{ attachmentname 
+}</td>
+<td class="BabSiteAdminTitleFontBackground" valign="top"> 
+<!--#in getnextattachment -->
+<a class="BabSiteAdminListLink" href="{ attachmenturl }">{ attachmentval }</a> 
+<!--#endin getnextattachment -->
+&nbsp; </td>
+</tr>
+<!--#endif count -->
+<tr> 
+<td class="BabFontBackground " colspan="2" valign="top">{ msgbody } </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<center>
+<br>
+<a class="BabContentLinkColor" href="{ replyurl }">{ replyname }</a>&nbsp;&nbsp;<a 
+class="BabContentLinkColor" href="{ replyaurl }">{ replyaname }</a>&nbsp;&nbsp;<a 
+class="BabContentLinkColor" href="{ forwardurl }">{ forwardname }</a>
+</center>
+<br>
 </BODY></HTML>
+
 <!--#end mailview -->
+

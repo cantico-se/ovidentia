@@ -1,73 +1,75 @@
-<!-- Présentation de la section article -->
+
+<!-- section article -->
+
 <!--#begin template -->
-<table class="BabSectionBackground" width="150" cellpadding="3" cellspacing="0" border="0">
-  <tr> 
-    <td> 
-      <table  width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td align="center" valign="middle">
-            <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr> 
-                <td width="20" align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceArticles.gif" width="18" height="16"></td>
-                <td class="BabTitleSectionFont" width="130" align="center" valign="middle"><b>{ 
-                  title }</b></td>
-        <!--#if bbox "== 1" --> 
+<table width="150" cellpadding="3" cellspacing="0" border="0">
+<tr> 
+<td class="BabSectionBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr> 
+<td align="center" valign="middle">
+<table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr> 
+<td align="center" valign="middle"><img src="{ babSkinPath }images/Puces/PuceArticles.gif" width="18" height="16" border="0" alt=""></td>
+<td class="BabTitleSectionFont" width="128" align="center" valign="middle">{ title } </td>
+<!--#if bbox "== 1" --> 
         <!--#if close "== 0" --> 
                 <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionClose.gif" border="0"></a></td>
         <!--#else close --> 
                 <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/Puces/PuceSectionOpen.gif" border="0"></a></td>
         <!--#endif close --> 
         <!--#endif bbox --> 
-              </tr>
-            </table>
-          </td>
-        </tr>
+</tr>
+</table>
+</td>
+</tr>
         <!--#if close "== 0" --> 
-        <tr> 
-          <td  valign="middle" align="center" width="100%"> 
-            <table  width="100%" cellpadding="0" cellspacing="0">
-              <tr> 
-                <td class="BabHeaderBodySection" align="center"><br>
-                  { head }</td>
-              </tr>
-              <tr> 
-                <td > <br>
-                  <table   width="100%" cellpadding="0" cellspacing="0" height="1">
-                    <!--#in topicsGetNext -->
-                    <tr> 
-                      <td width="15"></td>
-                      <td align="left" valign="middle" width="1"><img src="{ babSkinPath }images/Puces/Puce3PxWhite.png" width="3" height="3" align="absmiddle"></td>
-                      <td width="5" align="left"></td>
-                      <td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{ 
-                        text }</a><!--#if newa "== a" -->&nbsp;&nbsp;&nbsp;{ waitingaimg }<!--#endif newa -->&nbsp;<!--#if newc "== c" -->&nbsp;&nbsp;&nbsp;{ waitingcimg }<!--#endif newc --></td>
-                    </tr>
-                    <!--#endin topicsGetNext -->
-                  </table>
-                </td>
-              </tr>
-              <tr> 
-                <td class="BabFooterBodySection" align="center"><br>
-				<table   width="100%" cellpadding="0" cellspacing="0" height="1">
-                    <tr> 
-                      <td width="15"></td>
-                      <td class="BabBodySection">{ waitinga }</td>
-                      <td width="5" align="left">{ waitingaimg }</td>
-                    </tr>
-                    <tr> 
-                      <td width="15"></td>
-                      <td class="BabBodySection">{ waitingc }</td>
-                      <td width="5" align="left">{ waitingcimg }</td>
-                    </tr>
-				</table>
-              </tr>
-            </table>
-          </td>
-        </tr>
+<tr> 
+<td> 
+<table width="100%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td class="BabHeaderBodySection" align="center"><br>
+{ head }</td>
+</tr>
+<tr> 
+<td > 
+<br>
+<table width="100%" cellpadding="0" cellspacing="0">
+<!--#in topicsGetNext -->
+<tr> 
+<td width="10"></td>
+<td valign="middle"><img src="{ babSkinPath }images/Puces/Puce3PxWhite.png" width="3" height="3" border="0" alt=""></td>
+<td width="5"></td>
+<td class="BabBodySection" width="126"><a class="BabSectionsLinkColor" href="{ url }">{ 
+  text }</a><!--#if newa "== a" -->&nbsp;&nbsp;&nbsp;{ waitingaimg }<!--#endif newa -->&nbsp;<!--#if newc "== c" -->&nbsp;&nbsp;&nbsp;{ waitingcimg }<!--#endif newc --></td>
+</tr>
+<!--#endin topicsGetNext -->
+</table>
+</td>
+</tr>
+<tr> 
+<td class="BabFooterBodySection">
+<br>
+<table width="100%" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+<td width="134" class="BabBodySection">{ waitinga }</td>
+<td width="10">{ waitingaimg }</td>
+</tr>
+<tr> 
+<td class="BabBodySection">{ waitingc }</td>
+<td>{ waitingcimg }</td>
+</tr>
+</table>
+</tr>
+</table>
+</td>
+</tr>
         <!--#endif close --> 
-      </table>
-    </td>
-  </tr>
+</table>
+</td>
+ </tr>
 </table>
 <br>
+
 <!--#end template -->
 

@@ -1,4 +1,6 @@
+
 <!--#begin addfile -->
+
 <form method="post" action="index.php" enctype="multipart/form-data">
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 <input type="hidden" name="tg" value="fileman">
@@ -7,135 +9,158 @@
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="gr" value="{ gr }">
 <input type="hidden" name="path" value="{ path }">
-  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              name }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="file" name="uploadf" size="45" maxlength="255" value="">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              description }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="description" size="60" maxlength="255" value="{ descval }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              keywords }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              attribute }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <select name="readonly">
-                <option value="N" selected>{ no }</option>
-                <option value="Y" >{ yes }</option>
-              </select>
-			</td>
-          </tr>
-          <tr>
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="submit" name="Submit" value="{ add }">
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
+
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="file" name="uploadf" size="40" maxlength="255" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="description2" size="45" maxlength="255" value="{ descval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="readonly">
+<option value="N" selected>{ no }</option>
+<option value="Y" >{ yes }</option>
+</select>
+</td>
+</tr>
+<tr>
+<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="Submit" value="{ add }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 </form>
 <!--#end addfile -->
 <!--#begin fileslist -->
 <br>
-	<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-  <tr><td class="BabBodyTitleBackground" ><center><a class="BabGroupsAdminListLink" href="{ rooturl }">{ root }</a>&nbsp;|&nbsp;<a class="BabGroupsAdminListLink" href="{ refreshurl }">{ refresh }</a></center></td></tr></table>
-  <br>
-       <center>{ rootpath }/{ path }</center>
-		<br>
-<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-  <tr> 
-    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-      <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr>
-          <td class="BabGroupsAdminTitleFontBackground" colspan="2" align="left" nowrap valign="middle">&nbsp;{ nametxt }</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ sizetxt }</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ modifiedtxt }</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ postedtxt }</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;</td>
-        </tr>
-       <!--#in getnextdir --> <tr> 
-          <td class="BabLoginMenuBackground" width="1%" align="right" nowrap valign="middle"> 
-            <!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name -->&nbsp; 
-          </td>          
-		  <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;<a class="BabGroupsAdminListLink" href="{ url }">{ name }</a></td>
-          <td class="BabGroupsAdminAdminFontBackground" colspan="6" align="left" valign="middle" nowrap>&nbsp;</td>
-        </tr><!--#endin getnextdir -->
-       <!--#in getnextgrpdir --> <tr> 
-          <td class="BabLoginMenuBackground" width="1%" align="right" nowrap valign="middle"> 
-            { grpfolderimg }&nbsp; 
-          </td>          
-		  <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;<a class="BabGroupsAdminListLink" href="{ url }">{ name }</a></td>
-          <td class="BabGroupsAdminAdminFontBackground" colspan="6" align="left" valign="middle" nowrap>&nbsp;</td>
-        </tr><!--#endin getnextgrpdir -->
-       <!--#in getnextmgrpdir --> <tr> 
-          <td class="BabLoginMenuBackground" width="1%" align="right" nowrap valign="middle"> 
-            { manfolderimg }&nbsp; 
-          </td>          
-		  <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;<a class="BabGroupsAdminListLink" href="{ url }">{ name }</a></td>
-          <td class="BabGroupsAdminAdminFontBackground" colspan="6" align="left" valign="middle" nowrap>&nbsp;</td>
-        </tr><!--#endin getnextmgrpdir -->
-       <!--#in getnextfile --> <tr> 
-          <td class="BabLoginMenuBackground" width="1%" align="right" nowrap valign="middle"> 
-            { fileimage }&nbsp;
-          </td>          
-          <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;
+<table width="98%" border="0" cellspacing="0" cellpadding="0" align="center" class="BabMailBackground">
+<tr>
+<td class="BabSiteAdminFontBackground" align="center"> 
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center" ><a class="BabSiteAdminListLink" 
+href="{ rooturl }">{ root }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" 
+href="{ refreshurl }">{ refresh }</a></td>
+</tr>
+</table>
+<br>
+{ rootpath }/{ path } 
+<br>
+<br>
+<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr>
+<td class="BabSiteAdminTitleFontBackground" colspan="2">&nbsp;{ nametxt }</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;{ sizetxt }</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;{ modifiedtxt }</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;{ postedtxt }</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+</tr>
+<!--#in getnextdir --> <tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+<!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name -->
+</td>          
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
+href="{ url }">{ name }</a></td>
+<td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
+</tr><!--#endin getnextdir -->
+<!--#in getnextgrpdir --> <tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+{ grpfolderimg } 
+</td>          
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
+href="{ url }">{ name }</a></td>
+<td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
+</tr><!--#endin getnextgrpdir -->
+<!--#in getnextmgrpdir --> <tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+{ manfolderimg } 
+</td>          
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
+href="{ url }">{ name }</a></td>
+<td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
+</tr><!--#endin getnextmgrpdir -->
+<!--#in getnextfile --> <tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+{ fileimage }</td>          
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp; 
 <!--#if bmanager -->
-		  <a class="BabGroupsAdminListLink" href="{ url }">{ name }</a>&nbsp;<!--#if bconfirmed "== 1" -->*<!--#endif bconfirmed -->
+<a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
+<!--#if bconfirmed "== 1" -->
+* 
+<!--#endif bconfirmed -->
 <!--#else bmanager -->
-		  { name }
-<!--#endif bmanager --></td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ sizef }&nbsp;{ bytes }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ modified }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ postedby }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap><a class="BabGroupsAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
-          <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;
+{ name } 
+<!--#endif bmanager -->
+</td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ sizef }&nbsp;{ 
+bytes }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ modified }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ postedby }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" align="right"><a 
+class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">&nbsp; 
 <!--#if bmanager -->
-		  <a class="BabGroupsAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" border="0" alt="{ cuttxt }"></a>&nbsp;
-		  <a class="BabGroupsAdminListLink" href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a>
-<!--#endif bmanager --></td>
-        </tr><!--#endin getnextfile -->
-       <!--#in getnextxfile --> <tr> 
-          <td class="BabLoginMenuBackground" width="1%" align="right" nowrap valign="middle"> 
-            { fileimage }&nbsp;
-          </td>          
-          <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;
+<a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" border="0" 
+alt="{ cuttxt }"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><img 
+src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a> 
+<!--#endif bmanager -->
+</td>
+</tr><!--#endin getnextfile -->
+<!--#in getnextxfile --> <tr> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+{ fileimage }</td>          
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp; 
 <!--#if bmanager -->
-		  <a class="BabGroupsAdminListLink" href="{ url }">{ name }</a>&nbsp;<!--#if bconfirmed "== 1" -->*<!--#endif bconfirmed -->
+<a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
+<!--#if bconfirmed "== 1" -->
+* 
+<!--#endif bconfirmed -->
 <!--#else bmanager -->
-		  { name }
-<!--#endif bmanager --></td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ sizef }&nbsp;{ bytes }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ modified }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ postedby }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap><a class="BabGroupsAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
-          <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;
+{ name } 
+<!--#endif bmanager -->
+</td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ sizef }&nbsp;{ 
+bytes }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ modified }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ postedby }</td>
+<td class="BabSiteAdminFontBackground" valign="middle" align="right"><a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">&nbsp; 
 <!--#if bmanager -->
-		  <a class="BabGroupsAdminListLink" href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" border="0" alt="{ paste }"></a>
-<!--#endif bmanager --></td>
-        </tr><!--#endin getnextxfile -->
-      </table>
-    </td>
-  </tr>
+<a class="BabSiteAdminListLink" href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" border="0" 
+alt="{ paste }"></a> 
+<!--#endif bmanager -->
+</td>
+</tr><!--#endin getnextxfile -->
+</table>
+</td>
+</tr>
 </table>
 <!--#if bmanager -->
 <br>
@@ -146,31 +171,35 @@
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="gr" value="{ gr }">
 <input type="hidden" name="path" value="{ path }">
-  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              directory }</td>
-            <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">
-              <input type="text" name="dirname" size="30" value="">
-            </td>
-            <td class="BabLoginMenuBackground" width="35%" align="left" valign="middle">
-              <input type="submit" name="create" value="{ mkdir }">&nbsp;&nbsp;<input type="submit" name="rename" value="{ rename }">
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<table  width="70%" border="0" cellspacing="0" cellpadding="1" align="center">
+<tr> 
+<td class="Blackbg" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right">{ directory }</td>
+<td class="BabLoginMenuBackground" width="35%">
+<input type="text" name="dirname" size="30" value="">
+</td>
+<td class="BabLoginMenuBackground" width="35%">
+<input type="submit" name="create" value="{ mkdir }">&nbsp;&nbsp;<input type="submit" name="rename" value="{ rename }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 
 <!--#if bdel -->
-<center><br><input type="submit" name="bdel" value="{ delete }"></center>
+<br><input type="submit" name="bdel" value="{ delete }">
 <!--#endif bdel -->
 </form>
 <!--#endif bmanager -->
+<br>
+</td>
+</tr>
+</table>
 <!--#end fileslist -->
+
 
 <!--#begin updatefile -->
 <form method="post" action="index.php">
@@ -182,65 +211,61 @@
 <input type="hidden" name="path" value="{ path }">
 <input type="hidden" name="file" value="{ file }">
 <input type="hidden" name="idf" value="{ idf }">
-  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              name }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="name" size="45" maxlength="255" value="{ nameval }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              description }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="description" size="60" maxlength="255" value="{ descval }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              keywords }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              attribute }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <select name="readonly">
-                <option value="N" { noselected }>{ no }</option>
-                <option value="Y" { yesselected }>{ yes }</option>
-              </select>
-			</td>
-          </tr>
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<input type="text" name="name" size="45" maxlength="255" value="{ nameval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="text" name="description" size="60" maxlength="255" value="{ descval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="readonly">
+  <option value="N" { noselected }>{ no }</option>
+  <option value="Y" { yesselected }>{ yes }</option>
+</select>
+</td>
+</tr>
 <!--#if bmanager -->
-          <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              confirm }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <select name="confirm">
-                <option value="N" { confirmno }>{ no }</option>
-                <option value="Y" { confirmyes }>{ yes }</option>
-              </select>
-			</td>
-          </tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ confirm }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="confirm">
+  <option value="N" { confirmno }>{ no }</option>
+  <option value="Y" { confirmyes }>{ yes }</option>
+</select>
+</td>
+</tr>
 <!--#endif bmanager -->
-          <tr>
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-              <input type="submit" name="Submit" value="{ add }">
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<tr>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="submit" name="Submit" value="{ add }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 </form>
 <!--#end updatefile -->
+
 <!--#begin trashfiles -->
 
 <form method="post" action="index.php" name="listform">
@@ -249,30 +274,34 @@
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="gr" value="{ gr }">
 <input type="hidden" name="cdel" value="update">
-<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-  <tr> 
-    <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-      <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr>
-          <td class="BabGroupsAdminTitleFontBackground" align="left" nowrap valign="middle">&nbsp;</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="left" nowrap valign="middle">&nbsp;</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="left" nowrap valign="middle">&nbsp;{ nametxt }</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ sizetxt }</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ modifiedtxt }</td>
-          <td class="BabGroupsAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ postedtxt }</td>
-        </tr>
-       <!--#in getnextfile --><tr> 
-          <td class="BabLoginMenuBackground" width="1%" align="right" nowrap valign="middle"><input type="checkbox" name="items[]" value="{ idfile }"></td>          
-          <td class="BabLoginMenuBackground" width="1%" align="right" nowrap valign="middle">{ fileimage }&nbsp;</td>          
-          <td class="BabLoginMenuBackground" align="left" nowrap valign="middle" nowrap>&nbsp;{ name }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ sizef }&nbsp;{ bytes }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ modified }</td>
-          <td class="BabGroupsAdminAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ postedby }</td>
-        </tr><!--#endin getnextfile -->
-      </table>
-    </td>
-  </tr>
-</table><br>
-<center><input type="submit" name="delete" value="{ delete }">&nbsp;&nbsp;<input type="submit" name="restore" value="{ restore }"></center>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground" align="center">
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;{ nametxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ sizetxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ modifiedtxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" nowrap valign="middle">&nbsp;{ postedtxt }</td>
+</tr>
+<!--#in getnextfile --><tr> 
+<td class="BabSiteAdminFontBackground" width="1%" align="right" nowrap valign="middle"><input type="checkbox" name="items[]" value="{ idfile }"></td>          
+<td class="BabSiteAdminFontBackground" width="1%" align="right" nowrap valign="middle">{ fileimage }&nbsp;</td>          
+<td class="BabSiteAdminFontBackground" nowrap>&nbsp;{ name }</td>
+<td class="BabSiteAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ sizef }&nbsp;{ bytes }</td>
+<td class="BabSiteAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ modified }</td>
+<td class="BabSiteAdminFontBackground" align="right" valign="middle" nowrap>&nbsp;{ postedby }</td>
+</tr><!--#endin getnextfile -->
+</table>
+<div align ="center"><br>
+<input type="submit" name="delete" value="{ delete }">&nbsp;&nbsp;<input type="submit" name="restore" 
+value="{ restore }">
+<br>
+</div>
+</td>
+</tr>
+</table>
 </form>
 <!--#end trashfiles -->

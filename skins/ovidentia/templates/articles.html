@@ -1,145 +1,101 @@
 
-
 <!--#begin articlecreatebyfile -->
 
 
-<table border="0" width="90%" cellpadding="0" cellspacing="0" align="center">
-
-<tr><td>
-
-
-
 <form method="post" action="index.php" enctype="multipart/form-data">
-
 <input type="hidden" name="tg" value="articles">
-
 <input type="hidden" name="idx" value="Articles">
-
 <input type="hidden" name="topics" value="{ topics }">
-
 <input type="hidden" name="addarticle" value="add">
-        <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-          <tr> 
-            <td class="BabTopicsCadreFilesFontBackground" align="center" valign="middle"> 
-              <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-                <tr> 
-                  <td class="BabTopicsBodyFilesrFontBackground" width="30%" align="right" nowrap valign="middle">{ 
-                    title }</td>
-                  <td class="BabTopicsBodyFilesrFontBackground" width="70%" align="left" valign="middle"> 
-                    <input type="text" name="title" size="60">
-                  </td>
-                </tr>
-                <tr> 
-                  <td class="BabTopicsBodyFilesrFontBackground" width="30%" align="right" nowrap valign="middle">{ 
-                    doctag }</td>
-                  <td class="BabTopicsBodyFilesrFontBackground" width="70%" align="left" valign="middle"> 
-                    <input type="text" name="doctag" size="30">
-                  </td>
-                </tr>
-                <tr> 
-                  <td class="BabTopicsBodyFilesrFontBackground" width="30%" align="right" nowrap valign="middle">{ 
-                    introtag }</td>
-                  <td class="BabTopicsBodyFilesrFontBackground" width="70%" align="left" valign="middle"> 
-                    <input type="text" name="introtag" size="30">
-                  </td>
-                </tr>
-                <tr> 
-                  <td class="BabTopicsBodyFilesrFontBackground" width="30%" align="right" nowrap valign="middle">{ 
-                    filename }</td>
-                  <td class="BabTopicsBodyFilesrFontBackground" width="70%" align="left" valign="middle"> 
-                    <input type="file" name="filename" size="60">
-                  </td>
-                </tr>
-                <tr> 
-                  <td class="BabTopicsBodyFilesrFontBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
-                  <td class="BabTopicsBodyFilesrFontBackground" width="70%" align="left" valign="middle"> 
-                    <input type="submit" name="submit" value="{ add }">
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </form>
-
-</td></tr>
-
+<table border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ title }</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="title" size="40" maxlength="100">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ doctag }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="doctag" size="30" maxlength="50">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ introtag }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="introtag" size="30" maxlength="50">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ filename }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="file" name="filename" size="25" maxlength="40">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ add }">
+</td>
+</tr>
 </table>
-
+</td>
+</tr>
+</table>
+</form>
+<br>
 <!--#end articlecreatebyfile -->
 <br>
-<br><br><br><br>
-
+<br>
+<br>
+<br>
+<br>
 <!--#begin introlist -->
-
-
-
 <!--#in getnext -->
-
-
-
-  <table   border="0" width="95%%" cellpadding="3" cellspacing="0" align="center">
-    <tr><td colspan="2" class="BabTopicsTitleBackground">{ arr[title] }</td>
-
-</tr>
-
-<tr><td class="BabTopicsBackground" colspan="2">{ content }</td>
-
-</tr>
-
+<table   border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <tr>
-
-<td class="BabTopicsAuthorBackground" nowrap>{ author }</td>
-
-<td class="BabTopicsAuthorBackground" align="right" nowrap><a class="BabTopicsFooterLinkColor" href="{ commentsurl }">{ commentsname }</a>&nbsp;&nbsp;&nbsp;<a class="BabTopicsFooterLinkColor" href="{ moreurl }">{ morename }</a></td>
-
+<td colspan="2" class="BabTopicsTitleBackground">{ arr[title] }</td>
 </tr>
-
-
-
+<tr>
+<td class="BabTopicsBackground" colspan="2">{ content }</td>
+</tr>
+<tr> 
+<td class="BabTopicsAuthorBackground" nowrap width="80%">{ author }</td>
+<td class="BabTopicsAuthorBackground" align="right" nowrap width="20%"><a class="BabTopicsFooterLink" href="{ commentsurl }">{ commentsname }</a>&nbsp;&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a></td>
+</tr>
 </table>
-
-  <br>
-
+<br>
 <!--#endin getnext -->
-
-
-
 <!--#end introlist -->
-
-<br><br><br><br><br>
-
+<br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin readmore -->
-
-
-
 <!--#in getnext -->
-
-
-
-  <table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-    <tr>
-      <td class="BabTopicsTitleBackground" align="left" valign="middle">{ arr[title] 
-        }</td>
-    </tr>
-
-<tr><td class="BabTopicsBackground" >{ content }</td></tr>
-
-<tr><td colspan="2" class="" align="right" nowrap></td></tr>
-
-
-
+<table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td class="BabTopicsTitleBackground" valign="middle">{ arr[title] }</td>
+</tr>
+<tr>
+<td class="BabTopicsBackground" >{ content }</td>
+</tr>
+<tr>
+<td colspan="2">&nbsp;</td>
+</tr>
 </table>
-
-  <br>
-
+<br>
 <!--#endin getnext -->
-
-
 <!--#end readmore -->
-
-<br><br><br><br><br>
-
+<br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin modifyarticle -->
 <form name= "modarticle" method="post" action="index.php">
 <input type="hidden" name="tg" value="articles">
@@ -147,176 +103,172 @@
 <input type="hidden" name="topics" value="{ topics }">
 <input type="hidden" name="article" value="{ article }">
 <input type="hidden" name="modify" value="modify">
-<table class="BabTopicsAdminCadreEditorFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-  <tr> 
-    <td> 
-      <table class="BabTopicsAdminBodyEditorFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-        <!-- Instanciation de la barre d'outils -->
-        <!--#if msie "== 1" -->
-        <tr class="BabSectionsAdminTitleFontBackground" align="left"> 
-          <td  class="BabTopicsAdminBodyEditorFontBackground" align="center" valign="middle"> 
-            <script src="{ babScriptPath }SaisieFormatee.js"></script>
-            <textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext">{ headval }</textarea>
-            <textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext">{ bodyval }</textarea>
-            <script language="JavaScript"> 
+<table class="BabLoginCadreBackground" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!-- Toolbar articlesmodify-->
+<!--#if msie "== 1" -->
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle"> 
+<script src="{ babScriptPath }SaisieFormatee.js"></script>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext">{ headval }</textarea>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext">{ bodyval }</textarea>
+<script language="JavaScript"> 
 			var idGenerator = new IDGenerator(0);
 			var editor = new Editor(idGenerator, '{ babEditorImages }');
 			editor.ToolBar();
 			</script>
-          </td>
-        </tr>
-        <!--#endif msie -->
-        <tr align="right" valign="middle"> 
-          <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center">{ 
-            title } </td>
-        </tr>
-        <tr align="center" valign="middle"> 
-          <td width="91%"> 
-            <input type="text" name="title" size="60" value="{ titleval }">
-          </td>
-        </tr>
-        <tr> 
-          <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center" valign="middle">{ 
-            head } </td>
-        </tr>
-        <tr> 
-          <td width="91%" align="center" valign="middle"> 
-            <!--#if msie "== 1" -->
-            <script language="JavaScript">
+</td>
+</tr>
+<!--#endif msie -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle" align="center">{ title } </td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<input type="text" name="title" size="50" value="{ titleval }" maxlength="100">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ head } </td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<script language="JavaScript">
 	editor.InFrame(0, "headtext", "modarticle", "100%", "160");
 </script>
-            <!--#else msie -->
-            <textarea cols="70" rows="5" name="headtext">{ headval }</textarea>
-            <!--#endif msie -->
-          </td>
-        </tr>
-        <tr> 
-          <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center" valign="middle">{ 
-            body }</td>
-        </tr>
-        <tr> 
-          <td width="91%" align="center" valign="middle"> 
-            <!--#if msie "== 1" -->
-            <script language="JavaScript">
+<!--#else msie -->
+<textarea cols="50" rows="5" name="headtext">{ headval }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ body }</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<script language="JavaScript">
 	editor.InFrame(1, "bodytext", "modarticle", "100%", "200");
 </script>
-            <!--#else msie -->
-            <textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea>
-            <!--#endif msie -->
-          </td>
-        </tr>
-        <!--#if msie "== 1" -->
-        <tr> 
-          <td width="91%" align="center" valign="middle"> 
-            <input onClick=SetVals() type="submit" name="submit" value="{ modify }">
-            <script language="JavaScript">
+<!--#else msie -->
+<textarea cols="50" rows="20" name="bodytext">{ bodyval }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<!--#if msie "== 1" -->
+<tr> 
+<td align="center" valign="middle"> 
+<input onClick=SetVals() type="submit" name="submit" value="{ modify }">
+<script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.FinalInstantiate(1);
 	editor.CloseInitSection();
 </script>
-          </td>
-        </tr>
-        <!--#else msie -->
-        <tr> 
-          <td width="91%" align="center" valign="middle"> 
-            <input type="submit" name="submit" value="{ modify }">
-          </td>
-        </tr>
-        <!--#endif msie -->
-      </table>
-    </td>
-  </tr>
+</td>
+</tr>
+<!--#else msie -->
+<tr> 
+<td align="center" valign="middle"> 
+<input type="submit" name="submit" value="{ modify }">
+</td>
+</tr>
+<!--#endif msie -->
+</table>
+</td>
+</tr>
 </table>
 </form>
 <!--#end modifyarticle -->
-
-<br><br><br><br><br>
-
+<br>
+<br>
+<br>
+<br>
+<br>
 <!--#begin createarticle -->
 <form name="createart" method="post" action="index.php">
 <input type="hidden" name="tg" value="articles">
 <input type="hidden" name="idx" value="More">
 <input type="hidden" name="topics" value="{ topics }">
 <input type="hidden" name="addart" value="add">
-<table class="BabTopicsAdminCadreEditorFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-  <tr> 
-    <td> 
-      <table class="BabTopicsAdminBodyEditorFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-        <!-- Instanciation de la barre d'outils -->
-        <!--#if msie "== 1" -->
-        <tr class="BabSectionsAdminTitleFontBackground" align="left"> 
-          <td  class="BabTopicsAdminBodyEditorFontBackground" align="center" valign="middle"> 
-            <script src="{ babScriptPath }SaisieFormatee.js"></script>
-            <textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext"></textarea>
-            <textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext"></textarea>
-            <script language="JavaScript"> 
+<table class="BabLoginCadreBackground" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!-- toolbar articlescreate -->
+<!--#if msie "== 1" -->
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle"> 
+<script src="{ babScriptPath }SaisieFormatee.js"></script>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="headtext"></textarea>
+<textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext"></textarea>
+<script language="JavaScript"> 
 			var idGenerator = new IDGenerator(0);
 			var editor = new Editor(idGenerator, '{ babEditorImages }');
 			editor.ToolBar();
 			</script>
-          </td>
-        </tr>
-        <!--#endif msie -->
-        <tr align="right" valign="middle"> 
-          <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center">{ 
-            title } </td>
-        </tr>
-        <tr align="center" valign="middle"> 
-          <td width="91%"> 
-            <input type="text" name="title" size="60" >
-          </td>
-        </tr>
-        <tr> 
-          <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center" valign="middle">{ 
-            head } </td>
-        </tr>
-        <tr> 
-          <td width="91%" align="center" valign="middle"> 
-            <!--#if msie "== 1" -->
-            <script language="JavaScript">
+</td>
+</tr>
+<!--#endif msie -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle" align="center">{ title } </td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<input type="text" name="title" size="60" >
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ head } </td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<script language="JavaScript">
 	editor.InFrame(0, "headtext", "createart", "100%", "160");
 </script>
-            <!--#else msie -->
-            <textarea cols="70" rows="5" name="headtext"></textarea>
-            <!--#endif msie -->
-          </td>
-        </tr>
-        <tr> 
-          <td class="BabTopicsAdminTitleEditorFontBackground" width="91%" align="center" valign="middle">{ 
-            body }</td>
-        </tr>
-        <tr> 
-          <td width="91%" align="center" valign="middle"> 
-            <!--#if msie "== 1" -->
-            <script language="JavaScript">
+<!--#else msie -->
+<textarea cols="50" rows="5" name="headtext"></textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ body }</td>
+</tr>
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<script language="JavaScript">
 	editor.InFrame(1, "bodytext", "createart", "100%", "200");
 </script>
-            <!--#else msie -->
-            <textarea cols="70" rows="20" name="bodytext"></textarea>
-            <!--#endif msie -->
-          </td>
-        </tr>
-        <!--#if msie "== 1" -->
-        <tr> 
-          <td width="91%" align="center" valign="middle"> 
-            <input onClick=SetVals() type="submit" name="submit" value="{ modify }">
-            <script language="JavaScript">
+<!--#else msie -->
+<textarea cols="50" rows="20" name="bodytext"></textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<!--#if msie "== 1" -->
+<tr> 
+<td align="center" valign="middle"> 
+<input onClick=SetVals() type="submit" name="submit" value="{ modify }">
+<script language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.FinalInstantiate(1);
 	editor.CloseInitSection();
 </script>
-          </td>
-        </tr>
-        <!--#else msie -->
-        <tr> 
-            <td width="91%" align="center" valign="middle" height="44"> 
-              <input type="submit" name="submit" value="{ modify }">
-          </td>
-        </tr>
-        <!--#endif msie -->
-      </table>
-    </td>
-  </tr>
+</td>
+</tr>
+<!--#else msie -->
+<tr> 
+<td align="center" valign="middle"> 
+<input type="submit" name="submit" value="{ modify }">
+</td>
+</tr>
+<!--#endif msie -->
+</table>
+</td>
+</tr>
 </table>
 </form>
 <!--#end createarticle -->

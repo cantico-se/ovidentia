@@ -1,6 +1,7 @@
 
-<!--#begin newvacation --><BR>
-<SCRIPT LANGUAGE="JavaScript">
+<!--#begin newvacation -->
+<BR>
+<SCRIPT language="JavaScript">
 <!--
 function updateDates(elemDay, elemMonth, elemYear)
 {
@@ -48,103 +49,100 @@ function dateEnd(day, month, year)
 <input type="hidden" name="tg" value="vacation">
 <input type="hidden" name="idx" value="confirmvac">
 <input type="hidden" name="newvacation" value="newvacation">
-  <table class="BabVacationCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td> 
-        <table class="BabVacationTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-                           <tr align="right" valign="middle"> 
-            <td width="45%" align="center"><a class="BabVacationLink" href="{ datebegin }">{ 
-              datebegintxt }</a>: </td>
-            <td width="23%" align="center">
-              <select name="daybegin">
-                <!--#in getnextday -->
-                <option value="{ dayid }" { selected }>{ dayid }</option>
-                <!--#endin getnextday -->
-              </select>
-            </td>
-            <td width="23%" align="center">
-              <select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-                <!--#in getnextmonth -->
-                <option value="{ monthid }" { selected }>{ monthname }</option>
-                <!--#endin getnextmonth -->
-              </select>
-            </td>
-            <td width="46%" align="center">
-              <select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-                <!--#in getnextyear -->
-                <option value="{ yearid }" >{ yearidval }</option>
-                <!--#endin getnextyear -->
-              </select>
-            </td>
-            <td width="46%" align="center">
-              <select name="halfdaybegin">
-                <!--#in getnexthalf -->
-                <option value="{ halfid }" >{ halfname }</option>
-                <!--#endin getnexthalf -->
-              </select>
-            </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-            <td width="45%"><a class="BabVacationLink" href="{ dateend }">{ dateendtxt 
-              }</a>: </td>
-            <td width="0%">
-              <select name="dayend">
-                <!--#in getnextday -->
-                <option value="{ dayid }"  { selected }>{ dayid }</option>
-                <!--#endin getnextday -->
-              </select >
-            </td>
-            <td width="0%">
-              <select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-                <!--#in getnextmonth -->
-                <option value="{ monthid }"  { selected }>{ monthname }</option>
-                <!--#endin getnextmonth -->
-              </select >
-            </td>
-            <td width="0%">
-              <select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-                <!--#in getnextyear -->
-                <option value="{ yearid }" >{ yearidval }</option>
-                <!--#endin getnextyear -->
-              </select >
-            </td>
-            <td width="46%">
-              <select name="halfdayend">
-                <!--#in getnexthalf -->
-                <option value="{ halfid }" >{ halfname }</option>
-                <!--#endin getnexthalf -->
-              </select >
-            </td>
-          </tr>
-     
-          <tr align="center" valign="middle"> 
-            <td  width="45%">{ vactype }: 
-            </td>
-            <td  width="46%" colspan="4" align="left"> 
-              <select name="vactype">
-                <!--#in getnextvac -->
-                <option value="{ vacid }" >{ vacname }</option>
-                <!--#endin getnextvac -->
-              </select>
-            </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-            <td width="45%">{ remark }: </td>
-            <td width="46%" colspan="4" align="left"> 
-              <input type="text" name="remarks" size="60" maxlength="255" value="">
-            </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-            <td width="45%">&nbsp;</td>
-            <td width="46%" colspan="4" align="left"> 
-              <input type="submit" name="Submit" value="{ addvac }">
-            </td>
-          </tr>
-        
-        </table>
-      </td>
-    </tr>
-  </table>
+<table class="BabLoginCadreBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="{ datebegin }">{ datebegintxt }</a>: </td>
+<td valign="middle"> 
+<select name="daybegin">
+  <!--#in getnextday -->
+  <option value="{ dayid }" { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }" { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }" >{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select>
+</td>
+<td valign="middle"> 
+<select name="halfdaybegin">
+  <!--#in getnexthalf -->
+  <option value="{ halfid }" >{ halfname }</option>
+  <!--#endin getnexthalf -->
+</select>
+</td>
+</tr>
+<tr> 
+<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="{ dateend }">{ dateendtxt }</a>: </td>
+<td valign="middle"> 
+<select name="dayend">
+  <!--#in getnextday -->
+  <option value="{ dayid }"  { selected }>{ dayid }</option>
+  <!--#endin getnextday -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextmonth -->
+  <option value="{ monthid }"  { selected }>{ monthname }</option>
+  <!--#endin getnextmonth -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+  <!--#in getnextyear -->
+  <option value="{ yearid }" >{ yearidval }</option>
+  <!--#endin getnextyear -->
+</select >
+</td>
+<td valign="middle"> 
+<select name="halfdayend">
+  <!--#in getnexthalf -->
+  <option value="{ halfid }" >{ halfname }</option>
+  <!--#endin getnexthalf -->
+</select >
+</td>
+</tr>
+<tr> 
+<td align="right" valign="middle">{ vactype }: </td>
+<td colspan="4" valign="middle"> 
+<select name="vactype">
+  <!--#in getnextvac -->
+  <option value="{ vacid }" >{ vacname }</option>
+  <!--#endin getnextvac -->
+</select>
+</td>
+</tr>
+<tr> 
+<td align="right" valign="middle">{ remark }: </td>
+<td colspan="4" valign="middle"> 
+<input type="text" name="remarks" size="45" maxlength="255" value="">
+</td>
+</tr>
+<tr> 
+<td>&nbsp;</td>
+<td colspan="4" valign="middle"> 
+<input type="submit" name="Submit" value="{ addvac }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
 </form>
 
 <!--#end newvacation -->
@@ -161,62 +159,64 @@ function dateEnd(day, month, year)
 <input type="hidden" name="vactype" value="{ vactype }">
 <input type="hidden" name="remarks" value="{ remarks }">
 <input type="hidden" name="addvacation" value="add">
-  <table class="BabVacationCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td> 
-        <table class="BabVacationTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-                 
-          <tr align="right" valign="middle"> 
-            <td  width="30%" align="center">{ from }:</td>
-            <td  width="70%" align="left">{ datefrom } { halfdayfrom } </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-            <td  width="30%">{ to }:</td>
-            <td align="left" width="70%">{ dateto }&nbsp;{ halfdayto } </td>
-          </tr>
-
-          <tr align="center" valign="middle"> 
-            <td  width="30%">{ type }</td>
-            <td width="70%" align="left">{ typename } </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-            <td  width="30%">{ remarkstext }</td>
-            <td width="70%" align="left">{ remarks } </td>
-          </tr>
-          <tr align="center" valign="middle"> 
-                        <td  align="center"> 
-              <input type="submit" name="submit" value="{ confirm }">
-            </td>
-          </tr>
-        
-        </table>
-      </td>
-    </tr>
-  </table>
+<table class="BabLoginCadreBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td width="30%" align="right">{ from }: </td>
+<td width="70%">{ datefrom } { halfdayfrom } </td>
+</tr>
+<tr> 
+<td align="right">{ to }: </td>
+<td>{ dateto }&nbsp;{ halfdayto } </td>
+</tr>
+<tr> 
+<td align="right">{ type }: </td>
+<td>{ typename } </td>
+</tr>
+<tr> 
+<td align="right">{ remarkstext }: </td>
+<td>{ remarks } </td>
+</tr>
+<tr> 
+<td colspan="2" align="center"> 
+<input type="submit" name="submit" value="{ confirm }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
 </form>
-
+<br>
 <!--#end confirmvacation -->
 <!--#begin vacationslist -->
 <BR>
-    <table class="BabVacationCadreFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-      <tr> 
-        <td> 
-          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-                       
-            <tr align="right" valign="middle"> 
-              <td class="BabVacationTitleFontBackground" width="30%" align="center">{ type }</td>
-              <td class="BabVacationTitleFontBackground" width="25%" align="center">{ begin } </td>
-              <td class="BabVacationTitleFontBackground" width="25%" align="center">{ end } </td>
-              <td class="BabVacationTitleFontBackground" width="20%" align="center">{ status } </td>
-            </tr><!--#in getnext -->
-            <tr align="center" valign="middle"> 
-              <td class="BabVacationBodyFontBackground">{ typename }&nbsp;</td>
-              <td class="BabVacationBodyFontBackground">{ datebegin }&nbsp;</td>
-              <td class="BabVacationBodyFontBackground">{ dateend }&nbsp;</td>
-              <td class="BabVacationBodyFontBackground">{ statusval }&nbsp;</td>
-            </tr><!--#endin getnext -->
-          </table>
-        </td>
-      </tr>
-    </table>
-    <!--#end vacationslist -->
+<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">      
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="30%">&nbsp;{ type }</td>
+<td class="BabSiteAdminTitleFontBackground" width="25%">{ begin } </td>
+<td class="BabSiteAdminTitleFontBackground" width="25%">{ end } </td>
+<td class="BabSiteAdminTitleFontBackground" width="20%" align="right">{ status 
+} </td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground">&nbsp;{ typename }</td>
+<td class="BabSiteAdminFontBackground">{ datebegin }</td>
+<td class="BabSiteAdminFontBackground">{ dateend }</td>
+<td class="BabSiteAdminFontBackground" align="right">{ statusval }&nbsp;</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end vacationslist -->

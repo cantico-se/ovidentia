@@ -1,5 +1,5 @@
 *****************************************************************************
-*********************                  Ovidentia                      *******
+**3.1****************                  Ovidentia                      *******
 *****************************************************************************
 ************************   Description des Templates     ********************
 *****************************************************************************
@@ -16,380 +16,419 @@
 
 
 - acl.html **********************************************************************
-	aclgroups
+3.0	aclgroups
 		Gestion des droits d'accés des groupes
 	
 - address.html ******************************************************************
-	addresslist
+3.0	addresslist
 		Liste des contacts en popup
 
 - admcals.html ******************************************************************
-	calendargroups
+3.0	calendargroups
 		Choix des groupes pour l'utilisation du calendrier
 
 - admfaqs.html ******************************************************************
-	categorycreate
+3.0	categorycreate
 		Creation des categories de FAQ
-	categorylist
+3.0	categorylist
 		Liste des categories de FAQ
-	categorymodify
+3.0	categorymodify
 		Modification des categories de FAQ
 		
+- admfiles.html ******************************************************************
+3.1	admfileslist
+		 List of groups - Filemanager
+		
 - adminsection.html **************************************************************
-	template
+3.0	template
 		Presentation de la section administration
 
 - admvacs.html *****************************************************************
 	vacationcreate
-		Creation de type de congés
+3.0		Creation de type de congés
 	vacationmodify
 		Modification des types de congés
-	vacationslist
+3.0	vacationslist
 		Liste des types de congés
-	statuscreate
+3.0	statuscreate
 		Creation d'un status de congés
-	statuslist
+3.0	statuslist
 		Liste des status de congés
-	statusmodify
+3.0	statusmodify
 		Modification des status de congés
 
 - articleprint.html ***************************************************************
-		Presentation des articles en pleine page
+3.0		Presentation des articles en pleine page
 	
 - articles.html *****************************************************************
-	articlecreatebyfile
+3.0	articlecreatebyfile
 		Creation d'un article depuis un fichier
-	introlist
+3.0	introlist
 		Liste des articles (presentation des intros)
-	readmore
+3.0	readmore
 		Presentation du corps de l'article
-	modifyarticle
+3.0	modifyarticle
 		Modification d'un article
-	createarticle
+3.0	createarticle
 		Creation d'un article
 
 - calendar.html ****************************************************************
-	calmonth
+3.0	calmonth
 		Presentation de l'agenda mensuel
-	calweek
+3.0	calweek
 		Presentation de l'agenda hebdomadaire
-	calday
+3.0	calday
 		Presentation de l'agenda quotidien
-	categorieslist
+3.0	categorieslist
 		Presentation de la liste des categories
 
 - calopt.html ******************************************************************
-	caloptions
+3.0	caloptions
 		Definition des options de l'agenda
-	access
+3.0	access
 		Definition des droits sur l'agenda pour les autres utilisateurs
 
 - calview.html *****************************************************************
-	eventslist
+3.0	eventslist
 		Liste des prochains evenements de l'agenda
-	articleslist
+3.0	articleslist
 		Liste des derniers articles publiés
-	threadslist
+3.0	threadslist
 		Liste des dernieres contributions dans les forums
-	mailslist
+3.0	mailslist
 		Presentation du nombre de messages dans les boite aux lettres
 
 - comments.html ***************************************************************
-	commentcreate
+3.0	commentcreate
 		Creation d'un commentaire
-	commentslist
+3.0	commentslist
 		Liste des commentaires
-	commentread
+3.0	commentread
 		Presentation d'un commentaire
 
 - concals.html *****************************************************************
-	categorycreate
+3.0	categorycreate
 		Creation des categories d'evenements
-	categorieslist
+3.0	categorieslist
 		Liste des categories d'evenements
-	categorycalmodify
+3.0	categorycalmodify
 		Modification des categories d'evenements
-	resourceslist
+3.0	resourceslist
 		Liste des ressources 
-	resourcecreate
+3.0	resourcecreate
 		Creation d'une ressource
-	resourcecalmodify
+3.0	resourcecalmodify
 		Modification des ressources
 
 - config.html ******************************************************************
-	babLogoLT
+3.0	babLogoLT
 		Logo de l'angle haut gauche du portail
-	babLogoRT
+3.0	babLogoRT
 		Logo de l'angle haut droit du portail
-	babLogoLB
+3.0	babLogoLB
 		Logo de l'angle bas gauche du portail
-	babLogoRB
+3.0	babLogoRB
 		Logo de l'angle bas droite du portail
-	babBanner
+3.0	babBanner
 		Banniere centrale du haut du portail
-	babWaitingArticle
+3.0	babWaitingArticle
 		Puce d'indication de l'attente de validation d'un article
-	babWaitingComment
+3.0	babWaitingComment
 		Puce d'indication de l'attente de validation d'un commentaire
-	babMeta
-		Meta tag pour robots de referencement de site
-
+3.1	babMeta
+		Meta tags for robots indexing
+3.1	babfolders
+		Icons for filemanager - path
+		
 - contact.html *****************************************************************
-	contactcreate
+3.0	contactcreate
 		Creation d'un contact
-	contactunload
+3.0	contactunload
 		Page de fermeture temporisée apres l'enregistrement d'un contact
 
 - contacts.html ****************************************************************
-	contactslist
+3.0	contactslist
 		Liste des contacts
 
 - entry.html ******************************************************************
-	homepage0
+3.0	homepage0
 		Presentation des articles pour les utilisateurs enregistrés/non enregistrés
-	readmore
+3.0	readmore
 		Presentation de tout l'article pour les utilisateurs nenregistrés/non enregistrés
 
 - event.html *******************************************************************
-	newevent
+3.0	newevent
 		Creation d'un rendez vous dans l'agenda
-	modifyevent
+3.0	modifyevent
 		Modification d'un rendez vous de l'agenda
-	viewevent
+3.0	viewevent
 		Lecture d'un rendez vous de l'agenda
 
 - faq.html *********************************************************************
-	categorylist
+3.0	categorylist
 		Liste des categories de FAQ
-	questionlist
+3.0	questionlist
 		Liste des questions d'une categorie
-	admquestionlist
+3.0	admquestionlist
 		Liste des Question pour l'administrateur de la categorie d'une faq
-	admquestioncreate
+3.0	admquestioncreate
 		Creation des questions/reponses pour l'administrateur de la  categorie d'une faq
-	admquestionmodify
+3.0	admquestionmodify
 		Modification des questions/reponses  pour l'administrateur d'une categorie de faq
-	viewquestion
+3.0	viewquestion
 		Presentation de la  question d'une categorie de faq et de sa reponse 
 
 - faqprint *********************************************************************
-	Presentation de la question d'une categorie de faq et de sa reponse en pleine page
+3.0	Presentation de la question d'une categorie de faq et de sa reponse en pleine page
+
+
+- fileman.html ******************************************************************
+3.1	addfile
+		Add files
+3.1	fileslist
+		List of files
+3.1	updatefile
+		Update files
+3.1	trashfiles
+		Trash files
 
 - forums.html ******************************************************************
-	forumcreate
+3.0	forumcreate
 		Creation d'un forum
-	forummodify
+3.0	forummodify
 		Modification d'un forum
-	forumslist
+3.0	forumslist
 		Liste des forums
 
 - forumssection.html *************************************************************
-	template
+3.0	template
 		Presentation de la section des forums
 
 - groups.html ******************************************************************
-	groupscreate
+3.0	groupscreate
 		Creation des groupes
-	groupslist
+3.0	groupslist
 		Listes des groupes
-	groupsmodify
+3.0	groupsmodify
 		Modification des groupes
-	memberslist
+3.0	memberslist
 		Liste des membres d'un groupe
-	groupvacation
+3.0	groupvacation
 		Validation et designation des approbateurs des congés
 
 - inbox.html *******************************************************************
-	maillist
+3.0	maillist
 		Liste des mails d'une boite aux lettres elecronique
-	mailview
+3.0	mailview
 		Presentation d'un courier electronique
 	
 
 - login.html *******************************************************************
-	login
+3.0	login
 		Page d'identification de l'utilisateur
-	changepassword
+3.0	changepassword
 		Page de modification du mot de passe d'un utilisateur
-	usercreate
+3.0	usercreate
 		Page d'enregistrement des utilistateurs
-	emailpassword
+3.0	emailpassword
 		page de demande d'envoie d'un email pour recuperer son mot de passe
 
 - mail.html *******************************************************************
-	mailcompose
+3.0	mailcompose
 		Compostion d'un courier electronique
-	mailunload
+3.0	mailunload
 		Page de fermeture temporisée apres l'envoi d'un courier electronique
 
 - maildoms.html ***************************************************************
-	domaincreate
+3.0	domaincreate
 		creation d'un domaine de messagerie
-	domainslist
+3.0	domainslist
 		Liste des domaines de messagerie
-	domainmodify
+3.0	domainmodify
 		modification d'un domaine de messagerie
 
 - *mailinfo.html ***************************************************************
-	articlewait
+3.0	articlewait
 		formattage d'un courier electronique signalant l'attente de validation d'un article
-	commentwait
+3.0	commentwait
 		formattage d'un courier electronique signalant l'attente de validation d'un commentaire
-	userregistration
+3.0	userregistration
 		formattage d'un courier electronique signalant l'attente de validation d'un enregistrement d'utilisateur
-	adminregistration
+3.0	adminregistration
 		formattage d'un courier electronique signalant l'attente de validation 
-	newpost
+3.0	newpost
 		formattage d'un courier electronique signalant l'attente de validation de contribution a un forum
-	confirmarticle
+3.0	confirmarticle
 		formattage d'un courier electronique signalant l acceptation/refus d'un article
-	confirmcomment
+3.0	confirmcomment
 		formattage d'un courier electronique signalant l'acceptation/refus d'un commentaire
 
 - mailopt.html ****************************************************************
-	accountcreate
+3.0	accountcreate
 		Creation d'un compte de messagerie
-	accountmodify
+3.0	accountmodify
 		Modification d'un compte de messagerie
-	accountslist
+3.0	accountslist
 		Liste des comptes de messagerie
-	signatureslist
+3.0	signatureslist
 		Liste des signatures
-	signaturecreate
+3.0	signaturecreate
 		Creation des signatures
-	signaturemodify
+3.0	signaturemodify
 		Modification des signatures
 
 - month.html *****************************************************************	
-	Presentation de la section du calendrier de la partie publique
+3.0	Presentation de la section du calendrier de la partie publique
 
 - montha.html ****************************************************************
-	Presentation de la section du calendrier de la partie privée
+3.0	Presentation de la section du calendrier de la partie privée
 
 - notes.html *****************************************************************
-	notescreate
+3.0	notescreate
 		Creation d'une note
-	noteslist
+3.0	noteslist
 		Liste des notes
-	notesmodify
+3.0	notesmodify
 		Modification des notes
 
 - options.html ****************************************************************
-	changepassword
+3.0	changepassword
 		Modification du mot de passe
-	changeuserinfo
+3.0	changeuserinfo
 		Modification des informations de l'utilisateur
-	changelang
+3.0	changelang
 		Modification de la langue d'Ovidentia
 
 - page.html ******************************************************************
-	Definition de la structure de base d'Ovidentia
+3.0	Definition de la structure de base d'Ovidentia
 
 - posts.html ****************************************************************
-	postcreate
+3.0	postcreate
 		Contribution a un forum
-	postedit
+3.0	postedit
 		Edition de la contribution d'un forum
-	newpostslist
+3.0	newpostslist
 		Liste des contributions d'un forum
 
 - sections.html ***************************************************************
-	sectionscreate
+3.0	sectionscreate
 		Creation d'une section
-	sectionslist
+3.0	sectionslist
 		Liste des sections
-	sectionsmodify
+3.0	sectionsmodify
 		Modification d'une section
-	sectionordering
-		Ordre des sections
+3.1	sectionordering
+		Order / position of sections
 
 - sectiontemplate.html *********************************************************
-	default	
+3.0	default	
 		Presentation des sections crées par les administrateurs
 
 - sites.html *****************************************************************
-	sitecreate
+3.0	sitecreate
 		Definition des options d'u site Ovidentia
-	siteslist
+3.0	siteslist
 		Liste des sites Ovidentia
-	sitemodify
+3.0	sitemodify
 		Modification des options d'un site Ovidentia
-	sitehomepage0
+3.0	sitehomepage0
 		Configuration de la presentation des articles de la page d'accueil public
-	sitehomepage1
+3.0	sitehomepage1
 		Configuration de la presentation des articles de la page d'accueil privée
 
 - threads.html **************************************************************
-	threadlist
+3.0	threadlist
 		Presentation de la liste des forums
-	threadcreate
+3.0	threadcreate
 		Presentation de la creation d'un forum
 
 - topics.html ****************************************************************
-	categorycreate
+3.0	categorycreate
 		Presentation d'un theme d'articles
-	categorylist
+3.0	categorylist
 		Presentation de la liste des themes
-	categorymodify
+3.0	categorymodify
 		Presentation de la modification d'un theme d'article
-	articleslist
+3.0	articleslist
 		Presentation de la liste des articles d'un theme
-	articleview
+3.0	articleview
 		Presentation d'un article dans l'administration des themes
 
 - topicssection.html ***********************************************************
-	template
+3.0	template
 		Presentation de la sections des themes d'articles
 
 - users.html *****************************************************************
-	userslist
+3.0	userslist
 		Presentation de la liste des utilisateurs
-	usercreate
+3.0	usercreate
 		Presentation de la creation d'un utilisateur
-	usersmodify
+3.0	usersmodify
 		Presentation de la modification d'un utilisateur
-	usersgroups
+3.0	usersgroups
 		Presentations des groupes de l'utilisateur
 
 - usersection.html ************************************************************
-	template
-		Presentation des sections crées par les administrateurs
+3.1	users section template
+		Presentation of the sections created by administrators
 
 - vacapp.html ***************************************************************
-	vacationslist
+3.0	vacationslist
 		Presentation de la liste des demandes de vacances aux approbateurs
-	updatevacation
+3.0	updatevacation
 		Presentation a un approbateur d accepter/refuser les demande
 
 - vacation.html **************************************************************
-	newvacation
+3.0	newvacation
 		Presentation de la creation d'une demande de vacances
-	confirmvacation
+3.0	confirmvacation
 		Presentation de la confirmation de demande de vacances
-	vacationslist
+3.0	vacationslist
 		Presentation de la liste des demandes de vacances
 
 - waiting.html ***************************************************************
-	introlist
+3.0	introlist
 		Presentation de la liste des articles en attentes de validation
-	readmore
+3.0	readmore
 		Presentation d'un article en attente de validation
-	modifyarticle
+3.0	modifyarticle
 		Modification d'un article en attente de validation
-	confirmarticle
+3.0	confirmarticle
 		Presentation de la page de confirmation d'un article
-	confirmcomment
+3.0	confirmcomment
 		Presentation de la page de confirmation d'un commentaire
 
 - warning.html **************************************************************
-	warningyesno
+3.0	warningyesno
 		Template de confirmation
-	texttitle
+3.0	texttitle
 		Presentation du Titre du Corps d'Ovidentia
-	texterror
+3.0	texterror
 		Presentation des erreurs
+
+
+
+
+- search.html **************************************************************
+3.1	search
+	Template search form
+3.1	searchresult
+	Template search results general
+3.1	viewart
+	Template view articles found
+3.1	viewcom
+	Template view comments found
+3.1	viewfor
+	Template view posts forums found
+3.1	viewfaq
+	Template view FAQ found
+3.1	viewfil
+	Template view files found
+3.1	viewcon
+	Template view contacts found
+
 
 *****************************************************************************
 ****END**********************************************************************
-************************** http://www.ovidentia.com *************************
+************************** http://www.ovidentia.org *************************
 *****************************************************************************

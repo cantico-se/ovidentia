@@ -1,15 +1,17 @@
 
+
 <!--#begin mailcompose -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-{ babCss }
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META NAME="Generator" CONTENT="Ovidentia">
+	<META NAME="Author" CONTENT="Ovidentia Community">
+	<META NAME="Keywords" CONTENT="">
+	<META NAME="Description" CONTENT="">
+	{ babCss }
+
 <script type="text/javascript">
 <!--
 function Start(page)
@@ -25,14 +27,13 @@ function mm()
   document.forms.composef.idx.value = "compose";
   document.forms.composef.submit.click();
 }
+
 <!--#endif bhtml -->
 //-->
 </script>
 </HEAD>
-<BODY class="BabBackground">
-<center>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-  <tr><td class="BabErrorMessage" ><center>&nbsp;{ msgerror }</center></td></tr></table><br>
+
+<BODY>
 <form method="post" name="composef" action="index.php" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="mail">
 <input type="hidden" name="idx" value="compose">
@@ -40,186 +41,195 @@ function mm()
 <input type="hidden" name="criteria" value="{ criteria }">
 <input type="hidden" name="reverse" value="{ reverse }">
 <input type="hidden" name="compose" value="message">
-  <table  class="BabMailEditCadreFontBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td class="BabMailEditCadreFontBackground" align="center" valign="middle"> 
-        <table  class="BabMailEditBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-            <td class="BabMailEditFromFontBackground" width="20%" align="right" nowrap valign="middle">{ 
-              from }</td>
-            <td class="BabMailEditFromFontBackground" width="80%" align="left" valign="middle"><b>{ 
-              fromval }</b></td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditForFontBackground" width="20%" align="right" nowrap valign="middle"><a class="BabMailEditLink" href="{ urlto }">{ 
-              to }</a></td>
-            <td class="BabMailEditForFontBackground" width="80%" align="left" valign="middle"> 
-              <input type="text" name="to" size="40" maxlength="50" value="{ toval }" maxlength="80">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditForFontBackground" width="20%" align="right" nowrap valign="middle"><a class="BabMailEditLink" href="{ urlto }">{ 
-              cc }</a></td>
-            <td class="BabMailEditForFontBackground" width="80%" align="left" valign="middle"> 
-              <input type="text" name="cc" size="40" maxlength="50" value="{ ccval }" maxlength="80">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditForFontBackground" width="20%" align="right" nowrap valign="middle"><a class="BabMailEditLink" href="{ urlto }">{ 
-              bcc }</a></td>
-            <td class="BabMailEditForFontBackground" width="80%" align="left" valign="middle"> 
-              <input type="text" name="bcc" size="40" maxlength="50" value="{ bccval }" maxlength="80">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditSubjectFontBackground" width="20%" align="right" nowrap valign="middle">{ 
-              subject }</td>
-            <td class="BabMailEditSubjectFontBackground" width="80%" align="left" valign="middle"> 
-              <input type="text" name="subject" size="60" maxlength="70" value="{ subjectval }" maxlength="80">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditJointFontBackground" width="20%" align="right" nowrap valign="middle">{ 
-              attachments }</td>
-            <td class="BabMailEditJointFontBackground" width="80%" align="left" valign="middle"> 
-              <input type="file" name="files[]" size="40" maxlength="50" value="{ file1 }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditJointFontBackground" width="20%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabMailEditJointFontBackground" width="80%" align="left" valign="middle"> 
-              <input type="file" name="files[]" size="40" maxlength="50" value="{ file2 }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditJointFontBackground" width="20%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="BabMailEditJointFontBackground" width="80%" align="left" valign="middle"> 
-              <input type="file" name="files[]" size="40" maxlength="50" value="{ file3 }">
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditFormatFontBackground" width="20%" align="right" nowrap valign="middle">{ 
-              format }</td>
-            <td class="BabMailEditFormatFontBackground" width="80%" align="left" valign="middle"> <select name="format" 
 
-                 
-              <!--#if bhtml "== 1" -->
-              onChange="mm()" 
-              <!--#endif bhtml -->
-              > <option value="plain" { plainselect }>{ plain }</option> <option value="html" { htmlselect }>{ 
-              html }</option> </select> </td>
-          </tr>
-          <!-- Instanciation de la barre d'outils -->
-          <!--#if msie "== 1" -->
-          <SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
-          <tr> 
-            <td class="" width="20%" align="right" nowrap valign="middle">&nbsp;</td>
-            <td class="" width="70%" align="left" valign="middle"> 
-              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message">{ messageval }</textarea>
-            </td>
-          </tr>
-          <tr> 
-            <td class="" colspan="2" align="center" nowrap valign="middle"> 
-              <script language="JavaScript"> 
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabContentBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td  class="BabMailText" width="20%" align="right" nowrap valign="middle">{ from }</td>
+<td  class="BabMailText" width="80%" valign="middle"><b>{ fromval }</b></td>
+</tr>
+<tr> 
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="{ urlto }">{ to }</a></td>
+<td  class="BabMailBackground" valign="middle">
+<input type="text" name="to" size="40" value="{ toval }" maxlength="80"> 
+</td>
+</tr>
+<tr> 
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="{ urlto }">{ cc }</a></td>
+<td class="BabMailBackground" valign="middle"> 
+<input type="text" name="cc" size="40" value="{ ccval }" maxlength="80"> 
+</td>
+</tr>
+<tr> 
+<td class="BabMailBackground" align="right" nowrap valign="middle"><a class="BabMailLink" href="{ urlto }">{ bcc }</a></td>
+<td class="BabMailBackground" valign="middle"> 
+<input type="text" name="bcc" size="40" value="{ bccval }" maxlength="80"> 
+</td>
+</tr>
+<tr> 
+<td class="BabMailText" align="right" nowrap valign="middle">{ subject }</td>
+<td class="BabMailBackground" valign="middle"> 
+<input type="text" name="subject" size="60" value="{ subjectval }" maxlength="80"> 
+</td>
+</tr>
+<tr> 
+<td class="BabMailText" align="right" nowrap valign="middle">{ attachments }</td>
+<td class="BabMailBackground" valign="middle"> 
+<input type="file" name="files[]" size="40" maxlength="50" value="{ file1 }">
+</td>
+</tr>
+<tr> 
+<td class="BabMailText" align="right" nowrap valign="middle">&nbsp;</td>
+<td class="BabMailBackground" align="left" valign="middle"> 
+<input type="file" name="files[]" size="40" maxlength="50" value="{ file2 }">
+</td>
+</tr>
+<tr> 
+<td class="BabMailBackground" align="right" nowrap valign="middle">&nbsp;</td>
+<td class="BabMailBackground" valign="middle"> 
+<input type="file" name="files[]" size="40" maxlength="50" value="{ file3 }">
+</td>
+</tr>
+<tr> 
+<td class="BabMailText" align="right" nowrap valign="middle">{ format }</td>
+<td class="BabMailBackground" valign="middle"> 
+	<select name="format" 
+  	<!--#if bhtml "== 1" -->
+	onChange="mm()" 
+	<!--#endif bhtml -->	
+	> 
+	<option value="plain" { plainselect }>{ plain }</option> 
+	<option value="html" { htmlselect }>{ html }</option> 
+	</select> 
+</td>
+</tr>
+
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT src="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
+
+<tr> 
+<td class="BabMailBackground" align="right" nowrap valign="middle">&nbsp;</td>
+<td class="BabMailBackground" valign="middle"> 
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message">{ messageval }</textarea>
+</td>
+</tr>
+<tr> 
+<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
+<script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
-</script>
-            </td>
-          </tr>
-          <!--#endif msie -->
-          <tr> 
-            <td class="" colspan="2" align="center" nowrap valign="middle"> 
-              <!--#if msie "== 1" -->
-              <script language="JavaScript">
+	</script>
+</td>
+</tr>
+<!--#endif msie -->
+<tr> 
+<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
+<!--#if msie "== 1" -->
+<script language="JavaScript">
 	editor.InFrame(0, "message", "composef", "100%", "160");
-</script>
-              <!--#else msie -->
-              <textarea cols="60" rows="20" name="message">{ messageval }</textarea>
-              <!--#endif msie -->
-            </td>
-          </tr>
-          <tr> 
-            <td class="BabMailEditSignFontBackground" colspan="2" align="center" nowrap valign="middle"> 
-              <select name="sigid">
-                <option value="0" { defaultselected }>{ selectsig }</option>
-                <!--#in getnextsig -->
-                <option value="{ sigid }"  { sigselected }>{ signame }</option>
-                <!--#endin getnextsig -->
-              </select>
-            </td>
-          </tr>
-          <!--#if msie "== 1" -->
-          <tr> 
-            <td class="" colspan="2" align="center" nowrap valign="middle"> 
-              <input onClick="SetVals();document.composef.submit();window.close()" type="submit" name="submit" value="{ send }">&nbsp;&nbsp;&nbsp;<input type="button" name="cancel" value="{ cancel }" onclick="window.close()">
-            </td>
-          </tr>
-          <SCRIPT LANGUAGE="JavaScript">
+    </script>
+<!--#else msie -->
+<textarea cols="50" rows="20" name="message">{ messageval }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
+<select name="sigid">
+<option value="0" { defaultselected }>{ selectsig }</option>
+<!--#in getnextsig -->
+<option value="{ sigid }"  { sigselected }>{ signame }</option>
+<!--#endin getnextsig -->
+</select>
+</td>
+</tr>
+<!--#if msie "== 1" -->
+<tr> 
+<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
+<input onClick="SetVals();document.composef.submit();window.close()" type="submit" name="submit" value="{ send }">
+&nbsp;&nbsp;&nbsp;
+<input type="button" name="cancel" value="{ cancel }" onClick="window.close()">
+</td>
+</tr>
+<SCRIPT language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
-</SCRIPT>
-          <!--#else msie -->
-          <tr> 
-            <td class="" colspan="2" align="center" nowrap valign="middle"> 
-              <input type="submit" name="submit" value="{ send }" onclick="document.composef.submit();window.close()">&nbsp;&nbsp;&nbsp;<input type="button" name="cancel" value="{ cancel }" onclick="window.close()">
-            </td>
-          </tr>
-          <!--#endif msie -->
-        </table>
-      </td>
-    </tr>
-  </table>
+	</SCRIPT>
+<!--#else msie -->
+<tr> 
+<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
+<input type="submit" name="submit" value="{ send }" onClick="document.composef.submit();window.close()">
+&nbsp;&nbsp;&nbsp;
+<input type="button" name="cancel" value="{ cancel }" onClick="window.close()">
+</td>
+</tr>
+<!--#endif msie -->
+</table>
+</td>
+</tr>
+</table>
 </form>
-</center>
+<br>
 </BODY></HTML>
 
 <!--#end mailcompose -->
 
+
+
 <!--#begin mailunload -->
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-{ babCss }
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META NAME="Generator" CONTENT="Ovidentia">
+	<META NAME="Author" CONTENT="Ovidentia Community">
+	<META NAME="Keywords" CONTENT="">
+	<META NAME="Description" CONTENT="">
+	{ babCss }
+
+
+
 <script type="text/javascript">
 <!--
+
 //-->
 </script>
-</HEAD>
-<BODY class="BabBackground">
-<br><br><br><br>
-<center>
-  <table class="BabContactsCardCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td> 
-        <table class="BabContactsCardBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr align="left" valign="middle"> 
-            <td class="BabContactsCardErrorsFontBackground" width="91%" colspan="2" align="center">{ 
-              message } </td>
-          </tr>
-          <tr align="left" valign="middle">
-            <td class="BabContactsCardErrorsFontBackground" width="91%" colspan="2" align="center"><a href="javascript:this.close()">{ 
-              close }</a> </td>
-          </tr>
-          <script src="{ babScriptPath }SaisieFormatee.js"></script>
-        </table>
-      </td>
-    </tr>
-  </table>
-  <br>
-</center>
-<script type="text/javascript">
-	setTimeout("this.close()","1000");
-</script>
 
+</HEAD>
+
+<BODY>
+<br><br><br><br>
+
+<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr valign="middle"> 
+<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+</tr>
+<tr>
+<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
+close }</a> </td>
+</tr>
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<script type="text/javascript">
+
+	setTimeout("this.close()","1000");
+
+</script>
 </BODY>
 </HTML>
-
 <!--#end mailunload -->
+
 

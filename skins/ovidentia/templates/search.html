@@ -4,38 +4,35 @@
 <input type="hidden" name="tg" value="search">
 <input type="hidden" name="pat" value="{ pat }">
 <input type="hidden" name="idx" value="find">
-  <center>
-    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-      <tr> 
-        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-            <tr> 
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              search }:</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
-              <input type="text" name="what" size="20" value="{ what }">
-            </td>
-            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
-              in }:</td>
-              <td class="BabLoginMenuBackground" align="center" nowrap valign="middle">
-                <select name="item">
-                  <option value="" selected>{ all }</option>
-                  <!--#in getnextitem -->
-                  <option value="{ itemvalue }">{ itemname }</option>
-                  <!--#endin getnextitem -->
-                </select>
-              </td>
-            </tr>
-            <tr valign="middle"> 
-              <td class="BabLoginMenuBackground" align="center" colspan=4> 
-                <input type="submit" name="go" value="{ search }">
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </center>
+
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ search }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="what" size="20" value="{ what }">
+</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ in }:</td>
+<td class="BabLoginMenuBackground" align="center" nowrap valign="middle">
+<select name="item">
+  <option value="" selected>{ all }</option>
+  <!--#in getnextitem -->
+  <option value="{ itemvalue }">{ itemname }</option>
+  <!--#endin getnextitem -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" colspan=4> 
+<input type="submit" name="go" value="{ search }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 </form>
 <!--#end search -->
 
@@ -49,155 +46,183 @@ function Start(page)
 }
 //-->
 </script>
-<!--#if countart "!= 0" -->
 <br>
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabBodyTitleBackground" >{ arttitle }</td></tr></table>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr align="left"> 
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabTopicsBackground" align="center"> 
+<!--#if countart "!= 0" -->
+
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" >{ arttitle }</td></tr>
+</table>
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
 <!--#in getnextart -->
-    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ articleurl }">{ article }</a></td>
-  </tr>
+<td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="{ articleurl }">{ article }</a></td>
+</tr>
 <!--#endin getnextart -->
 </table>
-<center>{ artpage }
+<br>
+{ artpage } 
 <!--#if artnext "!= 0" -->
-<a class="BabFaqLink" href="{ artnext }">{ next }</a>
+<a class="BabFaqLink" href="{ artnext }">{ next }</a> 
 <!--#endif artnext -->
-</center>
 <!--#endif countart -->
 <!--#if countcom "!= 0" -->
 <br>
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ comtitle }</td></tr></table>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr align="left"> 
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
 <!--#in getnextcom -->
-    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ comurl }">{ com }</a></td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="{ comurl }">{ com }</a></td>
   </tr>
 <!--#endin getnextcom -->
 </table>
-<center>{ compage }
+<br>
+{ compage } 
 <!--#if comnext "!= 0" -->
-<a class="BabFaqLink" href="{ comnext }">{ next }</a>
+<a class="BabFaqLink" href="{ comnext }">{ next }</a> 
 <!--#endif comnext -->
-</center>
 <!--#endif countcom -->
 <!--#if countfor "!= 0" -->
 <br>
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ fortitle }</td></tr></table>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr align="left"> 
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
 <!--#in getnextfor -->
-    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ posturl }">{ post }</a></td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="{ posturl }">{ post }</a></td>
   </tr>
 <!--#endin getnextfor -->
 </table>
-<center>{ forpage }
+<br>
+{ forpage } 
 <!--#if fornext "!= 0" -->
-<a class="BabFaqLink" href="{ fornext }">{ next }</a>
+<a class="BabFaqLink" href="{ fornext }">{ next }</a> 
 <!--#endif fornext -->
-</center>
 <!--#endif countfor -->
 <!--#if countfaq "!= 0" -->
 <br>
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ faqtitle }</td></tr></table>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr align="left"> 
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
 <!--#in getnextfaq -->
-    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ questionurl }">{ question }</a></td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="{ questionurl }">{ question }</a></td>
   </tr>
 <!--#endin getnextfaq -->
 </table>
-<center>{ faqpage }
+<br>
+{ faqpage } 
 <!--#if faqnext "!= 0" -->
-<a class="BabFaqLink" href="{ faqnext }">{ next }</a>
+<a class="BabFaqLink" href="{ faqnext }">{ next }</a> 
 <!--#endif faqnext -->
-</center>
 <!--#endif countfaq -->
-
 <!--#if countfil "!= 0" -->
 <br>
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ filtitle }</td></tr></table>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr align="left"> 
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
 <!--#in getnextfil -->
-    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ fileurl }">{ file }</a>&nbsp;{ filedesc }</td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="{ fileurl }">{ file }</a>&nbsp;{ filedesc }</td>
   </tr>
 <!--#endin getnextfil -->
 </table>
-<center>{ filpage }
+<br>
+{ filpage } 
 <!--#if filnext "!= 0" -->
-<a class="BabFaqLink" href="{ artnext }">{ next }</a>
+<a class="BabFaqLink" href="{ artnext }">{ next }</a> 
 <!--#endif filnext -->
-</center>
 <!--#endif countfil -->
-
 <!--#if countcon "!= 0" -->
 <br>
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ contitle }</td></tr></table>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr align="left"> 
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
 <!--#in getnextcon -->
-    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ fullnameurl }">{ fullname }</a></td>
+    <td class="BabTopicsBackground" valign="top"><a class="BabFaqLink" href="{ fullnameurl }">{ fullname }</a></td>
   </tr>
 <!--#endin getnextcon -->
 </table>
-<center>{ conpage }
+<br>
+{ conpage } 
 <!--#if connext "!= 0" -->
-<a class="BabFaqLink" href="{ connext }">{ next }</a>
+<a class="BabFaqLink" href="{ connext }">{ next }</a> 
 <!--#endif connext -->
-</center>
 <!--#endif countcon -->
-
 <!--#if countnot "!= 0" -->
 <br>
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<br>
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr><td class="BabBodyTitleBackground" >{ nottitle }</td></tr></table>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr align="left"> 
+<table class="BabTopicsBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
 <!--#in getnextnot -->
-    <td class="BabFaq1BodyFontBackground" valign="top" width="10%">{ content }</td>
+    <td class="BabTopicsBackground" valign="top">{ content }</td>
   </tr>
 <!--#endin getnextnot -->
 </table>
-<center>{ notpage }
+<br>
+{ notpage } 
 <!--#if notnext "!= 0" -->
-<a class="BabFaqLink" href="{ notnext }">{ next }</a>
+<a class="BabFaqLink" href="{ notnext }">{ next }</a> 
 <!--#endif notnext -->
-</center>
 <!--#endif countnot -->
 <br>
-<!--#end searchresult -->
+<br>
+</td>
+</tr>
+</table>
 
+<!--#end searchresult -->
+<br><br><br><br>
 <!--#begin viewart -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
 { babCss }
 </HEAD>
 <BODY class="BabBackground">
-<center>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-  <tr><td class="BabTopicsTitleBackground" ><center>&nbsp;{ topic }</center></td></tr></table><br>
-<table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabTopicsTitleBackground" align="left" valign="middle">{ title }</td>
+<br>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr> 
+<td class="BabMailBackground"> 
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td class="BabBodyTitleBackground" align="center" > { topic } </td>
 </tr>
-<tr><td class="BabTopicsBackground" >{ content }</td></tr>
-<tr><td colspan="2" class="" align="right" nowrap></td></tr>
 </table>
-</center>
+<br>
+<table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td class="BabTopicsTitleBackground">{ title }</td>
+</tr>
+<tr> 
+<td class="BabTopicsBackground" >{ content }</td>
+</tr>
+<tr> 
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
 </body>
 </html>
 <!--#end viewart -->
@@ -207,49 +232,53 @@ function Start(page)
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
+
+
 { babCss }
 </HEAD>
 <BODY class="BabBackground">
-<center>
 <br>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground">
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center" >{ title }</td>
+</tr></table>
 <br>
 
-<table  width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
-  <tr> 
-    <td class="BabCommentCadreFontBackground" align="center" valign="middle"> 
-      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-        <tr align="right"> 
-          <td class="BabCommentTitleFontBackground" colspan="2" nowrap valign="middle">{ 
-            arr[date] }</td>
-        </tr>
-        <tr> 
-          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ 
-            by }:</td>
-          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle">{ 
-            arr[name] } </td>
-        </tr>
-        <tr> 
-          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ 
-            subject }:</td>
-          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle">{ 
-            arr[subject] } </td>
-        </tr>
-        <tr> 
-          <td class="BabCommentFontBackground" align="left" valign="middle" height="26" colspan="2">{ 
-            arr[message] } </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" colspan="2" nowrap>{ arr[date] }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="20%" nowrap>{ by }:</td>
+<td class="BabSiteAdminTitleFontBackground" width="80%">{ arr[name] } </td>
+</tr>
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap>{ subject }:</td>
+<td class="BabSiteAdminTitleFontBackground">{ arr[subject] } </td>
+</tr>
+<tr> 
+<td class="BabTopicsBackground" colspan="2">{ arr[message] } </td>
+</tr>
 </table>
-</center>
+</td>
+</tr>
+</table>
+<br>
+</td>
+</tr>
+</table>
+<br>
 </body>
 </html>
 <!--#end viewcom -->
@@ -259,42 +288,44 @@ function Start(page)
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
 { babCss }
 </HEAD>
 <BODY class="BabBackground">
-<center>
 <br>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
-<br>
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
-  <tr><td>
-      <table class="" border="0" width="100%" cellpadding="2" cellspacing="0">
-        <tr> 
-          <td height="19" class="BabForumTopicsNavFontTitleBackground" width="100%" colspan="2">{ 
-            postsubject }</td>
-        </tr>
-        <tr> 
-          <td class="BabForumTopicsNavBodyFontBackground" colspan="2"><br>
-            { postmessage }<br>
-            &nbsp;</td>
-        </tr>
-        <tr> 
-          <td class="BabForumTopicsNavFooterDateFontBackground" nowrap width="17%">{ 
-            postdate }</td>
-          <td class="BabForumTopicsNavFooterAuthorFontBackground" nowrap width="16%" align="right">{ 
-            postauthor }</td>
-                 </tr>
-      </table>
-
-</td></tr>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground"> 
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabFaqTitleFontBg" align="center" >{ title }</td>
+</tr>
 </table>
-</center>
+<br>
+<table class="" border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabForumTopicsNavTitle" width="100%" colspan="2">{ postsubject }</td>
+</tr>
+<tr> 
+<td class="BabForumBackground" colspan="2"><br>
+            { postmessage }
+			<br>
+</td>
+</tr>
+<tr> 
+<td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
+<td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right">{ postauthor }</td>
+</tr>
+</table>
+<br>
+</td>
+</tr>
+</table>
+<br>
 </body>
 </html>
 <!--#end viewfor -->
@@ -304,30 +335,38 @@ function Start(page)
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
 { babCss }
 </HEAD>
 <BODY class="BabBackground">
-<center>
 <br>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
-<br>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr> 
-    <td class="BabFaqQuestionBodyFontBackground" nowrap align="left" valign="middle">{ 
-      arr[question] }</td>
-  </tr>
-  <tr colspan="2" align="left"> 
-    <td class="BabFaqresponseBodyFontBackground" valign="top">{ arr[response] }</td>
-  </tr>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground"> 
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabFaqTitleFontBg" align="center" >{ title }</td>
+</tr>
 </table>
 <br>
-</center>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+    
+<td class="BabFaqQuestion" nowrap valign="middle">{ arr[question] }</td>
+  </tr>
+<tr colspan="2"> 
+<td class="BabFaqBodyFontBg" valign="top">{ arr[response] }</td>
+</tr>
+</table>
+<br>
+</td>
+</tr>
+</table>
+<br>
 </body>
 </html>
 <!--#end viewfaq -->
@@ -337,40 +376,52 @@ function Start(page)
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
 { babCss }
 </HEAD>
 <BODY class="BabBackground">
-<center>
 <br>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
-<br>
-<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-  <tr><td class="BabBodyTitleBackground" >{ description }</td>
-    <td class="BabFaqQuestionBodyFontBackground" nowrap align="left" valign="middle" align="left">{ 
-      arr[description] }</td>
-  </tr>
-  <tr><td class="BabBodyTitleBackground" >{ keywords }</td>
-    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ arr[keywords] }</td>
-  </tr>
-  <tr><td class="BabBodyTitleBackground" >{ sizetxt }</td>
-    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ size }</td>
-  </tr>
-  <tr><td class="BabBodyTitleBackground" >{ modifiedtxt }</td>
-    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ modified }</td>
-  </tr>
-  <tr><td class="BabBodyTitleBackground" >{ postedbytxt }</td>
-    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ postedby }</td>
-  </tr>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground" align="center">
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center"> { title } </td>
+</tr>
 </table>
 <br>
-<a class="BabFaqLink" href="{ geturl }">{ download }</a>
-</center>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabSiteAdminFontBackground" width="30%" >{ description }</td>
+<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ arr[description] }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ keywords }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ arr[keywords] }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ sizetxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ size }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ modifiedtxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ modified }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground">{ postedbytxt }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ postedby }</td>
+</tr>
+</table>
+<a class="BabFaqLink" href="{ geturl }"><br>
+{ download }</a> <br>
+</td>
+</tr>
+</table>
+<br>
 </body>
 </html>
 <!--#end viewfil -->
@@ -380,11 +431,11 @@ function Start(page)
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META NAME="Generator" CONTENT="Bab">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
 { babCss }
 <script type="text/javascript">
 <!--
@@ -392,71 +443,69 @@ function Start(page)
 </script>
 </HEAD>
 <BODY class="BabBackground">
-
-  <table class="BabContactsCardCadreFontBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-    <tr> 
-      <td> 
-        <table class="BabContactsCardBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr align="left" valign="middle"> 
-            <td class="BabContactsCardErrorsFontBackground" width="91%" colspan="2">{ msgerror } </td>
-          </tr>       
-          <tr align="right" valign="middle"> 
-            <td class="BabContactsCardBodyFontBackground" width="45%" align="left">{ firstname }: </td>
-            <td class="BabContactsCardBodyFontBackground" width="46%" align="left">{ firstnameval }</td>
-          </tr>
-      
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ lastname }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ lastnameval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ email }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ emailval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ compagny }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ compagnyval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ hometel }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ hometelval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ mobiletel }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ mobiletelval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ businesstel }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ businesstelval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ businessfax }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ businessfaxval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ jobtitle }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ jobtitleval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ businessaddress }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ businessaddressval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%">{ homeaddress }:</td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">{ homeaddressval }</td>
-          </tr>
-          <tr> 
-            <td class="BabContactsCardBodyFontBackground" width="45%"> 
-              <input type="button" name="cancel" value="{ cancel }"  onClick="window.close()">
-            </td>
-            <td class="BabContactsCardBodyFontBackground" width="46%">&nbsp;</td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</form>
-
-</BODY></HTML>
+<br>
+<table class="BabMailBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabMailBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminFontBackground" colspan="2">{ msgerror } </td>
+</tr>       
+<tr> 
+<td class="BabSiteAdminFontBackground" width="40%">{ firstname }: </td>
+<td class="BabSiteAdminFontBackground" width="60%">{ firstnameval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ lastname }:</td>
+<td class="BabSiteAdminFontBackground">{ lastnameval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ email }:</td>
+<td class="BabSiteAdminFontBackground">{ emailval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ compagny }:</td>
+<td class="BabSiteAdminFontBackground">{ compagnyval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ hometel }:</td>
+<td class="BabSiteAdminFontBackground">{ hometelval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ mobiletel }:</td>
+<td class="BabSiteAdminFontBackground">{ mobiletelval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ businesstel }:</td>
+<td class="BabSiteAdminFontBackground">{ businesstelval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ businessfax }:</td>
+<td class="BabSiteAdminFontBackground">{ businessfaxval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ jobtitle }:</td>
+<td class="BabSiteAdminFontBackground">{ jobtitleval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ businessaddress }:</td>
+<td class="BabSiteAdminFontBackground">{ businessaddressval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground">{ homeaddress }:</td>
+<td class="BabSiteAdminFontBackground">{ homeaddressval }</td>
+</tr>
+<tr> 
+<td class="BabMailBackground"> 
+<input type="button" name="cancel" value="{ cancel }"  onClick="window.close()">
+</td>
+<td class="BabSiteAdminFontBackground">&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</BODY>
+</HTML>
 <!--#end viewcon -->
