@@ -286,28 +286,26 @@ function validateNum(field)
 <!--#begin siteslist --> 
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginCadreBackground" > 
-      <table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-        <tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ name }</b> </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ lang }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>{ email }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>&nbsp;{ description }</b></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><b>&nbsp;{ homepages }</b></td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
-<td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ arr[lang] }</td>
-          <td class="BabSiteAdminFontBackground" valign="middle" align="center">&nbsp;{ 
-            arr[adminemail] }</td>
-          <td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;{ 
-            arr[description] }</td>
-          <td class="BabSiteAdminFontBackground" align="center" valign="middle">&nbsp;<a class="BabSiteAdminListLink" href="{ hmanagementurl }">{ hmanagement }</a></td>
-</tr>
-<!--#endin getnext -->
-</table>
-</td>
+	<td class="BabLoginCadreBackground" > 
+      <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ name }</td>
+			<td>{ lang }</td>
+			<td>{ email }</td>
+			<td>{ description }</td>
+			<td>{ homepages }</td>
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+			<td>&nbsp;{ arr[lang] }</td>
+          <td>&nbsp;{ arr[adminemail] }</td>
+          <td>&nbsp;{ arr[description] }</td>
+          <td>&nbsp;<a class="BabSiteAdminListLink" href="{ hmanagementurl }">{ hmanagement }</a></td>
+		</tr>
+		<!--#endin getnext -->
+	</table>
+	</td>
 </tr>
 </table>
 <!--#end siteslist -->
