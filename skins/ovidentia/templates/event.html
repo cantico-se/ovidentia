@@ -4,9 +4,7 @@
 <form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this))" >
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="addevent" />
-<input type="hidden" name="curday" value="{ curday }" />
-<input type="hidden" name="curmonth" value="{ curmonth }" />
-<input type="hidden" name="curyear" value="{ curyear }" />
+<input type="hidden" name="date" value="{ curdate }" />
 <input type="hidden" name="view" value="{ curview }" />
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="action" value="addevent" />
@@ -16,7 +14,7 @@
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
 	<tr> 
 		<td align="right">
-			<a class="BabEventFaqLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:
+			<a class="BabEventFaqLink" href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:
 		</td>
 		<td nowrap> 
 			<select name="daybegin">
@@ -46,7 +44,7 @@
 	</tr>
 	<tr> 
 		<td align="right">
-			<a class="BabEventFaqLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>:
+			<a class="BabEventFaqLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>:
 		</td>
 		<td nowrap> 
 			<select name="dayend">
@@ -243,193 +241,6 @@
 </table>
 </form>
 <!--#end newevent -->
-
-<!--#begin calendarchoice -->
-<script type="text/javascript">
-<!--
-
-function optionInGroup(grp,optvalue)
-	{
-	var option = grp.getElementsByTagName('option');
-
-	for (var j = 0; j < option.length ; j++)
-		{
-		if (option.item(j).value == optvalue)
-			return true;
-		}
-	return false;
-	}
-
-var assoc = new Array();
-
-function moveOptions(src,dest)
-{	
-	var destoptgroup = dest.getElementsByTagName('optgroup');
-	var srcoptgroup = src.getElementsByTagName('optgroup');
-
-	
-	var destgroups = new Array();
-	
-
-	if (assoc.length == 0)
-		{
-		for (var i = 0; i < srcoptgroup.length ; i++)
-			{
-			var option = srcoptgroup[i].getElementsByTagName('option');
-
-			for (var j = 0; j < option.length ; j++)
-				{
-				assoc[option.item(j).value] = srcoptgroup[i]['className'];
-				}
-			}
-		}
-
-	for (var i = 0; i < destoptgroup.length ; i++)
-		{
-		destgroups[destoptgroup[i]['className']] = destoptgroup[i];
-		var option = destoptgroup[i].getElementsByTagName('option');
-		for (var j = 0; j < option.length ; j++)
-			{
-			assoc[option.item(j).value] = destoptgroup[i]['className'];
-			}
-		}
-
-	srclen = src.options.length;
-	if (srclen == 0) return;
-	reslen = dest.options.length + srclen;
-	resopt = new Array(reslen);
-	destcnt = 0;
-	rescnt = 0;
-	nbsel = 0;
-
-	while(destcnt < dest.options.length)
-		{
-		resopt[rescnt] = new Option(dest.options[destcnt].text, dest.options[destcnt].value);
-		destcnt++;
-		rescnt++;
-		}
-	for(i = 0; i < srclen; i++)
-		{
-		while((i < srclen) && (src.options[i].selected == false))
-			i++;
-		if(i < srclen)
-			{
-			nbsel++;
-			resopt[rescnt] = new Option(src.options[i].text, src.options[i].value);
-			src.options[i] = null;
-			i--;
-			srclen--;
-			rescnt++;
-			}
-		}
-
-	
-	for(i=0; i < nbsel;i++)
-		{
-		dest.options[i] = null;
-		dest.options[i] = resopt[rescnt - nbsel + i];
-		}
-
-	for(i=0; i < rescnt - nbsel; i++)
-		{
-		dest.options[nbsel + i] = null;
-		dest.options[nbsel + i] = resopt[i];
-		}
-
-	var sort = true;
-	
-	while (sort)
-		{
-		var loop = false;
-		for (i=0 ; i < dest.options.length ; i++ )
-			{
-			destgroups[assoc[dest.options[i].value]].appendChild(dest.options[i]);
-			if (!optionInGroup(destgroups[assoc[dest.options[i].value]],dest.options[i].value))
-				loop = true;
-			}
-		sort = loop ? true : false;
-		}
-}
-
-function movecalendar(action)
-	{
-	//{}
-	var form = '{ formname }';
-	var src = document.forms[form].calendars;
-	var dest = document.forms[form].elements['selected_calendars[]'];
-
-	switch (action)
-		{
-
-		case 0:
-			moveOptions(src,dest);
-			break;
-		case 1:
-			moveOptions(dest,src);
-			break;
-		}
-	}
-
-
-function calendarChoice_selectAll(formname)
-	{
-	var list = document.forms[formname].elements['selected_calendars[]'];
-	for(i=0; i < list.options.length; i++)
-	{
-		list.options[i].selected = true;
-	}
-	}
-//-->
-</script>
-<table align="center" width="100%">
-	<tr>
-		<td width="45%">
-		<select name="calendars" multiple="multiple" size="10" style="width:100%">
-			<optgroup class="usr" label="{ usrcalendarstxt }">
-			<!--#if personal -->
-				<option value="{ personal }" { selected }>{ BAB_SESS_USER }</option>
-			<!--#endif personal -->
-			<!--#in getnextusrcal -->
-				<option value="{ id }" { selected }>{ name }</option>
-			<!--#endin getnextusrcal -->
-			</optgroup>
-			<optgroup class="grp" label="{ grpcalendarstxt }">
-			<!--#in getnextpubcal -->
-				<option value="{ id }" { selected }>{ name }</option>
-			<!--#endin getnextpubcal -->
-			</optgroup>
-			<optgroup class="res" label="{ rescalendarstxt }">
-			<!--#in getnextrescal -->
-				<option value="{ id }" { selected }>{ name }</option>
-			<!--#endin getnextrescal -->
-			</optgroup>
-		</select>
-		</td>
-
-		<td align="center">
-			<a href="javascript:movecalendar(0)" title="{ t_goright }"><img alt="{ t_goright }" src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" /></a>
-			<br /><br />
-			<a href="javascript:movecalendar(1)" title="{ t_goleft }"><img alt="{ t_goleft }" src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" /></a>
-		</td>
-
-		<td width="45%">
-			<select name="selected_calendars[]" multiple="multiple" size="10" style="width:100%">
-				<optgroup class="usr" label="{ usrcalendarstxt }">
-				</optgroup>
-				<optgroup class="grp" label="{ grpcalendarstxt }">
-				</optgroup>
-				<optgroup class="res" label="{ rescalendarstxt }">
-				</optgroup>
-			</select>
-		</td>
-	</tr>
-</table>
-<script type="text/javascript">
-<!--
-movecalendar(0);
-//-->
-</script>
-<!--#end calendarchoice -->
 
 
 <!--#begin modifyevent -->
@@ -786,8 +597,6 @@ window.focus();
 <!--#begin scripts -->
 <SCRIPT language="JavaScript">
 <!--
-
-
 function bupdrec_change(obj)
 	{
 	if (obj.value==2)
@@ -847,7 +656,7 @@ function dateBegin(day, month, year)
 	document.vacform.elements['daybegin'].options[day-1].selected = true;
 	document.vacform.elements['monthbegin'].options[month-1].selected = true;
 	document.vacform.elements['yearbegin'].options[year-{ yearmin }].selected = true;
-
+	updateDates(document.vacform.elements['daybegin'], document.vacform.elements['monthbegin'], document.vacform.elements['yearbegin']);
 }
 
 function dateEnd(day, month, year)
@@ -855,7 +664,7 @@ function dateEnd(day, month, year)
 	document.vacform.elements['dayend'].options[day-1].selected = true;
 	document.vacform.elements['monthend'].options[month-1].selected = true;
 	document.vacform.elements['yearend'].options[year-{ yearmin }].selected = true;
-
+	updateDates(document.vacform.elements['dayend'], document.vacform.elements['monthend'], document.vacform.elements['yearend']);
 }
 
 function daytypeswitch()

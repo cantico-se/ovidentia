@@ -242,6 +242,9 @@ function cal_month_free($calids, $date)
 }
 
 /* main */
+record_calendarchoice();
+$calid = $babBody->icalendars->user_calendarids;
+
 if(!isset($idx))
 	{
 	$idx='viewm';
@@ -255,7 +258,6 @@ if( empty($date))
 if( !isset($calid) )
 	$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
 
-record_calendarchoice();
 
 
 switch($idx)

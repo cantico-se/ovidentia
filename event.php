@@ -49,11 +49,12 @@ class bab_event
 		{
 		$this->db = & $GLOBALS['babDB'];
 
-		list($this->curyear,$this->curmonth,$this->curday) = !empty($_REQUEST['date']) ? explode(',',$_REQUEST['date']) : array(date('Y'),date('m'),date('d'));
+		$this->curdate = !empty($_REQUEST['date']) ? $_REQUEST['date'] : date('Y').",".date('m').",".date('d');
 
-		$this->curview = !empty($_REQUEST['curview']) ? $_REQUEST['curview'] : 'viewm';
+		list($this->curyear,$this->curmonth,$this->curday) = explode(',', $this->curdate);
 
-		$this->calid = & $_REQUEST['calid'];
+		$this->curview = !empty($_REQUEST['view']) ? $_REQUEST['view'] : 'viewm';
+		$this->calid = $_REQUEST['calid'];
 
 		$this->datebegintxt = bab_translate("Begin date");
 		$this->dateendtxt = bab_translate("Until date");
@@ -137,89 +138,61 @@ function newEvent()
 		var $arrresname = array();
 		var $arrresid = array();
 
-
-
 		function temp()
 			{
+			global $babBody;
 
 			$this->bab_event();
 
-
 			global $babBodyPopup;
-			if( empty($_REQUEST['st']))
-
-
-				$this->st = "08:00";
-			else
-				$this->st = $_REQUEST['st'];
-
 
 			$this->mcals = explode(",", $this->calid);
-			$this->caltype = bab_getCalendarType($this->mcals[0]);
-
 			$this->repeat = isset($_POST['repeat'])? $_POST['repeat']: 0;
 			$this->titleval = isset($_POST['title'])? $_POST['title']: '';
-			
-			$babBodyPopup->title = bab_translate("New calendar event");
-			
-			$this->yearbegin = $this->curyear;
+				
+			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
+			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
 			$this->yearmin = $this->curyear - $this->ymin;
-			$this->daybegin = $this->curday;
-			$this->monthbegin = $this->curmonth;
-			$this->datebegin = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
-			$this->dateend = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
+
+			$this->yearbegin = !isset($_POST['yearbegin'])? $this->curyear: $_POST['yearbegin'];
+			$this->monthbegin = !isset($_POST['monthbegin'])? $this->curmonth: $_POST['monthbegin'];
+			$this->daybegin = !isset($_POST['daybegin'])? $this->curday: $_POST['daybegin'];
+
+			$this->yearend = !isset($_POST['yearend'])? $this->curyear: $_POST['yearend'];
+			$this->monthend = !isset($_POST['monthend'])? $this->curmonth: $_POST['monthend'];
+			$this->dayend = !isset($_POST['dayend'])? $this->curday: $_POST['dayend'];
+
+			$this->repeat_yearend = !isset($_POST['repeat_yearend'])? $this->curyear: $_POST['repeat_yearend'];
+			$this->repeat_monthend = !isset($_POST['repeat_monthend'])? $this->curmonth: $_POST['repeat_monthend'];
+			$this->repeat_dayend = !isset($_POST['repeat_dayend'])? $this->curday: $_POST['repeat_dayend'];
+
+			$this->timebegin = !isset($_POST['timebegin'])? substr($babBody->icalendars->starttime, 0, 5): $_POST['timebegin'];
+			$this->timeend = !isset($_POST['timeend'])? substr($babBody->icalendars->endtime, 0, 5): $_POST['timeend'];
 
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : 'FFFFFF' ;
 
-			$descriptionval = isset($_POST['$description'])? $_POST['$description'] : "";
+			$descriptionval = isset($_POST['evtdesc'])? $_POST['evtdesc'] : "";
 			$this->editor = bab_editor($descriptionval, 'evtdesc', 'vacform',150);
 
 			$this->daytypechecked = $this->icalendar->allday == 'Y' ? "checked"  :'';
 			$this->elapstime = $this->icalendar->elapstime;
 			$this->ampm = $GLOBALS['babBody']->ampm == 'Y' ? true : false;
-
-			
-			
 			$this->calendars = calendarchoice('vacform');
+			$this->totaldays = date("t",mktime(0,0,0,$this->curmonth,$this->curday,$this->curyear));
 
-
+			$this->daysel = $this->daybegin;
+			$this->monthsel = $this->monthbegin;
+			$this->yearsel = $this->yearbegin;
+			$this->timesel = $this->timebegin;
 			}
-
-		function getnextdays()
-			{
-			global $babDays;
-
-			static $i = 0;
-			if( $i < 7 )
-				{
-				$this->days = $i;
-				$this->daysname = $babDays[$i];
-				if( 1 == $i)
-					{
-					$this->selected = "selected";
-					}
-				else
-					$this->selected = "";
-				
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
-
-			}
-
 
 		function getnextday()
 			{
-			static $i = 1;
-			if( $i <= date("t",mktime(0,0,0,$this->curmonth,$this->curday,$this->curyear)))
+			static $i = 1, $k=0;
+			if( $i <= $this->totaldays)
 				{
 				$this->dayid = $i;
-				if( $this->daybegin == $i)
+				if( $this->daysel == $i)
 					{
 					$this->selected = "selected";
 					}
@@ -232,21 +205,29 @@ function newEvent()
 			else
 				{
 				$i = 1;
+				if( $k == 0 )
+					{
+					$this->daysel = $this->dayend;
+					$k++;
+					}
+				else
+					{
+					$this->daysel = $this->repeat_dayend;
+					}
 				return false;
 				}
-
 			}
 
 		function getnextmonth()
 			{
 			global $babMonths;
-			static $i = 1;
+			static $i = 1, $k = 0;
 
 			if( $i < 13)
 				{
 				$this->monthid = $i;
 				$this->monthname = $babMonths[$i];
-				if( $this->monthbegin == $i)
+				if( $this->monthsel == $i)
 					{
 					$this->selected = "selected";
 					}
@@ -259,18 +240,27 @@ function newEvent()
 			else
 				{
 				$i = 1;
+				if( $k == 0 )
+					{
+					$this->monthsel = $this->monthend;
+					$k++;
+					}
+				else
+					{
+					$this->monthsel = $this->repeat_monthend;
+					}
 				return false;
 				}
 
 			}
 		function getnextyear()
 			{
-			static $i = 0;
+			static $i = 0, $k=0;
 			if( $i < $this->ymin + $this->ymax + 1)
 				{
 				$this->yearidval = $this->yearmin + $i;
 				$this->yearid = $this->yearidval;
-				if( $this->yearbegin == $this->yearidval)
+				if( $this->yearsel == $this->yearidval)
 					{
 					$this->selected = "selected";
 					}
@@ -282,6 +272,15 @@ function newEvent()
 			else
 				{
 				$i = 0;
+				if( $k == 0 )
+					{
+					$this->yearsel = $this->yearend;
+					$k++;
+					}
+				else
+					{
+					$this->yearsel = $this->repeat_yearend;
+					}
 				return false;
 				}
 
@@ -299,22 +298,24 @@ function newEvent()
 					$this->time = bab_toAmPm($this->timeval);
 				else
 					$this->time = $this->timeval;
-				if( $this->st == $this->timeval)
+				if( $this->timesel == $this->timeval)
+					{
 					$this->selected = "selected";
+					}
 				else
+					{
 					$this->selected = "";
+					}
 				$i++;
 				return true;
 				}
 			else
 				{
 				$i = 0;
+				$this->timesel = $this->timeend;
 				return false;
 				}
-
 			}
-
-
 		}
 
 	$temp = new temp();
@@ -735,19 +736,19 @@ else
 	return $_POST[$key];
 }
 
-function addEvent()
+function addEvent(&$message)
 	{
 	global $babBody;
 	
 	if( empty($_POST['title']))
 		{
-		$babBody->msgerror = bab_translate("You must provide a title")." !!";
+		$message = bab_translate("You must provide a title")." !!";
 		return false;
 		}
 
-	if( !isset($_POST['selected_calendars']) || count($_POST['selected_calendars']) == 0 )
+	if( !isset($GLOBALS['calid']) || count($GLOBALS['calid']) == 0 )
 		{
-		$babBody->msgerror = bab_translate("You must select at least one calendar type")." !!";
+		$message = bab_translate("You must select at least one calendar type")." !!";
 		return false;
 		}
 
@@ -755,6 +756,7 @@ function addEvent()
 	$title = post_string('title');
 		
 	$category = empty($_POST['category']) ? '0' : $_POST['category'];
+	$color = empty($_POST['color']) ? 'FFFFFF' : $_POST['color'];
 
 	$yearbegin = $_POST['yearbegin'];
 	$monthbegin = $_POST['monthbegin'];
@@ -771,55 +773,138 @@ function addEvent()
 
 	$begin = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin, $yearbegin );
 	$end = mktime( $te[0],$te[1],0,$monthend, $dayend, $yearend );
+	$repeatdate = mktime( 23,59,0,$_POST['repeat_monthend'], $_POST['repeat_dayend'], $_POST['repeat_yearend'] );
 
 	if( $begin > $end)
 		{
-		$babBody->msgerror = bab_translate("End date must be older")." !";
+		$message = bab_translate("End date must be older")." !";
 		return false;
 		}
 
-
-
-	
-	if( $_POST['repeat'] == "y")
+	if( $_POST['repeat'] != 0)
 		{
-
-		for( $i = 0; $i < 7; $i++)
+		$hash = "R_".md5(uniqid(rand(),1));
+		$duration = $end - $begin;
+		switch($_POST['repeat'] )
 			{
-			$tab[$i] = 0;
-			}
-
-		for( $i = 0; $i < count($days); $i++)
-			{
-			$tab[$days[$i]] = 1;
-			}
-
-		$md5 = "R_".md5(uniqid(rand(),1));
-		for( $i=0; $i < 7; $i++)
-			{
-			if( $tab[$i] != 0 )
-				{
-				$delta = $i - Date("w", $begin);
-				if( $delta < 0)
-					$delta = 7 - Abs($delta);
-
-
-				$nextday = $daybegin + $delta;
-				$nextmont = $monthbegin;
-				$nextyear = $yearbegin;
-				while( $end > mktime( 0,0,0, $nextmont, $nextday+$tab[$i]-1, $nextyear ))
+			case '2': /* weekly */
+				if( empty($_POST['repeat_n_2']))
 					{
-					die('répétition a faire');
-					insertEvent($_POST['selected_calendars'], $title, $description, $startdate, $enddate, $category, $_POST['color'], $md5);
-					$nextday += 7;
+					$_POST['repeat_n_2'] = 1;
 					}
-				}
+
+				if( !isset($_POST['repeat_wd']) )
+					{
+					$rtime = 24*3600*7*$_POST['repeat_n_2'];
+					}
+				else
+					{
+					$rtime = 24*3600;
+					}
+
+				if( $duration > $rtime)
+					{
+					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
+					return false;					
+					}
+
+				if( !isset($_POST['repeat_wd']) )
+					{
+					$time = $begin;
+					do
+						{
+						createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+						$time += $rtime;
+						}
+					while( $time < $repeatdate );
+					}
+				else
+					{
+					for( $i = 0; $i < count($_POST['repeat_wd']); $i++ )
+						{
+						$delta = $_POST['repeat_wd'][$i] - Date("w", $begin);
+						if( $delta < 0 )
+							{
+							$delta = 7 - Abs($delta);
+							}
+
+						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin+$delta, $yearbegin );
+						do
+							{
+							createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+							$time += 24*3600*7;
+							}
+						while( $time < $repeatdate );
+						}
+					}
+
+				break;
+			case '3': /* monthly */
+				if( empty($_POST['repeat_n_3']))
+					{
+					$_POST['repeat_n_3'] = 1;
+					}
+				if( $duration > 24*3600*28*$_POST['repeat_n_2'])
+					{
+					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
+					return false;					
+					}
+				$time = $begin;
+				do
+					{
+					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+					$time = mktime( $tb[0],$tb[1],0,date("m", $time)+1, date("j", $time), date("Y", $time) );
+					}
+				while( $time < $repeatdate );
+				break;
+			case '4': /* yearly */
+				if( empty($_POST['repeat_n_4']))
+					{
+					$_POST['repeat_n_4'] = 1;
+					}
+				if( $duration > 24*3600*365*$_POST['repeat_n_4'])
+					{
+					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
+					return false;					
+					}
+				$time = $begin;
+				do
+					{
+					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+					$time = mktime( $tb[0],$tb[1],0,date("m", $time), date("j", $time), date("Y", $time)+1 );
+					}
+				while( $time < $repeatdate );
+				break;
+			case '1': /* daily */
+			default:
+				if( empty($_POST['repeat_n_1']))
+					{
+					$_POST['repeat_n_1'] = 1;
+					}
+				$rtime = 24*3600*$_POST['repeat_n_1'];
+
+				if( $duration > $rtime )
+					{
+					$message = bab_translate("The duration of the event must be shorter than how frequently it occurs")." !";
+					return false;
+					}
+
+				$time = $begin;
+				do
+					{
+					createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, 0, $hash);
+					$time += $rtime;
+					}
+				while( $time < $repeatdate );
+				break;
 			}
+
 		}
 	else
 		{
-		insertEvent($_POST['selected_calendars'], $title, $description, $begin, $end, $category, $_POST['color'], "");
+		createEvent(explode(',', $GLOBALS['calid']), $title, $description, $begin, $end, $category, $color, 0, '');
 		}
+
 	return true;	
 	}
 
@@ -976,12 +1061,10 @@ function calendarquerystring()
 	}
 
 /* main */
-
-
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "newevent";
-
-
 record_calendarchoice();
+$calid = $babBody->icalendars->user_calendarids;
+
 
 $calid = bab_isCalendarAccessValid($calid);
 if( !$calid )
@@ -991,6 +1074,7 @@ if( !$calid )
 	}
 
 if (isset($_POST['action']))
+	{
 	switch($_POST['action'])
 		{
 		case 'yes':
@@ -1004,8 +1088,15 @@ if (isset($_POST['action']))
 			break;
 
 		case 'addevent':
-			if (addEvent())
+			$message = '';
+			if (addEvent($message))
+				{
 				$idx = "unload";
+				}
+			else
+				{
+				$idx = 'newevent';
+				}
 			break;
 
 		case 'modifyevent':
@@ -1017,14 +1108,29 @@ if (isset($_POST['action']))
 			deleteEvent($calid, $evtid, $curday, $curmonth, $curyear, $view, $bupdrec);
 			break;
 		}
-
+	}
 
 
 
 switch($idx)
 	{
 	case "unload":
-		eventUnload();
+		include_once $babInstallPath."utilit/uiutil.php";
+		if( !isset($popupmessage)) { $popupmessage = bab_translate("Your event has been updated");}
+		switch($view)
+		{
+			case 'viewd':
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."date=".$curyear.",".$curmonth.",".$curday;
+				break;
+			case 'viewq':
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."date=".$curyear.",".$curmonth.",".$curday;
+				break;
+			case 'viewm':
+			default:
+				$refreshurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."date=".$curyear.",".$curmonth.",".$curday;
+				break;
+		}
+		popupUnload($popupmessage, $refreshurl);
 		exit;
 		break;
 
@@ -1041,27 +1147,21 @@ switch($idx)
 			modifyEvent($calid, $evtid, $view, $bmodif);
 		else
 			viewEvent($calid, $evtid);
-
 		printBabBodyPopup();
 		exit;
-
-
-
-
 		break;
 
 	case "newevent":
+		if( !isset($message)) { $message = '';}
 		$babBodyPopup = new babBodyPopup();
-
+		$babBodyPopup->title = bab_translate("New calendar event");
+		$babBodyPopup->msgerror = $message;
 		newEvent();
 		printBabBodyPopup();
 		exit;
-
 		break;
 
 	default:
 		break;
 	}
-$babBody->setCurrentItemMenu($idx);
-
 ?>

@@ -237,6 +237,28 @@ function getAvailableResourcesCalendars($bwrite = false)
 	return $tab;
 }
 
+
+function createEvent($idcals, $title, $description, $startdate, $enddate, $category, $color, $status, $hash='')
+{
+	global $babDB;
+
+	if( bab_isMagicQuotesGpcOn())
+		{
+		$title = stripslashes($title);
+		$description = stripslashes($description);
+		}
+
+	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." ( title, description, start_date, end_date, id_cat, id_creator, color, hash) values ('".addslashes($title)."', '".addslashes($description)."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$category."', '".$GLOBALS['BAB_SESS_USERID']."', '".$color."', '".$hash."')");
+	
+	$id_event = $babDB->db_insert_id();
+
+	foreach($idcals as $id_cal)
+		{
+		$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$id_cal."', '".$status."')");
+		}
+}
+
+
 class bab_icalendars
 {
 	var $id_percal = 0; // personal calendar
@@ -545,6 +567,53 @@ class bab_icalendars
 	return false;
 	}
 
+	function getCalendarOwner($idcal)
+	{
+		if( $idcal == $this->id_percal )
+		{
+			return $GLOBALS['BAB_SESS_USER'];
+		}
+		else
+		{
+			$this->initializeCalendars();
+			if( count($this->pubcal) > 0 )
+			{
+				reset($this->pubcal);
+				while( $row=each($this->pubcal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1]['owner'];
+						}
+					}
+			}
+			
+			if( count($this->rescal) > 0 )
+			{
+				reset($this->rescal);
+				while( $row=each($this->rescal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1]['owner'];
+						}
+					}
+			}
+
+			if( count($this->usercal) > 0 )
+			{
+				reset($this->usercal);
+				while( $row=each($this->usercal) ) 
+					{ 
+					if( $row[0] == $idcal)
+						{
+						return $row[1]['owner'];
+						}
+					}
+			}
+		}
+	return false;
+	}
 
 
 }
@@ -647,7 +716,7 @@ class calendarchoice
 
 	function printhtml()
 		{
-		return bab_printTemplate($this,"event.html", "calendarchoice");
+		return bab_printTemplate($this,"calendar.html", "calendarchoice");
 		}
 	}
 
@@ -658,15 +727,23 @@ return $temp->printhtml();
 
 function record_calendarchoice()
 {
+global $babBody;
+
 if (isset($_POST['selected_calendars']) && count($_POST['selected_calendars']) > 0 && $GLOBALS['BAB_SESS_LOGGED'])
 	{
+	$babBody->icalendars->user_calendarids = implode(',',$_POST['selected_calendars']);
 	
 	$db = &$GLOBALS['babDB'];
 	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
 	if ($n > 0)
-		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".implode(',',$_POST['selected_calendars'])."' WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		{
+		$db->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babBody->icalendars->user_calendarids."' WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+		}
 	else
-		$db->db_query("INSERT INTO ".BAB_CAL_USER_OPTIONS_TBL."  (id_user,user_calendarids) VALUES ('".$GLOBALS['BAB_SESS_USERID']."','".implode(',',$_POST['selected_calendars'])."')");
+		{
+		$db->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, work_days, week_numbers, user_calendarids) values ('".$GLOBALS['BAB_SESS_USERID']."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', '1,2,3,4,5', 'N', '".$babBody->icalendars->user_calendarids."')");
+		}
 	}
+
 }
 ?>
