@@ -788,6 +788,7 @@ function viewContact($id, $what)
 		var $addcontactval;
 		var $cancel;
 		var $babCss;
+		var $msgerror;
 
 		function temp($id, $what)
 			{
@@ -805,6 +806,7 @@ function viewContact($id, $what)
 			$this->homeaddress = babTranslate("Home Address");
 			$this->cancel = babTranslate("Cancel");
 			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->msgerror = "";
 
 			$db = new db_mysql();
 			$req = "select * from contacts where id='".$id."'";
