@@ -1863,12 +1863,6 @@ editor.insertHTML('$DIRECTORYID('+id+','+txt+')');
 // bug ie 5.0
 function savef(obj) {}
 
-// EOF
-// Local variables: //
-// c-basic-offset:8 //
-// indent-tabs-mode:t //
-// End: //
-
 var editor = null;
 
 var babUrl = null;
@@ -1919,9 +1913,9 @@ function initEditor2(what,ta)
 		];
 		}
 
-	if( what == 2 )
+	else if( what == 2 )
 		{
-		// descriptions (no $VAR)
+		// descriptions (no $XXX)
 	  	editor.config.toolbar = [ [ "fontname", "space" ],
 			 [ "fontsize", "space" ],
 			 [ "formatblock", "space"],
@@ -1933,6 +1927,24 @@ function initEditor2(what,ta)
 			 [ "popupeditor","bablink","unlink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript" ]
+		];
+		}
+
+	else if( what == 3 )
+		{
+		// Sections
+	  	editor.config.toolbar = [ [ "fontname", "space" ],
+			 [ "fontsize", "space" ],
+			 [ "formatblock", "space"],
+			 [ "babstyle", "space", "textindicator","linebreak" ],
+			 [ "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator" ],
+			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
+			 [ "forecolor", "backcolor", "separator" ],
+			 [ "horizontalrule", "inserttable", "htmlmode","cleanhtml", "separator" ],
+			 [ "popupeditor","bablink","unlink", "linebreak" ],
+			 [ "copy", "cut", "paste","undo","redo", "separator" ],
+			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
+			 [ "babfile","babarticle","babfaq","babovml","babcontdir"]
 		];
 		}
 
