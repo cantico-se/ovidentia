@@ -16,6 +16,7 @@
 - Sorted files in Files Manager
 - babMaxRows is no longer used from config.php. Value in forum defintion is used
 - Now, when you reply you can view post or comment or read article on witch you reply
+- Added possibilty to non moderate comments on topics
 ************************************************************************/
 function upgrade()
 {

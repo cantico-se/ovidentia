@@ -202,7 +202,7 @@ function deleteComment($topics, $article, $com, $newc)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function notifyApprover($top, $article, $title, $approveremail)
+function notifyApprover($top, $article, $title, $approveremail, $modcom)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include $babInstallPath."utilit/mailincl.php";
@@ -225,11 +225,14 @@ function notifyApprover($top, $article, $title, $approveremail)
         var $dateval;
 
 
-		function tempa($top, $article, $title)
+		function tempa($top, $article, $title, $modcom)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->subjectname = $title;
-            $this->message = bab_translate("A new comment is waiting for you");
+			if( $modcom == "Y")
+				$this->message = bab_translate("A new comment is waiting for you");
+			else
+				$this->message = bab_translate("A new comment has been added");
             $this->from = bab_translate("Author");
             $this->subject = bab_translate("Subject");
             $this->subjectname = $title;
@@ -253,7 +256,7 @@ function notifyApprover($top, $article, $title, $approveremail)
 			}
 		}
 	
-	$tempa = new tempa($top, $article, $title);
+	$tempa = new tempa($top, $article, $title, $modcom);
 	$message = bab_printTemplate($tempa,"mailinfo.html", "commentwait");
 
     $mail = new babMail();
@@ -302,7 +305,7 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 			$arr3 = $db->db_fetch_array($res);
 			//$message = bab_translate("A new Comment is waiting for you on topic: \n  "). $arr['category'];
 			//mail ($arr2['email'],'New waiting article',$message,"From: ".$babAdminEmail);
-            notifyApprover($top, $arr3['title'], $subject, $arr2['email']);
+            notifyApprover($top, $arr3['title'], $subject, $arr2['email'], $arr['mod_com']);
 			}
 		}
 	}
