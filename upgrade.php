@@ -4174,7 +4174,7 @@ if( !$res)
 	}
 
 $res = $db->db_query("SELECT * FROM ".BAB_ADDONS_TBL."");
-while($arr = $this->db->db_fetch_array($res))
+while($arr = $db->db_fetch_array($res))
 	{
 	$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title']."/addonini.php");
 	if( !empty($arr_ini['version']) && $arr_ini['version'] == $arr['version'])
