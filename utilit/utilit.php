@@ -725,12 +725,19 @@ var $file;
 function babSectionTemplate($file, $section="")
 	{
 	$this->babSection("","");
+
+	
 	$this->file = $file;
 	$this->setTemplate($section);
 	}
 
 function printout()
 	{
+	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/'. $this->file ) )
+		{
+		$this->content = & bab_printTemplate($this,'insections.html', substr($this->file,0,-5));
+		return bab_printTemplate($this,'sectiontemplate.html', 'default');
+		}
 	$str = bab_printTemplate($this,$this->file, $this->template);
 	if( empty($str))
 		return bab_printTemplate($this,$this->file, "template");
@@ -1908,6 +1915,13 @@ function printout()
 				}
 			}
 		$this->currmonthevents = $currmonthevents;
+		}
+
+	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/montha.html' ) )
+		{
+		$this->content = & bab_printTemplate($this,'insections.html', 'montha');
+		$this->title = $this->curmonth.' '.$this->curyear;
+		return bab_printTemplate($this,'sectiontemplate.html', 'default');
 		}
 
 	return bab_printTemplate($this,"montha.html", "");

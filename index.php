@@ -287,6 +287,8 @@ function printBody()
 
 			$this->content = $babBody->printout();
 			$this->message = $babBody->message;
+			$this->title = $babBody->title;
+			$this->msgerror = $babBody->msgerror;
 			}
 
 		function getNextMenu()
