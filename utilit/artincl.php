@@ -597,7 +597,7 @@ function acceptWaitingArticle($idart)
 			{
 			$artauthor = bab_translate("Anonymous");
 			}
-		if( $arr['notify_members'] == "Y" )
+		if( $arr['notify_members'] == "Y" && bab_mktime($arr['date_publication']) <= mktime())
 			{
 			notifyArticleGroupMembers($arr['topicname'], $arr['id_topic'], $arr['title'], $artauthor, 'add', $arr['restriction']);
 			}
