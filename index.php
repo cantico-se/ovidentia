@@ -88,6 +88,7 @@ include_once "base.php";
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
 if ($babNTauth) include $babInstallPath."utilit/ntident.php";
+if ($babCookieIdent) include $babInstallPath."utilit/cookieident.php";
 
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;

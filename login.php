@@ -37,6 +37,15 @@ function displayLogin()
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");
 			$this->login = bab_translate("Login");
+
+			// ajout cookie
+			$this->life = bab_translate("Automatic connection time");
+			$this->nolife = bab_translate("no automatic connection");
+			$this->oneday = bab_translate("one day");
+			$this->oneweek = bab_translate("one week");
+			$this->onemonth = bab_translate("one month");
+			$this->oneyear = bab_translate("one year");
+			$this->infinite = bab_translate("unlimited");
 			}
 		}
 
@@ -100,6 +109,11 @@ function signOff()
 		session_unregister("BAB_SESS_HASHID");
 		session_destroy();
 		}
+
+	// ajout cookie
+	setcookie('c_nickname'," ");
+	setcookie('c_password'," ");
+
 	Header("Location: ". $GLOBALS['babPhpSelf']);
 	}
 
@@ -147,7 +161,7 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 	$babBody->babecho(	bab_printTemplate($temp,"login.html", "usercreate"));
 	}
 
-function signOn( $nickname, $password)
+function signOn( $nickname, $password,$lifetime)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID;
 	if( empty($nickname) || empty($password))
@@ -174,6 +188,12 @@ function signOn( $nickname, $password)
 		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."' where id='".$arr['id']."'");
 		}
 
+	// ajout cookie
+	if ( $lifetime > 0 )
+		{
+		setcookie('c_nickname',$nickname,time()+$lifetime);
+		setcookie('c_password',md5($password),time()+$lifetime);
+		}
 	return true;
 	}
 
@@ -242,8 +262,6 @@ function userLogin($nickname,$password)
 				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
 				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
 				$_SESSION['BAB_SESS_HASHID'] = $arr['confirm_hash'];
-				$_SESSION['BAB_SESS_GROUPID'] = bab_getPrimaryGroupId($arr['id']);
-				$_SESSION['BAB_SESS_GROUPNAME'] = bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
 				$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
 				$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
 				$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
@@ -257,8 +275,6 @@ function userLogin($nickname,$password)
 				$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
 				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
 				$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
-				$GLOBALS['BAB_SESS_GROUPID']  = bab_getPrimaryGroupId($arr['id']);
-				$GLOBALS['BAB_SESS_GROUPNAME'] = bab_getGroupName($GLOBALS['BAB_SESS_GROUPID']);
 				}
 			return true;
 			}
@@ -357,9 +373,15 @@ if( $res && $db->db_num_rows($res) > 0 )
 	$r = $db->db_fetch_array($res);
 }
 
+// ajout cookie
+if (!isset($lifetime))
+	{
+	$lifetime = 0;
+	}
+
 if( isset($login) && $login == "login")
 	{
-	if(!signOn($nickname, $password))
+	if(!signOn($nickname, $password, $lifetime))
 		$idx = 'signon';
 	else
 		Header("Location: ". $GLOBALS['babUrlScript']);
@@ -373,6 +395,8 @@ else if( isset($sendpassword) && $sendpassword == "send")
 	{
 	sendPassword($nickname);
 	}
+
+
 
 switch($cmd)
 	{
