@@ -150,6 +150,15 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE sections ADD jscript ENUM('N','Y') NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>sections</b> table failed !<br>";
+	return $ret;
+	}
+
+
 $req = "CREATE TABLE files (";
 $req .= " id int(11) unsigned NOT NULL auto_increment,";
 $req .= " name varchar(255) NOT NULL default '',";

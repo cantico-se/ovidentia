@@ -1107,7 +1107,6 @@ function deleteFiles($items, $gr, $id)
 			$arr = $db->db_fetch_array($res);
 			if( file_exists($pathx.$arr['path']."/".$arr['name']))
 				{
-				echo $pathx.$arr['path']."/".$arr['name'];
 				if( unlink($pathx.$arr['path']."/".$arr['name']))
 					{
 					$db->db_query("delete from files where id='".$items[$i]."' or link='".$items[$i]."'");
