@@ -307,12 +307,12 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 			$mime->mailSubject($subject);
 			if(!empty($cc))
 				{
-				addAddress($to, "mailCc", $mime);
+				addAddress($cc, "mailCc", $mime);
 				}
 
 			if(!empty($bcc))
 				{
-				addAddress($to, "mailBcc", $mime);
+				addAddress($bcc, "mailBcc", $mime);
 				}
 
 			for($i=0; $i < count($files); $i++)
