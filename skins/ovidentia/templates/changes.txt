@@ -61,6 +61,7 @@ inbox.html					            changed action="index.php" to action="{ babPhpSelf }"
                                         Changed href="{ msgfromurl }" to javascript call
                                         Changed href="{ msgsubjecturl }" to javascript call
                                         Added an icon to delete emails
+                                        Added composeurl url (2 times )
                         mailview        Removed Meta tags
                                         Removed JavaScript
                                         Changed href="{ addurl }" to javascript call
