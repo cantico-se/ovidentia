@@ -90,6 +90,7 @@ function siteModify($id)
 			$this->mailfunction = bab_translate("Mail function");
 			$this->server = bab_translate("Smtp server");
 			$this->serverport = bab_translate("Server port");
+			$this->imagessize = bab_translate("Max image size ( Kb )");
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
@@ -113,6 +114,7 @@ function siteModify($id)
 				$this->siteemailval = $arr['adminemail'];
 				$this->serverval = $arr['smtpserver'];
 				$this->serverportval = $arr['smtpport'];
+				$this->imgsizeval = $arr['imgsize'];
 				if( $arr['registration'] == "Y")
 					{
 					$this->nregister = "";
@@ -481,7 +483,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport)
+function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize)
 	{
 	global $babBody;
 	if( empty($name))
@@ -515,7 +517,9 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 		}
 	else
 		{
-		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."' where id='".$id."'";
+		if( !is_numeric($imgsize))
+			$imgsize = 25;
+		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."' where id='".$id."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -564,7 +568,7 @@ if( isset($modify))
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport))
+		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize))
 			$idx = "modify";
 		}
 	else if( !empty($delete))

@@ -103,8 +103,20 @@ function listImages($editor)
 
 		function temp($editor)
 			{
-			$this->maximagessize = BAB_IMAGE_MAXSIZE;
-			$this->maxsizetxt = bab_translate("Image size must not exceed")." ".BAB_IMAGE_MAXSIZE;
+			$db = $GLOBALS['babDB'];
+
+			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+			$res=$db->db_query($req);
+
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				$arr = $db->db_fetch_array($res);
+				$this->maximagessize = $arr['imgsize'];
+				}
+			else
+				$this->maximagessize = 25;
+			$this->maxsizetxt = bab_translate("Image size must not exceed")." ".$this->maximagessize. " ". bab_translate("Kb");
+			$this->maximagessize *= 1000 ;
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
 			$this->yes = bab_translate("Yes");

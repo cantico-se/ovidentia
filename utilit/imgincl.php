@@ -1,7 +1,6 @@
 <?php
 
-define("BAB_FILE_TIMEOUT", 600);
-define("BAB_IMAGE_MAXSIZE", 1000000);
+define("BAB_FILE_TIMEOUT", 36000);
 define("BAB_IUF", "images");
 define("BAB_IUF_TMP", "tmp");
 define("BAB_IUF_COMMON", "common");

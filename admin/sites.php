@@ -140,6 +140,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 			$this->mailfunction = bab_translate("Mail function");
 			$this->server = bab_translate("Smtp server");
 			$this->serverport = bab_translate("Server port");
+			$this->imagessize = bab_translate("Max image size ( Kb )");
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
@@ -311,7 +312,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport)
+function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize)
 	{
 	global $babBody;
 	if( empty($name))
@@ -345,7 +346,9 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		}
 	else
 		{
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport."')";
+		if( !is_numeric($imgsize))
+			$imgsize = 25;
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize."')";
 		$db->db_query($query);
 		}
 	return true;
@@ -355,7 +358,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 /* main */
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport))
+	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize))
 		$idx = "create";
 	}
 
