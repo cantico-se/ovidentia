@@ -48,28 +48,24 @@ href="{ previousmonth }">&lt; </a> </td>
         <!--#else currentmonth -->
         <td valign="top" class="BabCalendarBodyBadMonthBackground"width="0" height="0">
         <!--#endif currentmonth -->
-        <div class="HeaderDayCalendar"><table width="100%" border="0" align="center">
-		<tr><td align="left" valign="middle">
-        <a class="BabMonthCalendarDayNumber" href="{ daynumberurl }">{ daynumbername }</a></td>
-		<!--#if bowner "== 1" -->		
-		<td align="right" valign="middle"><a class="BabDayCalendarEventLink" href="{ neweventurl }"><IMG SRC="{ babSkinPath }images/Puces/PuceNewEvent.png" WIDTH="12" HEIGHT="11" BORDER=0 ALT="{ new }" align="absmiddle"></a></td>
-		<!--#endif bowner -->
-        </tr></table>
+        <div class="HeaderDayCalendar">
+		<table width="100%" border="0" align="center">
+			<tr><td align="left" valign="middle"><a class="BabMonthCalendarDayNumber" href="{ daynumberurl }">{ daynumbername }</a></td>
+			<!--#if bowner "== 1" -->		
+			<td align="right" valign="middle"><a class="BabDayCalendarEventLink" href="{ neweventurl }"><IMG SRC="{ babSkinPath }images/Puces/PuceNewEvent.png" WIDTH="12" HEIGHT="11" BORDER=0 ALT="{ new }" align="absmiddle"></a></td>
+			<!--#endif bowner -->
+			</tr>
+		</table>
         </div>		
-		
         <!--#in getnextcal -->
         <!--#if countevent "> 0" -->
-<table width="100%" border="0" align="center">
-		<tr><td align="center" valign="middle">
-		<div class="BabCalendarBodyFont" style="width: 0px" title="{ fullname }" nowrap>
-            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="3" height="1" border="0">{ fullnameten }
+		<div class="BabCalendarBodyFont" style="width:100%;padding:2px" title="{ fullname }" nowrap>
+            { fullnameten }
             </div>
-        </td></tr></table>
         <!--#endif countevent -->
         <!--#in getevent -->
-  
-            <div class="BabCalendarBodyFont" style="background-color : { bgcolor }; width : 0px" title="{ title }" nowrap>
-            { hourten }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="3" height="1" border="0"><a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
+            <div class="BabCalendarBodyFont" style="background-color : { bgcolor }; width :100%;padding:2px" title="{ title }" nowrap>
+            { hourten }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
             </div>
 		<!--#endin getevent -->
         <!--#endin getnextcal -->
@@ -426,4 +422,3 @@ window.focus();
 </body>
 </html>
 <!--#end categorieslist -->
-
