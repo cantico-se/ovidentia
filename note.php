@@ -48,7 +48,7 @@ function deleteNotes($id)
 function updateNotes($id, $content)
 	{
 	$db = $GLOBALS['babDB'];
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+	if( !bab_isMagicQuotesGpcOn())
 		{
 		$content = addslashes($content);
 		}

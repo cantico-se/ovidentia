@@ -149,7 +149,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$this->messageval = "";
 			if( !empty($pmsg))
 				{
-				if( ini_get("magic_quotes_gpc") || get_cfg_var("magic_quotes_gpc"))
+				if( bab_isMagicQuotesGpcOn())
 					{
 					$this->messageval = stripslashes($pmsg);
 					}
@@ -301,7 +301,7 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 				$mime = new babMail();
 			addAddress($to, "mailTo", $mime);
 			$mime->mailFrom($arr['email'], $arr['name']);
-			if( ini_get("magic_quotes_gpc") || get_cfg_var("magic_quotes_gpc"))
+			if( bab_isMagicQuotesGpcOn())
 				{
 				$message = stripslashes($message);
 				$subject = stripslashes($subject);

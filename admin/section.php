@@ -149,7 +149,7 @@ function sectionUpdate($id, $title, $desc, $content, $script)
 		}
 	*/
 	//$query = "update ".BAB_SECTIONS_TBL." set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+	if( !bab_isMagicQuotesGpcOn())
 		{
 		$desc = addslashes($desc);
 		$content = addslashes($content);

@@ -20,6 +20,15 @@ function bab_isEmailValid ($email)
 	//return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
 	}
 
+function bab_isMagicQuotesGpcOn()
+	{
+	$mqg = ini_get("magic_quotes_gpc");
+	if( $mqg == 0 || strtolower($mqg) == "off" || !get_cfg_var("magic_quotes_gpc"))
+		return false;
+	else
+		return true;
+	}
+
 function bab_mktime($time)
 	{
 	$arr = explode(" ", $time);

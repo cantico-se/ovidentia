@@ -605,7 +605,7 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		}
 	$db = $GLOBALS['babDB'];
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+	if( !bab_isMagicQuotesGpcOn())
 		{
 		$headtext = addslashes($headtext);
 		$bodytext = addslashes($bodytext);
@@ -645,7 +645,7 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext)
 		return;
 		}
 
-	if( ini_get("magic_quotes_gpc") || get_cfg_var("magic_quotes_gpc"))
+	if( bab_isMagicQuotesGpcOn())
 		{
 		$headtext = stripslashes($headtext);
 		$bodytext = stripslashes($bodytext);

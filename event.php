@@ -839,7 +839,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		return false;
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+	if( !bab_isMagicQuotesGpcOn())
 		{
 		$description = addslashes($description);
 		$title = addslashes($title);
@@ -990,7 +990,7 @@ function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebe
 		return;
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+	if( !bab_isMagicQuotesGpcOn())
 		{
 		$description = addslashes($description);
 		$title = addslashes($title);

@@ -468,7 +468,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	if( $send == "1")
 		{
 		$msg = nl2br($message);
-		if( ini_get("magic_quotes_gpc") || get_cfg_var("magic_quotes_gpc"))
+		if( bab_isMagicQuotesGpcOn())
 			$msg = stripslashes($msg);
         notifyArticleAuthor($subject, $msg, $title, $arr2['email'], $arr['email']);
 		//mail ($arr['email'],$subject,$title . "\n". $msg,"From: ".$arr2['email']);
@@ -492,7 +492,7 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 		}
 
 	$db = $GLOBALS['babDB'];
-	if( ini_get("magic_quotes_gpc") || get_cfg_var("magic_quotes_gpc"))
+	if( bab_isMagicQuotesGpcOn())
 		{
 		$headtext = stripslashes($headtext);
 		$bodytext = stripslashes($bodytext);
@@ -571,7 +571,7 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 		else
 			$subject = "Your comment has been refused";
 		$msg = nl2br($message);
-		if( ini_get("magic_quotes_gpc") || get_cfg_var("magic_quotes_gpc"))
+		if( bab_isMagicQuotesGpcOn())
 			$msg = stripslashes($msg);
 		//mail ($arr['email'], bab_translate("About your comment"), $msg,"From: ".$arr2['email']);
         notifyCommentAuthor($subject, $msg, empty($BAB_SESS_USER)? $babAdminEmail: $BAB_SESS_USER, $arr['email']);

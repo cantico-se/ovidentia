@@ -118,7 +118,7 @@ function saveCategory($category, $description, $manager)
 		return;
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+	if( !bab_isMagicQuotesGpcOn())
 		{
 		$description = addslashes($description);
 		$category = addslashes($category);
