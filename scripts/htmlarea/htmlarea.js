@@ -1858,6 +1858,9 @@ function EditorOnInsertOvml(txt)
 editor.insertHTML('$OVML('+txt+')');
 }
 
+// bug ie 5.0
+function savef(obj) {}
+
 // EOF
 // Local variables: //
 // c-basic-offset:8 //
