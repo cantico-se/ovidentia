@@ -453,7 +453,7 @@ function displayFrtFrame($ocid, $oeid, $update)
 	die(bab_printTemplate($temp,"frchart.html", "frtframe"));
 }
 
-function displayUsersList($ocid, $oeid, $update, $pos, $xf)
+function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 {
 	global $babBody;
 
@@ -461,14 +461,16 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf)
 		{
 		var $count;
 
-		function temp($ocid, $oeid, $update, $pos, $xf)
+		function temp($ocid, $oeid, $update, $pos, $xf, $q)
 			{
 			global $ocinfo;
 			$this->allname = bab_translate("All");
+			$this->search = bab_translate("Search");
 			$this->ocid = $ocid;
 			$this->oeid = $oeid;
 			$this->pos = $pos;
 			$this->xf = $xf;
+			$this->q = $q;
 			$this->iddir = $ocinfo['id_directory'];
 			if( $pos[0] == "-" )
 				{
@@ -486,7 +488,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf)
 			else
 				$this->allselected = 0;
 
-			$this->allurl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$ocid."&oeid=".$oeid."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
+			$this->allurl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$ocid."&oeid=".$oeid."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf."&q=".urlencode($this->q);
 			$this->count = 0;
 			$this->db = $GLOBALS['babDB'];
 			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->iddir."'"));
@@ -512,6 +514,40 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf)
 			$this->javascript = bab_printTemplate($this, "frchart.html", "orgjavascript");
 			$this->cuserid = 0;
 			$this->cuoeid = 0;
+
+			$this->like = '';
+			if (!empty($q))
+				{
+				$qs = addslashes($q);
+				$this->like = "(det.cn like '%".$qs."%'".
+							" or det.sn like '%".$qs."%'".
+							" or det.mn like '%".$qs."%'".
+							" or det.givenname like '%".$qs."%'".
+							" or det.email like '%".$qs."%'".
+							" or det.btel like '%".$qs."%'".
+							" or det.htel like '%".$qs."%'".
+							" or det.mobile like '%".$qs."%'".
+							" or det.bfax like '%".$qs."%'".
+							" or det.title like '%".$qs."%'".
+							" or det.departmentnumber like '%".$qs."%'".
+							" or det.organisationname like '%".$qs."%'".
+							" or det.bstreetaddress like '%".$qs."%'".
+							" or det.bcity like '%".$qs."%'".
+							" or det.bpostalcode like '%".$qs."%'".
+							" or det.bstate like '%".$qs."%'".
+							" or det.bcountry like '%".$qs."%'".
+							" or det.hstreetaddress like '%".$qs."%'".
+							" or det.hcity like '%".$qs."%'".
+							" or det.hpostalcode like '%".$qs."%'".
+							" or det.hstate like '%".$qs."%'".
+							" or det.hcountry like '%".$qs."%'".
+							" or det.user1 like '%".$qs."%'".
+							" or det.user2 like '%".$qs."%'".
+							" or det.user3 like '%".$qs."%'".
+							" or ocet.name like '%".$qs."%'".
+							" or ocrt.name like '%".$qs."%')";
+				}
+
 			}
 
 		function getnextcol()
@@ -524,7 +560,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf)
 				$this->coltxt = bab_translate($arr[1]);
 				if( $arr[2] )
 					{
-					$this->colurl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$this->ocid."&oeid=".$this->oeid."&pos=".$this->ord."&xf=".$arr[0];
+					$this->colurl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$this->ocid."&oeid=".$this->oeid."&pos=".$this->ord."&xf=".$arr[0]."&q=".urlencode($this->q);
 					}
 				else
 					{
@@ -554,11 +590,21 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf)
 
 					if( $this->idgroup > 1 )
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=det.id_user left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where ugt.id_group='".$this->idgroup."' and det.id_directory='0' and ".$this->xf." like '".$this->pos."%' order by ".$this->xf." ";
+						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=det.id_user left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where ugt.id_group='".$this->idgroup."' and det.id_directory='0' and ".$this->xf." like '".$this->pos."%'";
+						if( !empty($this->like))
+							{
+							$req .= " and ".$this->like." ";
+							}
+						$req .= " order by ".$this->xf." ";
 						}
 					else
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where det.id_directory='".($this->idgroup != 0? 0: $this->iddir)."' and ".$this->xf." like '".$this->pos."%' order by ".$this->xf." ";
+						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where det.id_directory='".($this->idgroup != 0? 0: $this->iddir)."' and ".$this->xf." like '".$this->pos."%'";
+						if( !empty($this->like))
+							{
+							$req .= " and ".$this->like." ";
+							}
+						$req .= " order by ".$this->xf." ";
 						}
 
 					if( $this->ord == "-" )
@@ -629,7 +675,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$this->ocid."&oeid=".$this->oeid."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
+				$this->selecturl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$this->ocid."&oeid=".$this->oeid."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf."&q=".urlencode($this->q);
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else
@@ -643,7 +689,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf)
 			}
 		}
 
-	$temp = new temp($ocid, $oeid, $update, $pos, $xf);
+	$temp = new temp($ocid, $oeid, $update, $pos, $xf, $q);
 	echo bab_printTemplate($temp, "frchart.html", "oedirectorylist_disp4");
 }
 
@@ -1021,7 +1067,8 @@ switch($idx)
 				break;
 			case "disp5":
 				if( !isset($pos )){	$pos = "A"; }
-				displayUsersList($ocid, $oeid, $update, $pos, $xf);
+				if( !isset($q )){	$q = ""; }
+				displayUsersList($ocid, $oeid, $update, $pos, $xf, $q);
 				break;
 			case "disp3":
 				displayChartTree($ocid, $oeid, $update);
