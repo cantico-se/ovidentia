@@ -2242,6 +2242,12 @@ function bab_updateSiteSettings()
 		{
 		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
 		}
+
+	if( !is_dir($GLOBALS['babUploadPath']."/addons/"))
+		{
+		bab_mkdir($GLOBALS['babUploadPath']."/addons/", $GLOBALS['babMkdirMode']);
+		}
+
 	if( $arr['babslogan'] != "")
 		{
 		$GLOBALS['babSlogan'] = $arr['babslogan'];

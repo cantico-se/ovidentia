@@ -104,10 +104,6 @@ unset($BAB_SESS_LOGGED);
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
-if( !is_dir($GLOBALS['babUploadPath']."/addons/"))
-{
-	bab_mkdir($GLOBALS['babUploadPath']."/addons/", $GLOBALS['babMkdirMode']);
-}
 
 if( !isset($tg))
 	$tg = '';
