@@ -100,6 +100,7 @@ function readMore($topics, $article)
 	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "readmore"));
 	}
 
+//##: warn this fucntion is duplicated in articles.php file 
 function modifyArticle($topics, $article)
 	{
 	global $babBody;
@@ -509,7 +510,7 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	$bodytext = addslashes($bodytext);
 	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext' where id='$article'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext', date=now() where id='$article'";
 	$res = $db->db_query($req);		
 	}
 
