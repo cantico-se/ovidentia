@@ -17,7 +17,6 @@ $babSiteName = "Ovidentia"; /* your site name */
 $babUrl = "http://yourdomain/"; /* url to access to your site */
 $babAdminEmail = "admin@your-domain.com"; /* email address used to send emails ( registration, ... ) */
 $babLanguage = "en"; /* default language */
-$babMaxRows = 10; 
 $babVersion = "3.3"; /* current version */
 $babMaxFileSize = 1000000; /* Max size ( bytes ) file allowed*/
 $babMaxUserSize = 2000000; /* Capacity storage ( bytes ) allowed by user*/
