@@ -77,8 +77,8 @@ class listFiles
 					}
 				closedir($h);
 				$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."'";
-				if( !$this->bmanager )
-					$req .= " and confirmed='Y'";
+				//if( !$this->bmanager )
+				//	$req .= " and confirmed='Y'";
 				$req .= " order by name asc";
 				$this->res = $this->db->db_query($req);
 				$this->count = $this->db->db_num_rows($this->res);
