@@ -49,7 +49,7 @@ function accessCalendar($calid)
 			$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=lusers&idx=brow&cb=";
 			}
 
 		function getnext()

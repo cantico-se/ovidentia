@@ -444,6 +444,10 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "vacapp";
 		break;
+	case "lusers":
+		if( $BAB_SESS_LOGGED)
+    		$incl = "lusers";
+		break;
 	case "threads":
 		$incl = "threads";
 		break;
