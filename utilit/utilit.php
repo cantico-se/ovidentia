@@ -18,6 +18,8 @@ $babDays = array(babTranslate("Sunday"), babTranslate("Monday"),
 				babTranslate("Tuesday"), babTranslate("Wednesday"), babTranslate("Thursday"),
 				babTranslate("Friday"), babTranslate("Saturday"));
 
+$babSearchUrl = "";
+
 function isEmailValid ($email)
 	{
 	return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
@@ -202,7 +204,7 @@ function open()
 
 function printout()
 {
-	global $babInstallPath, $sectionTitlesBgnd;
+	global $babInstallPath;
 
 	$file = "sectiontemplate.html";
 	$filepath = "templates/". $file;
@@ -260,7 +262,6 @@ var $titlebgnd;
 
 function adminSection()
 	{
-	global $sectionTitlesBgnd;
 	$this->babSectionTemplate("adminsection.html", "template");
 	$this->array_urls[babTranslate("Sites")] = $GLOBALS[babUrl]."index.php?tg=sites";
 	$this->array_urls[babTranslate("Sections")] = $GLOBALS[babUrl]."index.php?tg=sections";
@@ -305,7 +306,7 @@ var $titlebgnd;
 
 function userSection()
 	{
-	global $BAB_SESS_USERID, $sectionTitlesBgnd;
+	global $BAB_SESS_USERID, $bab, $babSearchUrl;
 	$pgrpid = getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
 	$db = new db_mysql();
@@ -344,7 +345,10 @@ function userSection()
 	$this->array_urls[babTranslate("Options")] = $GLOBALS[babUrl]."index.php?tg=options";
 	$this->array_urls[babTranslate("Notes")] = $GLOBALS[babUrl]."index.php?tg=notes";
 	if( $faq )
+		{
 		$this->array_urls[babTranslate("Faq")] = $GLOBALS[babUrl]."index.php?tg=faq";
+		$babSearchUrl .= "sfaq=1&";
+		}
 	if( $vac )
 		$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=vacation";
 	$idcal = getCalendarid($BAB_SESS_USERID, 1);
@@ -403,7 +407,6 @@ var $waitingaimg;
 
 function topicsSection()
 	{
-	global $sectionTitlesBgnd;
 	$this->babSectionTemplate("topicssection.html", "template");
 	$this->title = babTranslate("Topics");
 	$this->head = babTranslate("List of different topics");
@@ -492,7 +495,6 @@ var $waiting;
 
 function forumsSection()
 	{
-	global $sectionTitlesBgnd;
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = babTranslate("Forums");
 	$this->head = babTranslate("List of different forums");
@@ -637,7 +639,7 @@ function loadSection($title, $pos=-1)
 
 function loadSections()
 {
-	global $body, $LOGGED_IN, $BAB_SESS_USERID;
+	global $body, $LOGGED_IN, $BAB_SESS_USERID, $babSearchUrl;
 	$add = false;
 	$db = new db_mysql();
 	$req = "select * from sections_order order by ordering asc";
@@ -665,6 +667,7 @@ function loadSections()
 					if( $sec->count > 0 )
 						{
 						$add = true;
+						$babSearchUrl .= "sart=1&";
 						}
 					break;
 				case 4: // Forums
@@ -672,6 +675,7 @@ function loadSections()
 					if( $sec->count > 0 )
 						{
 						$add = true;
+						$babSearchUrl .= "sfor=1&";
 						}
 					break;
 				case 5: // user's section
@@ -679,6 +683,7 @@ function loadSections()
 						{
 						$add = true;
 						$sec = new userSection();
+						$babSearchUrl .= "snot=1&";
 						}
 					break;
 				}

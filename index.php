@@ -48,10 +48,13 @@ function printBody()
 		var $content;
 		var $message;
 		var $version;
+		var $search;
+		var $bsearch;
+		var $searchurl;
 
 		function tpl()
 			{
-			global $body, $LOGGED_IN, $babSiteName,$babSlogan,$babStyle;
+			global $body, $LOGGED_IN, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
 			$this->version = $GLOBALS[babVersion];
 			$this->babLogoLT = "";
 			$this->babLogoRT = "";
@@ -83,6 +86,16 @@ function printBody()
 				$this->logurl = $GLOBALS[babUrl]."index.php?tg=login&cmd=signon";
 				}
 
+			$this->search = babTranslate("Search");
+			if( !empty($babSearchUrl))
+				{
+				$this->searchurl = $GLOBALS[babUrl]."index.php?tg=search&".substr($babSearchUrl, 0 ,-1);
+				$this->bsearch = 1;
+				}
+			else
+				{
+				$this->bsearch = 0;
+				}
 			$this->menukeys = array_keys($body->menu->items);
 			$this->menuvals = array_values($body->menu->items);
 			$this->menuitems = count($this->menukeys);
@@ -332,6 +345,9 @@ switch($tg)
 		break;
 	case "faq":
 		$incl = "faq";
+		break;
+	case "search":
+		$incl = "search";
 		break;
 	case "notes":
 		if( $LOGGED_IN)

@@ -1,0 +1,272 @@
+
+<!--#begin search -->
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="search">
+<input type="hidden" name="sfaq" value="{ sfaq }">
+<input type="hidden" name="sfor" value="{ sfor }">
+<input type="hidden" name="sart" value="{ sart }">
+<input type="hidden" name="snot" value="{ snot }">
+<input type="hidden" name="idx" value="find">
+  <center>
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              search }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="what" size="20" value="{ what }">
+            </td>
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              in }:</td>
+              <td class="BabLoginMenuBackground" align="center" nowrap valign="middle">
+                <select name="item">
+                  <option value="" selected>{ all }</option>
+                  <!--#in getnextitem -->
+                  <option value="{ itemvalue }">{ itemname }</option>
+                  <!--#endin getnextitem -->
+                </select>
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" align="center" colspan=4> 
+                <input type="submit" name="go" value="{ search }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</form>
+<!--#end search -->
+
+<!--#begin searchresult -->
+<script type="text/javascript">
+<!--
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=650,height=500,status=no,resizable=yes,top=200,left=200, scrollbars=yes");
+}
+//-->
+</script>
+<!--#if countart "!= 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ arttitle }</td></tr></table>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr align="left"> 
+<!--#in getnextart -->
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ articleurl }">{ article }</a></td>
+  </tr>
+<!--#endin getnextart -->
+</table>
+<!--#endif countart -->
+<!--#if countcom "!= 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ comtitle }</td></tr></table>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr align="left"> 
+<!--#in getnextcom -->
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ comurl }">{ com }</a></td>
+  </tr>
+<!--#endin getnextcom -->
+</table>
+<!--#endif countcom -->
+<!--#if countfor "!= 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ fortitle }</td></tr></table>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr align="left"> 
+<!--#in getnextfor -->
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ posturl }">{ post }</a></td>
+  </tr>
+<!--#endin getnextfor -->
+</table>
+<!--#endif countfor -->
+<!--#if countfaq "!= 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ faqtitle }</td></tr></table>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr align="left"> 
+<!--#in getnextfaq -->
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ questionurl }">{ question }</a></td>
+  </tr>
+<!--#endin getnextfaq -->
+</table>
+<!--#endif countfaq -->
+<!--#if countnot "!= 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ nottitle }</td></tr></table>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr align="left"> 
+<!--#in getnextnot -->
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%">{ content }</td>
+  </tr>
+<!--#endin getnextnot -->
+</table>
+<!--#endif countnot -->
+<br>
+<!--#end searchresult -->
+
+<!--#begin viewart -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+</HEAD>
+<BODY class="BabBackground">
+<center>
+<table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabTopicsTitleBackground" align="left" valign="middle">{ title }</td>
+</tr>
+<tr><td class="BabTopicsBackground" >{ content }</td></tr>
+<tr><td colspan="2" class="" align="right" nowrap></td></tr>
+</table>
+</center>
+</body>
+</html>
+<!--#end viewart -->
+
+<!--#begin viewcom -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+</HEAD>
+<BODY class="BabBackground">
+<center>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
+<br>
+
+<table  width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+    <td class="BabCommentCadreFontBackground" align="center" valign="middle"> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr align="right"> 
+          <td class="BabCommentTitleFontBackground" colspan="2" nowrap valign="middle">{ 
+            arr[date] }</td>
+        </tr>
+        <tr> 
+          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ 
+            by }:</td>
+          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle">{ 
+            arr[name] } </td>
+        </tr>
+        <tr> 
+          <td class="BabCommentTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ 
+            subject }:</td>
+          <td class="BabCommentBodyFontBackground" width="80%" align="left" valign="middle">{ 
+            arr[subject] } </td>
+        </tr>
+        <tr> 
+          <td class="BabCommentFontBackground" align="left" valign="middle" height="26" colspan="2">{ 
+            arr[message] } </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</center>
+</body>
+</html>
+<!--#end viewcom -->
+
+<!--#begin viewfor -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+</HEAD>
+<BODY class="BabBackground">
+<center>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
+<br>
+<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+  <tr><td>
+      <table class="" border="0" width="100%" cellpadding="2" cellspacing="0">
+        <tr> 
+          <td height="19" class="BabForumTopicsNavFontTitleBackground" width="100%" colspan="2">{ 
+            postsubject }</td>
+        </tr>
+        <tr> 
+          <td class="BabForumTopicsNavBodyFontBackground" colspan="2"><br>
+            { postmessage }<br>
+            &nbsp;</td>
+        </tr>
+        <tr> 
+          <td class="BabForumTopicsNavFooterDateFontBackground" nowrap width="17%">{ 
+            postdate }</td>
+          <td class="BabForumTopicsNavFooterAuthorFontBackground" nowrap width="16%" align="right">{ 
+            postauthor }</td>
+                 </tr>
+      </table>
+
+</td></tr>
+</table>
+</center>
+</body>
+</html>
+<!--#end viewfor -->
+
+<!--#begin viewfaq -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+</HEAD>
+<BODY class="BabBackground">
+<center>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
+<br>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabFaqQuestionBodyFontBackground" nowrap align="left" valign="middle">{ 
+      arr[question] }</td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabFaqresponseBodyFontBackground" valign="top">{ arr[response] }</td>
+  </tr>
+</table>
+<br>
+</center>
+</body>
+</html>
+<!--#end viewfaq -->
