@@ -92,9 +92,10 @@ class listFiles
 					}
 				closedir($h);
 				$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."'";
-				//if( !$this->bmanager )
-				//	$req .= " and confirmed='Y'";
+				if( !$this->bmanager || $what != "list")
+					$req .= " and confirmed='Y'";
 				$req .= " order by name asc";
+
 				$this->res = $this->db->db_query($req);
 				$this->count = $this->db->db_num_rows($this->res);
 				}
@@ -1639,20 +1640,24 @@ function viewFile( $idf, $aclfm)
 				{
 				$bconfirm = true;
 				$bmanager = true;
+				$access = true;
 				}
 
-			if( $arr['id_owner'] == 2)
-				$access = true;
-			else if(!empty($BAB_SESS_USERID))
+			if( !$access )
 				{
-				if( $arr['id_owner'] == 1)
+				if( $arr['id_owner'] == 2)
 					$access = true;
-				else
+				else if(!empty($BAB_SESS_USERID))
 					{
-					$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='".$arr['id_owner']."' and id_object='".$BAB_SESS_USERID."'";
-					$res = $db->db_query($req);
-					if( $res && $db->db_num_rows($res) > 0)
+					if( $arr['id_owner'] == 1)
 						$access = true;
+					else
+						{
+						$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='".$arr['id_owner']."' and id_object='".$BAB_SESS_USERID."'";
+						$res = $db->db_query($req);
+						if( $res && $db->db_num_rows($res) > 0)
+							$access = true;
+						}
 					}
 				}
 			}
