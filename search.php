@@ -521,7 +521,7 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countnot)
 				{
 				$arr = $this->db->db_fetch_array($this->resnot);
-				$this->content = $arr['content'];
+				$this->content = highlightWord( $this->what, bab_replace($arr['content']));
 				$i++;
 				return true;
 				}
@@ -597,8 +597,8 @@ function viewComment($topics, $article, $com, $w)
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
 			$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
-			$this->arr['subject'] = highlightWord( $w, $this->arr['subject']);
-			$this->arr['message'] = highlightWord( $w, $this->arr['message']);
+			$this->arr['subject'] = highlightWord( $w, bab_replace($this->arr['subject']));
+			$this->arr['message'] = highlightWord( $w, bab_replace($this->arr['message']));
 			}
 		}
 
@@ -630,10 +630,8 @@ function viewPost($thread, $post, $w)
 			$arr = $db->db_fetch_array($db->db_query($req));
 			$this->postdate = bab_strftime(bab_mktime($arr['date']));
 			$this->postauthor = $arr['author'];
-			$this->postsubject = $arr['subject'];
-			$this->postmessage = $arr['message'];
-			$this->postsubject = highlightWord( $w, $arr['subject']);
-			$this->postmessage = highlightWord( $w, $arr['message']);
+			$this->postsubject = highlightWord( $w, bab_replace($arr['subject']));
+			$this->postmessage = highlightWord( $w, bab_replace($arr['message']));
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			}
 		}
@@ -659,8 +657,8 @@ function viewQuestion($idcat, $id, $w)
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->arr['question'] = highlightWord( $w, $this->arr['question']);
-			$this->arr['response'] = highlightWord( $w, $this->arr['response']);
+			$this->arr['question'] = highlightWord( $w, bab_replace($this->arr['question']));
+			$this->arr['response'] = highlightWord( $w, bab_replace($this->arr['response']));
 			$req = "select category from faqcat where id='$idcat'";
 			$a = $this->db->db_fetch_array($this->db->db_query($req));
 			$this->title = highlightWord( $w,  $a['category']);
