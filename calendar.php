@@ -143,7 +143,7 @@ function getEventsResult($calid, $day, $month, $year)
 	$db = $GLOBALS['babDB'];
 	$mktime = mktime(0,0,0,$month, $day,$year);
 	$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-	$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and '$daymin' between start_date and end_date";
+	$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and '$daymin' between start_date and end_date order by start_date, start_time asc";
 	return $db->db_query($req);
 }
 
