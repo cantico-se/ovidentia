@@ -1,4 +1,4 @@
-body {  margin: 0px 0px; background: #FFFFFF}
+body {  margin: 0px 0px; background: #FFFFFF;font-family: arial;font-size:10px}
 
 /* input */
 INPUT { font-family: Verdana;font-size:10px; color:#000000;background-color:#FFFFFF;border-width:1;border-color:#000000;font-weight:bold }
