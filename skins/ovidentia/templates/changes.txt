@@ -7,16 +7,16 @@ file			        section		        change
 --------------------------------------------------------------------------------
 sites.html              sitecreate          Added 'mailfunction', 'serveur' and 'serverport'
                         scripts             Modified function 'moveOptions()'
-mailinfo.html                               Added articlewaittxt section
-                                            Added commentwaittxt section
-                                            Added userregistrationtxt section
-                                            Added adminregistrationtxt section
-                                            Added newposttxt section
-                                            Added confirmarticletxt section
-                                            Added confirmcommenttxt section
-                                            Added filewaittxt section
-                                            Added sendpasswordtxt section
-                                            Added userconfirmationtxt section
+mailinfo.html                               Added template 'articlewaittxt'
+                                            Added template 'commentwaittxt'
+                                            Added template 'userregistrationtxt'
+                                            Added template 'adminregistrationtxt'
+                                            Added template 'newposttxt'
+                                            Added template 'confirmarticletxt'
+                                            Added template 'confirmcommenttxt'
+                                            Added template 'filewaittxt'
+                                            Added template 'sendpasswordtxt'
+                                            Added template 'userconfirmationtxt'
 comments.html           commentcreate       Changed name="name" to name="cname"
 calopt.html             access              Changed <input type="checkbox" name="baccess" value="y"> to select option
 search.html             viewfil             Added { modifiedbytxt }, { modifiedby }, { createdtxt }, { created }
@@ -25,8 +25,11 @@ fileman.html                                Added template 'viewfile'
                         fileslist           Removed Javascript
                                             Added column for Read Only files ( R )
                                             Moved { diskspace } before <!--#endif bmanager -->
-admfiles                admfileslist        Added column for 'moderation'                                          
-
+admfiles.html           admfileslist        Added column for 'moderation'                                          
+calview.html            articleslist        Changed href="{ titleurl }" to popup window
+users.html                                  Added template 'changepassword'
+                        userslist           Added column 'nickname'
+topman.html             articleslist        Added test <!--#if badmin --> ... <!--#endif badmin -->                       
 /****************************/
 version 3.3.0 / 3.3.1
 /****************************/
