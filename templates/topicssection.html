@@ -31,8 +31,7 @@
                       <td align="left" valign="middle" width="1"><img src="images/Puces/Puce3PxWhite.png" width="3" height="3" align="absmiddle"></td>
                       <td width="5" align="left"></td>
                       <td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{ 
-                        text }</a><!--#if new "== *" -->&nbsp;&nbsp;&nbsp;<IMG SRC="images/Puces/PuceSectionContrib.gif"
-						WIDTH="7" HEIGHT="11" BORDER=0 align="center" valign="middle" ALT="{ new }"><!--#endif new --></td>
+                        text }</a><!--#if newa "== *" -->&nbsp;&nbsp;&nbsp;{ waitinga }<!--#endif newa -->&nbsp;<!--#if newc "== *" -->&nbsp;&nbsp;&nbsp;{ waitinga }<!--#endif newc --></td>
                     </tr>
                     <!--#endin topicsGetNext -->
                   </table>
@@ -40,7 +39,18 @@
               </tr>
               <tr> 
                 <td class="BabFooterBodySection" align="center"><br>
-                  { foot }</td>
+				<table   width="100%" cellpadding="0" cellspacing="0" height="1">
+                    <tr> 
+                      <td width="15"></td>
+                      <td class="BabBodySection">{ waitinga }</td>
+                      <td width="5" align="left">{ waitingaimg }</td>
+                    </tr>
+                    <tr> 
+                      <td width="15"></td>
+                      <td class="BabBodySection">{ waitingc }</td>
+                      <td width="5" align="left">{ waitingcimg }</td>
+                    </tr>
+				</table>
               </tr>
             </table>
           </td>

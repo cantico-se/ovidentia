@@ -378,8 +378,13 @@ var $arrid = array();
 var $newartcount;
 var $newcomcount;
 var $count;
-var $new;
+var $newa;
+var $newc;
 var $titlebgnd;
+var $waitingc;
+var $waitinga;
+var $waitingcimg;
+var $waitingaimg;
 
 function topicsSection()
 	{
@@ -388,6 +393,10 @@ function topicsSection()
 	$this->title = babTranslate("Topics");
 	$this->head = babTranslate("List of different topics");
 	$this->foot = babTranslate("Topics with asterisk have waiting articles or comments ");
+	$this->waitingc = babTranslate("Waiting comments");
+	$this->waitinga = babTranslate("Waiting articles");
+	$this->waitingaimg = babPrintTemplate($this, "config.html", "babWaitingArticle");
+	$this->waitingcimg = babPrintTemplate($this, "config.html", "babWaitingComment");
 	$this->db = new db_mysql();
 	$req = "select * from topics";
 	$res = $this->db->db_query($req);
@@ -423,14 +432,21 @@ function topicsGetNext()
 				$req = "select * from comments where id_topic='".$this->arr[id]."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newcomcount = $this->db->db_num_rows($res);
-				if( $this->newartcount > 0 || $this->newcomcount > 0)
+				if( $this->newartcount > 0 )
 					{
-					//$this->new = " ( ".$this->newartcount. ", ".$this->newcomcount." )";
-					$this->new = "*";
+					$this->newa = "a";
 					}
 				else
 					{
-					$this->new = "";
+					$this->newa = "";
+					}
+				if( $this->newcomcount > 0)
+					{
+					$this->newc = "c";
+					}
+				else
+					{
+					$this->newc = "";
 					}
 				}
 			else
