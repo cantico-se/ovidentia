@@ -27,7 +27,7 @@ HTMLArea.I18N = {
 		about:          "Betreffende deze editor",
 		help:           "Hulp bij gebruik editor",
 		textindicator:  "Huidige stijl",
-		babimage:		"Ovidentia afbeelding tussenvoegen",
+		babimage:		"afbeelding tussenvoegen",
 		bablink:		"Web link tussenvoegen",
 		unlink:			"Remove Web Link",
 		cleanhtml:		"HTML code oppoetsen",
@@ -55,7 +55,7 @@ HTMLArea.I18N = {
 		},
 	babstyle : {
 		"Normal": "Font style",
-		"Remove format": "Remove format"
+		"Remove format": "Remove style"
 		}
 };
 

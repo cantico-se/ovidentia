@@ -166,7 +166,7 @@ HTMLArea.Config = function (babLanguage) {
 		inserttable:    ["InsertTable",          "Insert Table",       "insert_table.gif",						false],
 		htmlmode:       ["HtmlMode",             "Toggle HTML Source", "ed_html.gif",							true],
 		popupeditor:    ["popupeditor",          "Enlarge Editor",     "fullscreen_maximize.gif",				true],
-		babimage:		["BabImage",			 "Insert Ovidentia Image","ed_image.gif",						false],
+		babimage:		["BabImage",			 "Insert Image",	   "ed_image.gif",							false],
 		bablink:		["bablink",				 "Insert Web Link",    "ed_link.gif",							false],
 		unlink:			["unlink",				 "Remove Web Link",    "ed_unlink.gif",							false],
 		cleanhtml:		["cleanhtml",			 "Clean HTML",		   "ed_bab_clean.gif",						false],
@@ -880,56 +880,6 @@ HTMLArea.prototype.getSelectedHTML = function() {
 	return existing;
 };
 
-
-// Called when the user clicks on "InsertImage" button
-/*
-HTMLArea.prototype._insertImage = function() {
-	var sel = this._getSelection();
-	var range = this._createRange(sel);
-	var editor = this;	// for nested functions
-	this._popupDialog("insert_image.html", function(param) {
-		if (!param) {	// user must have pressed Cancel
-			return false;
-		}
-		editor._execCommand("insertimage", false, param["f_url"]);
-		var img = null;
-		if (HTMLArea.is_ie) {
-			img = range.parentElement();
-			// wonder if this works...
-			if (img.tagName.toLowerCase() != "img") {
-				img = img.previousSibling;
-			}
-		} else {
-			img = range.startContainer.previousSibling;
-		}
-		for (field in param) {
-			var value = param[field];
-			if (!value) {
-				continue;
-			}
-			switch (field) {
-			    case "f_alt":
-				img.alt = value;
-				break;
-			    case "f_border":
-				img.border = parseInt(value);
-				break;
-			    case "f_align":
-				img.align = value;
-				break;
-			    case "f_vert":
-				img.vspace = parseInt(value);
-				break;
-			    case "f_horiz":
-				img.hspace = parseInt(value);
-				break;
-			}
-		}
-	}, null);
-};
-
-*/
-
 // Called when the user clicks on "BabInsertImage" button
 HTMLArea.prototype._insertBabImage = function() {
 	var sel = this._getSelection();
@@ -973,7 +923,7 @@ HTMLArea.prototype._insertBabImage = function() {
 				break;
 			}
 		}
-	}, null,'toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
+	}, null,'toolbar=no,menubar=no,personalbar=no,width=500,height=480,scrollbars=yes,resizable=yes');
 };
 
 
@@ -1953,6 +1903,7 @@ function initEditor2(what,ta)
 	editor = new HTMLArea(ta,babUrl,babInstallPath,babLanguage,babPhpSelf);
 	if( what == 1 )
 		{
+		// articles
 	  	editor.config.toolbar = [ [ "fontname", "space" ],
 			 [ "fontsize", "space" ],
 			 [ "formatblock", "space"],
@@ -1965,6 +1916,23 @@ function initEditor2(what,ta)
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
 			 [ "babimage","babfile","babarticle","babfaq","babovml","babcontdir"]
+		];
+		}
+
+	if( what == 2 )
+		{
+		// descriptions (no $VAR)
+	  	editor.config.toolbar = [ [ "fontname", "space" ],
+			 [ "fontsize", "space" ],
+			 [ "formatblock", "space"],
+			 [ "babstyle", "space", "textindicator","linebreak" ],
+			 [ "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator" ],
+			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
+			 [ "forecolor", "backcolor", "separator" ],
+			 [ "horizontalrule", "inserttable", "htmlmode","cleanhtml", "separator" ],
+			 [ "popupeditor","bablink","unlink", "linebreak" ],
+			 [ "copy", "cut", "paste","undo","redo", "separator" ],
+			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript" ]
 		];
 		}
 

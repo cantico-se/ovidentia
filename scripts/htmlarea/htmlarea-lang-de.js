@@ -27,7 +27,7 @@ HTMLArea.I18N = {
 		about:          "About this editor",
 		help:           "Help using editor",
 		textindicator:  "Current style",
-		babimage:		"Insert Ovidentia image",
+		babimage:		"Insert image",
 		bablink:		"Insert Web Link",
 		unlink:			"Remove Web Link",
 		cleanhtml:		"Clean HTML code",
@@ -55,7 +55,7 @@ HTMLArea.I18N = {
 		},
 	babstyle : {
 		"Normal": "Font style",
-		"Remove format": "Remove format"
+		"Remove format": "Remove style"
 		}
 };
 
