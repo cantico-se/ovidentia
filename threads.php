@@ -15,6 +15,7 @@ function listThreads($forum, $active, $pos)
 		var $thread;
 		var $starter;
 		var $replies;
+		var $repliesname;
 		var $views;
 		var $lastpost;
 		var $lastpostdate;
@@ -51,7 +52,7 @@ function listThreads($forum, $active, $pos)
 			$this->prevname = "";
 			$this->thread = babTranslate("Thread");
 			$this->starter = babTranslate("Starter");
-			$this->replies = babTranslate("Replies");
+			$this->repliesname = babTranslate("Replies");
 			$this->views = babTranslate("Views");
 			$this->lastpost = babTranslate("Last Post");
 			$this->db = new db_mysql();
