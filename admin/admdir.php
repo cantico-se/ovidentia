@@ -1490,14 +1490,19 @@ switch($idx)
 
 	case "ldap":
 		$babBody->title = bab_translate("Add new ldap directory");
+		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
+		$babBody->addItemMenu("ldap", bab_translate("New"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap");
+		if (!function_exists('ldap_connect'))
+			{
+			$babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
+			break;
+			}
 		if( !isset($adname) ) { $adname ='';}
 		if( !isset($description) ) { $description ='';}
 		if( !isset($host) ) { $host ='';}
 		if( !isset($basedn) ) { $basedn ='';}
 		if( !isset($userdn) ) { $userdn ='';}
 		addAdLdap($adname, $description, $host, $basedn, $userdn);
-		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("ldap", bab_translate("New"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap");
 		break;
 
 	case "db":

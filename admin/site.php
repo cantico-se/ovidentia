@@ -1167,6 +1167,12 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	{
 	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname;
 
+	if (!function_exists('ldap_connect'))
+		{
+		$babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
+		return false;
+		}
+
 	if( empty($host))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a host address !!");

@@ -1696,4 +1696,5 @@
 <string id="whaiting request(s)">demande(s) en attente</string>
 <string id="Negative balance are not alowed on right">Les soldes négatifs ne sont pas autorisés sur le droit</string>
 <string id="Group schema">Schéma de groupes</string>
+<string id="You must have LDAP enabled on the server">Les fonction LDAP doivent être installées sur le serveur</string>
 </fr>
