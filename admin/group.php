@@ -457,67 +457,52 @@ function confirmDeleteGroup($id)
 	if( $id <= 3)
 		return;
 	$db = $GLOBALS['babDB'];
-	$req = "delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_group='$id'";
-	$res = $db->db_query($req);	
-	$req = "delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group='$id'";
-	$res = $db->db_query($req);	
-	$req = "delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group='$id'";
-	$res = $db->db_query($req);	
-	$req = "delete from ".BAB_SECTIONS_GROUPS_TBL." where id_group='$id'";
-	$res = $db->db_query($req);	
-	$req = "delete from ".BAB_FAQCAT_GROUPS_TBL." where id_group='$id'";
-	$res = $db->db_query($req);	
-	$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_group='$id'";
-	$res = $db->db_query($req);	
-	$req = "delete from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='$id'";
-	$res = $db->db_query($req);
-	$req = "delete from ".BAB_CATEGORIESCAL_TBL." where id_group='$id'";
-	$res = $db->db_query($req);
+	$db->db_query("delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_SECTIONS_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_FAQCAT_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='$id'");
+	$db->db_query("delete from ".BAB_CATEGORIESCAL_TBL." where id_group='$id'");
+	$db->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_group='$id'");	
+	$db->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_group='$id'");	
 
-	$req = "select * from ".BAB_RESOURCESCAL_TBL." where id_group='$id'";
-	$res = $db->db_query($req);
+	$res = $db->db_query("select * from ".BAB_RESOURCESCAL_TBL." where id_group='$id'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		
 		while( $arr = $db->db_fetch_array($res))
 			{
-			$req = "select * from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'";
-			$res = $db->db_query($req);
+			$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'");
 			$r = $db->db_fetch_array($res);
 
 			// delete resource's events
-			$req = "delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$r['id']."'";
-			$res = $db->db_query($req);	
+			$res = $db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$r['id']."'");	
 
 			// delete resource from calendar
-			$req = "delete from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'";
-			$res = $db->db_query($req);	
+			$res = $db->db_query("delete from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='3'");	
 
 			// delete resource
-			$req = "delete from ".BAB_RESOURCESCAL_TBL." where id_group='$id'";
-			$res = $db->db_query($req);
+			$res = $db->db_query("delete from ".BAB_RESOURCESCAL_TBL." where id_group='$id'");
 			}
 		}
 
-	$req = "select * from ".BAB_CALENDAR_TBL." where owner='$id' and type='2'";
-	$res = $db->db_query($req);
+	$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='$id' and type='2'");
 	$arr = $db->db_fetch_array($res);
 
 	// delete group's events
-	$req = "delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$arr['id']."'";
-	$res = $db->db_query($req);	
+	$res = $db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$arr['id']."'");	
 
 	// delete user from calendar
-	$req = "delete from ".BAB_CALENDAR_TBL." where owner='$id' and type='2'";
-	$res = $db->db_query($req);	
+	$res = $db->db_query("delete from ".BAB_CALENDAR_TBL." where owner='$id' and type='2'");	
 
 	// delete user from BAB_MAIL_DOMAINS_TBL
-	$req = "delete from ".BAB_MAIL_DOMAINS_TBL." where owner='$id' and bgroup='Y'";
-	$res = $db->db_query($req);	
+	$res = $db->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='$id' and bgroup='Y'");	
 
     // delete group
-	$req = "delete from ".BAB_GROUPS_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	$res = $db->db_query("delete from ".BAB_GROUPS_TBL." where id='$id'");
 	bab_callAddonsFunction('onGroupDelete', $id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 	}
