@@ -36,7 +36,7 @@
 <script src="{ babScriptPath }editor.js"></script>
 <tr align="center"> 
 <td colspan="2" nowrap>&nbsp; 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message"></textarea>
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message">{ messageval }</textarea>
 <SCRIPT language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator, '{ babEditorImages }');
@@ -52,7 +52,7 @@
 <SCRIPT language="JavaScript">
 	editor.InFrame(0, "message", "comcreate", "90%", "160");</SCRIPT>
 <!--#else msie -->
-<textarea cols="40" rows="10" name="message"></textarea>
+<textarea cols="40" rows="10" name="message">{ messageval }</textarea>
 </td>
 <!--#endif msie -->
 </tr>
