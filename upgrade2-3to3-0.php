@@ -157,7 +157,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE users CHANGE name nickname CHAR (30)";
+$req = "ALTER TABLE users CHANGE name nickname CHAR (255)";
 $res = $db->db_query($req);
 if( !$res)
 	{

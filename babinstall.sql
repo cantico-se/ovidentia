@@ -299,7 +299,7 @@ CREATE TABLE topicsview_groups (
 
 CREATE TABLE users (
    id int(11) unsigned NOT NULL auto_increment,
-   nickname varchar(30),
+   nickname varchar(255),
    firstname varchar(60),
    lastname varchar(30),
    hashname varchar(32),
