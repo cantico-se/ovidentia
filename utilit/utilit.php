@@ -13,8 +13,8 @@ include $babInstallPath."utilit/calincl.php";
 
 function bab_isEmailValid ($email)
 	{
-	if( empty($email) || ereg(' ', $email)
-		return false
+	if( empty($email) || ereg(' ', $email))
+		return false;
 	else
 		return true;
 	//return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $email));
@@ -1037,7 +1037,7 @@ function loadSections()
 				if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id_section']))
 					{
 					$r = $db->db_fetch_array($db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$arr['id_section']."'"));
-					if( $r['enabled'] == "Y")
+					if( $r['enabled'] == "Y" && is_file($GLOBALS['babAddonsPath'].$r['title']."/init.php"))
 						{
 						require_once( $GLOBALS['babAddonsPath'].$r['title']."/init.php" );
 						$func = $r['title']."_onSectionCreate";
