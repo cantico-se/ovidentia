@@ -1040,7 +1040,7 @@ function bab_newArticleDraft($idtopic, $idarticle)
 		if( $res && $babDB->db_num_rows($res) == 1 )
 			{
 			$arr = $babDB->db_fetch_array($res);
-			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set head='".addslashes($arr['head'])."', body='".addslashes($arr['body'])."', title='".addslashes($arr['title'])."', date_archiving='".$arr['date_archiving']."', lang='".$arr['lang']."' where id='".$id."'");
+			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set head='".addslashes($arr['head'])."', body='".addslashes($arr['body'])."', title='".addslashes($arr['title'])."', date_archiving='".$arr['date_archiving']."', lang='".$arr['lang']."', restriction='".$arr['restriction']."' where id='".$id."'");
 
 			$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$idarticle."'");
 			$pathorg = bab_getUploadArticlesPath();
