@@ -247,9 +247,10 @@ a.BabFaqAdminTitleLink:Hover { COLOR: #009933 ; font : 10px Verdana, Arial, sans
 .BabSiteAdminSmall {background: #D1D1D9; COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
 .BabSiteAdminFontBackground {background: #FFFFFF; COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif }
 .BabSiteAdminFont { COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif }
-a.BabSiteAdminListLink:Link { COLOR: #000000  ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
-a.BabSiteAdminListLink:Visited { COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
-a.BabSiteAdminListLink:Hover { COLOR: #009933 ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+a.BabSiteAdminListLink:Link { COLOR: blue  ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}
+a.BabSiteAdminListLink:Visited { COLOR: blue ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}
+a.BabSiteAdminListLink:Hover { COLOR: blue ; font : 11px Verdana, Arial, sans-serif; text-decoration: none }
 
 /********* FAQ **** NOTES ********************************/
 a.BabFaqLink:Link { COLOR: #0000CC  ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
