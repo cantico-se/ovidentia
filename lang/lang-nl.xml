@@ -1,4 +1,4 @@
-<nl-be>
+<nl>
 <string id="Whole day">Volledige dag</string>
 <string id="Morning">Voormiddag</string>
 <string id="Afternoon">Namiddag</string>
@@ -709,4 +709,4 @@
 <string id="New files">Nieuwe bestanden</string>
 <string id="Delete Contacts">Verwijder Contacten</string>
 <string id="Cannot upload file">Bestand kan niet worden opgeladen</string>
-</nl-be>
+</nl>
