@@ -1492,7 +1492,20 @@ function bab_replace_ref( &$txt, $remove = '')
 							break;
 							
 						case 'OVML':
-							bab_replace_var($txt,$var,preg_replace("/\\\$OVML\(.*\)/","",bab_printOvmlTemplate($param[0])));
+							$args = array();
+							if( ($cnt = count($param)) > 1 )
+							{
+								for( $i=1; $i < $cnt; $i++)
+								{
+									$tmp = explode('=', $param[$i]);
+									if( is_array($tmp) && count($tmp) == 2 )
+										{
+										$args[$tmp[0]] = trim($tmp[1], '"');
+										}
+								}
+							}
+
+							bab_replace_var($txt,$var,preg_replace("/\\\$OVML\(.*\)/","",bab_printOvmlTemplate($param[0], $args)));
 							break;
 						}
 					}
