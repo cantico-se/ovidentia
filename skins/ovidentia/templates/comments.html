@@ -2,34 +2,29 @@
 <!--#if count -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginMenuBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<td class="BabLoginCadreBackground"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="2">
 <!--#in getnext -->
-<!--#if altbg -->
-<tr class="BabSummaryContentBackground">
-<!--#else altbg -->
-<tr class="BabTopicsAuthorBackground">
-<!--#endif altbg -->
-<td>{ authorname }</td>
-<td align="left"><span style="font-Size:9">{ commenttitle }</span>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSummaryContentBackground">
-<!--#else altbg -->
-<tr class="BabTopicsAuthorBackground">
-<!--#endif altbg -->
-<td>{ commentdate }</td>
-<td align="left">{ commentbody }&nbsp;
-</td>
-</tr>
+	<!--#if altbg -->
+	<tbody class="BabSiteAdminFontBackground">
+	<!--#else altbg -->
+	<tbody class="BabForumBackground1">
+	<!--#endif altbg -->
+		<tr class="bab_title">	
+			<th align="left">{ commenttitle }</th>
+			<td align="right"><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small></td>
+		</tr>
+		<tr class="bab_content">
+			<td colspan="2">{ commentbody }<br /><br /></td>
+		</tr>
+	</tbody>
 <!--#endin getnext --> 
 </table>
 </td>
 </tr>
 </table>
 <!--#endif count -->
-<br>
+<br />
 <!--#end commentslist -->
 
 <!--#begin commentcreate -->
