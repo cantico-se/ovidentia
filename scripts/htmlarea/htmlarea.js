@@ -55,7 +55,6 @@ function HTMLArea(textarea,baburl,babInstallPath, babLanguage,babPhpSelf,enabled
 		this._htmlArea = null;
 		this._textArea = textarea;
 		this._editMode = "wysiwyg";
-
 	}
 };
 
@@ -78,7 +77,7 @@ HTMLArea.Config = function (babLanguage) {
 	this.sizeIncludesToolbar = false;
 
 	this.bodyStyle = "background-color: #fff; font-family: Verdana, Arial, sans-serif ; font-size:11px";
-	this.invisibletable = "border:dashed 1pt;border-color:#CCCCCC";
+	this.invisibletable = "1px dotted #DDDDDD";
 	this.editorURL = HTMLArea.babInstallPath+"scripts/htmlarea/";
 
 	// URL-s
@@ -102,7 +101,7 @@ HTMLArea.Config = function (babLanguage) {
 			 [ "popupeditor","bablink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
-			 ["cleanhtml","babarticle"]
+			 ["cleanhtml","babarticle","babfaq"]
 		];
 
 	this.fontname = {
@@ -1097,6 +1096,35 @@ HTMLArea.prototype._insertbablink = function() {
 };
 
 
+HTMLArea.prototype.nullBorders = function(status) {
+	// show table borders
+		var doc = this._doc;
+		var edit_Tables = doc.body.getElementsByTagName("TABLE");
+		for (i=0; i < edit_Tables.length; i++) {
+			if (edit_Tables[i].border == '' || edit_Tables[i].border == '0' ) {
+				if (status == 'show' ) {edit_Tables[i].style.border = this.config.invisibletable;} 
+				else {edit_Tables[i].style.border = '';}
+			}
+		
+		edit_Rows = edit_Tables[i].rows;
+			for (j=0; j < edit_Rows.length; j++) {
+			edit_Cells = edit_Rows[j].cells;
+			for (k=0; k < edit_Cells.length; k++) {
+			if (edit_Tables[i].border == '' || edit_Tables[i].border == '0' ) {
+			if (!edit_Cells[k].border || edit_Cells[k].border == '' || edit_Cells[k].border == '0' ) {
+			if (status == 'show' ) {edit_Cells[k].style.border = this.config.invisibletable;} 
+			else {edit_Cells[k].style.border = '';}
+			}} 
+			else {
+			if ( edit_Cells[k].border == '0' ) {
+			if (status == 'show' ) {edit_Cells[k].style.border = this.config.invisibletable;} 
+			else {edit_Cells[k].style.border = '';}
+			}}
+			}}
+		}
+	}
+
+
 
 // Called when the user clicks the Insert Table button
 HTMLArea.prototype._insertTable = function() {
@@ -1150,10 +1178,14 @@ HTMLArea.prototype._insertTable = function() {
 			}
 		}
 		if (HTMLArea.is_ie) { 
-			range.pasteHTML(table.outerHTML);
+			range.pasteHTML(table.outerHTML);	
+			//editor.nullBorders('show');
 		} else {
 			editor.insertNodeAtSelection(table);
 		}
+
+
+
 		return true;
 	}, null);
 };
@@ -1424,6 +1456,7 @@ HTMLArea.prototype._editorEvent = function(ev) {
 // gets called before the form is submitted
 HTMLArea.prototype._formSubmit = function(ev) {
 	// retrieve the HTML
+	//this.nullBorders('hide');
 	this._textArea.value = this.getHTML();
 };
 
