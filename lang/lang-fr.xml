@@ -272,7 +272,7 @@
 <string id="ERROR: This email account already exists !!">ERREUR: Cette adresse e-mail existe déjà !!</string>
 <string id="ERROR: This forum already exists">ERREUR: Ce forum existe déjà</string>
 <string id="ERROR: This section already exists">ERREUR: Cette section existe déjà</string>
-<string id="ERROR: This site already exists">ERREUR: Ce site n'existe pas</string>
+<string id="ERROR: This site already exists">ERREUR: Ce site existe déja</string>
 <string id="ERROR: This topic already exists">ERREUR: Ce thème d'articles existe déjà</string>
 <string id="ERROR: This topic category doesn't exist">ERREUR: cette catégorie de thèmes d'articles n'existe pas</string>
 <string id="ERROR: You must check at least one vacation type">ERREUR: Vous devez cocher au moins un type de congé</string>
