@@ -1,4 +1,12 @@
 /************************************************************************/
+Juillet 2002: Version 3.3.3
+/************************************************************************/
+- Possibility to upload and link images to articles
+- Added $FILE to reference a file 
+- Improved WysiWyg editor ( support images creation, table creation, ...) 
+- Fixed some minors bugs
+
+/************************************************************************/
 Juillet 2002: Version 3.3.2
 /************************************************************************/
 - Added Calendar sharing:  Consultation, Creation and update, and Total access

@@ -702,6 +702,7 @@ CREATE TABLE bab_sites (
    mailfunc char(20) NOT NULL DEFAULT 'mail',
    smtpserver char(255) NOT NULL DEFAULT '',
    smtpport char(20) NOT NULL DEFAULT '25',
+   imgsize int(11) unsigned NOT NULL default '25',
    PRIMARY KEY (id)
 );
 
