@@ -90,6 +90,8 @@ if (!session_is_registered('BAB_SESS_NTREGISTER'))
 	{
 	if (!isset($ntident)) setcookie("ntident","connexion");
 	session_register("BAB_SESS_NTREGISTER");
+	session_register("BAB_SESS_NTREGISTER2");
+	$GLOBALS['BAB_SESS_NTREGISTER2'] = false;
 	$GLOBALS['BAB_SESS_NTREGISTER'] = true;
 	header("location:".$GLOBALS['babUrl'].$babPhpSelf);
 	}
@@ -98,8 +100,9 @@ if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && $ntident == "connexi
 	{
 	if (NTuserLogin($NTidUser))
 		{
+		$GLOBALS['BAB_SESS_NTREGISTER2'] = true;
 		$GLOBALS['BAB_SESS_NTREGISTER'] = false;
-		setcookie("ntident","ok");
+		//setcookie("ntident","ok");
 		$db = $GLOBALS['babDB'];
 		$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
 		if( $res && $db->db_num_rows($res) > 0)
@@ -129,13 +132,20 @@ if( $GLOBALS['BAB_SESS_NTREGISTER'] && $ntident == "connexion" )
 	var strLoggedUser
 	function loggedUser()
 	{
-		WshShell = new ActiveXObject("WScript.Network");
-		query = \'\' + this.location;
-		if ( query.indexOf(\'?\') != -1 && query.indexOf(\'NTidUser\') == -1)
-			{window.location.href = query+"&NTidUser="+escape(WshShell.Username);}
-		else if (query.indexOf(\'NTidUser\') == -1)
-			{window.location.href = "'.$babPhpSelf.'?NTidUser="+escape(WshShell.Username);}
+		try {
+    		WshShell = new ActiveXObject("WScript.Network");
+    		query = \'\' + this.location;
+    		if ( query.indexOf(\'?\') != -1 && query.indexOf(\'NTidUser\') == -1)
+    			{window.location.href = query+"&NTidUser="+escape(WshShell.Username);}
+    		else if (query.indexOf(\'NTidUser\') == -1)
+    			{window.location.href = "'.$babPhpSelf.'?NTidUser="+escape(WshShell.Username);}
+			}
+		catch(e)
+			{}
 	}
 	loggedUser();';
 	}
+
+if( $GLOBALS['BAB_SESS_NTREGISTER2'] && $GLOBALS['BAB_SESS_USERID'] )
+	$babCnxLink = 0;
 ?>
