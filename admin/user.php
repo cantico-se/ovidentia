@@ -148,7 +148,7 @@ function listGroups($id, $pos, $grp)
 			if( $this->count1 < 1)
 				$this->select = "selected";
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2  and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2  and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
