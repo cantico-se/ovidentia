@@ -166,6 +166,7 @@ function siteModify($id)
                 }
             closedir($h);
 			$this->count = count($this->arrfiles);
+			sort($this->arrfiles);
 
 			if( is_dir($GLOBALS['babInstallPath']."skins/"))
 				{
