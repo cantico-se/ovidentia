@@ -1336,10 +1336,12 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 					case 0:
 						deleteFile($arr['id'], $arr['name'], $pathx);
 						unlink($pathx.$arr['name']);
+						notifyFileAuthor(bab_translate("Your file has been refused"),"", $arr['author'], $arr['name']);
 						break;
 					case 1:
 						deleteFlowInstance($arr['idfai']);
 						$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$arr['id']."'");
+						notifyFileAuthor(bab_translate("Your file has been accepted"),"", $arr['author'], $arr['name']);
 						if( $bnotify == "Y")
 							{
 							fileNotifyMembers($arr['name'], $arr['path'], $arr['id_owner'], bab_translate("A new file has been uploaded"));

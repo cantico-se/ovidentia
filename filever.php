@@ -460,56 +460,6 @@ function showVersionHistoricFile($idf, $pos)
 	echo bab_printTemplate($temp, "filever.html", "filevershistoric");
 }
 
-function notifyFileAuthor($subject, $version, $author)
-	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-	include_once $babInstallPath."utilit/mailincl.php";
-
-	class tempc
-		{
-		var $message;
-        var $from;
-        var $author;
-        var $about;
-        var $title;
-        var $titlename;
-        var $site;
-        var $sitename;
-        var $date;
-        var $dateval;
-
-
-		function tempc($version)
-			{
-            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName, $arrfile;
-            $this->about = bab_translate("About your file");
-            $this->title = bab_translate("Name");
-            $this->titlename = $arrfile['name'] ." (".$version.")";
-            $this->site = bab_translate("Web site");
-            $this->sitename = $babSiteName;
-            $this->date = bab_translate("Date");
-            $this->dateval = bab_strftime(mktime());
-            $this->message = '';
-			}
-		}
-	
-    $mail = bab_mail();
-	if( $mail == false )
-		return;
-
-    $mail->mailTo(bab_getUserEmail($author), bab_getUserName($author));
-    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject($subject);
-
-	$tempc = new tempc($version);
-	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "confirmfileversion"));
-    $mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmfileversiontxt");
-    $mail->mailAltBody($message);
-	$mail->send();
-	}
-
 
 function getFile( $idf, $vmajor, $vminor )
 	{
@@ -750,7 +700,7 @@ function confirmFile($idf, $bconfirm )
 			$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id='".$arrfile['edit']."'");
 			$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$GLOBALS['BAB_SESS_USERID']."', '".BAB_FACTION_COMMIT."', '".bab_translate("Refused by ").$GLOBALS['BAB_SESS_USER']."', '".$arr['ver_major'].".".$arr['ver_minor']."')");
 			deleteFlowInstance($arr['idfai']);
-			notifyFileAuthor(bab_translate("Your new file version has been refused"),$arr['ver_major'].".".$arr['ver_minor'], $arr['author']);
+			notifyFileAuthor(bab_translate("Your new file version has been refused"),$arr['ver_major'].".".$arr['ver_minor'], $arr['author'], $arrfile['name']);
 			// notify user
 			break;
 		case 1:
