@@ -371,7 +371,7 @@ class bab_Articles extends bab_handler
 
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $ctx->get_value('topicid')))
 		{
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$ctx->get_value('topicid')."'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$ctx->get_value('topicid')."' order by date desc";
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
 			if( $rows !== "" && $offset !== "" )
@@ -398,7 +398,8 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-			$this->ctx->curctx->push('ArticleTopicId', $this->arr['id_topic']);
+			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$i++;
 			return true;
 		}
