@@ -167,7 +167,6 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 
 	if( empty($oldpwd) || empty($newpwd1) || empty($newpwd2))
 		{
-		echo $oldpwd ."   ". $newpwd1."     ". $newpwd2;
 		$body->msgerror = babTranslate("You must complete all fields !!");
 		return;
 		}
@@ -204,7 +203,6 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 
 	$password = strtolower($password);
 	$req = "select * from users where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
-	echo $req;
 	$db = new db_mysql();
 	$res = $db->db_query($req);
 	if (!$res || $db->db_num_rows($res) < 1)
