@@ -1086,6 +1086,9 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	}
 	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."', lang='" .$lang. "' where id='".$article."'";
 	$res = $db->db_query($req);
+	if( $topics != $topicid )
+		$db->db_query("update ".BAB_COMMENTS_TBL." set id_topic='".$topicid."' where id_article='".$article."' and id_topic='".$topics."'");
+
 
 	if( $bnotif == "Y" )
 		{
