@@ -439,7 +439,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		$subject = babTranslate("Your article has been accepted");
 		$res = $db->db_query($query);
 
-		$query = "select * from sites where name='".$GLOBALS['babSiteName']."'";
+		$query = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{

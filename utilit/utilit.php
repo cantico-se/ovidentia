@@ -1094,7 +1094,7 @@ function updateSiteSettings()
 	global $body;
 	$db = new db_mysql();
 
-	$req="select * from sites where name='".$GLOBALS['babSiteName']."'";
+	$req="select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$db->db_query($req);
 
 	if( $res && $db->db_num_rows($res) > 0 )

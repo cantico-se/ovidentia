@@ -340,6 +340,12 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin)
 		return false;
 		}
 
+	if(!get_cfg_var("magic_quotes_gpc"))
+		{
+		$description = addslashes($description);
+		$name = addslashes($name);
+		}
+
 	$db = new db_mysql();
 	$query = "select * from sites where name='$name' and id!='$id'";
 	$res = $db->db_query($query);

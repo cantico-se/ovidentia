@@ -133,11 +133,11 @@ function ListArticles($idgroup)
 		function temp($idgroup)
 			{
 			$this->db = new db_mysql();
-			$req = "select * from sites where name='".$GLOBALS['babSiteName']."'";
+			$req = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
 			$res = $this->db->db_query($req);
 			if( !$res || $this->db->db_num_rows($res) < 1)
 				{
-				$req = "insert into sites ( name, adminemail, lang ) values ('" .$GLOBALS['babSiteName']. "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
+				$req = "insert into sites ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
 				$res = $this->db->db_query($req);
 				$idsite = $this->db->db_insert_id();
 				}

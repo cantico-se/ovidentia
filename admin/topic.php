@@ -306,11 +306,11 @@ function addToHomePages($item, $homepage, $art)
 
 	$db = new db_mysql();
 
-	$req = "select * from sites where name='".$GLOBALS['babSiteName']."'";
+	$req = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res = $db->db_query($req);
 	if( !$res || $db->db_num_rows($res) < 1)
 	{
-		$req = "insert into sites ( name, adminemail, lang ) values ('" .$GLOBALS['babSiteName']. "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
+		$req = "insert into sites ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
 		$res = $db->db_query($req);
 		$idsite = $db->db_insert_id();
 	}
