@@ -1690,6 +1690,19 @@ function upgrade400to401()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
+
+/* missing in 4.0.0 sql script babinstall.sql */
+$res = $db->db_query("SHOW COLUMNS from ".BAB_FILES_TBL." like 'idfai'");
+if( !$res || $db->db_num_rows($res) == 0 )
+	{
+	$req = "ALTER TABLE ".BAB_FILES_TBL." ADD idfai INT(11) UNSIGNED NOT NULL";
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_FILES_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
 return $ret;
 }
 
