@@ -156,6 +156,7 @@ var $position;
 var $close;
 var $boxurl;
 var $bbox;
+var $babsectionpuce;
 
 function babSection($title = "Section", $content="<br>This is a sample of content<br>")
 {
@@ -167,6 +168,8 @@ function babSection($title = "Section", $content="<br>This is a sample of conten
 	$this->close = 0;
 	$this->boxurl = "";
 	$this->bbox = 0;
+	$this->babsectionpuce = babPrintTemplate($this, "config.html", "babSectionPuce");
+
 }
 
 function getTitle() { return $this->title;}
