@@ -778,10 +778,10 @@
 <string id="Delete FAQ">Supprimer la FAQ</string>
 <string id="Modify FAQ">Modifier la FAQ</string>
 <string id="Approbations">Approbations</string>
-<string id="Topic manager">Manager du thème d'articles</string>
+<string id="Topic manager">Gestionnaire du thème d'articles</string>
 <string id="Approbation schema for comments">Schéma d'approbation pour les commentaires</string>
 <string id="Approbation schema for articles">Schéma d'approbation pour les articles</string>
-<string id="ERROR: You must provide topic manager !!">ERREUR: Vous devez indiquer un manager du thème d'articles !!</string>
+<string id="ERROR: You must provide topic manager !!">ERREUR: Vous devez indiquer un gestionnaire pour le thème d'articles !!</string>
 <string id="Ordre">Ordre</string>
 <string id="Group with the same name already exists!">Un groupe avec le même nom existe déjà!</string>
 <string id="Forums order">Ordre des forums</string>
