@@ -598,7 +598,9 @@ function listFiles($id, $gr, $path, $bmanager)
 					$this->fileimage = $this->arrext[$ext];
 				$this->name = $arr['name'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$jfname = str_replace("'", "\'", $arr['name']);
+				$jfname = str_replace('"', "'+String.fromCharCode(34)+'",$jfname);
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$jfname;
 				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				

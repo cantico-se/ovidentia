@@ -167,8 +167,9 @@ function bab_isCalendarAccessValid($calid)
 				$arr = $db->db_fetch_array($res);
 				if( $arr['id_group'] == 1 && !empty($GLOBALS['BAB_SESS_USERID']))
 					return true;
-				$res = $db->db_query("select * from ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group='".$arr['id_group']."'");
-				return true;
+				$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group='".$arr['id_group']."'");
+				if( $res && $db->db_num_rows($res) > 0 )
+					return true;
 				}
 			break;
 		}

@@ -403,6 +403,7 @@ if( !$res)
 	return $ret;
 	}
 
+return $ret;
 }
 
 function upgrade332to333()

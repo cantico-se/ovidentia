@@ -1,6 +1,20 @@
 /****************************/
-version 3.3.2 / 3.4.0 beta
+version 3.3.2 / 3.3.3
 /****************************/
+--------------------------------------------------------------------------------
+file			        section		        change 
+--------------------------------------------------------------------------------
+waiting.html            introlist           Added { author } variable
+                        readmore            Added { author } variable
+
+admfiles.html           admfileslist        Added <!--#if bview --> ... <!--#endif bview -->
+
+maildoms.html           domainmodify        Added { arr[inport] }, { arr[outport] } variables
+
+/****************************/
+version 3.3.2 / 3.3.3 beta
+/****************************/
+
 --------------------------------------------------------------------------------
 file			        section		        change 
 --------------------------------------------------------------------------------

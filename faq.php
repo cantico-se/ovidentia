@@ -205,7 +205,7 @@ function faqPrint($idcat)
 		function temp($id)
 			{
 			global $babSiteName, $babUrl;
-			$this->return = "Go to Top";
+			$this->return = bab_translate("Go to Top");
 			$this->indexquestions = bab_translate("Index of questions");
 			$this->sitename = $babSiteName;
 			$this->urlsite = $babUrl;
