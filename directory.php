@@ -1356,7 +1356,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		{
 		list($iddbu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$iduser."'"));
 		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . substr($req, 0, strlen($req) -1);
-		$req .= " where id='".$idu."'";
+		$req .= " where id='".$iddbu."'";
 		$db->db_query($req);
 		}
 	else if( !empty($req))
