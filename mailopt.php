@@ -702,18 +702,20 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 		}
 
 	if( empty($password1) )
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', account='$account', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item'";
+		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', account='$account', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item' and owner='".$BAB_SESS_USERID."'";
 	else
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),  account='$account', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item'";
+		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),  account='$account', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item' and owner='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 
 }
 
 function confirmDeleteAccount($item)
 {
+	global $BAB_SESS_USERID;
+
 	$db = $GLOBALS['babDB'];
 
-	$req = "delete from ".BAB_MAIL_ACCOUNTS_TBL." where id='$item'";
+	$req = "delete from ".BAB_MAIL_ACCOUNTS_TBL." where id='$item' and owner='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);	
 
 }
@@ -748,17 +750,17 @@ function modifySignature($name, $signature, $html, $sigid)
 		}
 	$db = $GLOBALS['babDB'];
 	if( !empty($name))
-	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='".$name."', text='".$signature."', html='".$html."' where id='".$sigid."'";
+	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='".$name."', text='".$signature."', html='".$html."' where id='".$sigid."' and owner ='".$BAB_SESS_USERID."'";
     else
-	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='signature".$sigid."', text='".$signature."', html='".$html."' where id='".$sigid."'";
+	    $req = "update ".BAB_MAIL_SIGNATURES_TBL." set name='signature".$sigid."', text='".$signature."', html='".$html."' where id='".$sigid."' and owner ='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 }
 
 function deleteSignature($sigid)
 {
-	global $babBody;
+	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-    $req = "delete from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."'";
+    $req = "delete from ".BAB_MAIL_SIGNATURES_TBL." where id='".$sigid."' and owner ='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 
 }
@@ -774,23 +776,23 @@ if( !isset($signame ))
 if( !isset($signature ))
 	$signature = "";
 
-if( isset($addacc) && $addacc == "add")
+if( isset($addacc) && $addacc == "add" && $BAB_SESS_USERID != '')
 	addAccount($fullname, $email, $account, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat);
 
-if( isset($modacc) && $modacc == "modify")
+if( isset($modacc) && $modacc == "modify" && $BAB_SESS_USERID != '')
 	modifyAccount($fullname, $email, $account, $password1, $password2, $domain, $item, $prefacc, $maxrows, $prefformat);
 
-if( isset($action) && $action == "Yes")
+if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != '')
 	{
 	confirmDeleteAccount($item);
 	}
 
-if( isset($addsig) && $addsig == "add")
+if( isset($addsig) && $addsig == "add" && $BAB_SESS_USERID != '')
 	{
 	addSignature($signame, $signature, $html);
 	}
 
-if( isset($modsig) && $modsig == "modify")
+if( isset($modsig) && $modsig == "modify" && $BAB_SESS_USERID != '')
 	{
 	modifySignature($signame, $signature, $html, $sigid);
 	}

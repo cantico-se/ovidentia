@@ -348,12 +348,6 @@ function addCalResource($groups, $name, $description)
 if( !isset($idx))
 	$idx = "listcat";
 
-if( isset($addcat) && $addcat == "add")
-	addCalCategory($groups, $name, $description, $bgcolor);
-
-if( isset($addres) && $addres == "add")
-	addCalResource($groups, $name, $description);
-
 $grpid = array();
 if( $userid == 0 )
 	{
@@ -378,6 +372,13 @@ else
 		return;
 		}
 	}
+
+if( isset($addcat) && $addcat == "add")
+	addCalCategory($groups, $name, $description, $bgcolor);
+
+if( isset($addres) && $addres == "add")
+	addCalResource($groups, $name, $description);
+
 
 switch($idx)
 	{

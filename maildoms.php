@@ -333,9 +333,6 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 if( !isset($idx))
 	$idx = "list";
 
-if( isset($adddom) && $adddom == "add")
-	addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver);
-
 $grpid = array();
 if( !isset($userid))
 	return;
@@ -362,6 +359,9 @@ if( $bgrp == "y")
 			}
 		}
 }
+
+if( isset($adddom) && $adddom == "add")
+	addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver);
 
 switch($idx)
 	{

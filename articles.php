@@ -998,13 +998,18 @@ if(!isset($idx))
 if( !isset($pos))
 	$pos = 0;
 
-if( isset($addarticle))
+if( isset($topics ) && $BAB_SESS_USERID != "")
+	$approver = bab_isUserTopicManager($topics);
+else
+	$approver = false;
+
+if( isset($addarticle) && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics))
 	{
 	saveArticleByFile($filename, $title, $doctag, $introtag, $topics, $lang);
 	$idx = "Articles";
 	}
 
-if( isset($addart) && $addart == "add")
+if( isset($addart) && $addart == "add" && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics))
 	{
 	if( saveArticle($title, $headtext, $bodytext, $topics, $lang))
 		$idx = "Articles";
@@ -1012,18 +1017,17 @@ if( isset($addart) && $addart == "add")
 		$idx = "Submit";
 	}
 
-if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != "" && bab_isUserTopicManager($topics))
+if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != "" && $approver)
 	{
 	bab_confirmDeleteArticle($article);
 	}
 
-if( isset($modify))
+if( isset($modify) && $approver)
 	{
 	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif, $lang);
 	$idx = "Articles";
 	}
 
-$approver = $BAB_SESS_USERID != ""? bab_isUserTopicManager($topics): false;
 $uaapp = bab_isUserArticleApprover($topics);
 $ucapp = bab_isUserCommentApprover($topics);
 if( $approver || $uaapp || $ucapp )

@@ -303,7 +303,7 @@ if(!isset($idx))
 	$idx = "List";
 	}
 
-if(isset($addcomment))
+if(isset($addcomment) && ( $approver || bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)))
 	{
 	if( isset($name) && empty($name))
 		$name = "Anonymous";

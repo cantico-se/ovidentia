@@ -1290,60 +1290,64 @@ return $bmodif;
 if( !isset($idx))
 	$idx = "newevent";
 
-if( isset($action) && $action == "Yes")
-	{
-	confirmDeleteEvent($calid, $evtid, $bupdrec);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
-	}
-
-if( isset($update) && $update == "desc")
-	{
-	updateDescription($calid, $evtid, $content, $bupdrec);
-	$idx = "unload";
-	}
-
-if( isset($modifyevent) && $modifyevent == "modify")
-	{
-	if( isset($Submit))
-		{
-		updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category, $bupdrec);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
-		}
-	else if( isset($evtdel))
-		{
-		$month = $curmonth;
-		$day = $curday;
-		$year = $curyear;
-		$idx = "delete";
-		}
-	}
-
-if( isset($addevent) && $addevent == "add")
-	{
-	if( !isset($usrcals))
-		$usrcals = array();
-	if( !isset($grpcals))
-		$grpcals = array();
-	if( !isset($rescals))
-		$rescals = array();
-	if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category, $usrcals, $grpcals, $rescals))
-		{
-		$day = $daybegin;
-		$month = $monthbegin;
-		$year = $yearbegin;
-		$view = $view;
-		$st = $timebegin;
-		$idx = "newevent";
-		$mcals = implode(",", array_merge($usrcals, $grpcals, $rescals));
-		}
-	else
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
-	}
-
 if( !bab_isCalendarAccessValid($calid) )
 	{
 	$babBody->title = bab_translate("Access denied");
 	$idx = "";
+	}
+else
+	{
+
+	if( isset($action) && $action == "Yes")
+		{
+		confirmDeleteEvent($calid, $evtid, $bupdrec);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+		}
+
+	if( isset($update) && $update == "desc")
+		{
+		updateDescription($calid, $evtid, $content, $bupdrec);
+		$idx = "unload";
+		}
+
+	if( isset($modifyevent) && $modifyevent == "modify")
+		{
+		if( isset($Submit))
+			{
+			updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category, $bupdrec);
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+			}
+		else if( isset($evtdel))
+			{
+			$month = $curmonth;
+			$day = $curday;
+			$year = $curyear;
+			$idx = "delete";
+			}
+		}
+
+	if( isset($addevent) && $addevent == "add")
+		{
+		if( !isset($usrcals))
+			$usrcals = array();
+		if( !isset($grpcals))
+			$grpcals = array();
+		if( !isset($rescals))
+			$rescals = array();
+		if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category, $usrcals, $grpcals, $rescals))
+			{
+			$day = $daybegin;
+			$month = $monthbegin;
+			$year = $yearbegin;
+			$view = $view;
+			$st = $timebegin;
+			$idx = "newevent";
+			$mcals = implode(",", array_merge($usrcals, $grpcals, $rescals));
+			}
+		else
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+		}
+
 	}
 
 switch($idx)
@@ -1394,6 +1398,9 @@ switch($idx)
 			$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 			}
 		$babBody->addItemMenu("calendar", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid);
+		break;
+
+	default:
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

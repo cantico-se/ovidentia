@@ -222,12 +222,13 @@ function contactsDelete($item, $pos)
 
 function confirmDeleteContacts($items)
 {
+	global $BAB_SESS_USERID;
 	$arr = explode(",", $items);
 	$cnt = count($arr);
 	$db = $GLOBALS['babDB'];
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$req = "delete from ".BAB_CONTACTS_TBL." where id='".$arr[$i]."'";	
+		$req = "delete from ".BAB_CONTACTS_TBL." where id='".$arr[$i]."' and owner='".$BAB_SESS_USERID."'";	
 		$res = $db->db_query($req);
 		}
 }

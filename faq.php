@@ -214,7 +214,13 @@ function viewPopupQuestion($id)
 			$req = "select * from ".BAB_FAQQR_TBL." where id='$id'";
 			$res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($res);
-			$this->arr['response'] = bab_replace($this->arr['response']);
+			if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $this->arr['idcat']))
+				$this->arr['response'] = bab_replace($this->arr['response']);
+			else
+				{
+				$this->arr['question'] = '';
+				$this->arr['response'] = bab_replace("Access denied");
+				}
 			}
 		}
 	
@@ -525,12 +531,12 @@ if(!isset($idx))
 	$idx = "Categories";
 	}
 
-if( isset($addquestion))
+if( isset($addquestion) && isUserManager($item))
 	{
 	saveQuestion($item, $question, $response);
 	}
 
-if( isset($updatequestion))
+if( isset($updatequestion) && isUserManager($item))
 	{
 	updateQuestion($idq, $question, $response);
 	}

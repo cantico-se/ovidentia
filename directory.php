@@ -1508,7 +1508,7 @@ if( isset($action) && $action == "Yes")
 
 if( isset($modify))
 	{
-		if( $modify == "dbc" )
+		if( $modify == "dbc" && bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id))
 			{
 			$idx = "dbmod";
 			if(updateDbContact($id, $idu, $fields, $photof_name,$photof))
@@ -1518,7 +1518,7 @@ if( isset($modify))
 				$fields = array();
 				}
 			}
-		else if( $modify == "dbac" )
+		else if( $modify == "dbac" && $badd)
 			{
 			if(!confirmAddDbContact($id, $fields, $photof_name,$photof, $password1, $password2, $nickname, $notifyuser, $sendpwd))
 				$idx = "adbc";
@@ -1530,7 +1530,7 @@ if( isset($modify))
 				}
 			}
 	}
-else if (isset($expfile))
+else if (isset($expfile) && $badd)
 {
 	exportDbDirectory($id, $wsepar, $separ);
 	$idx = "sdb";

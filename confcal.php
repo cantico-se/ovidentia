@@ -276,30 +276,6 @@ function confirmDeleteresourcescal($userid, $id)
 if( !isset($idx))
 	$idx = "modifycat";
 
-if( isset($modify) && $modify == "modcat")
-	{
-	if( isset($submit))
-		modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $item);
-	else if( isset($caldel))
-		$idx = "delcat";
-	}
-
-if( isset($modify) && $modify == "modres")
-	{
-	if( isset($submit))
-		modifyResourceCal($userid, $oldname, $name, $description, $item);
-	else if( isset($resdel))
-		$idx = "delres";
-	}
-
-if( isset($action) && $action == "Yes")
-	{
-	if( isset($category))
-		confirmDeletecategoriescal($userid,$category);
-	if( isset($resource))
-		confirmDeleteresourcescal($userid,$resource);
-	}
-
 $grpid = array();
 if( $userid == 0 )
 	{
@@ -324,6 +300,31 @@ else
 		return;
 		}
 	}
+
+if( isset($modify) && $modify == "modcat")
+	{
+	if( isset($submit))
+		modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $item);
+	else if( isset($caldel))
+		$idx = "delcat";
+	}
+
+if( isset($modify) && $modify == "modres")
+	{
+	if( isset($submit))
+		modifyResourceCal($userid, $oldname, $name, $description, $item);
+	else if( isset($resdel))
+		$idx = "delres";
+	}
+
+if( isset($action) && $action == "Yes")
+	{
+	if( isset($category))
+		confirmDeletecategoriescal($userid,$category);
+	if( isset($resource))
+		confirmDeleteresourcescal($userid,$resource);
+	}
+
 
 switch($idx)
 	{

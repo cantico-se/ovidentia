@@ -180,15 +180,6 @@ function confirmDeleteDomain($userid, $id, $bgrp)
 if( !isset($idx))
 	$idx = "modify";
 
-if( isset($modify) && $modify == "moddom")
-	modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver, $item);
-
-if( isset($action) && $action == "Yes")
-	{
-	confirmDeleteDomain($userid,$domain, $bgrp);
-	}
-
-$grpid = array();
 if(!isset($userid))
 	return;
 if(  $userid == 0 )
@@ -210,6 +201,14 @@ else
 		{
 		$bgrp = "n";
 		}
+	}
+
+if( isset($modify) && $modify == "moddom")
+	modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver, $item);
+
+if( isset($action) && $action == "Yes")
+	{
+	confirmDeleteDomain($userid,$domain, $bgrp);
 	}
 
 switch($idx)

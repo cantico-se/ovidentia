@@ -840,42 +840,46 @@ if( !isset($pos))
 if( !isset($flat))
 	$flat = 0;
 
-if( isset($add) && $add == "addreply")
+if( isset($forum) && bab_isUserForumModerator($forum, $BAB_SESS_USERID))
+	$moderator = true;
+else
+	$moderator = false;
+
+if( isset($add) && $add == "addreply" && bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum))
 	{
 	saveReply($forum, $thread, $postid, $author, $subject, $message);
 	$post = $postid;
 	}
 
-if( isset($update) && $update == "updatereply")
+if( isset($update) && $update == "updatereply" && $moderator)
 	{
 	updateReply($forum, $thread, $subject, $message, $post);
 	}
 
-if( $idx == "Close" && bab_isUserForumModerator($forum, $BAB_SESS_USERID))
+if( $idx == "Close" && $moderator)
 	{
 	closeThread($thread);
 	$idx = "List";
 	}
 
-if( $idx == "Open" && bab_isUserForumModerator($forum, $BAB_SESS_USERID))
+if( $idx == "Open" && $moderator)
 	{
 	openThread($thread);
 	$idx = "List";
 	}
 
-if( $idx == "DeleteP" && bab_isUserForumModerator($forum, $BAB_SESS_USERID))
+if( $idx == "DeleteP" && $moderator)
 	{
 	deletePost($forum, $post);
 	unset($post);
 	$idx = "List";
 	}
 
-if( isset($action) && $action == "Yes")
+if( isset($action) && $action == "Yes" && $moderator)
 	{
 	confirmDeleteThread($forum, $thread);
 	}
 
-$moderator = bab_isUserForumModerator($forum, $BAB_SESS_USERID);
 
 if( !isset($post))
 	{

@@ -200,7 +200,7 @@ function listArticles($id)
 					$this->checked1 = "";
 				$this->title = $arr['title'];
 				$this->articleid = $arr['id'];
-				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id'];
+				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&art=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -265,7 +265,7 @@ function listOldArticles($id)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->title = $arr['title'];
 				$this->articleid = $arr['id'];
-				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id'];
+				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&art=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -309,8 +309,16 @@ function viewArticle($article)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->content = bab_replace($this->arr['body']);
-			$this->head = bab_replace($this->arr['head']);
+			if( bab_isUserTopicManager($this->arr['id_topic']))
+				{
+				$this->content = bab_replace($this->arr['body']);
+				$this->head = bab_replace($this->arr['head']);
+				}
+			else
+				{
+				$this->content = "";
+				$this->head = bab_translate("Access denied");
+				}
 			}
 		}
 	
@@ -440,7 +448,12 @@ if(!isset($idx))
 	$idx = "list";
 	}
 
-if( isset($upart) && $upart == "articles")
+if( isset($item) && bab_isUserTopicManager($item) )
+	$manager = true;
+else
+	$manager = true;
+
+if( isset($upart) && $upart == "articles" && $manager)
 	{
 	switch($idx)
 		{
@@ -456,7 +469,7 @@ if( isset($upart) && $upart == "articles")
 		}
 	}
 
-if( isset($action) && $action == "Yes")
+if( isset($action) && $action == "Yes" && $manager)
 	{
 	if( $idx == "Deletea")
 		{
@@ -468,41 +481,65 @@ if( isset($action) && $action == "Yes")
 switch($idx)
 	{
 	case "viewa":
-		viewArticle($item);
+		viewArticle($art);
 		exit;
 	
 	case "deletea":
-		$babBody->title = bab_translate("Delete articles");
-		deleteArticles($art, $item);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
-		$babBody->addItemMenu("deletea", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topman&idx=deletea&art=".$art);
+		if( $manager )
+		{
+			$babBody->title = bab_translate("Delete articles");
+			deleteArticles($art, $item);
+			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
+			$babBody->addItemMenu("deletea", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topman&idx=deletea&art=".$art);
+		}
+		else
+			$babBody->msgerror = bab_translate("Access denied");
+
 		break;
 
 	case "alist":
-		$babBody->title = bab_translate("List of old articles").": ".bab_getCategoryTitle($item);
-		listOldArticles($item);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item."&new=".$new."&newc=".$newc);
-		$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item."&new=".$new."&newc=".$newc);
+		if( $manager )
+		{
+			$babBody->title = bab_translate("List of old articles").": ".bab_getCategoryTitle($item);
+			listOldArticles($item);
+			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item."&new=".$new."&newc=".$newc);
+			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item."&new=".$new."&newc=".$newc);
 
-		if( $new > 0)
-			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
+			if( $new > 0)
+				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
+		}
+		else
+			$babBody->msgerror = bab_translate("Access denied");
 		break;
 
 	case "archive":
-		archiveArticles($item, $aart);
+		if( $manager )
+		{
+			archiveArticles($item, $aart);
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+			break;
+		}
 		/* no break; */
 	case "Articles":
-		$babBody->title = bab_translate("List of articles").": ".bab_getCategoryTitle($item);
-		$nbarch = listArticles($item);
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
-		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item."&new=".$new."&newc=".$newc);
-		if( $nbarch > 0)
-			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item."&new=".$new."&newc=".$newc);
+		if( $manager )
+		{
+			$babBody->title = bab_translate("List of articles").": ".bab_getCategoryTitle($item);
+			$nbarch = listArticles($item);
+			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item."&new=".$new."&newc=".$newc);
+			if( $nbarch > 0)
+				$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item."&new=".$new."&newc=".$newc);
 
-		if( $new > 0 && bab_isUserArticleApprover($item))
-			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
+			if( $new > 0 && bab_isUserArticleApprover($item))
+				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
+		}
+		else
+			$babBody->msgerror = bab_translate("Access denied");
 		break;
 
 	default:

@@ -85,22 +85,33 @@ if( !isset($idx))
 	{
 	$idx = "Modify";
 	}
-if( isset($update))
+
+list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_NOTES_TBL." where id = '".$item."'"));
+
+if( isset($update) && $iduser == $BAB_SESS_USERID)
 	updateNotes($item, $content);
 
 switch($idx)
 	{
 	case "Delete":
-		deleteNotes($item);
-		$idx = "List";
+		if( $iduser != $BAB_SESS_USERID )
+			$babBody->msgerror = bab_translate("Access denied");
+		else
+			deleteNotes($item);
+		break;
 
 	default:
 	case "Modify":
-		$babBody->title = bab_translate("Modify a note");
-		notesModify($item);
-		$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$item);
+		if( $iduser != $BAB_SESS_USERID )
+			$babBody->msgerror = bab_translate("Access denied");
+		else
+		{
+			$babBody->title = bab_translate("Modify a note");
+			notesModify($item);
+			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$item);
+			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$item);
+		}
 		break;
 	}
 

@@ -429,6 +429,9 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
 	global $babBody, $babInstallPath;
 
+	if( empty($GLOBALS['BAB_SESS_USERID']))
+		return;
+
 	if( empty($oldpwd) || empty($newpwd1) || empty($newpwd2))
 		{
 		$babBody->msgerror = bab_translate("You must complete all fields !!");
@@ -452,7 +455,7 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 function updateLanguage($lang, $langfilter)
 	{
     global $BAB_SESS_USERID;
-	if( !empty($lang))
+	if( !empty($lang) && !empty($BAB_SESS_USERID))
 		{
         $db = $GLOBALS['babDB'];
 		$req = "update ".BAB_USERS_TBL." set lang='".$lang."', langfilter='" .$langfilter. "' where id='".$BAB_SESS_USERID."'";
@@ -464,7 +467,7 @@ function updateLanguage($lang, $langfilter)
 function updateSkin($skin, $style)
 	{
     global $BAB_SESS_USERID;
-	if( !empty($skin))
+	if( !empty($skin) && !empty($BAB_SESS_USERID))
 		{
         $db = $GLOBALS['babDB'];
         $req = "update ".BAB_USERS_TBL." set skin='".$skin."', style='".$style."' where id='".$BAB_SESS_USERID."'";
@@ -476,6 +479,9 @@ function updateSkin($skin, $style)
 function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email)
 	{
 	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+
+	if( empty($GLOBALS['BAB_SESS_USERID']))
+		return false;
 
 	$password = strtolower($password);
 	$req = "select id from ".BAB_USERS_TBL." where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
@@ -597,7 +603,7 @@ function updateStateSection($c, $w, $closed)
 	Header("Location: ". $HTTP_REFERER);
 	}
 
-if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email))
+if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email) && $BAB_SESS_USERID != '')
 	{
 	$db = $GLOBALS['babDB'];
 	$req = "select sn, mn, givenname, email from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$BAB_SESS_USERID."'";

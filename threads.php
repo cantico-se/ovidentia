@@ -357,7 +357,7 @@ if(!isset($idx))
 if( !isset($pos))
 	$pos = 0;
 
-if( isset($add) && $add == "addthread")
+if( isset($add) && $add == "addthread" && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 	{
 	saveThread($forum, $uname, $subject, $message, $notifyme);
 	}

@@ -493,17 +493,17 @@ if(!isset($idx))
 	}
 
 
-if( isset($accessadd) )
+if( isset($accessadd) && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
 	addAccessUsers($users, $idcal, $baccess);
 	$idx = "lunload";
 }
 
-if( isset($accessdel) )
+if( isset($accessdel) && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
 	delAccessUsers($users, $idcal);
 }
-if( isset($modify) && $modify == "options")
+if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime, $defaultview, $defaultviewweek);
 	}

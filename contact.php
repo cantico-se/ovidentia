@@ -206,6 +206,8 @@ if( !isset($idx))
 	$idx = "create";
 $msgerror = "";
 
+if( $BAB_SESS_USERID != '' )
+{
 if( isset($addcontact))
 	{
 	if( $addcontact == "add")
@@ -229,6 +231,12 @@ if( isset($addcontact))
 			}
 		}
 	}
+}
+else
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
 
 switch($idx)
 	{
