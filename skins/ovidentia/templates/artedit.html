@@ -121,29 +121,31 @@ window.focus();
 <tr> 
 <td class="BabLoginCadreBackground" > 
 	<table width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr class="BabSiteAdminTitleFontBackground"> 
+	<tr class="BabSiteAdminTitleFontBackground">
 		<td>&nbsp;</td>
 		<td>{ nametxt }</td>
-		<td>{ datesubtxt }</td>
+		<td align="center">{ datesubtxt }</td>
 		<td>{ statustxt }</td>
 	</tr>
 	<!--#in getnext -->
 	<tr class="BabSiteAdminFontBackground"> 
 		<td  nowrap width="1%">
-		<!--#if bdelete -->
-		<a title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;
-		<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
-		<!--#endif bdelete -->&nbsp;
-		<a title="{ proptxt }" href="javascript: bab_popup('{ urlname }',2);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;
-		<a href="javascript: bab_popup('{ previewurl }',2);" title="{ previewtxt }">{ name }</a>&nbsp;
-		<!--#if attachment -->
-		<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
-		<!--#endif attachment -->
-		<!--#if bnotes -->
-		<img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" alt="{ notestxt }" border="0">
-		<!--#endif bnotes -->
+			<!--#if bdelete -->
+			<a title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;
+			<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
+			<!--#endif bdelete -->&nbsp;
+			<a title="{ proptxt }" href="javascript: bab_popup('{ urlname }',2);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;
 		</td>
-		<td align="center" valign="middle">&nbsp;{ datesub }</td>
+		<td>
+			<a href="javascript: bab_popup('{ previewurl }',2);" title="{ previewtxt }">{ name }</a>&nbsp;
+			<!--#if attachment -->
+			<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
+			<!--#endif attachment -->
+			<!--#if bnotes -->
+			<img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" alt="{ notestxt }" border="0">
+			<!--#endif bnotes -->
+		</td>
+		<td align="center">&nbsp;{ datesub }</td>
 		<td>&nbsp;{ status }</td>
 	</tr>
 	<!--#endin getnext -->
