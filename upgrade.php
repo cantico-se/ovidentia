@@ -2366,6 +2366,7 @@ while ($arr = $db->db_fetch_array($res))
 		{
 		$arr_ini = @parse_ini_file( $GLOBALS['babInstallPath']."addons/".$arr['title']."/addonini.php");
 		$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$arr['id']."'";
+		$res = $db->db_query($req);
 		}
 	}
 
