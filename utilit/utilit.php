@@ -132,8 +132,60 @@ function bab_browserVersion()
 		}
 	return 0;
 	}
+function babLoadLanguage($lang, $folder, &$arr)
+	{
+	if( empty($folder))
+		{
+		$filename = "lang/lang-".$lang.".xml";
+		if (!file_exists($filename))
+			$filename = $GLOBALS['babInstallPath']."lang/lang-".$lang.".xml";
+		}
+	else
+		{
+		$filename = "lang/addons/".$folder."/lang-".$lang.".xml";
+		if (!file_exists($filename))
+			$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$lang.".xml";
+		}
 
-function bab_translate($str, $folder = "")
+	$file = @fopen($filename, "r");
+	if( $file )
+		{
+		$tmp = fread($file, filesize($filename));
+		fclose($file);
+		preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
+		preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", $m[1], $arr);
+		}
+	}
+
+function bab_translate($str, $folder = "", $lang="")
+{
+	static $babLA = array();
+
+	if( empty($lang))
+		$lang = $GLOBALS['babLanguage'];
+
+	if( empty($lang) || empty($str))
+		return $str;
+
+	if( empty($folder))
+		$tag = $folder."/".$lang;
+	else
+		$tag = "bab/".$lang;
+
+	if( !isset($babLA[$tag]))
+		babLoadLanguage($lang, $folder, $babLA[$tag]);
+
+	for( $i = 0; $i < count($babLA[$tag][1]); $i++)
+		{
+		if( $babLA[$tag][1][$i] == $str )
+			{
+			return $babLA[$tag][2][$i];
+			}
+		}
+	return $str;
+}
+
+function bab_translate_old($str, $folder = "")
 {
 	static $langcontent;
 
