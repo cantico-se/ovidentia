@@ -501,6 +501,7 @@ function confirmDeleteGroup($id)
     // delete group
 	$req = "delete from groups where id='$id'";
 	$res = $db->db_query($req);
+	bab_callAddonsFunction('bab_group_delete', $id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 	}
 
