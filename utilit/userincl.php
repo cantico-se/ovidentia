@@ -697,6 +697,16 @@ function bab_replace( $txt )
 			}
 		}
 
+	$reg = "/\\\$VAR\((.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$var = trim($m[1][$k]);
+			$txt = preg_replace("/\\\$VAR\(".preg_quote($var)."\)/", $GLOBALS[$var], $txt);
+			}
+		}
+
 	return $txt;
 }
 ?>
