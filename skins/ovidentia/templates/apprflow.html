@@ -40,6 +40,14 @@ else
 	op.focus();
 }
 
+function emptycell(findex)
+{
+var f = document.forms.sccreate;
+eval('f.fn'+findex+'.value=\'\';');
+eval('f.fh'+findex+'.value=\'\';');
+eval('savef(f.fn'+findex+');');
+}
+
 function closepop()
 	{
 	if( op != null )
@@ -73,7 +81,7 @@ function closepop()
 <!--#in getnextcol --> 
 <td class="BabLoginMenuBackground" valign="middle" nowrap>
 <input type="text" name="fn{ findex }" size="18" value="{ fieldval }" onfocus="savef(this)">
-<a href="#" onclick="fn{ findex }.value='';fh{ findex }.value='';savef(fn{ findex })"><img border="0" src="{ babSkinPath }images/Puces/del.gif" width="12" height="13"></a>
+<a href="javascript:emptycell({ findex });"><img border="0" src="{ babSkinPath }images/Puces/del.gif" width="12" height="13"></a>
 <input type="hidden" name="fh{ findex }" value="{ fieldid }">
 </td>
 <!--#endin getnextcol --> 
