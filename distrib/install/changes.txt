@@ -2,6 +2,7 @@
 Mars 2005: Version 5.5.5
 /************************************************************************/
 - Added possibility to define vacation right with fixed dates 
+- Added possibility to let vacation managers make a vacation request for any user
 - Fixed some minors bugs
 
 /************************************************************************/
