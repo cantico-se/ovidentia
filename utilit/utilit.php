@@ -1301,31 +1301,23 @@ function printout()
 	$this->w = 0;
 	$todaymonth = date("n");
 	$todayyear = date("Y");
+	$this->idcals = array();
 	if( !empty($BAB_SESS_USERID))
 		{
 		$this->idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		$this->idcals = "(id_cal='".$this->idcal."' ";
+		if( $this->idcal != 0 )
+			$this->idcals[] = $this->idcal;
+
 		$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group");
-		$req2 = "select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_RESOURCESCAL_TBL." where ".BAB_CALENDAR_TBL.".owner=".BAB_RESOURCESCAL_TBL.".id and (".BAB_RESOURCESCAL_TBL.".id_group='1'";
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			$res2 = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='2' and actif='Y'");
 			while( $arr2 = $babDB->db_fetch_array($res2))
 				{
-				$this->idcals .= " or id_cal='".$arr2['id']."' ";
-				$req2 .= " or ".BAB_RESOURCESCAL_TBL.".id_group='".$arr2['id']."'"; 
+				$this->idcals[] = $arr2['id'];
 				}
 			}
-		$req2 .= ")"; 
-		$res = $babDB->db_query($req2);
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			$this->idcals .= "or id_cal='".$arr['id']."' ";
-			}
-		$this->idcals .=")";
 		}
-	else
-		$this->idcal = "";
 
 	return bab_printTemplate($this,"montha.html", "");
 	}
@@ -1385,11 +1377,11 @@ function printout()
 				if( $total > $this->days)
 					return false;
 				$this->day = $total;
-				if( $this->idcal != "" )
+				if( count($this->idcals) > 0 )
 					{
 					$mktime = mktime(0,0,0,$this->currentMonth, $total,$this->currentYear);
 					$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-					$req = "select distinct(".BAB_CAL_EVENTS_TBL.".id_cal) as idcal from ".BAB_CAL_EVENTS_TBL." where ".$this->idcals;
+					$req = "select distinct(".BAB_CAL_EVENTS_TBL.".id_cal) as idcal from ".BAB_CAL_EVENTS_TBL." where id_cal IN (".implode(',', $this->idcals).")";
 					$req .= " and '".$daymin."' between start_date and end_date";
 					$res = $babDB->db_query($req);
 					if( $res && $babDB->db_num_rows($res))
