@@ -466,10 +466,8 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what =
 
 	$tempc = new tempcc($topicname, $title, $author, $msg);
 	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticle");
-    $mail->mailBody($message, "html");
 
-	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
-    $mail->mailAltBody($message);
+	$messagetxt = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_TOPICSVIEW_GROUPS_TBL." where  id_object='".$topics."'");
@@ -496,6 +494,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what =
 				while($arr = $db->db_fetch_array($res2))
 					{
 					$mail->mailTo($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+					$count++;
 
 					while(($arr = $db->db_fetch_array($res2)) && $count < 25)
 						{
@@ -503,13 +502,12 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what =
 						$count++;
 						}
 
-					if( $count > 0 )
-						{
-						$mail->send();
-						$mail->clearBcc();
-						$mail->clearTo();
-						$count = 0;
-						}
+					$mail->mailBody($message, "html");
+					$mail->mailAltBody($messagetxt);
+					$mail->send();
+					$mail->clearBcc();
+					$mail->clearTo();
+					$count = 0;
 					}
 
 				}	
