@@ -6,7 +6,15 @@ version 3.3.1 / 3.3.2
 file			        section		        change 
 --------------------------------------------------------------------------------
 sites.html              sitecreate          Added 'mailfunction', 'serveur' and 'serverport'
+                                            Named form tag: name="formsite"
+                                            Changed <select name="skin">
+                                            Added <select name="style">
+                        sitemodify          Named form tag: name="formsite"
+                                            Changed <select name="skin">
+                                            Added <select name="style">
                         scripts             Modified function 'moveOptions()'
+                                            Added template 'skinscripts'
+                                           
 mailinfo.html                               Added template 'articlewaittxt'
                                             Added template 'commentwaittxt'
                                             Added template 'userregistrationtxt'
@@ -17,6 +25,8 @@ mailinfo.html                               Added template 'articlewaittxt'
                                             Added template 'filewaittxt'
                                             Added template 'sendpasswordtxt'
                                             Added template 'userconfirmationtxt'
+                                            Added template 'articlehomepage'
+                                            Added template 'articlehomepagetxt'
 comments.html           commentcreate       Changed name="name" to name="cname"
 calopt.html             access              Changed <input type="checkbox" name="baccess" value="y"> to select option
 search.html             viewfil             Added { modifiedbytxt }, { modifiedby }, { createdtxt }, { created }
@@ -35,6 +45,15 @@ maildoms.html           domaincreate        Added test <!--#if dummy -->
 articles.html           introlist           Added <!--#if approver --> .... <!--#endif approver -->
 vacation.html           newvacation         Updated Javascript
 event.html              scripts             Updated Javascript
+wainting.html           introlist           Added link ( with images ) to let topic manager confirm and modify waitibg article
+options.html            changeskin          Removed javascript at the begining
+                                            Changed <select name="skin" onChange="mm()">
+                                            Changed <select name="style"> ... </select>
+                                            Added javascript at the end
+config.html             babCss              Changed path to css file
+forums.html             forumcreate         Added 'notification' select
+                        forummodify         Added 'notification' select
+entry.html              homepage0           Added link to 'print' with image
 /****************************/
 version 3.3.0 / 3.3.1
 /****************************/
