@@ -430,11 +430,8 @@ switch($idx)
 		$babLittleBody->title = '';
 		$access = false;
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
-		if( $oeid )
-		{
 		$access = viewOrgChartRoleDetail($ocid, $oeid, $iduser);
-		}
-		if( $access )
+		if( $access && $oeid)
 			{
 			$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 			}
