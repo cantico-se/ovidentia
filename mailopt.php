@@ -628,7 +628,7 @@ function addAccount($fullname, $email, $account, $password1, $password2, $domain
 	*/
 
 	$db = new db_mysql();
-	$req = "select * from mail_accounts where account='$account' and domain='$domain'";	
+	$req = "select * from mail_accounts where account='$account' and domain='$domain' and owner='".$BAB_SESS_USERID."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
