@@ -5,6 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include $babInstallPath."admin/acl.php";
+include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
 
 function listCategories()
@@ -378,6 +379,8 @@ function addToHomePages($item, $homepage, $art)
 				{
 					$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$arr['id']. "', '" . $idsite. "', '" . $homepage. "')";
 					$db->db_query($req);
+					notifyArticleHomePage(bab_getCategoryTitle($item), $arr['title'], $homepage, $homepage);
+
 				}
 			}
 		else
