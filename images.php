@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/tempfile.php";
-include $babInstallPath."utilit/imgincl.php";
+include_once $babInstallPath."utilit/tempfile.php";
+include_once $babInstallPath."utilit/imgincl.php";
 
 function bab_mkdir($path, $mode)
 {

@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/mailincl.php";
+include_once $babInstallPath."utilit/mailincl.php";
 
 function notifyUserRegistration($link, $name, $email)
 	{

@@ -408,12 +408,21 @@ if( !isset($idx))
 	$idx = "List";
 
 if( isset($add) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
+	{
 	addGroup($name, $description, $managerid, $bemail, $grpdg);
-
-if (!isset($notgrpids)) $notgrpids = array();
+	}
 
 if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
+	{
+	if (!isset($mailgrpids)) $mailgrpids = array();
+	if (!isset($calgrpids)) $calgrpids = array();
+	if (!isset($notgrpids)) $notgrpids = array();
+	if (!isset($congrpids)) $congrpids = array();
+	if (!isset($pdsgrpids)) $pdsgrpids = array();
+	if (!isset($dirgrpids)) $dirgrpids = array();
+	if (!isset($calperids)) $calperids = array();
 	saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids, $calperids);
+	}
 
 switch($idx)
 	{

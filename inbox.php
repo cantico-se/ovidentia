@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/mailincl.php";
+include_once $babInstallPath."utilit/mailincl.php";
 
 define('MAX_MSGROWS', 10);
 

@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/forumincl.php";
-include $babInstallPath."utilit/mailincl.php";
+include_once $babInstallPath."utilit/forumincl.php";
+include_once $babInstallPath."utilit/mailincl.php";
 
 function listThreads($forum, $active, $pos)
 	{

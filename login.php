@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/register.php";
+include_once $babInstallPath."admin/register.php";
 
 function displayLogin($url)
 	{

@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/orgincl.php";
-include $babInstallPath."utilit/treeincl.php";
+include_once $babInstallPath."utilit/orgincl.php";
+include_once $babInstallPath."utilit/treeincl.php";
 
 function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 	{

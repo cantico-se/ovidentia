@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/topincl.php";
-include $babInstallPath."utilit/treeincl.php";
+include_once $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/treeincl.php";
 
 function isUserManager()
 	{

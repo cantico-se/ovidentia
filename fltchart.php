@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/orgincl.php";
+include_once $babInstallPath."utilit/orgincl.php";
 
 function listOrgChartRoles($ocid, $oeid, $iduser)
 	{

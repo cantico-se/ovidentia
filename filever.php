@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/fileincl.php";
+include_once $babInstallPath."utilit/fileincl.php";
 
 define("BAB_FM_MAXLOGS"	, 10);
 
