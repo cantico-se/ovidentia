@@ -709,6 +709,7 @@ function viewFile($id, $w)
 			$this->modifiedbytxt = bab_translate("Modified by");
 			$this->download = bab_translate("Download");
 			$this->sizetxt = bab_translate("Size");
+			$this->pathtxt = bab_translate("Path");
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FILES_TBL." where id='$id' and state='' and confirmed='Y'";
@@ -730,6 +731,11 @@ function viewFile($id, $w)
 				else
 					$fstat = stat($GLOBALS['babUploadPath']."/U".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
+				if( $this->arr['bgroup'] == "Y")
+					$this->rootpath = bab_getGroupName($this->arr['id_owner']);
+				else
+					$this->rootpath = "";
+				$this->path = $this->rootpath."/".$this->arr['path'];
 				}
 			else
 				{
