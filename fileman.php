@@ -1781,7 +1781,8 @@ function viewFile( $idf)
 				$this->idf = $idf;
 
 				$this->description = bab_translate("Description");
-				$this->keywords = bab_translate("Keywords");
+				$this->t_keywords = bab_translate("Keywords");
+				$this->keywords = bab_translate("Keywords (separated by spaces)");
 				$this->notify = bab_translate("Notify members group");
 
 				$this->id = $arr['id_owner'];
