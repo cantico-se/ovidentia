@@ -591,7 +591,7 @@ switch($idx)
 		changeSkin($skin);
 		changeLanguage();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
-		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 		{
 			$babBody->addItemMenu("calendar", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 		}

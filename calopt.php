@@ -453,7 +453,7 @@ switch($idx)
 	case "access":
 		$babBody->title = bab_translate("Calendar Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		if( $idcal != 0 )
 		{
 			accessCalendar($idcal);
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
@@ -464,16 +464,19 @@ switch($idx)
 				$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 				}
 		}
+		else
+			$babBody->title = bab_translate("Access denied");
 		break;
 	default:
 	case "options":
 		$babBody->title = bab_translate("Calendar Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 		{
 			calendarOptions($calid);
 			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
-			$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal);
+			if( $idcal != 0 )
+				$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal);
 			if( bab_isUserGroupManager())
 				{
 				$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");

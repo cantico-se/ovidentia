@@ -5,55 +5,6 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include_once "base.php";
-function bab_getCategoryCalName($id)
-	{
-	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return $arr['name'];
-		}
-	else
-		{
-		return "";
-		}
-	}
-
-function bab_getResourceCalName($id)
-	{
-	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_RESOURCESCAL_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return $arr['name'];
-		}
-	else
-		{
-		return "";
-		}
-	}
-
-function bab_getCalendarId($iduser, $type)
-{
-	if( empty($iduser))
-		return 0;
-	$db = $GLOBALS['babDB'];
-	$query = "select id from ".BAB_CALENDAR_TBL." where owner='$iduser' and actif='Y' and type='".$type."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return $arr['id'];
-		}
-	else
-		{
-		return 0;
-		}
-}
 
 function bab_getCalendarType($idcal)
 {
@@ -84,22 +35,6 @@ function bab_getCalendarOwner($idcal)
 	else
 		{
 		return 0;
-		}
-}
-
-function bab_getCalendarEventTitle($evtid)
-{
-	$db = $GLOBALS['babDB'];
-	$query = "select title from ".BAB_CAL_EVENTS_TBL." where id='$evtid'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return $arr['title'];
-		}
-	else
-		{
-		return "";
 		}
 }
 

@@ -5,6 +5,25 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include_once "base.php";
+include $babInstallPath."utilit/calincl.php";
+
+function bab_getCalendarEventTitle($evtid)
+{
+	$db = $GLOBALS['babDB'];
+	$query = "select title from ".BAB_CAL_EVENTS_TBL." where id='$evtid'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['title'];
+		}
+	else
+		{
+		return "";
+		}
+}
+
+
 function getAvailableUsersCalendars()
 {
 	global $BAB_SESS_USERID,$BAB_SESS_USER;

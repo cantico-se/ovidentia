@@ -9,7 +9,6 @@ include $babInstallPath."utilit/defines.php";
 include $babInstallPath."utilit/dbutil.php";
 include $babInstallPath."utilit/template.php";
 include $babInstallPath."utilit/userincl.php";
-include $babInstallPath."utilit/calincl.php";
 
 function bab_stripDomainName ($txt)
 	{
@@ -544,7 +543,6 @@ function babUserSection($close)
 	$this->aidetxt = bab_translate("Since your last connection:");
 
 	$this->blogged = false;
-	$pgrpid = $BAB_SESS_USERID == "" ? "": bab_getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
 	$req = "select id from ".BAB_FAQCAT_TBL."";
 	$res = $babDB->db_query($req);
@@ -579,7 +577,6 @@ function babUserSection($close)
 		$bemail = bab_mailAccessLevel();
 		if( $bemail == 1 || $bemail == 2)
 			$bemail = true;
-		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		}
 
 	if( $mtopics )
@@ -599,8 +596,12 @@ function babUserSection($close)
 		}
 	if( $vac )
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacuser";
-	if( (bab_getCalendarId(1, 2) != 0  || ($pgrpid != "" && bab_getCalendarId($pgrpid, 2) != 0)) &&  $idcal != 0 )
+	$idcal = bab_calendarAccess();
+	if( $idcal != 0 )
+		{
+		$babBody->calaccess = true;
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&calid=".$idcal;
+		}
 	if( $bemail )
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";
 	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
@@ -992,6 +993,7 @@ var $newarticles;
 var $newcomments;
 var $newposts;
 var $topview = array();
+var $calaccess;
 
 function babBody()
 {
@@ -1006,6 +1008,7 @@ function babBody()
 	$this->newcomments = 0;
 	$this->newposts = 0;
 	$this->newfiles = 0;
+	$this->calaccess = false;
 }
 
 function resetContent()

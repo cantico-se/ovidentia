@@ -441,6 +441,76 @@ function bab_vacationsAccess()
 	return $array;
 	}
 	
+function bab_getCalendarId($iduser, $type)
+{
+	if( empty($iduser))
+		return 0;
+	$db = $GLOBALS['babDB'];
+	$query = "select id from ".BAB_CALENDAR_TBL." where owner='$iduser' and actif='Y' and type='".$type."'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['id'];
+		}
+	else
+		{
+		return 0;
+		}
+}
+
+function bab_calendarAccess()
+	{
+	$db = $GLOBALS['babDB'];
+
+	if( $GLOBALS['BAB_SESS_USERID'] != "" )
+		{
+		$idcal = bab_getCalendarId($GLOBALS['BAB_SESS_USERID'], 1);
+		if( $idcal != 0 )
+			return $idcal;
+	
+		$idcal = bab_getCalendarId(1, 2);
+		if( $idcal != 0 )
+			return $idcal;
+
+		$res = $db->db_query("select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_CALENDAR_TBL.".owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_CALENDAR_TBL.".type='2' and ".BAB_CALENDAR_TBL.".actif='Y'");
+
+		if( $res && $db->db_num_rows($res) > 0 )
+			{
+			$arr = $db->db_fetch_array($res);
+			return $arr['id'];
+			}
+
+		$res = $db->db_query("select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_RESOURCESCAL_TBL." where ".BAB_RESOURCESCAL_TBL.".id_group='1' and ".BAB_CALENDAR_TBL.".owner=".BAB_RESOURCESCAL_TBL.".id and ".BAB_CALENDAR_TBL.".type='3' and ".BAB_CALENDAR_TBL.".actif='Y'");
+
+		if( $res && $db->db_num_rows($res) > 0 )
+			{
+			$arr = $db->db_fetch_array($res);
+			return $arr['id'];
+			}
+
+		$res = $db->db_query("select ".BAB_RESOURCESCAL_TBL.".id from ".BAB_RESOURCESCAL_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_RESOURCESCAL_TBL.".id_group=".BAB_USERS_GROUPS_TBL.".id_group");
+
+		while( $arr = $db->db_fetch_array($res) )
+			{
+			$idcal = bab_getCalendarId($arr['id'], 3);
+			if( $idcal != 0 )
+				return $idcal;
+			}
+
+		$res = $db->db_query("select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_CALACCESS_USERS_TBL." where ".BAB_CALACCESS_USERS_TBL.".id_user='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_CALENDAR_TBL.".id=".BAB_CALACCESS_USERS_TBL.".id_cal and ".BAB_CALENDAR_TBL.".type='1' and ".BAB_CALENDAR_TBL.".actif='Y'");
+
+		if( $res && $db->db_num_rows($res) > 0 )
+			{
+			$arr = $db->db_fetch_array($res);
+			return $arr['id'];
+			}
+
+		}
+
+	return 0;
+	}
+
 function bab_fileManagerAccessLevel()
 	{
 	global $babDB, $babBody, $BAB_SESS_USERID;

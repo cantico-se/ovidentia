@@ -5,6 +5,8 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include_once "base.php";
+include $babInstallPath."utilit/calincl.php";
+
 function isCalUpdate($mcals)
 {
 global $BAB_SESS_USERID;

@@ -6,6 +6,38 @@
  ***********************************************************************/
 include_once "base.php";
 
+function bab_getCategoryCalName($id)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select name from ".BAB_CATEGORIESCAL_TBL." where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['name'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
+function bab_getResourceCalName($id)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select name from ".BAB_RESOURCESCAL_TBL." where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['name'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
 function categoryCalModify($userid, $id)
 	{
 	global $babBody;

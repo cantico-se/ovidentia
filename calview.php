@@ -29,19 +29,17 @@ function upComingEvents($idcal)
 			$this->db = $GLOBALS['babDB'];
 			$mktime = mktime();
 			$this->newevents = bab_translate("Upcoming Events ( in the seven next days )");
-			$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
+			$this->daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 			$mktime = $mktime + 518400;
-			$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";		
+			$this->daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
+			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$idcal."' and ('".$this->daymin."' between start_date and end_date or '".$this->daymax."' between start_date and end_date";
+			$req .= " or start_date between '".$this->daymin."' and '".$this->daymax."' or end_date between '".$this->daymin."' and '".$this->daymax."') order by start_date, start_time asc";		
 			$this->resevent = $this->db->db_query($req);
 			$this->countevent = $this->db->db_num_rows($this->resevent);
-			$idgrp = bab_getPrimaryGroupId($BAB_SESS_USERID);
-			$this->grpname = bab_getGroupName($idgrp);
-			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".bab_getCalendarId($idgrp, 2)."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-			$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";		
-			$this->resgrpevent = $this->db->db_query($req);
-			$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
+			$this->arrgrp = bab_getUserGroups();
+			$this->arrgrp['id'][] = '1';
+			$this->arrgrp['name'][] = bab_translate("Registered users");
+			$this->countgrp = count($this->arrgrp['id']);
 			}
 
 		function getevent()
@@ -69,6 +67,31 @@ function upComingEvents($idcal)
 				}
 			}
 
+		function getgroup()
+			{
+			static $k=0;
+			if( $k < $this->countgrp)
+				{
+				$this->grpname = bab_getGroupName($this->arrgrp['id'][$k]);
+				$idcal = bab_getCalendarId($this->arrgrp['id'][$k], 2);
+				if( $idcal != 0 )
+					{
+					$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".bab_getCalendarId($this->arrgrp['id'][$k], 2)."' and ('".$this->daymin."' between start_date and end_date or '".$this->daymax."' between start_date and end_date";
+					$req .= " or start_date between '".$this->daymin."' and '".$this->daymax."' or end_date between '".$this->daymin."' and '".$this->daymax."') order by start_date, start_time asc";
+					$this->resgrpevent = $this->db->db_query($req);
+					$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
+					}
+				else
+					{
+					$this->countgrpevent = 0;
+					}
+				$k++;
+				return true;
+				}
+			else
+				return false;
+			}
+		
 		function getgrpevent()
 			{
 			static $k=0;
@@ -551,7 +574,7 @@ switch($idx)
 	case "view":
 		$babBody->title = bab_translate("Summary");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 		{
 			upComingEvents($idcal);
 			/*
