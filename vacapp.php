@@ -196,8 +196,8 @@ function listVacations( $group, $email)
 			if( $i < $this->countvac)
 				{
 				$arr = $this->db->db_fetch_array($this->resvac);
-				$this->datebegin = bab_strftime(bab_mktime($arr['datebegin']), false) . "  " . $babDayType[$arr['daybegin]'];
-				$this->dateend = bab_strftime(bab_mktime($arr['dateend']), false) . "  " . $babDayType[$arr['dayend]'];
+				$this->datebegin = bab_strftime(bab_mktime($arr['datebegin']), false) . "  " . $babDayType[$arr['daybegin']];
+				$this->dateend = bab_strftime(bab_mktime($arr['dateend']), false) . "  " . $babDayType[$arr['dayend']];
 				//$this->statusval = getStatusName($arr['status']);
 				$this->userurl = $GLOBALS['babUrl']."index.php?tg=vacapp&idx=updatevac&item=".$arr['id']."&groupid=".$this->groupid;
 				$this->username = getUserName($this->userid);
@@ -268,10 +268,10 @@ function updateVacation($vacid, $groupid)
 			$this->commentrefused = babTranslate("Reasons of refusal");
 			$this->user = babTranslate("User");
 			$this->datefrom = bab_strftime(bab_mktime($arr['datebegin']), false);
-			$this->halfdayfrom = $babDayType[$arr['daybegin]'];
+			$this->halfdayfrom = $babDayType[$arr['daybegin']];
 
 			$this->dateto = bab_strftime(bab_mktime($arr['dateend']), false);
-			$this->halfdayto =  $babDayType[$arr['dayend]'];
+			$this->halfdayto =  $babDayType[$arr['dayend']];
 			$this->remarks = $arr['comment'];
 			$this->username = getUserName($arr['userid']);
 
@@ -325,8 +325,8 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		$message .= babTranslate("Request date") .": " . bab_strftime(bab_mktime($arr['date']), false) ."\n";
 
 		$message .= babTranslate("Vacation").":\n";
-		$message .= babTranslate("from"). " " . bab_strftime(bab_mktime($arr['datebegin']), false). " ". $babDayType[$arr['daybegin]'] . "\n";
-		$message .= babTranslate("to"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend]'] . "\n";
+		$message .= babTranslate("from"). " " . bab_strftime(bab_mktime($arr['datebegin']), false). " ". $babDayType[$arr['daybegin']] . "\n";
+		$message .= babTranslate("to"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend']] . "\n";
 
 		$req = "select * from users where id='".$arr['userid']."'";
 		$res = $db->db_query($req);

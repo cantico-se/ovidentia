@@ -386,7 +386,7 @@ function confirmAddVacation($begindate, $enddate, $halfdaybegin, $halfdayend, $v
 	if( !empty($emailapprover))
 		{
 		$subject = babTranslate("Vacation request is waiting to be validated");
-		$message = babTranslate("Mr/Mrs"). " ". $BAB_SESS_USER . " ." .babTranslate("request a vacation").":\n";
+		$message = babTranslate("Mr")."/".babTranslate("Mrs"). " ". $BAB_SESS_USER . " ." .babTranslate("request a vacation").":\n";
 		$message .= babTranslate("Vacation").":\n";
 		$message .= babTranslate("from"). " " . bab_strftime(bab_mktime($begindate), false). " ". babTranslate($half[$halfdaybegin]) . "\n";
 		$message .= babTranslate("to"). " " . bab_strftime(bab_mktime($enddate), false). " ". babTranslate($half[$halfdayend]) . "\n";
