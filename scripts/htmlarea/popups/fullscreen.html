@@ -119,10 +119,6 @@ function createRequestObject() {
 
 
 
-//var seltop = FORM_DATA['seltop'];
-
-
-
 /* ---------------------------------------------------------------------- *\
   Function    : init
   Description : run this code on page load
@@ -143,7 +139,7 @@ function init() {
 
   // generate editor and resize it
 
-  editor = new HTMLArea("editor",FORM_DATA['baburl'],FORM_DATA['babInstallPath'],'en',FORM_DATA['babPhpSelf'],true,config);
+  editor = new HTMLArea("editor",FORM_DATA['baburl'],FORM_DATA['babInstallPath'],FORM_DATA['lang'],FORM_DATA['babPhpSelf'],true,config);
   editor.generate();
   resize_editor();
   editor._iframe.style.width = "100%";

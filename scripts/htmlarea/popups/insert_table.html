@@ -1,22 +1,89 @@
 <html style="width: 398; height: 218">
 
 <head>
-  <title>Insert Table</title>
+
 
 <script type="text/javascript" src="popup.js"></script>
-
+<script type="text/javascript" src="popup-lang.js"></script>
 <script type="text/javascript">
 
+
+
+function createRequestObject() {
+  
+  FORM_DATA = new Object();
+  separator = ',';
+    // The token used to separate data from multi-select inputs
+  query = '' + this.location;
+  query = query.substring((query.indexOf('?')) + 1);
+  if (query.length < 1) { return false; } 
+  keypairs = new Object();
+  numKP = 1;
+   while (query.indexOf('&') > -1) {
+    keypairs[numKP] = query.substring(0,query.indexOf('&'));
+    query = query.substring((query.indexOf('&')) + 1);
+    numKP++;
+  }
+  keypairs[numKP] = query;
+  for (i in keypairs) {
+    keyName = keypairs[i].substring(0,keypairs[i].indexOf('='));
+    keyValue = keypairs[i].substring((keypairs[i].indexOf('=')) + 1);
+    while (keyValue.indexOf('+') > -1) {
+      keyValue = keyValue.substring(0,keyValue.indexOf('+')) + ' ' + keyValue.substring(keyValue.indexOf('+') + 1);
+    }
+    
+    keyValue = unescape(keyValue);
+      // Unescape non-alphanumerics
+      
+    if (FORM_DATA[keyName]) {
+      FORM_DATA[keyName] = FORM_DATA[keyName] + separator + keyValue;
+    } else {
+      FORM_DATA[keyName] = keyValue;
+    }
+  }
+
+  return FORM_DATA;
+}
+
+var msg = null;
 function Init() {
   __dlg_init();
   document.getElementById("f_rows").focus();
+  FORM_DATA = createRequestObject();
+	msg = new messages(FORM_DATA['lang']);
+
+	document.title = msg.insert_table.title;
+	document.getElementById("title").innerHTML = msg.insert_table.title;
+	document.getElementById("rows").innerHTML = msg.insert_table.rows;
+	document.getElementById("cols").innerHTML = msg.insert_table.cols;
+	document.getElementById("width").innerHTML = msg.insert_table.width;
+	document.getElementById("layout").innerHTML = msg.insert_table.layout;
+	document.getElementById("alignment").innerHTML = msg.insert_table.alignment;
+	document.getElementById("borderthick").innerHTML = msg.insert_table.borderthick;
+	document.getElementById("spacing").innerHTML = msg.insert_table.spacing;
+	document.getElementById("cellspacing").innerHTML = msg.insert_table.cellspacing;
+	document.getElementById("cellpadding").innerHTML = msg.insert_table.cellpadding;
+	document.getElementById("ok").innerHTML = msg.insert_table.ok;
+	document.getElementById("cancel").innerHTML = msg.insert_table.cancel;
+	document.getElementById("notset").innerHTML = msg.insert_table.notset;
+	document.getElementById("left").innerHTML = msg.insert_table.left;
+	document.getElementById("right").innerHTML = msg.insert_table.right;
+	document.getElementById("texttop").innerHTML = msg.insert_table.texttop;
+	document.getElementById("absmiddle").innerHTML = msg.insert_table.absmiddle;
+	document.getElementById("baseline").innerHTML = msg.insert_table.baseline;
+	document.getElementById("absbottom").innerHTML = msg.insert_table.absbottom;
+	document.getElementById("bottom").innerHTML = msg.insert_table.bottom;
+	document.getElementById("middle").innerHTML = msg.insert_table.middle;
+	document.getElementById("top").innerHTML = msg.insert_table.top;
 };
 
+
+
 function onOK() {
-  var required = {
-    "f_rows": "You must enter a number of rows",
-    "f_cols": "You must enter a number of columns"
-  };
+var required = new Array();
+required["f_rows"] = msg.insert_table.f_rows;
+required["f_cols"] = msg.insert_table.f_cols;
+	
   for (var i in required) {
     var el = document.getElementById(i);
     if (!el.value) {
@@ -77,23 +144,23 @@ form { padding: 0px; margin: 0px; }
 
 <body onload="Init()">
 
-<div class="title">Insert Table</div>
+<div id="title" class="title">Insert Table</div>
 
 <form action="" method="get">
 <table border="0" style="padding: 0px; margin: 0px">
   <tbody>
 
   <tr>
-    <td style="width: 4em; text-align: right">Rows:</td>
+    <td style="width: 4em; text-align: right" id="rows">Rows:</td>
     <td><input type="text" name="rows" id="f_rows" size="5" title="Number of rows" value="2" /></td>
     <td></td>
     <td></td>
     <td></td>
   </tr>
   <tr>
-    <td style="width: 4em; text-align: right">Cols:</td>
+    <td style="width: 4em; text-align: right" id="cols">Cols:</td>
     <td><input type="text" name="cols" id="f_cols" size="5" title="Number of columns" value="4" /></td>
-    <td style="width: 4em; text-align: right">Width:</td>
+    <td style="width: 4em; text-align: right" id="width">Width:</td>
     <td><input type="text" name="width" id="f_width" size="5" title="Width of the table" value="100" /></td>
     <td><select size="1" name="unit" id="f_unit" title="Width unit">
       <option value="%" selected="1"  >Percent</option>
@@ -108,52 +175,47 @@ form { padding: 0px; margin: 0px; }
 <p />
 
 <fieldset style="float: left; margin-left: 5px;">
-<legend>Layout</legend>
+<legend id="layout">Layout</legend>
 
 <div class="space"></div>
 
-<div class="fl">Alignment:</div>
+<div class="fl" id="alignment">Alignment :</div>
 <select size="1" name="align" id="f_align"
   title="Positioning of this image">
-  <option value="" selected="1"                >Not set</option>
-  <option value="left"                         >Left</option>
-  <option value="right"                        >Right</option>
-  <option value="texttop"                      >Texttop</option>
-  <option value="absmiddle"                    >Absmiddle</option>
-  <option value="baseline"                     >Baseline</option>
-  <option value="absbottom"                    >Absbottom</option>
-  <option value="bottom"                       >Bottom</option>
-  <option value="middle"                       >Middle</option>
-  <option value="top"                          >Top</option>
+  <option value="" selected="1" id="notset"	   >Not set</option>
+  <option value="left" id="left"               >Left</option>
+  <option value="right" id="right"             >Right</option>
+  <option value="texttop" id="texttop"         >Texttop</option>
+  <option value="absmiddle" id="absmiddle"     >Absmiddle</option>
+  <option value="baseline" id="baseline"       >Baseline</option>
+  <option value="absbottom" id="absbottom"     >Absbottom</option>
+  <option value="bottom" id="bottom"           >Bottom</option>
+  <option value="middle" id="middle"           >Middle</option>
+  <option value="top" id="top"                 >Top</option>
 </select>
 
 <p />
 
-<div class="fl">Border thickness:</div>
+<div class="fl" id="borderthick">Border thickness:</div>
 <input type="text" name="border" id="f_border" size="5" value="1"
 title="Leave empty for no border" />
-<!--
-<p />
 
-<div class="fl">Collapse borders:</div>
-<input type="checkbox" name="collapse" id="f_collapse" />
--->
 <div class="space"></div>
 
 </fieldset>
 
 <fieldset style="float:right; margin-right: 5px;">
-<legend>Spacing</legend>
+<legend id="spacing">Spacing</legend>
 
 <div class="space"></div>
 
-<div class="fr">Cell spacing:</div>
+<div class="fr" id="cellspacing">Cell spacing:</div>
 <input type="text" name="spacing" id="f_spacing" size="5" value="1"
 title="Space between adjacent cells" />
 
 <p />
 
-<div class="fr">Cell padding:</div>
+<div class="fr" id="cellpadding">Cell padding:</div>
 <input type="text" name="padding" id="f_padding" size="5" value="1"
 title="Space between content and border in cell" />
 
@@ -163,8 +225,8 @@ title="Space between content and border in cell" />
 
 <div style="margin-top: 85px; text-align: right;">
 <hr />
-<button type="button" name="ok" onclick="return onOK();">OK</button>
-<button type="button" name="cancel" onclick="return onCancel();">Cancel</button>
+<button type="button" name="ok" onclick="return onOK();" id="ok">OK</button>
+<button type="button" name="cancel" onclick="return onCancel();" id="cancel">Cancel</button>
 </div>
 
 </form>

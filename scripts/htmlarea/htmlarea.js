@@ -89,7 +89,6 @@ HTMLArea.Config = function (babLanguage) {
 	this.replaceNextLines = 0;
 	this.plainTextInput = 0;
 
-	// ["cleanhtml","babimage","babfile"]
 
 	this.toolbar = [ [ "fontname", "space" ],
 			 [ "fontsize", "space" ],
@@ -144,35 +143,35 @@ HTMLArea.Config = function (babLanguage) {
 
 	//      ID              CMD                      ToolTip               Icon                        Enabled in text mode?
 	this.btnList = {
-		bold:           ["Bold",                 "Bold",               babLanguage+"ed_format_bold.gif",       false],
-		italic:         ["Italic",               "Italic",             "ed_format_italic.gif",     false],
-		underline:      ["Underline",            "Underline",          "ed_format_underline.gif",  false],
-		strikethrough:  ["StrikeThrough",        "Strikethrough",      "ed_format_strike.gif",     false],
-		subscript:      ["SubScript",            "Subscript",          "ed_format_sub.gif",        false],
-		superscript:    ["SuperScript",          "Superscript",        "ed_format_sup.gif",        false],
-		justifyleft:    ["JustifyLeft",          "Justify Left",       "ed_align_left.gif",        false],
-		justifycenter:  ["JustifyCenter",        "Justify Center",     "ed_align_center.gif",      false],
-		justifyright:   ["JustifyRight",         "Justify Right",      "ed_align_right.gif",       false],
-		justifyfull:    ["JustifyFull",          "Justify Full",       "ed_align_justify.gif",     false],
-		orderedlist:    ["InsertOrderedList",    "Ordered List",       "ed_list_num.gif",          false],
-		unorderedlist:  ["InsertUnorderedList",  "Bulleted List",      "ed_list_bullet.gif",       false],
-		outdent:        ["Outdent",              "Decrease Indent",    "ed_indent_less.gif",       false],
-		indent:         ["Indent",               "Increase Indent",    "ed_indent_more.gif",       false],
-		forecolor:      ["ForeColor",            "Font Color",         "ed_color_fg.gif",          false],
-		backcolor:      ["BackColor",            "Background Color",   "ed_color_bg.gif",          false],
-		horizontalrule: ["InsertHorizontalRule", "Horizontal Rule",    "ed_hr.gif",                false],
-		inserttable:    ["InsertTable",          "Insert Table",       "insert_table.gif",         false],
-		htmlmode:       ["HtmlMode",             "Toggle HTML Source", "ed_html.gif",              true],
-		popupeditor:    ["popupeditor",          "Enlarge Editor",     "fullscreen_maximize.gif",  true],
-		babimage:		["BabImage",			 "Insert Ovidentia Image","ed_image.gif",          false],
-		bablink:		["bablink",				 "Insert Web Link",    "ed_link.gif",              false],
-		cleanhtml:		["cleanhtml",			 "Clean HTML",		   "ed_bab_clean.gif",         false],
-		copy:			["copy",				 "Copy",			   "ed_copy.gif",	           false],
-		cut:			["cut",					 "Cut",				   "ed_cut.gif",		       false],
-		paste:			["paste",				 "Paste",			   "ed_paste.gif",             false],
-		undo:			["undo",				 "undo",			   "ed_undo.gif",		       false],
-		redo:			["redo",				 "Redo",			   "ed_redo.gif",              false],
-		babfile:		["babfile",				 "Insert Ovidentia File","ed_bab_file.gif",		   false]	
+		bold:           ["Bold",                 "Bold",               babLanguage+"ed_format_bold.gif",		false],
+		italic:         ["Italic",               "Italic",             "ed_format_italic.gif",					false],
+		underline:      ["Underline",            "Underline",          babLanguage+"ed_format_underline.gif",	false],
+		strikethrough:  ["StrikeThrough",        "Strikethrough",      "ed_format_strike.gif",					false],
+		subscript:      ["SubScript",            "Subscript",          "ed_format_sub.gif",						false],
+		superscript:    ["SuperScript",          "Superscript",        "ed_format_sup.gif",						false],
+		justifyleft:    ["JustifyLeft",          "Justify Left",       "ed_align_left.gif",						false],
+		justifycenter:  ["JustifyCenter",        "Justify Center",     "ed_align_center.gif",					false],
+		justifyright:   ["JustifyRight",         "Justify Right",      "ed_align_right.gif",					false],
+		justifyfull:    ["JustifyFull",          "Justify Full",       "ed_align_justify.gif",					false],
+		orderedlist:    ["InsertOrderedList",    "Ordered List",       "ed_list_num.gif",						false],
+		unorderedlist:  ["InsertUnorderedList",  "Bulleted List",      "ed_list_bullet.gif",					false],
+		outdent:        ["Outdent",              "Decrease Indent",    "ed_indent_less.gif",					false],
+		indent:         ["Indent",               "Increase Indent",    "ed_indent_more.gif",					false],
+		forecolor:      ["ForeColor",            "Font Color",         "ed_color_fg.gif",						false],
+		backcolor:      ["BackColor",            "Background Color",   "ed_color_bg.gif",						false],
+		horizontalrule: ["InsertHorizontalRule", "Horizontal Rule",    "ed_hr.gif",								false],
+		inserttable:    ["InsertTable",          "Insert Table",       "insert_table.gif",						false],
+		htmlmode:       ["HtmlMode",             "Toggle HTML Source", "ed_html.gif",							true],
+		popupeditor:    ["popupeditor",          "Enlarge Editor",     "fullscreen_maximize.gif",				true],
+		babimage:		["BabImage",			 "Insert Ovidentia Image","ed_image.gif",						false],
+		bablink:		["bablink",				 "Insert Web Link",    "ed_link.gif",							false],
+		cleanhtml:		["cleanhtml",			 "Clean HTML",		   "ed_bab_clean.gif",						false],
+		copy:			["copy",				 "Copy",			   "ed_copy.gif",							false],
+		cut:			["cut",					 "Cut",				   "ed_cut.gif",							false],
+		paste:			["paste",				 "Paste",			   "ed_paste.gif",							false],
+		undo:			["undo",				 "undo",			   "ed_undo.gif",							false],
+		redo:			["redo",				 "Redo",			   "ed_redo.gif",							false],
+		babfile:		["babfile",				 "Insert Ovidentia File","ed_bab_file.gif",						false]	
 	};
 
 	// initialize tooltips from the I18N module
@@ -1040,7 +1039,7 @@ HTMLArea.prototype._insertbablink = function() {
 	var range = this._createRange(sel);
 	var editor = this;	// for nested functions
 
-	this._popupDialog("insert_bablink.html", function(param) {
+	this._popupDialog("insert_bablink.html?lang="+this.babLanguage.substr(0, (this.babLanguage.length-1)), function(param) {
 	if (!param) {	// user must have pressed Cancel
 			return false;
 		}
@@ -1091,7 +1090,7 @@ HTMLArea.prototype._insertTable = function() {
 	var sel = this._getSelection();
 	var range = this._createRange(sel);
 	var editor = this;	// for nested functions
-	this._popupDialog("insert_table.html", function(param) {
+	this._popupDialog("insert_table.html?lang="+this.babLanguage.substr(0, (this.babLanguage.length-1)), function(param) {
 		if (!param) {	// user must have pressed Cancel
 			return false;
 		}
@@ -1178,7 +1177,6 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 	    case "createlink":
 		this._execCommand(cmd, true);
 		break;
-		
 	    case "insertimage":
 		this._insertImage();
 		break;
@@ -1187,11 +1185,11 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 		break;
 	    case "popupeditor":
 		if (HTMLArea.is_ie) {
-			fullview = window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf="+escape(this.babPhpSelf)), "ha_fullscreen",
+			fullview = window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf="+escape(this.babPhpSelf)+"&lang="+this.babLanguage.substr(0, (this.babLanguage.length-1))), "ha_fullscreen",
 				    "toolbar=no,location=no,directories=no,status=yes,menubar=no," +
 				    "scrollbars=no,resizable=yes,width=640,height=480");
 		} else {
-			window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf"+escape(this.babPhpSelf)), "ha_fullscreen",
+			window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf"+escape(this.babPhpSelf)+"&lang="+this.babLanguage.substr(0, (this.babLanguage.length-1))), "ha_fullscreen",
 				    "toolbar=no,menubar=no,personalbar=no,width=640,height=480," +
 				    "scrollbars=no,resizable=yes");
 		}
@@ -1863,7 +1861,7 @@ function initEditor(what,ta)
 	{
 		babPhpSelf = 'index.php';
 	}
-	
+
 
 	editor = new HTMLArea(ta,babUrl,babInstallPath,babLanguage,babPhpSelf);
 	if( what == 1 )

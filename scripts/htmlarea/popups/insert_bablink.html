@@ -1,9 +1,10 @@
 <html style="width: 398; height: 218">
 
 <head>
-  <title>Insert Link</title>
+  <title></title>
 
 <script type="text/javascript" src="popup.js"></script>
+<script type="text/javascript" src="popup-lang.js"></script>
 
 <script type="text/javascript">
 var preview_window = null;
@@ -12,7 +13,43 @@ function _CloseOnEsc() {
   if (event.keyCode == 27) { window.close(); return; }
 }
 
+function createRequestObject() {
+  
+  FORM_DATA = new Object();
+  separator = ',';
+    // The token used to separate data from multi-select inputs
+  query = '' + this.location;
+  query = query.substring((query.indexOf('?')) + 1);
+  if (query.length < 1) { return false; } 
+  keypairs = new Object();
+  numKP = 1;
+   while (query.indexOf('&') > -1) {
+    keypairs[numKP] = query.substring(0,query.indexOf('&'));
+    query = query.substring((query.indexOf('&')) + 1);
+    numKP++;
+  }
+  keypairs[numKP] = query;
+  for (i in keypairs) {
+    keyName = keypairs[i].substring(0,keypairs[i].indexOf('='));
+    keyValue = keypairs[i].substring((keypairs[i].indexOf('=')) + 1);
+    while (keyValue.indexOf('+') > -1) {
+      keyValue = keyValue.substring(0,keyValue.indexOf('+')) + ' ' + keyValue.substring(keyValue.indexOf('+') + 1);
+    }
+    
+    keyValue = unescape(keyValue);
+      // Unescape non-alphanumerics
+      
+    if (FORM_DATA[keyName]) {
+      FORM_DATA[keyName] = FORM_DATA[keyName] + separator + keyValue;
+    } else {
+      FORM_DATA[keyName] = keyValue;
+    }
+  }
 
+  return FORM_DATA;
+}
+
+var msg = null;
 function Init() {
 
   __dlg_init();
@@ -32,46 +69,25 @@ try {with (range) {
 		//alert(e);
 		//break;
 	}
-	/*
-	if (a.tagName.toLowerCase() == "a") {
-		try {with (a.attributes) {
-			var attrib = a.attributes.getNamedItem('href');
-			urlvalue = attrib.value;
-			var url = document.getElementById('url');
-			//url.value = urlvalue;
-			
-			// FIXME
-			var attrib = a.attributes.getNamedItem('target');
-			targetvalue = attrib.value;
-			
-			var target = document.getElementById('target');
-			
-			for (var j in target.element) 
-				{
-				
-				if (target.element[j] == targetvalue)
-					{
-					target.element.selectedIndex = j;
-					}
-				}
-			
-			
-		}}
-		catch (e) {
-			//alert(e);
-			//break;
-		}
 
-	}
-*/
+  FORM_DATA = createRequestObject();
+	msg = new messages(FORM_DATA['lang']);
+
+	document.title = msg.insert_bablink.title;
+	document.getElementById("title").innerHTML = msg.insert_bablink.title;
+	document.getElementById("urltxt").innerHTML = msg.insert_bablink.url;
+	document.getElementById("notset").innerHTML = msg.insert_bablink.notset;
+	document.getElementById("notset2").innerHTML = msg.insert_bablink.notset;
+	document.getElementById("ok").innerHTML = msg.insert_bablink.ok;
+	document.getElementById("cancel").innerHTML = msg.insert_bablink.cancel;
 
 };
 
 
 function onOK() {
-  var required = {
-    "url": "You must enter the URL"
-  };
+var required = new Array();
+  required["url"] = msg.insert_bablink.msgurl;
+
   for (var i in required) {
     var el = document.getElementById(i);
     if (!el.value) {
@@ -145,13 +161,13 @@ form { padding: 0px; margin: 0px; }
 
 <body onload="Init()">
 
-<div class="title">Insert Link</div>
+<div class="title" id="title">Insert Link</div>
 
 <form action="" method="get">
   <table border="0" width="100%" style="padding: 0px; margin: 0px" align="center">
     <tbody> 
     <tr> 
-      <td style="width: 3em; text-align: right">Url:</td>
+      <td style="width: 3em; text-align: right" id="urltxt">Url:</td>
       <td>
         <input type="text" name="url" id="url" style="width:100%" title="For browsers that don't support images" value="http://" />
       </td>
@@ -168,7 +184,7 @@ form { padding: 0px; margin: 0px; }
 
 <div class="fl">Type:</div>
 <select size="1" name="type" id="type" title="type" onchange="onTypeChange()">
-  <option value="">Not set</option>
+  <option value="" id="notset">Not set</option>
   <option value="http://" selected>http</option>
   <option value="mailto:">mailto</option>
   <option value="https://">https</option>
@@ -179,7 +195,7 @@ form { padding: 0px; margin: 0px; }
 
 <div class="fl">Target:</div>
 <select size="1" name="target" id="target" title="target">
-  <option value="">Not set</option>
+  <option value="" id="notset2">Not set</option>
   <option value="_blank">blank</option>
   <option value="_parent">parent</option>
   <option value="_self">self</option>
@@ -188,15 +204,11 @@ form { padding: 0px; margin: 0px; }
 
 </fieldset>
 <p />
-  <div style="margin-top: 20px; text-align: right;"> <button type="button" name="ok" onclick="return onOK();">OK</button> 
-    &nbsp;&nbsp;<button type="button" name="cancel" id="cancel" onclick="return onCancel();">Cancel</button> 
+  <div style="margin-top: 20px; text-align: right;"> <button type="button" name="ok" onclick="return onOK();" id="ok">OK</button> 
+    &nbsp;&nbsp;<button type="button" name="cancel" id="cancel" onclick="return onCancel();" id="cancel">Cancel</button> 
   </div>
 
 </form>
 
-<script type="text/javascript">
-
-
-</script>
 </body>
 </html>
