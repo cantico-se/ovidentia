@@ -1,7 +1,8 @@
 /************************************************************************/
-Juillet 2003: Version 4.0.7
+Juillet 2003: Version 4.0.8
 /************************************************************************/
 - Bug: Administrateur can register user with blank nickname
+- Bug: Modified date is not updated when a file is commited without approbation
 - Improved mail template
 - Emails sent uses Bcc
 - Fixed some minors bugs
