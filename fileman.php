@@ -290,7 +290,6 @@ function showDiskSpace($id, $gr, $path)
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_formatSizeFile($size).$this->kilooctet;
 				$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxUserSize']).$this->kilooctet;
-				//$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxUserSize'], false)." " . $this->bytes;
 				$this->remainingspace =  bab_formatSizeFile($GLOBALS['babMaxUserSize'] - $size).$this->kilooctet;
 				$this->groupname = bab_translate("Personnal Folder");
 				$i++;
@@ -305,11 +304,9 @@ function showDiskSpace($id, $gr, $path)
 			static $i = 0;
 			if( $i < $this->diskg)
 				{
-				//$pathx = bab_getUploadFullPath("N", $GLOBALS['BAB_SESS_USERID']);
 				$size = getDirSize($GLOBALS['babUploadPath']);
 				$this->diskspace = bab_formatSizeFile($size).$this->kilooctet;
 				$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxTotalSize']).$this->kilooctet;
-				//$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxTotalSize'], false)." " . $this->bytes;
 				$this->remainingspace =  bab_formatSizeFile($GLOBALS['babMaxTotalSize'] - $size).$this->kilooctet;
 				$this->groupname = bab_translate("Global space");
 				$i++;
@@ -328,7 +325,6 @@ function showDiskSpace($id, $gr, $path)
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_formatSizeFile($size).$this->kilooctet;
 				$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet;
-				//$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize'], false)." " . $this->bytes;
 				$this->remainingspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet;
 				$this->groupname = bab_getFolderName($this->arrgrp[$i]);
 				$i++;
@@ -348,7 +344,6 @@ function showDiskSpace($id, $gr, $path)
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_formatSizeFile($size).$this->kilooctet;
 				$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet;
-				//$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize'], false)." " . $this->bytes;
 				$this->remainingspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet;
 				$i++;
 				return true;
@@ -371,9 +366,23 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 	class temp extends listFiles
 		{
 		var $arrext = array();
+		var $upfolderimg;
+		var $usrfolderimg;
+		var $grpfolderimg;
+		var $editor;
+		var $desctxt;
+		var $root;
+		var $refresh;
+		var $manfolderimg;
+		var $rootpath;
+		var $rooturl;
+		var $refreshurl;
 		var $name;
 		var $url;
-		var $fileimage;
+		var $jname;
+		var $description;
+		var $idf;
+		var $close;
 
 		function temp($id, $gr, $path, $bmanager, $editor)
 			{
@@ -383,6 +392,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			$this->root = bab_translate("Home folder");
 			$this->refresh = bab_translate("Refresh");
 			$this->nametxt = bab_translate("Name");
+			$this->close = bab_translate("Close");
 			$this->listFiles($id, $gr, $path, $bmanager, "brow");
 			$this->upfolderimg = bab_printTemplate($this, "config.html", "parentfolder");
 			$this->usrfolderimg = bab_printTemplate($this, "config.html", "userfolder");
@@ -392,10 +402,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 				$this->rootpath = bab_getFolderName($id);
 			else
 				$this->rootpath = "";
-			//if( !empty($BAB_SESS_USERID))
-				$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$BAB_SESS_USERID."&gr=N&path=&editor=".$this->editor;
-			//else
-			//	$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=2&gr=Y&path=&editor=".$this->editor;
+			$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$BAB_SESS_USERID."&gr=N&path=&editor=".$this->editor;
 			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$id."&gr=".$gr."&path=".$path."&editor=".$this->editor;
 			}
 
