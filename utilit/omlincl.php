@@ -117,10 +117,12 @@ function bab_formatAuthor($format, $id)
 class bab_handler
 {
 	var $ctx;
+	var $idx;
 
 	function bab_handler( &$ctx)
 	{
 		$this->ctx = $ctx;
+		$this->idx = 0;
 	}
 
 	function printout($txt)
@@ -179,15 +181,14 @@ class bab_Operator extends bab_handler
 
 	function getnext()
 	{
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$i++;
+			$this->idx++;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -307,11 +308,10 @@ class bab_ArticlesHomePages extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."' and confirmed='Y'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$this->idx]."' and confirmed='Y'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
@@ -323,13 +323,13 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -372,23 +372,22 @@ class bab_ArticleCategories extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -431,23 +430,22 @@ class bab_ParentsArticleCategory extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -525,23 +523,22 @@ class bab_ArticleCategory extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -586,11 +583,10 @@ class bab_ArticleTopics extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicTotal', $this->count);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
@@ -600,13 +596,13 @@ class bab_ArticleTopics extends bab_handler
 			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 		}
 	}
@@ -678,11 +674,10 @@ class bab_ArticleTopic extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
 			$this->ctx->curctx->push('TopicId', $arr['id']);
@@ -691,13 +686,13 @@ class bab_ArticleTopic extends bab_handler
 			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 		}
 	}
@@ -748,11 +743,10 @@ class bab_Articles extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
@@ -763,13 +757,13 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -807,11 +801,10 @@ class bab_Article extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
@@ -822,13 +815,13 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -870,22 +863,21 @@ class bab_Forums extends bab_handler
 	{
 		global $babDB;
 
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ForumName', $arr['name']);
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -954,22 +946,21 @@ class bab_Forum extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ForumName', $arr['name']);
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -1018,27 +1009,26 @@ class bab_Post extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
-			$this->ctx->curctx->push('PostForumId', $this->arrfid[$i]);
+			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -1085,11 +1075,10 @@ class bab_Thread extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_THREADS_TBL." where id='".$this->arrid[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_THREADS_TBL." where id='".$this->arrid[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ThreadForumId', $arr['forum']);
 			$this->ctx->curctx->push('ThreadId', $arr['id']);
 			$this->ctx->curctx->push('ThreadPostId', $arr['post']);
@@ -1097,13 +1086,13 @@ class bab_Thread extends bab_handler
 			$this->ctx->curctx->push('ThreadDate',  bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ThreadStarter',  $arr['starter']);
 			$this->ctx->curctx->push('ThreadUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id']."&views=1");
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -1145,20 +1134,19 @@ class bab_Folders extends bab_handler
 	{
 		global $babDB;
 
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FolderName', $arr['folder']);
 			$this->ctx->curctx->push('FolderId', $arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -1230,20 +1218,19 @@ class bab_Folder extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FolderName', $arr['folder']);
 			$this->ctx->curctx->push('FolderId', $arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -1306,18 +1293,17 @@ class bab_SubFolders extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$this->ctx->curctx->push('CIndex', $i);
-			$this->ctx->curctx->push('SubFolderName', $this->IdEntries[$i]);
-			$i++;
-			$this->index = $i;
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('SubFolderName', $this->IdEntries[$this->idx]);
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -1364,23 +1350,22 @@ class bab_Files extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FileDescription', $arr['description']);
 			$this->ctx->curctx->push('FileKeywords', $arr['keyword']);
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -1415,22 +1400,21 @@ class bab_File extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileName', $this->arr['name']);
 			$this->ctx->curctx->push('FileDescription', $this->arr['description']);
 			$this->ctx->curctx->push('FileKeywords', $this->arr['keyword']);
 			$this->ctx->curctx->push('FileId', $this->arr['id']);
 			$this->ctx->curctx->push('FileFolderId', $this->arr['id_owner']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -1472,11 +1456,10 @@ class bab_FileFields extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileFieldName', bab_translate($arr['name']));
 			$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."' and id_file='".$this->fileid."'");
 			if( $res && $babDB->db_num_rows($res) > 0)
@@ -1484,13 +1467,13 @@ class bab_FileFields extends bab_handler
 				list($fieldval) = htmlentities($babDB->db_fetch_array($res));
 				}
 			$this->ctx->curctx->push('FileFieldValue', $fieldval);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -1588,11 +1571,10 @@ class bab_RecentArticles extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
@@ -1603,13 +1585,13 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -1668,11 +1650,10 @@ class bab_RecentComments extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->rescomments);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CommentTitle', $arr['subject']);
 			$this->ctx->curctx->push('CommentText', $arr['message']);
 			$this->ctx->curctx->push('CommentId', $arr['id']);
@@ -1683,13 +1664,13 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -1752,27 +1733,26 @@ class bab_RecentPosts extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
-			$this->ctx->curctx->push('PostForumId', $this->arrfid[$i]);
+			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -1836,27 +1816,26 @@ class bab_RecentThreads extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
-			$this->ctx->curctx->push('PostForumId', $this->arrfid[$i]);
+			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -1927,11 +1906,10 @@ class bab_RecentFiles extends bab_handler
 	function getnext()
 		{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count )
+		if( $this->idx < $this->count )
 			{
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FilePath', $arr['path']);
@@ -1942,13 +1920,13 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -1996,11 +1974,10 @@ class bab_WaitingArticles extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$this->ctx->curctx->push('CIndex', $i);
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
@@ -2011,13 +1988,13 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewa&article=".$arr['id']."&topics=".$arr['id_topic']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -2063,11 +2040,10 @@ class bab_WaitingComments extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CommentTitle', $arr['subject']);
 			$this->ctx->curctx->push('CommentText', $arr['message']);
 			$this->ctx->curctx->push('CommentId', $arr['id']);
@@ -2078,13 +2054,13 @@ class bab_WaitingComments extends bab_handler
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=ReadC&com=".$arr['id']."&topics=".$arr['id_topic']."&article=".$arr['id_article']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -2130,11 +2106,10 @@ class bab_WaitingFiles extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FilePath', $arr['path']);
@@ -2145,13 +2120,13 @@ class bab_WaitingFiles extends bab_handler
 			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -2190,10 +2165,9 @@ class bab_WaitingPosts extends bab_handler
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 			{
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
@@ -2204,13 +2178,13 @@ class bab_WaitingPosts extends bab_handler
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 			}
 		else
 			{
-			$i = 0;
+			$this->idx = 0;
 			return false;
 			}
 		}
@@ -2248,23 +2222,22 @@ class bab_Faqs extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqName', $arr['category']);
 			$this->ctx->curctx->push('FaqDescription', $arr['description']);
 			$this->ctx->curctx->push('FaqId', $arr['id']);
 			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
 			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -2335,23 +2308,22 @@ class bab_Faq extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqName', $arr['category']);
 			$this->ctx->curctx->push('FaqDescription', $arr['description']);
 			$this->ctx->curctx->push('FaqId', $arr['id']);
 			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
 			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -2389,23 +2361,22 @@ class bab_FaqQuestions extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$this->IdEntries[$i]."'"));
-			$this->ctx->curctx->push('CIndex', $i);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$this->IdEntries[$this->idx]."'"));
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -2476,23 +2447,22 @@ class bab_FaqQuestion extends bab_handler
 	function getnext()
 	{
 		global $babDB;
-		static $i=0;
-		if( $i < $this->count)
+		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
-			$i++;
-			$this->index = $i;
+			$this->idx++;
+			$this->index = $this->idx;
 			return true;
 		}
 		else
 		{
-			$i=0;
+			$this->idx=0;
 			return false;
 		}
 	}
@@ -2619,7 +2589,7 @@ function get_handler($name)
 	return false;
 	}
 
-function handle_tag( $handler, $txt )
+function handle_tag( $handler, $txt, $txt2 )
 	{
 	$out = '';
 	$handler = "bab_".$handler;
@@ -2627,6 +2597,13 @@ function handle_tag( $handler, $txt )
 		{
 		$ctx = new bab_context($handler);
 		$this->push_ctx($ctx);
+		if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $txt2, $mm))
+			{
+			for( $j = 0; $j< count($mm[1]); $j++)
+				{
+				$this->curctx->push($mm[1][$j], $mm[3][$j]);
+				}
+			}
 		$cls = new $handler($this);
 		$out = $cls->printout($txt);
 		$this->pop_ctx();
@@ -2766,23 +2743,14 @@ function vars_replace($txt)
 
 function handle_text($txt)
 	{
-	if(preg_match_all("/(.*?)<".BAB_TAG_CONTAINER."([^\s]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>(.*?)<\/".BAB_TAG_CONTAINER."\\2>(.*)/s", $txt, $m))
+	if(preg_match_all("/(.*?)<".BAB_TAG_CONTAINER."([^\s]*)\s*(\w+\s*=\s*[\"].*?\")*\s*(\w*)>(.*?)<\/".BAB_TAG_CONTAINER."\\2\s*\\4>(.*)/s", $txt, $m))
 		{
 		$out = '';
 		for( $i = 0; $i< count($m[3]); $i++)
 			{
 			$out .= $this->handle_text($m[1][$i]);
-			$txt2 = $this->vars_replace($m[3][$i]);
-			if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $txt2, $mm))
-				{
-				for( $j = 0; $j< count($mm[1]); $j++)
-					{
-					$this->curctx->push($mm[1][$j], $mm[3][$j]);
-					}
-				}
-
-			$out .= $this->handle_tag($m[2][$i], $m[4][$i]);
-			$out .= $this->handle_text($m[5][$i]);
+			$out .= $this->handle_tag($m[2][$i], $m[5][$i], $this->vars_replace($m[3][$i]));
+			$out .= $this->handle_text($m[6][$i]);
 			}
 		return $out;
 		}
