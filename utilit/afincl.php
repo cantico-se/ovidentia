@@ -451,6 +451,54 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 			}
 		}
 
+	if( count($result) > 0 )
+	{
+	$res = $db->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date and id_user in (".implode(',', $result).")");
+
+	$substitutes = array();
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
+		while( $arr = $db->db_fetch_array($res) )
+			{
+			if( $arr['id_substitute'] !=  0 )
+				{
+				if( !isset($substitutes[$arr['id_user']] ) || !in_array($arr['id_substitute'], $substitutes[$arr['id_user']]))
+					{
+					$substitutes[$arr['id_user']][] =  $arr['id_substitute'];
+					}
+				}
+
+			$entities = bab_OCGetUserEntities($arr['id_user']);
+			if( count($entities['superior']) > 0 )
+				{
+				for( $i=0; $i < count($entities['superior']); $i++ )
+					{
+					$idsub = bab_OCGetTemporaryEmployee($entities['superior'][$i]['id']);
+					if( $idsub )
+						if( !isset($substitutes[$arr['id_user']]) || !in_array($idsub['id_user'],$substitutes[$arr['id_user']]))
+						{
+						$substitutes[$arr['id_user']][] =  $idsub['id_user'];
+						}
+					}
+				}				
+			}
+		}
+
+	if( count($substitutes) > 0 )
+		{
+		foreach($substitutes as $i => $val )
+			{
+			for( $k=0; $k < count($val); $k++ )
+				{
+				if( !in_array($val[$k], $result) )
+					{
+					$result[] = $val[$k];
+					}
+				}
+			}
+		}
+	}
 	return $result;
 }
 

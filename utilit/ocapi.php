@@ -274,7 +274,7 @@ function bab_OCGetTemporaryEmployees($idoc='')
 	$ret = array();
 
 	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '2'");
-	if( $res && $babDB->db_num_rows($res) > 1 )
+	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		while($arr = $babDB->db_fetch_array($res))
 			{
