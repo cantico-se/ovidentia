@@ -508,16 +508,29 @@ function import()
 			}
 			
 		if (empty($addon_name) || count($path_file) == 0) return false;
+
+		function create_directory($path)
+			{
+			if (!is_dir($path) && !@bab_mkdir($path))
+				{
+				$path = trim($path,'/.');
+				$l = strlen($path) - strlen(strrchr($path, '/'));
+				$path = substr($path, 0,$l);
+				create_directory($path);
+				if (!is_dir($path))
+					bab_mkdir($path);
+				}
+			}
 		
 		foreach ($file_zipid as $arr)
 			{
 			$path = $GLOBALS['babInstallPath'].$loc_in[$arr[0]].'/'.$addon_name;
 			$subdir = dirname(substr($zipcontents[$arr[2]]['filename'],strlen($loc_out[$arr[0]])+1));
 			$subdir = isset($subdir) && $subdir != '.' ? '/'.$subdir : '';
+			create_directory($path.$subdir);
 			$zip->Extract($ul,$path.$subdir,$arr[1],false );
 			}
 
-		//unlink($ul);
 		}
 	}
 
