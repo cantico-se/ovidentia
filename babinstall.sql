@@ -590,20 +590,22 @@ CREATE TABLE mail_signatures (
 #
 
 CREATE TABLE contacts (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	category INT (11) UNSIGNED not null,
-	owner INT (11) UNSIGNED not null,
-	firstname TEXT not null,
-	lastname TEXT not null,
-	email TEXT not null,
-	compagny varchar(255) NOT NULL,
-	hometel varchar(255) not null,
-	mobiletel varchar(255) not null,
-	businesstel varchar(255) not null,
-	businessfax varchar(255) not null,
-	jobtitle varchar(255) not null,
-	businessaddress TEXT not null,
-	homeaddress TEXT not null,
-	PRIMARY KEY (id)
-); 
-
+   id int(11) unsigned NOT NULL auto_increment,
+   category int(11) unsigned DEFAULT '0' NOT NULL,
+   owner int(11) unsigned DEFAULT '0' NOT NULL,
+   firstname char(60) NOT NULL,
+   lastname char(60) NOT NULL,
+   hashname char(32) NOT NULL,
+   email text NOT NULL,
+   compagny char(255) NOT NULL,
+   hometel char(255) NOT NULL,
+   mobiletel char(255) NOT NULL,
+   businesstel char(255) NOT NULL,
+   businessfax char(255) NOT NULL,
+   jobtitle char(255) NOT NULL,
+   businessaddress text NOT NULL,
+   homeaddress text NOT NULL,
+   PRIMARY KEY (id),
+   KEY hashname (hashname),
+   KEY id (id)
+);

@@ -16,39 +16,8 @@
 function Start(page)
 {
 	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200");
+	OpenWin = this.open(page, "", "width=650,height=500,status=no,resizable=yes,top=200,left=200");
 }
-function addAddress()
-	{
-	var pad;
-	if (document.composef.contact.value)
-		{
-		if( document.composef.elements['tocheck'].checked )
-			{
-			if( document.composef.to.value )
-				pad = " ";
-			else
-				pad = "";
-			document.composef.to.value=document.composef.to.value+pad+document.composef.contact.value;
-			}
-		if( document.composef.elements['cccheck'].checked)
-			{
-			if( document.composef.cc.value )
-				pad = " ";
-			else
-				pad = "";
-			document.composef.cc.value=document.composef.cc.value+pad+document.composef.contact.value;
-			}
-		if( document.composef.elements['bcccheck'].checked)
-			{
-			if( document.composef.bcc.value )
-				pad = " ";
-			else
-				pad = "";
-			document.composef.bcc.value=document.composef.bcc.value+pad+document.composef.contact.value;
-			}
-		}
-	}
 </script>
 <center>
 <table border="0" width="90%" cellpadding="0" cellspacing="0">
@@ -68,27 +37,16 @@ function addAddress()
 <td><b>{ fromval }</b></td>
 </tr>
 <tr>
-<td align="right"><a class=BabMenuLink href="{ urlto }">{ to }</a></td>
+<td align="right"><a class="BabDialogLink" href="{ urlto }">{ to }</a></td>
 <td><input type="text" name="to" size="80" value="{ toval }"></td>
 </tr>
 <tr>
-<td align="right">{ cc }</td>
+<td align="right"><a class="BabDialogLink" href="{ urlto }">{ cc }</a></td>
 <td><input type="text" name="cc" size="80" value="{ ccval }"></td>
 </tr>
 <tr>
-<td align="right">{ bcc }</td>
+<td align="right"><a class="BabDialogLink" href="{ urlto }">{ bcc }</a></td>
 <td><input type="text" name="bcc" size="80" value="{ bccval }"></td>
-</tr>
-<tr>
-<td align="right">{ contactslist }</td>
-<td><input type="checkbox" name="tocheck" value="1">&nbsp;&nbsp;{ to }&nbsp;<input type="checkbox" name="cccheck" value="1">&nbsp;&nbsp;{ cc }&nbsp;<input type="checkbox" name="bcccheck" value="1">&nbsp;&nbsp;{ bcc }&nbsp;&nbsp;
-<select name="contact"  onchange="addAddress()">
-<option value="">------ { none } ------</option>
-<!--#in getnextcontact -->
-<option value="{ contactemail }">{ contactname }</option>
-<!--#endin getnextcontact -->
-</select>
-</td>
 </tr>
 <tr>
 <td align="right">{ subject }</td>

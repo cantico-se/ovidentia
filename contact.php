@@ -134,21 +134,23 @@ function addContact( $firstname, $lastname, $email, $compagny, $hometel, $mobile
 		$msgerror = babTranslate("ERROR: You must provide a first name");
 		return false;
 		}
-	if( empty($email) /*|| !isEmailValid($email) */)
+	if( empty($email) || !isEmailValid($email) )
 		{
 		$msgerror = babTranslate("ERROR: You must provide a valid email address");
 		return false;
 		}
 
 	$db = new db_mysql();
-	$req = "select * from contacts where firstname='$firstname' and lastname='$lastname' and email='$email' and owner='".$BAB_SESS_USERID."'";	
+	$replace = array( " " => "", "-" => "");
+	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
+	$req = "select * from contacts where hashname='".$hash."' and owner='".$BAB_SESS_USERID."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
 		$msgerror = babTranslate("ERROR: This contact already exists");
 		return false;
 		}
-	$req = "insert into contacts (owner, firstname, lastname, email, compagny, hometel, mobiletel, businesstel, businessfax, jobtitle, businessaddress, homeaddress) VALUES ('". $BAB_SESS_USERID. "','" . $firstname. "','". $lastname. "','" . $email. "','" . $compagny. "','" . $hometel. "','" . $mobiletel. "','" . $businesstel. "','" . $businessfax. "','" . $jobtitle. "','" . $baddress. "','" . $haddress. "')";
+	$req = "insert into contacts (owner, firstname, lastname, hashname, email, compagny, hometel, mobiletel, businesstel, businessfax, jobtitle, businessaddress, homeaddress) VALUES ('". $BAB_SESS_USERID. "','" . $firstname. "','". $lastname. "','". $hash. "','" . $email. "','" . $compagny. "','" . $hometel. "','" . $mobiletel. "','" . $businesstel. "','" . $businessfax. "','" . $jobtitle. "','" . $baddress. "','" . $haddress. "')";
 	$res = $db->db_query($req);	
 	return true;
 }
@@ -162,14 +164,24 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 		$msgerror = babTranslate("ERROR: You must provide a first name");
 		return false;
 		}
-	if( empty($email) /*|| !isEmailValid($email) */)
+	if( empty($email) || !isEmailValid($email) )
 		{
 		$msgerror = babTranslate("ERROR: You must provide a valid email address");
 		return false;
 		}
 
+	$replace = array( " " => "", "-" => "");
+	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
+	$req = "select * from contacts where hashname='".$hash."' and owner='".$BAB_SESS_USERID."' and id!='".$id."'";	
 	$db = new db_mysql();
-	$req = "update contacts set owner='$BAB_SESS_USERID', firstname='$firstname', lastname='$lastname',email='$email', compagny='$compagny', hometel='$hometel', mobiletel='$mobiletel', businesstel='$businesstel', businessfax='$businessfax', jobtitle='$jobtitle', businessaddress='$baddress', homeaddress='$haddress' where id='$id'";
+	$res = $db->db_query($req);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$msgerror = babTranslate("ERROR: This contact already exists");
+		return false;
+		}
+
+	$req = "update contacts set owner='$BAB_SESS_USERID', firstname='$firstname', lastname='$lastname', hashname='$hash',email='$email', compagny='$compagny', hometel='$hometel', mobiletel='$mobiletel', businesstel='$businesstel', businessfax='$businessfax', jobtitle='$jobtitle', businessaddress='$baddress', homeaddress='$haddress' where id='$id'";
 	$res = $db->db_query($req);	
 	return true;
 }

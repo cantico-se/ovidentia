@@ -1,0 +1,117 @@
+<!--#begin addresslist -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listcontact.elements.length; i++)
+		{
+		objCtrl = document.forms.listcontact.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function updateDestination(target)
+{
+var pad = "";
+var address = "";
+var editval = "";
+
+for( i =0; i < document.listcontact.length; i++)
+{
+if( document.listcontact.elements[i].type = "checkbox")
+	{
+	if( document.listcontact.elements[i].checked )
+		{
+		if( address != "")
+			pad = ",";
+		else
+			pad ="";
+		address = address+pad+document.listcontact.elements[i].value;
+		document.listcontact.elements[i].checked = false;
+		}
+	}
+}
+if( self.opener.window.document.composef.elements[target].value)
+	editval = self.opener.window.document.composef.elements[target].value;
+else
+	editval = "";
+if( editval != "" && address != "")
+	{
+	pad = ",";
+	}
+else
+	pad = "";
+self.opener.window.document.composef.elements[target].value = editval+pad+address;
+}
+//-->
+</script>
+</HEAD>
+<BODY class="BabBodyBgnd">
+<br><br>
+<center>
+<form method="post" name="listcontact" action="index.php">
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr>
+<td class="BabListTitleBgnd" ><a href="javascript:onCheckAll('tocheck', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a>&nbsp;</td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ fullname }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
+</tr>
+<!--#in getnextcontact -->
+<tr><td nowrap><input type="checkbox" name="tocheck[]" value="{ checkval }">&nbsp;</td>
+<td nowrap>{ nameval }</td>
+<td nowrap>{ emailval }</td>
+</tr>
+<!--#endin getnextcontact -->
+<!--#in getnextgroupmember -->
+<tr><td nowrap><input type="checkbox" name="tocheck[]" value="{ checkval }">&nbsp;G</td>
+<td nowrap>{ nameval }</td>
+<td nowrap>{ emailval }</td>
+</tr>
+<!--#endin getnextgroupmember -->
+<!--#in getnextgroup -->
+<tr><td nowrap><input type="checkbox" name="tocheck[]" value="{ checkval }">&nbsp;G</td>
+<td nowrap>{ nameval }</td>
+<td nowrap>{ emailval }</td>
+</tr>
+<!--#endin getnextgroup -->
+<td class="BabListTitleBgnd"><a href="javascript:onCheckAll('tocheck', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
+<td class="BabListTitleBgnd" colspan="2">
+<!--#if allselected "== 1" -->
+{ allname }&nbsp;&nbsp;
+<!--#else allselected -->
+<a class="BabMenuLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }&nbsp;&nbsp;
+<!--#else selected -->
+<a class="BabMenuLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
+<!--#endif selected -->
+<!--#endin getnextselect -->
+</td>
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<br><center><a class="BabDialogLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabDialogLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabDialogLink"  href="{ tobccurl }">{ tobccname }</a><br><br><a class="BabDialogLink"  href="{ closeurl }">{ closename }</a>
+</center>
+</form>
+</BODY>
+</HTML>
+<!--#end addresslist -->

@@ -52,7 +52,6 @@ function Start(page)
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ compagny }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ btel }</b></td>
-<td class="BabListTitleBgnd" align="center" nowrap><b>{ htel }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ mtel }</b></td>
 </tr>
 <!--#in getnext -->
@@ -66,13 +65,12 @@ function Start(page)
 <!--#endif accid -->
 <td nowrap>{ arr[compagny] }</td>
 <td nowrap>{ arr[businesstel] }</td>
-<td nowrap>{ arr[hometel] }</td>
 <td nowrap>{ arr[mobiletel] }</td>
 </tr>
 <!--#endin getnext -->
 <tr>
 <td class="BabListTitleBgnd"><a href="javascript:onCheckAll('item', false)"><img src="images/PuceUncheked.gif" alt="{ uncheckall }"></a></td>
-<td class="BabListTitleBgnd" colspan="6">
+<td class="BabListTitleBgnd" colspan="5">
 <!--#if allselected "== 1" -->
 { allname }&nbsp;&nbsp;
 <!--#else allselected -->

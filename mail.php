@@ -3,6 +3,90 @@ include $babInstallPath."utilit/mailincl.php";
 
 define('CRLF', "\r\n");
 
+function getContactId( $name )
+	{
+	$replace = array( " " => "", "-" => "");
+	$db = new db_mysql();
+	$hash = md5(strtolower(strtr($name, $replace)));
+	$req = "select * from contacts where hashname='".$hash."'";	
+	$res = $db->db_query($req);
+	if( $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr[id];
+		}
+	else
+		return 0;
+	}
+
+function addAddress( $val, $to, &$class)
+{
+	if( !empty($val))
+	{
+		$db = new db_mysql();
+		$tmp = explode(",", $val);
+		for($i=0; $i<count($tmp); $i++)
+		{
+			$addr = trim($tmp[$i]);
+			if( eregi("(.*@.*\..*)", $addr, $res))
+			{
+				$class->$to($addr,$addr);
+			}
+			else if( strtolower(substr($addr, -3)) == "(g)")
+			{
+
+				eregi("([^(]*)", $addr, $res);
+				$addr = $res[1];
+				$id = getUserId($addr);
+				if( $id < 1) // it's a group
+				{
+					$idgrp = isMemberOf($addr);
+					if( $idgrp > 0 )
+					{
+					$req = "select p1.firstname, p1.lastname, p1.email from users as p1, users_groups as p2 where p2.id_group='".$idgrp."' and p1.id=p2.id_object";
+					$res = $db->db_query($req);
+					if( $db->db_num_rows($res) > 0)
+						{
+						while( $arr = $db->db_fetch_array($res))
+							{
+							$class->$to($arr[email], composeName($arr[firstname], $arr[lastname]));
+							}
+						}
+					}
+				}
+				else // it's user
+				{
+					$req = "select * from users where id='".$id."'";
+					$res = $db->db_query($req);
+					if( $db->db_num_rows($res) > 0)
+						{
+						$arr = $db->db_fetch_array($res);
+						$class->$to($arr[email], composeName($arr[firstname], $arr[lastname]));
+						}
+				}
+			}
+			else
+			{
+				$id = getContactId($addr);
+				if( $id < 1) // it's a ditribution list
+				{
+				}
+				else // it's contact
+				{
+					$req = "select * from contacts where id='".$id."'";
+					$res = $db->db_query($req);
+					if( $db->db_num_rows($res) > 0)
+						{
+						$arr = $db->db_fetch_array($res);
+						$class->$to($arr[email], composeName($arr[firstname], $arr[lastname]));
+						}
+				}
+			}
+		}
+	}
+}
+
+
 function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
 	{
 	global $body;
@@ -38,7 +122,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $countcl;
 		var $rescl;
 		var $none;
-		var $contactslist;
 		var $urlto;
 
 		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
@@ -77,8 +160,12 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			if( !empty($pfiles[2]))
 				$this->file3 = $pfiles[2];
 			$this->accid = $accid;
-			$this->criteria = $criteria;
-			$this->reverse = $reverse;
+			$this->criteria = SORTARRIVAL;
+			if( !empty($criteria))
+				$this->criteria = $criteria;
+			$this->reverse = 1;
+			if( !empty($reverse))
+				$this->reverse = $reverse;
 			$this->send = babTranslate("Send");
 			$this->from = babTranslate("From");
 			$this->to = babTranslate("To");
@@ -91,7 +178,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$this->html = babTranslate("Html");
             $this->selectsig = "-- ".babTranslate("Select signature"). " --";
 			$this->none = "-- ".babTranslate("Select destinataire"). " --";
-			$this->contactslist = babTranslate("Contacts");
 			$this->urlto = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=address&idx=list')";
 			$this->db = new db_mysql();
 			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
@@ -154,25 +240,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 
             }
 
-        function getnextcontact()
-            {
-			static $k = 0;
-			if( $k < $this->countcl)
-				{
-				$arr = $this->db->db_fetch_array($this->rescl);
-				$this->contactname = $arr[lastname] . " " .$arr[firstname];
-				$this->contactemail = $arr[email];
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-
-            }
-
 		}
 	
 	$temp = new temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid);
@@ -213,13 +280,12 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 				$mime = new babMailSmtp($arr2[outserver], $arr2[outport]);
 			else
 				$mime = new babMail();
-            $tmp = explode(" ", $to);
-            for($i=0; $i<count($tmp); $i++)
-                $mime->mailTo($tmp[$i]);
+			addAddress($to, "mailTo", $mime);
 			$mime->mailFrom($arr[email], $arr[name]);
 			if(get_cfg_var("magic_quotes_gpc"))
 				{
 				$message = stripslashes($message);
+				$subject = stripslashes($subject);
 				}
             if( $sigid != 0)
                 {
@@ -236,16 +302,12 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 			$mime->mailSubject($subject);
 			if(!empty($cc))
 				{
-				$tmp = explode(" ", $cc);
-				for($i=0; $i<count($tmp); $i++)
-					$mime->mailCc($tmp[$i]);
+				addAddress($to, "mailCc", $mime);
 				}
 
 			if(!empty($bcc))
 				{
-				$tmp = explode(" ", $bcc);
-				for($i=0; $i<count($tmp); $i++)
-					$mime->mailBcc($tmp[$i]);
+				addAddress($to, "mailBcc", $mime);
 				}
 
 			for($i=0; $i < count($files); $i++)

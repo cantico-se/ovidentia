@@ -34,7 +34,7 @@ function listContacts($pos)
 			$this->checkall = babTranslate("Check all");
 			$this->allname = babTranslate("All");
 			$this->db = new db_mysql();
-			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and lastname like '".$pos."%' order by lastname desc";
+			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);
 			if( $this->res )
 				$this->count = $this->db->db_num_rows($this->res);
@@ -95,7 +95,7 @@ function listContacts($pos)
 					$this->selected = 1;
 				else 
 					{
-					$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and lastname like '".$this->selectname."%'";
+					$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$this->selectname."%'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;

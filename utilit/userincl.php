@@ -52,15 +52,15 @@ function isMemberOf($groupname, $userid="")
 			$req = "select * from users_groups where id_object='$userid' and id_group='$arr[id]'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
-				return true;
+				return $arr[id];
 			else
-				return false;
+				return 0;
 			}
 		else
-			return false;
+			return 0;
 		}
 	else
-		return false;
+		return 0;
 }
 
 function isUserAdministrator()
@@ -74,7 +74,7 @@ function isUserAdministrator()
 		return isMemberOf($arr[name]);
 		}
 	else
-		return false;
+		return 0;
 }
 
 

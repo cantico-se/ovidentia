@@ -79,6 +79,9 @@ class babMail
 	var $to = array();
 	var $cc = array();
 	var $bcc = array();
+	var $toname = array();
+	var $ccname = array();
+	var $bccname = array();
 	var $subject;
 	var $parts = array();
 	var $add_headers;
@@ -100,19 +103,31 @@ class babMail
 		$this->fromname = $name;
 	}
 
-	function mailTo($email)
+	function mailTo($email, $name="")
 	{
 		$this->to[] = $email;
+		if(!empty($name))
+			$this->toname[] = $name . " " . "<".$email.">";
+		else
+			$this->toname[] = $email;
 	}
 
-	function mailCc($email)
+	function mailCc($email, $name="")
 	{
 		$this->cc[] = $email;
+		if(!empty($name))
+			$this->ccname[] = $name . " " . "<".$email.">";
+		else
+			$this->ccname[] = $email;
 	}
 	
-	function mailBcc($email)
+	function mailBcc($email, $name="")
 	{
 		$this->bcc[] = $email;
+		if(!empty($name))
+			$this->bccname[] = $name . " " . "<".$email.">";
+		else
+			$this->bccname[] = $email;
 	}
 
 	function mailSubject($subject)
@@ -265,11 +280,11 @@ class babMail
 				$from = $this->fromemail;
 			$this->add_headers .= "From: " . $from . CRLF;
 			}
-		$this->add_headers .= "To: " . join(", ", $this->to) . CRLF;
+		$this->add_headers .= "To: " . join(", ", $this->toname) . CRLF;
 		if( count($this->cc) > 0)
-			$this->add_headers .= "Cc: " . join(", ", $this->cc) . CRLF;
+			$this->add_headers .= "Cc: " . join(", ", $this->ccname) . CRLF;
 		if( count($this->bcc) > 0)
-			$this->add_headers .= "Bcc: " . join(", ", $this->bcc) . CRLF;
+			$this->add_headers .= "Bcc: " . join(", ", $this->bccname) . CRLF;
 		if( !empty($this->subject))
 			$this->add_headers .= "Subject: ".$this->subject . CRLF;
 		else
