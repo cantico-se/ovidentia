@@ -20,6 +20,18 @@
 <!--#endif parentscount -->
 <!--#end categorieshierarchy -->
 
+<!--#begin categorieshierarchy_txt -->
+<!--#if parentscount -->
+<!--#in getnextparent -->
+<!--#if burl -->
+{ parentname }&nbsp&gt;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+<!--#endif parentscount -->
+<!--#end categorieshierarchy_txt -->
+
 <!--#begin articlecreatebyfile -->
 <!--#if parentscount -->
 <table border="0" width="100%" cellpadding="1" cellspacing="0">

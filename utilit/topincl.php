@@ -106,6 +106,22 @@ function viewCategoriesHierarchy($topics)
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "categorieshierarchy"));
 	}
 
+function viewCategoriesHierarchy_txt($topics)
+	{
+	global $babBody;
+	class tempvch extends categoriesHierarchy
+		{
+
+		function tempvch($topics)
+			{
+			$this->categoriesHierarchy($topics);
+			}
+		}
+
+	$temp = new tempvch($topics);
+	return bab_printTemplate($temp,"articles.html", "categorieshierarchy_txt");
+	}
+
 
 function bab_getCategoryTitle($id)
 	{
@@ -343,8 +359,7 @@ function notifyArticleApprovers($id, $users)
 				$this->from = bab_translate("Author");
 				$this->category = bab_translate("Topic");
 				$this->title = bab_translate("Title");
-				$rr = $db->db_fetch_array($db->db_query("select category from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
-				$this->categoryname = $rr['category'];
+				$this->categoryname = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
@@ -418,7 +433,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 				$this->article = bab_translate("Article");
 				$this->articlename = bab_getArticleTitle($arr['id_article']);
 				$this->category = bab_translate("Topic");
-				$this->categoryname = bab_getCategoryTitle($arr['id_topic']);
+				$this->categoryname = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
