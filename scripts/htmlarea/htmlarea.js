@@ -1850,6 +1850,10 @@ function initEditorVars(var1, var2, var3, var4)
 		{
 		babPhpSelf = var4.substr(1, var4.length);
 		}
+	else
+		{
+		babPhpSelf = var4;
+		}
 	}
 
 function initEditor(what,ta)
@@ -1859,7 +1863,7 @@ function initEditor(what,ta)
 	{
 		babPhpSelf = 'index.php';
 	}
-
+	
 
 	editor = new HTMLArea(ta,babUrl,babInstallPath,babLanguage,babPhpSelf);
 	if( what == 1 )
