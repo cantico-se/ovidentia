@@ -12,6 +12,35 @@ function getFullPath($gr, $id)
 		return $GLOBALS['babUploadPath']."/U".$id."/";
 }
 
+function formatSize($size, $roundoff = true)
+{
+	if( $size <= 0 )
+		return 0;
+
+	if( $size <= 1024 )
+		return 1;
+	else
+		{
+		if( $roundoff)
+			$size = (int)($size / 1024);
+		if( ($l = strlen($size)) > 3)
+			{
+			if( $l % 3 > 0 )
+				{
+				$txt = substr( $size, 0, $l % 3);
+				}
+			for( $i = 0; $i < ($l / 3); $i++)
+				{
+				$txt .= " ". substr($size, $l%3 + $i*3, 3);
+				}
+			}
+		else
+			$txt = $size;
+		return $txt;
+		}
+		
+}
+
 function getDirSize( $dir )
 	{
 	$h = opendir($dir);
@@ -144,6 +173,7 @@ function showDiskSpace($id, $gr, $path)
 			$this->remainingspacetxt = babTranslate("Remaining");
 			$this->cancel = babTranslate("Close");
 			$this->bytes = babTranslate("bytes");
+			$this->kilooctet = " Ko";
 			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
 			for( $i = 0; $i < count($aclfm['id']); $i++)
 				{
@@ -173,9 +203,11 @@ function showDiskSpace($id, $gr, $path)
 			if( $i < $this->diskp)
 				{
 				$pathx = getFullPath("N", $GLOBALS['BAB_SESS_USERID']);
-				$this->diskspace = getDirSize($pathx);
-				$this->allowedspace = $GLOBALS['babMaxUserSize'];
-				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$size = getDirSize($pathx);
+				$this->diskspace = formatSize($size)." Ko";
+				$this->allowedspace =  formatSize($GLOBALS['babMaxUserSize'])." Ko";
+				//$this->allowedspace =  formatSize($GLOBALS['babMaxUserSize'], false)." " . $this->bytes;
+				$this->remainingspace =  formatSize($GLOBALS['babMaxUserSize'] - $size)." Ko";
 				$this->groupname = babTranslate("Personnal Folder");
 				$i++;
 				return true;
@@ -190,9 +222,11 @@ function showDiskSpace($id, $gr, $path)
 			if( $i < $this->diskg)
 				{
 				$pathx = getFullPath("N", $GLOBALS['BAB_SESS_USERID']);
-				$this->diskspace = getDirSize($GLOBALS['babUploadPath']);
-				$this->allowedspace = $GLOBALS['babMaxTotalSize'];
-				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$size = getDirSize($pathx);
+				$this->diskspace = formatSize($size)." Ko";
+				$this->allowedspace =  formatSize($GLOBALS['babMaxTotalSize'])." Ko";
+				//$this->allowedspace =  formatSize($GLOBALS['babMaxTotalSize'], false)." " . $this->bytes;
+				$this->remainingspace =  formatSize($GLOBALS['babMaxTotalSize'] - $size)." Ko";
 				$this->groupname = babTranslate("Global space");
 				$i++;
 				return true;
@@ -207,9 +241,11 @@ function showDiskSpace($id, $gr, $path)
 			if( $i < $this->countgrp)
 				{
 				$pathx = getFullPath("Y", $this->arrgrp[$i]);
-				$this->diskspace = getDirSize($pathx);
-				$this->allowedspace = $GLOBALS['babMaxGroupSize'];
-				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$size = getDirSize($pathx);
+				$this->diskspace = formatSize($size)." Ko";
+				$this->allowedspace =  formatSize($GLOBALS['babMaxGroupSize'])." Ko";
+				//$this->allowedspace =  formatSize($GLOBALS['babMaxGroupSize'], false)." " . $this->bytes;
+				$this->remainingspace =  formatSize($GLOBALS['babMaxGroupSize'] - $size)." Ko";
 				$this->groupname = getGroupName($this->arrgrp[$i]);
 				$i++;
 				return true;
@@ -225,9 +261,11 @@ function showDiskSpace($id, $gr, $path)
 				{
 				$this->groupname = getGroupName($this->arrmgrp[$i]);
 				$pathx = getFullPath("Y", $this->arrmgrp[$i]);
-				$this->diskspace = getDirSize($pathx);
-				$this->allowedspace = $GLOBALS['babMaxGroupSize'];
-				$this->remainingspace = $this->allowedspace - $this->diskspace;
+				$size = getDirSize($pathx);
+				$this->diskspace = formatSize($size)." Ko";
+				$this->allowedspace =  formatSize($GLOBALS['babMaxGroupSize'])." Ko";
+				//$this->allowedspace =  formatSize($GLOBALS['babMaxGroupSize'], false)." " . $this->bytes;
+				$this->remainingspace =  formatSize($GLOBALS['babMaxGroupSize'] - $size)." Ko";
 				$i++;
 				return true;
 				}
