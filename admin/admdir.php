@@ -670,10 +670,11 @@ function confirmDeleteDirectory($id, $type)
 function dbUpdateDiplay($id, $listfd)
 {
 	global $babDB;
-	$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='0' where id_directory='".$id."'");
+	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+	$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='0' where id_directory='".($idgroup != 0? 0: $id)."'");
 	for($i=0; $i < count($listfd); $i++)
 		{
-		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='".($i + 1)."' where id_directory='".$id."' and id_field='".$listfd[$i]."'");
+		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='".($i + 1)."' where id_directory='".($idgroup != 0? 0: $id)."' and id_field='".$listfd[$i]."'");
 		}
 }
 /* main */
