@@ -1351,12 +1351,8 @@ else
 $new = 0;
 if( $uaapp )
 	{
-		if( isset($babBody->waitingarticles[$arr['id_topic']]))
-		{
-			$new = $babBody->waitingarticles[$topics];
-		}
+	$new = count(bab_getWaitingArticles($topics));
 	}
-
 $babLevelTwo = bab_getCategoryTitle($topics);
 $arr = $babDB->db_fetch_array($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 $babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
