@@ -866,15 +866,31 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 			}
 		}
 
+	$mail = bab_mail();
+	if( $mail == false )
+		return;
+
+	$mail->mailTo($babAdminEmail, bab_translate("Ovidentia Administrator"));
+	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+
+	if( $bnew )
+		$mail->mailSubject(bab_translate("New file"));
+	else
+		$mail->mailSubject(bab_translate("File has been updated"));
+
+	$tempa = new tempb($file, $path, $idgrp, $bnew);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
+	$mail->mailBody($message, "html");
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
+	$mail->mailAltBody($message);
+
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_FMDOWNLOAD_GROUPS_TBL." where  id_object='".$idgrp."'");
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
 		while( $row = $db->db_fetch_array($res))
 			{
-			$mail = bab_mail();
-			if( $mail == false )
-				return;
 
 			switch($row['id_group'])
 				{
@@ -891,27 +907,21 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 
 			if( $res2 && $db->db_num_rows($res2) > 0 )
 				{
-				$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
-
-				while($arr = $db->db_fetch_array($res2))
+				$count = 0;
+				while(($arr = $db->db_fetch_array($res2)))
 					{
 					$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+					$count++;
+					if( $count == 25 )
+						{
+						$mail->send();
+						$mail->clearBcc();
+						$count = 0;
+						}
 					}
 
-				$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
-				if( $bnew )
-					$mail->mailSubject(bab_translate("New file"));
-				else
-					$mail->mailSubject(bab_translate("File has been updated"));
-
-				$tempa = new tempb($file, $path, $idgrp, $bnew);
-				$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
-				$mail->mailBody($message, "html");
-
-				$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
-				$mail->mailAltBody($message);
-
-				$mail->send();
+				if( $count > 0 )
+					$mail->send();
 				}
 			}
 		}
