@@ -670,7 +670,7 @@ function upgrade340to341()
 $ret = "";
 $db = $GLOBALS['babDB'];
 
-$res = $db->db_query("SHOW COLUMNS from ."BAB_GROUPS_TBL." like 'filenotify'");
+$res = $db->db_query("SHOW COLUMNS from ".BAB_GROUPS_TBL." like 'filenotify'");
 if( !$res || $db->db_num_rows($res) == 0 )
 	{
 	$req = "ALTER TABLE ."BAB_GROUPS_TBL." ADD filenotify ENUM('N','Y') NOT NULL AFTER moderate";
