@@ -68,7 +68,7 @@ href="{ previousmonth }">&lt; </a> </td>
         <!--#endif countevent -->
         <!--#in getevent -->
   
-            <div class="BabCalendarBodyFont" style="background-color: #{ bgcolor }; width : 0px" title="{ title }" nowrap>
+            <div class="BabCalendarBodyFont" style="background-color : { bgcolor }; width : 0px" title="{ title }" nowrap>
             { hourten }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="3" height="1" border="0"><a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
             </div>
 		<!--#endin getevent -->
@@ -155,7 +155,7 @@ href="{ previousmonth }">&lt; </a> </td>
         <!--#endif countevent -->
         <!--#in getevent -->
   
-            <div class="BabCalendarBodyFont" style="background-color: #{ bgcolor }; width : 0px" title="{ title }" nowrap>
+            <div class="BabCalendarBodyFont" style="background-color : { bgcolor }; width : 0px" title="{ title }" nowrap>
             { hourten }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="3" height="1" border="0"><a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
             </div>
 		<!--#endin getevent -->
@@ -396,12 +396,27 @@ window.focus();
 <BR><BR>
 <table  width="0" cellpadding="5" cellspacing="0" align="left">
 <tr>
-<td class="BabMonthCalendarEventLegendTitleFont"> { description } 
+<td > 
 <table cellpadding="2" cellspacing="2">        
+<tr>
+<td>
+&nbsp;
+</td>
+<td class="BabDayCalendarTitleFont">
+{ description } 
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td><td>
+&nbsp;
+</td>
+</tr>
 <!--#in getnextcat -->
 <tr> 
 <td bgcolor="#{ arr[bgcolor] }" width="10">&nbsp;</td>
-<td class="BabMonthCalendarEventLegendFont">&nbsp;{ arr[description] }</td>
+<td>&nbsp;{ arr[description] }</td>
 </tr>
 <!--#endin getnextcat -->
 </table>
