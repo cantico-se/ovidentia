@@ -250,6 +250,42 @@ function listOldArticles($topics, $pos)
 	return $temp->count;
 	}
 
+function viewArticle($article)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $content;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $more;
+		var $topics;
+		var $baCss;
+		var $close;
+		var $head;
+
+
+		function temp($article)
+			{
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->close = bab_translate("Close");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->content = bab_replace($this->arr['body']);
+			$this->head = bab_replace($this->arr['head']);
+			}
+		}
+	
+	$temp = new temp($article);
+	echo bab_printTemplate($temp,"articles.html", "articleview");
+	}
+
 function readMore($topics, $article)
 	{
 	global $babBody;
@@ -694,6 +730,10 @@ if( isset($modify))
 $approver = bab_isUserApprover($topics);
 switch($idx)
 	{
+	case "viewa":
+		viewArticle($article);
+		exit;
+
 	case "Submit":
 		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
