@@ -164,7 +164,7 @@ valign="middle">{ name }:</td>
 
 
 <!--#begin vpersonnellist -->
-<form method="post" action="{ babPhpSelf }" name="listform">
+<form name="listform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="vacadm">
 <input type="hidden" name="idx" value="lper">
 <input type="hidden" name="pos" value="{ pos }">
@@ -217,7 +217,12 @@ valign="middle">{ name }:</td>
 </td>
 </tr>
 </table>
+</form>
 <br>
+<form name="filterform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadm">
+<input type="hidden" name="idx" value="lper">
+<input type="hidden" name="pos" value="{ pos }">
   <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
     <tr>
       <td>
