@@ -99,7 +99,7 @@ HTMLArea.Config = function (babLanguage) {
 			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
 			 [ "forecolor", "backcolor", "separator" ],
 			 [ "horizontalrule", "inserttable", "htmlmode","cleanhtml", "separator" ],
-			 [ "popupeditor","bablink", "linebreak" ],
+			 [ "popupeditor","bablink","unlink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
 			 [ "babarticle","babfaq","babcontdir"]
@@ -137,9 +137,11 @@ HTMLArea.Config = function (babLanguage) {
 		"Address": "address",
 		"Formatted": "pre"
 	};
+
 	
 
 	this.babstyle = HTMLArea.babstyle;
+	this.babstyle['Remove format'] = 'removeformat';
 
 
 	//      ID              CMD                      ToolTip               Icon                        Enabled in text mode?
@@ -166,6 +168,7 @@ HTMLArea.Config = function (babLanguage) {
 		popupeditor:    ["popupeditor",          "Enlarge Editor",     "fullscreen_maximize.gif",				true],
 		babimage:		["BabImage",			 "Insert Ovidentia Image","ed_image.gif",						false],
 		bablink:		["bablink",				 "Insert Web Link",    "ed_link.gif",							false],
+		unlink:			["unlink",				 "Remove Web Link",    "ed_unlink.gif",							false],
 		cleanhtml:		["cleanhtml",			 "Clean HTML",		   "ed_bab_clean.gif",						false],
 		copy:			["copy",				 "Copy",			   "ed_copy.gif",							false],
 		cut:			["cut",					 "Cut",				   "ed_cut.gif",							false],
@@ -186,6 +189,19 @@ HTMLArea.Config = function (babLanguage) {
 			btn[1] = HTMLArea.I18N.tooltips[i];
 		}
 	}
+
+	if (typeof HTMLArea.I18N.babstyle != "undefined")
+		{
+		this.babstyle2 = {
+			};
+		for (var i in this.babstyle) {
+			if (typeof HTMLArea.I18N.babstyle[i] != "undefined") {
+				this.babstyle2[HTMLArea.I18N.babstyle[i]] = this.babstyle[i];
+				}
+			else this.babstyle2[i] = this.babstyle[i];
+			}
+		this.babstyle = this.babstyle2;
+		}
 
 	if (typeof HTMLArea.I18N.formatblock != "undefined")
 		this.formatblock = HTMLArea.I18N.formatblock;
@@ -735,27 +751,14 @@ HTMLArea.prototype.updateToolbar = function() {
 				if (HTMLArea.is_ie) {
 				
 				try {with (range) {
-					span = range.parentElement();
+					span = range.parentElement(); // text range
 				}}
 				catch (e) {
 					btn.element.selectedIndex = 0;
 					break;
 				}
-				
-				if (span.tagName.toLowerCase() != "span") {
-					span = span.previousSibling;
-					}
-				} else {
-					span = range.startContainer.previousSibling;
-				}
-				//window.status=span.tagName;
-				try {with (span.attributes) {
-					var attrib = span.attributes.getNamedItem('class');
-					var value = attrib.value.toLowerCase();
-				}}
-				catch (e) {
-					btn.element.selectedIndex = 0;
-					break;
+				while (span && !span.className) { span = span.parentElement; }
+				var value = span ? span.className.toLowerCase() : "";
 				}
 				btn.element.selectedIndex = 0;
 
@@ -1323,36 +1326,31 @@ HTMLArea.prototype.babstyle = function(value)
 		catch (e) {
 			//alert(e);
 		}
-		
-		if (span.tagName.toLowerCase() != "span") {
-			span = span.previousSibling;
-			}
-		try {with (span.attributes) {
-			var attrib = span.attributes.getNamedItem('class');
-			var currentvalue = attrib.value.toLowerCase();
-		}}
-		catch (e) {
-			//alert(e);
-		}
+		while (span && !span.className) { span = span.parentElement; }
+		var currentvalue = span ? span.className.toLowerCase() : "";
+
 		if( currentvalue )
 			{
-			if (value == 'Normal')
+			if (value == 'removeformat' || value == 'normal' )
 				{
+				range.execCommand('RemoveFormat');
 				span.removeNode(false);
 				}
 			else
 				span.className = value;
 			}
-		else
+		else if (value != 'removeformat')
+		{
 			this.surroundHTML('<span class="'+value+'">','</span>');
+		}
+			
 	}
 	else
 		{
 		range.execCommand('RemoveFormat'); 
 		this.surroundHTML('<span class="'+value+'">','</span>');
 		}
-
-
+editor.updateToolbar();
 };
 
 // the execCommand function (intercepts some commands and replaces them with
@@ -1963,7 +1961,7 @@ function initEditor2(what,ta)
 			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
 			 [ "forecolor", "backcolor", "separator" ],
 			 [ "horizontalrule", "inserttable", "htmlmode","cleanhtml", "separator" ],
-			 [ "popupeditor","bablink", "linebreak" ],
+			 [ "popupeditor","bablink","unlink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
 			 [ "babimage","babfile","babarticle","babfaq","babovml","babcontdir"]
