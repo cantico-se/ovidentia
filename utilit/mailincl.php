@@ -175,17 +175,20 @@ function bab_mail()
 	if( empty($arr['mailfunc']))
 		return false;
 
-	$mail = new babMail();
+	$mail = false;
 	switch($arr['mailfunc'])
 	{
 		case "mail":
+			$mail = new babMail();
 			$mail->mail->IsMail();
 			break;
 		case "sendmail":
+			$mail = new babMail();
 			$mail->mail->IsSendmail();
 			$mail->mail->Sendmail = $arr['smtpserver'];
 			break;
 		case "smtp":
+			$mail = new babMail();
 			$mail->mail->IsSMTP();
 			$mail->mail->Host = $arr['smtpserver'];
 			$mail->mail->Port = $arr['smtpport'];

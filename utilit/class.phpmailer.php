@@ -513,7 +513,7 @@ class phpmailer
      */
     function smtp_send($header, $body) {
         // Include SMTP class code, but not twice
-        include_once("class.smtp.php"); // Load code only if asked
+        include_once($GLOBALS['babInstallPath']."utilit/class.smtp.php"); // Load code only if asked
 
         $smtp = new SMTP;
 
