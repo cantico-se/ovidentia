@@ -52,7 +52,7 @@ function notifyUserRegistration($link, $name, $email)
 	if( $mail == false )
 		return;
     $mail->mailTo($email, $name);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 	
 	$message = bab_translate("Thank You For Registering at our site");
@@ -60,7 +60,7 @@ function notifyUserRegistration($link, $name, $email)
 	$message .= ", ". bab_translate("simply follow this").": ";
 
 	$tempa = new tempa($link, $name, $message);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistration");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userregistration"));
 
     $mail->mailBody($message, "html");
 
@@ -114,14 +114,14 @@ function notifyAdminRegistration($name, $useremail, $warning)
 			$res=$db->db_query($sql);
 			$r = $db->db_fetch_array($res);
 			if( $r['disabled'] != 1 )
-				$mail->mailTo($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
+				$mail->mailBcc($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
 			}
 		}
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 
 	$tempb = new tempb($name, $useremail, $warning);
-	$message = bab_printTemplate($tempb,"mailinfo.html", "adminregistration");
+	$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "adminregistration"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempb,"mailinfo.html", "adminregistrationtxt");
@@ -196,6 +196,12 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 	if( empty($firstname) && empty($lastname))
 		{
 		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		return false;
+		}
+
+	if ( empty($nickname) || strpos($nickname, ' ') !== false )
+		{
+		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
 		return false;
 		}
 
@@ -316,11 +322,11 @@ function notifyUserPassword($passw, $email)
 		return;
 	
     $mail->mailTo($email);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject("Ovidentia: ". bab_translate("Password Reset"));
 
 	$tempa = new tempa($passw);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "sendpassword");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "sendpassword"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "sendpasswordtxt");
@@ -357,7 +363,7 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 	if( $mail == false )
 		return;
     $mail->mailTo($email, $name);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 	
 	$message = bab_translate("You have been registered on our site") ."<br>";
@@ -368,7 +374,7 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 		}
 
 	$tempa = new tempa($name, $message);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistration2");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userregistration2"));
 
     $mail->mailBody($message, "html");
 
