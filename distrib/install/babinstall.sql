@@ -900,7 +900,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '4');
 INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '8');
+INSERT INTO bab_ini VALUES ('ver_build', '9');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #

@@ -2409,4 +2409,13 @@ if( !$res)
 
 return $ret;
 }
+
+
+function upgrade408to409()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+return $ret;
+}
 ?>
