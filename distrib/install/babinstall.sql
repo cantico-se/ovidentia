@@ -805,7 +805,7 @@ CREATE TABLE `bab_sites` (
 );
 
 
-INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_mp', 'ovidentia.css');
+INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_fx', 'ovidentia.css');
 
 
 # --------------------------------------------------------
