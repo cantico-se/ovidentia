@@ -330,5 +330,31 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "select id, bwrite from ".BAB_CALACCESS_USERS_TBL;
+$res = $db->db_query($req);
+
+$req = "ALTER TABLE ".BAB_CALACCESS_USERS_TBL." CHANGE bwrite bwrite SMALLINT(2) UNSIGNED NOT NULL ";
+$res1 = $db->db_query($req);
+if( !$res1)
+	{
+	$ret = "Alteration of <b>".BAB_CALACCESS_USERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+while( $arr = $db->db_fetch_array($res))
+	{
+	if( $arr['bwrite'] == "Y")
+		$db->db_query("update ".BAB_CALACCESS_USERS_TBL." set bwrite='1' where id='".$arr['id']."'");
+	else
+		$db->db_query("update ".BAB_CALACCESS_USERS_TBL." set bwrite='0' where id='".$arr['id']."'");
+	}
+
+$req = "ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD id_creator INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CAL_EVENTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 }
 ?>

@@ -67,7 +67,7 @@ function getEventsResult($calid, $day, $month, $year)
 	$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 	$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
 	$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax') order by start_date, start_time asc";
-	return $this->resevent = $db->db_query($req);
+	return $db->db_query($req);
 }
 
 function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
@@ -145,7 +145,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
 							$row = $this->db->db_fetch_array($res);
-							if($row['bwrite'] == "Y")
+							if($row['bwrite'] == "1" || $row['bwrite'] == "2")
 								$this->bowner = 1;
 							}
 						}
@@ -472,7 +472,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
 							$row = $this->db->db_fetch_array($res);
-							if($row['bwrite'] == "Y")
+							if($row['bwrite'] == "1" || $row['bwrite'] == "2")
 								$this->bowner = 1;
 							}
 						}
@@ -741,7 +741,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 						if( $res && $this->db->db_num_rows($res) > 0)
 							{
 							$row = $this->db->db_fetch_array($res);
-							if($row['bwrite'] == "Y")
+							if($row['bwrite'] == "1" || $row['bwrite'] == "2")
 								$this->bowner = 1;
 							}
 						}
@@ -1119,7 +1119,6 @@ function categoriesList($calid)
 		}
 	}
 
-
 /* main */
 if(!isset($idx))
 	{
@@ -1130,11 +1129,6 @@ if( isset($viewcal) && $viewcal == "view")
 {
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$idx."&calid=".$calendar."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
 }
-
-
-$caltype = bab_getCalendarType($calid);
-$owner = bab_getCalendarOwner($calid);
-$bmanager = bab_isUserGroupManager();
 
 if( empty($month))
 	$month = Date("n");
@@ -1149,22 +1143,36 @@ switch($idx)
 	{
 
 	case "viewd":
-		$babBody->title = "";
-		calendarDay($calid, $day, $month, $year, $start, $caltype, $owner, $bmanager);
-		categoriesList($calid);
+		if( !bab_isCalendarAccessValid($calid) )
+			$babBody->title = bab_translate("Acces denied");
+		else
+			{
+			$babBody->title = "";
+			calendarDay($calid, $day, $month, $year, $start, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
+			categoriesList($calid);
+			}
 		break;
 	case "viewq":
-		$babBody->title = "";
-		calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager);
-		categoriesList($calid);
+		if( !bab_isCalendarAccessValid($calid) )
+			$babBody->title = bab_translate("Acces denied");
+		else
+			{
+			$babBody->title = "";
+			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
+			categoriesList($calid);
+			}
 		break;
 	default:
 	case "viewm":
-		$babBody->title = "";
-		calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager);
-		categoriesList($calid);
+		if( !bab_isCalendarAccessValid($calid) )
+			$babBody->title = bab_translate("Acces denied");
+		else
+			{
+			$babBody->title = "";
+			calendarMonth($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
+			categoriesList($calid);
+			}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
 ?>

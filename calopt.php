@@ -23,6 +23,10 @@ function accessCalendar($calid)
 		var $delusers;
 		var $fullnameval;
 
+		var $vaccname0;
+		var $vaccname1;
+		var $vaccname2;
+
 		var $db;
 		var $res;
 		var $count;
@@ -35,10 +39,13 @@ function accessCalendar($calid)
 			$this->userstxt = bab_translate("Users");
 			$this->textinfo = bab_translate("Enter user name. ( You can enter multiple users separated by comma )");
 			$this->addusers = bab_translate("Update access");
-			$this->useraccess = bab_translate("User can update my calendar");
+			$this->useraccess = bab_translate("Access");
 			$this->fullname = bab_translate("Fullname");
-			$this->accessname = bab_translate("Update");
+			$this->accessname = bab_translate("Access");
 			$this->delusers = bab_translate("Delete users");
+			$this->vaccname0 = bab_translate("Consultation");
+			$this->vaccname1 = bab_translate("Creation and modification");
+			$this->vaccname2 = bab_translate("Total access");
 			$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -54,10 +61,18 @@ function accessCalendar($calid)
 				$res = $this->db->db_query($req);
 				$this->arr = $this->db->db_fetch_array($res);
 				$this->fullnameval = bab_composeUserName($this->arr['firstname'], $this->arr['lastname']);
-				if( $arr['bwrite'] == "Y")
-					$this->yesno = bab_translate("Yes");
-				else
-					$this->yesno = bab_translate("No");
+				switch( $arr['bwrite'])
+					{
+					case 1:
+						$this->yesno = $this->vaccname1;
+						break;
+					case 2:
+						$this->yesno = $this->vaccname2;
+						break;
+					default:
+						$this->yesno = $this->vaccname0;
+						break;
+					}
 				$k++;
 				return true;
 				}
@@ -79,11 +94,6 @@ function addAccessUsers( $users, $calid, $baccess, $del )
 	$db = $GLOBALS['babDB'];
 	$arr = explode(",", $users);
 
-	if( $baccess == "y")
-		$acc = "Y";
-	else
-		$acc = "N";
-
 	for( $i = 0; $i < count($arr); $i++)
 		{
 		$iduser = bab_getUserId($arr[$i]);
@@ -97,12 +107,12 @@ function addAccessUsers( $users, $calid, $baccess, $del )
 				if( $del )
 					$req = "delete from ".BAB_CALACCESS_USERS_TBL." where id='".$rr['id']."'";
 				else
-					$req = "update ".BAB_CALACCESS_USERS_TBL." set id_user='".$iduser."', bwrite='".$acc."' where id='".$rr['id']."'";
+					$req = "update ".BAB_CALACCESS_USERS_TBL." set id_user='".$iduser."', bwrite='".$baccess."' where id='".$rr['id']."'";
 				$res = $db->db_query($req);
 				}
 			else if($del == false)
 				{
-				$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$calid."', '".$iduser."', '".$acc."')";
+				$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$calid."', '".$iduser."', '".$baccess."')";
 				$res = $db->db_query($req);
 				}
 			}

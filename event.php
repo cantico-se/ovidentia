@@ -829,7 +829,34 @@ function eventUnload()
 	echo bab_printTemplate($temp,"event.html", "eventunload");
 	}
 
-function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, 	$description, $category)
+function insertEvent($calid, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid)
+	{
+	$db = $GLOBALS['babDB'];
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_CALENDAR_TBL." where id='".$calid."'"));
+	switch ($arr['type'])
+		{
+		case 1:
+			if( $arr['owner'] == $GLOBALS['BAB_SESS_USERID'])
+				$creator = 0;
+			else
+				$creator = $GLOBALS['BAB_SESS_USERID'];
+			break;
+		case 2:
+			$creator = 0;
+			break;
+		case 3:
+			$creator = $GLOBALS['BAB_SESS_USERID'];
+			break;
+		default:
+			$creator = 0;
+			break;
+		}
+	$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat, id_creator) values ";
+	$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."', '".$creator."')";
+	$db->db_query($req);
+	}
+
+function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category)
 {
 	global $babBody;
 	
@@ -845,9 +872,6 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		$title = addslashes($title);
 		}
 		
-	$db = $GLOBALS['babDB'];
-
-
 	if( empty($category))
 		$catid = 0;
 	else
@@ -916,10 +940,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 							$enddate = sprintf("%04d-%02d-%02d", Date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 							$endtime = sprintf("%s:00", $timeend);
 							}
-
-						$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
-						$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
-						$db->db_query($req);
+						insertEvent($calid, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid);
 						$nextday += 7;
 						}
 					}
@@ -942,9 +963,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 				$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 				$endtime = sprintf("%s:00", $timeend);
 				}
-			$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
-			$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
-			$db->db_query($req);
+			insertEvent($calid, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid);
 			}
 
 	}
@@ -973,9 +992,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 		$endtime = sprintf("%s:00", $timeend);
 		}
-	$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat) values ";
-	$req .= "('".$calid."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."')";
-	$db->db_query($req);
+	insertEvent($calid, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid);
 	}
 	return true;	
 }
@@ -1035,10 +1052,52 @@ function updateDescription($calid, $evtid, $content)
 	$db->db_query("update ".BAB_CAL_EVENTS_TBL." set description='".$content."' where id='".$evtid."'");
 }
 
+function isUpdateEvent($calid, $evtid)
+{
+$bmodif = 0;
+$caltype = bab_getCalendarType($calid);
+$owner = bab_getCalendarOwner($calid);
+switch($caltype)
+	{
+	case 1:
+		if( $owner == $GLOBALS['BAB_SESS_USERID'])
+			$bmodif = 1;
+		else
+			{
+			$db = $GLOBALS['babDB'];
+			$res = $db->db_query("select bwrite from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				$arr = $db->db_fetch_array($res);
+				if( $arr['bwrite'] == 2 )
+					$bmodif = 1;
+				else
+					{
+					$arr = $db->db_fetch_array($db->db_query("select id_creator from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
+					if( $arr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] )
+						$bmodif = 1;
+					}
+				}
+			}
+		break;
+	case 2:
+		if( bab_isUserGroupManager($owner))
+			$bmodif = 1;
+		else
+			$bmodif = 0;
+		break;
+	case 3:
+		$bmodif = 1;
+		break;
+	default:
+		$bmodif = 0;
+		break;	
+	}
+return $bmodif;
+}
 /* main */
 if( !isset($idx))
 	$idx = "newevent";
-
 
 if( isset($action) && $action == "Yes")
 	{
@@ -1082,6 +1141,12 @@ if( isset($addevent) && $addevent == "add")
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
 	}
 
+if( !bab_isCalendarAccessValid($calid) )
+	{
+	$babBody->title = bab_translate("Access denied");
+	$idx = "";
+	}
+
 switch($idx)
 	{
 	case "unload":
@@ -1107,30 +1172,7 @@ switch($idx)
 		break;
 
 	case "modify":
-		$caltype = bab_getCalendarType($calid);
-		$owner = bab_getCalendarOwner($calid);
-		$bmanager = bab_isUserGroupManager();
-		switch($caltype)
-			{
-			case 1:
-				if( $owner == $BAB_SESS_USERID)
-					$bmodif = 1;
-				else
-					$bmodif = 0;
-				break;
-			case 2:
-				if( bab_isUserGroupManager($owner))
-					$bmodif = 1;
-				else
-					$bmodif = 0;
-				break;
-			case 3:
-				$bmodif = 1;
-				break;
-			default:
-				$bmodif = 0;
-				break;	
-			}
+		$bmodif = isUpdateEvent($calid, $evtid);
 		if( $bmodif )
 			modifyEvent($calid, $evtid, $day, $month, $year, $view, $bmodif);
 		else
@@ -1145,7 +1187,6 @@ switch($idx)
 		break;
 
 	case "newevent":
-	default:
 		newEvent($calid, $day, $month, $year, $view, $title, $description);
 		if( bab_isUserGroupManager())
 			{
