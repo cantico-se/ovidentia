@@ -133,7 +133,6 @@ function addComment($topics, $article, $subject, $message, $com="")
 		}
 
 	$temp = new temp($topics, $article, $subject, $message, $com);
-	$tpl = new babTemplate();
 	$babBody->babecho(	bab_printTemplate($temp,"comments.html", "commentcreate"));
 	return $temp->nbarch;
 	}
@@ -225,6 +224,12 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 		{
 		$babBody->msgerror = bab_translate("comments - ERROR: You must provide a comment");
 		return false;
+		}
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$subject = addslashes($subject);
+		$message = addslashes($message);
 		}
 
 	if( empty($com))
