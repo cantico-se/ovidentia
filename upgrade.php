@@ -2080,13 +2080,6 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_PRIVATE_SECTIONS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
-$req = "ALTER TABLE ".BAB_PRIVATE_SECTIONS_TBL." ADD optional ENUM('N','Y') DEFAULT 'N' NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_PRIVATE_SECTIONS_TBL."</b> table failed !<br>";
-	return $ret;
-	}
 
 $req = "ALTER TABLE ".BAB_TOPICS_CATEGORIES_TBL." ADD optional ENUM('N','Y') DEFAULT 'N' NOT NULL";
 $res = $db->db_query($req);
