@@ -131,6 +131,7 @@ sites.html					            changed action="index.php" to action="{ babPhpSelf }"
 
 threads.html					        changed action="index.php" to action="{ babPhpSelf }"
                         threadlist      added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
+                                        Added <!--#if ipost "== 1" --> ... <!--#endif ipost -->
 topcats.html					        changed action="index.php" to action="{ babPhpSelf }"
                         topcatslist     Removed Javascript
 topcatsection.html
