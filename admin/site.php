@@ -82,6 +82,7 @@ function siteModify($id)
 		var $smtpuserval;
 		var $smtppass;
 		var $smtppass2;
+		var $smtppassval;
 
 		function temp($id)
 			{
@@ -117,7 +118,7 @@ function siteModify($id)
 			$this->id = $id;
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_SITES_TBL." where id='$id'";
+			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
@@ -133,6 +134,7 @@ function siteModify($id)
 				$this->imgsizeval = $arr['imgsize'];
 				$this->grpidsel = $arr['idgroup'];
 				$this->smtpuserval = $arr['smtpuser'];
+				$this->smtppassval = $arr['smtppass'];
 				if( $arr['registration'] == "Y")
 					{
 					$this->nregister = "";

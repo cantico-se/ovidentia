@@ -780,6 +780,8 @@ CREATE TABLE bab_sites (
    smtpport char(20) NOT NULL DEFAULT '25',
    imgsize int(11) unsigned NOT NULL default '25',
    idgroup int(11) unsigned NOT NULL default '0',
+   smtpuser varchar(20) NOT NULL default '',
+   smtppassword tinyblob NOT NULL,
    PRIMARY KEY (id),
    KEY name (name)
 );

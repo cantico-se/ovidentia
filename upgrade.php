@@ -1059,12 +1059,6 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (id, name, description, host, basedn, userdn, password) select id, name, description, host, basedn, userdn, password from ad_directories where ldap='Y'";
-$res = $db->db_query($req);
-
-$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (id, name, description) select id, name, description from ad_directories where ldap='N'";
-$res = $db->db_query($req);
-
 $req = "CREATE TABLE ".BAB_LDAPDIRVIEW_GROUPS_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
 $req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
@@ -1097,22 +1091,6 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "select id, ldap from ad_directories";
-$res = $db->db_query($req);
-
-while( $arr = $db->db_fetch_array($res))
-	{
-	$req = "select * from ad_dirview_groups where id_object='".$arr['id']."'";
-	$res2 = $db->db_query($req);
-	while( $arr2 = $db->db_fetch_array($res2))
-		{
-		if( $arr['ldap'] == 'Y')
-			$db->db_query("insert into ".BAB_LDAPDIRVIEW_GROUPS_TBL." ( id_object, id_group) values ('".$arr2['id_object']."', '".$arr2['id_group']."')");
-		else
-			$db->db_query("insert into ".BAB_DBDIRVIEW_GROUPS_TBL." ( id_object, id_group) values ('".$arr2['id_object']."', '".$arr2['id_group']."')");
-		}
-	}
-
 $req = "CREATE TABLE ".BAB_DBDIRADD_GROUPS_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
 $req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
@@ -1128,9 +1106,6 @@ if( !$res)
 	$ret = "Creation of <b>".BAB_DBDIRADD_GROUPS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
-
-$req = "insert into ".BAB_DBDIRADD_GROUPS_TBL." (id_object, id_group) select id_object, id_group from ad_diradd_groups";
-$res = $db->db_query($req);
 
 $req = "CREATE TABLE ".BAB_DBDIRUPDATE_GROUPS_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
@@ -1148,8 +1123,6 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "insert into ".BAB_DBDIRUPDATE_GROUPS_TBL." (id_object, id_group) select id_object, id_group from ad_dirupdate_groups";
-$res = $db->db_query($req);
 
 $req = "CREATE TABLE ".BAB_DBDIR_FIELDS_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
@@ -1166,9 +1139,6 @@ if( !$res)
 	$ret = "Creation of <b>".BAB_DBDIR_FIELDS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
-
-$req = "insert into ".BAB_DBDIR_FIELDS_TBL." select * from ad_fields";
-$res = $db->db_query($req);
 
 $req = "CREATE TABLE ".BAB_DBDIR_FIELDSEXTRA_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
@@ -1190,36 +1160,6 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." select * from ad_directories_fields";
-$res = $db->db_query($req);
-
-/* id_directory = '0' means entry is owned by Ovidentia directory */
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 1, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 2, '', 'Y', 'Y', 'N', 1)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 3, '', 'Y', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 4, '', 'Y', 'Y', 'N', 2)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 5, '', 'Y', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 6, '', 'Y', 'Y', 'N', 3)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 7, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 8, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 9, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 10, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 11, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 12, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 13, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 14, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 15, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 16, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 17, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 18, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 19, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 20, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 21, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 22, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 23, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 24, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 25, '', 'N', 'N', 'N', 0)");
-$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 26, '', 'N', 'N', 'N', 0)");
 
 $req = "CREATE TABLE ".BAB_DBDIR_ENTRIES_TBL." (";
 $req .= "id int(11) unsigned NOT NULL auto_increment,";
@@ -1266,22 +1206,84 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." select * from ad_dbentries";
-$res = $db->db_query($req);
+
+$res = $db->db_query("SHOW tables like 'ad\_%'");
+if( $res && $db->db_num_rows($res) > 0 )
+	{
+	$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (id, name, description, host, basedn, userdn, password) select id, name, description, host, basedn, userdn, password from ad_directories where ldap='Y'";
+	$res = $db->db_query($req);
+
+	$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (id, name, description) select id, name, description from ad_directories where ldap='N'";
+	$res = $db->db_query($req);
+
+	$req = "select id, ldap from ad_directories";
+	$res = $db->db_query($req);
+
+	while( $arr = $db->db_fetch_array($res))
+		{
+		$req = "select * from ad_dirview_groups where id_object='".$arr['id']."'";
+		$res2 = $db->db_query($req);
+		while( $arr2 = $db->db_fetch_array($res2))
+			{
+			if( $arr['ldap'] == 'Y')
+				$db->db_query("insert into ".BAB_LDAPDIRVIEW_GROUPS_TBL." ( id_object, id_group) values ('".$arr2['id_object']."', '".$arr2['id_group']."')");
+			else
+				$db->db_query("insert into ".BAB_DBDIRVIEW_GROUPS_TBL." ( id_object, id_group) values ('".$arr2['id_object']."', '".$arr2['id_group']."')");
+			}
+		}
+
+
+	$req = "insert into ".BAB_DBDIRADD_GROUPS_TBL." (id_object, id_group) select id_object, id_group from ad_diradd_groups";
+	$res = $db->db_query($req);
+
+
+	$req = "insert into ".BAB_DBDIRUPDATE_GROUPS_TBL." (id_object, id_group) select id_object, id_group from ad_dirupdate_groups";
+	$res = $db->db_query($req);
+
+
+	$req = "insert into ".BAB_DBDIR_FIELDS_TBL." select * from ad_fields";
+	$res = $db->db_query($req);
+
+
+	$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." select * from ad_directories_fields";
+	$res = $db->db_query($req);
+
+
+	$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." select * from ad_dbentries";
+	$res = $db->db_query($req);
+	}
+
+/* id_directory = '0' means entry is owned by Ovidentia directory */
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 1, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 2, '', 'Y', 'Y', 'N', 1)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 3, '', 'Y', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 4, '', 'Y', 'Y', 'N', 2)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 5, '', 'Y', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 6, '', 'Y', 'Y', 'N', 3)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 7, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 8, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 9, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 10, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 11, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 12, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 13, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 14, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 15, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 16, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 17, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 18, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 19, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 20, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 21, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 22, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 23, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 24, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 25, '', 'N', 'N', 'N', 0)");
+$db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 26, '', 'N', 'N', 'N', 0)");
 
 $req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group) values ('Ovidentia', 'Ovidentia directory', '1')";
 $res = $db->db_query($req);
 $iddir = $db->db_insert_id();
-
-/*
-$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
-while( $arr = $db->db_fetch_array($res))
-	{
-	// id_directory = '0' means entry is owned by Ovidentia directory
-	$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes) VALUES ('0', '" . $arr['id']. "', '', 'N', 'N', 'N')";
-	$db->db_query($req);
-	}
-*/
 
 $req = "ALTER TABLE ".BAB_DBDIR_ENTRIES_TBL." ADD id_user INT(11) UNSIGNED NOT NULL";
 $res = $db->db_query($req);
@@ -1299,7 +1301,6 @@ while($arr = $db->db_fetch_array($res))
 	$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (sn, givenname, email, id_directory, id_user) values ('".addslashes($arr['lastname'])."', '".addslashes($arr['firstname'])."', '".addslashes($arr['email'])."', '0', '".$arr['id']."')";
 	$db->db_query($req);
 	}
-return $ret;
 
 
 $req = "ALTER TABLE ".BAB_SITES_TBL." ADD `smtpuser` varchar(20) NOT NULL";
@@ -1317,5 +1318,6 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+return $ret;
 }
 ?>

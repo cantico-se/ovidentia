@@ -1,8 +1,11 @@
 /************************************************************************/
-Novembre 2002: Version 3.4.3
+Decembre 2002: Version 3.4.3
 /************************************************************************/
-- Directories
+- Added smtp authentification
+- Fixed bug when site name is longer than 30 characters
+- Fixed bug: bab_mail function always send plain text mails
 - Upgrade of php mailer to Version 1.62
+- Directories
 - Fixed some minors bugs
 
 /************************************************************************/
