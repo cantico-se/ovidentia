@@ -527,6 +527,10 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 		$title = stripslashes($title);
 		}
 
+	$ar = array();
+	$headtext = imagesReplace($headtext, $article."_art_", $ar);
+	$bodytext = imagesReplace($bodytext, $article."_art_", $ar);
+
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
 	$title = addslashes($title);
