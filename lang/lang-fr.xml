@@ -644,7 +644,10 @@
 <string id="Global space">Espace global</string>
 <string id="The file could not be uploaded">Le fichier ne peut être chargé</string>
 <string id="Prefered skin">Skin préféré</string>
-<string id="Update Skin">Modifier Skin</string>
+<string id="Update Skin">Mettre à jour le Skin</string>
 <string id="Firstname">Prénom</string>
 <string id="Lastname">Nom</string>
+<string id="Contact">Contact</string>
+<string id="Mr">Mr</string>
+<string id="Mrs">Mme</string>
 </fr>
