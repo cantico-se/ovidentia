@@ -254,15 +254,14 @@ function searchKeyword($item , $option = "OR")
 					break;
 					}
 				}
-			$res = $this->db->db_query("select id from ".BAB_GROUPS_TBL." WHERE notes='Y'");
-			while( $row = $this->db->db_fetch_array($res))
+
+			$res = $this->db->db_query("select count(g.id) from ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE g.notes='Y' AND u.id_object=".$GLOBALS['BAB_SESS_USERID']." AND u.id_group=g.id");
+			$row = $this->db->db_fetch_array($res);
 				{
-				if(bab_isMemberOfGroup($row['id']))
-					{
+				if($row[0] > 0)
 					$this->acces['d'] = true;
-					break;
-					}
 				}
+
 			bab_fileManagerAccessLevel();
 			if( $babBody->ustorage || count($babBody->aclfm) > 0 )
 				{
