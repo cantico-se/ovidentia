@@ -1400,7 +1400,11 @@ function loadSections()
 					$arr2 = $babBody->babaddons[$at[$i]];
 					$sectionid = $arr2['id'];
 					$objectid = $arrsectionsbytype[$type][$sectionid];
-					if( $arr2['access'] && is_file($GLOBALS['babAddonsPath'].$arr2['title']."/init.php"))
+					$acces =false;
+					if (is_file($GLOBALS['babAddonsPath'].$arr2['title']."/addonini.php"))
+						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+					else $acces =true;
+					if( $arr2['access']  && (($arr_ini['version'] == $arr2['version']) || $acces) && is_file($GLOBALS['babAddonsPath'].$arr2['title']."/init.php"))
 						{
 							$GLOBALS['babAddonFolder'] = $arr2['title'];
 							$GLOBALS['babAddonTarget'] = "addon/".$sectionid;
