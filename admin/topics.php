@@ -80,7 +80,7 @@ function listCategories($adminid)
 					$this->select = "";
 					
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr[description] = nl2br($this->arr[description]);
+				$this->arr[description] = $this->arr[description];//nl2br($this->arr[description]);
 				$this->urlcategory = $GLOBALS[babUrl]."index.php?tg=topic&idx=Modify&item=".$this->arr[id];
 				$this->namecategory = $this->arr[category];
 				$req = "select * from users where id='".$this->arr[id_approver]."'";

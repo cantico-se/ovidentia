@@ -52,7 +52,7 @@ function listCategories()
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$this->arr = $this->db->db_fetch_array($res);
-					$this->arr[description] = nl2br($this->arr[description]);
+					$this->arr[description] = $this->arr[description];// nl2br($this->arr[description]);
 					$this->urlcategory = $GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=".$this->arr[id];
 					$this->namecategory = $this->arr[category];
 					}
