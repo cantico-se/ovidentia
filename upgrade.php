@@ -1260,7 +1260,7 @@ if( !$res)
 	}
 
 
-$res = $db->db_query("SHOW tables like 'ad_diretories'");
+$res = $db->db_query("SHOW tables like 'ad_directories'");
 if( $res && $db->db_num_rows($res) > 0 )
 	{
 	$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (id, name, description, host, basedn, userdn, password) select id, name, description, host, basedn, userdn, password from ad_directories where ldap='Y'";
