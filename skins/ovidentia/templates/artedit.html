@@ -325,6 +325,10 @@ document.forms[fmname].updstep02.value = cmd;
 <td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle">&nbsp;
 <!--#if bmodify -->
 <input type="radio" name="articleid" value="{ articleid }" { articlechecked }>
+<!--#else bmodify -->
+<!--#if bauthor -->
+<a class="BabSiteAdminListLink" href="{ editdrafturl }">{ editdrafttxt }</a>
+<!--#endif bauthor -->
 <!--#endif bmodify -->
 </td>
 </tr>

@@ -593,11 +593,11 @@ function showChoiceArticleModify($topicid)
 				$arr = $babDB->db_fetch_array($res);
 				if( (count($babBody->topmod) && in_array($topicid, $babBody->topmod)) || ($arr['allow_manupdate'] != '0' && count($babBody->topman) && in_array($topicid, $babBody->topman)) )
 					{
-					$req = "select at.id, at.title, adt.id_author from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' order by at.ordering asc";
+					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' order by at.ordering asc";
 					}
 				elseif( $arr['allow_update'] && count($babBody->topsub) && in_array($topicid, $babBody->topsub))
 					{
-					$req = "select at.id, at.title, adt.id_author from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' order by at.ordering asc";
+					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' order by at.ordering asc";
 					}
 				else
 					{
@@ -652,6 +652,16 @@ function showChoiceArticleModify($topicid)
 					$this->modifybytxt = bab_translate("In modification by");
 					$this->modifauthor = bab_getUserName($arr['id_author']);
 					$this->bmodify = false;
+					if( $arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
+						{
+						$this->editdrafttxt = bab_translate("Edit");
+						$this->editdrafturl = $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id_draft']."&rfurl=".urlencode($this->rfurl);
+						$this->bauthor = true;
+						}
+					else
+						{
+						$this->bauthor = false;
+						}
 					}
 				$i++;
 				return true;
