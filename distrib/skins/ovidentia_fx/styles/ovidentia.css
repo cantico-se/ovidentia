@@ -131,6 +131,10 @@ h2.msgerror {
 	width:700px;
 	}
 
+#ovfx_page .bab_content table {
+	text-align:left;
+	}
+
 #ovfx_menu {
 	background:transparent url('../images/btn_1.gif') repeat-x 0 0;
 	position:absolute;
