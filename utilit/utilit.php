@@ -2039,7 +2039,15 @@ function bab_updateUserSettings()
 	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		$arr['access'] = bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']);
+		$arr['access'] = false;
+		if (bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']))
+			{
+			$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$arr['title']."/addonini.php");
+			if( !empty($arr_ini['version']) && $arr_ini['version'] == $arr['version'])
+				{
+				$arr['access'] = true;
+				}
+			}
 		$babBody->babaddons[$arr['id']] = $arr;
 		}
 
