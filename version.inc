@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-$CurrentVersion = "3.3";
-$CurrentRelease = "1";
+$bab_ver_major = "3";
+$bab_ver_minor = "3";
+$bab_ver_build = "1";
 ?>

@@ -6,16 +6,86 @@
  ***********************************************************************/
 include $babInstallPath."version.inc";
 
+function upgrade()
+{
+$bab_versions = array("310", "320", "330", "331");
+
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$res = $db->db_query("show tables like '".BAB_INI_TBL."'");
+if( !$res || $db->db_num_rows($res) < 1)
+	{
+	$dbver = explode(".", $GLOBALS['babVersion']);
+	$dbver[2] = "0";
+	}
+else
+	{
+	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_major'"));
+	$dbver[] = $rr['fvalue'];
+	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_minor'"));
+	$dbver[] = $rr['fvalue'];
+	$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
+	$dbver[] = $rr['fvalue'];
+	}
+
+$ver_from = $dbver[0].$dbver[1].$dbver[2];
+$ver_to = $GLOBALS['bab_ver_major'].$GLOBALS['bab_ver_minor'].$GLOBALS['bab_ver_build'];
+if( $ver_from == $ver_to )
+	{
+	return bab_translate("You site is already up to date");
+	}
+
+$i_from = array_search($ver_from, $bab_versions);
+$i_to = array_search($ver_to, $bab_versions);
+
+include $GLOBALS['babInstallPath']."upgrade.php";
+for( $i = $i_from; $i < $i_to; $i++)
+	{
+	$func = "upgrade".$bab_versions[$i]."to".$bab_versions[$i+1];
+	if( function_exists($func))
+		{
+		$ret = $func();
+		if( !empty($ret))
+			return $ret;
+		}
+	else
+		{
+		$ret .= "Call to undefined function: ".$func."()<br>";
+		return $ret;
+		}
+	}
+$db->db_query("update ".BAB_INI_TBL." set fvalue='".$GLOBALS['bab_ver_major']."' where foption='ver_major'");
+$db->db_query("update ".BAB_INI_TBL." set fvalue='".$GLOBALS['bab_ver_minor']."' where foption='ver_minor'");
+$db->db_query("update ".BAB_INI_TBL." set fvalue='".$GLOBALS['bab_ver_build']."' where foption='ver_build'");
+putVersion($GLOBALS['bab_ver_major'].".".$GLOBALS['bab_ver_minor']);
+$ret .= bab_translate("You site has been updated")."<br>";
+$ret .= "From ". $dbver[0].".".$dbver[1].".".$dbver[2] ." to ". $GLOBALS['bab_ver_major'].".".$GLOBALS['bab_ver_minor'].".".$GLOBALS['bab_ver_build'];
+return $ret;
+}
+
 function getVersion()
 {
-	$filename = "config.php";
+	$str = "Sources Version ". $GLOBALS['bab_ver_major'].".".$GLOBALS['bab_ver_minor'].".".$GLOBALS['bab_ver_build']."<br>";
+	$db = $GLOBALS['babDB'];
 
-	$file = @fopen($filename, "r");
-	$txt = fread($file, filesize($filename));
-	fclose($file);
-	$reg = "babVersion[[:space:]]*=[[:space:]]*\"([^\"]*)\"";
-	$res = ereg($reg, $txt, $match);
-	return $match[1];
+	$res = $db->db_query("show tables like '".BAB_INI_TBL."'");
+	if( !$res || $db->db_num_rows($res) < 1)
+		{
+		$dbver = explode(".", $GLOBALS['babVersion']);
+		$dbver[2] = "0";
+		}
+	else
+		{
+		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_major'"));
+		$dbver[] = $rr['fvalue'];
+		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_minor'"));
+		$dbver[] = $rr['fvalue'];
+		$rr = $db->db_fetch_array($db->db_query("select fvalue from ".BAB_INI_TBL." where foption='ver_build'"));
+		$dbver[] = $rr['fvalue'];
+		}
+	$str .= "Database Version ". $dbver[0].".".$dbver[1].".".$dbver[2] ."<br>";
+	return $str;
 }
 
 function putVersion($version)
@@ -85,17 +155,7 @@ $str = "";
 switch($idx)
 	{
 	case "upgrade";
-		$oldversion = getVersion();
-		if( $oldversion == $CurrentVersion)
-		{
-			$str = "Version ". $CurrentVersion . "<br>";
-			$str .= bab_translate("You site is already up to date");
-		}
-		$oldversion = strtr($oldversion, ".", "-");
-		include $babInstallPath."upgrade".$oldversion."to".strtr($CurrentVersion, ".", "-").".php";
 		$str = upgrade();
-		if( empty($str))
-			putVersion($CurrentVersion);
 		break;
 
 	case "lang":
@@ -150,9 +210,7 @@ switch($idx)
 
 	case "version":
 	default:
-		$oldversion = getVersion();
-		$str = "Source Version ". $CurrentVersion ."<br>";
-		$str .= "Database Version ". $oldversion ."<br>";
+		$str = getVersion();
 		break;
 	}
 ?>
