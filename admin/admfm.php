@@ -551,7 +551,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
-		$babBody->addItemMenu("rights", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=rights&fid=".$fid);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admfm&idx=rights&fid=".$fid);
 		break;
 
 	case "delf":
