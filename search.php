@@ -284,8 +284,20 @@ function searchKeyword($item , $option = "OR")
 				$i++;
 				}
 
-			$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
-			$this->countcal = count($this->rescal);
+			if ($item == 'h')
+				{
+				$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
+				
+				foreach ($this->rescal as $k => $arr)
+					{
+					$this->rescal[$arr['name']] = $arr;
+					unset($this->rescal[$k]);
+					}
+				ksort($this->rescal);
+				$this->rescal = array_values($this->rescal);
+				
+				$this->countcal = count($this->rescal);
+				}
 
 			$this->acces['a'] = true;
 			$this->acces['b'] = false;
