@@ -434,7 +434,7 @@ function listWaitingVacations()
 				{
 				$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".implode(',', $arrschi).") order by date desc");
 				$this->wvacationscount = $this->db->db_num_rows($this->res);
-				$this->waitingvacationstxt = bab_translate("Waiting vacations");
+				$this->waitingvacationstxt = bab_translate("Request vacations waiting to be validate");
 				$this->validationtxt = bab_translate("Validation");
 				$this->nametxt = bab_translate("Fullname");
 				$this->datebtxt = bab_translate("Begin date");
