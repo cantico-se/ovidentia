@@ -633,7 +633,7 @@ switch($idx)
 		if( !isset($catdesc)) {	$catdesc = ""; }
 		if( !isset($bgcolor)) {	$bgcolor = ""; }
 		calendarsAddCategory($catname, $catdesc, $bgcolor);
-		$babBody->title = bab_translate("Add calendar category");
+		$babBody->title = bab_translate("Add event category");
 		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");

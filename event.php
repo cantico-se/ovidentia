@@ -82,7 +82,7 @@ class bab_event
 		$this->t_weekly = bab_translate("Weekly");
 		$this->t_monthly = bab_translate("Monthly");
 		$this->t_yearly = bab_translate("Yearly");
-		$this->t_all_the = bab_translate("Tout les");
+		$this->t_all_the = bab_translate("Every");
 		$this->t_years = bab_translate("years");
 		$this->t_months = bab_translate("months");
 		$this->t_weeks = bab_translate("weeks");
