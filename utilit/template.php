@@ -172,6 +172,7 @@ function processIf(&$class, $str)
 	$reg = "/(.*)".$this->startPatternI."else\s+" . preg_quote($var) . "\s+".$this->endPatternI."(.*)/s";
 	$res = preg_match($reg, $m2[1], $m3);
 
+	$rep = "";
 	if($res)
 		{
 		if($bool)
@@ -182,7 +183,6 @@ function processIf(&$class, $str)
 	else if ( $bool )
 		$rep = $m2[1];
 
-	$rep = "";
 	if( strlen($rep) > 1 && $rep[strlen($rep)-1] == chr(10))
 		$rep = substr($rep, 0, strlen($rep)-1);
 
