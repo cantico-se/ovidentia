@@ -301,7 +301,7 @@ function userLogin($nickname,$password)
 				}
 			if( !isset($updattributes['givenname']))
 				{
-				$attributes[] = $updattributes['givenname'];
+				$attributes[] = "givenname";
 				}
 
 			$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))", $attributes);
@@ -447,6 +447,7 @@ function userLogin($nickname,$password)
 				$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
 				return false;
 				}
+			$logok = true;
 			}
 		else
 			{
@@ -455,6 +456,11 @@ function userLogin($nickname,$password)
 			}
 		}
 	
+	if( !$logok )
+		{
+		return false;
+		}
+
 	$babBody->msgerror = "";
 	if ($arruser['is_confirmed'] == '1')
 		{
