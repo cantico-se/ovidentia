@@ -39,7 +39,7 @@ function changeAdmGroup()
 		function temp()
 			{
 			global $babBody, $babDB;
-			$this->groupname = bab_translate("Group");
+			$this->groupname = bab_translate("Administration");
 			$this->modify = bab_translate("Modify");
 			$this->selected = "";
 			$this->groups = $babBody->dgAdmGroups;

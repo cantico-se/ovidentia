@@ -1179,8 +1179,9 @@
 <string id="WARNING: This operation will delete delegation group and all references">ATTENTION: Cette opération supprime le groupe de délégation et ses références</string>
 <string id="This delegation group already exists">Ce groupe de délégation existe déja</string>
 <string id="Group of delegation with the same name already exists!">Un groupe de délégation avec le même nom existe déja</string>
-<string id="Managing administrator">Administrateur délégué</string>
+<string id="Managing administrators">Administrateurs délégués</string>
 <string id="It is necessary to remove all associations with the users groups">Il est nécessaire d\'enlever toutes les associations avec les groupes utilisteurs</string>
 <string id="Administrators of delegation group">Les administrateurs du groupe de délégation</string>
 <string id="Member group">Groupe membre</string>
+<string id="Change administration">Changer d'administration</string>
 </fr>

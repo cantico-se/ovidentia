@@ -507,7 +507,7 @@ function babAdminSection($close)
 		{
 		if( $babBody->isSuperAdmin || $dgcnt > 1 )
 			{
-			$this->array_urls[bab_translate("Change group")] = $GLOBALS['babUrlScript']."?tg=delegusr";
+			$this->array_urls[bab_translate("Change administration")] = $GLOBALS['babUrlScript']."?tg=delegusr";
 			}
 		}
 
