@@ -22,12 +22,14 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-function get_js_style_list()
+function editor_js($mode)
 	{
 	class temp
 		{
-		function temp()
+		function temp($mode)
 			{
+			$this->mode = $mode;
+
 			$this->t_css = bab_translate("CSS styles");
 			$this->t_bab_image = bab_translate("Insert image");
 			$this->t_bab_file = bab_translate("Insert file link");
@@ -91,9 +93,8 @@ function get_js_style_list()
 
 
 	header("Content-type: application/x-javascript");
-	//header("Content-type: text/plain");
 	
-	$temp = & new temp();
+	$temp = & new temp($mode);
 	die(bab_printTemplate($temp, 'editor.js'));
 
 	}
@@ -139,7 +140,7 @@ function get_css_style_list()
 switch($idx)
 	{
 	case "js":
-		get_js_style_list();
+		editor_js($_GET['mode']);
 		break;
 	case "css":
 		get_css_style_list();
