@@ -22,3 +22,49 @@ function Start(page, title, param)
 var r;
 r = this.open(page, title, param);
 }
+
+function bab_selectFirstInputField(filterclass)
+	{
+	if (!document.getElementsByTagName)
+		{
+		return;
+		}
+	function in_array(val,arr)
+		{
+		for (var i in arr )
+			{
+			if ( arr[i] == val)
+				return true;
+			}
+		return false;
+		}
+
+	if (typeof filterclass != 'undefined')
+		var filter = filterclass.split(',');
+	else
+		var filter = false;
+
+	var el = document.getElementsByTagName('input');
+	for (var i =0 ; i < el.length ; i++)
+		{
+		
+		if (((el[i].type == 'text' || el[i].type == 'password') && el[i].value == '') || el[i].type == 'submit' )
+			{
+			if (filter && typeof el[i].className != 'undefined' && el[i].className != '')
+				{
+				if (!in_array(el[i].className,filter))
+					{
+					el[i].focus();
+					el[i].select();
+					return;
+					}
+				}
+			else
+				{
+				el[i].focus();
+				el[i].select();
+				return;
+				}
+			}
+		}
+	}
