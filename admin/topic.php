@@ -407,6 +407,7 @@ if( isset($update) && $adminid >0)
 if( isset($aclview) && $adminid >0)
 	{
 	aclUpdate($table, $item, $groups, $what);
+	Header("Location: index.php?tg=topics&idx=list&cat=".$cat);
 	}
 
 if( isset($upart) && $upart == "articles")
@@ -427,7 +428,7 @@ if( isset($action) && $action == "Yes")
 	if( $idx == "Delete" && $adminid > 0 )
 		{
 		confirmDeleteCategory($category);
-		Header("Location: index.php?tg=topics&idx=list&userid=".$userid);
+		Header("Location: index.php?tg=topics&idx=list&cat=".$cat."userid=".$userid);
 		}
 	else if( $idx == "Deletea")
 		{
