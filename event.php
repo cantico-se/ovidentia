@@ -1173,18 +1173,30 @@ function eventAvariabilityCheck(&$avariability_message)
 	if( count($workdays) > 0)
 		{
 		for($i = 0; $i < $nbdays; $i++)
-
 			{
 			$begin_day = $begin + $i*(24*3600);
+			$end_day = $end + $i*(24*3600);
+			$day = mktime( 0,0,0,date('n',$begin_day), date('j',$begin_day), date('Y',$begin_day) );
+
 			if (!in_array(date('w',$begin_day),$workdays))
 				{
 				$GLOBALS['avariability'][] = bab_longDate($begin_day,false);
 				$message1 = bab_translate("The event is on a non-working day");
 				}
+
+			if ($end_day <= ($day + $starttime_sec) || $begin_day >= ($day + $endtime_sec) )
+				{
+				$GLOBALS['avariability'][] = bab_longDate($begin_day);
+				$message3 = bab_translate("The event isn't on displayed hours for all calendars");
+				}
 			}
 		}
-	$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin),date('H',$begin),date('H',$begin),date('i',$begin), date('s',$begin));
-	$edate = sprintf("%04s-%02s-%02s %02s:%02s:%02s",  date('Y',$end), date('m',$end), date('d',$end),date('H',$end),date('H',$end),date('i',$end), date('s',$end));
+
+	$begin++;
+	$end--;
+
+	$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin), date('H',$begin), date('i',$begin), date('s',$begin));
+	$edate = sprintf("%04s-%02s-%02s %02s:%02s:%02s",  date('Y',$end), date('m',$end), date('d',$end),date('H',$end),date('i',$end), date('s',$end));
 
 	$mcals = & new bab_mcalendars($sdate, $edate, $calid);
 	while ($cal = current($mcals->objcals)) 
@@ -1204,6 +1216,7 @@ function eventAvariabilityCheck(&$avariability_message)
 		{
 		$avariability_message = isset($message1) ? $message1 : '';
 		$avariability_message .= isset($message2) ? '<br />'.$message2 : '';
+		$avariability_message .= isset($message3) ? '<br />'.$message3 : '';
 		return false;
 		}
 	else

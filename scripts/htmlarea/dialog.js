@@ -6,7 +6,7 @@ function Dialog(url, action, init,param) {
 		init = window;	// pass this window object by default
 	}
 	if (document.all) {	// here we hope that Mozilla will never support document.all
-		var value = showModalDialog(url, init,"resizable: no; help: no; status: no; scroll: no");
+		var value = showModalDialog(url, init,"resizable: yes; help: no; status: no; scroll: no");
 		if (action) {
 			action(value);
 		}
