@@ -1173,4 +1173,14 @@
 <string id="Create an e-mail account">Crée un compte e-mail</string>
 <string id="popup">popup</string>
 <string id="The new version need to be installed">La nouvelle version de l'add-on n'est pas installée</string>
+<string id="Groups of delegation">Groupes de délégation</string>
+<string id="Modify delegation group">Modifier un groupe de délégation</string>
+<string id="Are you sure you want to delete this delegation group">Etes-vous certain de vouloir détruire ce groupe de délégation</string>
+<string id="WARNING: This operation will delete delegation group and all references">ATTENTION: Cette opération supprime le groupe de délégation et ses références</string>
+<string id="This delegation group already exists">Ce groupe de délégation existe déja</string>
+<string id="Group of delegation with the same name already exists!">Un groupe de délégation avec le même nom existe déja</string>
+<string id="Managing administrator">Administrateur délégué</string>
+<string id="It is necessary to remove all associations with the users groups">Il est nécessaire d\'enlever toutes les associations avec les groupes utilisteurs</string>
+<string id="Administrators of delegation group">Les administrateurs du groupe de délégation</string>
+<string id="Member group">Groupe membre</string>
 </fr>
