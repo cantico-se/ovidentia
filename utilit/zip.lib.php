@@ -144,7 +144,7 @@ class zip
    $pos_entry = $cdir['offset'];
 
    if(!is_array($index)){ $index = array($index);  }
-   for($i=0; $index[$i];$i++){
+   for($i=0; isset($index[$i]);$i++){
      if(intval($index[$i])!=$index[$i]||$index[$i]>$cdir['entries'])
       return(-1);
    }
@@ -269,7 +269,7 @@ class zip
      if(!is_dir($to.$tmp.$pth[$i])) @mkdir($to.$pth[$i],0777);
      $tmp.=$pth[$i]."/";
    }
-  if (!($header['external']==0x41FF0010)&&!($header['external']==16))
+  if (isset($header['external']) && !($header['external']==0x41FF0010)&&!($header['external']==16))
   {
    if ($header['compression']==0)
    {

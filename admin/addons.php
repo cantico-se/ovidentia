@@ -370,7 +370,7 @@ function upload()
 
 function import()
 	{
-	if( !empty($_FILES['uploadf']['name']) && $_FILES['uploadf']['type'] == "application/zip")
+	if( !empty($_FILES['uploadf']['name']) && ( $_FILES['uploadf']['type'] == "application/zip" || $_FILES['uploadf']['type'] == "application/x-compressed"))
 		{
 		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize'])
 			{
@@ -408,7 +408,7 @@ function import()
 			$tmppath = substr($arr['filename'],0,strrpos($arr['filename'],'/'));
 			if (!empty($tmppath))
 				{
-				if (!is_array($path_file[$tmppath])) $path_file[$tmppath] = array();
+				if (!isset($path_file[$tmppath])) $path_file[$tmppath] = array();
 				foreach ($loc_out as $key => $zippath)
 					{
 					if ($arr['folder'] == 0 && substr_count($arr['filename'],$zippath))
