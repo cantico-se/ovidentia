@@ -87,8 +87,6 @@ $babSiteName = substr($babSiteName, 0, 30);
 include_once "base.php";
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
-if ($babNTauth) include $babInstallPath."utilit/ntident.php";
-if ($babCookieIdent) include $babInstallPath."utilit/cookieident.php";
 
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
@@ -104,6 +102,9 @@ if( $tg != "version" )
 	bab_updateUserSettings();
 	$babLangFilter->translateTexts();
 	}
+
+if ($babNTauth) include $babInstallPath."utilit/ntident.php";
+if ($babCookieIdent) include $babInstallPath."utilit/cookieident.php";
 
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 if(!is_dir($babSkinPath)) {
@@ -771,6 +772,10 @@ switch($tg)
 		break;
 	case "editorovml":
 		include $babInstallPath."editorovml.php";
+		exit;
+		break;
+	case "editorcontdir":
+		include $babInstallPath."editorcontdir.php";
 		exit;
 		break;
 	case "imgget":
