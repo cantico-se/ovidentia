@@ -597,6 +597,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			
 			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			$this->idgroup = $arr['id_group'];
+			$allowuu = $arr['user_update'];
 
 			$this->showph = false;
 			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id='".$idu."'");
@@ -617,7 +618,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					$this->delete = bab_translate("Delete this picture");
 					}
 
-				if( $this->bupd == false && $arr['user_update'] == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
+				if( $this->bupd == false && $allowuu == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
 					$this->bupd = true;
 
 				}
