@@ -36,6 +36,8 @@ function cookieUserLogin($nickname,$password)
 		return false;
 		}
 
+	$nickname = bab_isMagicQuotesGpcOn() ? $nickname : mysql_escape_string($nickname);
+
 	$sql="select * from ".BAB_USERS_TBL." where nickname='".$nickname."' and password='".$password."'";
 	$result=$db->db_query($sql);
 	
@@ -81,6 +83,21 @@ function cookieUserLogin($nickname,$password)
 				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
 				$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
 				}
+
+			$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				$db->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id='".$GLOBALS['BAB_SESS_USERID']."'");
+				}
+
+			$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$GLOBALS['BAB_SESS_USERID']."' where id='".$arr['id']."'");
+				}
+			
 			return true;
 			}
 		else
