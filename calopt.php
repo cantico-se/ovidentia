@@ -540,7 +540,8 @@ function unload()
 		{
 		function temp()
 			{
-			$this->backurl = $_POST['backurl'].implode(',',$_POST['selected_calendars']);
+			$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
+			$this->backurl = $_POST['backurl'].implode(',',$selected);
 			$this->message = bab_translate('Successful recording');
 			}
 		}

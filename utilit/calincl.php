@@ -662,7 +662,7 @@ class calendarchoice
 		$this->db = $GLOBALS['babDB'];
 		$icalendars = &$GLOBALS['babBody']->icalendars;
 		$icalendars->initializeCalendars();
-		$this->selectedCalendars = isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
+		$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
 
 		$this->usrcalendarstxt = bab_translate('Users');
 		$this->grpcalendarstxt = bab_translate('Collectifs');
@@ -729,9 +729,11 @@ function record_calendarchoice()
 {
 global $babBody;
 
-if (isset($_POST['selected_calendars']) && count($_POST['selected_calendars']) > 0 && $GLOBALS['BAB_SESS_LOGGED'])
+$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
+
+if ($GLOBALS['BAB_SESS_LOGGED'])
 	{
-	$babBody->icalendars->user_calendarids = implode(',',$_POST['selected_calendars']);
+	$babBody->icalendars->user_calendarids = implode(',',$selected);
 	
 	$db = &$GLOBALS['babDB'];
 	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
