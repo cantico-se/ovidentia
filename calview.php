@@ -21,6 +21,7 @@ function upComingEvents($idcal)
 			$this->calid = $idcal;
 			$this->db = new db_mysql();
 			$mktime = mktime();
+			$this->newevents = babTranslate("Upcoming Events");
 			$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 			$mktime = $mktime + 518400;
 			$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
@@ -277,6 +278,76 @@ function newThreads()
 	$body->babecho(	babPrintTemplate($temp,"calview.html", "threadslist"));
 }
 
+function newEmails()
+{
+	global $body;
+
+	class temp4
+		{
+
+		var $db;
+		var $count;
+		var $res;
+		var $newmails;
+		var $domain;
+		var $domainurl;
+		var $nbemails;
+
+		function temp4()
+			{
+			global $BAB_SESS_USERID;
+			$this->db = new db_mysql();
+			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->newmails = babTranslate("New mails");
+			}
+
+		function getmail()
+			{
+			static $i=0;
+			if( $i < $this->count )
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$req = "select * from mail_domains where id='".$arr[domain]."'";
+				$res2 = $this->db->db_query($req);
+				$this->domain = "";
+				$this->nbemails = "";
+				$this->domainurl = "";
+				if( $res2 && $this->db->db_num_rows($res2) > 0 )
+					{
+					$arr2 = $this->db->db_fetch_array($res2);
+					$this->domain = $arr2[name];
+					$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
+					$mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+					if($mbox)
+						{
+						$this->domainurl = $GLOBALS[babUrl]."index.php?tg=inbox&&accid=".$arr[id];
+						$nbmsg = imap_num_recent($mbox); 
+						$this->nbemails = "( ". $nbmsg. " )";
+						imap_close($mbox);
+						}
+					else
+						{
+						$this->nbemails = "( ". imap_last_error(). " )";
+						}
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new temp4();
+	$body->babecho(	babPrintTemplate($temp,"calview.html", "mailslist"));
+}
+
 /* main */
 if(!isset($idx))
 	{
@@ -287,21 +358,27 @@ switch($idx)
 	{
 	default:
 	case "view":
-		$body->title = babTranslate("Upcoming Events");
+		$body->title = "";
 		$idcal = getCalendarid($BAB_SESS_USERID, 1);
 		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
 			upComingEvents($idcal);
+			/*
 			$body->addItemMenu("viewm", babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&calid=".$idcal);
 			if( isUserGroupManager())
 				{
 				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
 				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 				}
-			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&calendarid=0");
+			*/
 		}
 		newArticles();
 		newThreads();
+		$bemail = mailAccessLevel();
+		if( $bemail == 1 || $bemail == 2)
+			{
+			newEmails();
+			}
 		break;
 	}
 $body->setCurrentItemMenu($idx);

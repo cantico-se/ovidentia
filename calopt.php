@@ -1,6 +1,112 @@
 <?php
 
-function calendarOptions($view, $day, $month, $year, $start, $calid)
+
+function accessCalendar($calid)
+{
+	global $body;
+	
+	class temp
+		{
+		var $email;
+		var $textinfo;
+		var $calid;
+		var $addusers;
+		var $useraccess;
+		var $fullname;
+		var $accessname;
+		var $yesno;
+		var $delusers;
+
+		var $db;
+		var $res;
+		var $count;
+		var $arr = array();
+
+		function temp($calid)
+			{
+			$this->db = new db_mysql();
+			$this->calid = $calid;
+			$this->email = babTranslate("Email");
+			$this->textinfo = babTranslate("Enter user email. ( You can enter multiple emails separated by space )");
+			$this->addusers = babTranslate("Update access");
+			$this->useraccess = babTranslate("User can update my calendar");
+			$this->fullname = babTranslate("Fullname");
+			$this->accessname = babTranslate("Update");
+			$this->delusers = babTranslate("Delete users");
+			$req = "select * from calaccess_users where id_cal='".$calid."'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			static $k=0;
+			if( $k < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$req = "select * from users where id='".$arr[id_user]."'";
+				$res = $this->db->db_query($req);
+				$this->arr = $this->db->db_fetch_array($res);
+				if( $arr[bwrite] == "Y")
+					$this->yesno = babTranslate("Yes");
+				else
+					$this->yesno = babTranslate("No");
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+		}
+
+	$temp = new temp($view, $day, $month, $year, $start, $calid);
+	$body->babecho(	babPrintTemplate($temp,"calopt.html", "access"));
+}
+
+function addAccessUsers( $emails, $calid, $baccess, $del )
+{
+	$db = new db_mysql();
+	$arr = explode(" ", $emails);
+
+	if( $baccess == "y")
+		$acc = "Y";
+	else
+		$acc = "N";
+
+	for( $i = 0; $i < count($arr); $i++)
+		{
+		$req = "select * from users where email='".trim($arr[$i])."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$rr = $db->db_fetch_array($res);
+			$iduser = $rr[id];
+			$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$iduser."'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$rr = $db->db_fetch_array($res);
+				if( $del )
+					$req = "delete from calaccess_users where id='".$rr[id]."'";
+				else
+					$req = "update calaccess_users set id_user='".$iduser."', bwrite='".$acc."' where id='".$rr[id]."'";
+				$res = $db->db_query($req);
+				}
+			else if($del == false)
+				{
+				$req = "insert into calaccess_users (id_cal, id_user, bwrite) values ('".$calid."', '".$iduser."', '".$acc."')";
+				$res = $db->db_query($req);
+				}
+			}
+		}
+
+}
+
+
+function calendarOptions($calid)
 	{
 	global $body;
 
@@ -17,14 +123,9 @@ function calendarOptions($view, $day, $month, $year, $start, $calid)
 		var $yes;
 		var $no;
 
-		function temp($view, $day, $month, $year, $start, $calid)
+		function temp($calid)
 			{
 			global $BAB_SESS_USERID;
-			$this->view = $view;
-			$this->day = $day;
-			$this->month = $month;
-			$this->year = $year;
-			$this->start = $start;
 			$this->calid = $calid;
 			$this->startday = babTranslate("First day of week");
 			$this->allday = babTranslate("On create new event, check")." ". babTranslate("All day");
@@ -51,7 +152,7 @@ function calendarOptions($view, $day, $month, $year, $start, $calid)
 				else
 					$this->selected = "";
 				$this->dayid = $i;
-				$this->dayname = $babDays[$i];		
+				$this->dayname = babTranslate($babDays[$i]);		
 				$i++;
 				return true;
 				}
@@ -64,7 +165,7 @@ function calendarOptions($view, $day, $month, $year, $start, $calid)
 			}
 		}
 
-	$temp = new temp($view, $day, $month, $year, $start, $calid);
+	$temp = new temp($calid);
 	$body->babecho(	babPrintTemplate($temp, "calopt.html", "caloptions"));
 	}
 
@@ -86,29 +187,62 @@ function updateCalOptions($startday, $allday, $viewcat, $usebgcolor)
 	$res = $db->db_query($req);
 
 	}
+
 /* main */
 if(!isset($idx))
 	{
 	$idx = "options";
 	}
 
+
+if( isset($accessuser) && $accessuser == "add")
+{
+	if( !empty($del))
+		$del = true;
+	else
+		$del = false;
+	addAccessUsers($emails, $idcal, $baccess, $del);
+	//Header("Location: index.php?tg=calendar&idx=".$idx."&calid=".$calendar."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
+}
+
 if( isset($modify) && $modify == "options")
 	{
 	updateCalOptions($startday, $allday, $viewcat, $usebgcolor);
-	Header("Location: index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year."&start=".$start. "&calid=".$calid);
+	//Header("Location: index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year."&start=".$start. "&calid=".$calid);
 	}
 
 switch($idx)
 	{
+	case "access":
+		$body->title = babTranslate("Calendar Options");
+		$idcal = getCalendarid($BAB_SESS_USERID, 1);
+		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		{
+			accessCalendar($idcal);
+			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options");
+			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=options&idx=access&idcal=".$idcal);
+			if( isUserGroupManager())
+				{
+				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+				}
+			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&calendarid=0");
+		}
+		break;
 	default:
 	case "options":
 		$body->title = babTranslate("Calendar Options");
 		$idcal = getCalendarid($BAB_SESS_USERID, 1);
 		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
-			calendarOptions($view, $day, $month, $year, $start, $calid);
-			$body->addItemMenu($view, babTranslate("Calendar"), $GLOBALS[babUrl]."index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year."&start=".$start. "&calid=".$calid);
-			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options&day=".$day."&month=".$month."&year=".$year."&start=".$start."&calid=".$calid."&view=viewd");
+			calendarOptions($calid);
+			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=options");
+			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS[babUrl]."index.php?tg=calopt&idx=access&idcal=".$idcal);
+			if( isUserGroupManager())
+				{
+				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS[babUrl]."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+				}
 			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS[babUrl]."index.php?tg=event&idx=newevent&calendarid=0");
 		}
 		break;
