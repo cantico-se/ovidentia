@@ -4,10 +4,22 @@
 <TITLE>{ title }</TITLE>
 { babMeta }
 { babCss }
+<style>
+@media print {
+.printhide { display:none }
+}
+</style>
 <script type="text/javascript">
 <!--
 window.focus();
 window.print();
+
+function hide_div(id)
+	{
+	var div = document.getElementById(id);
+	if (div.style.display == 'none') div.style.display = '';
+	else div.style.display = 'none';
+	}
 //-->
 </script>
 </HEAD>
@@ -15,10 +27,11 @@ window.print();
 <div>
 <div style="width:100%;font-size:175%;font-weight:bold;text-align:center;padding:1em;">{ title }</div>
 <br />
-<div style="text-align:justify;padding:1em;">{ head }</div>
-<div style="text-align:justify;padding:1em;">{ content }</div>
+<div id="print_head" style="padding:1em;">{ head }</div>
+<div id="print_content" style="padding:1em;">{ content }</div>
 <br />
-<div style="width:100%;border-top:#000000 1px solid;padding:0.5em;">{ url } - { babUrl }</div>
+
+<div style="width:100%;border-top:#000000 1px solid;padding:0.5em;">{ url } - { babUrl }<!--#if content --> - <span class="printhide"><a href="javascript:hide_div('print_head')">{ print_head }</a> - <a href="javascript:hide_div('print_content')">{ print_content }</a></span><!--#endif content --></div>
 </div>
 </BODY>
 </HTML>
