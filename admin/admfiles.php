@@ -31,6 +31,7 @@ function listGroups()
 			$this->public = bab_translate("Public");
 			$this->private = bab_translate("Private");
 			$this->moderate = bab_translate("Moderate");
+			$this->notify = bab_translate("Notify");
 			$this->modify = bab_translate("Update");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -66,6 +67,10 @@ function listGroups()
 					$this->cmoderate = "checked";
 				else
 					$this->cmoderate = "";
+				if( $this->arr['filenotify'] == "Y")
+					$this->cnotify = "checked";
+				else
+					$this->cnotify = "";
 				$this->url = $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$this->arr['id'];
 				if( $this->arr['id'] < 3 )
 					$this->urlname = bab_getGroupName($this->arr['id']);
@@ -84,7 +89,7 @@ function listGroups()
 	$babBody->babecho(	bab_printTemplate($temp, "admfiles.html", "admfileslist"));
 	}
 
-function updateGroups($groups, $ugroups, $moderate )
+function updateGroups($groups, $ugroups, $moderate, $ntfgrps )
 	{
 	$db = $GLOBALS['babDB'];
 	$req = "select id from ".BAB_GROUPS_TBL."";
@@ -105,7 +110,13 @@ function updateGroups($groups, $ugroups, $moderate )
 			$mod = "Y";
 		else
 			$mod = "N";
-		$req = "update ".BAB_GROUPS_TBL." set gstorage='".$gs."', ustorage='".$us."', moderate='".$mod."' where id='".$row['id']."'";
+		
+		if( count($ntfgrps) > 0 && in_array($row['id'], $ntfgrps))
+			$nf = "Y";
+		else
+			$nf = "N";
+
+		$req = "update ".BAB_GROUPS_TBL." set gstorage='".$gs."', ustorage='".$us."', moderate='".$mod."', filenotify='".$nf."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
 	}
@@ -116,7 +127,7 @@ if( !isset($idx))
 	$idx = "list";
 
 if( isset($update) && $update == "update")
-	updateGroups($groups, $ugroups, $moderate );
+	updateGroups($groups, $ugroups, $moderate, $ntfgrps );
 
 switch($idx)
 	{
