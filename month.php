@@ -200,7 +200,7 @@ function printout()
 					return false;
 				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
 					{
-					$this->bgcolor = "bgcolor=\"white\"";
+					$this->bgcolor = "white";
 					$this->dayurl = "\"#\" onclick=\"self.opener.".$this->callback."('".$total."','".$this->currentMonth."','".$this->currentYear."');window.close();\"";
 					$this->day = $total;
 					}
