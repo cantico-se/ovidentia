@@ -592,7 +592,7 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 
 function updateNickname($password, $nickname)
 	{
-	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_HASHID;
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
 		return false;
@@ -628,13 +628,15 @@ function updateNickname($password, $nickname)
 			}
 
 		$hash=md5($nickname.$BAB_HASH_VAR);
-		$req = "update ".BAB_USERS_TBL." set nickname='".$nickname."' where id='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_USERS_TBL." set nickname='".$nickname."', hashname='".$hash."', confirm_hash='".$hash."' where id='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 
 		$BAB_SESS_NICKNAME = $nickname;
+		$BAB_SESS_HASHID = $hash;
 		return true;
 		}
 	}
+
 
 
 
