@@ -181,7 +181,7 @@ function bab_isAccessFileValid($gr, $id)
 function notifyFileApprovers($id, $users, $msg)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
+    include_once $babInstallPath."utilit/mailincl.php";
 
 	class tempa
 		{
@@ -249,7 +249,7 @@ function notifyFileApprovers($id, $users, $msg)
 function fileNotifyMembers($file, $path, $idgrp, $msg)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
+    include_once $babInstallPath."utilit/mailincl.php";
 
 	class tempb
 		{
