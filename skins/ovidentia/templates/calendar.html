@@ -427,3 +427,40 @@ function dateEnd(day, month, year)
 </tr>
 </table>
 <!--#end searchavailability -->
+
+<!--#begin eventlist -->
+<style type="text/css">
+@import url('{ babInstallPath }styles/calendar.css');
+</style>
+<ul id="eventlist">
+<!--#in getnextevent -->
+	<!--#if evt[private] -->
+	<li id="event{ id }">
+		<h3>{ t_private }</h3>
+	</li>
+	<!--#else evt[private] -->
+	<li id="event{ id }" style="color:#{ evt[color] }">
+		<h3>{ evt[title] }</h3>
+		<h4>{ evt[start_date] } <span>-</span> { evt[end_date] }</h4>
+		<!--#if evt[categoryname] -->
+		<h5 title="{ evt[categorydescription] }" style="color:#{ evt[color] }"><span title="{ evt[categorydescription] }">{ evt[categoryname] }</span></h5>
+		<!--#endif evt[categoryname] -->
+		<!--#if evt[creator] -->
+		<h6>{ evt[creator] }</h6>
+		<!--#endif evt[creator] -->
+		<!--#if evt[description] -->
+		<p>{ evt[description] }</p>
+		<!--#endif evt[description] -->
+		<ul>
+		<!--#in getnextcalendar -->
+			<li><strong>{ calendar[type] } : </strong>{ calendar[name] }</li>
+		<!--#endin getnextcalendar -->
+		</ul>
+	</li>
+	<!--#endif evt[private] -->
+<!--#endin getnextevent -->
+</ul>
+<div class="bab_cal_buttons">
+<a class="print" href="javascript:window.print()">{ t_print }</a>
+</div>
+<!--#end eventlist -->

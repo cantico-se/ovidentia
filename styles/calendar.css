@@ -298,11 +298,79 @@ a img {
 /* EVENTLIST */
 
 #eventlist {
-	
+	list-style-type:square;
+	list-style-position:inside;
+	margin:0;
+	padding:0;
 	}
 
 #eventlist li {
-	margin:.2em
-	padding:.2em;
-	border:#000 1px solid;
+	margin:.2em;
+	padding:.6em .2em 0 .2em;
+	border-bottom:#000 1px solid;
+	}
+
+#eventlist h3 {
+	display:inline;
+	font-size:1.3em;
+	margin:0;
+	}
+
+#eventlist h4 {
+	font-size:.95em;
+	margin:0;
+	color:#000;
+	font-weight:normal;
+	text-align:right;
+	}
+
+#eventlist h4 span {
+	font-weight:bold;
+	color:#f00;
+	font-size:1.2em;
+	}
+
+#eventlist h6 {
+	font-size:.9em;
+	margin:0;
+	}
+
+#eventlist h5 {
+	font-size:1.2em;
+	margin:0;
+	font-weight:normal;
+	text-decoration:underline;
+	}
+
+#eventlist h5 span {
+	color:#000;
+	margin:0;
+	}
+
+#eventlist p {
+	margin:.4em 0 .4em 0;
+	}
+
+#eventlist * {
+	color:#000;
+	/*margin-left:2em;*/
+	}
+
+#eventlist ul {
+	list-style-type:none;
+	margin:.5em 0 0 .5em;
+	padding:.1em .5em .1em 2em;
+	font-style:italic;
+	}
+
+#eventlist ul li {
+	margin:0;
+	padding:0;
+	border:0;
+	font-size:.95em;
+	}
+
+#eventlist ul li strong {
+	margin:0;
+	font-style:normal;
 	}

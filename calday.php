@@ -46,6 +46,8 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->dayname = bab_longDate($time1, false);
 		$this->week = bab_translate("week").' '.date('W',$time1);
 
+		$this->eventlisturl = $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."";
+
 		$this->alternate = false;
 		$this->cindex = 0;
 

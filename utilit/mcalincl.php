@@ -41,6 +41,7 @@ class bab_mcalendars
 		for( $i = 0; $i < count($this->idcals); $i++ )
 			{
 			$this->objcals[$this->idcals[$i]] =& new bab_icalendar($startdate, $enddate, $this->idcals[$i]);
+			if (isset($this->objcals[$this->idcals[$i]]->events))
 			for( $k= 0; $k < count($this->objcals[$this->idcals[$i]]->events); $k++ )
 				{
 				if( $this->objcals[$this->idcals[$i]]->events[$k]['bfree'] != 'Y' )
@@ -352,6 +353,7 @@ class bab_icalendar
 	function getNextEvent($startdate, $enddate, &$arr) /* YYYY-MM-DD HH:MM:SS */
 		{
 		static $i =0;
+		if (isset($this->events))
 		while( $i < count($this->events) )
 			{			
 			if( $enddate <= $this->events[$i]['start_date'] || $startdate >= $this->events[$i]['end_date'] )
@@ -364,7 +366,7 @@ class bab_icalendar
 				}
 			}
 
-		if( $i < count($this->events))
+		if( isset($this->events) && $i < count($this->events))
 			{
 			$arr = $this->events[$i];
 			$i++;
@@ -518,6 +520,7 @@ class cal_wmdbaseCls
 		$this->t_view_event = bab_translate("View event");
 		$this->t_modify_event = bab_translate("Modify event");
 		$this->t_search = bab_translate("Search");
+		$this->t_eventlist = bab_translate("Detailed sight");
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."|date=".$date."|calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
@@ -660,7 +663,7 @@ class calendarchoice
 		$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
 
 		$this->usrcalendarstxt = bab_translate("Users");
-		$this->grpcalendarstxt = bab_translate("Collectifs");
+		$this->grpcalendarstxt = bab_translate("Publics");
 		$this->rescalendarstxt = bab_translate("Resources");
 		$this->t_goright = bab_translate("Push right");
 		$this->t_goleft = bab_translate("Push left");

@@ -264,6 +264,95 @@ function categoriesList()
 	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "categorieslist"));
 }
 
+function eventlist($from, $to, $idcals)
+{
+include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/mcalincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+
+	class eventlist
+		{
+		function eventlist($from, $to, $idcals)
+			{
+			list($fyear,$fmonth,$fday) = explode(',', $from);
+			list($tyear,$tmonth,$tday) = explode(',', $to);
+
+			$idcals = explode(',',$idcals);
+
+			$this->from = sprintf("%04s-%02s-%02s 00:00:00", $fyear, $fmonth, $fday);
+			$this->to = sprintf("%04s-%02s-%02s 23:59:59", $tyear, $tmonth, $tday);
+
+			$this->mcals = & new bab_mcalendars($this->from, $this->to, $idcals);
+			$this->mcals->loadCategories();
+			$this->resevent = array();
+
+			$this->t_print = bab_translate('Print');
+			$this->t_private = bab_translate('private');
+
+			foreach ($idcals as $idcal)
+				{
+				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $arr))
+					{
+					if (!isset($this->resevent[$arr['id_event']]))
+						{
+						$this->resevent[$arr['id_event']] = array();
+						$this->resevent[$arr['id_event']]['cals'] = array();
+						}
+
+					$evt = & $this->resevent[$arr['id_event']];
+					switch($this->mcals->getCalendarType($arr['id_cal']))
+						{
+						case 1:
+							$type = bab_translate('User');
+							break;
+						case 2:
+							$type = bab_translate('Public');
+							break;
+						case 3:
+							$type = bab_translate('Resource');
+							break;
+						}
+					$evt['cals'][$arr['id_cal']] = array('name' => $this->mcals->getCalendarName($arr['id_cal']), 'type' => $type);
+					$evt['title'] = $arr['title'];
+					$evt['description'] = $arr['description'];
+					$evt['start_date'] = bab_longDate(bab_mktime($arr['start_date']));
+					$evt['end_date'] = bab_longDate(bab_mktime($arr['end_date']));
+					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['name'] : '';
+					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['description'] : '';
+					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['bgcolor'] : $arr['color'];
+					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_getUserName($arr['id_creator']) : '';
+					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && $arr['private'] == 'Y';
+					$evt['nbowners'] = $arr['nbowners']+1;
+					}
+				}
+
+			}
+
+		function getnextevent()
+			{
+			return list($this->id,$this->evt) = each($this->resevent);
+			}
+
+		function getnextcalendar()
+			{
+			return list($this->id,$this->calendar) = each($this->evt['cals']);
+			}
+
+		function printout()
+			{
+			$GLOBALS['babBodyPopup'] = new babBodyPopup();
+			$GLOBALS['babBodyPopup']->title = bab_translate("Detailed sight");
+			$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($this, "calendar.html", "eventlist"));
+			printBabBodyPopup();
+			die();
+			}
+		}
+
+	$temp = new eventlist($from, $to, $idcals);
+	$temp->printout();
+
+}
+
 
 function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 {
@@ -341,6 +430,9 @@ switch($idx)
 		displayAttendees($evtid, $idcal);
 		printBabBodyPopup();
 		exit;
+		break;
+	case 'eventlist':
+		eventlist($_GET['from'],$_GET['to'],$_GET['calid']);
 		break;
 	default:
 		break;

@@ -60,6 +60,8 @@ class cal_monthCls  extends cal_wmdbaseCls
 		$time2 = $time1 + 41*24*3600;
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 
+		$this->eventlisturl = $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."";
+
 		$this->cindex = 0;
 		$this->evtidx = 0;
 
