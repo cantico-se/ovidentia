@@ -96,8 +96,7 @@
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabTopicsAdminListTitle" nowrap>
-<a class="BabTopicsAdminTitleLink" href="{ urlcategory }">{ namecategory }</a>&nbsp;( { approver } )&nbsp;<a class="BabTopicsAdminTitleLink" href="{ urlgroups }">{ groups }</a>&nbsp;|&nbsp;<a class="BabTopicsAdminTitleLink" href="{ urlcomments }">{ comments }</a>&nbsp;|&nbsp;<a class="BabTopicsAdminTitleLink" href="{ urlsubmit }">{ submit }</a> 
-</td>
+<a class="BabTopicsAdminTitleLink" href="{ urlcategory }">{ namecategory }</a>&nbsp;( { approver } )</td>
 <td class="BabTopicsAdminListTitle" align="right"> 
 <!--#if nbarticles "== 0" -->
 { nbarticles }&nbsp;{ articles } 
@@ -107,11 +106,14 @@ href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>
 <!--#endif nbarticles -->
 </td>
 </tr>
-<tr colspan="2">
-<td>
+<tr>
+<td colspan="2">
 { arr[description] }
 </td>
-<td>&nbsp;
+</tr>
+<tr>
+<td colspan="2" class="BabTopicsAdminListTitle" nowrap>
+&nbsp;<a class="BabTopicsAdminTitleLink" href="{ urlgroups }">{ groups }</a>&nbsp;|&nbsp;<a class="BabTopicsAdminTitleLink" href="{ urlcomments }">{ comments }</a>&nbsp;|&nbsp;<a class="BabTopicsAdminTitleLink" href="{ urlsubmit }">{ submit }</a> 
 </td>
 </tr>
 </table>
