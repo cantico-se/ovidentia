@@ -769,7 +769,7 @@ CREATE TABLE `bab_sites` (
   `maxfilesize` int(11) unsigned NOT NULL default '0',
   `uploadpath` varchar(255) NOT NULL default '',
   `babslogan` varchar(255) NOT NULL default '',
-  `remember_login` enum('Y','N') NOT NULL default 'N',
+  `remember_login` enum('Y','N','L') NOT NULL default 'N',
   `change_password` enum('Y','N') NOT NULL default 'Y',
   `change_nickname` enum('Y','N') NOT NULL default 'Y',
   `name_order` enum('F L','L F') NOT NULL default 'F L',
