@@ -6,12 +6,18 @@
 <tr> 
 <td class="BabSiteAdminTitleFontBackground">&nbsp;{ delegtxt }</td>
 <td class="BabSiteAdminTitleFontBackground">&nbsp;{ delegdesctxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="right">&nbsp;{ delegadmintxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ grpmtxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" width="10%">&nbsp;{ delegadmintxt }</td>
 </tr>
 <!--#in getnext -->
 <tr> 
 <td class="BabSiteAdminFontBackground">&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ urltxt }</a></td>
 <td class="BabSiteAdminFontBackground">&nbsp;{ delegval }</td>
+<td class="BabSiteAdminFontBackground">
+	<!--#in getnextgroup -->
+	 { grpmval } ,&nbsp;
+	<!--#endin getnextgroup -->
+</td>
 <td class="BabSiteAdminFontBackground" align="right">&nbsp;<a href="{ urlmem }"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ memberstxt }" border="0" align="middle"></a></td>
 </tr>
 <!--#endin getnext -->
@@ -63,15 +69,16 @@ op.close();
 <input type="text" name="description" size="45" maxlength="255" value="{ grpdesc }">
 </td>
 </tr>
-<!--#if new -->
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a href="javascript:openpopupgrp('{ grpm_url }')">{ grp_members }:</a></td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="top">{ grp_members }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="grpm_display" size="45" maxlength="255" value="" disabled>
-<input type="hidden" name="grpm" value="">
+	<select multiple name="groups[]" id="groups" size="6">
+	<!--#in getnextgroup -->
+	<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+	<!--#endin getnextgroup -->
+	</select>
 </td>
 </tr>
-<!--#endif new -->
 <!--#in getnext -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><input type="checkbox" name="delegitems[]" value="{ delegitem }" { checked }></td>
@@ -142,3 +149,4 @@ valign="middle"><a href="javascript:submitForm('mem', 'memform')"><img src="{ ba
 </form>
 <br>
 <!--#end delegatmembers -->
+

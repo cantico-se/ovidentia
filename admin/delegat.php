@@ -35,63 +35,6 @@ $babDG = array(	array("groups", bab_translate("Groups")),
 				array("filemanager", bab_translate("File manager"))
 				);
 
-function browseGroups_dg($cb)
-	{
-	global $babBody;
-	class temp
-		{
-		var $fullname;
-		var $urlname;
-		var $url;
-				
-		var $fullnameval;
-
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-
-		var $groupid;
-
-		function temp($cb)
-			{
-			global $babBody;
-			$this->db = $GLOBALS['babDB'];
-			$this->cb = $cb;
-
-			$this->fullname = bab_translate("Group");
-			$this->res = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' and id_dggroup='0'");
-			$this->count = $this->db->db_num_rows($this->res);
-			}
-
-		function getnext()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->groupid = $arr['id'];
-				if( $this->arr['id'] < 3 )
-					{
-					$this->groupname = str_replace("'"," ",bab_getGroupName($arr['id']));
-					}
-				else
-					{
-					$this->groupname = str_replace("'"," ",$arr['name']);
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		}
-
-	$temp = new temp($cb);
-	echo bab_printTemplate($temp, "groups.html", "browsegroups");
-	}
 
 function delgatList($res)
 	{
@@ -116,8 +59,10 @@ function delgatList($res)
 			$this->delegdesctxt = bab_translate("Description");
 			$this->delegadmintxt = bab_translate("Managing administrators");
 			$this->memberstxt = bab_translate("Managing administrators");
+			$this->grpmtxt = bab_translate("Users groups");
 			$this->res = $res;
 			$this->count = $babDB->db_num_rows($this->res);
+			$this->c= 0;
 			}
 
 		function getnext()
@@ -131,13 +76,39 @@ function delgatList($res)
 				$this->urltxt = $arr['name'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$arr['id'];
 				$this->urlmem = $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$arr['id'];
+				$rgroup = $babDB->db_query("select name from ".BAB_GROUPS_TBL." where id_dggroup=".$arr['id']);
+				$this->count_g[$this->c] = 0;
+				while ($arr = $babDB->db_fetch_array($rgroup))
+					{
+					$this->groups_tbl[$this->c][] = $arr['name'];
+					$this->count_g[$this->c]++;
+					}
+				$this->c++;
 				$i++;
 				return true;
 				}
-			else
+			else{
 				return false;
-
+				}
 			}
+
+		function getnextgroup()
+			{
+			global $babDB;
+			static $j = 0;
+			if( $j < $this->count_g[$this->c-1])
+				{
+				$this->grpmval = $this->groups_tbl[$this->c-1][$j];
+				$j++;
+				return true;
+				}
+			else
+				{
+				$j = 0;
+				return false;
+				}
+			}
+
 		}
 
 	$temp = new temp($res);
@@ -206,11 +177,11 @@ function groupDelegatCreate($gname, $description)
 
 		function temp($gname, $description)
 			{
+			$this->db = $GLOBALS['babDB'];
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->add = bab_translate("Add");
-			$this->grp_members = bab_translate("Member group");
-			$this->grpm_url = $GLOBALS['babUrlScript']."?tg=delegat&idx=bg";
+			$this->grp_members = bab_translate("Users groups");
 			$this->new = true;
 			$this->id = "";
 			if( bab_isMagicQuotesGpcOn())
@@ -227,6 +198,10 @@ function groupDelegatCreate($gname, $description)
 			$this->tgval = "delegat";
 			$this->what = "add";
 			$this->checked = '';
+
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' and id_dggroup='0' order by id asc";
+			$this->res2 = $this->db->db_query($req);
+			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
 
 		function getnext()
@@ -243,6 +218,36 @@ function groupDelegatCreate($gname, $description)
 			else
 				return false;
 
+			}
+
+		function getnextgroup()
+			{
+			static $i = 0;
+			
+			if( $i < $this->count2)
+				{
+				$this->arrgroups = $this->db->db_fetch_array($this->res2);
+				if($this->count1 > 0)
+					{
+					$this->db->db_data_seek($this->res1, 0);
+					$this->arrgroups['select'] = "";
+					for( $j = 0; $j < $this->count1; $j++)
+						{
+						$this->groups = $this->db->db_fetch_array($this->res1);
+						if( $this->groups['id'] == $this->arrgroups['id'])
+							{
+							$this->arrgroups['select'] = "selected";
+							break;
+							}
+						}
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 
 		}
@@ -278,7 +283,9 @@ function groupDelegatModify($gname, $description, $id)
 			$this->add = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
 			$this->alert_msg = bab_translate("It is necessary to remove all associations with the users groups");
+			$this->grp_members = bab_translate("Users groups");
 			$db = $GLOBALS['babDB'];
+			$this->db = $db;
 			$res = $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
 			$this->arr = $db->db_fetch_array($res);
 			$this->id = $id;
@@ -309,6 +316,14 @@ function groupDelegatModify($gname, $description, $id)
 				$this->grpdesc = htmlentities($this->arr['description']);
 			$this->tgval = "delegat";
 			$this->what = "mod";
+
+			$req = "select * from ".BAB_GROUPS_TBL." where id_dggroup='".$id."'";
+			$this->res1 = $this->db->db_query($req);
+			$this->count1 = $this->db->db_num_rows($this->res1);
+
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' and (id_dggroup='0' or id_dggroup='".$id."') order by id asc";
+			$this->res2 = $this->db->db_query($req);
+			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
 
 		function getnext()
@@ -329,6 +344,36 @@ function groupDelegatModify($gname, $description, $id)
 			else
 				return false;
 
+			}
+
+		function getnextgroup()
+			{
+			static $i = 0;
+			
+			if( $i < $this->count2)
+				{
+				$this->arrgroups = $this->db->db_fetch_array($this->res2);
+				if($this->count1 > 0)
+					{
+					$this->db->db_data_seek($this->res1, 0);
+					$this->arrgroups['select'] = "";
+					for( $j = 0; $j < $this->count1; $j++)
+						{
+						$this->groups = $this->db->db_fetch_array($this->res1);
+						if( $this->groups['id'] == $this->arrgroups['id'])
+							{
+							$this->arrgroups['select'] = "selected";
+							break;
+							}
+						}
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 		}
 
@@ -369,7 +414,7 @@ function deleteDelegatGroup($id)
 	}
 
 
-function addDelegatGroup($name, $description, $grpm, $delegitems)
+function addDelegatGroup($name, $description, $delegitems, $groups)
 	{
 	global $babBody, $babDB;
 
@@ -406,9 +451,13 @@ function addDelegatGroup($name, $description, $grpm, $delegitems)
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
 		$id = $babDB->db_insert_id();
 
-		if (is_numeric($grpm))
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set id_dggroup='0' where id_dggroup='".$id."'");
+		if (is_array($groups))
 			{
-			$babDB->db_query("update ".BAB_GROUPS_TBL." set id_dggroup='".$id."' where id='".$grpm."' and id_dggroup='0'");
+			foreach($groups as $id_group)
+				{
+				$babDB->db_query("update ".BAB_GROUPS_TBL." set id_dggroup='".$id."' where id='".$id_group."'");
+				}
 			}
 		}
 
@@ -417,7 +466,7 @@ function addDelegatGroup($name, $description, $grpm, $delegitems)
 	exit;
 	}
 
-function modifyDelegatGroup($name, $description, $delegitems, $id)
+function modifyDelegatGroup($name, $description, $delegitems, $id, $groups)
 	{
 	global $babBody, $babDB, $babDG;
 
@@ -452,6 +501,15 @@ function modifyDelegatGroup($name, $description, $delegitems, $id)
 			}
 
 		$babDB->db_query($req ." where id='".$id."'");
+
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set id_dggroup='0' where id_dggroup='".$id."'");
+		if (is_array($groups))
+			{
+			foreach($groups as $id_group)
+				{
+				$babDB->db_query("update ".BAB_GROUPS_TBL." set id_dggroup='".$id."' where id='".$id_group."'");
+				}
+			}
 		}
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
@@ -526,7 +584,7 @@ if( isset($add))
 		{
 		if( $add == 'add')
 			{
-			if( !addDelegatGroup($gname, $description,$grpm, $delegitems ))
+			if( !addDelegatGroup($gname, $description, $delegitems, $groups ))
 				{
 				$idx = 'new';
 				}
@@ -535,7 +593,7 @@ if( isset($add))
 			}
 		else if( $add == 'mod' )
 			{
-			if(!modifyDelegatGroup($gname, $description, $delegitems, $id))
+			if(!modifyDelegatGroup($gname, $description, $delegitems, $id, $groups))
 				$idx = "mod";
 			else
 				$idx = 'list';
@@ -589,7 +647,7 @@ switch($idx)
 		$babBody->title = bab_translate("Administrators of delegation group");
 		$babBody->addItemMenu("list", bab_translate("Groups of delegation"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
 		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$id);
-		$babBody->addItemMenu("mem", bab_translate("Managing administrator"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
+		$babBody->addItemMenu("mem", bab_translate("Managing administrators"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 		break;
 	case "mod":
@@ -599,7 +657,7 @@ switch($idx)
 		$babBody->title = bab_translate("Modify delegation group");
 		$babBody->addItemMenu("list", bab_translate("Groups of delegation"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
 		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$id);
-		$babBody->addItemMenu("mem", bab_translate("Managing administrator"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
+		$babBody->addItemMenu("mem", bab_translate("Managing administrators"), $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 		break;
 	case "new":
