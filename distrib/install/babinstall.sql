@@ -806,3 +806,13 @@ CREATE TABLE bab_addons_groups (
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
    PRIMARY KEY (id)
 );
+
+CREATE TABLE bab_ini (
+	option char(255) NOT NULL default '',
+	value char(255) NOT NULL default '',
+	UNIQUE KEY option (option)
+);
+
+INSERT INTO bab_ini VALUES ('ver_major', '3')");
+INSERT INTO bab_ini VALUES ('ver_minor', '3')");
+INSERT INTO bab_ini VALUES ('ver_build', '1')");
