@@ -129,17 +129,6 @@ class listFiles
 			$this->countgrp = count($this->arrgrp['id']);
 			}
 
-		if( !empty($path))
-			{
-			$i = strrpos($path, "/");
-			if( !$i )
-				$p = "";
-			else
-				$p = substr( $path, 0, $i);
-			$this->arrdir[] = ". .";
-			$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p;
-			}
-
 		if( $id != 0  && is_dir($this->fullpath.$path."/"))
 			{
 			$h = opendir($this->fullpath.$path."/");
@@ -155,8 +144,28 @@ class listFiles
 			sort ($this->arrdir);
 			reset ($this->arrdir);
 			foreach ( $this->arrdir as $f )
+				{
 				$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
+				}
 
+			if( !empty($path))
+				{
+				$i = strrpos($path, "/");
+				if( !$i )
+					$p = "";
+				else
+					$p = substr( $path, 0, $i);
+				if (is_array($this->arrudir))
+					{
+					array_unshift ($this->arrdir,". .");
+					array_unshift ($this->arrudir, $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p);
+					}
+				else
+					{
+					$this->arrdir[] = ". .";
+					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p;
+					}
+				}
 			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='Y'";
 			$req .= " order by name asc";
 			$this->res = $this->db->db_query($req);
