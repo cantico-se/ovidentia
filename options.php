@@ -333,7 +333,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 
 		if( $arr['firstname'] != $firstname || $arr['lastname'] != $lastname )
 			{
-			if( getUserId($firstname. " " . $lastname) == 0)
+			if( getUserId($firstname. " " . $lastname) != 0)
 				{
 				$body->msgerror = babTranslate("Firstname and Lastname already exists !!");
 				return false;
