@@ -110,7 +110,17 @@ function processIf(&$class, $str)
 	if( preg_match($reg, $var, $m2) > 0)
 		{
 		$barray = 1;
-		//$str = preg_replace($reg, $class->{$m2[1]}[$m2[2]], $str);
+		if( isset($class->{$m2[1]}[$m2[2]]))
+			$tvar = $class->{$m2[1]}[$m2[2]];
+		else
+			$tvar = $GLOBALS[$$m2[1][$m2[2]]];
+		}
+	else
+		{
+		if( isset($class->$var))
+			$tvar = $class->$var;
+		else
+			$tvar = $GLOBALS[$var];
 		}
 
 	if( $res )
@@ -126,69 +136,32 @@ function processIf(&$class, $str)
 		switch ($match[1])
 			{
 			case ">=":
-				$bool = ($class->$var >= $val)?true:false;
+				$bool = ($tvar >= $val)?true:false;
 				break;
 			case "==":
-				if( isset($barray))
-					{
-					$bool = ($class->{$m2[1]}[$m2[2]] == $val)?true:false;
-					}
-				else
-					$bool = ($class->$var == $val)?true:false;
+				$bool = ($tvar == $val)?true:false;
 				break;
 			case "!=":
-				if( isset($barray))
-					{
-					$bool = ($class->{$m2[1]}[$m2[2]] != $val)?true:false;
-					}
-				else
-					$bool = ($class->$var != $val)?true:false;
+				$bool = ($tvar != $val)?true:false;
 				break;
 			case "<=":
-				if( isset($barray))
-					{
-					$bool = ($class->{$m2[1]}[$m2[2]] <= $val)?true:false;
-					}
-				else
-					$bool = ($class->$var <= $val)?true:false;
+				$bool = ($tvar <= $val)?true:false;
 				break;
 			case ">":
-				if( isset($barray))
-					{
-					$bool = ($class->{$m2[1]}[$m2[2]] > $val)?true:false;
-					}
-				else
-					{
-					$bool = ($class->$var > $val)?true:false;
-					}
+				$bool = ($tvar > $val)?true:false;
 				break;
 			case "<":
-				if( isset($barray))
-					{
-					$bool = ($class->{$m2[1]}[$m2[2]] < $val)?true:false;
-					}
-				else
-					$bool = ($class->$var < $val)?true:false;
+				$bool = ($tvar < $val)?true:false;
 				break;
 			default:
-				if( isset($barray))
-					{
-					$bool = $class->{$m2[1]}[$m2[2]]?true:false;
-					}
-				else
-					$bool = $class->$var?true:false;
+				$bool = $tvar?true:false;
 				echo ("<BR>unknown operator : <B>" .$match[1]."</B></BR>\n");
 				break;
 			}
 		}
 	else
 		{
-		if( isset($barray))
-			{
-			$bool = $class->{$m2[1]}[$m2[2]]?true:false;
-			}
-		else
-			$bool = $class->$var?true:false;
+		$bool = $tvar?true:false;
 		}
 
 	$reg = "/".$this->startPatternI."if\s+".preg_quote($m[2])."\s+".$this->endPatternI."(.*?)".$this->startPatternI."endif\s+".preg_quote($var)."\s+".$this->endPatternI."(.*)/s";
