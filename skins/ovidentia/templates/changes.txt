@@ -32,6 +32,9 @@ users.html                                  Added template 'changepassword'
 topman.html             articleslist        Added test <!--#if badmin --> ... <!--#endif badmin -->
 maildoms.html           domaincreate        Added test <!--#if dummy -->
                         domainmodify        Added test <!--#if dummy -->
+articles.html           introlist           Added <!--#if approver --> .... <!--#endif approver -->
+vacation.html           newvacation         Updated Javascript
+event.html              scripts             Updated Javascript
 /****************************/
 version 3.3.0 / 3.3.1
 /****************************/
