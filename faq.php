@@ -24,6 +24,22 @@
 include_once "base.php";
 include $babInstallPath."utilit/topincl.php";
 
+function bab_getFaqName($id)
+	{
+	global $babDB;
+
+	$res = $babDB->db_query("select category from ".BAB_FAQCAT_TBL." where id='$id'");
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return $arr['category'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
 function isUserManager($item)
 	{
 	global $BAB_SESS_USERID;
@@ -556,7 +572,7 @@ if( isset($action) && $action == "Yes" && isUserManager($item))
 switch($idx)
 	{
 	case "questions":
-		$babBody->title = bab_translate("Questions and Answers");
+		$babBody->title = bab_getFaqName($item);
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
 			listQuestions($item);
@@ -574,7 +590,7 @@ switch($idx)
 		exit;
 
 	case "viewq":
-		$babBody->title = bab_translate("Questions and Answers");
+		$babBody->title = bab_getFaqName($item);
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
 			viewQuestion($item, $idq);
