@@ -351,7 +351,7 @@ if( isset($login) && $login == "login")
 	{
 	if(!signOn($nickname, $password))
 		return;
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=entry");
+	Header("Location: ". $GLOBALS['babUrlScript']);
 	}
 
 
