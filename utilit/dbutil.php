@@ -122,6 +122,17 @@ function db_fetch_array($result)
 		}
 	}
 
+function db_fetch_assoc($result)
+    {
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			return mysql_fetch_assoc($result);
+			break;
+		}
+	}
+
 function db_fetch_row($result)
     {
 	switch($this->db_type )
@@ -209,6 +220,11 @@ class babDatabase extends bab_database
 	function db_fetch_array($result)
 		{
 		return parent::db_fetch_array($result);
+		}
+
+	function db_fetch_assoc($result)
+		{
+		return parent::db_fetch_assoc($result);
 		}
 
 	function db_fetch_row($result)
