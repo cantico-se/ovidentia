@@ -161,10 +161,35 @@ function dateEnd(day, month, year)
 <td align="right">{ title }:</td>
 <td colspan="4"><input type="text" name="title" size="60" maxlength="255"></td>
 </tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
 <tr>
+<td align="right" nowrap>&nbsp;</td>
+<td colspan="4"><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="description"></textarea></td>
+</tr>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td colspan="4">
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
 <tr>
 <td align="right">{ description }</td>
-<td colspan="4"><textarea cols="40" rows="5" name="description"></textarea></td>
+<td colspan="4">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "description", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+<textarea cols="40" rows="5" name="description"></textarea>
+<!--#endif msie -->
+</td>
 </tr>
 
 <!--#if bcategory "== 1" -->
@@ -182,10 +207,21 @@ function dateEnd(day, month, year)
 <!--#endif bcategory -->
 
 
+<!--#if msie "== 1" -->
+<tr>
+<td align="right">&nbsp;</td>
+<td colspan="4"><input onclick=SetVals() type="submit" name="Submit" value="{ addvac }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 <tr>
 <td align="right" nowrap>&nbsp;</td>
 <td colspan="4"><input type="submit" name="Submit" value="{ addvac }"></td>
 </tr>
+<!--#endif msie -->
 </table>
 </center>
 </form>

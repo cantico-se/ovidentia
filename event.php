@@ -36,6 +36,7 @@ function newEvent($calendarid, $day, $month, $year, $view)
 		var $curmonth;
 		var $curyear;
 		var $curview;
+		var $msie;
 
 		function temp($calendarid, $day, $month, $year, $view)
 			{
@@ -129,6 +130,10 @@ function newEvent($calendarid, $day, $month, $year, $view)
 					$this->countcat = 0;
 					break;
 				}
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 /*
 $body->script = <<<EOD
 EOD;
