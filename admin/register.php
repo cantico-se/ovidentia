@@ -193,6 +193,12 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 	{
 	global $BAB_HASH_VAR, $babBody, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
 
+	if( empty($firstname) && empty($lastname))
+		{
+		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		return false;
+		}
+
 	if( empty($password1) || empty($password2))
 		{
 		$babBody->msgerror = bab_translate( "You must complete all fields !!");
