@@ -671,6 +671,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $idx)
 					$this->currentday = 1;
 					}
 				$this->daynumbername = date("j", mktime(0,0,0,$this->month, $this->mday,$this->year));
+				$this->daynumberurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$this->mday."&month=".$this->month. "&year=".$this->year. "&calid=".$this->calid;
 				$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $this->mday, $this->year), false);
 				$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->mday."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=".$this->defview."";
 				$i++;
