@@ -30,7 +30,7 @@ function listComments($topics, $article)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $subjecturl;
@@ -39,18 +39,18 @@ function listComments($topics, $article)
 		var $db;
 		var $count;
 		var $res;
-		var $topics;
 		var $article;
 		var $alternate;
 		var $newc;
 
 		function temp($topics, $article)
 			{
+			$this->categoriesHierarchy($topics);
+
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->topics = $topics;
 			$this->article = $article;
 			$this->alternate = 0;
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
@@ -90,7 +90,7 @@ function addComment($topics, $article, $subject, $message, $com="")
 	{
 	global $babBody;
 	
-	class temp
+	class temp extends categoriesHierarchy
 		{
 		var $subject;
 		var $subjectval;
@@ -98,7 +98,6 @@ function addComment($topics, $article, $subject, $message, $com="")
 		var $email;
 		var $message;
 		var $add;
-		var $topics;
 		var $article;
 		var $username;
 		var $anonyme;
@@ -112,6 +111,7 @@ function addComment($topics, $article, $subject, $message, $com="")
 		function temp($topics, $article, $subject, $message, $com)
 			{
 			global $BAB_SESS_USER;
+			$this->categoriesHierarchy($topics);
 			$this->subject = bab_translate("comments-Title");
 			$this->name = bab_translate("Name");
 			$this->email = bab_translate("Email");
@@ -119,7 +119,6 @@ function addComment($topics, $article, $subject, $message, $com="")
 			$this->add = bab_translate("Add comment");
 			$this->title = bab_translate("Article");
 			$this->see = bab_translate("Read article");
-			$this->topics = $topics;
 			$this->article = $article;
 			$this->subjectval = $subject;
 			$this->messageval = $message;
@@ -160,20 +159,19 @@ function readComment($topics, $article, $subject, $message, $com)
 	{
 	global $babBody;
 	
-	class ctp
+	class ctp extends categoriesHierarchy
 		{
 		var $subject;
 		var $add;
-		var $topics;
 		var $article;
 		var $arr = array();
 
 		function ctp($topics, $article, $com)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->subject = bab_translate("Subject");
 			$this->by = bab_translate("By");
 			$this->date = bab_translate("Date");
-			$this->topics = $topics;
 			$this->article = $article;
 			$db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$com."'";
@@ -381,6 +379,7 @@ switch($idx)
 		$babBody->title = bab_translate("Delete Comment");
 		if( $approver)
 			{
+			viewCategoriesHierarchy($topics);
 			deleteComment($topics, $article, $com, $newc);
 			$babBody->addItemMenu("delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com);
 			}

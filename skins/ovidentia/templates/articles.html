@@ -1,4 +1,45 @@
+<!--#begin categorieshierarchy -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
+<!--#end categorieshierarchy -->
+
 <!--#begin articlecreatebyfile -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="articles">
 <input type="hidden" name="idx" value="Articles">
@@ -60,6 +101,25 @@
 <!--#end articlecreatebyfile -->
 
 <!--#begin modifyarticle -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <form name= "modarticle" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="articles">
 <input type="hidden" name="idx" value="More">
@@ -277,6 +337,25 @@ window.focus();
 
 
 <!--#begin createarticle -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <form name="createart" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="articles">
 <input type="hidden" name="idx" value="More">

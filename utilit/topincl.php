@@ -24,6 +24,86 @@
 include_once "base.php";
 include $babInstallPath."utilit/imgincl.php";
 
+class categoriesHierarchy
+{
+
+	var $parentscount;
+	var $parentname;
+	var $parenturl;
+	var $burl;
+	var $topics;
+
+	function categoriesHierarchy($topics)
+		{
+		global $babDB;
+
+		$this->topics = $topics;
+
+		$this->arrparents[] = $topics;
+		list($cat) = $babDB->db_fetch_row($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+		$this->arrparents[] = $cat;
+		$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			if( $arr['id_parent'] == 0 )
+				break;
+			$this->arrparents[] = $arr['id_parent'];
+			$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
+			}
+
+		$this->arrparents[] = 0;
+
+		$this->parentscount = count($this->arrparents);
+		$this->arrparents = array_reverse($this->arrparents);
+		}
+
+	function getnextparent()
+		{
+		static $i = 0;
+		if( $i < $this->parentscount)
+			{
+			if( $i == $this->parentscount - 1 )
+				{
+				$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
+				$this->parenturl = "";
+				$this->burl = false;
+				}
+			else
+				{
+				$this->burl = true;
+				if( $this->arrparents[$i] == 0 )
+					$this->parentname = bab_translate("Top");
+				else
+					$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
+				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
+				}
+			$i++;
+			return true;
+			}
+		else
+			return false;
+		}
+}
+
+
+
+function viewCategoriesHierarchy($topics)
+	{
+	global $babBody;
+	class tempvch extends categoriesHierarchy
+		{
+
+		function tempvch($topics)
+			{
+			$this->categoriesHierarchy($topics);
+			}
+		}
+
+	$temp = new tempvch($topics);
+	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "categorieshierarchy"));
+	}
+
+
 function bab_getCategoryTitle($id)
 	{
 	$db = $GLOBALS['babDB'];

@@ -29,7 +29,7 @@ function listArticles($topics, $res)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $content;
@@ -39,7 +39,6 @@ function listArticles($topics, $res)
 		var $res;
 		var $moreurl;
 		var $morename;
-		var $topics;
 		var $modify;
 		var $confirm;
 		var $modifyurl;
@@ -49,12 +48,12 @@ function listArticles($topics, $res)
 
 		function temp($topics, $res)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->modify = bab_translate("Modify");
 			$this->confirm = bab_translate("Confirm");
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $res;
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->topics = $topics;
 			}
 
 		function getnext()
@@ -91,7 +90,7 @@ function readMore($topics, $article)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $content;
@@ -100,16 +99,15 @@ function readMore($topics, $article)
 		var $count;
 		var $res;
 		var $more;
-		var $topics;
 		var $topictitle;
 
 		function temp($topics, $article)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->topics = $topics;
 			}
 
 		function getnext()
@@ -143,7 +141,7 @@ function modifyArticle($topics, $article)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $head;
@@ -153,7 +151,6 @@ function modifyArticle($topics, $article)
 		var $title;
 		var $titleval;
 		var $modify;
-		var $topics;
 		var $article;
 		var $arr = array();
 		var $db;
@@ -168,8 +165,8 @@ function modifyArticle($topics, $article)
 
 		function temp($topics, $article)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->article = $article;
-			$this->topics = $topics;
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
@@ -228,7 +225,7 @@ function confirmArticle($article, $topics)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 		var $name;
 		var $nameval;
@@ -238,7 +235,6 @@ function confirmArticle($article, $topics)
 		var $what;
 		var $message;
 		var $modify;
-		var $topics;
 		var $article;
 		var $fullname;
 		var $author;
@@ -252,8 +248,8 @@ function confirmArticle($article, $topics)
 
 		function temp($topics, $article)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->article = $article;
-			$this->topics = $topics;
 			$this->name = bab_translate("Author");
 			$this->modify = bab_translate("Update");
 			$this->action = bab_translate("Action");
@@ -308,7 +304,7 @@ function listWaitingComments($topics, $article, $res)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $subjecturl;
@@ -317,16 +313,15 @@ function listWaitingComments($topics, $article, $res)
 		var $db;
 		var $count;
 		var $res;
-		var $topics;
 		var $article;
 		var $alternate;
 
 		function temp($topics, $article, $res)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $res;
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->topics = $topics;
 			$this->article = $article;
 			$this->alternate = 0;
 			}
@@ -396,7 +391,7 @@ function confirmComment($article, $topics, $com)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 		var $name;
 		var $nameval;
@@ -408,7 +403,6 @@ function confirmComment($article, $topics, $com)
 		var $new;
 		var $message;
 		var $modify;
-		var $topics;
 		var $article;
 		var $fullname;
 		var $author;
@@ -420,8 +414,8 @@ function confirmComment($article, $topics, $com)
 
 		function temp($topics, $article, $com)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->article = $article;
-			$this->topics = $topics;
 			$this->com = $com;
 			$this->name = bab_translate("Submiter");
 			$this->modify = bab_translate("Update");

@@ -27,13 +27,9 @@ include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);
 
-class listArticles
+class listArticles extends categoriesHierarchy
 {
 
-	var $parentscount;
-	var $parentname;
-	var $parenturl;
-	var $burl;
 	var $template;
 	var $topurl;
 	var $bottomurl;
@@ -43,7 +39,6 @@ class listArticles
 	var $bottomname;
 	var $nextname;
 	var $prevname;
-	var $topics;
 	var $bnavigation;
 	var $printtxt;
 	var $deletetxt;
@@ -69,6 +64,7 @@ class listArticles
 		{
 		global $babDB;
 
+		$this->categoriesHierarchy($topics);
 		$this->topurl = "";
 		$this->bottomurl = "";
 		$this->nexturl = "";
@@ -78,7 +74,6 @@ class listArticles
 		$this->nextname = "";
 		$this->prevname = "";
 
-		$this->topics = $topics;
 		$this->bnavigation = false;
 		$this->approver = false;
 		$this->commentstxt = false;
@@ -90,9 +85,9 @@ class listArticles
 		$this->morename = bab_translate("Read more");
 
 		$this->template = "default";
-		if( !empty($topics) )
+		if( !empty($this->topics) )
 			{
-			$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->topics."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -101,50 +96,8 @@ class listArticles
 				}
 			}
 	
-		$this->arrparents[] = $topics;
-		list($cat) = $babDB->db_fetch_row($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
-		$this->arrparents[] = $cat;
-		$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			if( $arr['id_parent'] == 0 )
-				break;
-			$this->arrparents[] = $arr['id_parent'];
-			$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
-			}
-
-		$this->arrparents[] = 0;
-
-		$this->parentscount = count($this->arrparents);
-		$this->arrparents = array_reverse($this->arrparents);
 		}
 
-	function getnextparent()
-		{
-		static $i = 0;
-		if( $i < $this->parentscount)
-			{
-			if( $i == $this->parentscount - 1 )
-				{
-				$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
-				$this->parenturl = "";
-				$this->burl = false;
-				}
-			else
-				{
-				$this->burl = true;
-				if( $this->arrparents[$i] == 0 )
-					$this->parentname = bab_translate("Top");
-				else
-					$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
-				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
-				}
-			$i++;
-			return true;
-			}
-		else
-			return false;
-		}
 }
 
 function listSubmittedArticles($topics)
@@ -499,7 +452,7 @@ function readMore($topics, $article)
 	{
 	global $babBody, $babDB;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $content;
@@ -508,7 +461,6 @@ function readMore($topics, $article)
 		var $count;
 		var $res;
 		var $more;
-		var $topics;
 		var $author;
 		var $resart;
 		var $countart;
@@ -521,15 +473,15 @@ function readMore($topics, $article)
 
 		function temp($topics, $article)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->printtxt = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->topics = $topics;
-			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
-			$req = "select id,title from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and confirmed='Y' and archive='N' order by date desc";
+			$req = "select id,title from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and confirmed='Y' and archive='N' order by date desc";
 			$this->resart = $this->db->db_query($req);
 			$this->countart = $this->db->db_num_rows($this->resart);
 			$this->topictxt = bab_translate("In the same topic");
@@ -598,14 +550,13 @@ function submitArticleByFile($topics)
 	{
 	global $babBody;
 	
-	class temp
+	class temp extends categoriesHierarchy
 		{
 		var $title;
 		var $doctag;
 		var $introtag;
 		var $filename;
 		var $add;
-		var $topics;
 		var $maxupload;
 		var $notearticle;
 		var $langLabel;
@@ -618,6 +569,8 @@ function submitArticleByFile($topics)
 		function temp($topics)
 			{
 			global $babMaxUpload;
+			$this->categoriesHierarchy($topics);
+
 			$this->title = bab_translate("Title");
 			$this->doctag = bab_translate("Document Tag");
 			$this->introtag = bab_translate("Introduction Tag");
@@ -694,7 +647,7 @@ function modifyArticle($topics, $article)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $head;
@@ -722,8 +675,8 @@ function modifyArticle($topics, $article)
 
 		function temp($topics, $article)
 			{
+			$this->categoriesHierarchy($topics);
 			$this->article = $article;
-			$this->topics = $topics;
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
@@ -832,13 +785,12 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 	{
 	global $babBody;
 
-	class temp
+	class temp extends categoriesHierarchy
 		{
 	
 		var $head;
 		var $babBody;
 		var $modify;
-		var $topics;
 		var $title;
 		var $msie;
 		var $notearticle;
@@ -853,6 +805,8 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 
 		function temp($title, $headtext, $bodytext, $topics)
 			{
+			$this->categoriesHierarchy($topics);
+
 			if( empty($title))
 				$this->titleval = "";
 			else
@@ -873,7 +827,6 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 				}
 
 
-			$this->topics = $topics;
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
@@ -1251,6 +1204,7 @@ switch($idx)
 		$babBody->title = bab_translate("Delete article");
 		if( $approver)
 			{
+			viewCategoriesHierarchy($topics);
 			deleteArticle($topics, $article, $new, $newc);
 			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$topics."&article=".$article);
 			}

@@ -1,4 +1,23 @@
 <!--#begin introlist -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <!--#in getnext -->
 <table   border="0" width="95%%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
@@ -25,6 +44,25 @@
 
 
 <!--#begin readmore -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <!--#in getnext -->
 <table  border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
@@ -46,6 +84,25 @@
 
 
 <!--#begin modifyarticle -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <form name="artmod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="waiting">
 <input type="hidden" name="idx" value="Waiting">
@@ -204,6 +261,25 @@ ctrlf = t;
 
 
 <!--#begin confirmarticle -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="waiting">
 <input type="hidden" name="idx" value="{ idxval }">
@@ -287,14 +363,33 @@ valign="middle">{ name }:</td>
 
 
 <!--#begin confirmcomment -->
+<!--#if parentscount -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td class="BabCategTitleNavigation">
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+<!--#else burl -->
+{ parentname }
+<!--#endif burl -->
+<!--#endin getnextparent -->
+</td>
+</tr></table>
+<TABLE>
+<TR>
+<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
+</TR>
+</TABLE>
+<!--#endif parentscount -->
 <form method="post" action="{ babPhpSelf }">
-  <input type="hidden" name="tg" value="waiting">
-  <input type="hidden" name="idx" value="{ idxval }">
-  <input type="hidden" name="topics" value="{ topics }">
-  <input type="hidden" name="article" value="{ article }">
-  <input type="hidden" name="comment" value="{ com }">
-  <input type="hidden" name="new" value="{ new }">
-  <input type="hidden" name="author" value="{ author }">
+<input type="hidden" name="tg" value="waiting">
+<input type="hidden" name="idx" value="{ idxval }">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="comment" value="{ com }">
+<input type="hidden" name="new" value="{ new }">
+<input type="hidden" name="author" value="{ author }">
 <input type="hidden" name="confirm" value="{ confval }">
 <table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
