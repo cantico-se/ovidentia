@@ -938,13 +938,24 @@ switch($tg)
 		$arr = explode("/", $tg);
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")
 			{
-			$db = $GLOBALS['babDB'];
+			if (!is_numeric($arr[1]))
+				{
+				function bab_getAddonId($name)
+					{
+					foreach($GLOBALS['babBody']->babaddons as $k => $v)
+						{
+						if ($v['title'] == $name)
+							return $k;
+						}
+					return false;
+					}
+				$arr[1] = bab_getAddonId($arr[1]);
+				}
 			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr[1]))
 				{
-				$res = $db->db_query("select title,version from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
-				if( $res && $db->db_num_rows($res) > 0)
+				if( isset($babBody->babaddons[$arr[1]]))
 					{
-					$row = $db->db_fetch_array($res);
+					$row = &$babBody->babaddons[$arr[1]];
 					$acces =false;
 					if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 						$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
