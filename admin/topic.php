@@ -770,6 +770,7 @@ if( isset($add) )
 
 if( isset($aclview) )
 	{
+	if( !isset($groups)) { $groups = array();}
 	aclUpdate($table, $item, $groups, $what);
 	if( $table == BAB_TOPICSVIEW_GROUPS_TBL )
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
@@ -879,6 +880,16 @@ switch($idx)
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a topic");
+		if( !isset($ncat)) { $ncat='';}
+		if( !isset($category)) { $category='';}
+		if( !isset($topdesc)) { $topdesc='';}
+		if( !isset($managerid)) { $managerid='';}
+		if( !isset($saart)) { $saart='';}
+		if( !isset($sacom)) { $sacom='';}
+		if( !isset($bnotif)) { $bnotif='';}
+		if( !isset($atid)) { $atid='';}
+		if( !isset($disptid)) { $disptid='';}
+		if( !isset($restrict)) { $restrict='';}
 		modifyCategory($item, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);

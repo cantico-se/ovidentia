@@ -192,6 +192,7 @@ function listImages($editor,$path="")
 				bab_mkdir(BAB_IUD_ARTICLES, 0700);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON);
+			$this->arrcfile = array();
 			while (($f = readdir($h)) != false)
 				{
 				if ($f != "." and $f != "..") 
@@ -274,6 +275,7 @@ function iframe($editor,$path="")
 				bab_mkdir(BAB_IUD_ARTICLES, 0700);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON.$path);
+			$this->arrcfile = array();
 			while (($f = readdir($h)) != false)
 				{
 				if ($f != "." and $f != "..") 
