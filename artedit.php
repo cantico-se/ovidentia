@@ -1155,9 +1155,15 @@ function showSetArticleProperties($idart)
 						else if( strchr($arr['restriction'], ","))
 							{
 							$this->arrrest = explode(',', $arr['restriction']);
+							$this->operatororysel = 'selected';
+							$this->operatorornsel = '';
 							}
 						else
+							{
 							$this->arrrest = array($arr['restriction']);
+							$this->operatororysel = '';
+							$this->operatorornsel = '';
+							}
 
 						if( empty($arr['restriction']))
 							{
@@ -1871,7 +1877,7 @@ function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$mes
 
 function updatePropertiesArticleDraft()
 {
-	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $topicid, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $hpage0, $hpage1, $notifm, $approbid;
+	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $topicid, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $grpids, $operator, $hpage0, $hpage1, $notifm, $approbid;
 
 	$date_sub = "0000-00-00 00:00";
 	$date_pub = "0000-00-00 00:00";

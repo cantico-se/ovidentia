@@ -656,7 +656,7 @@ function viewArticleProperties($item, $idart)
 				$this->timesel = $this->timepub;
 
 				$rr = $babDB->db_fetch_array($babDB->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$arrart['id_topic']."'"));
-				if( $arrart['restriction'] == '' && isset($rr['restrict_access']) && $rr['restrict_access'] == 'Y')
+				if( $arrart['restriction'] != '' || (isset($rr['restrict_access']) && $rr['restrict_access'] == 'Y'))
 					{
 					$this->restrictaccess = true;
 					$this->restrictiontitletxt = bab_translate("Access restriction");
@@ -676,6 +676,7 @@ function viewArticleProperties($item, $idart)
 						{
 						$this->countgrp = 0;
 						}
+
 					if( strchr($arrart['restriction'], "&"))
 						{
 						$this->arrrest = explode('&', $arrart['restriction']);
@@ -685,11 +686,17 @@ function viewArticleProperties($item, $idart)
 					else if( strchr($arrart['restriction'], ","))
 						{
 						$this->arrrest = explode(',', $arrart['restriction']);
+						$this->operatororysel = 'selected';
+						$this->operatorornsel = '';
 						}
 					else
+						{
 						$this->arrrest = array($arrart['restriction']);
+						$this->operatororysel = '';
+						$this->operatorornsel = '';
+						}
 
-					if( empty($arr['restriction']))
+					if( empty($arrart['restriction']))
 						{
 						$this->norestrictsel = 'selected';
 						$this->yesrestrictsel = '';
@@ -1137,7 +1144,7 @@ function saveOrderArticles($id, $listarts)
 
 function saveArticleProperties()
 {
-	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $item, $topicid, $cdatep, $yearbegin, $yearpub, $monthpub, $daypub, $timepub, $cdatee, $yearend, $yearend, $monthend, $dayend, $timeend, $restriction;
+	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $item, $topicid, $cdatep, $yearbegin, $yearpub, $monthpub, $daypub, $timepub, $cdatee, $yearend, $yearend, $monthend, $dayend, $timeend, $restriction, $operator, $grpids;
 
 	if( isset($cdatep) || isset($cdatee) || isset($topicid) || isset($restriction))
 	{
