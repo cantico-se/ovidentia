@@ -1,0 +1,27 @@
+<table width="150" cellpadding="1" cellspacing="0" align="center" class="BabSectionBgndSides"><tr><td>
+<table class="BabSectionBgndContent" width="150" cellpadding="0" cellspacing="3">
+<TBODY>
+<tr>
+<td class="BabSectionBgndTitle" colspan=7><img src="images/box.gif" width="30" height="7" alt=""><b></b>{ curmonth } { curyear }</td>
+</tr>
+<tr>
+<!--#in getnextday3 -->
+<td bgcolor="white">{ day3 }</td>
+<!--#endin getnextday3 -->
+</tr>
+<!--#in getnextweek -->
+<tr>
+<!--#in getnextday -->
+<!--#if event "== 1" -->
+<td { bgcolor }><a class=BabMenuLink href="{ dayurl }">{ day }</a></td>
+<!--#else event -->
+<td { bgcolor }>{ day }</td>
+<!--#endif event -->
+<!--#endin getnextday -->
+</tr>
+<!--#endin getnextweek -->
+</TBODY>
+</table>
+</td>
+</tr>
+</table><br>

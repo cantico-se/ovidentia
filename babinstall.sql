@@ -149,12 +149,13 @@ CREATE TABLE groups (
    name varchar(20) NOT NULL,
    description varchar(200) NOT NULL,
    vacation enum('N','Y') DEFAULT 'N' NOT NULL,
+   manager int(11) unsigned  DEFAULT '0' NOT NULL,
    PRIMARY KEY (id)
 );
 
-INSERT INTO groups VALUES ( '1', 'Users', 'All registered users');
-INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users');
-INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site');
+INSERT INTO groups VALUES ( '1', 'Users', 'All registered users', 'N', '0');
+INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0');
+INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0');
 
 # --------------------------------------------------------
 #
@@ -430,3 +431,71 @@ CREATE TABLE vacationsman_groups (
 	supplier INT (11) UNSIGNED not null,
 	PRIMARY KEY (id)
 ); 
+
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'categoriescal'
+#
+
+CREATE TABLE categoriescal (
+	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
+	name VARCHAR (60) not null,
+	description VARCHAR (255) not null,
+	bgcolor VARCHAR (6) not null,
+	id_group INT (11) UNSIGNED not null,
+	PRIMARY KEY (id)
+);
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'resourcescal'
+#
+
+CREATE TABLE resourcescal (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	name VARCHAR (60) not null,
+	description VARCHAR (255) not null,
+	id_group INT (11) UNSIGNED not null,
+	PRIMARY KEY (id)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'cal_events'
+#
+
+CREATE TABLE cal_events (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	id_cal INT (11) UNSIGNED not null,
+	title VARCHAR (255) not null,
+	description TEXT not null,
+	start_date DATE not null,
+	start_time TIME not null,
+	end_date DATE not null,
+	end_time TIME not null,
+	id_cat INT (11) UNSIGNED not null,
+	PRIMARY KEY (id)
+);
+
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'calendar'
+#
+
+CREATE TABLE calendar (
+	id int(11) unsigned NOT NULL auto_increment,
+	owner int(11) unsigned DEFAULT '0' NOT NULL,
+	actif enum('Y','N') DEFAULT 'Y' NOT NULL,
+	type TINYINT (2) not null,
+	PRIMARY KEY (id)
+);
+
+INSERT INTO calendar VALUES ( '1', '1', 'Y', '1');
+INSERT INTO calendar VALUES ( '2', '1', 'Y', '2');
+INSERT INTO calendar VALUES ( '3', '2', 'N', '2');
+INSERT INTO calendar VALUES ( '4', '3', 'Y', '2');

@@ -8,11 +8,15 @@ function groupCreate()
 		{
 		var $name;
 		var $description;
+		var $managertext;
+		var $add;
 
 		function temp()
 			{
 			$this->name = babTranslate("Name");
 			$this->description = babTranslate("Description");
+			$this->managertext = babTranslate("Manager");
+			$this->add = babTranslate("Add Group");
 			}
 		}
 
@@ -72,7 +76,7 @@ function groupList()
 	}
 
 
-function addGroup($name, $description)
+function addGroup($name, $description, $manager)
 	{
 	global $body;
 	if( empty($name))
@@ -82,16 +86,36 @@ function addGroup($name, $description)
 		}
 
 	$db = new db_mysql();
-	$query = "select * from groups where name='$name'";	
-	$res = $db->db_query($query);
+
+	$req = "select * from groups where name='$name'";	
+	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This group already exists");
+		$body->msgerror = babTranslate("This group already exists");
 		}
 	else
 		{
-		$query = "insert into groups (name, description, vacation) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "')";
-		$db->db_query($query);
+		if( !empty($manager))
+			{
+			$req = "select * from users where email='".$manager."'";	
+			$res = $db->db_query($req);
+
+			if( $db->db_num_rows($res) < 1)
+				{
+				$body->msgerror = babTranslate("The manager doesn't exist");
+				return;
+				}
+			$arr = $db->db_fetch_array($res);
+			$idmanager = $arr[id];
+			}
+		else
+			$idmanager = 0;
+		$req = "insert into groups (name, description, vacation, manager) VALUES ('" .$name. "', '" . $description. "', '" . $vacation. "', '" . $managerid. "')";
+		$db->db_query($req);
+		$id = $db->db_insert_id();
+
+		$req = "insert into calendar (owner, actif, type) VALUES ('" .$id. "', 'Y', '2')";
+		$db->db_query($req);
 		}
 	}
 
@@ -100,7 +124,7 @@ if( !isset($idx))
 	$idx = "List";
 
 if( isset($add))
-	addGroup($name, $description);
+	addGroup($name, $description, $manager);
 
 
 switch($idx)

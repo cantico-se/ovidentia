@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/vtd8.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin calendargroups -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="admcals">
+<input type="hidden" name="idx" value="groups">
+<input type="hidden" name="calgroups" value="update">
+<center>
+<table class=BabDialogBgnd width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="center"><nobr>
+<select name="what">
+<option value="">{ listgroups }</option>
+<option value="-1">{ all }</option>
+<option value="0" >{ none }</option>
+</select>
+</nobr></td>
+<td align="center"><nobr>&nbsp;</nobr></td>
+</tr>
+<tr>
+<td align="center"><nobr>{ name }:</nobr></td>
+<td align="center"><nobr>&nbsp;</nobr></td>
+</tr>
+<tr>
+<td align="center"><nobr>
+<select multiple name="groups[]" size="10">
+<!--#in getnextgroup -->
+<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+<!--#endin getnextgroup -->
+</select>
+</nobr></td>
+<td align="center"><nobr>&nbsp;</nobr></td>
+</tr>
+<tr>
+<td align="center"><input type="submit" name="submit" value="{ updategroups }"></td>
+<td>&nbsp;</td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end calendargroups -->
+</BODY>
+</HTML>

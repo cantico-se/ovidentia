@@ -27,11 +27,15 @@
 </tr>
 <tr>
 <td align="right">{ description }:</td>
-<td><input type="text" name="description" size="30" maxlength="60"></td>
+<td><input type="text" name="description" size="60" maxlength="200"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ managertext }:</td>
+<td ><input type="text" name="manager" size="60" maxlength="255" value=""></td>
 </tr>
 <tr>
 <td align="right">&nbsp;</td>
-<td><input type="submit" name="submit" value="Add Group"></td>
+<td><input type="submit" name="submit" value="{ add }"></td>
 </tr>
 </table>
 </center>
@@ -82,6 +86,10 @@
 <tr>
 <td align="right">{ description }:</td>
 <td ><input type="text" name="description" size="30" maxlength="60" value="{ arr[description] }"></td>
+</tr>
+<tr>
+<td align="right" nowrap>{ managertext }:</td>
+<td ><input type="text" name="manager" size="60" maxlength="255" value="{ managerval }"></td>
 </tr>
 <tr>
 <td align="right">&nbsp;</td>

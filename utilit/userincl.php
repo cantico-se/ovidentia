@@ -15,6 +15,27 @@ function isUserApprover($topics)
 		}
 	}
 
+function isUserGroupManager($grpid="")
+	{
+	global $BAB_SESS_USERID;
+	if( empty($grpid))
+		$query = "select * from groups where manager='$BAB_SESS_USERID'";
+	else
+		$query = "select * from groups where id='$BAB_SESS_USERID' and id='$grpid'";
+
+	$db = new db_mysql();
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		return true;
+		}
+	else
+		{
+		return false;
+		}
+	}
+
+
 function isMemberOf($groupname, $userid="")
 {
 	global $BAB_SESS_USERID;

@@ -26,7 +26,7 @@ $sec = new forumsSection();
 if( $sec->count > 0 )
 	$body->addSection($sec);
 
-$sec = new babMonth();
+$sec = new babMonthA();
 $sec->setPosition(1);
 $body->addSection($sec);
 
@@ -269,6 +269,29 @@ switch($tg)
 		if( isUserAdministrator())
 			$incl = "admin/admvac";
 		break;
+	case "admcals":
+		if( isUserAdministrator())
+			$incl = "admin/admcals";
+		break;
+	case "admcal":
+		if( isUserAdministrator())
+			$incl = "admin/admcal";
+		break;
+	case "confcals":
+		$incl = "confcals";
+		break;
+	case "confcal":
+		$incl = "confcal";
+		break;
+	case "calendar":
+		$incl = "calendar";
+		break;
+	case "event":
+		$incl = "event";
+		break;
+	case "calview":
+		$incl = "calview";
+		break;
 	case "vacation":
 		$incl = "vacation";
 		break;
@@ -302,7 +325,8 @@ switch($tg)
 			$incl = "note";
 		break;
 	case "month":
-		$incl = "utilit/month";
+		$incl = "month";
+		include $babInstallPath."utilit/month.php";
 		include $babInstallPath."$incl.php";
 		exit;
 		break;

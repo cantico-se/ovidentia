@@ -221,7 +221,6 @@ function updateUser($id, $fullname, $changepwd, $is_confirmed, $disabled, $group
 		return;
 		}
 
-
 	$req = "update users set fullname='$fullname', changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'";
 	$db = new db_mysql();
 	$res = $db->db_query($req);
@@ -244,6 +243,10 @@ function confirmDeleteUser($id)
 
 	// delete user from groups
 	$req = "delete from users_groups where id_object='$id'";
+	$res = $db->db_query($req);	
+
+	// delete user from calendar
+	$req = "delete from calendar where owner='$id' and type='1'";
 	$res = $db->db_query($req);	
 
 	// delete user

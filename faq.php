@@ -93,7 +93,7 @@ function listQuestions($idcat)
 			{
 			$this->idcat = $id;
 			$this->db = new db_mysql();
-			$req = "select * from faqqr where idcat='$id'";
+			$req = "select * from faqqr where idcat='$id' order by id asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -349,7 +349,7 @@ function deleteQuestion($item, $idq)
 
 		function temp($item, $idq)
 			{
-			$this->message = babTranslate("Are you sure you want question");
+			$this->message = babTranslate("Are you sure you want to delete this question");
 			$this->title = "";
 			$this->warning = babTranslate("WARNING: This operation will delete question and its response"). "!";
 			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=faq&idx=questions&item=".$item."&idq=".$idq."&action=Yes";

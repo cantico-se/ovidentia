@@ -4,10 +4,27 @@ class babMonthX
 {
 var $currentMonth;
 var $currentYear;
+var $ymin;
+var $ymax;
+var $callback;
+var $curmonth;
+var $curyear;
+var $day3;
 
-function babMonthX($month = "", $year = "")
+var $days;
+var $daynumber;
+var $now;
+var $w;
+
+var $nextmonth;
+var $nextyear;
+var $prevmonth;
+var $prevyear;
+
+var $today;
+
+function babMonthX($month = "", $year = "", $callback = "")
 	{
-	global $ymin, $ymax;
 
 	if(empty($month))
 		$this->currentMonth = Date("n");
@@ -15,144 +32,170 @@ function babMonthX($month = "", $year = "")
 		{
 		$this->currentMonth = $month;
 		}
-		
+	$this->callback = $callback;
+	
 	if(empty($year))
 		{
 		$this->currentYear = Date("Y");
-		if( !empty($ymin) && !empty($ymax))
-			{
-			if( $this->currentYear < $ymin && $this->currentYear > $ymax )
-				$this->currentYear = $ymin;
-			}
-		else
-			{
-			$ymin = Date("Y") - 2;
-			$ymax = $ymin + 4;
-			}
 		}
 	else
 		{
 		$this->currentYear = $year;
 		}
+
+	$this->ymin = 1;
+	$this->ymax = 8;
+	$this->nextmonth = "";
+	$this->nextyear = "";
+	$this->prevmonth = "";
+	$this->prevyear = "";
+	$this->today = "";
+	}
+
+function setMaxYear( $delta )
+	{
+	$this->ymax = $delta;
+	}
+
+function setMinYear( $delta )
+	{
+	$this->ymin = $delta;
 	}
 
 function printout()
 	{
-	global $babMonths, $babDays, $callback, $ymin, $ymax;
-	$sec = "<table width=\"150\" cellpadding=\"1\" cellspacing=\"0\" align=\"center\" class=\"BabSectionBgndSides\"><tr><td>";
-	$sec .= "<table class=\"BabSectionBgndContent\" width=\"150\" cellpadding=\"0\" cellspacing=\"3\">";
-	$sec .= "<TBODY>";
-	$sec .= "<tr>";
-	$sec .= "<td class=\"BabSectionBgndTitle\" colspan=7><img src=\"images/box.gif\" width=\"30\" height=\"7\" alt=\"\"><b>&nbsp;&nbsp;".$babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))]." ".$this->currentYear."</b></td>";
-	$sec .= "</tr>";
-	$sec .= "<tr>";
-	for( $i= 0; $i < count($babDays); $i++)
-		$sec .= "<td bgcolor=\"white\">".substr($babDays[$i], 0, 3)."</td>";
-	$sec .= "</tr>";
-
-	$days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
-	$daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
-	$now = date("j");
-
-	$total = 0;
-	for( $i = 1; $i <= 6; $i++)
+	global $babMonths, $babDays;
+	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
+	$this->curyear = $this->currentYear;
+	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
+	$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
+	$this->now = date("j");
+	$this->w = 0;
+	$todaymonth = date("n");
+	$todayyear = date("Y"); 
+	if( $todayyear >= $this->currentYear - $this->ymin && $todayyear <= $this->currentYear + $this->ymax )
 		{
-		$sec .= "<tr>\n";
-		
-		for( $j = 0; $j < 7; $j++)
+		$this->today = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=";
+		$this->today .= ($todayyear - $this->currentYear + $this->ymin)."&ymax=".($this->currentYear + $this->ymax - $todayyear)."&month=".$todaymonth."&year=".($todayyear)."\">today</a>";
+		}
+
+	if( $this->currentYear > $this->currentYear - $this->ymin)
+		$this->prevyear = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin-1)."&ymax=".($this->ymax+1)."&month=".$this->currentMonth."&year=".($this->currentYear-1)."\"><<</a>";
+	else
+		$this->prevyear = "&nbsp;";
+
+	if( $this->currentMonth != 1 || $this->currentYear > $this->currentYear - $this->ymin)
+		{
+		if( $this->currentMonth == 1)
 			{
-			if( $i == 1 &&  $j < $daynumber)
+			$this->prevmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin-1)."&ymax=".($this->ymax+1)."&month=";
+			$this->prevmonth .= "12&year=".($this->currentYear-1);
+			}
+		else
+			{
+			$this->prevmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=";
+			$this->prevmonth .= ($this->currentMonth - 1)."&year=".$this->currentYear;
+			}
+		$this->prevmonth .= "\"><</a>";
+		}
+	else
+		$this->prevmonth = "&nbsp;";
+
+	if( $this->currentMonth != 12 || $this->currentYear < $this->currentYear + $this->ymax)
+		{
+		if( $this->currentMonth == 12)
+			{
+			$this->nextmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin+1)."&ymax=".($this->ymax-1)."&month=";
+			$this->nextmonth .= "1&year=".($this->currentYear+1);
+			}
+		else
+			{
+			$this->nextmonth = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".$this->ymin."&ymax=".$this->ymax."&month=";
+			$this->nextmonth .= ($this->currentMonth+1)."&year=".$this->currentYear;
+			}
+		$this->nextmonth .= "\">></a>";
+		}
+	else
+		$this->nextmonth = "&nbsp;";
+
+
+	if( $this->currentYear < $this->currentYear + $this->ymax)
+		$this->nextyear = "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$this->callback."&ymin=".($this->ymin+1)."&ymax=".($this->ymax-1)."&month=".$this->currentMonth."&year=".($this->currentYear+1)."\">>></a>";
+	else
+		$this->nextyear = "&nbsp;";
+
+
+	echo babPrintTemplate($this,"month.html", "");
+	}
+
+	function getnextday3()
+		{
+		global $babMonths, $babDays;
+		static $i = 0;
+		if( $i < 7)
+			{
+			$this->day3 = substr($babDays[$i], 0, 3);
+			$i++;
+			return true;
+			}
+		else
+			return false;
+		}
+
+	function getnextweek()
+		{
+		if( $this->w < 7)
+			{
+			$this->w++;
+			return true;
+			}
+		else
+			{
+			return false;
+			}
+		}
+
+	function getnextday()
+		{
+		static $d = 0;
+		static $total = 0;
+		if( $d < 7)
+			{
+			$this->bgcolor = "";
+
+			if( $this->w == 1 &&  $d < $this->daynumber)
 				{
-				$sec .= "<td>&nbsp;</td>\n";
+				$this->day = "&nbsp;";
 				}
 			else
 				{
 				$total++;
-				if( $total > $days)
-					break;
-				if( $total == $now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
+
+				if( $total > $this->days)
+					return false;
+				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
 					{
-					$sec .= "<td bgcolor=\"white\"><a href='#' onclick=\"self.opener.".$callback."('".$total."','".$this->currentMonth."','".$this->currentYear."');window.close();\">".$total."</a></td>\n";
+					$this->bgcolor = "bgcolor=\"white\"";
+					$this->day = "<a href='#' onclick=\"self.opener.".$this->callback."('".$total."','".$this->currentMonth."','".$this->currentYear."');window.close();\">".$total."</a>";
 					}
 				else
-					$sec .= "<td><a href='#' onclick=\"self.opener.".$callback."('".$total."','".$this->currentMonth."','".$this->currentYear."');window.close();\">".$total."</a></td>\n";
+					{
+					$this->day = "<a href='#' onclick=\"self.opener.".$this->callback."('".$total."','".$this->currentMonth."','".$this->currentYear."');window.close();\">".$total."</a>";
+					}
 
 				}
-			if( $total > $days)
-				break;
+			if( $total > $this->days)
+				{
+				return false;
+				}
+			$d++;
+			return true;
 			}
-
-		$sec .= "</tr>\n";
-		}
-	$sec .= "<tr>";
-	$sec .= "<td bgcolor=\"white\"><b>";
-	if( $this->currentYear > $ymin)
-		$sec .= "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$callback."&ymin=".$ymin."&ymax=".$ymax."&month=".$this->currentMonth."&year=".($this->currentYear-1)."\"><<</a>";
-	$sec .= "</b></td>";
-
-	$sec .= "<td bgcolor=\"white\"><b>";
-	if( $this->currentMonth != 1 || $this->currentYear > $ymin)
-		{
-		$sec .= "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$callback."&ymin=".$ymin."&ymax=".$ymax."&month=";
-		if( $this->currentMonth == 1)
-			$sec .= "12&year=".($this->currentYear-1);
 		else
-			$sec .= ($this->currentMonth - 1)."&year=".$this->currentYear;
-		$sec .= "\"><</a>";
+			{
+			$d = 0;
+			return false;
+			}
 		}
-	$sec .= "</b></td>";
-
-
-	$sec .= "<td bgcolor=\"white\" colspan=3><b>&nbsp;</b></td>";
-	$sec .= "<td bgcolor=\"white\"><b>";
-	if( $this->currentMonth != 12 || $this->currentYear < $ymax)
-		{
-		$sec .= "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$callback."&ymin=".$ymin."&ymax=".$ymax."&month=";
-		if( $this->currentMonth == 12)	
-			$sec .= "1&year=".($this->currentYear+1);
-		else
-			$sec .= ($this->currentMonth+1)."&year=".$this->currentYear;
-		$sec .= "\">></a>";
-		}
-
-	$sec .= "</b></td>";
-
-	$sec .= "<td bgcolor=\"white\"><b>";
-	if( $this->currentYear < $ymax)
-		$sec .= "<a href=\"".$GLOBALS[babUrl]."index.php?tg=month&callback=".$callback."&ymin=".$ymin."&ymax=".$ymax."&month=".$this->currentMonth."&year=".($this->currentYear+1)."\">>></a>";
-	$sec .= "</b></td>";
-
-	$sec .= "</tr>";
-	$sec .= "</TBODY>";
-	$sec .= "</table>";
-	$sec .= "</td></tr></table><br>";
-	return $sec;
-	}
 }
-
-
-
 ?>
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<META NAME="Generator" CONTENT="Ovidentia">
-<META NAME="Author" CONTENT="">
-<META NAME="Keywords" CONTENT="">
-<META NAME="Description" CONTENT="">
-<LINK rel="stylesheet" title="Default" href="<?php echo $GLOBALS[babUrl];?>styles/<?php echo $GLOBALS[babStyle]; ?>" type="text/css">
-<script type="text/javascript">
-<!--
-//-->
-</script>
-</HEAD>
-<BODY>
-<br><br><br>
-<?php
-$month = new babMonthX($month, $year);
-echo $month->printout();
-?>
-</body>
-</html>

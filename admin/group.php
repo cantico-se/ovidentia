@@ -1,7 +1,6 @@
 <?php
 include $babInstallPath."utilit/grpincl.php";
 
-
 function groupModify($id)
 	{
 	global $body;
@@ -14,6 +13,8 @@ function groupModify($id)
 		{
 		var $name;
 		var $description;
+		var $managertext;
+		var $managerval;
 		var $modify;
 
 		var $db;
@@ -24,11 +25,21 @@ function groupModify($id)
 			{
 			$this->name = babTranslate("Name");
 			$this->description = babTranslate("Description");
+			$this->managertext = babTranslate("Manager");
 			$this->modify = babTranslate("Modify Group");
 			$this->db = new db_mysql();
 			$req = "select * from groups where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			$req = "select * from users where id='".$this->arr[manager]."'";
+			$res = $this->db->db_query($req);
+			if( $this->db->db_num_rows($res) > 0)
+				{
+				$arr = $this->db->db_fetch_array($res);
+				$this->managerval = $arr[email];
+				}
+			else
+				$this->managerval = "";
 			}
 		}
 
@@ -207,7 +218,7 @@ function groupVacation($id)
 	}
 
 
-function modifyGroup($oldname, $name, $description, $id)
+function modifyGroup($oldname, $name, $description, $manager, $id)
 	{
 	global $body;
 	if( empty($name))
@@ -225,7 +236,23 @@ function modifyGroup($oldname, $name, $description, $id)
 		}
 	else
 		{
-		$query = "update groups set name='$name', description='$description' where id='$id'";
+		if( !empty($manager))
+			{
+			$req = "select * from users where email='".$manager."'";	
+			$res = $db->db_query($req);
+
+			if( $db->db_num_rows($res) < 1)
+				{
+				$body->msgerror = babTranslate("The manager doesn't exist");
+				return;
+				}
+			$arr = $db->db_fetch_array($res);
+			$idmanager = $arr[id];
+			}
+		else
+			$idmanager = 0;
+
+		$query = "update groups set name='$name', description='$description', manager='$idmanager' where id='$id'";
 		$db->db_query($query);
 		}
 	Header("Location: index.php?tg=groups&idx=List");
@@ -296,22 +323,20 @@ function vacationGroup($usevacation, $approver, $item)
 
 function confirmDeleteGroup($id)
 	{
-	global $tableGroups;
-
 	if( $id <= 3)
 		return;
 	$db = new db_mysql();
-	$req = "delete from topicsview_groups"." where id_group='$id'";
+	$req = "delete from topicsview_groups where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from topicscom_groups"." where id_group='$id'";
+	$req = "delete from topicscom_groups where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from topicssub_groups"." where id_group='$id'";
+	$req = "delete from topicssub_groups where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from sections_groups"." where id_group='$id'";
+	$req = "delete from sections_groups where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from faqcat_groups"." where id_group='$id'";
+	$req = "delete from faqcat_groups where id_group='$id'";
 	$res = $db->db_query($req);	
-	$req = "delete from users_groups"." where id_group='$id'";
+	$req = "delete from users_groups where id_group='$id'";
 	$res = $db->db_query($req);	
 	$req = "delete from vacationsman_groups where id_group='$id'";
 	$res = $db->db_query($req);
@@ -327,7 +352,7 @@ if( !isset($idx))
 	$idx = "Modify";
 
 if( isset($modify))
-	modifyGroup($oldname, $name, $description, $item);
+	modifyGroup($oldname, $name, $description, $manager, $item);
 
 if( isset($vacation) && $vacation == "update")
 	{

@@ -29,6 +29,10 @@ function registerUser( $fullname, $email, $password1, $password2)
 	$result=$db->db_query($sql);
 	if ($result)
 		{
+		$id = $db->db_insert_id();
+		$sql = "insert into calendar (owner, type) values ('$id', '1')";
+		$result=$db->db_query($sql);
+
 		$body->msgerror = babTranslate("Thank You For Registering at our site") ."<br>";
 		$body->msgerror .= babTranslate("You will receive an email which let you confirm your registration.");
 		$message = babTranslate("Thank You For Registering at our site")."\n". babTranslate("Simply follow this")." <a href=\"".$babUrl."index.php?tg=register&cmd=confirm&hash=$hash&email=". urlencode($email)."\">link</a> ".babTranslate("to confirm your registration").": ".
@@ -129,10 +133,11 @@ function confirmUser($hash, $email)
 			return true;
 			}
 		}
-	else {
+	else
+		{
 		$body->msgerror = babTranslate("Update failed");
 		return false;
-	}
+		}
 
 	}
 

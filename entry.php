@@ -44,6 +44,7 @@ function listArticles()
 					}
 				}
 			$this->counttop = count($this->arrid);
+			//echo $this->counttop;
 
 			$this->com = false;
 			$this->morename = babTranslate("Read More");

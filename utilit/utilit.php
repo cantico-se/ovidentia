@@ -3,6 +3,7 @@ include $babInstallPath."utilit/dbutil.php";
 include $babInstallPath."utilit/uiutil.php";
 include $babInstallPath."utilit/template.php";
 include $babInstallPath."utilit/userincl.php";
+include $babInstallPath."utilit/calincl.php";
 include $babInstallPath."utilit/date-".$babLanguage.".php";
 
 function bab_mktime($time)
@@ -198,6 +199,7 @@ function adminSection()
 	$this->array_urls[babTranslate("Topics")] = $GLOBALS[babUrl]."index.php?tg=topics";
 	$this->array_urls[babTranslate("Forums")] = $GLOBALS[babUrl]."index.php?tg=forums";
 	$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=admvacs";
+	$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=admcals";
 	$this->title = babTranslate("Administration");
 	$this->head = babTranslate("This section is for Administration");
 	$this->foot = babTranslate("");
@@ -231,7 +233,7 @@ var $titlebgnd;
 
 function userSection()
 	{
-	global $sectionTitlesBgnd;
+	global $BAB_SESS_USERID, $sectionTitlesBgnd;
 	$faq = false;
 	$db = new db_mysql();
 	$req = "select * from faqcat";
@@ -256,6 +258,8 @@ function userSection()
 		$this->array_urls[babTranslate("Faq")] = $GLOBALS[babUrl]."index.php?tg=faq";
 	if( $vac )
 		$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=vacation";
+	if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && getCalendarid($BAB_SESS_USERID, 1) != 0 )
+		$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=calview";
 	$this->title = babTranslate("User's section");
 	$this->head = babTranslate("You are logged as").":<br><center><b>";
 	if( !empty($GLOBALS[BAB_SESS_USER]))
@@ -585,83 +589,155 @@ function printout()
 
 }  /* end of class babBody */
 
-class babMonth  extends babSection
+class babMonthA  extends babSection
 {
 var $currentMonth;
 var $currentYear;
+var $curmonth;
+var $curyear;
+var $day3;
 
-function babMonth($month = "", $year = "")
+var $days;
+var $daynumber;
+var $now;
+var $w;
+var $event;
+var $dayurl;
+
+var $db;
+
+function babMonthA($month = "", $year = "")
 	{
-	$this->babSection("", "");
+
+	$this->db = new db_mysql();
 
 	if(empty($month))
 		$this->currentMonth = Date("n");
 	else
+		{
 		$this->currentMonth = $month;
-		
+		}
+	$this->callback = $callback;
+	
 	if(empty($year))
+		{
 		$this->currentYear = Date("Y");
+		}
 	else
+		{
 		$this->currentYear = $year;
+		}
 
 	}
 
 function printout()
 	{
-	$sec = "<table width=\"150\" cellpadding=\"1\" cellspacing=\"0\" align=\"center\" class=\"BabSectionBgndSides\"><tr><td>";
-	$sec .= "<table class=\"BabSectionBgndContent\" width=\"150\" cellpadding=\"0\" cellspacing=\"3\">";
-	$sec .= "<TBODY>";
-	$sec .= "<tr>";
-	$sec .= "<td class=\"BabSectionBgndTitle\" colspan=7><img src=\"images/box.gif\" width=\"30\" height=\"7\" alt=\"\"><b>&nbsp;&nbsp;".date("F", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))."</b></td>";
-	$sec .= "</tr>";
-	$sec .= "<tr>";
-	$sec .= "<td bgcolor=\"white\">L</td><td bgcolor=\"white\">M</td><td bgcolor=\"white\">M</td><td bgcolor=\"white\">J</td><td bgcolor=\"white\">V</td><td bgcolor=\"white\">S</td><td bgcolor=\"white\">D</td>";
-	$sec .= "</tr>";
+	global $babMonths, $babDays,$BAB_SESS_USERID;
+	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
+	$this->curyear = $this->currentYear;
+	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
+	$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
+	$this->now = date("j");
+	$this->w = 0;
+	$todaymonth = date("n");
+	$todayyear = date("Y");
+	$this->idcal = getCalendarId($BAB_SESS_USERID, 1);
+	$idgrp = getPrimaryGroupId($BAB_SESS_USERID);
+	$this->idgrpcal = getCalendarId($idgrp, 2);
+	return babPrintTemplate($this,"montha.html", "");
+	}
 
-	$days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
-	$daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
-	if(!$daynumber)
-		$daynumber = 7;
-	$now = date("j");
-
-	$total = 0;
-	for( $i = 1; $i <= 6; $i++)
+	function getnextday3()
 		{
-		$sec .= "<tr>\n";
-		
-		for( $j = 1; $j <= 7; $j++)
+		global $babMonths, $babDays;
+		static $i = 0;
+		if( $i < 7)
 			{
-			if( $i == 1 &&  $j < $daynumber)
+			$this->day3 = substr($babDays[$i], 0, 1);
+			$i++;
+			return true;
+			}
+		else
+			return false;
+		}
+
+	function getnextweek()
+		{
+		if( $this->w < 7)
+			{
+			$this->w++;
+			return true;
+			}
+		else
+			{
+			return false;
+			}
+		}
+
+	function getnextday()
+		{
+		static $d = 0;
+		static $total = 0;
+		if( $d < 7)
+			{
+			$this->bgcolor = "";
+			$this->event = 0;
+
+			if( $this->w == 1 &&  $d < $this->daynumber)
 				{
-				$sec .= "<td>&nbsp;</td>\n";
+				$this->day = "&nbsp;";
 				}
 			else
 				{
 				$total++;
-				if( $total > $days)
-					break;
-				if( $total == $now )
+
+				if( $total > $this->days)
+					return false;
+				$this->day = $total;
+				$mktime = mktime(0,0,0,$this->currentMonth, $total,$this->currentYear);
+				$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
+				$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
+				$req = "select * from cal_events where id_cal='".$this->idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
+				$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax')";
+				$res = $this->db->db_query($req);
+				if( $res && $this->db->db_num_rows($res) > 0)
 					{
-					$sec .= "<td class=\"BabSectionBgndTitle\">".$total."</td>\n";
+					$this->event = 1;
+					$this->dayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idcal;
+					$this->day = "<b>".$total."</b>";
 					}
 				else
-					$sec .= "<td>".$total."</td>\n";
+					{
+					$req = "select * from cal_events where id_cal='".$this->idgrpcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
+					$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax')";
+					$res = $this->db->db_query($req);
+					if( $res && $this->db->db_num_rows($res) > 0)
+						{
+						$this->event = 1;
+						$this->dayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idgrpcal;
+						$this->day = "<b>".$total."</b>";
+						}
+					}
+				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
+					{
+					$this->bgcolor = "bgcolor=\"white\"";
+					}
 
 				}
-			if( $total > $days)
-				break;
+			if( $total > $this->days)
+				{
+				return false;
+				}
+			$d++;
+			return true;
 			}
-
-		$sec .= "</tr>\n";
+		else
+			{
+			$d = 0;
+			return false;
+			}
 		}
-	$sec .= "</TBODY>";
-	$sec .= "</table>";
-	$sec .= "</td></tr></table><br>";
-	return $sec;
-	}
 }
-
-
 function updateActivity()
 {
 	global $BAB_SESS_USERID;

@@ -1,30 +1,51 @@
 
-DROP TABLE IF EXISTS vacations_states;
-CREATE TABLE vacations_states (
-   id tinyint(2) NOT NULL auto_increment,
-   status varchar(255) NOT NULL,
-   description text NOT NULL,
-   PRIMARY KEY (id)
+ALTER TABLE groups ADD manager INT (11) UNSIGNED not null AFTER vacation;
+
+CREATE TABLE categoriescal (
+	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
+	name VARCHAR (60) not null,
+	description VARCHAR (255) not null,
+	bgcolor VARCHAR (6) not null,
+	id_group INT (11) UNSIGNED not null,
+	PRIMARY KEY (id)
 );
 
-#
-# Contenu de la table 'vacations_states'
-#
-
-INSERT INTO vacations_states VALUES ( '1', 'Refused', 'Vacation refused');
-INSERT INTO vacations_states VALUES ( '2', 'Accepted', 'Vacation accepted');
-
-ALTER TABLE vacations ADD date DATETIME not null AFTER comment;
-ALTER TABLE vacations ADD comref TEXT not null AFTER comment;
-
-DROP TABLE IF EXISTS vacationsmana_groups;
-
-CREATE TABLE vacationsman_groups (
+CREATE TABLE resourcescal (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	id_object INT (11) not null,
-	id_group INT (11) not null,
-	ordering SMALLINT (4) UNSIGNED not null,
-	status TINYINT (2) not null,
-	supplier INT (11) UNSIGNED not null,
+	name VARCHAR (60) not null,
+	description VARCHAR (255) not null,
+	id_group INT (11) UNSIGNED not null,
 	PRIMARY KEY (id)
 ); 
+
+
+# --------------------------------------------------------
+#
+# database dev
+#
+
+CREATE TABLE cal_events (
+	id INT (11) UNSIGNED not null AUTO_INCREMENT,
+	id_cal INT (11) UNSIGNED not null,
+	title VARCHAR (255) not null,
+	description TEXT not null,
+	start_date DATE not null,
+	start_time TIME not null,
+	end_date DATE not null,
+	end_time TIME not null,
+	id_cat INT (11) UNSIGNED not null,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE calendar (
+	id int(11) unsigned NOT NULL auto_increment,
+	owner int(11) unsigned DEFAULT '0' NOT NULL,
+	actif enum('Y','N') DEFAULT 'Y' NOT NULL,
+	type TINYINT (2) not null,
+	PRIMARY KEY (id)
+);
+
+INSERT INTO calendar VALUES ( '1', '1', 'Y', '1');
+INSERT INTO calendar VALUES ( '2', '1', 'Y', '2');
+INSERT INTO calendar VALUES ( '3', '2', 'N', '2');
+INSERT INTO calendar VALUES ( '4', '3', 'Y', '2');

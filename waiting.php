@@ -475,7 +475,7 @@ switch($idx)
 		$body->title = getCategoryTitle($topics);
 		readMore($topics, $article);
 		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modifier"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
 		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
@@ -483,7 +483,7 @@ switch($idx)
 		$body->title = getArticleTitle($article);
 		modifyArticle($topics, $article);
 		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modifier"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
 		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
@@ -491,7 +491,7 @@ switch($idx)
 		$body->title = getArticleTitle($article);
 		confirmArticle($article, $topics);
 		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modifier"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
 		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS[babUrl]."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 

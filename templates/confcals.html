@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK href="../styles/vtd8.css" rel=stylesheet>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+<!--#begin categorycreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="confcals">
+<input type="hidden" name="idx" value="listcat">
+<input type="hidden" name="userid" value="{ userid }">
+<input type="hidden" name="addcat" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">{ name }:</td>
+<td ><input type="text" name="name" size="60" maxlength="60"></td>
+</tr>
+<tr>
+<td align="right">{ description }:</td>
+<td><input type="text" name="description" size="60" maxlength="255"></td>
+</tr>
+<tr>
+<td align="right">{ bgcolor }:</td>
+<td><input type="text" name="bgcolor" size="6" maxlength="6"></td>
+</tr>
+<tr>
+<td align="right">{ groupsname }:</td>
+<td>
+<select multiple name="groups[]" size="10">
+<!--#in getnextgroup -->
+<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+<!--#endin getnextgroup -->
+</select>
+</td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end categorycreate -->
+
+<br><br><br><br>
+<!--#begin categorieslist -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ name }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ group }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ bgcolor }</b></td></tr>
+<!--#in getnextgroup -->
+<!--#in getnext -->
+<tr><td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td><td nowrap bgcolor="#{ arr[bgcolor] }" align="center">&nbsp;{ arr[bgcolor] }</td>
+</tr>
+<!--#endin getnext -->
+<!--#endin getnextgroup -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end categorieslist -->
+
+<br><br><br><br>
+<!--#begin categorycalmodify -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="confcal">
+<input type="hidden" name="idx" value="modifycat">
+<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="oldname" value="{ arr[name] }">
+<input type="hidden" name="userid" value="{ userid }">
+<input type="hidden" name="modify" value="modcat">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">{ name }:</td>
+<td ><input type="text" name="name" size="60" maxlength="60" value="{ arr[name] }"></td>
+</tr>
+<tr>
+<td align="right">{ description }:</td>
+<td ><input type="text" name="description" size="60" maxlength="255" value="{ arr[description] }"></td>
+</tr>
+<tr>
+<td align="right">{ bgcolor }:</td>
+<td ><input type="text" name="bgcolor" size="6" maxlength="6" value="{ arr[bgcolor] }"></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td ><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end categorycalmodify -->
+<br><br><br><br>
+<!--#begin resourceslist -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ name }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ group }</b></td>
+<!--#in getnextgroup -->
+<!--#in getnext -->
+<tr><td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td>
+</tr>
+<!--#endin getnext -->
+<!--#endin getnextgroup -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end resourceslist -->
+<br><br><br><br>
+<!--#begin resourcecreate -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="confcals">
+<input type="hidden" name="idx" value="listres">
+<input type="hidden" name="userid" value="{ userid }">
+<input type="hidden" name="addres" value="add">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">{ name }:</td>
+<td ><input type="text" name="name" size="60" maxlength="60"></td>
+</tr>
+<tr>
+<td align="right">{ description }:</td>
+<td><input type="text" name="description" size="60" maxlength="255"></td>
+</tr>
+<tr>
+<td align="right">{ groupsname }:</td>
+<td>
+<select multiple name="groups[]" size="10">
+<!--#in getnextgroup -->
+<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+<!--#endin getnextgroup -->
+</select>
+</td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end resourcecreate -->
+<br><br><br><br>
+<!--#begin resourcecalmodify -->
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="confcal">
+<input type="hidden" name="idx" value="modifyres">
+<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="oldname" value="{ arr[name] }">
+<input type="hidden" name="userid" value="{ userid }">
+<input type="hidden" name="modify" value="modres">
+<center>
+<table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+<td align="right">{ name }:</td>
+<td ><input type="text" name="name" size="60" maxlength="60" value="{ arr[name] }"></td>
+</tr>
+<tr>
+<td align="right">{ description }:</td>
+<td ><input type="text" name="description" size="60" maxlength="255" value="{ arr[description] }"></td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td ><input type="submit" name="submit" value="{ modify }"></td>
+</tr>
+</table>
+</center>
+</form>
+</td></tr>
+</table>
+</center>
+<!--#end resourcecalmodify -->
+<br><br><br><br>
+</BODY>
+</HTML>
