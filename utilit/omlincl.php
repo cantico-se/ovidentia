@@ -4391,6 +4391,34 @@ function bab_PutVar($args)
 		}
 	}
 
+/* get a variable */
+function bab_GetVar($args)
+	{
+	global $babBody;
+	$name = "";
+
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'name':
+					$name = $mm[3][$j];
+					$global = true;
+					break;
+				}
+			}					
+
+		if( !empty($name))
+			{
+			$value = $this->get_value($name);
+			if( $value !== false )
+				return $value;
+			}
+		}
+	}
+
 /* save a variable to global space if not already defined */
 function bab_IfNotIsSet($args)
 	{
