@@ -956,8 +956,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($navitem != "g") $navpos = 0;
 				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);
 				$tmp = explode(" ",$order);
-				if (in_array("title",$tmp)) $order = "sn ASC, givenname ASC";
-				$req = "select * from dirresults order by ".$order." limit ".$navpos.", ".$babLimit;
+				if (in_array("title",$tmp)) $order_tmp = "sn ASC, givenname ASC";
+				$req = "select * from dirresults order by ".$order_tmp." limit ".$navpos.", ".$babLimit;
 				$this->resdir = $this->db->db_query($req);
 				$this->countdir = $this->db->db_num_rows($this->resdir);
 				if( !$this->counttot && $this->countdir > 0 )
