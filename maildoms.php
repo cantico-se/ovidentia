@@ -377,7 +377,7 @@ switch($idx)
 		}
 		else
 		{
-			$babBody->title = bab_translate("Private domains list");
+			$babBody->title = bab_translate("Available domains list");
 		}
 		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("list", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
