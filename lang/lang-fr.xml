@@ -832,4 +832,9 @@
 <string id="Calendar access has been updated">L'agenda a été mis à jour</string>
 <string id="Private home page articles">Liste des articles de la page d'accueil privée</string>
 <string id="Public home page articles">Liste des articles de la page d'accueil public</string>
+<string id="An article has been modified">Un article a été modifié</string>
+<string id="An article has been published">Un article a été publié</string>
+<string id="Notify group members by mail">Notifier les membres du groupe par email</string>
+<string id="Events categories">Catégories d'évènements</string>
+<string id="Inbox">Boîte de réception</string>
 </fr>
