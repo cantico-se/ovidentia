@@ -2410,5 +2410,5 @@ CREATE TABLE bab_forumsfiles_groups (
   id_group int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_object (id_object),
-  KEY id_group (id_group`)
+  KEY id_group (id_group)
 );
