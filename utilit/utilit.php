@@ -556,9 +556,9 @@ function bab_translate_old($str, $folder = "")
 
 function bab_callAddonsFunction($func)
 {
-	global $babBody,$babDB;
+	$babBody = & $GLOBALS['babBody'];
 	reset($babBody->babaddons);
-	while( $row=each($babBody->babaddons) ) 
+	while( list($key,$row)=each($babBody->babaddons) ) 
 		{ 
 		$acces =false;
 		if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
