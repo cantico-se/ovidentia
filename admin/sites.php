@@ -523,10 +523,10 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		$idsite = $db->db_insert_id();
 		$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
 
-		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRAEXTRA_TBL." where id_directory='0'");
+		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
 		while( $row = $db->db_fetch_array($resf))
 			{
-			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$row['name']."','','".$idsite."')");
+			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$row['id_field']."','','".$idsite."')");
 			$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id_field']."','N','N', 'N')");
 			}
 
