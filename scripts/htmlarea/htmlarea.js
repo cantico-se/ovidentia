@@ -1271,7 +1271,7 @@ HTMLArea.prototype._editorEvent = function(ev) {
 		    case 'u': cmd = "underline"; break;
 		    case 's': cmd = "strikethrough"; break;
 		    case 'l': cmd = "justifyleft"; break;
-		    case 'e': cmd = "justifycenter"; break;
+		    //case 'e': cmd = "justifycenter"; break; // euro key!
 		    case 'r': cmd = "justifyright"; break;
 		    case 'j': cmd = "justifyfull"; break;
 
