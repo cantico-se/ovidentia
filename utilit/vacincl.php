@@ -281,6 +281,9 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 
 				list($nbdays) = $db->db_fetch_array($db->db_query($req));
 
+				if (empty($nbdays))
+					$nbdays = 0;
+
 				$access = false;
 				if ( $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] )
 					$access = true;
