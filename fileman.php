@@ -1616,7 +1616,7 @@ function viewFile( $idf)
 		var $fsizetxt;
 		var $fsize;
 
-		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate)
+		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload)
 			{
 			$this->access = $access;
 			if( $access)
@@ -1624,6 +1624,7 @@ function viewFile( $idf)
 				$this->bmanager = $bmanager;
 				$this->bconfirm = $bconfirm;
 				$this->bupdate = $bupdate;
+				$this->bdownload = $bdownload;
 				if( $bconfirm || $bmanager || $bupdate)
 					$this->bsubmit = true;
 				else
@@ -1720,6 +1721,7 @@ function viewFile( $idf)
 	$bmanager = false;
 	$bconfirm = false;
 	$bupdate = false;
+	$bdownload = false;
 	$db = $GLOBALS['babDB'];
 	$req = "select * from ".BAB_FILES_TBL." where id='".$idf."'";
 	$res = $db->db_query($req);
@@ -1733,6 +1735,7 @@ function viewFile( $idf)
 				$access = true;
 				$bmanager = true;
 				$bupdate = true;
+				$bdownload = true;
 				}
 			}
 
@@ -1750,6 +1753,9 @@ function viewFile( $idf)
 				if( $babBody->aclfm['id'][$i] == $arr['id_owner'] )
 					{
 					$access = true;
+                    if($babBody->aclfm['down'][$i])
+                        $bdownload = true;
+
 					if( $babBody->aclfm['ma'][$i] == 1 && !empty($BAB_SESS_USERID))
 						{
 						$bmanager = true;
@@ -1765,7 +1771,7 @@ function viewFile( $idf)
 			}
 		}
 
-	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate);
+	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload);
 	echo bab_printTemplate($temp,"fileman.html", "viewfile");
 	}
 
