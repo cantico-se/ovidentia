@@ -79,6 +79,48 @@ function db_connect($host, $login, $password, $dbname)
     return $dblink;
     }
 
+function db_close($id)
+    {
+	$res = false;
+
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			$res = mysql_close($id);
+			break;
+		}
+	return $res;
+    }
+
+function db_create_db($dbname, $id)
+    {
+	$res = false;
+
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			$res = mysql_create_db($dbname, $id);
+			break;
+		}
+	return $res;
+    }
+
+function db_drop_db($dbname, $id)
+    {
+	$res = false;
+
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			$res = mysql_drop_db($dbname, $id);
+			break;
+		}
+	return $res;
+    }
+
 function db_query($id, $query)
     {
 	$res = false;
@@ -188,6 +230,40 @@ function db_data_seek($res, $row)
 		}
 	}
 
+function db_escape_string($str)
+    {
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			return mysql_escape_string($str);
+			break;
+		}
+	}
+
+function db_real_escape_string($str, $id)
+    {
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			return mysql_real_escape_string($str, $id);
+			break;
+		}
+	}
+
+function db_free_result($result)
+    {
+	switch($this->db_type )
+		{
+		case "mysql":
+		default:
+			return mysql_free_result($result);
+			break;
+		}
+	}
+
+
 } /* end of class bab_database */
 
 class babDatabase extends bab_database
@@ -205,6 +281,21 @@ class babDatabase extends bab_database
 			$idlink = parent::db_connect($GLOBALS['babDBHost'], $GLOBALS['babDBLogin'], $GLOBALS['babDBPasswd'], $GLOBALS['babDBName']);
 			}
 		return $idlink;
+		}
+
+	function db_close()
+		{
+		return parent::db_close($this->db_connect());
+		}
+
+	function db_create_db($dbname)
+		{
+		return parent::db_create_db($dbname, $this->db_connect());
+		}
+
+	function db_drop_db($dbname)
+		{
+		return parent::db_drop_db($dbname, $this->db_connect());
 		}
 
 	function db_query($query)
@@ -252,6 +343,20 @@ class babDatabase extends bab_database
 		return parent::db_data_seek($res, $row);
 		}
 
+	function db_escape_string($str)
+		{
+		return parent::db_escape_string($str);
+		}
+
+	function db_real_escape_string($str)
+		{
+		return parent::db_real_escape_string($str, $this->db_connect());
+		}
+
+	function db_free_result($result)
+		{
+		return parent::db_free_result($result);
+		}
 }
 
 
