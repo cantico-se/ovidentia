@@ -72,7 +72,7 @@
 <!--#in getnext -->
 <table   border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <tr>
-<td colspan="2" class="BabTopicsTitleBackground"><a name="art{ arr[id] }"></a>{ arr[title] }</td>
+<td colspan="2" class="BabTopicsTitleBackground"><a name="art{ arr[id] }"></a>{ title }</td>
 </tr>
 <tr>
 <td class="BabTopicsBackground" colspan="2">{ content }</td>
@@ -172,11 +172,25 @@ ctrlf = t;
 </tr>
 <!--#endif msie -->
 <tr> 
+<td valign="middle"> 
+
+<table width="100%"><tr>
 <td class="BabLoginMenuBackground" valign="middle" align="center">{ title } </td>
+<td class="BabLoginMenuBackground" valign="middle" align="center">{ topicstxt } </td>
 </tr>
 <tr> 
 <td align="center" valign="middle"> 
 <input type="text" name="title" size="50" value="{ titleval }" maxlength="100">
+</td>
+<td align="center" valign="middle">
+<select name="topicid">
+<!--#in getnexttopic -->
+<option value="{ topicid }" { selected }>{ topictitle }</option>
+ <!--#endin getnexttopic -->
+</select>
+</td>
+</tr></table>
+
 </td>
 </tr>
 <tr> 

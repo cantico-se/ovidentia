@@ -68,6 +68,7 @@ function listArticles($topics, $newc, $approver)
 				$this->articledate = bab_getArticleDate($this->arr['id']);
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
+				$this->title = stripslashes($this->arr['title']);
 				if( $this->approver )
 					$this->blen = 1;
 				else
@@ -451,6 +452,7 @@ function modifyArticle($topics, $article)
 		var $count;
 		var $res;
 		var $msie;
+		var $topicstxt;
 
 		function temp($topics, $article)
 			{
@@ -460,6 +462,7 @@ function modifyArticle($topics, $article)
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
+			$this->topicstxt = bab_translate("Topic");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
@@ -479,6 +482,29 @@ function modifyArticle($topics, $article)
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+
+			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$GLOBALS['BAB_SESS_USERID']."'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
+
+		function getnexttopic()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->topicid = $arr['id'];
+				$this->topictitle = $arr['category'];
+				if( $arr['id'] == $this->topics )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 	
@@ -662,8 +688,15 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	$bodytext = addslashes($bodytext);
 
 	$db = $GLOBALS['babDB'];
-	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, title, body, head) values ";
-	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
+	$arr = $db->db_fetch_array($db->db_query("select id_approver from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+	if( $arr['id_approver'] == 0 )
+		$confirmed = "Y";
+	else
+		$confirmed = "N";
+
+
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date, title, body, head) values ";
+	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', '" . $confirmed."', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
@@ -704,9 +737,14 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		}
 
 	$db = $GLOBALS['babDB'];
+	$arr = $db->db_fetch_array($db->db_query("select id_approver from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+	if( $arr['id_approver'] == 0 )
+		$confirmed = "Y";
+	else
+		$confirmed = "N";
 
-	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date) values ";
-	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now())";
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date) values ";
+	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', '" . $confirmed. "', now())";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
@@ -740,7 +778,7 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	}
 
 //@@: warn this function is duplicated in waiting.php file 
-function updateArticle($topics, $title, $article, $headtext, $bodytext)
+function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid)
 	{
 	global $babBody;
 
@@ -763,7 +801,7 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext)
 
 	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now() where id='".$article."'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."' where id='".$article."'";
 	$res = $db->db_query($req);
 
 	}
@@ -798,7 +836,7 @@ if( isset($action) && $action == "Yes" && bab_isUserApprover($topics))
 
 if( isset($modify))
 	{
-	updateArticle($topics, $title, $article, $headtext, $bodytext);
+	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid);
 	$idx = "Articles";
 	}
 
