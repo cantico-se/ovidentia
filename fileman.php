@@ -1023,13 +1023,13 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 
-	$name = $osfname;
+	$name = mysql_escape_string($osfname);
+
 	$mqgo = bab_isMagicQuotesGpcOn();
 	if( !$mqgo)
 		{
-		$name = addslashes($osfname);
-		$description = addslashes($description);
-		$keywords = addslashes($keywords);
+		$description = mysql_escape_string($description);
+		$keywords = mysql_escape_string($keywords);
 		}
 
 	$db = $GLOBALS['babDB'];
@@ -1099,7 +1099,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else
 		{
 		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
-		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" . addslashes($path). "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
+		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" .addslashes($path). "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
 		$db->db_query($req);
 		$idf = $db->db_insert_id(); 
 		}
@@ -1696,6 +1696,13 @@ function delFile( $file, $id, $gr, $path, $bmanager)
 		$babBody->msgerror = bab_translate("Access denied");
 		return false;
 		}
+
+	if (!bab_isMagicQuotesGpcOn())
+		{
+		$path = mysql_escape_string($path);
+		$file = mysql_escape_string($file);
+		}
+	
 	$db = $GLOBALS['babDB'];
 	$req = "update ".BAB_FILES_TBL." set state='D' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and name='".$file."'";
 	$res = $db->db_query($req);
