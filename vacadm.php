@@ -1138,7 +1138,7 @@ function confirmDeletePersonnel($items)
 			{
 			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$row['id']."'");
 			}
-		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id_user='".$row['id']."'");
+		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id_user='".$arr[$i]."'");
 
 		$res = $babDB->db_query("select id_right from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$arr[$i]."'");
 		while( $row = $babDB->db_fetch_array($res))
@@ -1146,7 +1146,7 @@ function confirmDeletePersonnel($items)
 			$babDB->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$arr[$i]."' and id_right='".$row['id_right']."'");
 			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$row['id_right']."'"));
 			if( $total == 0 )
-				$babDB->db_query("delete from ".BAB_ENTRIES_TBL." where id='".$row['id_right']."'");
+				$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$row['id_right']."'");
 			}
 		$babDB->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$arr[$i]."'");
 		}
