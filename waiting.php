@@ -46,7 +46,7 @@ function listArticles($topics)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
 					$this->articleauthor = bab_translate("Anonymous");
@@ -100,7 +100,7 @@ function readMore($topics, $article)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['body']);
-				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
 					$this->articleauthor = bab_translate("Anonymous");
@@ -657,7 +657,7 @@ if( $uaapp && isset($modify))
 if( isset($confirm) )
 	{
 	if($uaapp && $confirm == "article")
-		updateConfirmArticle($topics, $article, $action, $send, $author, $message,$homepage0, $homepage1);
+		updateConfirmArticle($topics, $article, $action, $send, $author, $message,$homepage0, $homepage1, $bnotif);
 	if($ucapp && $confirm == "comment")
 		updateConfirmComment($topics, $article, $action, $send, $author, $message, $comment, $new);
 	}

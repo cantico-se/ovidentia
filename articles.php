@@ -62,7 +62,7 @@ function listArticles($topics, $approver)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
 					$this->articleauthor = bab_translate("Anonymous");
@@ -222,7 +222,7 @@ function listOldArticles($topics, $pos, $approver)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
 					$this->articleauthor = bab_translate("Anonymous");
@@ -340,7 +340,7 @@ function readMore($topics, $article)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['body']);
-				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
 					$this->articleauthor = bab_translate("Anonymous");
