@@ -943,6 +943,13 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else
 		$idcreator = $BAB_SESS_USERID;
 
+	if( $gr == "Y" )
+		{
+		$rr = $db->db_fetch_array($db->db_query("select moderate from ".BAB_GROUPS_TBL." where id='".$id."'"));
+		if( $rr['moderate'] == "N" )
+			$confirmed = "Y";
+		}
+
 	if( $bexist)
 		{
 		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), hits='0', modifiedby='".$idcreator."', state='' where id='".$arr['id']."'";
