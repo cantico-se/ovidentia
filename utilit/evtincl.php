@@ -584,7 +584,7 @@ function notifyEventUpdate($evtid, $bdelete)
 				break;
 			case BAB_CAL_PUB_TYPE:
 				$res2 = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_object='".$arr['id_cal']."'");
-				while( $row = $babDB->db_fetch_array($res2) && !$all)
+				while( ($row = $babDB->db_fetch_array($res2)) && !$all)
 					{
 					switch($row['id_group'])
 						{
@@ -606,7 +606,7 @@ function notifyEventUpdate($evtid, $bdelete)
 				break;
 			case BAB_CAL_RES_TYPE:
 				$res2 = $babDB->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where id_object='".$arr['id_cal']."'");
-				while( $row = $babDB->db_fetch_array($res2) && !$all)
+				while( ($row = $babDB->db_fetch_array($res2)) && !$all)
 					{
 					switch($row['id_group'])
 						{
@@ -631,14 +631,12 @@ function notifyEventUpdate($evtid, $bdelete)
 		if( $all )
 			{
 			$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-			echo "select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'";
 			}
 		else
 			{
 			if( count($arrgroups) > 0 )
 				{
 				$res2 = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group in (".implode(',', array_keys($arrgroups)).")");
-				echo "select id_object from ".BAB_USERS_GROUPS_TBL." where id_group in (".implode(',', array_keys($arrgroups)).")<br>";
 				while( $row = $babDB->db_fetch_array($res2))
 					{
 					if( !isset($arrusers[$row['id_object']]))
@@ -651,11 +649,9 @@ function notifyEventUpdate($evtid, $bdelete)
 			if( count($arrusers) > 0 )
 				{
 				$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." WHERE is_confirmed='1' and disabled='0' and id in (".implode(',', array_keys($arrusers)).") AND id <> '".$GLOBALS['BAB_SESS_USERID']."'");
-				echo "select id, email, firstname, lastname from ".BAB_USERS_TBL." WHERE is_confirmed='1' and disabled='0' and id in (".implode(',', array_keys($arrusers)).") AND id <> '".$GLOBALS['BAB_SESS_USERID']."'<br>";
 				}
 			}
 
-exit;
 		if( $res2 )
 			{
 			$calinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
