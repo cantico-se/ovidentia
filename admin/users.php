@@ -262,6 +262,41 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 	$babBody->babecho(	bab_printTemplate($temp,"users.html", "usercreate"));
 	}
 
+
+function utilit()
+	{
+	global $babBody;
+	class temp
+		{
+
+		function temp()
+			{
+			$this->db = $GLOBALS['babDB'];
+			$this->t_nb_total_users = bab_translate('Total users');
+			$this->t_nb_unconfirmed_users = bab_translate('Unconfirmed users');
+			$this->t_delete_unconfirmed = bab_translate('Delete unconfirmed users from');
+			$this->t_days = bab_translate('Days');
+			$this->t_ok = bab_translate('Ok');
+			$this->js_alert = bab_translate('Day number must be 1 at least');
+			
+			$query = "SELECT COUNT(DISTINCT t1.id) nb_total_users, COUNT(DISTINCT t2.id) nb_unconfirmed_users FROM ".BAB_USERS_TBL." t1 LEFT JOIN ".BAB_USERS_TBL." t2 ON t2.is_confirmed='0'";
+			$this->arr = $this->db->db_fetch_array($this->db->db_query($query));
+			}
+		}
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp,"users.html", "utilit"));
+	}
+	
+function delete_unconfirmed()
+	{
+	include $GLOBALS['babInstallPath']."utilit/delincl.php";
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("SELECT id FROM ".BAB_USERS_TBL." WHERE is_confirmed='0' AND DATE_ADD(datelog, INTERVAL ".$_POST['nb_days']." DAY) < NOW()");
+	while (list($id) = $db->db_fetch_array($res))
+		bab_deleteUser($id);
+	}
+
 function updateGroup( $grp, $users, $userst)
 {
 	$db = $GLOBALS['babDB'];
@@ -387,11 +422,26 @@ switch($idx)
 			if ($grp != 3 && $grp != $babBody->currentAdmGroup) $babBody->addItemMenu("cancel", bab_translate("Group's members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+				{
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
+				}
 			}
 		else
 			{
 			$babBody->msgerror = bab_translate("Access denied");
+			}
+		break;
+	case "utilit":
+		if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			{
+			if (isset($_POST['action']) && $_POST['action'] == 'delete_unconfirmed')
+				delete_unconfirmed();
+				
+			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+			$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
+			$babBody->title = bab_translate("Utilities");
+			utilit();
 			}
 		break;
 	default:
