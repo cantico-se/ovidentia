@@ -193,7 +193,8 @@ function listMails($accid, $criteria, $reverse, $start)
 					$this->msgfromurlname = $headinfo->from[0]->personal;
 				$arr = imap_mime_header_decode($this->msgfromurlname);
 				$this->msgfromurlname = htmlentities($arr[0]->text);
-				$this->msgfromurl = $GLOBALS[babUrl]."index.php?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
+				$this->msgfromurl = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse."')";
+				//$this->msgfromurl = $GLOBALS[babUrl]."index.php?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				$arr = imap_mime_header_decode($headinfo->subject);
 				$this->msgsubjecturlname = htmlentities($arr[0]->text);
 				$this->msgsubjecturl = $this->msgfromurl;
@@ -289,6 +290,9 @@ function viewMail($accid, $msg)
 		var $addurl;
 		var $addname;
 		var $addcontact;
+		var $style;
+		var $babUrl;
+		var $sitename;
 
 		function temp($accid, $msg)
 			{
@@ -300,6 +304,9 @@ function viewMail($accid, $msg)
 			$this->datename = babTranslate("Date");
 			$this->attachmentname = babTranslate("Attachments");
 			$this->addcontact = babTranslate("Add to contacts");
+			$this->style = $GLOBALS[babStyle];
+			$this->babUrl = $GLOBALS[babUrl];
+			$this->sitename = $GLOBALS[babSiteName];
 
 			$this->msg = $msg;
 			$this->accid = $accid;
@@ -487,7 +494,8 @@ function viewMail($accid, $msg)
 				{ 
 				if($structure->type != 1)
 					{
-					if (strtoupper ($structure->disposition) == "ATTACHMENT")
+					$disp = strtoupper ($structure->disposition);
+					if ( $disp == "ATTACHMENT")
 						{
 						if ($structure->ifdparameters)
 							{
@@ -515,6 +523,10 @@ function viewMail($accid, $msg)
 							{
 							$filename = "untitled." . strtolower($structure->subtype);
 							}
+						/*
+						if( !$part_number )
+							$part_number = "1";
+						*/
 						$this->attachment[] = array( "part_number" => urlencode (htmlentities ($part_number))
 													,"filename" => urlencode (htmlentities ($filename))
 													,"encoding" => urlencode (htmlentities ($structure->encoding))
@@ -537,7 +549,7 @@ function viewMail($accid, $msg)
 			}
 		}
 	$temp = new temp($accid, $msg);
-	$body->babecho(	babPrintTemplate($temp,"inbox.html", "mailview"));
+	echo babPrintTemplate($temp,"inbox.html", "mailview");
 	}
 
 function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number = false) 
@@ -641,6 +653,7 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
             	$structure = imap_fetchstructure($mbox, $msg, FT_UID);
 				$text = imap_fetchbody($mbox, $msg, $part);
 				imap_close($mbox);
+				/*
             	if (eregi("([0-9\.]*)\.([0-9\.]*)", $part, $m))
                     {
                     $idx = $m[2] - 1;
@@ -667,13 +680,13 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
                         $filename = $msgpart->dparameters[$i]->value;
                         }
                     }
-
+				*/
 				if( $enc == 3)
 					$text =  imap_base64 ($text);
 				else if ($enc == 4)
 					$text = imap_qprint ($text);
 				header("Content-Type: " . $mime);
-				header("Content-Disposition: attachment; filename=$filename");
+				header("Content-Disposition: attachment; filename=\"".$file."\"");
 				echo $text;
 				exit;
 				}
@@ -738,6 +751,7 @@ switch($idx)
 	{
 	case "attach":
 		getAttachment($accid, $msg, $part, $mime, $enc, $file);
+		exit;
 		break;
 
 	case "getpart":
@@ -755,6 +769,7 @@ switch($idx)
 	case "view":
 		$body->title = babTranslate("Email");
 		viewMail($accid, $msg);
+		exit;
 		$body->addItemMenu("list", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&start=".$start);
 		$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg);
 		$body->addItemMenu("replya", babTranslate("Reply to all"), $GLOBALS[babUrl]."index.php?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1");

@@ -40,6 +40,11 @@ document.forms.listform.submit();
 
 }
 
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
+}
 </script>
 
 <form method="post" action="index.php" name="listform">
@@ -175,13 +180,27 @@ document.forms.listform.submit();
 <br><br><br><br><br>
 
 <!--#begin mailview -->
-<script language="javascript">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
 function Start(page)
 {
 	var dummy;
 	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200");
 }
+//-->
 </script>
+</HEAD>
+<BODY class="BabBackground">
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
   <tr> 
     <td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -246,6 +265,7 @@ function Start(page)
     </td>
   </tr>
 </table>
+</BODY></HTML>
 <!--#end mailview -->
 
 <!--#begin mailcompose -->
