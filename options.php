@@ -447,6 +447,88 @@ function changeSkin($skin)
     $babBody->babecho(	bab_printTemplate($tempc,"options.html", "changeskin"));
     }
 
+
+function changeProfiles()
+{
+	global $babBody,$BAB_SESS_USERID;
+	class changeProfilsCls
+		{
+		function changeProfilsCls()
+			{
+			global $babBody,$babDB;
+			$this->profilestxt = bab_translate("Profiles");
+			$this->updatetxt = bab_translate("Update");
+			$this->res = $babDB->db_query("select * from ".BAB_PROFILES_TBL."");
+			$this->countpf = $babDB->db_num_rows($this->res);
+			$this->altbg = true;
+			}
+
+		function getnextprofile(&$skip)
+			{
+			global $babDB;
+			static $j = 0;
+			if( $j < $this->countpf)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				if( bab_IsAccessValid(BAB_PROFILES_GROUPS_TBL, $arr['id']))
+					{
+					$this->pname = $arr['name'];
+					$this->pdesc = $arr['description'];
+					$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$arr['id']."'");
+					$this->countgrp = $babDB->db_num_rows($this->resgrp);
+					}
+				else
+					{
+					$skip = true;
+					}
+				$j++;
+				return true;
+				}
+			else
+				{
+				$j = 0;
+				return false;
+				}
+			}
+
+		function getnextgrp()
+			{
+			global $babBody, $babDB;
+			static $i = 0;	
+			if( $i < $this->countgrp)
+				{
+				$arr = $babDB->db_fetch_array($this->resgrp);
+				$this->altbg = !$this->altbg;
+				$this->grpid = $arr['id'];
+				$this->grpname = $arr['name'];
+				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
+				if( count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups))
+					{
+					$this->grpcheck = 'checked';
+					}
+				else
+					{
+					$this->grpcheck = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new changeProfilsCls();
+	if( $temp->countpf > 0 )
+		{
+		$babBody->babecho(bab_printTemplate($temp,"options.html", "profileslist"));
+		}
+}
+
 function userChangePassword($oldpwd, $newpwd)
 	{
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
@@ -653,7 +735,30 @@ function updateNickname($password, $nickname)
 	}
 
 
+function updateProfiles($grpids)
+{
+	global $babBody, $babDB;
 
+	$res = $babDB->db_query("select id from ".BAB_PROFILES_TBL."");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+	if( bab_IsAccessValid(BAB_PROFILES_GROUPS_TBL, $arr['id']))
+		{
+		$resgrp = $babDB->db_query("select pgt.id_group from ".BAB_PROFILES_GROUPSSET_TBL." pgt where pgt.id_object ='".$arr['id']."'");
+		while( $row = $babDB->db_fetch_array($resgrp))
+			{
+			if( count($grpids) > 0  && in_array($row['id_group'], $grpids ))
+				{
+				bab_addUserToGroup($GLOBALS['BAB_SESS_USERID'], $row['id_group']);
+				}
+			else
+				{
+				bab_removeUserFromGroup($GLOBALS['BAB_SESS_USERID'], $row['id_group']);
+				}
+			}
+		}
+	}
+}
 
 /* main */
 if(!isset($idx))
@@ -703,6 +808,9 @@ if( isset($update))
 				unset($nickname);
 				unset($email);
 				}
+            break;
+        case "profiles":
+        	updateProfiles($grpids);
             break;
         }
 	}
@@ -770,13 +878,16 @@ switch($idx)
 		changeNickname($nickname);
 		changeSkin($skin);
 		changeLanguage();
+		changeProfiles();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
-		{
+			{
 			$babBody->addItemMenu("calendar", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
-		}
+			}
 		if( bab_mailAccessLevel())
+			{
 			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+			}
 		$babBody->addItemMenu("list", bab_translate("Sections"), $GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
 		break;
 	}

@@ -167,6 +167,204 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 	$babBody->babecho(	bab_printTemplate($temp,"login.html", "usercreate"));
 	}
 
+
+function displayRegistration($nickname, $fields, $cagree, $grpids)
+	{
+	global $babBody, $babDB;
+	class temp
+		{
+
+		function temp($nickname, $fields, $cagree, $grpids)
+			{
+			global $babBody, $babDB;
+			$this->nickname = bab_translate("Nickname");
+			$this->password = bab_translate("Password");
+			$this->repassword = bab_translate("Retype Password");
+			$this->adduser = bab_translate("Register");
+			$this->infotxt1 = bab_translate("Please provide a valid email.");
+			$this->infotxt2 = bab_translate("We will send you an email for confirmation before you can use our services");
+			$this->requiredtxt = bab_translate("Those fields are required");
+			$this->passwordlengthtxt = bab_translate("At least 6 characters");
+
+			if( $babBody->babsite['display_disclaimer'] == "Y" )
+				{
+				$this->disclaimer = bab_translate("I have read and accept the agreement");
+				$this->readtxt = bab_translate("Read");
+				$this->urlshowdp = $GLOBALS['babUrlScript']."?tg=login&cmd=showdp";
+				$this->bagree = true;
+				}
+			else
+				{
+				$this->bagree = false;
+				}
+
+			$this->nicknameval = $nickname != ""? $nickname: "";
+			$this->fields = $fields;
+			$this->grpids = $grpids;
+
+			if( $cagree == 'Y' )
+				{
+				$this->cagreechecked = "checked";
+				}
+			else
+				{
+				$this->cagreechecked = "";
+				}
+
+			list($jpegphoto) = $babDB->db_fetch_array($babDB->db_query("select registration from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babBody->babsite['id']."' and id_field='5'"));
+			if( $jpegphoto == "Y" )
+				{
+				$this->bphoto = true;
+				}
+			else
+				{
+				$this->bphoto = false;
+				}
+			$this->res = $babDB->db_query("select sfrt.*, dft.name, dft.description from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDS_TBL." dft on sfrt.id_field=dft.id where sfrt.id_site='".$babBody->babsite['id']."'");
+			$this->count = $babDB->db_num_rows($this->res);
+
+			$this->respf = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where inscription='Y'");
+			$this->countpf = $babDB->db_num_rows($this->respf);
+			$this->altbg = true;
+			}
+
+		function getnextfield(&$skip)
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->fieldname = bab_translate($arr['description']);
+				$this->fieldv = $arr['name'];
+				$this->bfieldphoto = false;
+				if( isset($this->fields[$arr['name']]))
+					{
+					$this->fieldval = $this->fields[$arr['name']];
+					}
+				else
+					{
+					$this->fieldval = '';
+					}
+				if( $this->bphoto && $this->fieldv == "jpegphoto" )
+					{
+					$this->bfieldphoto = true;
+					}
+				if( $arr['registration'] == "Y" )
+					{
+					if( $arr['required'] == "Y")
+						{
+						$this->brequired = true;
+						}
+					else
+						{
+						$this->brequired = false;
+						}
+					if( $arr['multilignes'] == "Y")
+						{
+						$this->bmultilignes = true;
+						}
+					else
+						{
+						$this->bmultilignes = false;
+						}
+					}
+				else
+					{
+					$skip =true;
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextprofile()
+			{
+			global $babDB;
+			static $j = 0;
+			if( $j < $this->countpf)
+				{
+				$arr = $babDB->db_fetch_array($this->respf);
+				$this->pname = $arr['name'];
+				$this->pdesc = $arr['description'];
+				if( $arr['multiplicity'] == 'Y' )
+					{
+					$this->bmultiplicity = true;
+					}
+				else
+					{
+					$this->bmultiplicity = false;
+					}
+				$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$arr['id']."'");
+				$this->countgrp = $babDB->db_num_rows($this->resgrp);
+				$j++;
+				return true;
+				}
+			else
+				{
+				$j = 0;
+				return false;
+				}
+			}
+
+		function getnextgrp()
+			{
+			global $babBody, $babDB;
+			static $i = 0;	
+			if( $i < $this->countgrp)
+				{
+				$arr = $babDB->db_fetch_array($this->resgrp);
+				$this->altbg = !$this->altbg;
+				$this->grpid = $arr['id'];
+				$this->grpname = $arr['name'];
+				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
+				if( count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups))
+					{
+					$this->grpcheck = 'checked';
+					}
+				else
+					{
+					$this->grpcheck = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		
+		}
+
+	$temp = new temp($nickname, $fields, $cagree, $grpids);
+	$babBody->babecho( bab_printTemplate($temp,"login.html", "registration"));
+	}
+
+function displayDisclaimer()
+{
+	global $babBody, $babBodyPopup;
+	class temp
+		{
+		function temp()
+			{
+			global $babBody, $babDB;
+			$this->title = bab_translate("Disclaimer/Privacy statement");
+			$res = $babDB->db_query("select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babBody->babsite['id']."'");
+			$arr = $babDB->db_fetch_array($res);
+			$this->content = bab_replace($arr['disclaimer_text']);
+			}
+
+		}
+
+	$temp = new temp();
+	$babBodyPopup->babecho( bab_printTemplate($temp, "login.html", "displaydisclaimer"));
+}
+
 function signOn( $nickname, $password,$lifetime)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID;
@@ -546,7 +744,7 @@ function confirmUser($hash, $nickname)
 
 	}
 	
-function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2)
+function addNewUser2( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2)
 	{
 	global $babBody, $babDB;
 	if( empty($nickname) || empty($email) || empty($firstname) || empty($lastname) || empty($password1) || empty($password2))
@@ -584,6 +782,123 @@ function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $pas
 	return true;
 	}
 
+function addNewUser( $nickname, $password1, $password2)
+	{
+	global $babBody, $babDB, $fields, $cagree, $photof, $photof_name, $grpids;
+	if( empty($nickname) || empty($fields['email']) || empty($fields['givenname']) || empty($fields['sn']) || empty($password1) || empty($password2))
+		{
+		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		return false;
+		}
+	if( $password1 != $password2)
+		{
+		$babBody->msgerror = bab_translate("Passwords not match !!");
+		return;
+		}
+	if ( strlen($password1) < 6 )
+		{
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
+	if ( strpos($nickname, ' ') !== false )
+		{
+		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
+		return false;
+		}
+
+	if ( !bab_isEmailValid($fields['email']))
+		{
+		$babBody->msgerror = bab_translate("Your email is not valid !!");
+		return false;
+		}
+
+	$bphoto = false;
+
+	$res = $babDB->db_query("select sfrt.*, dft.name from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDS_TBL." dft on sfrt.id_field=dft.id where sfrt.id_site='".$babBody->babsite['id']."' and sfrt.registration='Y'");
+	$req = "";
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		if( $arr['name'] ==  'jpegphoto')
+			{
+			if($arr['required'] == 'Y' && !isset($photof_name))
+				{
+				$babBody->msgerror = bab_translate( "You must complete all fields !!");
+				return false;
+				}
+			else
+				{
+				$bphoto = true;
+				}
+			}
+		else
+			{
+			if( $arr['required'] == 'Y' && empty($fields[$arr['name']]))
+				{
+				$babBody->msgerror = bab_translate( "You must complete all fields !!");
+				return false;
+				}
+			$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
+			}
+		}
+
+	if( $babBody->babsite['display_disclaimer'] == "Y" && !isset($cagree))
+		{
+		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		return false;
+		}
+
+	$iduser = registerUser($fields['givenname'], $fields['sn'], $fields['givenname'], $fields['email'],$nickname, $password1, $password2, false);
+	if( $iduser == false )
+		{
+		return false;
+		}
+
+	if( $bphoto && !empty($photof_name) && $photof_name != "none")
+		{
+		if ($babBody->babsite['imgsize']*1000 < filesize($tmp_photof))
+			{
+			$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
+			return false;
+			}
+		$fp=fopen($photof,"rb");
+		if( $fp )
+			{
+			$cphoto = addslashes(fread($fp,filesize($photof)));
+			fclose($fp);
+			}
+		}
+	
+	if( !empty($cphoto))
+		{
+		$req .= " photo_data='".$cphoto."'";
+		}
+	else
+		{
+		$req = substr($req, 0, strlen($req) -1);
+		}
+
+	if( !empty($req))
+		{
+		list($idu) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$iduser."' and id_directory='0'"));
+		if( $idu )
+			{
+			$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
+			$req .= " where id='".$idu."'";
+			$babDB->db_query($req);
+			}
+		}
+
+	if( isset($grpids) && count($grpids) > 0 )
+		{
+		for( $i = 0; $i < count($grpids); $i++ )
+			{
+			bab_addUserToGroup($iduser, $grpids[$i]);
+			}
+		}
+	return true;
+	}
+
 /* main */
 // ajout cookie
 if (!isset($lifetime))
@@ -611,7 +926,8 @@ if( isset($login) && $login == "login")
 	}
 else if( isset($adduser) && $adduser == "register" && $babBody->babsite['registration'] == 'Y')
 	{
-	if( !addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2))
+	//if( !addNewUser2( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2))
+	if( !addNewUser( $nickname, $password1, $password2))
 		$cmd = "register";
 	}
 else if( isset($sendpassword) && $sendpassword == "send")
@@ -638,6 +954,14 @@ switch($cmd)
 		signOff();
 		break;
 
+	case "showdp":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$babBodyPopup = new babBodyPopup();
+		displayDisclaimer();
+		printBabBodyPopup();
+		exit;
+		break;
+
 	case "register":
 		$babBody->title = bab_translate("Register");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
@@ -645,12 +969,12 @@ switch($cmd)
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if ($GLOBALS['babEmailPassword'] ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		if( !isset($firstname)) { $firstname = '';}
-		if( !isset($middlename)) { $middlename = '';}
-		if( !isset($lastname)) { $lastname = '';}
 		if( !isset($nickname)) { $nickname = '';}
-		if( !isset($email)) { $email = '';}
-		userCreate($firstname, $middlename, $lastname, $nickname, $email);
+		if( !isset($cagree)) { $cagree = '';}
+		//userCreate($firstname, $middlename, $lastname, $nickname, $email);
+		if( !isset($fields)) { $fields = array();}
+		if( !isset($grpids)) { $grpids = array();}
+		displayRegistration($nickname, $fields, $cagree, $grpids);
 		break;
 
 	case "emailpwd":

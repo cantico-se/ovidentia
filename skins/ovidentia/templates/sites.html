@@ -13,9 +13,9 @@ function validateNum(field)
 </script>
 
 <form name="formsite" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="sites">
-<input type="hidden" name="idx" value="0">
-<input type="hidden" name="create" value="create">
+<input type="hidden" name="tg" value="sites" />
+<input type="hidden" name="idx" value="0" />
+<input type="hidden" name="create" value="create" />
   <table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -24,14 +24,14 @@ function validateNum(field)
             <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               name }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
+              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               description }</td>
             <td> 
-              <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
+              <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }" />
 </td>
 </tr>
           <tr valign="middle"> 
@@ -80,40 +80,17 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
-              confirmation }<br>
-              { helpconfirmation } </td>
-            <td class="BabLoginMenuBackground" align="left"> 
-              <select name="confirm">
-                  <option value="Y" selected>{ yes }</option>
-                  <option value="N">{ no }</option>
-                </select>
-            </td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
-              group }</td>
-            <td class="BabLoginMenuBackground" align="left"> 
-              <select name="group">
-                  <option value="0" selected>{ none }</option>
-                  <!--#in getnextgrp -->
-                  <option value="{ grpid }">{ grpname }</option>
-                  <!--#endin getnextgrp -->
-                </select>
-            </td>
-</tr>
-          <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               siteemail }</td>
             <td> 
-              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               adminnametxt }</td>
             <td> 
-              <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }">
+              <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }" />
 </td>
 </tr>
           <tr valign="middle"> 
@@ -132,31 +109,31 @@ function validateNum(field)
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               server }</td>
             <td> 
-              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
+              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               serverport }</td>
             <td> 
-              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)">
+              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)" />
 </td>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ smtpuser }</td>
             <td> 
-              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }">
+              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ smtppass }</td>
             <td> 
-              <input type="password" name="smtppass" size="30" maxlength="20" value="">
+              <input type="password" name="smtppass" size="30" maxlength="20" value="" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ smtppass2 }</td>
             <td> 
-              <input type="password" name="smtppass2" size="30" maxlength="20" value="">
+              <input type="password" name="smtppass2" size="30" maxlength="20" value="" />
 </td>
 </tr>
 
@@ -164,14 +141,14 @@ function validateNum(field)
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               imagessize }</td>
             <td> 
-              <input type="text" name="imgsize" size="5" maxlength="10" value="50" onKeyUp="validateNum(this)">
+              <input type="text" name="imgsize" size="5" maxlength="10" value="50" onKeyUp="validateNum(this)" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td nowrap align="left">&nbsp;</td>
             <td> 
-<br><br>              
-<br>
+<br /><br />              
+<br />
 </td>
 </tr>
 
@@ -248,45 +225,45 @@ function validateNum(field)
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
             <td width="70%"> 
-				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }">
+				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }" />
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
             <td width="70%"> 
-				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ dbvalue[uploadpath] }">
+				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ dbvalue[uploadpath] }" />
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td>
 			&nbsp;
 			</td>
-			<td><br>
-			<input type="submit" name="Submit" value="{ create }">
+			<td><br />
+			<input type="submit" name="Submit" value="{ create }" />
 			</td>
 		</tr>
 		</table>
@@ -294,7 +271,7 @@ function validateNum(field)
 </tr>
 </table>
 </form>
-<br>
+<br />
 <!--#end sitecreate -->
 
 
@@ -349,10 +326,10 @@ function validateNum(field)
 	}
 </script>
 <form name="formsite" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="item" value="{ id }">
-<input type="hidden" name="modify" value="bloc1">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="item" value="{ id }" />
+<input type="hidden" name="modify" value="bloc1" />
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -361,14 +338,14 @@ function validateNum(field)
             <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               name }</td>
             <td width="70%"> 
-              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
+              <input type="text" name="name" size="30" maxlength="30" value="{ nameval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               description }</td>
             <td> 
-              <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
+              <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }" />
 </td>
 </tr>
           <tr valign="middle"> 
@@ -417,40 +394,17 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
-              confirmation }<br>
-              { helpconfirmation }</td>
-            <td class="BabLoginMenuBackground" width="70%" align="left"> 
-              <select name="confirm">
-                  <option value="Y" { yconfirm }>{ yes }</option>
-                  <option value="N" { nconfirm }>{ no }</option>
-                </select>
-            </td>
-</tr>
-          <tr valign="middle"> 
-            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
-              group }</td>
-            <td class="BabLoginMenuBackground" align="left"> 
-              <select name="group">
-                  <option value="0">{ none }</option>
-                  <!--#in getnextgrp -->
-                  <option value="{ grpid }" { grpsel }>{ grpname }</option>
-                  <!--#endin getnextgrp -->
-                </select>
-            </td>
-</tr>
-          <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               siteemail }</td>
             <td> 
-              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+              <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               adminnametxt }</td>
             <td> 
-              <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }">
+              <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }" />
 </td>
 </tr>
           <tr valign="middle"> 
@@ -469,49 +423,49 @@ function validateNum(field)
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               server }</td>
             <td> 
-              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
+              <input type="text" name="server" size="30" maxlength="254" value="{ serverval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               serverport }</td>
             <td> 
-              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)">
+              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               smtpuser }</td>
             <td> 
-              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }">
+              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               smtppass }</td>
             <td> 
-              <input type="password" name="smtppass" size="30" maxlength="20" value="{ smtppassval }">
+              <input type="password" name="smtppass" size="30" maxlength="20" value="{ smtppassval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               smtppass2 }</td>
             <td> 
-              <input type="password" name="smtppass2" size="30" maxlength="20" value="{ smtppassval }">
+              <input type="password" name="smtppass2" size="30" maxlength="20" value="{ smtppassval }" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               imagessize }</td>
             <td> 
-              <input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }" onKeyUp="validateNum(this)">
+              <input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }" onKeyUp="validateNum(this)" />
 </td>
 </tr>
           <tr valign="middle"> 
             <td align="left">&nbsp;</td>
             <td> 
-              <input type="submit" name="Submit" value="{ create }">&nbsp;&nbsp;<input type="submit" name="delete" value="{ delete }">
-<br>
+              <input type="submit" name="Submit" value="{ create }">&nbsp;&nbsp;<input type="submit" name="delete" value="{ delete }" />
+<br />
 </td>
 </tr>
 </table>
@@ -519,14 +473,14 @@ function validateNum(field)
 </tr>
 </table>
 </form>
-<br><br>
+<br /><br />
 
 
 <form name="formsite_bloc2" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="item" value="{ id }">
-<input type="hidden" name="modify" value="bloc2">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="item" value="{ id }" />
+<input type="hidden" name="modify" value="bloc2" />
 
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -605,45 +559,45 @@ function validateNum(field)
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
             <td width="70%"> 
-				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }">
+				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }" />
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
             <td width="70%"> 
-				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ babUploadPath }">
+				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ babUploadPath }" />
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
-				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
+				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
 			</td>
 		</tr>
 		<tr>
 			<td>
 			&nbsp;
 			</td>
-			<td><br>
-			<input type="submit" name="Submit" value="{ create }">
+			<td><br />
+			<input type="submit" name="Submit" value="{ create }" />
 			</td>
 		</tr>
 		</table>
@@ -654,7 +608,7 @@ function validateNum(field)
 
 
 </form>
-<br>
+<br />
 
 <!--#end sitemodify -->
 
@@ -663,10 +617,10 @@ function validateNum(field)
 
 <!--#begin sitehomepage0 -->
 <form method="post" name="homeform" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="item" value="{ id }">
-<input type="hidden" name="update" value="homepage0">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="item" value="{ id }" />
+<input type="hidden" name="update" value="homepage0" />
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -699,17 +653,17 @@ function validateNum(field)
 			</select>
 		</td>
 		<td valign="middle" align="center">
-			<a href="Javascript:move(true, document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> <br>
-			<br>
+			<a href="Javascript:move(true, document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> <br />
+			<br />
 			<a href="Javascript:move(false, document.homeform.elements[5])"> 
 			<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
 		</td>
 	</tr>
 	<tr> 
 		<td align="center"> 
-			<input type="submit" name="Submit" value="{ create }" onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.submit()">
-			<br>
-			<br>
+			<input type="submit" name="Submit" value="{ create }" onClick="Javascript:selectAll(document.homeform.elements[5]); document.homeform.submit()" />
+			<br />
+			<br />
 		</td>
 		<td>&nbsp; </td>
 	</tr>
@@ -726,10 +680,10 @@ function validateNum(field)
 
 <!--#begin sitehomepage1 -->
 <form method="post" name="homeform1" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="item" value="{ id }">
-<input type="hidden" name="update" value="homepage1">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="item" value="{ id }" />
+<input type="hidden" name="update" value="homepage1" />
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -763,16 +717,16 @@ function validateNum(field)
 		</td>
 		<td align="center" >
 			<a href="Javascript:move(true, document.homeform1.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-			<br>
-			<br>
+			<br />
+			<br />
 			<a href="Javascript:move(false, document.homeform1.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
 		</td>
 	</tr>
 	<tr valign="middle"> 
 		<td align="center"> 
-			<input type="submit" name="Submit" value="{ create }" onClick="Javascript:selectAll(document.homeform1.elements[5]); document.homeform1.submit()">
-			<br>
-			<br>
+			<input type="submit" name="Submit" value="{ create }" onClick="Javascript:selectAll(document.homeform1.elements[5]); document.homeform1.submit()" />
+			<br />
+			<br />
 		</td>
 		<td>&nbsp;</td>
 	</tr>
@@ -781,7 +735,7 @@ function validateNum(field)
 </tr>
 </table>
 </form>
-<br>
+<br />
 <!--#end sitehomepage1 -->
 
 
@@ -1011,10 +965,10 @@ function hideShowCnx()
 </script>
 
 <form name="formsiteauth" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="item" value="{ id }">
-<input type="hidden" name="modify" value="bloc3">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="item" value="{ id }" />
+<input type="hidden" name="modify" value="bloc3" />
 <table class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -1028,7 +982,7 @@ function hideShowCnx()
 <!--#endin getnextauth -->
 </select>
 &nbsp;&nbsp;
-<input type="checkbox" id="ldpapchkcnxid" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked }>&nbsp;<span class="BabLoginMenuBackground" id="ldpaptxtcnxid" nowrap>{ ldpachkcnxtxt }</span>
+<input type="checkbox" id="ldpapchkcnxid" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span class="BabLoginMenuBackground" id="ldpaptxtcnxid" nowrap>{ ldpachkcnxtxt }</span>
 </td>
 </tr>
 <tr> 
@@ -1038,44 +992,44 @@ function hideShowCnx()
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ hosttxt }&nbsp;<font color="red">*</font></td>
 <td valign="middle">
-<input type="text" name="host" size="50" value="{ ldaphost }">
+<input type="text" name="host" size="50" value="{ ldaphost }" />
 </td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ basedntxt }</td>
 <td valign="middle">
-<input type="text" name="basedn" size="70" value="{ ldapbasednsite }">
+<input type="text" name="basedn" size="70" value="{ ldapbasednsite }" />
 </td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ userdntxt }</td>
 <td valign="middle">
-<input type="text" name="userdn" size="70" value="{ ldapuserdnsite }">
+<input type="text" name="userdn" size="70" value="{ ldapuserdnsite }" />
 </td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpasstxt }</td>
 <td valign="middle">
-<input type="password" name="ldappass1" size="30" value="{ ldappasssite }">
+<input type="password" name="ldappass1" size="30" value="{ ldappasssite }" />
 </td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpassconftxt }</td>
 <td valign="middle">
-<input type="password" name="ldappass2" size="30" value="{ ldappasssite }">
+<input type="password" name="ldappass2" size="30" value="{ ldappasssite }" />
 </td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ searchbasetxt }</td>
 <td valign="middle">
-<input type="text" name="searchdn" size="70" value="{ ldapsearchdnsite }">
+<input type="text" name="searchdn" size="70" value="{ ldapsearchdnsite }" />
 </td>
 </tr>
 <!--#if 0 -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attributetxt }</td>
 <td valign="middle">
-<input type="text" name="ldapattr" size="50" value="{ ldapattributesite }">
+<input type="text" name="ldapattr" size="50" value="{ ldapattributesite }" />
 </td>
 </tr>
 <tr> 
@@ -1098,14 +1052,14 @@ function hideShowCnx()
 <!--#in getnextval -->
 <option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
 <!--#endin getnextval -->
-</select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="30" value="{ ofieldval }">
+</select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="30" value="{ ofieldval }" />
 </td>
 </tr>
 <!--#endin getnextfield -->
 <tr> 
 <td nowrap>&nbsp;</td>
 <td valign="middle">
-<input type="Submit" name="Submit" value="{ modify }">
+<input type="Submit" name="Submit" value="{ modify }" />
 </td>
 </tr>
 </table>
@@ -1115,3 +1069,215 @@ function hideShowCnx()
 </form>
 <!--#endif showform -->
 <!--#end siteauthentification -->
+
+<!--#begin siteregistration -->
+<form name="formsitereg" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="update" value="enreg" />
+<br />
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="80%" align="left" nowrap valign="middle" colspan="2">{ disclaimertxt }</td>
+</tr>
+<tr class="BabSummaryContentBackground">
+<td align="right"><input type="checkbox" name="cdp" value="Y" { dpchecked }></td>
+<td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: Start('{ urleditdp }', 'OviSitesDP', 'width=600,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ editdptxt }</a>&nbsp;)</td>
+</tr>
+<tr class="BabSummaryContentBackground">
+<td align="right"><input type="checkbox" name="cen" value="Y" { enchecked }></td>
+<td>{ emailnotification }</td>
+</tr>
+<tr class="BabSummaryContentBackground">
+<td align="right">
+<select name="group">
+<option value="0">{ none }</option>
+<!--#in getnextgrp -->
+<option value="{ grpid }" { grpsel }>{ grpname }</option>
+<!--#endin getnextgrp -->
+</select>
+</td>
+<td>{ groupregistration }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br />
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="80%" align="left" nowrap valign="middle">{ field }</td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ required }</td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
+</tr>
+<!--#in getnextfield -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<!--#if disabled -->
+<td><input type="checkbox" { rwchecked } disabled>
+<input type="hidden" name="rw[]" value="{ fieldid }" />&nbsp;{ fieldn }</td>
+<td><input type="checkbox" { reqchecked } disabled>
+<!--#if reqchecked -->
+<input type="hidden" name="req[]" value="{ fieldid }" /></td>
+<!--#endif reqchecked -->
+<td><input type="checkbox" { mlchecked } disabled>
+<!--#if mlchecked -->
+<input type="hidden" name="ml[]" value="{ fieldid }" />
+<!--#endif mlchecked -->
+</td>
+<!--#else disabled -->
+<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }" />&nbsp;{ fieldn }</td>
+<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }" /></td>
+<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }" /></td>
+<!--#endif disabled -->
+</tr>
+<!--#endin getnextfield -->
+</table>
+</td>
+</tr>
+</table>
+<br />
+<center><input type="submit" name="admod" value="{ add }" />
+</form>
+<!--#end siteregistration -->
+
+<!--#begin disclaimeredit -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+	{ babMeta }
+	{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY>
+<br>
+<form name="discmod" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="item" value="{ item }">
+<input type="hidden" name="update" value="updisc">
+<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td align="center" valign="middle">{ disclaimertxt }</td>
+</tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<!--#if babOldEditor -->
+<tr align="center" valign="middle"> 
+<td> 
+<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
+<script src="{ babScriptPath }editor.js"></script>
+<td> 
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ disclaimerval }</textarea>
+</td>
+</tr>
+<tr align="center" valign="middle"> 
+<td> 
+     <script language="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+	</script>
+</td>
+</tr>
+<!--#else babOldEditor -->
+<style type="text/css">
+@import url({ babUrl }{ babScriptPath }htmlarea/htmlarea.css);
+</style>
+
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
+<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
+<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
+<script language="JavaScript">
+initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
+</script>
+<!--#endif babOldEditor -->
+<!--#endif msie -->
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+<!--#if babOldEditor -->
+<script language="JavaScript">
+editor.InFrame(0, "content", "discmod", "90%", "260");
+</script>
+<!--#else babOldEditor -->
+<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content')">
+</iframe>
+<textarea id="content" name="content"  onfocus="savef(document.discmod.content)" style="width:100%" rows="40">{ disclaimerval }</textarea>
+<!--#endif babOldEditor -->
+<!--#else msie -->
+<textarea onblur="this.focus()" onfocus="savef(document.discmod.content)" style="width:100%" rows="40" id="content" name="content">{ disclaimerval }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr> 
+<td align="center" valign="middle">
+<!--#if msie "== 1" -->
+<!--#if babOldEditor -->
+<input onClick=SetVals() type="submit" name="submit" value="{ modify }">
+        <script language="JavaScript">
+		editor.FinalInstantiate(0);
+		editor.CloseInitSection();
+		</script>
+<!--#else babOldEditor -->
+<input type="submit" name="submit" value="{ modify }">
+<!--#endif babOldEditor -->
+<!--#else msie -->
+<input type="submit" name="submit" value="{ modify }">
+<!--#endif msie -->
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#if msie "!= 1" -->
+<script type="text/javascript">
+<!--
+var ctrlf = null;
+function onInsertFile(idf,txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+}
+
+function onInsertImage(txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
+}
+
+function savef(t)
+{
+ctrlf = t;
+}
+
+savef(document.discmod.content);
+//-->
+</script>
+<!--#endif msie -->
+<br>
+</BODY>
+</HTML>
+<!--#end disclaimeredit -->

@@ -750,6 +750,7 @@ CREATE TABLE `bab_sites` (
   `skin` varchar(255) NOT NULL default '',
   `style` varchar(255) NOT NULL default '',
   `registration` enum('Y','N') NOT NULL default 'Y',
+  `display_disclaimer` enum('N','Y') NOT NULL default 'N',
   `email_confirm` enum('Y','N') NOT NULL default 'Y',
   `mailfunc` varchar(20) NOT NULL default 'mail',
   `smtpserver` varchar(255) NOT NULL default '',
@@ -781,10 +782,10 @@ CREATE TABLE `bab_sites` (
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
-) TYPE=MyISAM AUTO_INCREMENT=16 ;
+);
 
 
-INSERT INTO bab_sites (name, description, lang, adminemail,  adminname, skin, style) values ('Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_mp', 'ovidentia.css');
+INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_mp', 'ovidentia.css');
 
 # --------------------------------------------------------
 #
@@ -1784,3 +1785,103 @@ CREATE TABLE bab_forumsman_groups (
   KEY id_object (id_object),
   KEY id_group (id_group)
 );
+
+
+#
+# Structure de la table `bab_site_fields_registration`
+#
+
+CREATE TABLE bab_site_fields_registration (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_site tinyint(2) unsigned NOT NULL default '0',
+  id_field int(11) unsigned NOT NULL default '0',
+  registration enum('N','Y') NOT NULL default 'N',
+  required enum('N','Y') NOT NULL default 'N',
+  multilignes enum('N','Y') NOT NULL default 'N',
+  PRIMARY KEY  (id),
+  KEY id_site (id_site)
+);
+
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 1, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 2, 'Y', 'Y', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 3, 'Y', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 4, 'Y', 'Y', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 5, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 6, 'Y', 'Y', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 7, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 8, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 9, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 10, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 11, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 12, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 13, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 14, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 15, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 16, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 17, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 18, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 19, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 20, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 21, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 22, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 23, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 24, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 25, 'N', 'N', 'N');
+INSERT INTO bab_site_fields_registration (id_site, id_field, registration, required, multilignes ) VALUES (1, 26, 'N', 'N', 'N');
+
+#
+# Structure de la table bab_sites_disclaimers
+#
+
+CREATE TABLE bab_sites_disclaimers (
+	id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
+	id_site TINYINT( 2 ) UNSIGNED NOT NULL ,
+	disclaimer_text LONGTEXT NOT NULL ,
+	PRIMARY KEY ( id ) ,
+	KEY id_site (id_site)
+);
+
+#
+# Structure de la table `bab_profiles`
+#
+
+CREATE TABLE bab_profiles (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  multiplicity enum('Y','N') NOT NULL default 'Y',
+  inscription enum('N','Y') NOT NULL default 'N',
+  id_dgowner int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_dgowner (id_dgowner)
+);
+
+
+#
+# Structure de la table `bab_profiles_groups`
+#
+
+CREATE TABLE bab_profiles_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table `bab_profiles_groupsset`
+#
+
+CREATE TABLE bab_profiles_groupsset (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+

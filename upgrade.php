@@ -3126,6 +3126,125 @@ while( $arr = $db->db_fetch_array($res))
 
 $db->db_query("ALTER TABLE ".BAB_FORUMS_TBL." DROP moderator");
 
+/* INTRA */
+$db->db_query("ALTER TABLE `bab_sites` ADD display_disclaimer ENUM( 'N', 'Y' ) DEFAULT 'N' NOT NULL AFTER registration");
+
+$req = "CREATE TABLE ".BAB_SITES_FIELDS_REGISTRATION_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_site tinyint(2) unsigned NOT NULL default '0',";
+$req .= "id_field int(11) unsigned NOT NULL default '0',";
+$req .= "registration enum('N','Y') NOT NULL default 'N',";
+$req .= "required enum('N','Y') NOT NULL default 'N',";
+$req .= "multilignes enum('N','Y') NOT NULL default 'N',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_site (id_site)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_SITES_FIELDS_REGISTRATION_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_SITES_DISCLAIMERS_TBL." (";
+$req .= "id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT ,";
+$req .= "id_site TINYINT( 2 ) UNSIGNED NOT NULL ,";
+$req .= "disclaimer_text LONGTEXT NOT NULL ,";
+$req .= "PRIMARY KEY ( id ) ,";
+$req .= "KEY id_site (id_site)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_SITES_DISCLAIMERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$res = $db->db_query("select id from ".BAB_SITES_TBL."");
+while( $arr = $db->db_fetch_array($res))
+	{
+	$db->db_query("INSERT INTO ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text ) VALUES (".$arr['id'].", '')");
+
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 1, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 2, 'Y', 'Y', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 3, 'Y', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 4, 'Y', 'Y', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 5, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 6, 'Y', 'Y', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 7, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 8, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 9, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 10, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 11, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 12, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 13, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 14, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 15, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 16, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 17, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 18, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 19, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 20, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 21, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 22, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 23, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 24, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 25, 'N', 'N', 'N')");
+	$db->db_query("INSERT INTO ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes ) VALUES (".$arr['id'].", 26, 'N', 'N', 'N')");
+	}
+
+$req = "CREATE TABLE ".BAB_PROFILES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "multiplicity enum('Y','N') NOT NULL default 'Y',";
+$req .= "inscription enum('N','Y') NOT NULL default 'N',";
+$req .= "id_dgowner int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_dgowner (id_dgowner)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_PROFILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_PROFILES_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_PROFILES_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_PROFILES_GROUPSSET_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_PROFILES_GROUPSSET_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 ?>

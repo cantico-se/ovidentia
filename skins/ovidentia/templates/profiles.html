@@ -1,0 +1,118 @@
+
+<!--#begin profileslist -->
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"	nowrap>{ nametxt }</td>
+<td class="BabSiteAdminTitleFontBackground" width="40%" valign="middle">{ descriptiontxt }</td>
+<td class="BabSiteAdminTitleFontBackground" width="40%" valign="middle">{ inscriptiontxt }</td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle" align="left">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" width="10%" valign="middle" nowrap>
+<a class="BabSiteAdminListLink" href="{ url }" nowrap>{ urlname }</a>
+</td>
+<td class="BabSiteAdminFontBackground" width="40%" valign="middle">{ descval }</td>
+<td class="BabSiteAdminFontBackground" width="40%" valign="middle">{ inscval }</td>
+<td class="BabSiteAdminFontBackground" width="10%" valign="middle">&nbsp;
+<!--#if brights -->
+<a class="BabSiteAdminListLink" href="{ rightsurl }" nowrap>{ rightstxt }</a>
+<!--#endif brights -->
+</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end profileslist -->
+
+<!--#begin profilecreate -->
+<form name="listform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="profiles">
+<input type="hidden" name="idx" value="plist">
+<input type="hidden" name="idprof" value="{ profid }">
+<input type="hidden" name="add" value="{ what }">
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ nametxt }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="pname" size="20" maxlength="255" value="{ pname }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap valign="middle">{ descriptiontxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="pdesc" size="45" maxlength="255" value="{ pdesc }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap valign="middle">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="checkbox" name="cinscription" { cinscheck } value="Y">&nbsp;&nbsp;{ inscriptiontxt }
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap valign="middle">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="checkbox" name="cmultiple" { cmulcheck } value="Y">&nbsp;&nbsp;{ multiplicitytxt }
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" nowrap valign="middle" colspan="2">
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabSiteAdminTitleFontBackground">
+<td valign="middle">{ grpnametxt } </td>
+<td valign="middle">{ grpdesctxt } </td>
+<td valign="middle">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+<td valign="middle"> 
+{ grpname } 
+</td>
+<td valign="middle">{ grpdesc }</td>
+<td valign="middle"> 
+<input type="checkbox" name="grpids[]" { grpcheck } value="{ grpid }">
+</td>
+</tr>        
+<!--#endin getnext -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle">&nbsp;</td>
+<td class="BabLoginMenuBackground" width="1%" align="center"><a href="javascript:onCheckAll('grpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('grpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ add }">
+<!--#if bdel -->
+&nbsp;&nbsp;<input type="submit" name="deletep" value="{ delete }">
+<!--#endif bdel -->
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end profilecreate -->

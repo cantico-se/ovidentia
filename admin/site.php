@@ -72,7 +72,6 @@ function siteModify($id)
         var $arrdir = array();
 
 		var $registration;
-		var $confirmation;
 		var $yes;
 		var $no;
 		var $yselected;
@@ -91,10 +90,6 @@ function siteModify($id)
 		var $smtpselected;
 		var $sendmailselected;
 		var $disabledselected;
-
-		var $group;
-		var $grpcount;
-		var $grpres;
 
 		var $smtpuser;
 		var $smtpuserval;
@@ -123,13 +118,11 @@ function siteModify($id)
 			$this->delete = bab_translate("Delete");
 			$this->confirmation = bab_translate("Send email confirmation")."?";
 			$this->registration = bab_translate("Activate Registration")."?";
-			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
 			$this->disabled = bab_translate("Disabled");
 			$this->mailfunction = bab_translate("Mail function");
 			$this->server = bab_translate("Smtp server");
 			$this->serverport = bab_translate("Server port");
 			$this->imagessize = bab_translate("Max image size ( Kb )");
-			$this->group = bab_translate("Default group for confirmed users");
 			$this->none = bab_translate("None");
 			$this->smtpuser = bab_translate("SMTP username");
 			$this->smtppass = bab_translate("SMTP password");
@@ -179,7 +172,6 @@ function siteModify($id)
 				$this->serverval = $arr['smtpserver'];
 				$this->serverportval = $arr['smtpport'];
 				$this->imgsizeval = $arr['imgsize'];
-				$this->grpidsel = $arr['idgroup'];
 				$this->smtpuserval = $arr['smtpuser'];
 				$this->smtppassval = $arr['smtppass'];
 				$this->dbvalue = $arr;
@@ -197,16 +189,6 @@ function siteModify($id)
 					{
 					$this->yregister = "";
 					$this->nregister = "selected";
-					}
-				if( $arr['email_confirm'] == "Y")
-					{
-					$this->nconfirm = "";
-					$this->yconfirm = "selected";
-					}
-				else
-					{
-					$this->yconfirm = "";
-					$this->nconfirm = "selected";
 					}
 				switch($arr['mailfunc'])
 					{
@@ -262,8 +244,6 @@ function siteModify($id)
             $this->skselectedindex = 0;
             $this->stselectedindex = 0;
 
-			$this->grpres = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id > '3'");
-			$this->grpcount = $this->db->db_num_rows($this->grpres);
 			}
 		
 		function getnextlang()
@@ -367,26 +347,6 @@ function siteModify($id)
 				return false;
 				}
 			}
-
-		function getnextgrp()
-			{
-			static $i = 0;
-			if( $i < $this->grpcount)
-				{
-				$arr = $this->db->db_fetch_array($this->grpres);
-                $this->grpname = $arr['name'];
-                $this->grpid = $arr['id'];
-				if( $this->grpidsel == $this->grpid )
-					$this->grpsel = "selected";
-				else
-					$this->grpsel = "";
-
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			} // getnextgrp
 
 		function getnextlangfilter()
 			{
@@ -830,7 +790,205 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter, $adminname)
+
+function siteRegistration($id)
+	{
+	global $babBody;
+	class temp
+		{
+		function temp($id)
+			{
+			global $babBody;
+			$this->item = $id;
+			$this->field = bab_translate("Fields to display in registration form");
+			$this->rw = bab_translate("Use in registration");
+			$this->required = bab_translate("Required");
+			$this->multilignes = bab_translate("Multilignes");
+			$this->disclaimertxt = bab_translate("Registration options");
+			$this->disclaimer = bab_translate("Display link to Disclaimer/Privacy Statement");
+			$this->editdptxt = bab_translate("Edit");
+			$this->groupregistration = bab_translate("Default group for confirmed users");
+			$this->emailnotification = bab_translate("Send email confirmation")."?";
+			$this->none = bab_translate("None");
+			$this->add = bab_translate("Modify");
+			$this->db = $GLOBALS['babDB'];
+			$this->res = $this->db->db_query("select * from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$id."'");
+			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				{
+				$this->count = $this->db->db_num_rows($this->res);
+				}
+			else
+				{
+				$this->count = 0;
+				}
+			$this->altbg = true;
+			$this->urleditdp = $GLOBALS['babUrlScript']."?tg=site&idx=editdp&item=".$id;
+
+			$this->grpres = $this->db->db_query("select id, name from ".BAB_GROUPS_TBL." where id > '3'");
+			$this->grpcount = $this->db->db_num_rows($this->grpres);
+
+			$this->arrsite = $this->db->db_fetch_array($this->db->db_query("select email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$id."'"));
+			if( $this->arrsite['email_confirm'] == "Y")
+				{
+				$this->enchecked = "checked";
+				}
+			else
+				{
+				$this->enchecked = "";
+				}
+			if( $this->arrsite['display_disclaimer'] == "Y")
+				{
+				$this->dpchecked = "checked";
+				}
+			else
+				{
+				$this->dpchecked = "";
+				}
+			}
+
+		function getnextfield()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->fieldid = $arr['id_field'];
+				$this->altbg = !$this->altbg;
+
+				if( $arr['registration'] == "Y")
+					{
+					$this->rwchecked = "checked";
+					}
+				else
+					{
+					$this->rwchecked = "";
+					}
+
+				if( $arr['required'] == "Y")
+					{
+					$this->reqchecked = "checked";
+					}
+				else
+					{
+					$this->reqchecked = "";
+					}
+				if( $arr['multilignes'] == "Y")
+					{
+					$this->mlchecked = "checked";
+					}
+				else
+					{
+					$this->mlchecked = "";
+					}
+
+				if (in_array( $this->fieldid, array( 2, 3, 4, 6) ))
+					{
+					$this->disabled = true;
+					}
+				else 
+					{
+					$this->disabled = false;
+					}
+
+				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldv = $arr['name'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextgrp()
+			{
+			static $i = 0;
+			if( $i < $this->grpcount)
+				{
+				$arr = $this->db->db_fetch_array($this->grpres);
+                $this->grpname = $arr['name'];
+                $this->grpid = $arr['id'];
+				if( $this->arrsite['idgroup'] == $this->grpid )
+					{
+					$this->grpsel = "selected";
+					}
+				else
+					{
+					$this->grpsel = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
+		}
+
+	$temp = new temp($id);
+	$babBody->babecho( bab_printTemplate($temp,"sites.html", "siteregistration"));
+	}
+
+function editDisclaimerPrivacy($id, $content)
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $disclaimertxt;
+		var $modify;
+
+		var $db;
+		var $arr = array();
+		var $res;
+		var $msie;
+		var $brecevt;
+		var $all;
+		var $thisone;
+		var $updaterec;
+
+		function temp($id, $content)
+			{
+			$this->disclaimertxt = bab_translate("Disclaimer/Privacy Statement");
+			$this->modify = bab_translate("Update");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$id."'";
+			$res = $this->db->db_query($req);
+			if( empty($content))
+				{
+				if( $res && $this->db->db_num_rows($res) > 0 )
+					{
+					$arr = $this->db->db_fetch_array($res);
+					$this->disclaimerval = $arr['disclaimer_text'];
+					}
+				else
+					{
+					$this->disclaimerval = '';
+					}
+				}
+			else
+				{
+				$this->disclaimerval = $content;
+				}
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
+				{
+				$this->msie = 1;
+				}
+			else
+				{
+				$this->msie = 0;
+				}
+			}
+		}
+
+	$temp = new temp($id, $content);
+	echo bab_printTemplate($temp,"sites.html", "disclaimeredit");
+	}
+
+
+function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter, $adminname)
 	{
 	global $babBody;
 	if( empty($name))
@@ -855,7 +1013,9 @@ function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $
 		}
 
 	if( empty($serverport))
+		{
 		$serverport = "25";
+		}
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -900,7 +1060,7 @@ function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $
 
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', adminname='".$adminname."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
+		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', adminname='".$adminname."', skin='".$skin."', style='".$style."', registration='".$register."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
 		$db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -991,6 +1151,43 @@ function siteUpdate_authentification($id, $authtype, $host, $ldpapchkcnx, $based
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
+function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
+{
+	global $babBody, $babDB;
+
+	$babDB->db_query("update ".BAB_SITES_TBL." set display_disclaimer='".$cdp."', email_confirm='".$cen."', idgroup='".$group."' where id='".$item."'");
+	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		if( count($rw) > 0 && in_array($arr['id'], $rw))
+			{
+			$registration = "Y";
+			}
+		else
+			{
+			$registration = "N";
+			}
+		if( count($rq) > 0 && in_array($arr['id'], $rq))
+			{
+			$required = "Y";
+			}
+		else
+			{
+			$required = "N";
+			}
+		if( count($ml) > 0 && in_array($arr['id'], $ml))
+			{
+			$multilignes = "Y";
+			}
+		else
+			{
+			$multilignes = "N";
+			}
+		$req = "update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='".$registration."', required='".$required."', multilignes='".$multilignes."' where id_site='".$item."' and id_field='".$arr['id']."'";
+		$babDB->db_query($req);
+		}
+}
+
 function confirmDeleteSite($id)
 	{
 	$db = $GLOBALS['babDB'];
@@ -998,6 +1195,9 @@ function confirmDeleteSite($id)
 	$db->db_query("delete from ".BAB_HOMEPAGES_TBL." where id_site='".$id."'");
 	// delete ldap settings
 	$db->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
+	// delete registration settings
+	$db->db_query("delete from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$id."'");
+	$db->db_query("delete from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$id."'");
 	// delete site
 	$db->db_query("delete from ".BAB_SITES_TBL." where id='".$id."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -1031,6 +1231,18 @@ function siteUpdateHomePage1($item, $listpage1)
 	return true;
 	}
 
+function siteUpdateDisclaimer($item, $content)
+	{
+	global $babDB;
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$content = addslashes($content);
+		}
+	$babDB->db_query("update ".BAB_SITES_DISCLAIMERS_TBL." set disclaimer_text='".$content."' where id_site='".$item."'");
+	return true;
+	}
+
 /* main */
 if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
 {
@@ -1042,7 +1254,7 @@ if( isset($modify) && $modify=="bloc1")
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter), $adminname))
+		if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter), $adminname))
 			$idx = "modify";
 		}
 	else if( !empty($delete))
@@ -1064,13 +1276,11 @@ elseif( isset($modify) && $modify =="bloc3")
 		{
 		if( !isset($passtype)) { $passtype='text';}
 		if( !isset($ldpapchkcnx)) { $ldpapchkcnx='N';}
-		//if(!siteUpdate_authentification($item, $authtype, $host, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $ldapattr, $passtype))
 		if(!siteUpdate_authentification($item, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype))
 			$idx = "auth";
 		}
 	}
-
-if( isset($update) )
+elseif( isset($update) )
 	{
 	if( $update == "homepage0" )
 		{
@@ -1081,6 +1291,22 @@ if( isset($update) )
 		{
 		if(!siteUpdateHomePage1($item, $listpage1))
 			$idx = "modify";
+		}
+	else if( $update == "updisc" )
+		{
+		siteUpdateDisclaimer($item, $content);
+		$popupmessage = bab_translate("Update done");
+		}
+	else if( $update == "enreg" )
+		{
+		if (!isset($ml)) { $ml = array(); }
+		if (!isset($rw)) { $rw = array(); }
+		if (!isset($req)) { $req = array(); }
+		if (!isset($cdp)) { $cdp = 'N'; }
+		if (!isset($cen)) { $cen = 'N'; }
+		siteUpdateRegistration($item, $rw, $req, $ml, $cdp, $cen, $group);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		exit;
 		}
 	}
 
@@ -1094,6 +1320,28 @@ if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
+	case "unload":
+		include_once $babInstallPath."utilit/uiutil.php";
+		if( !isset($popupmessage)) { $popupmessage ='';}
+		if( !isset($refreshurl)) { $refreshurl ='';}
+		popupUnload($popupmessage, $refreshurl);
+		exit;
+	case "editdp":
+		if( !isset($content)) { $content ='';}
+		editDisclaimerPrivacy($item, $content);
+		exit;
+		break;
+	case "cnx":
+		$babBody->title = bab_translate("Registration").": ".getSiteName($item);
+		siteRegistration($item);
+		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
+		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
+		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
+		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
+		break;
+
 	case "auth":
 		$babBody->title = bab_translate("Authentification").": ".getSiteName($item);
 		siteAuthentification($item);
@@ -1102,6 +1350,7 @@ switch($idx)
 		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
 		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
+		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
 		break;
 
 	case "hpriv":
@@ -1112,6 +1361,7 @@ switch($idx)
 		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
 		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
+		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
 		break;
 
 	case "hpub":
@@ -1122,6 +1372,7 @@ switch($idx)
 		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
 		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
+		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
 		break;
 
 	case "Delete":
@@ -1140,6 +1391,7 @@ switch($idx)
 		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
 		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
 		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
+		$babBody->addItemMenu("cnx", bab_translate("Registration"),$GLOBALS['babUrlScript']."?tg=site&idx=cnx&item=".$item);
 		break;
 	}
 

@@ -127,7 +127,6 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
         var $siteval;
 
 		var $registration;
-		var $confirmation;
 		var $yes;
 		var $no;
 
@@ -141,10 +140,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 		var $serverport;
 		var $serverportval;
 
-		var $group;
 		var $db;
-		var $grpcount;
-		var $grpres;
 
 		var $smtpuser;
 		var $smtppass;
@@ -178,10 +174,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
-			$this->confirmation = bab_translate("Send email confirmation")."?";
 			$this->registration = bab_translate("Activate Registration")."?";
-			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
-			$this->group = bab_translate("Default group for confirmed users");
 			$this->smtpuser = bab_translate("SMTP username");
 			$this->smtppass = bab_translate("SMTP password");
 			$this->smtppass2 = bab_translate("Re-type SMTP password");
@@ -287,10 +280,6 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 				}
             $this->skselectedindex = 0;
             $this->stselectedindex = 0;
-
-			$this->db = $GLOBALS['babDB'];
-			$this->grpres = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id > '3'");
-			$this->grpcount = $this->db->db_num_rows($this->grpres);
 			}
 
 		function getnextlang()
@@ -384,20 +373,6 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 				return false;
 				}
 			}
-		function getnextgrp()
-			{
-			static $i = 0;
-			if( $i < $this->grpcount)
-				{
-				$arr = $this->db->db_fetch_array($this->grpres);
-                $this->grpname = $arr['name'];
-                $this->grpid = $arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			} // getnextgrp
 		function getnextlangfilter()
 		{
 			static $i = 0;
@@ -486,7 +461,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname)
+function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname)
 	{
 	global $babBody;
 	if( empty($name))
@@ -511,7 +486,9 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		}
 
 	if( empty($serverport))
+		{
 		$serverport = "25";
+		}
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -539,15 +516,22 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 	else
 		{
 		if( !is_numeric($imgsize))
+			{
 			$imgsize = 50;
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group. "', '" . $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."')";
+			}
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, registration, mailfunc, smtpserver, smtpport, imgsize, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '". $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."')";
 		$db->db_query($query);
 		$idsite = $db->db_insert_id();
+		$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
 		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
 		while( $row = $db->db_fetch_array($resf))
 			{
 			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (name, x_name, id_site) values ('".$row['name']."','','".$idsite."')");
+			$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id']."','N','N', 'N')");
 			}
+
+		$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y', required='Y' where id_site='".$idsite."' and id_field IN ('2', '4', '6')");	
+		$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y' where id_site='".$idsite."' and id_field='3'");	
 		}
 	return true;
 	}
@@ -562,7 +546,7 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname))
+	if(!siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname))
 		$idx = "create";
 	}
 
