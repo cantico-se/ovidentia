@@ -1877,48 +1877,38 @@ function printout()
 	$this->w = 0;
 	$todaymonth = date("n");
 	$todayyear = date("Y");
+	
+	$icalendars = & $GLOBALS['babBody']->icalendars;
+	$icalendars->initializeCalendars();
+	
 	$this->idcals = array();
-	if( !empty($BAB_SESS_USERID))
+
+	if (!empty($icalendars->id_percal))
+		$this->idcals[] = $icalendars->id_percal;
+
+	foreach($icalendars->pubcal as $id => $pubcal)
 		{
-		$this->idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if( $this->idcal != 0 )
-			$this->idcals[] = $this->idcal;
+		if ($pubcal['group'])
+			$this->idcals[] = $id;
+		}
 
-		$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group");
-
-		$arrgroups = array();
-		while($arr = $babDB->db_fetch_array($res))
+	$mktime = mktime(0,0,0,$this->currentMonth, 1,$this->currentYear);
+	$daymin = date('Y-m-d', $mktime);
+	$mktime = mktime(0,0,0,$this->currentMonth, $this->days,$this->currentYear);
+	$daymax = date('Y-m-d', $mktime);
+	if(count($this->idcals) > 0)
+		{
+		$currmonthevents = array();
+		$res2 = $babDB->db_query('SELECT c.id_cal, IF(EXTRACT(MONTH FROM e.start_date)<'.$this->currentMonth.', 1, DAYOFMONTH(e.start_date)) AS start_day, IF(EXTRACT(MONTH FROM e.end_date)>'.$this->currentMonth.', '.$this->days.', DAYOFMONTH(e.end_date)) AS end_day FROM '.BAB_CAL_EVENTS_TBL.' e,'.BAB_CAL_EVENTS_OWNERS_TBL.' c  WHERE e.id = c.id_event AND c.id_cal IN ('.implode(',', $this->idcals).') AND ((end_date>=\''.$daymin.'\' AND end_date<=\''.$daymax.'\') OR (start_date<=\''.$daymax.'\' AND start_date>=\''.$daymin.'\'))');
+		while($event = $babDB->db_fetch_array($res2))
 			{
-				$arrgroups[] = $arr['id'];
-			}
-		if(!empty($arrgroups))
-			{
-				$ingroups = implode(',', $arrgroups);
-				$res2 = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner IN(".$ingroups.") and type='2' and actif='Y'");
-				while( $arr2 = $babDB->db_fetch_array($res2))
-					{
-						$this->idcals[] = $arr2['id'];
-					}
-			}
-
-		$mktime = mktime(0,0,0,$this->currentMonth, 1,$this->currentYear);
-		$daymin = date('Y-m-d', $mktime);
-		$mktime = mktime(0,0,0,$this->currentMonth, $this->days,$this->currentYear);
-		$daymax = date('Y-m-d', $mktime);
-		if(count($this->idcals) > 0)
-			{
-			$currmonthevents = array();
-			$res2 = $babDB->db_query('SELECT id_cal, IF(EXTRACT(MONTH FROM start_date)<'.$this->currentMonth.', 1, DAYOFMONTH(start_date)) AS start_day, IF(EXTRACT(MONTH FROM end_date)>'.$this->currentMonth.', '.$this->days.', DAYOFMONTH(end_date)) AS end_day FROM '.BAB_CAL_EVENTS_TBL.' WHERE id_cal IN ('.implode(',', $this->idcals).') AND ((end_date>=\''.$daymin.'\' AND end_date<=\''.$daymax.'\') OR (start_date<=\''.$daymax.'\' AND start_date>=\''.$daymin.'\'))');
-			while($event = $babDB->db_fetch_array($res2))
+			for($day = $event['start_day'] ; $day<=$event['end_day']; $day++)
 				{
-				for($day = $event['start_day'] ; $day<=$event['end_day']; $day++)
-					{
-						$currmonthevents[$day][] = $event['id_cal'];
-					}
+					$currmonthevents[$day][] = $event['id_cal'];
 				}
-			$this->currmonthevents = $currmonthevents;
 			}
-	}
+		$this->currmonthevents = $currmonthevents;
+		}
 
 	return bab_printTemplate($this,"montha.html", "");
 	}
