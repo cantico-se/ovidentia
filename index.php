@@ -316,6 +316,10 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/admfiles";
 		break;
+	case "addons":
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+			$incl = "admin/addons";
+		break;
 	case "options":
 		if( $BAB_SESS_LOGGED)
     		$incl = "options";
@@ -438,15 +442,24 @@ switch($tg)
 		$incl = "entry";
 		break;
 	default:
+		$incl = "entry";
 		$arr = explode("/", $tg);
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")
 			{
-			$incl = "addons/".$GLOBALS['babAddons'][$arr[1]]['bab_folder'];
-			for($i = 2; $i < sizeof($arr); $i++)
-				$incl .= "/".$arr[$i];
+			$db = $GLOBALS['babDB'];
+			$res = $db->db_query("select id, folder from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$row = $db->db_fetch_array($res);
+				$incl = "addons/".$row['folder'];
+				for($i = 2; $i < sizeof($arr); $i++)
+					$incl .= "/".$arr[$i];
+				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['folder']."/";
+				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['folder']."/";
+				}
 			}
-		else
-			$incl = "entry";
 		break;
 	}
 

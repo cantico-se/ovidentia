@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+define("BAB_ADDONS_TBL", "bab_addons");
 define("BAB_ARTICLES_TBL", "bab_articles");
 define("BAB_CAL_EVENTS_TBL", "bab_cal_events");
 define("BAB_CALACCESS_USERS_TBL", "bab_calaccess_users");

@@ -186,6 +186,9 @@ function sectionsOrder()
 					case "3":
 						$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
 						break;
+					case "4":
+						$req = "select * from ".BAB_ADDONS_TBL." where id ='".$arr['id_section']."'";
+						break;
 					default:
 						$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
 						break;
@@ -217,6 +220,9 @@ function sectionsOrder()
 						break;
 					case "3":
 						$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'";
+						break;
+					case "4":
+						$req = "select * from ".BAB_ADDONS_TBL." where id ='".$arr['id_section']."'";
 						break;
 					default:
 						$req = "select * from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'";
