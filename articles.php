@@ -1322,7 +1322,7 @@ switch($idx)
 
 	default:
 	case "Articles":
-		$babBody->title = bab_translate("List of articles");
+		$babBody->title = bab_getCategoryTitle($topics);
 		listArticles($topics);
 		$arr = articles_init($topics);
 		$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
