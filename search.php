@@ -945,7 +945,7 @@ function viewDirectoryUser($id, $what)
 								break;
 								}
 							$res2 = $this->db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->arr['id_user']."' and id_group='".$row['id_group']."'");
-							if( $res2 && $this->db_num_rows($res2) > 0 )
+							if( $res2 && $this->db->db_num_rows($res2) > 0 )
 								{
 								$access = true;
 								break;
