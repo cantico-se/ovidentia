@@ -138,9 +138,6 @@ function browseLdapDirectory($id, $pos)
 						$this->count = $this->entries['count'];
 						}
 					}
-				else
-					{
-					}
 				}
 
 			/* find prefered mail account */
@@ -210,7 +207,7 @@ function browseLdapDirectory($id, $pos)
 		}
 
 	$temp = new temp($id, $pos);
-	$babBody->babecho( bab_printTemplate($temp, $GLOBALS['babAddonHtmlPath']."main.html", "adbrowse"));
+	$babBody->babecho( bab_printTemplate($temp, $GLOBALS['babAddonHtmlPath']."main.html", "adldapbrowse"));
 }
 
 function browseDbDirectory($id, $pos, $xf, $badd)
@@ -250,8 +247,6 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->db = $GLOBALS['babDB'];
 			if(bab_isAccessValid(ADDON_DIRVIEW_GROUPS_TBL, $id))
 				{
-				//$this->res = $this->db->db_query("select id, sn, givenname, email, btel, htel from ".ADDON_DBENTRIES_TBL." where givenname like '".$pos."%' and id_directory='".$id."' order by givenname, sn");
-				//$this->count = $this->db->db_num_rows($this->res);
 				$this->rescol = $this->db->db_query("select id_field from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."' and ordering!='0' order by ordering asc");
 				$this->countcol = $this->db->db_num_rows($this->rescol);
 				}
