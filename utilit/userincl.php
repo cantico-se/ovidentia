@@ -706,7 +706,7 @@ function bab_getGroups()
 function bab_getGroupEmails($id)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select email from ".BAB_USERS_TBL." usr , ".BAB_USERS_GROUPS_TBL." grp where grp.id_group='$id' and grp.id_object=usr.id";
+	$query = "select distinct email from ".BAB_USERS_TBL." usr , ".BAB_USERS_GROUPS_TBL." grp where grp.id_group in ($id) and grp.id_object=usr.id";
 	$res = $db->db_query($query);
 	$emails = "";
 	if( $res && $db->db_num_rows($res) > 0)
