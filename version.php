@@ -24,21 +24,9 @@
 include_once "base.php";
 include $babInstallPath."version.inc";
 
-function bab_array_search($str, $vars)
-{
-	foreach ($vars as $key => $val)
-	{
-		if ($val == $str)
-		{
-			return $key;
-		}
-	}
-	return false;
-}
-
 function upgrade()
 {
-$bab_versions = array("310", "320", "330", "331", "332", "333", "340", "341", "342", "343", "400", "401", "402", "403", "404");
+$bab_versions = array("310", "320", "330", "331", "332", "333", "340", "341", "342", "343", "400", "401", "402", "403", "404", "405");
 
 $ret = "";
 $db = $GLOBALS['babDB'];

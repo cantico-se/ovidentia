@@ -1,4 +1,11 @@
 /************************************************************************/
+Juin 2003: Version 4.0.5
+/************************************************************************/
+- Users can update their personnal information stored in Ovidentia directory
+- Now Administrators can disable user's calendar
+- Fixed some minors bugs
+
+/************************************************************************/
 Juin 2003: Version 4.0.4
 /************************************************************************/
 - Enhanced OvML ( See documentation )

@@ -179,6 +179,7 @@ CREATE TABLE bab_groups (
    notes enum('Y','N') NOT NULL default 'Y',
    contacts enum('Y','N') NOT NULL default 'Y',
    directory enum('N','Y') NOT NULL default 'N',
+   pcalendar enum('Y','N') NOT NULL default 'Y',
    id_dggroup int(11) unsigned NOT NULL default '0',
    id_dgowner int(11) unsigned NOT NULL default '0',
    PRIMARY KEY (id),
@@ -187,9 +188,9 @@ CREATE TABLE bab_groups (
    KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0', 'N', 'Y', 'Y', 'Y', '0', '0');
-INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0', 'N', 'N', 'N', 'N', '0', '0');
-INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0', 'N', 'Y', 'Y', 'N', '0', '0');
+INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0', 'N', 'Y', 'Y', 'Y', 'Y', '0', '0');
+INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0', 'N', 'N', 'N', 'N', 'N', '0', '0');
+INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0', 'N', 'Y', 'Y', 'N', 'Y', '0', '0');
 
 
 # --------------------------------------------------------
@@ -1005,6 +1006,7 @@ CREATE TABLE bab_db_directories (
   description varchar(255) NOT NULL default '',
   id_group int(11) unsigned NOT NULL default '0',
   id_dgowner int(11) unsigned NOT NULL default '0',
+  user_update enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );
