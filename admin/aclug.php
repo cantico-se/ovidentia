@@ -60,6 +60,18 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 
 		function aclusersgroups($pos, $table, $target, $idgroup)
 			{
+			global $babBody;
+			switch ($babBody->nameorder[0]) {
+			case "L":
+				$this->namesearch = "lastname";
+				$this->namesearch2 = "firstname";
+			break; 
+			case "F":
+			default:
+				$this->namesearch = "firstname";
+				$this->namesearch2 = "lastname";
+			break;}
+
 			$this->allname = bab_translate("All");
 			$this->update = bab_translate("Update");
 			$this->db = $GLOBALS['babDB'];
@@ -73,16 +85,16 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
+				$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
+				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=aclug&idx=chg&pos=".$this->ord.$this->pos.$this->urltrail;
 				}
 			else
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->pos."%' order by firstname, lastname asc";
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
+				$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
+				$this->fullname = bab_composeUserName(bab_translate("Firstname"), bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=aclug&idx=chg&pos=".$this->ord.$this->pos.$this->urltrail;
 				}
 			$this->res = $this->db->db_query($req);
@@ -146,9 +158,9 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 				else 
 					{
 					if( $this->ord == "-" )
-						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->selectname."%'";
 					else
-						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
+						$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->selectname."%'";
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
