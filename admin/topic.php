@@ -31,6 +31,7 @@ function listArticles($id)
 		var $bhomepage0;
 		var $bhomepage1;
 		var $addtohome;
+		var $siteid;
 
 		function temp($id)
 			{
@@ -46,6 +47,9 @@ function listArticles($id)
 			$req = "select * from articles where id_topic='$id' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			$req="select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
+			$r = $this->db->db_fetch_array($this->db->db_query($req));
+			$this->siteid = $r['id'];
 			}
 
 		function getnext()
@@ -54,13 +58,13 @@ function listArticles($id)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='2'";
+				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='2' and id_site='".$this->siteid."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					$this->bhomepage0 = "X";
 				else
 					$this->bhomepage0 = "";
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='1'";
+				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='1' and id_site='".$this->siteid."'";
 				$res = $this->db->db_query($req);
 				if( $res && $this->db->db_num_rows($res) > 0)
 					$this->bhomepage1 = "X";
@@ -326,7 +330,7 @@ function addToHomePages($item, $homepage, $art)
 		{
 		if( $count > 0 && in_array($arr['id'], $art))
 			{
-				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='".$homepage."'";
+				$req = "select * from homepages where id_article='".$arr['id']."' and id_group='".$homepage."' and id_site='".$idsite."'";
 				$res2 = $db->db_query($req);
 				if( !$res2 || $db->db_num_rows($res2) < 1)
 				{
