@@ -288,7 +288,7 @@ function startSearch($pat, $item, $what, $pos)
 				$private = false;
 				for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 					{
-					if( $babBody->aclfm['down'][$i] == 1)
+					if( $babBody->aclfm['down'][$i] == 1 || $babBody->aclfm['ma'][$i] == 1)
 						{
 						$req = "insert into filresults select * from ".BAB_FILES_TBL." where (name ".$this->like." or description ".$this->like." or keywords ".$this->like.") and id_owner='".$babBody->aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
 						$this->db->db_query($req);						
