@@ -357,7 +357,7 @@ if(isset($addcomment))
 	{
 	if( isset($name) && empty($name))
 		$name = "Anonymous";
-	if( !saveComment($topics, $article, $name, $subject, $message, $com))
+	if( !saveComment($topics, $article, $cname, $subject, $message, $com))
 		{
 		if( empty($com))
 			$idx = "addComment";
@@ -433,7 +433,7 @@ switch($idx)
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 			if( $arr['barch'] == "N")
 				$babBody->addItemMenu("AddComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
-			if( isset($newc) && $newc > 0)
+			if( $approver && isset($newc) && $newc > 0)
 				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);				
 			if( $arr['count'] < 1)
 				$babBody->title = bab_translate("Today, there is no comment on this article");
