@@ -1089,7 +1089,7 @@
 <string id="Members of delegation group">Les membres du groupe de délégation</string>
 <string id="Modify delegation group">Modifier un groupe de délégation</string>
 <string id="Create delegation group">Créer un groupe de délégation</string>
-<string id="Groups of delegation list">Créer des groupes de délégation</string>
+<string id="Groups of delegation list">Liste des groupes de délégation</string>
 <string id="Modify approbation schema">Modifier un schéma d'approbation</string>
 <string id="Create a new approbation schema">Créer un schéma d'approbation</string>
 <string id="Test an approbation schema">Tester un schéma d'approbation</string>
@@ -1182,6 +1182,6 @@
 <string id="Managing administrators">Administrateurs délégués</string>
 <string id="It is necessary to remove all associations with the users groups">Il est nécessaire d\'enlever toutes les associations avec les groupes utilisteurs</string>
 <string id="Administrators of delegation group">Les administrateurs du groupe de délégation</string>
-<string id="Member group">Groupe membre</string>
+<string id="Users groups">Groupes utilisateurs</string>
 <string id="Change administration">Changer d'administration</string>
 </fr>
