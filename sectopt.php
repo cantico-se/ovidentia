@@ -68,15 +68,15 @@ function sectionsList()
 			$this->groups = bab_translate("View");
 			$this->maxallowedsectxt = bab_translate("The maximum number of authorized optional sections was reached");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select distinct s.* from ".BAB_SECTIONS_TBL." s, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_SECTIONS_GROUPS_TBL." sg where s.optional='Y' and s.id=sg.id_object and ( (ug.id_group=sg.id_group and ug.id_object='".$GLOBALS['BAB_SESS_USERID']."') or sg.id_group='0' or sg.id_group='1')";
+			$req = "select distinct s.* from ".BAB_SECTIONS_TBL." s, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_SECTIONS_GROUPS_TBL." sg where s.enabled='Y' AND s.optional='Y' and s.id=sg.id_object and ( (ug.id_group=sg.id_group and ug.id_object='".$GLOBALS['BAB_SESS_USERID']."') or sg.id_group='0' or sg.id_group='1')";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
 			// don't get Administrator section and User's section
-			$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where optional='Y' and id !='1' and id!='5'");
+			$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where enabled='Y' AND optional='Y' and id !='1' and id!='5'");
 			$this->counta = $this->db->db_num_rows($this->resa);
 
-			$res = $this->db->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_CATEGORIES_TBL.".optional='Y'");
+			$res = $this->db->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." c where ".BAB_TOPICS_TBL.".id_cat=c.id and c.optional='Y' AND c.enabled='Y'");
 			while( $row = $this->db->db_fetch_array($res))
 				{
 				if( in_array($row['id'], $babBody->topview) )
