@@ -193,8 +193,9 @@ function browse($topics,$cat,$cb)
 					$this->articledate = bab_strftime(bab_mktime($arr['date']));
 					$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 
-					$tmp = str_replace("\n"," ",addslashes(substr(strip_tags(bab_replace($arr['head']))."...", 0, 400)." -- ".$this->author));
+					$tmp = str_replace("\n"," ",substr(strip_tags(bab_replace($arr['head'])), 0, 400)." -- ".$this->author);
 					$this->content = str_replace("\r"," ",$tmp);
+					$this->content = str_replace("\"","'",$this->content);
 					$this->titledisp = $arr['title'];
 					$tmp = str_replace("\""," ",$arr['title']);
 					$this->title = addslashes($tmp);
