@@ -866,6 +866,10 @@ switch($tg)
 		include $babInstallPath."editorcontdir.php";
 		exit;
 		break;
+	case "selectcolor":
+		include $babInstallPath."selectcolor.php";
+		exit;
+		break;
 	case "imgget":
 		include $babInstallPath."imgget.php";
 		exit;
