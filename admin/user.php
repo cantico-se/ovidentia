@@ -302,6 +302,10 @@ function confirmDeleteUser($id)
 	$req = "delete from contacts where owner='$id'";
 	$res = $db->db_query($req);	
 
+	// delete user from sections_states
+	$req = "delete from sections_states where id_user='$id'";
+	$res = $db->db_query($req);	
+
 	// delete user
 	$req = "delete from users where id='$id'";
 	$res = $db->db_query($req);	

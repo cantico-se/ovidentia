@@ -146,6 +146,10 @@ function confirmDeleteSection($id)
 	$req = "delete from sections_groups where id_object='$id'";
 	$res = $db->db_query($req);	
 
+	// delete from sections_order
+	$req = "delete from sections_order where id_section='$id'";
+	$res = $db->db_query($req);	
+
 	// delete section
 	$req = "delete from sections where id='$id'";
 	$res = $db->db_query($req);

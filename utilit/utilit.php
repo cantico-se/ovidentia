@@ -139,15 +139,18 @@ var $title;
 var $content;
 var $hidden;
 var $position;
-var $acl;
+var $close;
+var $boxurl;
 
 function babSection($title = "Section", $content="<br>This is a sample of content<br>")
 {
+	global $HTTP_GET_VARS;
 	$this->title = $title;
 	$this->content = $content;
 	$this->hidden = false;
 	$this->position = 0;
-	$this->acl;
+	$this->close = 0;
+	$this->boxurl = "";
 }
 
 function getTitle() { return $this->title;}
@@ -183,6 +186,16 @@ function show()
 function hide()
 {
 	$this->hidden = true;
+}
+
+function close()
+{
+	$this->close = 1;
+}
+
+function open()
+{
+	$this->close = 0;
 }
 
 function printout()
@@ -620,6 +633,101 @@ function loadSection($title, $pos=-1)
 		}
 }
 
+function loadSections()
+{
+	global $body, $LOGGED_IN, $BAB_SESS_USERID;
+	$add = false;
+	$db = new db_mysql();
+	$req = "select * from sections_order order by ordering asc";
+	$res = $db->db_query($req);
+	while( $arr =  $db->db_fetch_array($res))
+		{
+		$add = false;
+		if( $arr[private] == "Y")
+			{
+			switch( $arr[id_section] )
+				{
+				case 1: // admin
+					if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+						{
+						$add = true;
+						$sec = new adminSection();
+						}
+					break;
+				case 2: // month
+					$add = true;
+					$sec = new babMonthA();
+					break;
+				case 3: // topics
+					$sec = new topicsSection();
+					if( $sec->count > 0 )
+						{
+						$add = true;
+						}
+					break;
+				case 4: // Forums
+					$sec = new forumsSection();
+					if( $sec->count > 0 )
+						{
+						$add = true;
+						}
+					break;
+				case 5: // user's section
+					if( isset($LOGGED_IN) && $LOGGED_IN)
+						{
+						$add = true;
+						$sec = new userSection();
+						}
+					break;
+				}
+			}
+		else
+			{
+			$add = isAccessValid("sections_groups", $arr[id_section]);
+			if( $add )
+				{
+				$req = "select * from sections where id='".$arr[id_section]."'";
+				$res2 = $db->db_query($req);
+				if( $res2 && $db->db_num_rows($res2) > 0)
+					{
+					$arr2 = $db->db_fetch_array($res2);
+					if( $arr2[script] == "Y")
+						eval("\$arr2[content] = \"$arr2[content]\";");
+					$sec = new babSection($arr2[title], $arr2[content]);
+					}
+				else
+					$add = false;
+				}
+			}
+		if( $add )
+			{
+			$sec->setPosition($arr[position]);
+			$req = "select * from sections_states where id_section='".$arr[id_section]."' and id_user='".$BAB_SESS_USERID."'";
+			$res2 = $db->db_query($req);
+			if( $res2 && $db->db_num_rows($res2) > 0)
+				{
+				$arr2 = $db->db_fetch_array($res2);
+				if( $arr2[closed] == "Y")
+					{
+					$sec->close = 1;
+					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=sections&idx=ob&s=".$arr[id_section]."&w=".$arr[private];
+					}
+				else
+					{
+					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=sections&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
+					$sec->close = 0;
+					}
+				}
+			else
+				{
+				$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=sections&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
+				$sec->close = 0;
+				}
+			$body->addSection($sec);
+			}
+		}
+}
+
 function addSection($sec)
 {
 	array_push($this->sections, $sec);
@@ -890,13 +998,7 @@ function updateUserSettings()
 function getSections()
 	{
 	global $body;
-	$db = new db_mysql();
-	$req = "select * from sections";
-	$res = $db->db_query($req);
-	while( $arr = $db->db_fetch_array($res))
-		{
-		$body->loadSection($arr[title]);
-		}
+	$body->loadSections();
 	}
 
 $font1 = new fontTag("", "verdana, arial, helvetica", 1);

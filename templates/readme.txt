@@ -300,6 +300,8 @@
 		Liste des sections
 	sectionsmodify
 		Modification d'une section
+	sectionordering
+		Ordre des sections
 
 - sectiontemplate.html *********************************************************
 	default	

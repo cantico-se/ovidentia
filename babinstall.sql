@@ -206,6 +206,59 @@ CREATE TABLE sections (
    PRIMARY KEY (id)
 );
 
+# --------------------------------------------------------
+#
+# Structure de la table 'private_sections'
+#
+
+CREATE TABLE private_sections (
+   id smallint(6) unsigned NOT NULL auto_increment,
+   position enum('0','1') DEFAULT '0' NOT NULL,
+   title varchar(60),
+   description varchar(200),
+   PRIMARY KEY (id)
+);
+
+INSERT INTO private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration');
+INSERT INTO private_sections VALUES ('2', '1', 'Month', 'This section lists month days');
+INSERT INTO private_sections VALUES ('3', '0', 'Topics', 'This section lists topics');
+INSERT INTO private_sections VALUES ('4', '0', 'Forums', 'This section lists forums');
+INSERT INTO private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User');
+
+# --------------------------------------------------------
+#
+# Structure de la table 'sections_order'
+#
+
+CREATE TABLE sections_order (
+   id smallint(6) unsigned NOT NULL auto_increment,
+   id_section smallint(6) unsigned NOT NULL,
+   position enum('0','1') DEFAULT '0' NOT NULL,
+   private enum('N','Y') DEFAULT 'N' NOT NULL,
+   ordering smallint(6) unsigned NOT NULL,
+   PRIMARY KEY (id)
+);
+
+INSERT INTO private_sections VALUES ('1', '0', 'Administration', 'This section is for Administration', 'N');
+INSERT INTO private_sections VALUES ('2', '1', 'Month', 'This section lists month days', 'N');
+INSERT INTO private_sections VALUES ('3', '0', 'Topics', 'This section lists topics', 'N');
+INSERT INTO private_sections VALUES ('4', '0', 'Forums', 'This section lists forums', 'N');
+INSERT INTO private_sections VALUES ('5', '1', 'User\'s section', 'This section is for User', 'N');
+
+# --------------------------------------------------------
+#
+# Structure de la table 'sections_states'
+#
+
+CREATE TABLE sections_states (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_section smallint(6) unsigned NOT NULL,
+   closed enum('N','Y') DEFAULT 'N' NOT NULL,
+   private enum('N','Y') DEFAULT 'N' NOT NULL,
+   id_user int(11) unsigned NOT NULL,
+   PRIMARY KEY (id)
+);
+
 
 # --------------------------------------------------------
 #

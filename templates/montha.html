@@ -10,10 +10,16 @@
                 <td width="20" align="center" valign="middle"><img src="images/Puces/PuceAgenda.gif" width="15" height="15"></td>
                 <td class="BabTitleSectionFont" width="130" align="center" valign="middle">{ 
                   curmonth } { curyear } </td>
-              </tr>
+         <!--#if close "== 0" --> 
+                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="images/Puces/PuceClose.gif"></a></td>
+        <!--#else close --> 
+                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="images/Puces/PuceOpen.gif"></a></td>
+        <!--#endif close --> 
+             </tr>
             </table>
           </td>
         </tr>
+         <!--#if close "== 0" --> 
         <tr> 
           <td  valign="middle" align="center" width="100%">
             <table  width="150" cellpadding="0">
@@ -49,6 +55,7 @@
             </table>
           </td>
         </tr>
+         <!--#endif close --> 
       </table>
     </td>
   </tr>

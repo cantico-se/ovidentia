@@ -75,6 +75,84 @@ function sectionsList()
 	return $temp->count;
 	}
 
+function sectionsOrder()
+	{
+	global $body;
+	class temp
+		{
+		var $id;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $moveup;
+		var $movedown;
+
+		function temp()
+			{
+			$this->listleftsectxt = "----------------- ". babTranslate("Left sections") . " -----------------";
+			$this->listrightsectxt = "----------------- ". babTranslate("Right sections") . " -----------------";
+			$this->update = babTranslate("Update");
+			$this->moveup = babTranslate("Move Up");
+			$this->movedown = babTranslate("Move Down");
+			$this->db = new db_mysql();
+			$req = "select * from sections_order where position='0' order by ordering asc";
+			$this->resleft = $this->db->db_query($req);
+			$this->countleft = $this->db->db_num_rows($this->resleft);
+			$req = "select * from sections_order where position='1' order by ordering asc";
+			$this->resright = $this->db->db_query($req);
+			$this->countright = $this->db->db_num_rows($this->resright);
+			}
+
+		function getnextsecleft()
+			{
+			static $i = 0;
+			if( $i < $this->countleft)
+				{
+				$arr = $this->db->db_fetch_array($this->resleft);
+				if( $arr[private] == "Y" )
+					$req = "select * from private_sections where id ='".$arr[id_section]."'";
+				else
+					$req = "select * from sections where id ='".$arr[id_section]."'";
+				$res2 = $this->db->db_query($req);
+				$arr2 = $this->db->db_fetch_array($res2);
+				$this->listleftsecval = $arr2[title];
+				$this->secid = $arr[id];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		function getnextsecright()
+			{
+			static $j = 0;
+			if( $j < $this->countright)
+				{
+				$arr = $this->db->db_fetch_array($this->resright);
+				if( $arr[private] == "Y" )
+					$req = "select * from private_sections where id ='".$arr[id_section]."'";
+				else
+					$req = "select * from sections where id ='".$arr[id_section]."'";
+				$res2 = $this->db->db_query($req);
+				$arr2 = $this->db->db_fetch_array($res2);
+				$this->listrightsecval = $arr2[title];
+				$this->secid = $arr[id];
+				$j++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		}
+
+	$temp = new temp();
+	$body->babecho(	babPrintTemplate($temp, "sections.html", "sectionordering"));
+	return $temp->count;
+	}
+
 function sectionCreate()
 	{
 	global $body;
@@ -140,11 +218,51 @@ function sectionSave($title, $pos, $desc, $content, $script)
 		}
 	}
 
+function saveSectionsOrder($listleft, $listright)
+	{
+		$db = new db_mysql();
+
+		for( $i = 0; $i < count($listleft); $i++)
+		{
+			$req = "update sections_order set position='0', ordering='".($i+1)."' where id='".$listleft[$i]."'";
+			$res = $db->db_query($req);
+		}
+		for( $i = 0; $i < count($listright); $i++)
+		{
+			$req = "update sections_order set position='1', ordering='".($i+1)."' where id='".$listright[$i]."'";
+			$res = $db->db_query($req);
+		}
+	}
+
+function updateStateSection($c, $w, $closed)
+	{
+	global $HTTP_REFERER, $BAB_SESS_USERID;
+
+	if( !empty($BAB_SESS_USERID))
+		{
+		$db = new db_mysql();
+		$req = "select * from sections_states where private='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 )
+			$req = "update sections_states set closed='".$closed."' where private='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		else
+			$req = "insert into sections_states (id_section, closed, private, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
+
+		$db->db_query($req);
+		}
+
+	Header("Location: ". $HTTP_REFERER);
+	}
 
 /* main */
 if( isset($create))
 	{
 	sectionSave($title, $position, $description, $content, $script);
+	}
+
+if( isset($update) && $update = "order")
+	{
+	saveSectionsOrder($listleft, $listright);
 	}
 
 if( !isset($idx))
@@ -153,10 +271,26 @@ if( !isset($idx))
 
 switch($idx)
 	{
+	case "cb":
+		updateStateSection($s, $w, "Y");
+		break;
+
+	case "ob":
+		updateStateSection($s, $w, "N");
+		break;
+
+	case "Order":
+		$body->title = babTranslate("Create section");
+		sectionsOrder();
+		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Order");
+		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Create");
+		break;
 	case "Create":
 		$body->title = babTranslate("Create section");
 		sectionCreate();
 		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS[babUrl]."index.php?tg=sections&idx=List");
+		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Order");
 		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Create");
 		break;
 	case "List":
@@ -169,6 +303,7 @@ switch($idx)
 		else
 			$body->title = babTranslate("There is no section");
 
+		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Order");
 		$body->addItemMenu("Create", babTranslate("Create"),$GLOBALS[babUrl]."index.php?tg=sections&idx=Create");
 		break;
 	}

@@ -18,32 +18,6 @@ include $babInstallPath."utilit/utilit.php";
 userIsloggedin();
 updateUserSettings();
 
-if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
-	{
-	$sec = new adminSection();
-	$body->addSection($sec);
-	}
-
-$sec = new topicsSection();
-if( $sec->count > 0 )
-	$body->addSection($sec);
-
-$sec = new forumsSection();
-if( $sec->count > 0 )
-	$body->addSection($sec);
-
-$sec = new babMonthA();
-$sec->setPosition(1);
-$body->addSection($sec);
-
-
-if( isset($LOGGED_IN) && $LOGGED_IN)
-	{
-	$sec = new userSection();
-	$sec->setPosition(1);
-	$body->addSection($sec);
-	}
-
 function printBody()
 	{
 	class tpl
