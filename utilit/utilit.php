@@ -651,6 +651,8 @@ function babSection($title = "Section", $content="<br>This is a sample of conten
 	$this->boxurl = "";
 	$this->bbox = 0;
 	$this->template = "default";
+	$this->t_open = bab_translate("Open");
+	$this->t_close = bab_translate("Close");
 }
 
 function getTitle() { return $this->title;}
@@ -728,6 +730,7 @@ function babSectionTemplate($file, $section="")
 
 	
 	$this->file = $file;
+	$this->htmlid = substr($this->file,0,-5);
 	$this->setTemplate($section);
 	}
 
@@ -735,7 +738,7 @@ function printout()
 	{
 	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/'. $this->file ) )
 		{
-		$this->content = & bab_printTemplate($this,'insections.html', substr($this->file,0,-5));
+		$this->content = & bab_printTemplate($this,'insections.html', $this->htmlid );
 		return bab_printTemplate($this,'sectiontemplate.html', 'default');
 		}
 	$str = bab_printTemplate($this,$this->file, $this->template);
@@ -1916,6 +1919,8 @@ function printout()
 			}
 		$this->currmonthevents = $currmonthevents;
 		}
+
+	$this->htmlid = 'montha';
 
 	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/montha.html' ) )
 		{

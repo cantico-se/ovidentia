@@ -1,201 +1,78 @@
 <!--#begin adminsection -->
-
-<table width="100%" cellpadding="0" cellspacing="0">
-  <tr> 
-	<td class="BabHeaderBodySection" align="center">
-	<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  { head }</td>
-  </tr>
-  <tr> 
-	<td > <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  <table width="100%" cellpadding="0" cellspacing="0">
-		<!--#in addUrl -->
-		<tr> 
-		  <td width="10"></td>
-		  <td class="BabBodySection" valign="middle">{ babsectionbullet }</td>
-		  <td width="5"></td>
-		  <td class="BabBodySection" width="126"><a class="BabSectionsLinkColor" href="{ val }">{ key }</a></td>
-		</tr>
-		<!--#endin addUrl -->
-		<!--#in addAddonUrl -->
-		<tr> 
-		  <td width="10"></td>
-		  <td class="BabBodySection" valign="middle">{ babsectionbullet }</td>
-		  <td width="5"></td>
-		  <td class="BabBodySection" width="126"><a class="BabSectionsLinkColor" href="{ val }">{ 
-			key }</a></td>
-		</tr>
-		<!--#endin addAddonUrl -->
-	  </table>
-	</td>
-  </tr>
-  <tr> 
-	<td class="BabFooterBodySection" align="center" valign="middle">
-	<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  { foot }</td>
-  </tr>
-</table>
-
+<h5>{ head }</h5>
+	<ul>
+	<!--#in addUrl -->
+		<li><a href="{ val }">{ key }</a></li>
+	<!--#endin addUrl -->
+	<!--#in addAddonUrl -->
+		<li><a href="{ val }">{ key }</a></li>
+	<!--#endin addAddonUrl -->
+	</ul>
+<h5>{ foot }</h5>
 <!--#end adminsection -->
 
 
 <!--#begin usersection -->
-<table width="100%" cellpadding="0" cellspacing="0">
-  <tr> 
-	<td class="BabHeaderBodySection" align="center"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">{ login }<br />
-	<center><b>{ BAB_SESS_USER }</b></center></td>
-  </tr>
-  <tr> 
-	<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	<table width="100%" cellpadding="0" cellspacing="0">
-		<!--#in addUrl -->
-		<tr> 
-		  <td width="15"></td>
-		  <td class="BabBodySection" valign="middle" width="1">{ babsectionbullet }</td>
-		  <td width="5"></td>
-		  <td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{ text }</a></td>
-		</tr>
-		<!--#endin addUrl -->
-		<!--#in addAddonUrl -->
-		<tr> 
-		  <td width="15"></td>
-		  <td class="BabBodySection" valign="middle" width="1">{ babsectionbullet }</td>
-		  <td width="5"></td>
-		  <td class="BabBodySection" width="129"><a class="BabSectionsLinkColor" href="{ url }">{ text }</a></td>
-		</tr>
-		<!--#endin addAddonUrl -->
-	  </table>
-	</td>
-  </tr>
-  <!--#if blogged -->
-  <tr> 
-	<td class="BabHeaderBodySection" align="center"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  { aidetxt }</td>
-  </tr>
-  <tr> 
-	<td class="BabFooterBodySection" align="center"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  <table width="100%" cellpadding="0" cellspacing="0">
-		<!--#in getnextnew -->
-		<tr> 
-		  <td width="15"></td>
-		  <td class="BabBodySection">{ newcount }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="3" height="1" border="0"><a class="BabSectionsLinkColor" href="{ newurl }">{ 
-			newtext }</a></td>
-		</tr>
-		<!--#endin getnextnew -->
-	  </table>
-  </tr>
-  <!--#endif blogged -->
-  <tr> 
-	<td class="BabFooterBodySection" align="center"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  { foot }</td>
-  </tr>
-</table>
+<h5>{ login } <strong>{ BAB_SESS_USER }</strong></h5>
+<ul>
+	<!--#in addUrl -->
+	<li><a href="{ url }">{ text }</a></li>
+	<!--#endin addUrl -->
+	<!--#in addAddonUrl -->
+	<li><a href="{ url }">{ text }</a></li>
+	<!--#endin addAddonUrl --> 
+</ul>
+<!--#if blogged --> 
+<h5>{ aidetxt }</h5>
+<ul class="last">
+	<!--#in getnextnew --> 
+	<li><a href="{ newurl }">{ newcount }&nbsp;{ newtext }</a></li>
+	<!--#endin getnextnew --> 
+</ul>
+<!--#endif blogged --> 
+<h5>{ foot }</h5>
 <!--#end usersection -->
 
 <!--#begin topcatsection -->
- <table width="100%" cellpadding="0" cellspacing="0" align="center">
-  <tr> 
-	<td class="BabHeaderBodySection" align="center"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  { head }<br></td>
-  </tr>
-  <tr><td ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0">
-	  <table width="100%" cellpadding="0" cellspacing="0">
-		<!--#in topcatGetNext -->
-		<tr> 
-		  <td width="10"></td>
-		  <td class="BabBodySection" valign="middle">{ babsectionbullet }</td>
-		  <td width="5"></td>
-		  <td class="BabBodySection" width="126"><a class="BabSectionsLinkColor" href="{ url }">{ text }</a></td>
-		</tr>
-		<!--#endin topcatGetNext -->
-	  </table>
-	</td>
-  </tr>
-  <tr> 
-	<td class="BabFooterBodySection"> <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-  </tr>
-</table>
+<h5>{ head }</h5>
+<ul>
+	<!--#in topcatGetNext --><li><a href="{ url }">{ text }</a></li><!--#endin topcatGetNext -->
+</ul>
 <!--#end topcatsection -->
 
 <!--#begin topicssection -->
-<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
-	  <tr> 
-		<td class="BabHeaderBodySection" align="center">
-		<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>{ head }</td>
-	</tr>
-	<tr><td >
-		<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-		<table width="100%" border="0" cellpadding="0" cellspacing="0"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-		<!--#in topicsGetNext -->
-		<tr> 
-		<td width="10"></td>
-		<td class="BabBodySection" align="center" valign="middle">{ babsectionbullet }</td>
-		<td width="5"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-		<td width="126" align="left" valign="middle" class="BabBodySection">
-		<a class="BabSectionsLinkColor" href="{ url }">{ text }</a><!--#if newa "== a" --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a href="{ url }">{ waitingaimg }</a>
-		<!--#endif newa --><!--#if newc "== c" --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><a href="{ url }">{ waitingcimg }</a><!--#endif newc -->
-		</td>
-		</tr>
-		<!--#endin topicsGetNext -->
-		</table>
-	</td>
-</tr>
-<tr> 
-	<td class="BabFooterBodySection"> <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	<!--#if bfooter "== 1" -->
-		  <table width="100%" cellpadding="1" cellspacing="0" align="center">
-			<tr align="center"> 
-			<td align="left" valign="middle" class="BabFooterBodySection">{ waitinga }</td>
-			<td width="10" align="left" valign="middle" class="BabFooterBodySection">{ waitingaimg }</td>
-			</tr>
-			<tr align="center"> 
-			<td align="left" valign="middle" class="BabFooterBodySection">{ waitingc }</td>
-			<td align="left" valign="middle" class="BabFooterBodySection">{ waitingcimg }</td>
-			</tr>
-		</table>
-	 <!--#endif bfooter --> 
-	</tr>
-</table>
+<h5>{ head }</h5>
+<ul>
+	<!--#in topicsGetNext -->
+	<li><a href="{ url }">{ text }</a><!--#if newa "== a" -->&nbsp;<a href="{ url }">{ waitingaimg }</a> <!--#endif newa --><!--#if newc "== c" -->&nbsp;<a href="{ url }">{ waitingcimg }</a><!--#endif newc --></li>
+	<!--#endin topicsGetNext -->
+</ul>
+<!--#if bfooter "== 1" -->
+<h5>
+	{ waitingaimg } { waitinga }<br />
+	{ waitingaimg } { waitingc }<br />
+</h5>
+<!--#endif bfooter -->
 <!--#end topicssection -->
 
 <!--#begin forumssection -->
- <table width="100%" cellpadding="0" cellspacing="0" align="center">
-  <tr> 
-	<td class="BabHeaderBodySection" align="center">
-	<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  { head }</td>
-  </tr>
-  <tr> 
-	<td ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  <table  width="100%" cellpadding="0" cellspacing="0">
-		<!--#in forumsGetNext -->
-		<tr> 
-		  <td width="10"></td>
-		  <td class="BabBodySection" valign="middle">{ babsectionbullet }</td>
-		  <td width="5"></td>
-		  <td class="BabBodySection" width="126" valign="middle"><a class="BabSectionsLinkColor" href="{ url }">{ text }</a> 
-			<!--#if waiting "== *" -->
-			<a href="{ url }">{ waitingpostsimg }</a>
-			<!--#endif waiting -->
-		  </td>
-		</tr>
-		<!--#endin forumsGetNext -->
-	  </table>
-	</td>
-  </tr>
-  <tr> 
-	<td class="BabFooterBodySection" align="center"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="5" border="0"><br>
-	  <!--#if bfooter "== 1" -->
-	  <table width="100%" cellpadding="1" cellspacing="0" align="center">
-		<tr> 
-		  <td width="134" valign="middle" class="BabFooterBodySection">{ waitingf }</td>
-		  <td width="10" valign="middle" class="BabFooterBodySection">{ waitingpostsimg }</td>
-		</tr>
-	  </table>
-	  <!--#endif bfooter -->
-	</td>
-  </tr>
-</table>
+<h5>{ head }</h5>
+<ul>
+	<!--#in forumsGetNext -->
+	<li><a href="{ url }">{ text }</a> <!--#if waiting "== *" --> <a href="{ url }">{ waitingpostsimg }</a> <!--#endif waiting --></li>
+	<!--#endin forumsGetNext --> 
+</ul>
+<!--#if blogged --> 
+<h5>{ aidetxt }</h5>
+<ul>
+	<!--#in getnextnew -->
+	<li><strong>{ newcount }</strong>&nbsp;<a href="{ newurl }">{ newtext }</a></li>
+	<!--#endin getnextnew --> 
+</ul>
+<!--#endif blogged -->
+<!--#if bfooter "== 1" -->
+<h5>{ waitingpostsimg }&nbsp;{ waitingf }</h5>
+<!--#endif bfooter -->
 <!--#end forumssection -->
 
 <!--#begin montha -->

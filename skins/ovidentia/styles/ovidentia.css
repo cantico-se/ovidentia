@@ -229,6 +229,72 @@ a.BabSummaryLinkColor:Hover,
 	}
 
 /****** SECTIONS GENERAL ***************************/
+
+
+.bab_section {
+	 background-color: #116;
+	 color:#fff;
+	 width:150px;
+	 margin:0 0 .8em 0;
+	}
+
+.bab_section .bab_title {
+	background-color: #D1D1D9;
+	color:#000;
+	height:1.3em;
+	padding-top:1px;
+	}
+
+.bab_section .bab_title h4 {
+	margin:0;
+	font-size:1em;
+	padding-left:20px;
+	
+	}
+
+.bab_section .bab_title a, .bab_section .bab_title span {
+	display:block;
+	background-image:url('../images/Puces/PuceSection3.gif');
+	background-repeat:no-repeat;
+	margin-left:3px;
+	float:left;
+	}
+
+.bab_section .bab_title a img, .bab_section .bab_title span img {
+	width:12px;
+	height:13px;
+	border:0;
+	}
+
+.bab_section .bab_title a.open {
+	background-position:-12px;
+	}
+
+.bab_section .bab_title a.close {
+	background-position:-24px;
+	}
+
+.bab_section .bab_content h5 {
+	text-align:center;
+	font-size:.9em;
+	margin:.4em 0 .4em 0;
+	padding:.3em;
+	font-weight:normal;
+	}
+
+.bab_section .bab_content ul {
+	margin:.2em 0 .2em 0;
+	margin-left:0px;
+	padding-left: 20px;
+	LIst-style-type:disc;
+	}
+
+.bab_section .bab_content li {
+	padding:.05em;
+	}
+
+
+
 .BabTitleSectionFont {
 	color: #000000; 
 	font-weight: bold;
@@ -248,12 +314,14 @@ a.BabSummaryLinkColor:Hover,
 	color: #FFFFFF;
 	}
 	
-
+.bab_section .bab_content a,
+.bab_section .bab_content a:visited,
 a.BabSectionsLinkColor,
-a.BabSectionsLinkColor:Link,
 a.BabSectionsLinkColor:Visited { 
 	color: #FFFFFF; 
 	}
+
+.bab_section .bab_content a:hover,
 a.BabSectionsLinkColor:Hover { 
 	color: #FFFF00; 
 	}
