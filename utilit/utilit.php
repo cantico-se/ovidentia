@@ -575,7 +575,7 @@ function babAdminSection($close)
 		$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['directories'] == 'Y')
 		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['orgchart'] == 'Y')
+	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || (isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y'))
 		$this->array_urls[bab_translate("Charts")] = $GLOBALS['babUrlScript']."?tg=admocs";
 	
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
