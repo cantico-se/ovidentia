@@ -17,6 +17,8 @@ function listArticles($id)
 		var $titlename;
 		var $articleid;
 		var $item;
+		var $checkall;
+		var $uncheckall;
 
 		var $db;
 		var $res;
@@ -25,6 +27,8 @@ function listArticles($id)
 		function temp($id)
 			{
 			$this->titlename = babTranslate("Title");
+			$this->uncheckall = babTranslate("Uncheck all");
+			$this->checkall = babTranslate("Check all");
 			$this->item = $id;
 			$this->db = new db_mysql();
 			$req = "select * from articles where id_topic='$id'";
