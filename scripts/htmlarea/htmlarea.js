@@ -13,7 +13,7 @@
 // Creates a new HTMLArea object.  Tries to replace the textarea with the given
 // ID with it.
 
-function HTMLArea(textarea,baburl,babInstallPath, babLanguage, enabled,config) {
+function HTMLArea(textarea,baburl,babInstallPath, babLanguage,enabled,config) {
 	
 	if (HTMLArea.checkSupportedBrowser()) {
 		if (typeof baburl == "undefined") {
@@ -32,6 +32,7 @@ function HTMLArea(textarea,baburl,babInstallPath, babLanguage, enabled,config) {
 		} else {
 			this.babLanguage = babLanguage+'/';
 		}
+		
 		if (typeof enabled == "undefined") {
 			this.enabled = true;
 		} else {
@@ -82,6 +83,7 @@ HTMLArea.Config = function (babLanguage) {
 	this.replaceNextLines = 0;
 	this.plainTextInput = 0;
 
+	// ["cleanhtml","babimage","babfile"]
 
 	this.toolbar = [ [ "fontname", "space" ],
 			 [ "fontsize", "space" ],
@@ -91,10 +93,10 @@ HTMLArea.Config = function (babLanguage) {
 			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
 			 [ "forecolor", "backcolor", "separator" ],
 			 [ "horizontalrule", "inserttable", "htmlmode", "separator" ],
-			 [ "popupeditor","babimage","bablink", "linebreak" ],
+			 [ "popupeditor","bablink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
-			 [ "cleanhtml","babfile" ] //"createlink", "about","insertimage"
+			 ["cleanhtml"]
 		];
 
 	this.fontname = {
@@ -175,9 +177,9 @@ HTMLArea.Config = function (babLanguage) {
 };
 
 /** Helper function: replace all TEXTAREA-s in the document with HTMLArea-s. */
-HTMLArea.replaceAll = function(baburl) {	
+HTMLArea.replaceAll = function(baburl,babInstallPath, babLanguage) {	
 	var tas = document.getElementsByTagName("textarea");
-	for (var i = tas.length; i > 0; (new HTMLArea(tas[--i],baburl)).generate());
+	for (var i = tas.length; i > 0; (editor = new HTMLArea(tas[--i],baburl,babInstallPath, babLanguage)).generate());
 
 };
 
@@ -1824,3 +1826,26 @@ editor.insertHTML('$FILE('+idf+','+txt+')');
 // indent-tabs-mode:t //
 // End: //
 
+var editor = null;
+
+function initEditor(what,ta, babUrl, babInstallPath, babLanguage)
+	{
+	editor = new HTMLArea(ta,babUrl,babInstallPath,babLanguage);
+	if( what == 1 )
+		{
+	  	editor.config.toolbar = [ [ "fontname", "space" ],
+			 [ "fontsize", "space" ],
+			 [ "formatblock", "space"],
+			 [ "babstyle", "space", "textindicator","linebreak" ],
+			 [ "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator" ],
+			 [ "orderedlist", "unorderedlist", "outdent", "indent", "separator" ],
+			 [ "forecolor", "backcolor", "separator" ],
+			 [ "horizontalrule", "inserttable", "htmlmode", "separator" ],
+			 [ "popupeditor","bablink", "linebreak" ],
+			 [ "copy", "cut", "paste","undo","redo", "separator" ],
+			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
+			 ["cleanhtml","babimage","babfile"]
+		];
+		}
+	editor.generate();
+	}
