@@ -41,12 +41,6 @@
             </td>
           </tr>
 <tr> 
-<td align="right" nowrap valign="middle">{ siteemail }</td>
-<td valign="middle">
-<input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
-</td>
-</tr>
-<tr> 
             <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ registration }</td>
             <td class="BabLoginMenuBackground" align="left" valign="middle">
                 <select name="register">
@@ -63,6 +57,35 @@
                   <option value="N">{ no }</option>
                 </select>&nbsp;{ helpconfirmation }
             </td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ siteemail }</td>
+<td valign="middle">
+<input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+</td>
+</tr>
+<tr> 
+            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ mailfunction }</td>
+            <td class="BabLoginMenuBackground" align="left" valign="middle">
+                <select name="mailfunc">
+                  <option value="mail" selected>{ mail }</option>
+                  <option value="">{ disabled }</option>
+                  <option value="smtp">{ smtp }</option>
+                  <option value="sendmail">{ sendmail }</option>
+                </select>
+            </td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ server }</td>
+<td valign="middle">
+<input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
+</td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ serverport }</td>
+<td valign="middle">
+<input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
+</td>
 </tr>
 <tr> 
 <td nowrap>&nbsp;</td>
@@ -174,6 +197,29 @@
 <td align="right" nowrap valign="middle">{ siteemail }</td>
 <td valign="middle">
 <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
+</td>
+</tr>
+<tr> 
+            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ mailfunction }</td>
+            <td class="BabLoginMenuBackground" align="left" valign="middle">
+                <select name="mailfunc">
+                  <option value="mail" { mailselected }>{ mail }</option>
+                  <option value="" { disabledselected }>{ disabled }</option>
+                  <option value="smtp" { smtpselected }>{ smtp }</option>
+                  <option value="sendmail" { sendmailselected }>{ sendmail }</option>
+                </select>
+            </td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ server }</td>
+<td valign="middle">
+<input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
+</td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ serverport }</td>
+<td valign="middle">
+<input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
 </td>
 </tr>
 <tr> 

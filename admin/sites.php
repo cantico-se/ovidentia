@@ -84,7 +84,7 @@ function sitesList()
 	}
 
 
-function siteCreate($name, $description, $siteemail)
+function siteCreate($name, $description, $siteemail, $server, $serverport)
 	{
 	global $babBody;
 	class temp
@@ -113,7 +113,19 @@ function siteCreate($name, $description, $siteemail)
 		var $confirmation;
 		var $yes;
 		var $no;
-		function temp($name, $description, $siteemail)
+
+		var $mailfunction;
+		var $disabled;
+		var $smtp;
+		var $sendmail;
+		var $mail;
+		var $mailfunction;
+		var $server;
+		var $serverval;
+		var $serverport;
+		var $serverportval;
+
+		function temp($name, $description, $siteemail, $server, $serverport)
 			{
 
 			$this->name = bab_translate("Site name");
@@ -124,6 +136,13 @@ function siteCreate($name, $description, $siteemail)
 			$this->create = bab_translate("Create");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->disabled = bab_translate("Disabled");
+			$this->mailfunction = bab_translate("Mail function");
+			$this->server = bab_translate("Smtp server");
+			$this->serverport = bab_translate("Server port");
+			$this->smtp = "smtp";
+			$this->sendmail = "sendmail";
+			$this->mail = "mail";
 			$this->confirmation = bab_translate("Send email confirmation")."?";
 			$this->registration = bab_translate("Activate Registration")."?";
 			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
@@ -132,6 +151,8 @@ function siteCreate($name, $description, $siteemail)
 			$this->descriptionval = $description == ""? "": $description;
 			$this->langval = $lang == ""? $GLOBALS['babLanguage']: $lang;
 			$this->siteemailval = $siteemail == ""? $GLOBALS['babAdminEmail']: $siteemail;
+			$this->serverval = $server == ""? "": $server;
+			$this->serverportval = $serverport == ""? "25": $serverport;
 
 			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
@@ -187,7 +208,7 @@ function siteCreate($name, $description, $siteemail)
 			}
 		}
 
-	$temp = new temp($name, $description, $siteemail);
+	$temp = new temp($name, $description, $siteemail, $server, $serverport);
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "sitecreate"));
 	}
 
@@ -226,7 +247,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm)
+function siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport)
 	{
 	global $babBody;
 	if( empty($name))
@@ -234,6 +255,15 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $register, $con
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return false;
 		}
+
+	if( $mailfunc == "smtp" && empty($server))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide server address !!");
+		return false;
+		}
+
+	if( empty($serverport))
+		$serverport = "25";
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -251,7 +281,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $register, $con
 		}
 	else
 		{
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, registration, email_confirm) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $register. "', '" . $confirm."')";
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, registration, email_confirm, mailfunc, smtpserver, smtpport) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport."')";
 		$db->db_query($query);
 		}
 	return true;
@@ -261,7 +291,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $register, $con
 /* main */
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm))
+	if(!siteSave($name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport))
 		$idx = "create";
 	}
 
@@ -285,7 +315,7 @@ switch($idx)
 
 	case "create":
 		$babBody->title = bab_translate("Create site");
-		siteCreate($name, $description, $siteemail);
+		siteCreate($name, $description, $siteemail, $server, $serverport);
 		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sites&idx=create");
 		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");

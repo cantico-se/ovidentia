@@ -670,16 +670,22 @@ function notifyApprover($grpname, $file, $path, $approveremail)
                 $this->authoremail = "";
 			}
 		}
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
 	
-	$tempa = new tempa($grpname, $file, $path);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "filewait");
-
-    $mail = new babMail();
     $mail->mailTo($approveremail);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject(bab_translate("New waiting file"));
+
+	$tempa = new tempa($grpname, $file, $path);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "filewait");
     $mail->mailBody($message, "html");
-    $mail->send();
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "filewaittxt");
+    $mail->mailAltBody($message);
+
+	$mail->send();
 	}
 
 function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywords, $readonly)

@@ -399,15 +399,21 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 			}
 		}
 	
-	$tempa = new tempa($subject, $msg, $title, $from, $to);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmarticle");
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
 
-    $mail = new babMail();
     $mail->mailTo($to);
     $mail->mailFrom($from, "Ovidentia Administrator");
     $mail->mailSubject($subject);
+
+	$tempa = new tempa($subject, $msg, $title, $from, $to);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmarticle");
     $mail->mailBody($message, "html");
-    $mail->send();
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmarticletxt");
+    $mail->mailAltBody($message);
+	$mail->send();
 	}
 
 function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1)
@@ -536,15 +542,22 @@ function notifyCommentAuthor($subject, $msg, $from, $to)
 			}
 		}
 	
-	$tempa = new tempa($subject, $msg, $from, $to);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmcomment");
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
 
-    $mail = new babMail();
-    $mail->mailTo($to);
+	$mail->mailTo($to);
     $mail->mailFrom($from, "Ovidentia Administrator");
     $mail->mailSubject($subject);
+
+	$tempa = new tempa($subject, $msg, $from, $to);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmcomment");
     $mail->mailBody($message, "html");
-    $mail->send();
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmcommenttxt");
+    $mail->mailAltBody($message);
+
+	$mail->send();
 	}
 
 function updateConfirmComment($topics, $article, $action, $send, $author, $message, $com, $newc)

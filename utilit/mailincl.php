@@ -4,7 +4,8 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-define('CRLF', "\r\n");
+include $babInstallPath."utilit/class.phpmailer.php";
+include $babInstallPath."utilit/class.smtp.php";
 
 function bab_getMimeType($type, $subtype)
 	{ 
@@ -78,370 +79,119 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 
 class babMail
 {
-	var $bhead = array();
-	var $fromemail;
-	var $fromname;
-	var $to = array();
-	var $cc = array();
-	var $bcc = array();
-	var $toname = array();
-	var $ccname = array();
-	var $bccname = array();
-	var $subject;
-	var $parts = array();
-	var $add_headers;
-	var $message;
-	var $babBody;
-	var $format;
+	var $mail;
 
-	function addHeadder($arg, $val)
+	function babMail()
 	{
-		if( !empty($arg))
-		{
-			$this->bhead[] = array($arg, $val);
-		}
+		$this->mail = new phpmailer();
+		$this->mail->From = $GLOBALS['babAdminEmail'];
+		$this->mail->FromName = "Ovidentia Administrator";
 	}
 
 	function mailFrom($email, $name='')
 	{
-		$this->fromemail = $email;
-		$this->fromname = $name;
+		$this->mail->From = $email;
+		$this->mail->FromName = $name;
 	}
 
 	function mailTo($email, $name="")
 	{
-		$this->to[] = $email;
-		if(!empty($name))
-			$this->toname[] = $name . " " . "<".$email.">";
-		else
-			$this->toname[] = $email;
+		$this->mail->AddAddress($email, $name);
 	}
 
 	function mailCc($email, $name="")
 	{
-		$this->cc[] = $email;
-		if(!empty($name))
-			$this->ccname[] = $name . " " . "<".$email.">";
-		else
-			$this->ccname[] = $email;
+		$this->mail->AddCC($email, $name);
 	}
 	
 	function mailBcc($email, $name="")
 	{
-		$this->bcc[] = $email;
-		if(!empty($name))
-			$this->bccname[] = $name . " " . "<".$email.">";
-		else
-			$this->bccname[] = $email;
+		$this->mail->AddBCC($email, $name);
+	}
+
+	function mailReplyTo($email, $name="")
+	{
+		$this->mail->AddReplyTo($email, $name);
 	}
 
 	function mailSubject($subject)
 	{
-		$this->subject = $subject;
+		$this->mail->Subject = $subject;
+	}
+
+	function setPriority($priority)
+	{
+		$this->mail->Priority = $priority;
+	}
+
+	function setSmtpServer($server, $port)
+	{
+		$this->mail->Host = $server;
+		$this->mail->Port = $port;
 	}
 
 	function mailBody($babBody, $format="plain")
 	{
-		$this->body = $babBody;
-		$this->format = $format;
+		$this->mail->Body = $babBody;
+		$this->mail->AltBody = $babAltBody;
+		if( $format == "plain" )
+			$this->mail->IsHTML(true);
+		else
+			$this->mail->IsHTML(true);
+	}
+
+	function mailAltBody($babAltBody)
+	{
+		$this->mail->AltBody = $babAltBody;
 	}
 
 	function mailFileAttach( $fname, $realname, $type )
 	{
-		if (!file_exists($fname) || !is_uploaded_file($fname))
-			{
-			echo "file does'nt exist";
-			return; 
-			}
-
-		$fp = fopen($fname, "r");
-		if (!$fp)
-			{
-			echo "Cannot open the file";
-			return;
-			}
-	
-		$data = fread($fp, filesize($fname));
-
-		if (eregi("([^ ]*)/([^ ]*)", $type, $regs))
-			{
-			$mime1 = $regs[1];
-			$mime2 = $regs[2];
-			}
-
-		switch (strtolower($mime1))
-			{
-			case "video":
-			case "image":
-			case "audio":
-			case "application":
-				$encoding = "base64";
-				$data = base64_encode($data);
-				break;
-			case "text":
-				$encoding = "quoted_printable";
-				$data = imap_8bit($data);
-				break;
-			case "message":
-			case "multipart": 
-			default:
-				$encoding = "";
-				break;
-			}
-
-		$msg = chunk_split($data);
-		$this->parts[] = array(	'contenttype' => $type,
-								'encoding' => $encoding,
-								'charset' => "",
-								'disposition' => "attachment;".CRLF."\tfilename=\"".$realname."\"",
-								'description' => "",
-								'name' => $realname,
-								'data' => $msg );
-
-	}
-
-	function mailBuildPart($part)
-	{
-		$msgpart = "";
-		$msgpart = "Content-Type: " . $part['contenttype'].";";
-		if( !empty($part['charset']))
-		{
-			$msgpart .= "charset= " . $part['charset'];
-		}
-
-		if( !empty($part['name']))
-		{
-			$msgpart .= CRLF."\tname=\"" . $part['name']. "\"";
-		}
-
-		$msgpart .= CRLF. "Content-Transfer-Encoding: " . $part['encoding'];
-		if( !empty($part['description']))
-		{
-			$msgpart .= CRLF. "Content-Description: " . $part['description'];
-		}
-
-		if( !empty($part['disposition']))
-		{
-			$msgpart .= CRLF. "Content-Disposition: " . $part['disposition'];
-		}
-
-		$msgpart .= CRLF. CRLF. $part['data']. CRLF;
-		return $msgpart;
-	}	
-
-	function mailBuildMessage()
-	{
-		$mail = "";
-		$boundary = 'NP'.md5(uniqid(time()));
-
-		if( empty($this->format))
-			$format = "text/plain";
-		else
-			$format = "text/".$this->format;
-
-		$nbparts = sizeof( $this->parts);
-		if( $nbparts > 0 || $this->format == "html")
-		{
-			$this->add_headers .= 'MIME-Version: 1.0' . CRLF;
-            if( $nbparts > 0 )
-			    $this->add_headers .= 'Content-Type: multipart/mixed;'.CRLF;
-            else
-			    $this->add_headers .= 'Content-Type: multipart/alternative;'.CRLF;
-			$this->add_headers .= "\tboundary=\"$boundary\"" . CRLF;
-			$mail .= CRLF.'This is a MIME encoded message';
-
-			if( !empty($this->body))
-			{
-				$bodypart = array( 'contenttype' => $format,
-									'encoding' => 'quoted_printable',
-									'charset' => 'iso-8859-1',
-									'disposition' => '',
-									'description' => '',
-									'name' => '',
-									'data' => $this->body );
-				$mail .= CRLF.CRLF."--". $boundary. CRLF. $this->mailBuildPart($bodypart).CRLF;
-
-			}
-			for($i = 0; $i < $nbparts; $i++)
-				$mail .= "--". $boundary. CRLF. $this->mailBuildPart($this->parts[$i]).CRLF;
-
-			$mail .= "--". $boundary. "--".CRLF;
-		}
-		else if( !empty($this->body))
-		{
-			$mail = $this->body.CRLF.CRLF;
-		}
-		return $mail;
-	}
-
-	function mailBuild()
-	{
-		$this->add_headers= "";
-		if( !empty($this->fromemail))
-			{
-			if( !empty($this->fromname))
-				$from = sprintf("%s <%s>", $this->fromname, $this->fromemail);
-			else
-				$from = $this->fromemail;
-			$this->add_headers .= "From: " . $from . CRLF;
-			}
-		$this->add_headers .= "To: " . join(", ", $this->toname) . CRLF;
-		if( count($this->cc) > 0)
-			$this->add_headers .= "Cc: " . join(", ", $this->ccname) . CRLF;
-		if( count($this->bcc) > 0)
-			$this->add_headers .= "Bcc: " . join(", ", $this->bccname) . CRLF;
-		if( !empty($this->subject))
-			$this->add_headers .= "Subject: ".$this->subject . CRLF;
-		else
-			$this->add_headers .= "Subject: (No Subject)".$this->subject . CRLF;
-        $counth = count($this->bhead);
-		if( $counth > 0)
-		{
-			for( $i = 0; $i < $counth; $i++)
-			{
-				$this->add_headers .= $this->bhead[$i][0] . ": " . $this->bhead[$i][1] . CRLF;
-			}
-		}
-		$this->message .= $this->mailBuildMessage();
+		$this->mail->AddAttachment($fname, $realname);
 	}
 
 	function send()
 	{
-        $this->mailBuild();
-		return mail(join(', ', $this->to), $this->subject, $this->message, $this->add_headers);
+		return $this->mail->Send();
 	}
 }
 
 
 class babMailSmtp extends babMail
 {
-	var $server;
-	var $port;
-	var $smtp;
 
 	function babMailSmtp($server, $port)
 	{
-		$this->server = $server;
-		$this->port = $port;
+		$this->babMail();
+		$this->mail->Host = $server;
+		$this->mail->Port = $port;
 	}
-
-	function open()
-	{
-		$this->smtp = fsockopen($this->server, $this->port); 
-        if ($this->smtp < 0)
-			return 0; 
-        $line = fgets($this->smtp, 1024);
-		if( substr($line, 0, 1) != 2)
-			return 0;
-
-		fputs($this->smtp,"HELO ".$this->server.CRLF);
-        $line = fgets($this->smtp, 1024);
-		if( substr($line, 0, 1) != 2)
-			return 0;
-
-		return $this->smtp;
-	}
-
-	function close()
-	{
-		fclose($this->smtp);
-	}
-
-	function send()
-	{
-		if( !$this->open())
-		{
-			return 0;
-		}
-
-		$data = "MAIL FROM: <".$this->fromemail.">".CRLF;
-		fputs($this->smtp,$data);
-        $line = fgets($this->smtp, 1024);
-		if( substr($line, 0, 1) != 2)
-		{
-			$this->close();
-			return 0;
-		}
-
-		for($i=0; $i < count($this->to); $i++)
-			{
-				$data = "RCPT TO: <".$this->to[$i].">".CRLF;
-				fputs($this->smtp, $data);
-				$line = fgets($this->smtp, 1024);
-				if( substr($line, 0, 1) != 2)
-				{
-					$this->close();
-					return 0;
-				}
-			}
-
-		for($i=0; $i < count($this->cc); $i++)
-			{
-				$data = "RCPT TO: <".$this->cc[$i].">".CRLF;
-				fputs($this->smtp, $data);
-				$line = fgets($this->smtp, 1024);
-				if( substr($line, 0, 1) != 2)
-				{
-					$this->close();
-					return 0;
-				}
-			}
-
-		for($i=0; $i < count($this->bcc); $i++)
-			{
-				$data = "RCPT TO: <".$this->bcc[$i].">".CRLF;
-				fputs($this->smtp, $data);
-				$line = fgets($this->smtp, 1024);
-				if( substr($line, 0, 1) != 2)
-				{
-					$this->close();
-					return 0;
-				}
-			}
-
-		fputs($this->smtp,"DATA".CRLF);
-        $line = fgets($this->smtp, 1024);
-		if( substr($line, 0, 1) != 3)
-		{
-			$this->close();
-			return 0;
-		}
-
-		$this->mailBuild();
-		fputs($this->smtp, $this->add_headers.CRLF.CRLF.$this->message);
-		fputs($this->smtp, CRLF.".".CRLF);
-        $line = fgets($this->smtp, 1024);
-		if( substr($line, 0, 1) != 2)
-			return 0;
-		fputs($this->smtp, "QUIT".CRLF);
-        $line = fgets($this->smtp, 1024);
-		$this->close();
-		return 1;
-	}
-
 }
 
-
-class babMailInfo extends babMail
+function bab_mail()
 {
-    var $file;
-    var $section;
-    var $mailtitle;
+	$db = $GLOBALS['babDB'];
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+	if( empty($arr['mailfunc']))
+		return false;
 
-    function babMailInfo($title, $file, $section="")
-        {
-        $this->file = $file;
-        $this->section = $section;
-        $this->mailtitle = $title;
-        }
-
-    function send()
-        {
-        $msg = bab_printTemplate($this,$this->file, $this->section);
-        $this->mailBody($msg, "html");
-        $this->mailBuild();
-		return mail(join(', ', $this->to), $this->subject, $this->message, $this->add_headers);
-        }
-
+	$mail = new babMail();
+	switch($arr['mail'])
+	{
+		case "mail":
+			$mail->mail->IsMail();
+			break;
+		case "sendmail":
+			$mail->mail->IsSendmail();
+			$mail->mail->Sendmail = $arr['smtpserver'];
+			break;
+		case "smtp":
+			$mail->mail->IsSMTP();
+			$mail->mail->Host = $arr['smtpserver'];
+			$mail->mail->Port = $arr['smtpport'];
+			break;
+	}
+	return $mail;
 }
+
 ?>

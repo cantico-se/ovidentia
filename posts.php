@@ -450,15 +450,22 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 			}
 		}
 	
-	$tempa = new tempa($threadTitle, $email, $author);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "newpost");
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
 
-    $mail = new babMail();
-    $mail->mailTo($email);
+	$mail->mailTo($email);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject(bab_translate("New post"));
+
+	$tempa = new tempa($threadTitle, $email, $author);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "newpost");
     $mail->mailBody($message, "html");
-    $mail->send();
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");
+    $mail->mailAltBody($message);
+
+	$mail->send();
 	}
 
 

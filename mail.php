@@ -284,6 +284,13 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 		return false;
 		}
 
+	$mail = bab_mail();
+	if( $mail == false )
+		{
+		$babBody->msgerror = bab_translate("Sending error( Mail sending disabled )");
+		return false;
+		}
+
 	$db = $GLOBALS['babDB'];
 	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
@@ -296,11 +303,9 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 			{
 			$arr2 = $db->db_fetch_array($res);
 			if( !empty($arr2['outserver']))
-				$mime = new babMailSmtp($arr2['outserver'], $arr2['outport']);
-			else
-				$mime = new babMail();
-			addAddress($to, "mailTo", $mime);
-			$mime->mailFrom($arr['email'], $arr['name']);
+				$mail->setSmtpServer($arr2['outserver'], $arr2['outport']);
+			addAddress($to, "mailTo", $mail);
+			$mail->mailFrom($arr['email'], $arr['name']);
 			if( bab_isMagicQuotesGpcOn())
 				{
 				$message = stripslashes($message);
@@ -317,22 +322,22 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
                     }
 
                 }
-			$mime->mailBody($message, $format);
-			$mime->mailSubject($subject);
+			$mail->mailBody($message, $format);
+			$mail->mailSubject($subject);
 			if(!empty($cc))
 				{
-				addAddress($cc, "mailCc", $mime);
+				addAddress($cc, "mailCc", $mail);
 				}
 
 			if(!empty($bcc))
 				{
-				addAddress($bcc, "mailBcc", $mime);
+				addAddress($bcc, "mailBcc", $mail);
 				}
 
 			for($i=0; $i < count($files); $i++)
 				if( !empty($files_name[$i]))
-					$mime->mailFileAttach($files[$i], $files_name[$i], $files_type[$i]);
-			if(!$mime->send())
+					$mail->mailFileAttach($files[$i], $files_name[$i], $files_type[$i]);
+			if(!$mail->send())
 				{
 				$babBody->msgerror = bab_translate("Error occured when sending email !!");
 				}

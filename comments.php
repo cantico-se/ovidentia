@@ -266,15 +266,21 @@ function notifyApprover($top, $article, $title, $approveremail, $modcom)
 			}
 		}
 	
-	$tempa = new tempa($top, $article, $title, $modcom);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "commentwait");
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
 
-    $mail = new babMail();
     $mail->mailTo($approveremail);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject(bab_translate("New waiting comment"));
+
+	$tempa = new tempa($top, $article, $title, $modcom);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "commentwait");
     $mail->mailBody($message, "html");
-    $mail->send();
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "commentwaittxt");
+    $mail->mailAltBody($message);
+	$mail->send();
 	}
 
 

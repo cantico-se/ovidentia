@@ -565,15 +565,22 @@ function notifyApprover($top, $title, $approveremail)
 			}
 		}
 	
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
+
+	$mail->mailTo($approveremail);
+	$mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+	$mail->mailSubject(bab_translate("New waiting article"));
+
 	$tempa = new tempa($top, $title);
 	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewait");
+	$mail->mailBody($message, "html");
 
-    $mail = new babMail();
-    $mail->mailTo($approveremail);
-    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
-    $mail->mailSubject(bab_translate("New waiting article"));
-    $mail->mailBody($message, "html");
-    $mail->send();
+	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewaittxt");
+	$mail->mailAltBody($message);
+
+	$mail->send();
 	}
 
 function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)

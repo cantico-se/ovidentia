@@ -19,27 +19,41 @@ function notifyUserRegistration($link, $name, $email)
 		var $message;
 
 
-		function tempa($link, $name)
+		function tempa($link, $name, $msg)
 			{
             global $babSiteName;
             $this->linkurl = $link;
             $this->linkname = bab_translate("link");
             $this->username = $name;
 			$this->sitename = $babSiteName;
-			$this->message = bab_translate("Thank You For Registering at our site");
-			$this->message .= "<br>". bab_translate("To confirm your registration");
-			$this->message .= ", ". bab_translate("simply follow this").": ";
+			$this->message = $msg;
 			}
 		}
-	
-	$tempa = new tempa($link, $name);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistration");
 
-    $mail = new babMail();
-    $mail->mailTo($email);
+	$mail = bab_mail();
+	if( $mail == false )
+		return;
+    $mail->mailTo($email, $name);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject(bab_translate("Registration Confirmation"));
+	
+	$message = bab_translate("Thank You For Registering at our site");
+	$message .= "<br>". bab_translate("To confirm your registration");
+	$message .= ", ". bab_translate("simply follow this").": ";
+
+	$tempa = new tempa($link, $name, $message);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistration");
+
     $mail->mailBody($message, "html");
+
+	$message = bab_translate("Thank You For Registering at our site")."\n";
+	$message .= bab_translate("To confirm your registration")."\n";
+	$message .= bab_translate("go to this url").":\n";
+
+	$tempa = new tempa($link, $name, $message);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt");
+
+	$mail->mailAltBody($message);
     $mail->send();
 	}
 
@@ -67,10 +81,10 @@ function notifyAdminRegistration($name, $useremail, $warning)
 			}
 		}
 	
-	$tempb = new tempb($name, $useremail, $warning);
-	$message = bab_printTemplate($tempb,"mailinfo.html", "adminregistration");
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
 
-    $mail = new babMail();
 	$db = $GLOBALS['babDB'];
 	$sql = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='3'";
 	$result=$db->db_query($sql);
@@ -78,16 +92,21 @@ function notifyAdminRegistration($name, $useremail, $warning)
 		{
 		while( $arr = $db->db_fetch_array($result))
 			{
-			$sql = "select email from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
+			$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
 			$res=$db->db_query($sql);
 			$r = $db->db_fetch_array($res);
-			$mail->mailTo($r['email']);
+			$mail->mailTo($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
 			}
 		}
-
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject(bab_translate("Registration Confirmation"));
+
+	$tempb = new tempb($name, $useremail, $warning);
+	$message = bab_printTemplate($tempb,"mailinfo.html", "adminregistration");
     $mail->mailBody($message, "html");
+
+	$message = bab_printTemplate($tempb,"mailinfo.html", "adminregistrationtxt");
+    $mail->mailAltBody($message);
     $mail->send();
 	}
 
@@ -351,15 +370,22 @@ function notifyUserPassword($passw, $email)
 			}
 		}
 	
-	$tempa = new tempa($passw);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "sendpassword");
-
-    $mail = new babMail();
+	$mail = bab_mail();
+	if( $mail == false )
+		return;
+	
     $mail->mailTo($email);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject("Ovidentia: ". bab_translate("Password Reset"));
+
+	$tempa = new tempa($passw);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "sendpassword");
     $mail->mailBody($message, "html");
-    $mail->send();
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "sendpasswordtxt");
+    $mail->mailAltBody($message);
+
+	$mail->send();
 	}
 
 function sendPassword ($nickname)

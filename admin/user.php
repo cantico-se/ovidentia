@@ -228,27 +228,40 @@ function notifyUserconfirmation($name, $email)
 		var $message;
 
 
-		function tempa($name)
+		function tempa($name, $msg)
 			{
             global $babSiteName;
             $this->linkurl = $GLOBALS['babUrl'];
             $this->username = $name;
 			$this->sitename = $babSiteName;
-			$this->message = bab_translate("Thank You For Registering at our site");
-			$this->message .= "<br>". bab_translate("Your registration has been confirmed.");
-			$this->message .= "<br>". bab_translate("To connect on our site").", ". bab_translate("simply follow this").": ";
+			$this->message = $msg;
 			}
 		}
 	
-	$tempa = new tempa($name);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userconfirmation");
+	$mail = bab_mail();
+	if( $mail == false )
+		return;
 
-    $mail = new babMail();
-    $mail->mailTo($email);
+	$mail->mailTo($email, $name);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
     $mail->mailSubject(bab_translate("Registration Confirmation"));
+	
+
+	$message = bab_translate("Thank You For Registering at our site");
+	$message .= "<br>". bab_translate("Your registration has been confirmed.");
+	$message .= "<br>". bab_translate("To connect on our site").", ". bab_translate("simply follow this").": ";
+	$tempa = new tempa($name, $message);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userconfirmation");
     $mail->mailBody($message, "html");
-    $mail->send();
+
+	$message = bab_translate("Thank You For Registering at our site") ."\n";
+	$message .= bab_translate("Your registration has been confirmed.")."\n";
+	$message .= bab_translate("To connect on our site").", ". bab_translate("go to this url").": ";
+	$tempa = new tempa($name, $message);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userconfirmationtxt");
+    $mail->mailAltBody($message);
+
+	$mail->send();
 	}
 
 function updateGroups($id, $groups, $groupst)

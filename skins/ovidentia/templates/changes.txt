@@ -1,17 +1,58 @@
 /****************************/
-version 3.2 beta2 / 3.2
+version 3.3.1 / 3.3.2
+/****************************/
+
+--------------------------------------------------------------------------------
+file			        section		        change 
+--------------------------------------------------------------------------------
+sites.html              sitecreate          Added 'mailfunction', 'serveur' and 'serverport'
+mailinfo.html                               Added articlewaittxt section
+                                            Added commentwaittxt section
+                                            Added userregistrationtxt section
+                                            Added adminregistrationtxt section
+                                            Added newposttxt section
+                                            Added confirmarticletxt section
+                                            Added confirmcommenttxt section
+                                            Added filewaittxt section
+                                            Added sendpasswordtxt section
+                                            Added userconfirmationtxt section
+
+/****************************/
+version 3.3.0 / 3.3.1
+/****************************/
+
+--------------------------------------------------------------------------------
+file			        section		        change 
+--------------------------------------------------------------------------------
+comments.html           commentcreate       Replace 'var t=document.open' by 'Start'
+warning.html            warningyesno        Addde ? after { message }
+entry.html              homepage0           Added <!--#if blen "> 0" --> ... <!--#endif blen -->
+articles.html                               Added articleview section
+
+/****************************/
+version 3.3.0 beta / 3.3.0
 /****************************/
 --------------------------------------------------------------------------------
-file			section			change 
+file			        section		        change 
 --------------------------------------------------------------------------------
-calview.html					Added commentslist section
-search.html		viewart			Added 'head' variable
-topics.html		articleview		Added 'head' variable
-topman.html		articleview		Added 'head' variable
-topusr.html		categorylist	Added 'urlsubmit', 'txtsubmit' variables
-mailinfo.html					Added sendpassword section
-sites.html		versions		Added 2002 in coypright
-page.html					    2001-2002 in copyright
+search.html                                 Replace 'var t=document.open' by 'Start'
+calview.html                                Replace 'var t=document.open' by 'Start'
+comments.html                               Replace 'var t=document.open' by 'Start'
+                    commentcreate           Moved out "subject" from wysiwyg editor
+                                            Added { messageval } ( 2 times !!! )
+contacts.html                               Replace 'var t=document.open' by 'Start'
+event.html                                  Replace 'var t=document.open' by 'Start'
+fileman.html                                Replace 'var t=document.open' by 'Start'
+inbox.html                                  Replace 'var t=document.open' by 'Start'
+mail.html                                   Replace 'var t=document.open' by 'Start'
+                    mailcompose             Replace Meta Tags with { babMeta }
+                                            Add <script type="text/javascript" src="{ babOvidentiaJs }"></script>
+sites.html                                  Replace 'var t=document.open' by 'Start'
+topics.html                                 Replace 'var t=document.open' by 'Start'
+topman.html                                 Replace 'var t=document.open' by 'Start'
+vacation.html                               Replace 'var t=document.open' by 'Start'
+                                            Remove javascript 'Start' function
+sections.html           sectionsmodify      Replace name="Submit" by name="submit"
 
 /****************************/
 version 3.2 / 3.3.0 beta
@@ -199,38 +240,17 @@ Style Sheet file:
 .HeaderDayCalendar { BACKGROUND: #FFFFFF }
 
 /****************************/
-version 3.3.0 beta / 3.3.0
+version 3.2 beta2 / 3.2
 /****************************/
 --------------------------------------------------------------------------------
-file			        section		        change 
+file			section			change 
 --------------------------------------------------------------------------------
-search.html                                 Replace 'var t=document.open' by 'Start'
-calview.html                                Replace 'var t=document.open' by 'Start'
-comments.html                               Replace 'var t=document.open' by 'Start'
-                    commentcreate           Moved out "subject" from wysiwyg editor
-                                            Added { messageval } ( 2 times !!! )
-contacts.html                               Replace 'var t=document.open' by 'Start'
-event.html                                  Replace 'var t=document.open' by 'Start'
-fileman.html                                Replace 'var t=document.open' by 'Start'
-inbox.html                                  Replace 'var t=document.open' by 'Start'
-mail.html                                   Replace 'var t=document.open' by 'Start'
-                    mailcompose             Replace Meta Tags with { babMeta }
-                                            Add <script type="text/javascript" src="{ babOvidentiaJs }"></script>
-sites.html                                  Replace 'var t=document.open' by 'Start'
-topics.html                                 Replace 'var t=document.open' by 'Start'
-topman.html                                 Replace 'var t=document.open' by 'Start'
-vacation.html                               Replace 'var t=document.open' by 'Start'
-                                            Remove javascript 'Start' function
-sections.html           sectionsmodify      Replace name="Submit" by name="submit"
+calview.html					Added commentslist section
+search.html		viewart			Added 'head' variable
+topics.html		articleview		Added 'head' variable
+topman.html		articleview		Added 'head' variable
+topusr.html		categorylist	Added 'urlsubmit', 'txtsubmit' variables
+mailinfo.html					Added sendpassword section
+sites.html		versions		Added 2002 in coypright
+page.html					    2001-2002 in copyright
 
-/****************************/
-version 3.3.0 / 3.3.1
-/****************************/
-
---------------------------------------------------------------------------------
-file			        section		        change 
---------------------------------------------------------------------------------
-comments.html           commentcreate       Replace 'var t=document.open' by 'Start'
-warning.html            warningyesno        Addde ? after { message }
-entry.html              homepage0           Added <!--#if blen "> 0" --> ... <!--#endif blen -->
-articles.html                               Added articleview section

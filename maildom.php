@@ -120,13 +120,13 @@ function modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmeth
 		$babBody->msgerror = bab_translate("You must provide an incoming mail server"). " !!";
 		return;
 		}
-
+/*
 	if( empty($outmailserver))
 		{
 		$babBody->msgerror = bab_translate("You must provide an outgoing mail server"). " !!";
 		return;
 		}
-
+*/
 	if( empty($inportserver) || !is_numeric($inportserver))
 		$inportserver = 110;
 

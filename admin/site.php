@@ -56,6 +56,22 @@ function siteModify($id)
 		var $no;
 		var $yselected;
 		var $nselected;
+
+		var $mailfunction;
+		var $disabled;
+		var $smtp;
+		var $sendmail;
+		var $mail;
+		var $mailfunction;
+		var $server;
+		var $serverval;
+		var $serverport;
+		var $serverportval;
+		var $mailselected;
+		var $smtpselected;
+		var $sendmailselected;
+		var $disabledselected;
+
 		function temp($id)
 			{
 			$this->name = bab_translate("Site name");
@@ -70,6 +86,17 @@ function siteModify($id)
 			$this->confirmation = bab_translate("Send email confirmation")."?";
 			$this->registration = bab_translate("Activate Registration")."?";
 			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
+			$this->disabled = bab_translate("Disabled");
+			$this->mailfunction = bab_translate("Mail function");
+			$this->server = bab_translate("Smtp server");
+			$this->serverport = bab_translate("Server port");
+			$this->smtp = "smtp";
+			$this->sendmail = "sendmail";
+			$this->mail = "mail";
+			$this->mailselected = "";
+			$this->smtpselected = "";
+			$this->sendmailselected = "";
+			$this->disabledselected = "";
 			$this->id = $id;
 
 			$this->db = $GLOBALS['babDB'];
@@ -83,6 +110,8 @@ function siteModify($id)
 				$this->langsite = $arr['lang'];
 				$this->skinsite = $arr['skin'];
 				$this->siteemailval = $arr['adminemail'];
+				$this->serverval = $arr['smtpserver'];
+				$this->serverportval = $arr['smtpport'];
 				if( $arr['registration'] == "Y")
 					{
 					$this->nregister = "";
@@ -103,6 +132,21 @@ function siteModify($id)
 					{
 					$this->yconfirm = "";
 					$this->nconfirm = "selected";
+					}
+				switch($arr['mailfunc'])
+					{
+					case "mail":
+						$this->mailselected = "selected";
+						break;
+					case "smtp":
+						$this->smtpselected = "selected";
+						break;
+					case "sendmail":
+						$this->sendmailselected = "selected";
+						break;
+					default:
+						$this->disabledselected = "selected";
+						break;
 					}
 				}
 			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
@@ -366,7 +410,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $register, $confirm)
+function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport)
 	{
 	global $babBody;
 	if( empty($name))
@@ -375,6 +419,15 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $registe
 		return false;
 		}
 
+	if( $mailfunc == "smtp" && empty($server))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide server address !!");
+		return false;
+		}
+
+	if( empty($serverport))
+		$serverport = "25";
+
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$description = addslashes($description);
@@ -382,7 +435,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $registe
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_SITES_TBL." where name='$name' and id!='$id'";
+	$query = "select * from ".BAB_SITES_TBL." where name='".$name."' and id!='".$id."'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -391,7 +444,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $registe
 		}
 	else
 		{
-		$query = "update ".BAB_SITES_TBL." set name='$name', description='$description', lang='$lang', adminemail='$siteemail', skin='$skin', registration='$register', email_confirm='$confirm' where id='$id'";
+		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."' where id='".$id."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -440,7 +493,7 @@ if( isset($modify))
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin, $register, $confirm))
+		if(!siteUpdate($item, $name, $description, $lang, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport))
 			$idx = "modify";
 		}
 	else if( !empty($delete))
