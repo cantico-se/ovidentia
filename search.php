@@ -758,7 +758,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
                 if ($idfile != "") 
 					{
-					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M where F.author=U.id and F.id_owner=R.id and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
+					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M where F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
                     $this->db->db_query($req);
                     }
 
