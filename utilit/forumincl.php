@@ -140,6 +140,9 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newpost"));
 	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");
 
+	$mail->mailBody($message, "html");
+	$mail->mailAltBody($messagetxt);
+
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_FORUMSMAN_GROUPS_TBL." where id_object='".$forum."'");
 	$arrusers = array();
@@ -164,7 +167,7 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 				{
 				$count = 0;
 				$mail->mailTo('');
-				while(($arr = $db->db_fetch_array($res2)) && $count < 25)
+				while(($arr = $db->db_fetch_array($res2)))
 					{
 					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
 						{
@@ -172,14 +175,23 @@ function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 						$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
 						$count++;
 						}
+
+					if( $count > 25 )
+						{
+						$mail->send();
+						$mail->clearBcc();
+						$mail->clearTo();
+						$count = 0;
+						}
 					}
 
-				$mail->mailBody($message, "html");
-				$mail->mailAltBody($messagetxt);
-				$mail->send();
-				$mail->clearBcc();
-				$mail->clearTo();
-				$count = 0;
+				if( $count > 0 )
+					{
+					$mail->send();
+					$mail->clearBcc();
+					$mail->clearTo();
+					$count = 0;
+					}
 				}	
 			}
 		}

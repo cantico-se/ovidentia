@@ -375,6 +375,9 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 
 	$messagetxt = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
 
+	$mail->mailBody($message, "html");
+	$mail->mailAltBody($messagetxt);
+
 	$sep = ',';
 	if( !empty($restriction))
 	{
@@ -408,7 +411,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 			if( $res2 && $db->db_num_rows($res2) > 0 )
 				{
 				$count = 0;
-				while(($arr = $db->db_fetch_array($res2)) && $count < 25)
+				while(($arr = $db->db_fetch_array($res2)))
 					{
 					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
 						{
@@ -423,15 +426,24 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 							$count++;
 							}
 						}
+
+					if( $count > 25 )
+						{
+						$mail->send();
+						$mail->clearBcc();
+						$mail->clearTo();
+						$count = 0;
+						}
+
 					}
 
-				$mail->mailBody($message, "html");
-				$mail->mailAltBody($messagetxt);
-				$mail->send();
-				$mail->clearBcc();
-				$mail->clearTo();
-				$count = 0;
-
+				if( $count > 0 )
+					{
+					$mail->send();
+					$mail->clearBcc();
+					$mail->clearTo();
+					$count = 0;
+					}
 				}	
 			}
 		}	
