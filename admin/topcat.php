@@ -14,7 +14,7 @@ function topcatModify($id)
 		$body->msgerror = babTranslate("ERROR: You must choose a valid topic category !!");
 		return;
 		}
-	class temp
+	class tempa
 		{
 		var $name;
 		var $description;
@@ -28,7 +28,7 @@ function topcatModify($id)
 		var $arr = array();
 		var $res;
 
-		function temp($id)
+		function tempa($id)
 			{
 			$this->name = babTranslate("Name");
 			$this->description = babTranslate("Description");
@@ -53,14 +53,14 @@ function topcatModify($id)
 			}
 		}
 
-	$temp = new temp($id);
+	$temp = new tempa($id);
 	$body->babecho(	babPrintTemplate($temp,"topcats.html", "topcatmodify"));
 	}
 
 
 function topcatDelete($id)
 	{
-	global $body;
+	global $body, $idx;
 	
 	class temp
 		{
@@ -82,6 +82,16 @@ function topcatDelete($id)
 			$this->urlno = $GLOBALS['babUrl']."index.php?tg=topcat&idx=Modify&item=".$id;
 			$this->no = babTranslate("No");
 			}
+		}
+
+	$db = new db_mysql();
+	$r = $db->db_fetch_array($db->db_query("select count(*) as total from topics where id_cat='".$id."'"));
+	if( $r['total'] > 0 )
+		{
+		$body->msgerror = babTranslate("To delete topic category, you must delete topics before");
+		$idx = "Modify";
+		topcatModify($id);
+		return;
 		}
 
 	$temp = new temp($id);
