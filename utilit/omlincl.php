@@ -311,7 +311,7 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->res = $babDB->db_query("select at.* from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where at.id IN (".implode(',', $this->IdEntries).")  and at.confirmed='Y'  order by ".$order);
 			}
 
-		$this->count = $babDB->db_num_rows($this->res);
+		$this->count = isset($this->res) ? $babDB->db_num_rows($this->res) : 0;
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 

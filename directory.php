@@ -280,9 +280,9 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->pos = $pos;
 			$this->badd = $badd;
 			$this->xf = $xf;
-			if( isset($pos[0]) && $pos[0] == "-" )
+			if( substr($pos,0,1) == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = substr($pos,1);
 				$this->ord = "";
 				}
 			else
