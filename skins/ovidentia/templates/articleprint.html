@@ -12,7 +12,7 @@
 <script type="text/javascript">
 <!--
 window.focus();
-window.print();
+// window.print();
 
 function hide_div(id)
 	{
@@ -24,14 +24,13 @@ function hide_div(id)
 </script>
 </HEAD>
 <BODY bgcolor="#FFFFFF">
+<div style="width:100%;border-bottom:#000000 1px solid;padding:0.5em;">{ url } - { babUrl }<!--#if content --> - <span class="printhide"><a href="javascript:hide_div('print_head')">{ print_head }</a> - <a href="javascript:hide_div('print_content')">{ print_body }</a></span><!--#endif content --></div>
 <div>
 <div style="width:100%;font-size:175%;font-weight:bold;text-align:center;padding:1em;">{ title }</div>
 <br />
 <div id="print_head" style="padding:1em;">{ head }</div>
 <div id="print_content" style="padding:1em;">{ content }</div>
 <br />
-
-<div style="width:100%;border-top:#000000 1px solid;padding:0.5em;">{ url } - { babUrl }<!--#if content --> - <span class="printhide"><a href="javascript:hide_div('print_head')">{ print_head }</a> - <a href="javascript:hide_div('print_content')">{ print_content }</a></span><!--#endif content --></div>
 </div>
 </BODY>
 </HTML>

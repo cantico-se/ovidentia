@@ -1119,6 +1119,8 @@ function articlePrint($topics, $article)
 				$this->title = $this->arr['title'];
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
+			$this->print_head = bab_translate('With/without introduction');
+			$this->print_body = bab_translate('With/without body');
 			}
 		}
 	
