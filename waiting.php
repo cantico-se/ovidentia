@@ -531,6 +531,9 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 		return;
 		}
 
+	if( !strcasecmp($bodytext, "<P>&nbsp;</P>"))
+		$bodytext = "";
+
 	$db = $GLOBALS['babDB'];
 	if( bab_isMagicQuotesGpcOn())
 		{

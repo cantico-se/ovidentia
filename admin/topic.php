@@ -6,6 +6,7 @@
  ***********************************************************************/
 include_once "base.php";
 include $babInstallPath."admin/acl.php";
+include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
 
 function listArticles($id, $userid)

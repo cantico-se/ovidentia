@@ -345,7 +345,6 @@ function notifyArticleApprovers($id, $users)
 function notifyCommentApprovers($idcom, $nfusers)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
 
 	if(!class_exists("tempa"))
 		{

@@ -10,6 +10,56 @@ include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);
 
+function listSubmittedArticles($topics)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $content;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $topics;
+		var $date;
+
+
+		function temp($topics)
+			{
+			$this->db = $GLOBALS['babDB'];
+			$req = "select id, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->topics = $topics;
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
+			list($this->nbarch) = $this->db->db_fetch_row($res);
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->date = bab_strftime(bab_mktime($this->arr['date']));
+				$this->content = $this->arr['head'];
+				$this->title = stripslashes($this->arr['title']);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	
+	$temp = new temp($topics);
+	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlistsubmitted"));
+	$arr = array($temp->count, $temp->nbarch);
+	return $arr;
+	}
+
 function listArticles($topics, $approver)
 	{
 	global $babBody;
@@ -53,6 +103,8 @@ function listArticles($topics, $approver)
 			$this->morename = bab_translate("Read More");
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
+			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."'");
+			list($this->nbws) = $this->db->db_fetch_row($res);
 			$this->approver = $approver;
 			}
 
@@ -70,10 +122,7 @@ function listArticles($topics, $approver)
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
-				if( $this->approver )
-					$this->blen = 1;
-				else
-					$this->blen = $this->arr['blen'];
+				$this->blen = $this->arr['blen'];
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id'];
@@ -123,7 +172,7 @@ function listArticles($topics, $approver)
 	
 	$temp = new temp($topics, $approver);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
-	$arr = array($temp->count, $temp->nbarch);
+	$arr = array($temp->count, $temp->nbarch, $temp->nbws);
 	return $arr;
 	}
 
@@ -720,6 +769,9 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
+	if( !strcasecmp($bodytext, "<P>&nbsp;</P>"))
+		$bodytext = "";
+
 	$headtext = stripslashes($headtext);
 	$bodytext = stripslashes($bodytext);
 	$title = stripslashes($title);
@@ -745,6 +797,9 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 		$babBody->msgerror = bab_translate("ERROR: You must provide a title");
 		return;
 		}
+
+	if( !strcasecmp($bodytext, "<P>&nbsp;</P>"))
+		$bodytext = "";
 
 	if( bab_isMagicQuotesGpcOn())
 		{
@@ -920,6 +975,28 @@ switch($idx)
 			}
 		break;
 
+	case "Submited":
+		$babBody->title = bab_translate("List of submitted articles");
+		if( in_array($topics, $babBody->topview)|| $access)
+			{
+			$arr = listSubmittedArticles($topics);
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)
+				{
+				$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
+				$babBody->addItemMenu("Submited", bab_translate("Submitted"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submited&topics=".$topics);
+				if( isset($new) && $new > 0 && $uaapp)
+					$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
+				}
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+			if( $arr[1] > 0 )
+				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
+			if( $arr[0] < 1)
+				$babBody->title = $babLevelTwo.": ".bab_translate("There are no submitted article");
+			else
+				$babBody->title = $babLevelTwo;
+			}
+		break;
+
 	default:
 	case "Articles":
 		$babBody->title = bab_translate("List of articles");
@@ -929,6 +1006,8 @@ switch($idx)
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)
 				{
 				$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
+				if( $arr[2] > 0 )
+					$babBody->addItemMenu("Submited", bab_translate("Submitted"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submited&topics=".$topics);
 				if( isset($new) && $new > 0 && $uaapp)
 					$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 				}

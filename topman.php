@@ -28,6 +28,9 @@ function listCategories()
 		var $waiting;
 		var $newa;
 		var $newc;
+		var $urlwaitinga;
+		var $urlwaitingc;
+		var $newac;
 
 		function temp()
 			{
@@ -54,13 +57,33 @@ function listCategories()
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
-				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
-				$res = $this->db->db_query($req);
-				$this->newa = $this->db->db_num_rows($res);
+				if( bab_isUserArticleApprover($this->arr['id']) )
+					{
+					$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
+					$res = $this->db->db_query($req);
+					$this->newa = $this->db->db_num_rows($res);
+					}
+				else
+					{
+					$this->newa = 0;
+					}
 
-				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
-				$res = $this->db->db_query($req);
-				$this->newc = $this->db->db_num_rows($res);
+				if( bab_isUserCommentApprover($this->arr['id']))
+					{
+					$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
+					$res = $this->db->db_query($req);
+					$this->newc = $this->db->db_num_rows($res);
+					}
+				else
+					{
+					$this->newc = 0;
+					}
+
+				$this->newac = $this->newa + $this->newc;
+
+				$this->urlwaitinga = $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$this->arr['id']."&new=".$this->new."&newc=".$this->newc;
+
+				$this->urlwaitingc = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id'];
 
 				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
 				$i++;
@@ -465,7 +488,7 @@ switch($idx)
 		if( $nbarch > 0)
 			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item."&new=".$new."&newc=".$newc);
 
-		if( $new > 0)
+		if( $new > 0 && bab_isUserArticleApprover($item))
 			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$item."&new=".$new."&newc=".$newc);
 		break;
 
