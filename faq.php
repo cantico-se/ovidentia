@@ -127,7 +127,9 @@ function FaqTableOfContents($idcat)
 			{
 			global $babDB, $faqinfo;
 			$this->idcat = $idcat;
+			$this->faqname = $faqinfo['category'];
 			$this->contentsname = bab_translate("CONTENTS");
+			$this->modifytxt = bab_translate("Modify");
 			$this->babTree  = new bab_arraytree(BAB_FAQ_TREES_TBL, $idcat, "");
 			$this->arr = array();
 			reset($this->babTree->nodes);
@@ -185,7 +187,7 @@ function FaqTableOfContents($idcat)
 
 				if( $faqinfo['id_root'] == $row['id_node'] )
 					{
-					$this->subcatname = $faqinfo['category'];
+					$this->subcatname = '';
 					$this->burl = false;
 					}
 				else
@@ -277,6 +279,7 @@ function FaqPrintContents($idcat)
 			{
 			global $babDB, $faqinfo;
 			$this->idcat = $idcat;
+			$this->faqname = $faqinfo['category'];
 			$this->contentsname = bab_translate("CONTENTS");
 			$this->return = bab_translate("Go to Top");
 			$this->babTree  = new bab_arraytree(BAB_FAQ_TREES_TBL, $idcat, "");
@@ -338,7 +341,7 @@ function FaqPrintContents($idcat)
 
 				if( $faqinfo['id_root'] == $row['id_node'] )
 					{
-					$this->subcatname = $faqinfo['category'];
+					$this->subcatname = '';
 					}
 				else
 					{
@@ -955,7 +958,7 @@ function saveQuestion($item, $idscat, $question, $response)
 
 	$query = "update ".BAB_FAQQR_TBL." set response='".addslashes(bab_stripDomainName($response))."' where id='".$id."'";
 	$db->db_query($query);
-	
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 	}
 
 function saveSubCategory($item, $idscat, $subcat)
@@ -1102,7 +1105,7 @@ else if( isset($modsc) && $modsc == "modscat")
 switch($idx)
 	{
 	case "questions":
-		$babBody->title = $faqinfo['category'];
+		$babBody->title = bab_translate("Contents");
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item))
 			{
 			FaqTableOfContents($item);
