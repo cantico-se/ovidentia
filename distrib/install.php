@@ -82,7 +82,7 @@ class bab_dumpToDb
 					}
 				}
 				
-			if (!$res || $createdatabase)
+			if (!$res || (isset($createdatabase) && $createdatabase === true))
 				{
 				if (!$this->db_query('CREATE DATABASE '.$_POST['babDBName']))
 					{
