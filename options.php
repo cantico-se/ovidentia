@@ -164,7 +164,7 @@ function changeLanguage()
 
     }
 
-function changeSkin()
+function changeSkin($skin)
 	{
 	global $babBody;
 
@@ -173,62 +173,102 @@ function changeSkin()
 		var $title;
         var $count;
         var $userskin;
+        var $userstyle;
         var $skinval;
         var $skinselected;
         var $skinname;
 		var $update;
 
-        var $arrfiles = array();
+        var $arrskins = array();
+        var $arrstyles = array();
 
-		function tempc()
+		var $cntskins;
+		var $cntstyles;
+		var $skin;
+
+		function tempc($skin)
 			{
         	global $BAB_SESS_USERID;
 			$this->title = bab_translate("Prefered skin");
 			$this->update = bab_translate("Update Skin");
-            $this->count = 0;
+            $this->cntskins = 0;
+            $this->cntstyles = 0;
 
-            $db = $GLOBALS['babDB'];
-            $req = "select * from users where id='$BAB_SESS_USERID'";
-            $res = $db->db_query($req);
-            if( $res && $db->db_num_rows($res) > 0 )
-                {
-    			$arr = $db->db_fetch_array($res);
-                $this->userskin = $arr['skin'];
-                }
-            else
-                $this->userskin = "";
-           
-            if( $this->userskin == "")
-                $this->userskin = $GLOBALS['babSkin'];
+			$db = $GLOBALS['babDB'];
+			$req = "select * from users where id='$BAB_SESS_USERID'";
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				$arr = $db->db_fetch_array($res);
+				$this->userskin = $arr['skin'];
+				$this->userstyle = $arr['style'];
+				}
+			else
+				{
+				$this->userskin = "";
+				$this->userstyle = "";
+				}
+		   
+			if( $this->userskin == "")
+				$this->userskin = $GLOBALS['babSkin'];
 
-            $this->title .= " : ".$this->userskin;
+			if( $this->userstyle == "")
+				$this->userstyle = $GLOBALS['babStyle'];
 
-            $h = opendir($GLOBALS['babInstallPath']."skins/"); 
-            while ( $file = readdir($h))
-                { 
-                if ($file != "." && $file != "..")
-                    {
-					if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
-                        {
-                            $this->arrfiles[] = $file; 
-                        }
-                    } 
-                }
-            closedir($h);
-            $this->count = count($this->arrfiles);
+			$this->title .= " : ".$this->userskin ." / ". $this->userstyle;
+
+			if(!isset($skin) || empty($skin))
+				$this->skin = $this->userskin;
+			else
+				$this->skin = $skin;
+
+			if( is_dir($GLOBALS['babInstallPath']."skins/"))
+				{
+				$h = opendir($GLOBALS['babInstallPath']."skins/"); 
+				while ( $file = readdir($h))
+					{ 
+					if ($file != "." && $file != "..")
+						{
+						if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
+							{
+								$this->arrskins[] = $file; 
+							}
+						} 
+					}
+				closedir($h);
+				$this->cntskins = count($this->arrskins);
+				}
+
+			if( is_dir($GLOBALS['babInstallPath']."skins/".$this->skin."/styles/"))
+				{
+				$h = opendir($GLOBALS['babInstallPath']."skins/".$this->skin."/styles/"); 
+				while ( $file = readdir($h))
+					{ 
+					if ($file != "." && $file != "..")
+						{
+						if( is_file($GLOBALS['babInstallPath']."skins/".$this->skin."/styles/".$file))
+							{
+								$this->arrstyles[] = $file; 
+							}
+						} 
+					}
+				closedir($h);
+				$this->cntstyles = count($this->arrstyles);
+				}
 			}
 
 		function getnextskin()
 			{
 			static $i = 0;
-			if( $i < $this->count)
+			if( $i < $this->cntskins)
 				{
-                $this->skinname = $this->arrfiles[$i];
-                $this->skinval = $this->arrfiles[$i];
-                if( $this->userskin == $this->skinname )
+                $this->skinname = $this->arrskins[$i];
+                $this->skinval = $this->arrskins[$i];
+                if( $this->skinname == $this->skin )
                     $this->skinselected = "selected";
                 else
                     $this->skinselected = "";
+
 				$i++;
 				return true;
 				}
@@ -236,10 +276,23 @@ function changeSkin()
 				return false;
 			}
 
+		function getnextstyle()
+			{
+			static $i = 0;
+			if( $i < $this->cntstyles)
+				{
+                $this->stylename = $this->arrstyles[$i];
+                $this->styleval = $this->arrstyles[$i];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
 		}
 
 
-    $tempc = new tempc();
+    $tempc = new tempc($skin);
     $babBody->babecho(	bab_printTemplate($tempc,"options.html", "changeskin"));
     }
 
@@ -280,13 +333,13 @@ function updateLanguage($lang)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
-function updateSkin($skin)
+function updateSkin($skin, $style)
 	{
     global $BAB_SESS_USERID;
 	if( !empty($skin))
 		{
         $db = $GLOBALS['babDB'];
-        $req = "update users set skin='".$skin."' where id='".$BAB_SESS_USERID."'";
+        $req = "update users set skin='".$skin."', style='".$style."' where id='".$BAB_SESS_USERID."'";
         $res = $db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
@@ -358,6 +411,12 @@ if(!isset($idx))
 	{
 	$idx = "global";
 	}
+
+if(!isset($skin))
+	{
+	$skin = "";
+	}
+
 $babBody->msgerror = "";
 
 if( isset($update))
@@ -371,7 +430,7 @@ if( isset($update))
         	updateLanguage($lang);
             break;
         case "skin":
-        	updateSkin($skin);
+        	updateSkin($skin, $style);
             break;
         case "userinfo":
         	if(updateUserInfo($password, $firstname, $lastname, $nickname, $email))
@@ -436,7 +495,7 @@ switch($idx)
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		changeUserInfo($firstname, $lastname, $nickname, $email);
 		changePassword();
-		changeSkin();
+		changeSkin($skin);
 		changeLanguage();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )

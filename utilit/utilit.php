@@ -1296,6 +1296,10 @@ function bab_updateUserSettings()
                 {
                 $GLOBALS['babSkin'] = $arr['skin'];
                 }
+            if( $arr['style'] != "" && is_file($GLOBALS['babInstallPath']."skins/".$arr['skin']."/styles/".$arr['style']))
+                {
+                $GLOBALS['babStyle'] = $arr['style'];
+                }
             /*
             $req="select * from users_log where id_user='$BAB_SESS_USERID'";
             $res=$db->db_query($req);

@@ -152,8 +152,17 @@ valign="middle">{ password }:</td>
 <!--#end changelang -->
 <br><br><br><br>
 <!--#begin changeskin -->
+<script type="text/javascript">
+<!--
+function mm()
+{
+  document.forms.formskin.update.value = "";
+  document.forms.formskin.submit.click();
+}
+//-->
+</script>
 <br>
-<form method="post" action="{ babPhpSelf }">
+<form name="formskin" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="skin">
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -177,11 +186,15 @@ valign="middle">{ password }:</td>
 </tr>
 <tr> 
 <td align="center" nowrap valign="middle"> 
-<select name="skin">
+<select name="skin" onChange="mm()">
 <!--#in getnextskin -->
 <option value="{ skinval }" { skinselected }>{ skinname }</option>
-
 <!--#endin getnextskin -->
+</select>
+<select name="style">
+<!--#in getnextstyle -->
+<option value="{ styleval }">{ stylename }</option>
+<!--#endin getnextstyle -->
 </select>
 </td>
 </tr>
