@@ -312,9 +312,9 @@ function newReply($forum, $thread, $post)
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			if( substr($arr['subject'], 0, 3) == "RE:")
-				$this->subjectval = $arr['subject'];
+				$this->subjectval = htmlentities($arr['subject']);
 			else
-				$this->subjectval = "RE:".$arr['subject'];
+				$this->subjectval = "RE:".htmlentities($arr['subject']);
 			if( empty($BAB_SESS_USER))
 				$this->anonyme = 1;
 			else
