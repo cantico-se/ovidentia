@@ -1048,7 +1048,7 @@ function bab_getSuperior($iduser, $iddirectory=0)
 
 function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 {
-	global $babDB;
+	global $babDB, $babBody;
 
 	if( $oc )
 	{
@@ -1057,8 +1057,12 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 		{
 			list($idrole) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity='".$identity."' and type='3'"));
 			list($idduser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$iduser."'"));
-			$req = "insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$idrole."','".$idduser."','Y')";
-			$babDB->db_query($req);
+			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$idrole."' and id_user='".$idduser."'"));
+			if( !$total )
+				{
+				$req = "insert into ".BAB_OC_ROLES_USERS_TBL." (id_role, id_user, isprimary) values ('".$idrole."','".$idduser."','Y')";
+				$babDB->db_query($req);
+				}
 		}
 	}
 
@@ -1066,15 +1070,21 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 	if( !$total )
 		{
 		$res = $babDB->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$idgroup. "', '" . $iduser. "')");
+		$babBody->usergroups[] = $idgroup;
 		}
 }
 
 function bab_removeUserFromGroup($iduser, $idgroup)
 {
-	global $babDB;
+	global $babDB, $babBody;
 
-	$req = "delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."' and id_object='".$iduser."'";
-	$res = $babDB->db_query($req);
+	$babDB->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgroup."' and id_object='".$iduser."'");
+	$idx = bab_array_search($idgroup, $babBody->usergroups);
+	if( $idx )
+		{
+		array_splice($babBody->usergroups, $idx, 1);
+		}
+
 	list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));
 	if( $identity )
 		{
