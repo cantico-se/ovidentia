@@ -93,7 +93,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			$this->attachmenttxt = bab_translate("Allow author to attach files to articles");
 			$this->artupdatetxt = bab_translate("Allow author to modify their articles");
 			$this->manmodtxt = bab_translate("Allow managers to modify articles");
-			$this->artmaxtxt = bab_translate("Max articles by page");
+			$this->artmaxtxt = bab_translate("Max articles on the archives page");
 			$this->yeswithapprobation = bab_translate("Yes with approbation");
 			$this->yesnoapprobation = bab_translate("Yes without approbation");
 			$this->yes = bab_translate("Yes");

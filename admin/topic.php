@@ -245,7 +245,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->attachmenttxt = bab_translate("Allow author to attach files to articles");
 			$this->artupdatetxt = bab_translate("Allow author to modify their articles");
 			$this->manmodtxt = bab_translate("Allow managers to modify articles");
-			$this->artmaxtxt = bab_translate("Max articles by page");
+			$this->artmaxtxt = bab_translate("Max articles on the archives page");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Update Topic");

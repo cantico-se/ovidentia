@@ -1304,7 +1304,7 @@
 <string id="Allow author to attach files to articles">Permettre aux auteurs de joindre des fichiers avec leurs articles</string>
 <string id="Allow author to modify their articles">Permettre aux auteurs de modifier leurs articles</string>
 <string id="Allow managers to modify articles">Permettre aux gestionnaires de modifier les articles</string>
-<string id="Max articles by page">Nombre maximum d'articles par page</string>
+<string id="Max articles on the archives page">Nombre maximum d'articles sur la page des archives</string>
 <string id="Yes with approbation">Oui avec approbation</string>
 <string id="Yes without approbation">Oui sans approbation</string>
 <string id="Who can read articles from this topic?">Qui peut lire les articles de ce thème?</string>
