@@ -215,6 +215,12 @@ function sectionSave($title, $pos, $desc, $content, $script)
 		{
 		$query = "insert into sections (title, position, description, content, script) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php."')";
 		$db->db_query($query);
+		$id = $db->db_insert_id();
+		$query = "select max(ordering) from sections_order where private='N' and position='".$pos."'";
+		$res = $db->db_query($query);
+		$arr = $db->db_fetch_array($res);
+		$query = "insert into sections_order (id_section, position, private, ordering) VALUES ('" .$id. "', '" . $pos. "', 'N', '" . ($arr[0]+1). "')";
+		$db->db_query($query);		
 		}
 	}
 

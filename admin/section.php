@@ -132,8 +132,19 @@ function sectionUpdate($id, $title, $pos, $desc, $content, $script)
 		$php = "Y";
 	else
 		$php = "N";
-	$query = "update sections set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
 	$db = new db_mysql();
+	$query = "select * from sections where id='".$id."'";
+	$res = $db->db_query($query);
+	$arr = $db->db_fetch_array($res);
+	if( $arr[position] != $pos)
+		{
+		$query = "select max(ordering) from sections_order where private='N' and position='".$pos."'";
+		$res = $db->db_query($query);
+		$arr = $db->db_fetch_array($res);
+		$query = "update sections_order set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";
+		$db->db_query($query);
+		}
+	$query = "update sections set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
 	$db->db_query($query);
 	Header("Location: index.php?tg=sections&idx=List");
 	}
