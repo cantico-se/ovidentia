@@ -485,7 +485,7 @@ switch($idx)
 		break;
 	case "new":
 		$babBody->title = bab_translate("Create a new approbation schema");
-		schemaCreate($formula, $idsch, $schname, $schdesc, $order, flase);
+		schemaCreate($formula, $idsch, $schname, $schdesc, $order, false);
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=new");
 		break;
