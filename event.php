@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include_once "base.php";
 function getAvailableUsersCalendars()
 {
 	global $BAB_SESS_USERID,$BAB_SESS_USER;

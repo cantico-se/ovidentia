@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include_once "base.php";
 include $babInstallPath."admin/register.php";
 
 function browseUsers($pos, $cb)
@@ -295,6 +296,10 @@ function userCreate($firstname, $lastname, $nickname, $email)
 		var $lastnameval;
 		var $nicknameval;
 		var $emailval;
+		var $notifyuser;
+		var $sendpassword;
+		var $yes;
+		var $no;
 
 		function temp($firstname, $lastname, $nickname, $email)
 			{
@@ -308,6 +313,10 @@ function userCreate($firstname, $lastname, $nickname, $email)
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Paasword");
+			$this->notifyuser = bab_translate("Notify user");
+			$this->sendpassword = bab_translate("Send password with email");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
 			$this->adduser = bab_translate("Register");
 			}
 		}
@@ -343,6 +352,63 @@ function updateGroup( $grp, $users, $userst)
 	}
 }
 
+function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
+	{
+	global $babBody, $babAdminEmail, $babInstallPath;
+
+	class tempa
+		{
+        var $sitename;
+        var $linkurl;
+        var $linkname;
+		var $username;
+		var $message;
+
+
+		function tempa($name, $msg)
+			{
+            global $babSiteName;
+            $this->linkurl = $link;
+            $this->linkname = bab_translate("link");
+            $this->username = $name;
+			$this->sitename = $babSiteName;
+			$this->message = $msg;
+			}
+		}
+
+	$mail = bab_mail();
+	if( $mail == false )
+		return;
+    $mail->mailTo($email, $name);
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailSubject(bab_translate("Registration Confirmation"));
+	
+	$message = bab_translate("You have been registered on our site") ."<br>";
+	$message .= bab_translate("Nickname") .": ". $nickname;
+	if( !empty($pwd))
+		{
+		$message .= " / ". bab_translate("Password") .": ". $pwd;
+		}
+
+	$tempa = new tempa($name, $message);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistration2");
+
+    $mail->mailBody($message, "html");
+
+	$message = bab_translate("You have been registered on our site")."\n";
+	$message .= bab_translate("Nickname") .": ". $nickname;
+	if( !empty($pwd))
+		{
+		$message .= " / ". bab_translate("Password") .": ". $pwd;
+		}
+
+	$tempa = new tempa($name, $message);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt2");
+
+	$mail->mailAltBody($message);
+    $mail->send();
+	}
+
 /* main */
 if( !isset($pos))
 	$pos = "A";
@@ -355,10 +421,17 @@ if( !isset($idx))
 
 if( isset($adduser))
 {
-	if(!addUser($firstname, $lastname, $nickname, $email, $password1, $password2))
+	if(!addUser($firstname, $lastname, $nickname, $email, $password1, $password2, true))
 		$idx = "Create";
 	else
+		{
 		$pos = substr($firstname,0,1);
+		$idx = "List";
+		if( $notifyuser == "Y" )
+			{
+			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $email, $nickname, $sendpwd == "Y"? $password1: "" );
+			}
+		}
 }
 
 if( $idx == "chg")

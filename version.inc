@@ -6,6 +6,6 @@
  ***********************************************************************/
 $bab_ver_major = "3";
 $bab_ver_minor = "4";
-$bab_ver_build = "0";
-$bab_ver_info = "beta2";
+$bab_ver_build = "1";
+$bab_ver_info = "beta";
 ?>

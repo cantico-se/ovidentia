@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include "base.php";
 include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);

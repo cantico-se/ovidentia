@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include_once "base.php";
 include $babInstallPath."version.inc";
 
 function bab_array_search($str, $vars)
@@ -20,7 +21,7 @@ function bab_array_search($str, $vars)
 
 function upgrade()
 {
-$bab_versions = array("310", "320", "330", "331", "332", "333", "340");
+$bab_versions = array("310", "320", "330", "331", "332", "333", "340", "341");
 
 $ret = "";
 $db = $GLOBALS['babDB'];

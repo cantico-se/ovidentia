@@ -64,6 +64,7 @@ if (!empty($_FILES))
 			}
 	}
 
+include_once "base.php";
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
 
@@ -535,6 +536,9 @@ switch($tg)
 		include $babInstallPath."version.php";
 		exit;
 		break;
+	case "accden":
+		$babBody->msgerror = bab_translate("Access denied");
+		/* no break; */
 	case "entry":
 		$incl = "entry";
 		break;

@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include_once "base.php";
 include $babInstallPath."utilit/mailincl.php";
 
 function notifyUserRegistration($link, $name, $email)
@@ -110,7 +111,7 @@ function notifyAdminRegistration($name, $useremail, $warning)
     $mail->send();
 	}
 
-function addUser( $firstname, $lastname, $nickname, $email, $password1, $password2)
+function addUser( $firstname, $lastname, $nickname, $email, $password1, $password2, $badmin)
 	{
 	global $babBody;
 	if( empty($firstname) || empty($lastname) || empty($email) || empty($password1) || empty($password2))
@@ -153,7 +154,7 @@ function addUser( $firstname, $lastname, $nickname, $email, $password1, $passwor
 		$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
 		return false;
 		}
-	if(!registerUser($nickname, $firstname, $lastname, $email, $password1, $password2, $hash))
+	if(!registerUser($nickname, $firstname, $lastname, $email, $password1, $password2, $hash, $badmin))
 		return false;
 
 	return true;
@@ -173,11 +174,15 @@ function random_password($length)
 	}
 
 
-function registerUser( $nickname, $firstname, $lastname, $email, $password1, $password2, $hashname)
+function registerUser( $nickname, $firstname, $lastname, $email, $password1, $password2, $hashname, $badmin)
 	{
 	global $BAB_HASH_VAR, $babBody, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
 	$password1=strtolower($password1);
 	$hash=md5($nickname.$BAB_HASH_VAR);
+	if( $badmin )
+		$isconfirmed = 1;
+	else
+		$isconfirmed = 0;
 
 	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang) ".
 		"values ('";
@@ -185,7 +190,7 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 		$sql .= addslashes($nickname)."','".addslashes($firstname)."','".addslashes($lastname);
 	else
 		$sql .= $nickname."','".$firstname."','".$lastname;
-	$sql .= "','".$hashname."','". md5($password1) ."','$email', now(),'$hash','0','1','$babLanguage')";
+	$sql .= "','".$hashname."','". md5($password1) ."','$email', now(),'$hash','".$isconfirmed."','1','$babLanguage')";
 	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($result)
@@ -194,28 +199,31 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 		$sql = "insert into ".BAB_CALENDAR_TBL." (owner, type) values ('$id', '1')";
 		$result=$db->db_query($sql);
 
-		$result=$db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
-		if( $result && $db->db_num_rows($result) > 0 )
+		if( !$badmin )
 			{
-			$r = $db->db_fetch_array($result);
-			}
+			$result=$db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
+			if( $result && $db->db_num_rows($result) > 0 )
+				{
+				$r = $db->db_fetch_array($result);
+				}
 
-		$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
-		$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
-		$link = $GLOBALS['babUrlScript']."?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
-		//mail ($email,bab_translate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
-		$fullname = bab_composeUserName($firstname , $lastname);
-		if( $r['email_confirm'] == 'Y')
-			{
-			notifyUserRegistration($link, $fullname, $email);
-			$warning = "";
+			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
+			$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
+			$link = $GLOBALS['babUrlScript']."?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
+			//mail ($email,bab_translate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+			$fullname = bab_composeUserName($firstname , $lastname);
+			if( $r['email_confirm'] == 'Y')
+				{
+				notifyUserRegistration($link, $fullname, $email);
+				$warning = "";
+				}
+			else
+				{
+				$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
+				}
+			notifyAdminRegistration($fullname, $email, $warning);
+			//$babBody->msgerror = $msg;
 			}
-		else
-			{
-			$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
-			}
-		notifyAdminRegistration($fullname, $email, $warning);
-		//$babBody->msgerror = $msg;
 		bab_callAddonsFunction('onUserCreate', $id);
 		return true;
 		}

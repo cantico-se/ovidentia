@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include_once "base.php";
 function bab_getCategoryCalName($id)
 	{
 	$db = $GLOBALS['babDB'];

@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include_once "base.php";
 include $babInstallPath."admin/register.php";
 
 function displayLogin()
@@ -171,7 +172,7 @@ if( isset($login) && $login == "login")
 
 if( isset($adduser) && $adduser == "register" && $r['registration'] == 'Y')
 	{
-	if( !addUser( $firstname, $lastname, $nickname, $email, $password1, $password2))
+	if( !addUser( $firstname, $lastname, $nickname, $email, $password1, $password2, false))
 		$cmd = "register";
 	}
 
