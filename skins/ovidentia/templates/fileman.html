@@ -86,8 +86,8 @@ href="{ refreshurl }">{ refresh }</a></td>
 <tr>
 <td class="BabSiteAdminTitleFontBackground" colspan="2" align="center">&nbsp;{ nametxt }&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" align="right">&nbsp;{ sizetxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ modifiedtxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ postedtxt }&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="center">{ modifiedtxt }&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;{ postedtxt }&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
 <!--#if bmanager -->
@@ -131,9 +131,9 @@ href="{ url }">{ name }</a></td>
 </tr>
 <!--#endin getnextmgrpdir -->
 <!--#in getnextfile --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
 { fileimage }</td>          
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp; 
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp; 
 <!--#if bmanager -->
 <a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
 <!--#if bconfirmed "== 1" -->
@@ -143,12 +143,13 @@ href="{ url }">{ name }</a></td>
 { name } 
 <!--#endif bmanager -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">&nbsp;{ sizef }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">&nbsp;{ modified }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">&nbsp;{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right"><a 
+<td class="BabSiteAdminFontBackground" valign="top" align="right">&nbsp;{ sizef }</td>
+<td class="BabSiteAdminFontBackground" valign="top" align="center">{ modified }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ postedby }&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top" align="right"><a 
 class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">&nbsp; 
+<td class="BabSiteAdminFontBackground" nowrap valign="top">&nbsp; 
+
 <!--#if bmanager -->
 <a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" border="0" 
 alt="{ cuttxt }"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><img 
@@ -160,9 +161,9 @@ src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a>
 <!--#endif bmanager -->
 </tr><!--#endin getnextfile -->
 <!--#in getnextxfile --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
 { fileimage }</td>          
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp; 
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp; 
 <!--#if bmanager -->
 <a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
 <!--#if bconfirmed "== 1" -->
@@ -172,11 +173,11 @@ src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a>
 { name } 
 <!--#endif bmanager -->
 </td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">&nbsp;{ sizef }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">&nbsp;{ modified }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">&nbsp;{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="middle" align="right"><a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp; 
+<td class="BabSiteAdminFontBackground" valign="top" align="right">&nbsp;{ sizef }</td>
+<td class="BabSiteAdminFontBackground" valign="top" align="center">{ modified }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ postedby }&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top" align="right"><a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" border="0" alt="{ download }"></a></td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp; 
 <!--#if bmanager -->
 <a class="BabSiteAdminListLink" href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" border="0" 
 alt="{ paste }"></a> 
@@ -199,14 +200,14 @@ alt="{ paste }"></a>
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="gr" value="{ gr }">
 <input type="hidden" name="path" value="{ path }">
-<table  width="70%" border="0" cellspacing="0" cellpadding="1" align="center">
+<table  width="80%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr> 
 <td class="Blackbg" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right">{ directory }</td>
 <td class="BabLoginMenuBackground" width="35%">
-<input type="text" name="dirname" size="30" value="">
+<input type="text" name="dirname" size="35" value="">
 </td>
 <td class="BabLoginMenuBackground" width="35%">
 <input type="submit" name="create" value="{ mkdir }">&nbsp;&nbsp;<input type="submit" name="rename" value="{ rename }">
