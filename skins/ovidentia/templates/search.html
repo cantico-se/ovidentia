@@ -396,9 +396,9 @@ setselects(document.forms.searchForm.g_directory);
 
 <!--#begin searchresult -->
 <div class="BabTopicsBackground" >
-<h5 class="BabBodyTitleBackground" align="right"> 
+<h4 class="BabBodyTitleBackground"> 
 		{ total } : { nbresult }
-</h5>
+</h4>
 
 <!--#if countart "!= 0" -->
 <h5 class="BabBodyTitleBackground">{ arttitle }</h5>
@@ -406,9 +406,9 @@ setselects(document.forms.searchForm.g_directory);
 	<!--#in getnextart -->
 	<li>
 	<p>
-	{ arttopic }&gt; 
+	<strong>{ arttopic }&gt; 
 	<a class="BabFaqLink" href="{ articleurl }">{ article }</a> 
-	[ <a href="javascript: bab_popup('{ articleurlpop }');">{ popup }</a> ]<br />
+	[ <a href="javascript: bab_popup('{ articleurlpop }');">{ popup }</a> ]</strong><br />
 	 { intro }<br />
 	 
 	<!--#if BAB_SESS_LOGGED -->
@@ -427,7 +427,7 @@ setselects(document.forms.searchForm.g_directory);
 	<!--#in getnextcom -->
 	<li>
 	<p>
-	{ arttopic }&gt; 
+	<strong>{ arttopic }&gt; 
 	<!--#if urlok -->
 	<a class="BabSummaryLinkColor" href="{ articleurl }">{ article }</a> 
 	<!--#else urlok -->
@@ -435,7 +435,7 @@ setselects(document.forms.searchForm.g_directory);
 	<!--#endif urlok -->
 	[ <a href="javascript:bab_popup('{ articleurlpop }');">{ popup }</a> ] &gt; 
 	<a class="BabFaqLink" href="{ comurl }">{ com }</a> 
-	[ <a href="javascript: bab_popup('{ comurlpop }');">{ popup }</a> ]<br />
+	[ <a href="javascript: bab_popup('{ comurlpop }');">{ popup }</a> ]</strong><br />
 
 	 { intro }<br />
 	 
@@ -452,9 +452,10 @@ setselects(document.forms.searchForm.g_directory);
 <!--#in getnextfor -->
   <li>
 	<p>
+	<strong>
 	<a class="BabSummaryLinkColor" href="{ forumurl }">{ forum }</a> &gt; 
 	<a class="BabFaqLink" href="{ posturl }">{ post }</a> 
-	[ <a href="javascript: Start('{ posturlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]<br />
+	[ <a href="javascript: Start('{ posturlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]</strong><br />
 	 { intro }<br />
 	 { postauthor } - <span class="BabForumTopicsNavTreeDate"><i>{ postdate }</i></span>
 	 </p>
@@ -469,9 +470,10 @@ setselects(document.forms.searchForm.g_directory);
 <!--#in getnextfaq -->
 	<li>
 	<p>
+	<strong>
 	<a class="BabSummaryLinkColor" href="{ topicurl }">{ faqtopic }</a> &gt; 
 	<a class="BabFaqLink" href="{ questionurl }">{ question }</a> 
-	[ <a href="javascript: Start('{ questionurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]<br />
+	[ <a href="javascript: Start('{ questionurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]</strong><br />
 	 { intro }<br />
 	 <!--#if BAB_SESS_LOGGED --><a class="BabDayCalendarEventLink" href="mailto:{ faqauthormail }"><!--#endif BAB_SESS_LOGGED -->{ faqauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED -->
 	 </p>
@@ -582,8 +584,8 @@ setselects(document.forms.searchForm.g_directory);
 <!--#in getnextage -->
 <li>
 	 <p>
-	{ agecat } &gt; 
-	<a class="BabFaqLink" href="javascript:bab_popup('{ ageurl }')" title="{ agecatdesc }">{ agetitle }</a><br /> 
+	<strong>{ agecat } &gt; 
+	<a class="BabFaqLink" href="javascript:bab_popup('{ ageurl }')" title="{ agecatdesc }">{ agetitle }</a></strong><br /> 
 	 { agedescription }<br />
 	 <!--#if agecreator --><!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --><a class="BabDayCalendarEventLink" href="mailto:{ agecreatormail }"><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED -->{ agecreator }<!--#if BAB_SESS_LOGGED --><!--#if agecreatormail --></a><!--#endif agecreatormail --><!--#endif BAB_SESS_LOGGED --> -  <!--#endif agecreator --><span class="BabForumTopicsNavTreeDate"><i>{ agestart_date }</i></span> <span class="BabErrorMessage">&gt;</span> <span class="BabForumTopicsNavTreeDate"><i>{ ageend_date }</i></span>
 	  </p>
@@ -599,8 +601,9 @@ setselects(document.forms.searchForm.g_directory);
 <!--#in getnextaddonrow -->
 	<li>
 		<p>
+		<strong>
 		<!--#if url --><a class="BabFaqLink" href="{ url }">{ urltxt }</a><!--#endif url -->
-		<!--#if urlpopup --> [ <a href="javascript: bab_popup('{ urlpopup }');">{ urlpopuptxt }</a> ]<!--#endif urlpopup --><br />
+		<!--#if urlpopup --> [ <a href="javascript: bab_popup('{ urlpopup }');">{ urlpopuptxt }</a> ]<!--#endif urlpopup --></strong><br />
 		{ text }<br />
 		</p>
 	</li>
