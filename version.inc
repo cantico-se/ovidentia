@@ -5,7 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 $bab_ver_major = "3";
-$bab_ver_minor = "4";
-$bab_ver_build = "0";
-$bab_ver_info = "beta";
+$bab_ver_minor = "3";
+$bab_ver_build = "3";
+$bab_ver_info = "";
 ?>

@@ -405,7 +405,7 @@ if( !$res)
 
 }
 
-function upgrade332to340()
+function upgrade332to333()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
