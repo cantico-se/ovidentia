@@ -74,7 +74,7 @@
 <!--#endif allselected -->
 <!--#in getnextselect -->
 <!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp; 
+{ selectname }&nbsp;&nbsp;
 <!--#else selected -->
 <a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
 <!--#endif selected -->
@@ -85,17 +85,28 @@
 <a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addname }</a>
 <!--#endif badd -->
 </td>
-</tr><tr> 
-<td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ cntxt }</b> </td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ emailtxt }</b></td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ bteltxt }</b></td>
-<td class="BabSiteAdminSmall" valign="middle" align="left"><b>&nbsp;{ hteltxt }</b></td>
+</tr>
+</table>
+<tr>
+<td>
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr>
+<td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap >&nbsp;</td>
+<td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap >&nbsp;</td>
+<!--#in getnextcol -->
+<td class="BabSiteAdminSmall" valign="middle" nowrap ><b><a class="BabAlphabetLink" href="{ colurl }">{ coltxt }</a></b></td>
+<!--#endin getnextcol -->
+<td class="BabSiteAdminSmall" valign="middle" nowrap >&nbsp;</td>
 </tr>
 <!--#in getnext -->
-<tr><td class="BabFontBackground"valign="middle"><a class="BabNameEmailLink" href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cn }</a></td>
-<td class="BabFontBackground" align="left" valign="middle"><!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ email }</a><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top>{ email }</a><!--#endif accid --></td>
-<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ btel }</td>
-<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ htel }</td>
+<tr>
+<td class="BabFontBackground" align="center" valign="middle" width="1%" >
+<!--#if accid "!= 0" --><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=700,status=no,resizable=yes,top=130,left=200,scrollbars=yes');"><!--#else accid --><a class="BabNameEmailLink" href="mailto:{ email }" target=_top><!--#endif accid --><img src="{ babSkinPath }images/Puces/txt.gif" border="0"></a></td>
+<td class="BabFontBackground" valign="middle" width="1%" ><a href="javascript: Start('{ url }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/edit.gif" border="0"></a></td>
+<!--#in getnextcolval -->
+<td class="BabFontBackground" align="left" valign="middle">&nbsp;{ coltxt }</td>
+<!--#endin getnextcolval -->
+<td class="BabFontBackground" valign="middle" nowrap >&nbsp;</td>
 </tr>
 <!--#endin getnext -->
 </table>

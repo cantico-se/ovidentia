@@ -213,7 +213,7 @@ function browseLdapDirectory($id, $pos)
 	$babBody->babecho( bab_printTemplate($temp, $GLOBALS['babAddonHtmlPath']."main.html", "adbrowse"));
 }
 
-function browseDbDirectory($id, $pos, $badd)
+function browseDbDirectory($id, $pos, $xf, $badd)
 {
 	global $babBody;
 
@@ -221,32 +221,43 @@ function browseDbDirectory($id, $pos, $badd)
 		{
 		var $count;
 
-		function temp($id, $pos, $badd)
+		function temp($id, $pos, $xf, $badd)
 			{
 			$this->allname = ad_translate("All");
-			$this->cntxt = ad_translate("Name");
-			$this->bteltxt = ad_translate("Business Phone");
-			$this->hteltxt = ad_translate("Home Phone");
-			$this->emailtxt = ad_translate("Email");
 			$this->addname = ad_translate("Add");
 			$this->id = $id;
 			$this->pos = $pos;
 			$this->badd = $badd;
+			$this->xf = $xf;
+			if( $pos[0] == "-" )
+				{
+				$this->pos = $pos[1];
+				$this->ord = "";
+				}
+			else
+				{
+				$this->pos = $pos;
+				$this->ord = "-";
+				}
+
 			if( empty($pos))
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=";
+			$this->allurl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$this->ord."&xf=".$this->xf;
 			$this->addurl = $GLOBALS['babAddonUrl']."main&idx=adbc&id=".$id;
 			$this->count = 0;
 			$this->db = $GLOBALS['babDB'];
 			if(bab_isAccessValid(ADDON_DIRVIEW_GROUPS_TBL, $id))
 				{
-				$this->res = $this->db->db_query("select id, sn, givenname, email, btel, htel from ".ADDON_DBENTRIES_TBL." where givenname like '".$pos."%' and id_directory='".$id."' order by givenname, sn");
-				$this->count = $this->db->db_num_rows($this->res);
+				//$this->res = $this->db->db_query("select id, sn, givenname, email, btel, htel from ".ADDON_DBENTRIES_TBL." where givenname like '".$pos."%' and id_directory='".$id."' order by givenname, sn");
+				//$this->count = $this->db->db_num_rows($this->res);
+				$this->rescol = $this->db->db_query("select id_field from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."' and ordering!='0' order by ordering asc");
+				$this->countcol = $this->db->db_num_rows($this->rescol);
 				}
 			else
 				{
+				$this->countcol = 0;
 				$this->count = 0;
 				}
 
@@ -268,26 +279,76 @@ function browseDbDirectory($id, $pos, $badd)
 				$this->accid = 0;			
 			}
 
-		function getnext()
+		function getnextcol()
 			{
 			static $i = 0;
-			if( $i < $this->count)
+			static $tmp = array();
+			if( $i < $this->countcol)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				if( empty($arr['givenname']) && empty($arr['sn']))
-					$this->cn = "???";
-				else
-					$this->cn = $arr['givenname']. " ". $arr['sn'];
-				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$arr['email'];
-				$this->email = $arr['email'];
-				$this->url = $GLOBALS['babAddonUrl']."main&idx=ddb&id=".$this->id."&idu=".$arr['id']."&pos=".$this->pos;
-				$this->btel = $arr['btel'];
-				$this->htel = $arr['htel'];
+				$arr = $this->db->db_fetch_array($this->rescol);
+				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".ADDON_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$this->coltxt = ad_translate($arr['description']);
+				$this->colurl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$arr['name'];
+				$tmp[] = $arr['name'];
 				$i++;
 				return true;
 				}
 			else
 				{
+				$tmp[] = "id";
+				if( !in_array("email", $tmp))
+					{
+					$tmp[] = "email";
+					}
+				$this->select = implode($tmp, ",");
+				if( $this->xf == "" )
+					$this->xf = "email";
+				$req = "select ".$this->select." from ".ADDON_DBENTRIES_TBL." where ".$this->xf." like '".$this->pos."%' and id_directory='".$this->id."' order by ".$this->xf." ";
+				if( $this->ord == "-" )
+					{
+					$req .= "asc";
+					}
+				else
+					{
+					$req .= "desc";
+					}
+
+				$this->res = $this->db->db_query($req);
+				$this->count = $this->db->db_num_rows($this->res);
+				return false;
+				}
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$this->arrf = $this->db->db_fetch_array($this->res);
+				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arrf['email'];
+				$this->email = $this->arrf['email'];
+				$this->url = $GLOBALS['babAddonUrl']."main&idx=ddb&id=".$this->id."&idu=".$this->arrf['id']."&pos=".$this->ord.$this->pos."&xf=".$this->xf;
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
+		function getnextcolval()
+			{
+			static $i = 0;
+			if( $i < $this->countcol)
+				{
+				$this->coltxt = ad_translate($this->arrf[$i]);
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
 				return false;
 				}
 			}
@@ -299,7 +360,7 @@ function browseDbDirectory($id, $pos, $badd)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$this->id."&pos=".$this->selectname;
+				$this->selecturl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->selectname."&xf=".$this->xf;
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else
@@ -313,7 +374,7 @@ function browseDbDirectory($id, $pos, $badd)
 			}
 		}
 
-	$temp = new temp($id, $pos, $badd);
+	$temp = new temp($id, $pos, $xf, $badd);
 	$babBody->babecho( bab_printTemplate($temp, $GLOBALS['babAddonHtmlPath']."main.html", "adbrowse"));
 }
 
@@ -1006,19 +1067,6 @@ function confirmAddDbContact($id, $idu, $fields, $file, $tmp_file)
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 
-	if( empty($fields['email']))
-		{
-		$babBody->msgerror = ad_translate("Contact must have email address");
-		return false;
-		}
-	
-	$res = $db->db_query("select email from ".ADDON_DBENTRIES_TBL." where email='".addslashes($fields['email'])."' and id_directory='".$id."'");
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = ad_translate("Contact with this email already exists");
-		return false;
-		}
-	
 	$res = $db->db_query("select * from ".ADDON_FIELDS_TBL." where name !='jpegphoto'");
 	$req = "";
 	while( $arr = $db->db_fetch_array($res))
@@ -1166,7 +1214,7 @@ switch($idx)
 
 	case "sdb":
 		$babBody->title = ad_translate("Database Directory").": ".getDirectoryName($id);
-		browseDbDirectory($id, $pos, $badd);
+		browseDbDirectory($id, $pos, $xf, $badd);
 		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."main&idx=list");
 		$babBody->addItemMenu("sdb", ad_translate("Browse"), $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)

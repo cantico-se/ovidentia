@@ -328,6 +328,64 @@ function modifyDb($id)
 	$babBody->babecho( bab_printTemplate($temp,$GLOBALS['babAddonHtmlPath']."admin.html", "dbmodify"));
 	}
 
+function displayDb($id)
+	{
+	global $babBody;
+	class temp
+		{
+		function temp($id)
+			{
+			global $babDB;
+			$this->id = $id;
+			$this->listftxt = "---- ".bab_translate("Fields")." ----";
+			$this->listdftxt = "---- ".bab_translate("Fields to display")." ----";
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->update = bab_translate("Update");
+			$this->resf = $babDB->db_query("select id, id_field from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."' and ordering='0'");
+			$this->countf = $babDB->db_num_rows($this->resf);
+			$this->resfd = $babDB->db_query("select id, id_field from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."' and ordering!='0' order by ordering asc");
+			$this->countfd = $babDB->db_num_rows($this->resfd);
+			}
+
+		function getnextf()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countf)
+				{
+				$arr = $babDB->db_fetch_array($this->resf);
+				$this->fid = $arr['id_field'];
+				$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".ADDON_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$this->fieldval = ad_translate($arr['description']);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextdf()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countfd)
+				{
+				$arr = $babDB->db_fetch_array($this->resfd);
+				$this->fid = $arr['id_field'];
+				$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".ADDON_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$this->fieldval = ad_translate($arr['description']);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp = new temp($id);
+	$babBody->babecho( bab_printTemplate($temp,$GLOBALS['babAddonHtmlPath']."admin.html", "dbdisplay"));
+	}
 
 function deleteAd($id)
 	{
@@ -571,6 +629,15 @@ function confirmDeleteDirectory($id)
 	Header("Location: ". $GLOBALS['babAddonUrl']."admin&idx=list");
 	}
 
+function dbUpdateDiplay($id, $listfd)
+{
+	global $babDB;
+	$babDB->db_query("update ".ADDON_DIRECTORIES_FIELDS_TBL." set ordering='0' where id_directory='".$id."'");
+	for($i=0; $i < count($listfd); $i++)
+		{
+		$babDB->db_query("update ".ADDON_DIRECTORIES_FIELDS_TBL." set ordering='".($i + 1)."' where id_directory='".$id."' and id_field='".$listfd[$i]."'");
+		}
+}
 /* main */
 $adminid = bab_isUserAdministrator();
 if( $adminid <= 0 )
@@ -645,6 +712,15 @@ if( isset($aclview))
 	$id = $item;
 	}
 
+if( isset($update) )
+	{
+	if( $update == "displaydb" )
+		{
+		if(!dbUpdateDiplay($id, $listfd))
+			$idx = "list";
+		}
+	}
+
 switch($idx)
 	{
 	case "gview":
@@ -688,11 +764,20 @@ switch($idx)
 		$babBody->addItemMenu("mldap", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=mldap&id=".$id);
 		break;
 
+	case "dispdb":
+		$babBody->title = ad_translate("Modify directory");
+		displayDb($id);
+		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
+		$babBody->addItemMenu("mdb", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=mdb&id=".$id);
+		$babBody->addItemMenu("dispdb", ad_translate("Display"), $GLOBALS['babAddonUrl']."admin&idx=dispdb&id=".$id);
+		break;
+
 	case "mdb":
 		$babBody->title = ad_translate("Modify directory");
 		modifyDb($id);
 		$babBody->addItemMenu("list", ad_translate("Directories"), $GLOBALS['babAddonUrl']."admin&idx=list");
 		$babBody->addItemMenu("mdb", ad_translate("Modify"), $GLOBALS['babAddonUrl']."admin&idx=mdb&id=".$id);
+		$babBody->addItemMenu("dispdb", ad_translate("Display"), $GLOBALS['babAddonUrl']."admin&idx=dispdb&id=".$id);
 		break;
 
 	case "ldap":

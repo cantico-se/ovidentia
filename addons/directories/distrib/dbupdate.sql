@@ -85,6 +85,7 @@ CREATE TABLE ad_directories_fields (
   modifiable enum('N','Y') NOT NULL default 'N',
   required enum('N','Y') NOT NULL default 'N',
   multilignes enum('N','Y') NOT NULL default 'N',
+  ordering int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 # --------------------------------------------------------
