@@ -509,7 +509,7 @@ function listFiles($id, $gr, $path, $bmanager)
 				if( file_exists($this->fullpath.$arr['path']."/".$arr['name']))
 					{
 					$fstat = stat($this->fullpath.$arr['path']."/".$arr['name']);
-					$this->sizef = $fstat[7];
+					$this->sizef = formatSize($fstat[7])." Ko";
 					}
 				else
 					$this->sizef = "???";
@@ -546,7 +546,7 @@ function listFiles($id, $gr, $path, $bmanager)
 				if( file_exists($this->fullpath.$arr['path']."/".$arr['name']))
 					{
 					$fstat = stat($this->fullpath.$arr['path']."/".$arr['name']);
-					$this->sizef = $fstat[7];
+					$this->sizef = formatSize($fstat[7])." Ko";
 					}
 				else
 					$this->sizef = "???";
@@ -1207,6 +1207,7 @@ function updateFile( $file, $id, $gr, $path, $aclfm)
 		var $confirmno;
 		var $confirmyes;
 		var $idf;
+		var $sizef;
 
 		function temp($file, $id, $gr, $path, $arr, $bmanager)
 			{
@@ -1227,6 +1228,8 @@ function updateFile( $file, $id, $gr, $path, $aclfm)
 			$this->keysval = $arr['keywords'];
 			$this->nameval = $arr['name'];
 			$this->idf = $arr['id'];
+			$fstat = stat(getFullPath($gr, $id).$arr['path']."/".$arr['name']);
+			$this->sizef = formatSize($fstat[7])." Ko ( ".formatSize($fstat[7], false) ." ".babTranslate("Bytes") ." )";
 			if( $arr['readonly'] == "Y")
 				{
 				$this->yesselected = "selected";
