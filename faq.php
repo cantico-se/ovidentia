@@ -1007,7 +1007,7 @@ function updateSubCategory($item, $idscat, $ids, $subcat)
 
 	$db = $GLOBALS['babDB'];
 
-	$query = "update ".BAB_FAQ_SUBCAT_TBL." set name='".$subcat."' where id='".$ids."'";
+	$query = "update ".BAB_FAQ_SUBCAT_TBL." set name='".addslashes($subcat)."' where id='".$ids."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
 	}
