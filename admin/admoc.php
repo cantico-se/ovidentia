@@ -248,7 +248,7 @@ function browseRoles($ocid, $oeid, $role, $type, $cb, $vpos, $echo=1)
 				$this->jrole = str_replace("'", "\'", $arr['r_name']);
 				$this->jrole = str_replace('"', "'+String.fromCharCode(34)+'",$this->jrole);
 				$this->roleid = $arr['id_role'];
-				if( $arr['givenname'] )
+				if( isset($arr['givenname']) )
 					{
 					$this->username = bab_composeUserName($arr['sn'], $arr['givenname']);
 					}
