@@ -656,8 +656,8 @@ function confirmDeleteDirectory($id, $type)
 		$arr = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 		if( $arr['id_group'] != 0)
 			return;
-		$db->db_query("delete * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id."'");
-		$db->db_query("delete * from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+		$db->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id."'");
+		$db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
 		$db->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'");
 		}
 	else if( $type == "l")

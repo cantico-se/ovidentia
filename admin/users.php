@@ -279,8 +279,8 @@ function listUsers($pos, $grp)
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "userslist"));
 	return $temp->count;
 	}
-/*
-function userCreate($firstname, $lastname, $nickname, $email)
+
+function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 	{
 	global $babBody;
 	class temp
@@ -301,14 +301,16 @@ function userCreate($firstname, $lastname, $nickname, $email)
 		var $yes;
 		var $no;
 
-		function temp($firstname, $lastname, $nickname, $email)
+		function temp($firstname, $middlename, $lastname, $nickname, $email)
 			{
 			$this->firstnameval = $firstname != ""? $firstname: "";
+			$this->middlenameval = $middlename != ""? $middlename: "";
 			$this->lastnameval = $lastname != ""? $lastname: "";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->emailval = $email != ""? $email: "";
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
+			$this->middlename = bab_translate("Middle Name");
 			$this->nickname = bab_translate("Nickname");
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
@@ -321,10 +323,10 @@ function userCreate($firstname, $lastname, $nickname, $email)
 			}
 		}
 
-	$temp = new temp($firstname, $lastname, $nickname, $email);
+	$temp = new temp($firstname, $middlename, $lastname, $nickname, $email);
 	$babBody->babecho(	bab_printTemplate($temp,"users.html", "usercreate"));
 	}
-*/
+
 function updateGroup( $grp, $users, $userst)
 {
 	$db = $GLOBALS['babDB'];
@@ -364,7 +366,7 @@ if( !isset($idx))
 
 if( isset($adduser))
 {
-	if(!addUser($firstname, $lastname, $nickname, $email, $password1, $password2, true))
+	if( !registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, true))
 		$idx = "Create";
 	else
 		{
@@ -403,19 +405,17 @@ switch($idx)
 		browseUsers($pos, $cb);
 		exit;
 		break;
-	/*
 	case "Create":
 		$babBody->title = bab_translate("Create a user");
-		userCreate($firstname, $lastname, $nickname, $email);
+		userCreate($firstname, $middlename, $lastname, $nickname, $email);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
 		break;
-	*/
 	case "List":
 		$babBody->title = bab_translate("Users list");
 		$cnt = listUsers($pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 		break;
 	default:
 		break;
