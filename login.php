@@ -146,6 +146,7 @@ function userCreate($firstname, $lastname, $nickname, $email)
 		var $lastnameval;
 		var $nicknameval;
 		var $emailval;
+		var $infotxt;
 
 		function temp($firstname, $lastname, $nickname, $email)
 			{
@@ -160,6 +161,8 @@ function userCreate($firstname, $lastname, $nickname, $email)
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Paasword");
 			$this->adduser = bab_translate("Register");
+			$this->infotxt = bab_translate("Please provide a valid email.") . "<br>";
+			$this->infotxt .= bab_translate("We will send you an email for confirmation before you can use our services") . "<br>";
 			}
 		}
 
@@ -202,8 +205,7 @@ switch($cmd)
 		break;
 
 	case "register":
-		$babBody->title = bab_translate("Please provide a valid email.") . "<br>";
-		$babBody->title .= bab_translate("We will send you an email for confirmation before you can use our services") . "<br>";
+		$babBody->title = bab_translate("Register");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $r['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");

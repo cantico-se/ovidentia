@@ -669,11 +669,14 @@ $newc = $db->db_num_rows($res);
 $req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and confirmed='N'";
 $res = $db->db_query($req);			
 $new = $db->db_num_rows($res);
+$babLevelTwo = bab_getCategoryTitle($topics);
+$arr = $db->db_fetch_array($db->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+$babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
 
 switch($idx)
 	{
 	case "More":
-		$babBody->title = bab_getCategoryTitle($topics);
+		$babBody->title = $babLevelTwo;
 		readMore($topics, $article);
 		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article);
@@ -724,7 +727,7 @@ switch($idx)
 	case "Waiting":
 		if( $new > 0)
 		{
-		$babBody->title = bab_getCategoryTitle($topics);
+			$babBody->title = $babLevelTwo;
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 		listArticles($topics, $new);

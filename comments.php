@@ -398,6 +398,10 @@ if( $approver )
 	$new = $db->db_num_rows($res);
 	}
 
+$babLevelTwo = bab_getCategoryTitle($topics);
+$arr = $babDB->db_fetch_array($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+$babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
+
 switch($idx)
 	{
 

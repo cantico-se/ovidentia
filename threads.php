@@ -330,6 +330,8 @@ if( isset($add) && $add == "addthread")
 	saveThread($forum, $name, $subject, $message, $notifyme);
 	}
 
+$babLevelTwo = bab_getForumName($forum);
+
 switch($idx)
 	{
 	case "newthread":

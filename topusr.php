@@ -109,14 +109,14 @@ switch($idx)
 	{
 	default:
 	case "list":
-		$catname = bab_getTopicCategoryTitle($cat);
-		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
+		$babLevelTwo = bab_getTopicCategoryTitle($cat);
+		$babBody->title = bab_translate("List of all topics"). " [ " . $babLevelTwo . " ]";
 		if( listCategories($cat) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 			}
 		else
-			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
+			$babBody->title = bab_translate("There is no topic"). " [ " . $babLevelTwo . " ]";
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

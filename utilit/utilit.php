@@ -940,6 +940,7 @@ var $items = array();
 
 function babMenu()
 {
+	$GLOBALS['babCurrentMenu'] = "";
 }
 
 function addItem($title, $txt, $url, $enabled=true)
@@ -962,6 +963,8 @@ function setCurrent($title, $enabled=false)
 			{
 			$this->curItem = $key;
 			$this->items[$key]["enabled"] = $enabled;
+			if( !$enabled )
+				$GLOBALS['babCurrentMenu'] = $this->items[$key]["text"];
 			break;
 			}
 		}
