@@ -150,7 +150,7 @@ class babLDAP
 
 	function get_values_len($re, $attr)
 	{
-		$res = ldap_get_values_len($this->idlink, $re, $attr);
+		$res = @ldap_get_values_len($this->idlink, $re, $attr);
 		if( $res === false )
 			{
 			$this->print_error("get values len failed");

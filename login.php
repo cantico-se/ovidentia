@@ -398,7 +398,10 @@ function userLogin($nickname,$password)
 								if( $ei)
 									{
 									$info = $ldap->get_values_len($ei, "jpegphoto");
-									$req .= ", photo_data='".addslashes($info[0])."'";
+									if( $info && is_array($info))
+										{
+										$req .= ", photo_data='".addslashes($info[0])."'";
+										}
 									}
 								}
 							break;
