@@ -221,8 +221,8 @@ function showDiskSpace($id, $gr, $path)
 			static $i = 0;
 			if( $i < $this->diskg)
 				{
-				$pathx = getFullPath("N", $GLOBALS['BAB_SESS_USERID']);
-				$size = getDirSize($pathx);
+				//$pathx = getFullPath("N", $GLOBALS['BAB_SESS_USERID']);
+				$size = getDirSize($GLOBALS['babUploadPath']);
 				$this->diskspace = formatSize($size)." Ko";
 				$this->allowedspace =  formatSize($GLOBALS['babMaxTotalSize'])." Ko";
 				//$this->allowedspace =  formatSize($GLOBALS['babMaxTotalSize'], false)." " . $this->bytes;
