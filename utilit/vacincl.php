@@ -106,8 +106,8 @@ function notifyOnRequestChange($id, $delete = false)
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->commenttxt = bab_translate("Comment");
 			$this->username = bab_getUserName($row['id_user']);
-			$this->begindate = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false). " ". $babDayType[$row['day_begin']];
-			$this->enddate = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false). " ". $babDayType[$row['day_end']];
+			$this->begindate = bab_strftime(bab_mktime($row['date_begin']), false). " ". $babDayType[$row['day_begin']];
+			$this->enddate = bab_strftime(bab_mktime($row['date_end']), false). " ". $babDayType[$row['day_end']];
 			list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$row['id']."'"));
 			$this->comment = htmlentities($row['comment']);
 			}
@@ -132,8 +132,13 @@ function notifyOnRequestChange($id, $delete = false)
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "newvacationtxt");
 	$mail->mailAltBody($message);
-
+	
 	$mail->send();
+	
+	if ($mail->ErrorInfo())
+		{
+		trigger_error($mail->ErrorInfo());
+		}
 	}
 
 

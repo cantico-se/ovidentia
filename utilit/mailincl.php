@@ -215,6 +215,11 @@ class babMail
 		$mtmpl = new babMailTemplate($msg);
 		return bab_printTemplate($mtmpl,"mailtemplate.html", "default");
 	}
+
+	function ErrorInfo()
+	{
+		return empty($this->mail->ErrorInfo) ? false : $this->mail->ErrorInfo;
+	}
 }
 
 

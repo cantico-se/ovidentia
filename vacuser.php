@@ -152,6 +152,7 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 
 			if (list(,$this->right) = each($this->rights))
 				{
+				$this->right['quantitydays'] = $this->right['quantitydays'] - $this->right['waiting'];
 				if (isset($_POST['nbdays'.$this->right['id']]))
 					{
 					$this->nbdays = $_POST['nbdays'.$this->right['id']];
@@ -425,9 +426,9 @@ function addNewVacation($id_user, $id_request, $begin,$end, $halfdaybegin, $half
 				return false;
 				}
 
-			if (!empty($nbd) && $arr['cbalance'] != 'Y' && ($arr['quantitydays'] - $nbd) < 0)
+			if (!empty($nbd) && $arr['cbalance'] != 'Y' && ($arr['quantitydays'] - $arr['waiting'] - $nbd) < 0)
 				{
-				$babBody->msgerror = bab_translate("You can't take more than").' '.$arr['quantitydays'].' '.bab_translate("days on the right").' '.$arr['description'];
+				$babBody->msgerror = bab_translate("You can't take more than").' '.($arr['quantitydays']- $arr['waiting']).' '.bab_translate("days on the right").' '.$arr['description'];
 				return false;
 				}
 			
@@ -655,7 +656,7 @@ if (!isset($_POST['daybegin']) ||
 
 	$id_entry = isset($_POST['id']) ? $_POST['id'] : 0;
 
-	$res = $db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$_POST['id_user']."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."')) AND id <> '".$id_entry."'");
+	$res = $db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$_POST['id_user']."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."')) AND id <> '".$id_entry."' AND status<>'N'");
 
 	if ($db->db_num_rows($res) > 0)
 		{
@@ -669,6 +670,8 @@ return true;
 
 function delete_request($id_request)
 {
+	notifyOnRequestChange($id_request, true);
+
 	$db = &$GLOBALS['babDB'];
 	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$id_request."'");
 
@@ -678,8 +681,6 @@ function delete_request($id_request)
 		deleteFlowInstance($idfai);
 
 	$db->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$id_request."'");
-
-	notifyOnRequestChange($id_request, true);
 }
 
 /* main */
