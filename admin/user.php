@@ -280,6 +280,22 @@ function confirmDeleteUser($id)
 	$req = "delete from users_log where id_user='$id'";
 	$res = $db->db_query($req);	
 
+	// delete user from mail_signatures
+	$req = "delete from mail_signatures where owner='$id'";
+	$res = $db->db_query($req);	
+
+	// delete user from mail_accounts
+	$req = "delete from mail_accounts where owner='$id'";
+	$res = $db->db_query($req);	
+
+	// delete user from mail_domains
+	$req = "delete from mail_domains where owner='$id' and bgroup='N'";
+	$res = $db->db_query($req);	
+
+	// delete user from contacts
+	$req = "delete from contacts where owner='$id'";
+	$res = $db->db_query($req);	
+
 	// delete user
 	$req = "delete from users where id='$id'";
 	$res = $db->db_query($req);	
