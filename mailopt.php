@@ -607,7 +607,7 @@ function signatureModify($sigid, $signature, $name, $html)
 
 function addAccount($fullname, $email, $account, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat)
 	{
-	global $body, $BAB_SESS_USERID;
+	global $body, $BAB_SESS_USERID, $BAB_HASH_VAR;
 	if( empty($account) || empty($password1) || empty($password2))
 		{
 		$body->msgerror = babTranslate("ERROR: You must complete all required fields !!");
