@@ -23,90 +23,123 @@
 ************************************************************************/
 include_once "base.php";
 
-function getResizedImage($imgf, $w, $h)
+function getResizedImage($file, $fullpath, $w, $h)
 	{
+	$imgf = $fullpath.$file;
+
 	if( file_exists($imgf))
 		{
+		$gdi = extension_loaded('gd');
+
 		$imgsize = @getimagesize($imgf);
-		if( $imgsize )
+
+		if( !$this->gdi || ($imgsize[2] == 1 && !(imagetypes() & IMG_GIF)) || ($imgsize[2] == 2 && !(imagetypes() & IMG_JPG)) || ($imgsize[2] == 3 && !(imagetypes() & IMG_PNG)) )
+			$gdi = false;
+
+		if( $gdi )
 			{
-			switch($imgsize[2])
+			if( $imgsize )
 				{
-				case '2':
-					$type = "jpeg";
-					break;
-				case '1':
-					$type = "gif";
-					break;
-				case '3':
-					$type = "png";
-					break;
-				default:
-					break;
+				switch($imgsize[2])
+					{
+					case '2':
+						$type = "jpeg";
+						break;
+					case '1':
+						$type = "gif";
+						break;
+					case '3':
+						$type = "png";
+						break;
+					default:
+						break;
+					}
+				}
+
+			if( !empty($type))
+				{
+				switch($imgsize[2])
+					{
+					case '2':
+						$tmp = imagecreatefromjpeg($imgf);
+						break;
+					case '1':
+						$tmp = imagecreatefromgif($imgf);
+						break;
+					case '3':
+						$tmp = imagecreatefrompng($imgf);
+						break;
+					default:
+						$tmp = 0;
+						break;
+					}
+				}
+
+			if( $tmp )
+				{
+				$wtmp = imagesx($tmp);
+				$htmp = imagesy($tmp);
+				if( $w == "" )
+					$w = $wtmp;
+				if( $h == "" )
+					$h = $htmp;
+				if( $wtmp > $htmp )
+					{
+					$wimg = $w;
+					$himg = (real)( ((real)(($wimg/$wtmp)*100) * $wtmp)/100);          
+					}  
+				else if ($htmp > $wtmp)  
+					{  
+					$himg = $h;  
+					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
+					}  
+				else  
+					{  
+					$himg = $h;  
+					$wimg = $w;  
+					}
+				$out = imagecreate($wimg, $himg);
+				imagecopyresized($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
+				imagedestroy($tmp);
+					
+				switch($imgsize[2])
+					{
+					case '2':
+						header('Content-type: image/jpeg');
+						imagejpeg($out);
+						break;
+					case '1':
+						header('Content-type: image/gif');
+						imagegif($out);
+						break;
+					case '3':
+						header('Content-type: image/png');
+						imagepng($out);
+						break;
+					}
 				}
 			}
-		}
-
-	if( !empty($type))
-		{
-		switch($imgsize[2])
+		else
 			{
-			case '2':
-				$tmp = imagecreatefromjpeg($imgf);
-				break;
-			case '1':
-				$tmp = imagecreatefromgif($imgf);
-				break;
-			case '3':
-				$tmp = imagecreatefrompng($imgf);
-				break;
-			default:
-				$tmp = 0;
-				break;
-			}
-		}
-
-	if( $tmp )
-		{
-		$wtmp = imagesx($tmp);
-		$htmp = imagesy($tmp);
-		if( $w == "" )
-			$w = $wtmp;
-		if( $h == "" )
-			$h = $htmp;
-		if( $wtmp > $htmp )
-			{
-			$wimg = $w;
-			$himg = (real)( ((real)(($wimg/$wtmp)*100) * $wtmp)/100);          
-			}  
-		else if ($htmp > $wtmp)  
-			{  
-			$himg = $h;  
-			$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
-			}  
-		else  
-			{  
-			$himg = $h;  
-			$wimg = $w;  
-			}
-		$out = imagecreate($wimg, $himg);
-		imagecopyresized($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
-		imagedestroy($tmp);
-			
-		switch($imgsize[2])
-			{
-			case '2':
-				header('Content-type: image/jpeg');
-				imagejpeg($out);
-				break;
-			case '1':
-				header('Content-type: image/gif');
-				imagegif($out);
-				break;
-			case '3':
-				header('Content-type: image/png');
-				imagepng($out);
-				break;
+			$mime = "application/octet-stream";
+			if ($ext = strrchr($file,"."))
+				{
+				$ext = substr($ext,1);
+				$db = $GLOBALS['babDB'];
+				$res = $db->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$ext."'");
+				if( $res && $db->db_num_rows($res) > 0)
+					{
+					$arr = $db->db_fetch_array($res);
+					$mime = $arr['mimetype'];
+					}
+				}
+			$fsize = filesize($imgf);
+			header("Content-Type: $mime"."\n");
+			header("Content-Length: ". $fsize."\n");
+			header("Content-transfert-encoding: binary"."\n");
+			$fp=fopen($imgf,"rb");
+			print fread($fp,$fsize);
+			fclose($fp);	
 			}
 		}
 	}
@@ -123,8 +156,7 @@ function getFmImage($idf, $w, $h)
 		$fullpath = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
 		if( !empty($arr['path']))
 			$fullpath .= $arr['path']."/";
-		$fullpath .= $arr['name'];
-		return getResizedImage($fullpath, $w, $h);
+		return getResizedImage($arr['name'], $fullpath, $w, $h);
 		}
 	}
 
