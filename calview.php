@@ -109,11 +109,8 @@ function newArticles($days)
 		var $count;
 		var $resarticles;
 		var $countarticles;
-		var $rescomments;
-		var $countcomments;
 		var $lastlog;
 		var $newarticles;
-		var $newcomments;
 		var $nbdays;
 
 		function temp2($days)
@@ -135,12 +132,10 @@ function newArticles($days)
 			if( $days > 0 )
 				{
 				$this->newarticles = babTranslate("Last articles ( Since seven days before your last visit )");
-				$this->newcomments = babTranslate("Last comments ( Since seven days before your last visit )");
 				}
 			else
 				{
 				$this->newarticles = babTranslate("New articles");
-				$this->newcomments = babTranslate("New comments");
 				}
 			}
 
@@ -197,6 +192,54 @@ function newArticles($days)
 				return false;
 				}
 			}
+		}
+
+	$temp = new temp2($days);
+	$body->babecho(	babPrintTemplate($temp,"calview.html", "articleslist"));
+}
+
+
+function newComments($days)
+{
+	global $body;
+
+	class temp5
+		{
+
+		var $db;
+		var $arrid = array();
+		var $count;
+		var $rescomments;
+		var $countcomments;
+		var $lastlog;
+		var $newcomments;
+		var $nbdays;
+
+		function temp5($days)
+			{
+			global $body, $BAB_SESS_USERID;
+			$this->db = new db_mysql();
+
+			$this->nbdays = $days;
+			$req = "select * from topics";
+			$res = $this->db->db_query($req);
+			while( $row = $this->db->db_fetch_array($res))
+				{
+				if(isAccessValid("topicsview_groups", $row['id']))
+					{
+					array_push($this->arrid, $row['id']);
+					}
+				}
+			$this->count = count($this->arrid);
+			if( $days > 0 )
+				{
+				$this->newcomments = babTranslate("Last comments ( Since seven days before your last visit )");
+				}
+			else
+				{
+				$this->newcomments = babTranslate("New comments");
+				}
+			}
 
 		function getnexttopiccom()
 			{
@@ -243,10 +286,9 @@ function newArticles($days)
 			}
 		}
 
-	$temp = new temp2($days);
-	$body->babecho(	babPrintTemplate($temp,"calview.html", "articleslist"));
+	$temp = new temp5($days);
+	$body->babecho(	babPrintTemplate($temp,"calview.html", "commentslist"));
 }
-
 
 function newThreads($nbdays)
 {
@@ -438,6 +480,8 @@ if(!isset($idx))
 switch($idx)
 	{
 	case "com":
+		newComments(0);
+		break;
 	case "art":
 		newArticles(0);
 		break;
@@ -461,6 +505,7 @@ switch($idx)
 			*/
 		}
 		newArticles(7);
+		newComments(7);
 		newThreads(7);
 		$bemail = mailAccessLevel();
 		if( $bemail == 1 || $bemail == 2)
