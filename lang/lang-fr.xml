@@ -1699,4 +1699,5 @@
 <string id="Group schema">Schéma de groupes</string>
 <string id="You must have LDAP enabled on the server">Les fonction LDAP doivent être installées sur le serveur</string>
 <string id="Negative balance">Solde négatif</string>
+<string id="Users with waiting requests will not be modified">Les utilisateurs avec des demandes en attente ne serons pas modifiés</string>
 </fr>

@@ -210,7 +210,7 @@ function siteModify($id)
 				$this->date_lformat_val = $arr['date_longformat'];
 				$this->date_sformat_val = $arr['date_shortformat'];
 				$this->time_format_val = $arr['time_format'];
-				if( $arr['registration'] == "Y" || $GLOBALS['babCookieIdent'])
+				if( $arr['registration'] == "Y")
 					{
 					$this->nregister = "";
 					$this->yregister = "selected";

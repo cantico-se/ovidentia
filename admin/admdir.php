@@ -1262,6 +1262,7 @@ if( isset($add))
 		case "db":
 			if (!isset($ml)) { $ml = array(); }
 			if (!isset($rw)) { $rw = array(); }
+			if (!isset($dz)) { $dz = array(); }
 			if( !addDbDirectory($adname, $description, $fields, $rw, $req, $ml, $dz))
 				{
 				$idx = "new";

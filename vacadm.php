@@ -551,6 +551,7 @@ function addGroupVacationPersonnel()
 			$this->t_modify = bab_translate("Modify");
 			$this->t_record = bab_translate("Record");
 			$this->t_add_modify = bab_translate("Add or modify users by group");
+			$this->t_modify_alert = bab_translate("Users with waiting requests will not be modified");
 
 			$this->db = & $GLOBALS['babDB'];
 
@@ -940,18 +941,21 @@ function updateVacationPersonnelGroup($groupid, $addmodify,  $idcol, $idsa)
 
 		while( $arr = $babDB->db_fetch_array($res))
 			{
-			$res2 = $babDB->db_query("select id, id_sa from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$arr['id_user']."'");
+			$res2 = $babDB->db_query("select p.id, p.id_sa, e.id we from ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_ENTRIES_TBL." e ON e.id_user=p.id_user AND status='' WHERE p.id_user='".$arr['id_user']."' GROUP BY p.id");
 			if( $res2 && $babDB->db_num_rows($res2) > 0 )
 				{
 				$row = $babDB->db_fetch_array($res2);
-				if ($addmodify == 'modify' && $row['id_sa'] != $idsa)
+				if ($addmodify == 'modify' && $row['id_sa'] != $idsa) //  && empty($row['we'])
 					{
-					updateVacationUser($arr['id_user'], $idsa);
+					if (!empty($row['we']))
+						updateVacationUser($arr['id_user'], $idsa);
 					$babDB->db_query("update ".BAB_VAC_PERSONNEL_TBL." set id_sa='".$idsa."' where id_user='".$arr['id_user']."'");
 					}
 				}
 			else
-				$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$arr['id_user']."','".$idcol."','".$idsa."')");
+				{
+				saveVacationPersonnel($arr['id_user'], $idcol, $idsa);
+				}
 			}
 		}
 	

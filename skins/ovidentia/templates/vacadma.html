@@ -19,20 +19,20 @@ function dateEnd(day, month, year)
 	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr class="BabSiteAdminTitleFontBackground">
 			<td>{ desctxt }</td>
-			<td align="center">&nbsp;</td>
+			<td align="center">{ t_edit }</td>
 			<td>{ statustxt }</td>
 			<td>{ typetxt }</td>
 			<td align="center">{ quantitytxt }</td>
 			<td>{ creditortxt }</td>
 			<td>{ datetxt }</td>
-			<td  align="center">&nbsp;</td>
+			<td>&nbsp;</td>
 		</tr>
         <!--#in getnext -->
         <tr class="BabSiteAdminFontBackground">
 			<td>
 				<a class="BabSiteAdminListLink" href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a>
 			</td>
-			<td width="1%">
+			<td align="center">
 				<a href="{ vrurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ alttxt }" /></a>
 			</td>
 			<td>{ statusval }</td>
@@ -318,9 +318,11 @@ function calwin(callback)
 				<td>&nbsp;</td>
 				<td> 
 					<input type="submit" name="submit" value="{ t_record }" />&nbsp;&nbsp;
-					<input type="button" name="breset" value="{ t_reset }" onclick="babReset()" />
+					
 					<!--#if arr[idvr] -->
-					&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ t_delete }" />
+					<input type="submit" name="deleteg" value="{ t_delete }" />
+					<!--#else arr[idvr] -->
+					<input type="button" name="breset" value="{ t_reset }" onclick="babReset()" />
 					<!--#endif arr[idvr] -->
 					<br>
 				</td>

@@ -240,6 +240,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->closedtxt = bab_translate("Vac. closed");
 			$this->openedtxt = bab_translate("Vac. opened");
 			$this->alttxt = bab_translate("Modify");
+			$this->t_edit = bab_translate("Modification");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -485,6 +486,7 @@ function addModifyVacationRigths($id = false)
 			$this->t_outperiod = bab_translate("Out of period");
 			$this->t_right_inperiod = bab_translate("Apply right");
 			$this->t_record = bab_translate("Record");
+		
 
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");

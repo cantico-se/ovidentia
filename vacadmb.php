@@ -221,6 +221,7 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 			$this->endtxt = bab_translate("End");
 			$this->resettxt = bab_translate("Reset");
 			$this->alttxt = bab_translate("Modify");
+			$this->t_edit = bab_translate("Modification");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -229,7 +230,7 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 			$this->bottomname = "";
 			$this->nextname = "";
 			$this->prevname = "";
-			$this->db = $GLOBALS['babDB'];
+			$this->db = & $GLOBALS['babDB'];
 			$this->statarr = array(bab_translate(""), bab_translate("Accepted"), bab_translate("Refused"));
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=browlp&cb=";
 			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));

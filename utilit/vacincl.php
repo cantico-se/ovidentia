@@ -27,40 +27,42 @@ include_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
 
 define("VAC_MAX_REQUESTS_LIST", 20);
 
+class vac_notifyVacationApprovers
+	{
+	var $message;
+	var $from;
+	var $site;
+	var $until;
+	var $begindate;
+	var $enddate;
+	var $quantitytxt;
+	var $quantity;
+	var $commenttxt;
+	var $comment;
+
+
+	function vac_notifyVacationApprovers($row)
+		{
+		global $babDayType, $babDB;
+		$this->message = bab_translate("Vacation request is waiting to be validated");
+		$this->fromuser = bab_translate("User");
+		$this->from = bab_translate("from");
+		$this->until = bab_translate("until");
+		$this->quantitytxt = bab_translate("Quantity");
+		$this->commenttxt = bab_translate("Comment");
+		$this->username = bab_getUserName($row['id_user']);
+		$this->begindate = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false). " ". $babDayType[$row['day_begin']];
+		$this->enddate = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false). " ". $babDayType[$row['day_end']];
+		list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$row['id']."'"));
+		$this->comment = htmlentities($row['comment']);
+		}
+	}
+
 function notifyVacationApprovers($id, $users)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
-	class tempa
-		{
-		var $message;
-		var $from;
-		var $site;
-		var $until;
-		var $begindate;
-		var $enddate;
-		var $quantitytxt;
-		var $quantity;
-		var $commenttxt;
-		var $comment;
 
-
-		function tempa($row)
-			{
-			global $babDayType, $babDB;
-			$this->message = bab_translate("Vacation request is waiting to be validated");
-			$this->fromuser = bab_translate("User");
-			$this->from = bab_translate("from");
-			$this->until = bab_translate("until");
-			$this->quantitytxt = bab_translate("Quantity");
-			$this->commenttxt = bab_translate("Comment");
-			$this->username = bab_getUserName($row['id_user']);
-			$this->begindate = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false). " ". $babDayType[$row['day_begin']];
-			$this->enddate = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false). " ". $babDayType[$row['day_end']];
-			list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$row['id']."'"));
-			$this->comment = htmlentities($row['comment']);
-			}
-		}
 
 	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
 
@@ -74,7 +76,7 @@ function notifyVacationApprovers($id, $users)
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("Vacation request is waiting to be validated"));
 
-	$tempa = new tempa($row);
+	$tempa = new vac_notifyVacationApprovers($row);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newvacation"));
 	$mail->mailBody($message, "html");
 
@@ -233,7 +235,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 			if ($arr['right_inperiod'] == 2 && 
 				!empty($arr['period_start']) && 
 				!empty($arr['period_end']) && 
-				!($period_start >= $begin && $period_end <= $end) )
+				($period_end <= $begin || $period_start >= $end) )
 					{
 					$access = true;
 					}
@@ -409,7 +411,23 @@ function viewVacationCalendar($users, $period = false )
 					}
 				}
 
-			$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
+			if ($this->nbusers == 1 && $this->idusers[0] == $GLOBALS['BAB_SESS_USERID'])
+				{
+				$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
+				}
+			elseif ($this->nbusers == 1)
+				{
+				$req = "SELECT workdays FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$this->idusers[0]."'";
+				list($workdays) = $this->db->db_fetch_array($this->db->db_query($req));
+				if (!empty($workdays))
+					$this->workdays = & explode(',',$workdays);
+				else
+					$this->workdays = & explode(',',$GLOBALS['babBody']->babsite['workdays']);
+				}
+			else
+				{
+				$this->workdays = & explode(',',$GLOBALS['babBody']->babsite['workdays']);
+				}
 
 			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
 
@@ -662,7 +680,7 @@ function listVacationRequests($id_user)
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->statustxt = bab_translate("Status");
 			$this->calendar = bab_translate("Planning");
-			$this->t_edit = bab_translate("Edit");
+			$this->t_edit = bab_translate("Modification");
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1";
 			$this->topurl = "";
 			$this->bottomurl = "";
@@ -1336,34 +1354,25 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 		return false;
 		}
 
-	if( !empty($userid))
+
+	$res = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		$res = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-			$babBody->msgerror = bab_translate("This user already exist in personnel list") ." !";
-			return false;
-			}
-		$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$userid."','".$idcol."','".$idsa."')");
+		$babBody->msgerror = bab_translate("This user already exist in personnel list") ." !";
+		return false;
 		}
 
-	if( !empty($groupid))
-		{
-		if( $groupid == 1 )
-			$res = $babDB->db_query("select id as id_user from ".BAB_USERS_TBL." where is_confirmed='1'");
-		else
-			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$groupid."'");
+	$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$userid."','".$idcol."','".$idsa."')");
 
-		while( $arr = $babDB->db_fetch_array($res))
-			{
-			$res2 = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$arr['id_user']."'");
-			if( $res2 && $babDB->db_num_rows($res2) > 0 )
-				{
-				continue;
-				}
-			else
-				$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$arr['id_user']."','".$idcol."','".$idsa."')");
-			}
+	// create default user rights
+
+	$babDB->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id_user='".$userid."'");
+
+	$res = $babDB->db_query("SELECT r.id FROM ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_COLL_TYPES_TBL." t WHERE r.id_type=t.id_type AND t.id_coll='".$idcol."'");
+
+	while($r = $babDB->db_fetch_array($res))
+		{
+		$babDB->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." ( id_user,  id_right ) VALUES ('".$userid."','".$r['id']."')");
 		}
 	
 	return true;
