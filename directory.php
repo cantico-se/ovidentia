@@ -684,7 +684,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				}
 			}
 		
-		function getnextfield()
+		function getnextfield(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
@@ -693,9 +693,13 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->fieldn = bab_translate($arr['description']);
 				$this->fieldv = $arr['name'];
 				if( isset($this->fields[$arr['name']]) )
+					{
 					$this->fvalue = stripslashes($this->fields[$arr['name']]);
+					}
 				else
+					{
 					$this->fvalue = stripslashes($this->arr[$arr['name']]);
+					}
 				$res = $this->db->db_query("select multilignes, required, modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field='".$arr['id']."'");
 
 				if( $res && $this->db->db_num_rows($res) > 0)
@@ -706,7 +710,15 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 						$this->modify = true;
 						}
 					else
+						{
 						$this->modify = false;
+						if( empty($this->fvalue))
+							{
+							$skip =true;
+							$i++;
+							return true;
+							}
+						}
 
 					$this->fieldt = $arr['multilignes'];
 					$this->required = $arr['required'];
@@ -1671,7 +1683,7 @@ switch($idx)
 		break;
 
 	case "dbmod":
-		if (!isset($fields)) $fields = '';
+		if (!isset($fields)) $fields = array();
 		if (!isset($refresh)) $refresh = '';
 		modifyDbContact($id, $idu, $fields, $refresh);
 		exit;
