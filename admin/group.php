@@ -185,91 +185,6 @@ function groupDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function groupVacation($id)
-	{
-	global $babBody;
-	if( !isset($id))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must choose a valid group !!");
-		return;
-		}
-	class temp
-		{
-		var $usevacation;
-		var $approver;
-		var $manager;
-		var $approvertext;
-		var $approvername;
-		var $approvervalue;
-		var $modify;
-		var $group;
-		var $checked;
-
-		var $groupid;
-
-		var $db;
-		var $res;
-		var $count;
-		var $arrapprover = array();
-
-		function temp($id)
-			{
-			$this->approver = "";
-			$this->manager = "";
-			$this->usevacation = bab_translate("Use Vacation");
-			$this->modify = bab_translate("Update Vacation");
-			$this->groupid = $id;
-			$this->group = bab_getGroupName($id);
-			$this->db = $GLOBALS['babDB'];
-			$this->count = 2;
-
-			$req = "select * from ".BAB_GROUPS_TBL." where id='$id'";
-			$res = $this->db->db_query($req);
-			if( $res && $this->db->db_num_rows($res) > 0)
-				{
-				$arr2 = $this->db->db_fetch_array($res);
-				if( $arr2['vacation'] == "Y")
-					$this->checked = "checked";
-				else
-					$this->checked = "";
-				}
-			}
-
-		function getnextapprover()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->approvervalue = "";
-				$this->approvertext = bab_translate("Approver")." ".($i+1);
-				$this->approvername = "approver".($i+1);
-
-				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$this->groupid."' and ordering='".($i+1)."'";
-				$res = $this->db->db_query($req);
-
-				if( $res && $this->db->db_num_rows($res) > 0)
-					{
-					$arr = $this->db->db_fetch_array($res);
-					$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0)
-						{
-						$arr2 = $this->db->db_fetch_array($res);
-						$this->approvervalue = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
-						}
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-		}
-
-	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupvacation"));
-	}
-
 function deleteMembers($users, $item)
 	{
 	global $babBody, $idx;
@@ -358,85 +273,6 @@ function modifyGroup($name, $description, $managerid, $bemail, $grpid)
 	return true;
 	}
 
-function vacationGroup($usevacation, $approver, $item)
-	{
-	global $babBody;
-
-	$db = $GLOBALS['babDB'];
-
-	if( $usevacation == "Y")
-		{
-		if( empty($approver[0]))
-			{
-			$babBody->msgerror = bab_translate("You must provide at least the first approver")." !!";
-			return;
-			}
-		
-		if( bab_getUserId($approver[0]) < 1)
-			{
-			$babBody->msgerror = bab_translate("The first approver doesn't exist");
-			return;
-			}
-
-		for( $i = 0; $i < count($approver); $i++)
-			{
-			if( !empty($approver[$i]))
-				{
-				$approverid = bab_getUserId($approver[$i]);
-				
-				if( $approverid != 0)
-					{
-					$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group ='$item' and ordering='".($i+1)."'";
-					$res = $db->db_query($req);
-					if( $res && $db->db_num_rows($res) > 0)
-						{
-						$arr = $db->db_fetch_array($res);
-						if( $arr['id_object'] !== $approverid)
-							{
-							$req = "delete from ".BAB_VACATIONS_STATES_TBL." where id='".$arr['status']."'";
-							$res = $db->db_query($req);
-							$name = "Waiting to validate by". " " .$approver[$i].
-							$description = "";
-							$req = "insert into ".BAB_VACATIONS_STATES_TBL." (status, description) VALUES ('" .$name. "', '" . $description. "')";
-							$res = $db->db_query($req);
-							$statusid = $db->db_insert_id();
-							$req = "update ".BAB_VACATIONSMAN_GROUPS_TBL." set id_object='".$approverid."', status='".$statusid."' where id_group ='$item' and ordering='".($i+1)."'";
-							$res = $db->db_query($req);
-							}
-						}
-					else
-						{
-						$name = "Waiting to validate by". " " .$approver[$i].
-						$description = "";
-						$req = "insert into ".BAB_VACATIONS_STATES_TBL." (status, description) VALUES ('" .$name. "', '" . $description. "')";
-						$res = $db->db_query($req);
-						$statusid = $db->db_insert_id();
-						$req = "insert into ".BAB_VACATIONSMAN_GROUPS_TBL." (id_object, id_group, ordering, status) VALUES ('" .$approverid. "', '" .$item. "', '".($i+1)."', '".$statusid."')";
-						$res = $db->db_query($req);
-						}
-					}
-				else
-					{
-					$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group ='$item' and ordering='".($i+1)."'";
-					$res = $db->db_query($req);
-					if( $res && $db->db_num_rows($res) > 0)
-						{
-						$arr = $db->db_fetch_array($res);
-						$req = "delete from ".BAB_VACATIONS_STATES_TBL." where id='".$arr['status']."'";
-						$res = $db->db_query($req);
-						$req = "delete from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group ='$item' and ordering='".($i+1)."'";
-						$res = $db->db_query($req);
-						}
-					}
-				}
-			}
-		}
-	else
-		$usevacation = "N";
-
-	$req = "update ".BAB_GROUPS_TBL." set vacation='$usevacation' where id='$item'";
-	$res = $db->db_query($req);
-	}
 
 function confirmDeleteMembers($item, $names)
 {
@@ -464,7 +300,6 @@ function confirmDeleteGroup($id)
 	$db->db_query("delete from ".BAB_SECTIONS_GROUPS_TBL." where id_group='$id'");	
 	$db->db_query("delete from ".BAB_FAQCAT_GROUPS_TBL." where id_group='$id'");	
 	$db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='$id'");	
-	$db->db_query("delete from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='$id'");
 	$db->db_query("delete from ".BAB_CATEGORIESCAL_TBL." where id_group='$id'");
 	$db->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_group='$id'");	
 	$db->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_group='$id'");	
@@ -527,17 +362,6 @@ if( isset($add))
 		}
 	}
 
-if( isset($vacation) && $vacation == "update")
-	{
-	$arrapprover = array();
-	for( $i = 0; $i < $count; $i++)
-		{
-		$var = "approver".($i+1);
-		array_push($arrapprover, $$var);
-		}
-	vacationGroup($usevacation, $arrapprover, $item);
-	}
-
 if( isset($action) && $action == "Yes")
 	{
 	if($idx == "Delete")
@@ -562,7 +386,6 @@ switch($idx)
 			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 			$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 			$babBody->addItemMenu("Deletem", bab_translate("Delete"), "");
-			$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
 			break;
 			}
 		/* no break */
@@ -573,7 +396,6 @@ switch($idx)
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
-		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
 		break;
 	case "Vacation":
 		groupVacation($item);
@@ -581,7 +403,6 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
 		break;
 	case "Delete":
 		if( $item > 3 )
@@ -590,7 +411,6 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
 		break;
 	case "Modify":
@@ -600,7 +420,6 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		$babBody->addItemMenu("Vacation", bab_translate("Vacation"), $GLOBALS['babUrlScript']."?tg=group&idx=Vacation&item=".$item);
 		break;
 	}
 

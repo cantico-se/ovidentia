@@ -166,52 +166,6 @@ class="BabAdminMembersList" href="{ url }">{ urlname }</a> </td>
 <!--#end memberslist -->
 
 
-<!--#begin groupvacation -->
-<table border="0" width="10%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabAdminMembers" align="center" 
-valign="middle">{ group }</td>
-</tr>
-</table>
-<br>
-
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="group">
-<input type="hidden" name="idx" value="Vacation">
-<input type="hidden" name="item" value="{ groupid }">
-<input type="hidden" name="count" value="{ count }">
-<input type="hidden" name="vacation" value="update">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%">&nbsp;</td>
-<td class="BabLoginMenuBackground" width="70%"  valign="middle">
-<input type="checkbox" name="usevacation" value="Y" { checked }>{ usevacation } </td>
-</tr>
-<!--#in getnextapprover -->
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ approvertext }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="{ approvername }" size="30" maxlength="60" value="{ approvervalue }">
-</td>
-</tr>
-<!--#endin getnextapprover -->
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="submit" value="{ modify }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</form>
-<br>
-<!--#end groupvacation -->
 <!--#begin groupsoptions -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="groups">
@@ -225,7 +179,6 @@ valign="middle">{ group }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ fullname } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ mail } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ calendar } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ vacation } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notes } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ contacts } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ directory } </td>
@@ -241,9 +194,6 @@ valign="middle">{ group }</td>
 </td>
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="calgrpids[]" { calcheck } value="{ grpid }">
-</td>
-<td valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="vacgrpids[]" { vaccheck } value="{ grpid }">
 </td>
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="notgrpids[]" { notescheck } value="{ grpid }">
@@ -263,7 +213,6 @@ valign="middle">{ group }</td>
 <td valign="middle">&nbsp;</td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('mailgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('mailgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('calgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td width="1%" align="center"><a href="javascript:onCheckAll('vacgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('vacgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('notgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('congrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('congrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td><td width="1%" align="center"><a href="javascript:onCheckAll('dirgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('dirgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td><td width="1%" align="center"><a href="javascript:onCheckAll('pdsgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('pdsgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
 </table>

@@ -176,7 +176,6 @@ function groupsOptions()
 		var $fullname;
 		var $mail;
 		var $calendar;
-		var $vacation;
 		var $notes;
 		var $contacts;
 		var $directory;
@@ -196,11 +195,10 @@ function groupsOptions()
 			$this->fullname = bab_translate("Groups");
 			$this->mail = bab_translate("Mail");
 			$this->calendar = bab_translate("Calendar");
-			$this->vacation = bab_translate("Vacation");
 			$this->notes = bab_translate("Notes");
 			$this->contacts = bab_translate("Contacts");
 			$this->persdiskspace = bab_translate("Personal disk space");
-			$this->directory = bab_translate("Directory");
+			$this->directory = bab_translate("Site directory");
 			$this->modify = bab_translate("Update");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -219,10 +217,6 @@ function groupsOptions()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->grpid = $this->arr['id'];
 
-				if( $this->arr['vacation'] == "Y")
-					$this->vaccheck = "checked";
-				else
-					$this->vaccheck = "";
 				if( $this->arr['mail'] == "Y")
 					$this->mailcheck = "checked";
 				else
@@ -307,20 +301,15 @@ function addGroup($name, $description, $managerid, $bemail)
 		}
 	}
 
-function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids)
+function saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids)
 {
 
 	$db = $GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', vacation='N', notes='N', contacts='N', ustorage='N', directory='N'"); 
+	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N'"); 
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{
 		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id='".$mailgrpids[$i]."'"); 
-	}
-
-	for( $i=0; $i < count($vacgrpids); $i++)
-	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set vacation='Y' where id='".$vacgrpids[$i]."'"); 
 	}
 
 	for( $i=0; $i < count($notgrpids); $i++)
@@ -365,7 +354,7 @@ if( isset($add))
 	addGroup($name, $description, $managerid, $bemail);
 
 if( isset($update) && $update == "options")
-	saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids);
+	saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids);
 
 switch($idx)
 	{
