@@ -105,31 +105,29 @@ valign="middle">{  name }:</td>
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ fullname } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ manager } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center" colspan="3">{ access }</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notify } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ active } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ version } </td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>{ fullname } </td>
+<td>{ manager } </td>
+<td align="center">{ access }</td>
+<td align="center">{ notify }</td>
+<td align="center">{ active }</td>
+<td align="center">{ version }</td>
 </tr>
 <!--#in getnext -->
 <!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
 <td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
 <td>{ managername }</td>
-<td><a class="BabSiteAdminListLink" href="{ urldown }">{ urldownname }</a></td>
-<td><a class="BabSiteAdminListLink" href="{ urluplo }">{ urluploname }</a></td>
-<td><a class="BabSiteAdminListLink" href="{ urlupda }">{ urlupdaname }</a></td>
+<td align="center"><a class="BabSiteAdminListLink" href="{ urlrights }">{ urlrightsname }</a></td>
 <td width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }"></td>
 <td width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }"></td>
 <td width="0%" align="center"><input type="checkbox" name="versions[]" { fversion } value="{ fid }"></td>
 </tr>        
 <!--#endin getnext -->
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle" colspan="3">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('notifies', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notifies', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td width="1%" align="center"><a href="javascript:onCheckAll('notifies', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notifies', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('actives', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('actives', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('versions', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('versions', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </tr>

@@ -131,6 +131,7 @@ function listFolders()
 			$this->active = bab_translate("Enabled");
 			$this->notify = bab_translate("Notify");
 			$this->modify = bab_translate("Update");
+			$this->urlrightsname = bab_translate("Rights");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by folder asc");
@@ -164,12 +165,8 @@ function listFolders()
 				$this->url = $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$arr['id'];
 				$this->urlname = $arr['folder'];
 				$this->managername = bab_getUserName($arr['manager']);
-				$this->urluplo = $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$arr['id'];
-				$this->urldown = $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$arr['id'];
-				$this->urlupda = $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$arr['id'];
-				$this->urluploname = bab_translate("Upload");
-				$this->urldownname = bab_translate("Download");
-				$this->urlupdaname = bab_translate("Update");
+				$this->urlrights = $GLOBALS['babUrlScript']."?tg=admfm&idx=rights&fid=".$arr['id'];
+				
 				$this->access = bab_translate("Access");
 
 				$i++;

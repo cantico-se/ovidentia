@@ -534,50 +534,24 @@ else if( isset($fmf))
 	}
 else if( isset($aclview))
 	{
-	if(!isset($groups)) { $groups=array();}
-	aclUpdate($table, $item, $groups, $what);
-	if( $table == BAB_FMDOWNLOAD_GROUPS_TBL )
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$item);
-	else if( $table == BAB_FMUPLOAD_GROUPS_TBL )
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$item);
-	else 
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-	exit;
+	maclGroups();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	}
 
 switch($idx)
 	{
-	case "uplo":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("List of groups");
-		aclGroups("admfm", "modify", BAB_FMUPLOAD_GROUPS_TBL, $fid, "aclview");
+	case "rights":
+		$babBody->title = bab_translate("Rights of directory").' '.bab_getFolderName($fid);
+		$macl = new macl("admfm", "modify", $fid, "aclview");
+		$macl->addtable( BAB_FMUPLOAD_GROUPS_TBL,bab_translate("Upload"));
+		$macl->addtable( BAB_FMDOWNLOAD_GROUPS_TBL,bab_translate("Download"));
+		$macl->addtable( BAB_FMUPDATE_GROUPS_TBL,bab_translate("Update"));
+		$macl->babecho();
+		
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
-		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
-		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
-		break;
-	
-	case "down":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("List of groups");
-		aclGroups("admfm", "modify", BAB_FMDOWNLOAD_GROUPS_TBL, $fid, "aclview");
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
-		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
-		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
-		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
-		break;
-
-	case "upda":
-		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("List of groups");
-		aclGroups("admfm", "modify", BAB_FMUPDATE_GROUPS_TBL, $fid, "aclview");
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
-		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
-		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
-		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
+		$babBody->addItemMenu("rights", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=rights&fid=".$fid);
 		break;
 
 	case "delf":
