@@ -433,15 +433,17 @@ function rename_popup(url)
 <script type="text/javascript">
 <!--
 function rename_dir()
-{
-var frameform = opener.document.forms['rename'];
-var new_name = document.getElementById('dirname');
-frameform.path.value = '{ path }';
-frameform.old_name.value = '{ old_name }';
-frameform.new_name.value = new_name.value;
-frameform.post_message.click();
-window.close();
-}
+	{
+	var frameform = opener.document.forms['rename'];
+	var new_name = document.getElementById('dirname');
+	frameform.path.value = '{ path }';
+	frameform.old_name.value = '{ old_name }';
+	frameform.new_name.value = new_name.value;
+	frameform.post_message.click();
+	window.close();
+	}
+
+window.focus();
 -->
 </script>
 </HEAD>
