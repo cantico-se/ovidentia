@@ -99,5 +99,50 @@
 </center>
 <!--#end categorymodify -->
 <br><br><br><br><br>
+<!--#begin articleslist -->
+<script language="javascript">
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		objCtrl = document.forms.listform.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="topic">
+<input type="hidden" name="idx" value="delete">
+<input type="hidden" name="item" value="{ item }">
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<tr>
+<td width="2%" class="BabListTitleBgnd"><a href="javascript:onCheckAll('item', true)"><img src="images/Pucecheked.gif" alt="{ checkall }"></a></td>
+<td class="BabListTitleBgnd" align="center" nowrap><b>{ titlename }</b></td>
+</tr>
+<!--#in getnext -->
+<tr>
+<td><input width="2%" type="checkbox" name="art[]" value="{ articleid }">
+<td nowrap>{ title }</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td></tr>
+</table>
+</center>
+</form>
+<!--#end articleslist -->
+<br><br><br><br><br>
 </BODY>
 </HTML>
