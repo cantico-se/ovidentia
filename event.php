@@ -160,8 +160,6 @@ function newEvent()
 			$this->mcals = explode(",", $this->calid);
 			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 1;
 			$this->repeat_cb_checked = isset($_POST['repeat_cb']) ? 'checked' : '';
-			$this->titleval = isset($GLOBALS['title'])? $GLOBALS['title']: '';
-			$this->locationval = isset($GLOBALS['location'])? $GLOBALS['location']: '';
 				
 			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
 			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
@@ -220,7 +218,14 @@ function newEvent()
 
 			if (isset($_POST) && count($_POST) > 0)
 				{
-				$this->arr = $_POST;
+				foreach($_POST as $k => $v)
+					{
+					$this->arr[$k] = post_string2($k);
+					}
+
+				$this->arr['title'] = htmlentities($this->arr['title']);
+				$this->arr['location'] = htmlentities($this->arr['location']);
+
 				$this->daytypechecked = isset($this->arr['daytype']) ? 'checked' : '';
 				$this->daysel = $this->arr['daybegin'];
 				$this->monthsel = $this->arr['monthbegin'];
@@ -240,6 +245,8 @@ function newEvent()
 				}
 			else
 				{
+				$this->arr['title'] = '';
+				$this->arr['location'] = '';
 				$this->arr['repeat_n_1'] = '';
 				$this->arr['repeat_n_2'] = '';
 				$this->arr['repeat_n_3'] = '';
@@ -251,7 +258,7 @@ function newEvent()
 				$this->arralert['minute'] = '';
 				}
 
-			
+	
 			}
 
 		function getnextday()
@@ -596,10 +603,12 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->ymax = 5;
 			if (isset($_POST) && count($_POST) > 0)
 				{
-				$this->evtarr = $_POST;
+				foreach($_POST as $k => $v)
+					{
+					$this->evtarr[$k] = post_string2($k);
+					}
 				$this->evtarr['id_cat'] = $_POST['category'];
 				$this->evtarr['description'] = $_POST['evtdesc'];
-				$this->evtarr['location'] = $_POST['location'];
 
 				$this->yearbegin = $this->evtarr['yearbegin'];
 				$this->daybegin =$this->evtarr['daybegin'];
@@ -622,6 +631,9 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				$this->timebegin = substr($this->evtarr['start_date'], 11, 5);
 				$this->timeend = substr($this->evtarr['end_date'], 11, 5);
 				}
+
+			$this->evtarr['title'] = htmlentities($this->evtarr['title']);
+			$this->evtarr['location'] = htmlentities($this->evtarr['location']);
 
 			$this->yearmin = $this->yearbegin - $this->ymin;
 
@@ -873,6 +885,14 @@ else
 	return $_POST[$key];
 }
 
+function post_string2($key)
+{
+if( !bab_isMagicQuotesGpcOn())
+	return $_POST[$key];
+else
+	return stripslashes($_POST[$key]);
+}
+
 function addEvent(&$message)
 	{
 	global $babBody;
@@ -903,7 +923,7 @@ function addEvent(&$message)
 
 	$description = post_string('evtdesc');
 	$title = post_string('title');
-	$location = post_string('location');
+	$location = stripslashes($_POST['location']);
 		
 	$category = empty($_POST['category']) ? '0' : $_POST['category'];
 	$color = empty($_POST['color']) ? '' : $_POST['color'];
@@ -1134,20 +1154,11 @@ function updateEvent(&$message)
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$title = addslashes($_POST['title']);
-		$description = addslashes($_POST['evtdesc']);
-		$location = addslashes($_POST['location']);
-		}
-	else
-		{
-		$title = $_POST['title'];
-		$description = $_POST['evtdesc'];
-		$location = addslashes($_POST['location']);
-		}
+	$description = post_string('evtdesc');
+	$title = post_string('title');
+	$location = post_string('location');
 		
-	$db = $GLOBALS['babDB'];
+	$db = &$GLOBALS['babDB'];
 
 	if( empty($_POST['category']))
 		$catid = 0;
