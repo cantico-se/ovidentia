@@ -117,6 +117,15 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_USERS_LOG_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD mod_com ENUM('Y','N') DEFAULT 'Y' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 ?>

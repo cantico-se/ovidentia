@@ -23,6 +23,9 @@ function addCategory($cat)
 		var $res;
 		var $selected;
 		var $topcat;
+		var $modcom;
+		var $yes;
+		var $no;
 
 		function temp($cat)
 			{
@@ -30,6 +33,9 @@ function addCategory($cat)
 			$this->category = bab_translate("Topic");
 			$this->description = bab_translate("Description");
 			$this->approver = bab_translate("Approver");
+			$this->modcom = bab_translate("Moderate comments");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
@@ -147,7 +153,7 @@ function listCategories($cat, $adminid)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $approver, $cat)
+function saveCategory($category, $description, $approver, $cat, $modcom)
 	{
 	global $babBody;
 	if( empty($category))
@@ -177,7 +183,7 @@ function saveCategory($category, $description, $approver, $cat)
 		return;
 		}
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, mod_com) values ('" .$approverid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $modcom. "')";
 	$db->db_query($query);
 	}
 
@@ -197,7 +203,7 @@ if(!isset($idx))
 
 if( isset($add) && $adminid > 0)
 	{
-	saveCategory($category, $description, $approver, $cat);
+	saveCategory($category, $description, $approver, $cat, $modcom);
 	}
 
 switch($idx)

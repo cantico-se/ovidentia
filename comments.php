@@ -279,13 +279,18 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 	else
 		$req .= $name. "', '')";
 
-	$res = $db->db_query($req);
+	$db->db_query($req);
+	$id = $db->db_insert_id();
 
 	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
+		if( $arr['mod_com'] == "N" )
+			{
+			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y' where id='".$id."'");
+			}
         $top = $arr['category'];
 		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'";
 		$res = $db->db_query($req);

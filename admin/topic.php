@@ -176,6 +176,11 @@ function modifyCategory($id)
 		var $msie;
 		var $count;
 		var $topcat;
+		var $modcom;
+		var $yes;
+		var $no;
+		var $yesselected;
+		var $noselected;
 
 		function temp($id)
 			{
@@ -184,10 +189,23 @@ function modifyCategory($id)
 			$this->description = bab_translate("Description");
 			$this->approver = bab_translate("Approver");
 			$this->add = bab_translate("Update Topic");
+			$this->modcom = bab_translate("Moderate comments");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_TOPICS_TBL." where id='$id'";
 			$res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($res);
+			if( $this->arr['mod_com'] == "Y")
+				{
+				$this->yesselected = "selected";
+				$this->noselected = "";
+				}
+			else
+				{
+				$this->yesselected = "";
+				$this->noselected = "selected";
+				}
 
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
 			$this->res = $this->db->db_query($req);
@@ -293,7 +311,7 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"topics.html", "articleview");
 	}
 
-function updateCategory($id, $category, $description, $approver, $cat)
+function updateCategory($id, $category, $description, $approver, $cat, $modcom)
 	{
 	global $babBody;
 	if( empty($category))
@@ -316,7 +334,7 @@ function updateCategory($id, $category, $description, $approver, $cat)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "update ".BAB_TOPICS_TBL." set id_approver='$approverid', category='$category', description='$description', id_cat='$cat' where id = '$id'";
+	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$approverid."', category='".$category."', description='".$description."', id_cat='$cat', mod_com='".$modcom."' where id = '".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
@@ -401,7 +419,7 @@ if(!isset($cat))
 
 if( isset($update) && $adminid >0)
 	{
-	updateCategory($item, $category, $description, $approver, $cat);
+	updateCategory($item, $category, $description, $approver, $cat, $modcom);
 	}
 
 if( isset($aclview) && $adminid >0)

@@ -60,6 +60,14 @@
 </select>
 </td>
 </tr>
+<tr> 
+<td nowrap>{ modcom }:&nbsp; 
+<select name="modcom">
+<option value="Y" selected>{ yes }</option>
+<option value="N">{ no }</option>
+</select>
+</td>
+</tr>
 <!--#if msie "== 1" --> 
 <tr>
 <td align="center"> 
@@ -186,6 +194,14 @@ editor.ToolBar();
 <!--#in getnextcat -->
 <option value="{ arr2[id] }" { selected }>{ arr2[title] }</option>
  <!--#endin getnextcat -->
+</select>
+</td>
+</tr>
+<tr> 
+<td nowrap>{ modcom }:&nbsp; 
+<select name="modcom">
+<option value="Y" { yesselected }>{ yes }</option>
+<option value="N" { noselected }>{ no }</option>
 </select>
 </td>
 </tr>
