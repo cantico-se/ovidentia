@@ -710,133 +710,6 @@ function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vcl
 	$babBody->babecho(	bab_printTemplate($temp,"vacadma.html", "prightsmod"));
 	}
 
-function listVacationRightPersonnelOld($pos, $idvr)
-	{
-	global $babBody;
-	class temp
-		{
-		var $fullname;
-		var $urlname;
-		var $url;
-				
-		var $fullnameval;
-
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $idvr;
-
-		var $pos;
-		var $selected;
-		var $allselected;
-		var $allurl;
-		var $allname;
-		var $checkall;
-		var $uncheckall;
-		var $deletealt;
-
-
-		function temp($pos, $idvr)
-			{
-			$this->allname = bab_translate("All");
-			$this->uncheckall = bab_translate("Uncheck all");
-			$this->checkall = bab_translate("Check all");
-			$this->deletealt = bab_translate("Delete");
-			$this->db = $GLOBALS['babDB'];
-			$this->idvr = $idvr;
-
-			if( $pos[0] == "-" )
-				{
-				$this->pos = $pos[1];
-				$this->ord = $pos[0];
-				$req = "select ".BAB_USERS_TBL.".* from ".BAB_USERS_TBL." join ".BAB_VAC_USERS_RIGHTS_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_USERS_RIGHTS_TBL.".id_user and ".BAB_VAC_USERS_RIGHTS_TBL.".id_right='".$idvr."' and ".BAB_USERS_TBL.".lastname like '".$this->pos."%' ";
-				$req .= "order by ".BAB_USERS_TBL.".lastname, ".BAB_USERS_TBL.".firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
-				}
-			else
-				{
-				$this->pos = $pos;
-				$this->ord = "";
-				$req = "select ".BAB_USERS_TBL.".* from ".BAB_USERS_TBL." join ".BAB_VAC_USERS_RIGHTS_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_USERS_RIGHTS_TBL.".id_user and ".BAB_VAC_USERS_RIGHTS_TBL.".id_right='".$idvr."' and ".BAB_USERS_TBL.".firstname like '".$this->pos."%' ";
-				$req .= "order by ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname asc";
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
-				}
-			$this->idvr = $idvr;
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
-
-			if( empty($this->pos))
-				$this->allselected = 1;
-			else
-				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&pos=&idvr=".$this->idvr;
-			}
-
-		function getnext()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=vacadma&idx=modp&idp=".$this->arr['id']."&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
-				if( $this->ord == "-" )
-					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
-				else
-					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-
-				$this->userid = $this->arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		function getnextselect()
-			{
-			static $k = 0;
-			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-			if( $k < 26)
-				{
-				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&pos=".$this->ord.$this->selectname."&idvr=".$this->idvr;
-
-				if( $this->pos == $this->selectname)
-					$this->selected = 1;
-				else 
-					{
-					if( $this->ord == "-" )
-						{
-						$req = "select ".BAB_USERS_TBL.".* from ".BAB_USERS_TBL." join ".BAB_VAC_USERS_RIGHTS_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_USERS_RIGHTS_TBL.".id_user and ".BAB_VAC_USERS_RIGHTS_TBL.".id_right='".$this->idvr."' and ".BAB_USERS_TBL.".lastname like '".$this->selectname."%' ";
-						}
-					else
-						{
-						$req = "select ".BAB_USERS_TBL.".* from ".BAB_USERS_TBL." join ".BAB_VAC_USERS_RIGHTS_TBL." where ".BAB_USERS_TBL.".id=".BAB_VAC_USERS_RIGHTS_TBL.".id_user and ".BAB_VAC_USERS_RIGHTS_TBL.".id_right='".$this->idvr."' and ".BAB_USERS_TBL.".firstname like '".$this->selectname."%' ";
-						}
-					$res = $this->db->db_query($req);
-					if( $this->db->db_num_rows($res) > 0 )
-						$this->selected = 0;
-					else
-						$this->selected = 1;
-					}
-				$k++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new temp($pos, $idvr);
-	echo bab_printTemplate($temp, "vacadma.html", "vrpersonnellist");
-	return $temp->count;
-	}
-
 function listVacationRightPersonnel($pos, $idvr)
 	{
 	global $babBody;
@@ -863,6 +736,8 @@ function listVacationRightPersonnel($pos, $idvr)
 		var $uncheckall;
 		var $deletealt;
 		var $modify;
+		var $quantitytxt;
+		var $quantity;
 
 
 		function temp($pos, $idvr)
@@ -872,6 +747,7 @@ function listVacationRightPersonnel($pos, $idvr)
 			$this->checkall = bab_translate("Check all");
 			$this->deletealt = bab_translate("Delete");
 			$this->modify = bab_translate("Modify");
+			$this->quantitytxt = bab_translate("Quantity");
 			$this->db = $GLOBALS['babDB'];
 			$this->idvr = $idvr;
 			list($this->idtype) = $this->db->db_fetch_row($this->db->db_query("select id_type from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'")); 
@@ -893,7 +769,6 @@ function listVacationRightPersonnel($pos, $idvr)
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr;
 				}
-			$this->idvr = $idvr;
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
@@ -921,9 +796,10 @@ function listVacationRightPersonnel($pos, $idvr)
 
 				if( $this->bview )
 				{
-					$res2 = $this->db->db_query("select id from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->arr['id']."' and id_right ='".$this->idvr."'");
+					$res2 = $this->db->db_query("select id, quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$this->arr['id']."' and id_right ='".$this->idvr."'");
 					if( $res2 && $this->db->db_num_rows($res2) > 0 )
 						{
+						$arr = $this->db->db_fetch_array($res2);
 						$this->selected = "checked";
 						$this->nuserid = $this->arr['id'];
 						}
@@ -933,6 +809,13 @@ function listVacationRightPersonnel($pos, $idvr)
 						$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
 					else
 						$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+	
+					if( $arr['quantity'] != '' )
+						$this->quantity = $arr['quantity'];
+					else
+					{
+						list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$this->idvr."'"));
+					}
 		
 					$this->userid = $this->arr['id'];
 				}
@@ -1340,7 +1223,7 @@ switch($idx)
 		listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
-		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
+		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
 		$babBody->addItemMenu("addvr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr");
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");

@@ -522,7 +522,11 @@ function editVacationRequest($vrid)
 				$row2 = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$this->iduser."' and ".BAB_VAC_ENTRIES_TBL.".status!='N' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$arr['id_type']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
 				$qdp = isset($row2['total'])? $row2['total'] : 0;
 
-				$this->quantitydays = $row['quantity'] - $qdp;
+				list($quant) = $this->db->db_fetch_row($this->db->db_query("select quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$arr['id_type']."' and id_user='".$this->iduser."'"));
+				if( $quant == '' )
+					$quant = $row['quantity'];
+
+				$this->quantitydays = $quant - $qdp;
 				$i++;
 				return true;
 				}

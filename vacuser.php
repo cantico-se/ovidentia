@@ -241,7 +241,12 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 				$row = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_VAC_ENTRIES_TBL.".status!='N' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$arr['id']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
 				$qdp = isset($row['total'])? $row['total'] : 0;
 
-				$this->quantitydays = $arr['quantity'] - $qdp;
+				list($quser) = $this->db->db_fetch_array($this->db->db_query("select quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$arr['id']."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+
+				if( $quser != '')
+					$this->quantitydays = $quser - $qdp;
+				else
+					$this->quantitydays = $arr['quantity'] - $qdp;
 
 				if( isset($GLOBALS[$this->nbdaysname]))
 					{

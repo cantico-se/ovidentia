@@ -680,9 +680,15 @@ function listRightsByUser($id)
 		var $idcoll;
 		var $bview;
 
+		var $updatetxt;
+		var $invalidentry;
+		var $invalidentry1;
+		var $invalidentry2;
+
 		function temp($id)
 			{
 			$this->iduser = $id;
+			$this->updatetxt = bab_translate("Update");
 			$this->desctxt = bab_translate("Description");
 			$this->consumedtxt = bab_translate("Consumed");
 			$this->datebtxt = bab_translate("Begin date");
@@ -690,6 +696,11 @@ function listRightsByUser($id)
 			$this->quantitytxt = bab_translate("Quantity");
 			$this->datetxt = bab_translate("Entry date");
 			$this->titletxt = bab_translate("Vacation rights of:");
+			$this->invalidentry = bab_translate("Invalid entry!  Only numbers are accepted or . !");
+			$this->invalidentry = str_replace("'", "\'", $this->invalidentry);
+			$this->invalidentry = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidentry);
+			$this->invalidentry1 = bab_translate("Invalid entry");
+			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
 			$this->fullname = bab_getUserName($id);
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query("select * from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$id."' order by id desc");
@@ -708,8 +719,12 @@ function listRightsByUser($id)
 				$this->bview = false;
 				if( $res && $this->db->db_num_rows($res) > 0 )
 					{
+					$this->idright = $row['id'];
 					$this->description = $row['description'];
-					$this->quantity = $row['quantity'];
+					if( $arr['quantity'] != '' )
+						$this->quantity = $arr['quantity'];
+					else
+						$this->quantity = $row['quantity'];
 					$this->date = bab_printDate($row['date_entry']);
 					$this->dateb = bab_printDate($row['date_begin']);
 					$this->datee = bab_printDate($row['date_end']);
@@ -730,6 +745,23 @@ function listRightsByUser($id)
 	echo bab_printTemplate($temp, "vacadm.html", "rlistbyuser");
 	}
 
+function rlistbyuserUnload($msg)
+	{
+	class temp
+		{
+		var $message;
+		var $close;
+
+		function temp($msg)
+			{
+			$this->message = $msg;
+			$this->close = bab_translate("Close");
+			}
+		}
+
+	$temp = new temp($msg);
+	echo bab_printTemplate($temp,"vacadm.html", "rlistbyuserunload");
+	}
 
 function saveVacationType($tname, $description, $quantity, $maxdays=0, $mindays=0, $default=0)
 	{
@@ -905,12 +937,13 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids)
 				$db->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id='".$arr['id']."'");
 				}
 			else
-				$vtexist[] = $arr['id'];
+				$vtexist[] = $arr['id_type'];
 			}
 
+		$nbexist = count($vtexist);
 		for( $i=0; $i < count($vtypeids); $i++)
 			{
-			if( count($vtexist) > 0 && !in_array($vtypeids[$i], $vtexist))
+			if( $nbexist == 0 || ($nbexist > 0 && !in_array($vtypeids[$i], $vtexist)))
 				$db->db_query("insert into ".BAB_VAC_COLL_TYPES_TBL." (id_coll, id_type) values ('".$vcid."', '".$vtypeids[$i]."')");
 			}
 	
@@ -1102,6 +1135,21 @@ function confirmDeletePersonnel($items)
 		}
 	}
 
+function updateVacationRightByUser($userid, $quantities, $idrights)
+{
+	global $babDB;
+	for($i = 0; $i < count($idrights); $i++)
+		{
+		list($quantity) = $babDB->db_fetch_array($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$idrights[$i]."'"));
+		if( $quantity != $quantities[$i] )
+			$quant = $quantities[$i];
+		else
+			$quant = '';
+
+		$babDB->db_query("update ".BAB_VAC_USERS_RIGHTS_TBL." set quantity='".$quant."' where id_user='".$userid."' and id_right='".$idrights[$i]."'");
+		}
+}
+
 /* main */
 $acclevel = bab_vacationsAccess();
 if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
@@ -1152,6 +1200,10 @@ if( isset($add) )
 			$idx ='modp';
 			}
 		}
+	else if( $add == "modrbu")
+		{
+		updateVacationRightByUser($iduser, $quantities, $idrights);
+		}
 	}
 else if( isset($action) && $action == "Yes")
 	{
@@ -1162,6 +1214,10 @@ else if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
+	case "rlbuul":
+		rlistbyuserUnload(bab_translate("Your request has been updated"));
+		exit;
+
 	case "lrbu":
 		listRightsByUser($idu);
 		exit;

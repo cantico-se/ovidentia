@@ -419,7 +419,7 @@ window.focus();
 <td class="BabMailBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td colspan="4" nowrap class="BabLetterlists">
+<td colspan="3" nowrap class="BabLetterlists">
 <!--#if allselected "== 1" -->
 { allname }&nbsp;&nbsp;
 <!--#else allselected -->
@@ -433,13 +433,11 @@ window.focus();
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-<td width="1" align="left" valign="middle" nowrap class="BabLetterlists">&nbsp;</td></tr>
-<tr> 
-<td> 
+</tr>
 <tr>         
 <td class="BabSiteAdminSmall" width="1%"><a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabSiteAdminSmall" valign="middle" nowrap><a class="BabNameEmailLink" href="{ fullnameurl }">{ fullname }</a></td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap>&nbsp;</td>
+<td class="BabSiteAdminSmall" valign="middle" nowrap>{ quantitytxt }</td>
 </tr>
 <!--#in getnext -->
 <!--#if bview -->
@@ -449,13 +447,13 @@ window.focus();
 <input type="hidden" name="nuserids[]" value="{ nuserid }">
 </td>
 <td class="BabSiteAdminFontBackground" valign="middle" width="20%" nowrap>{ urlname }</td>
-<td valign="middle" nowrap>&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="20%" nowrap>{ quantity }</td>
 </tr> 
 <!--#endif bview -->
 <!--#endin getnext -->
 <tr> 
 <td class="BabSiteAdminSmall" width="1%" align="center">&nbsp;</td>
-<td colspan="4" class="BabSiteAdminSmall"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+<td colspan="2" class="BabSiteAdminSmall"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 </tr></table>
 </td>
 </tr>

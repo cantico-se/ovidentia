@@ -379,11 +379,51 @@ document.forms['gcreate'].group.value ='';
 <script type="text/javascript">
 <!--
 window.focus();
+
+function validateNum(field) {
+var valid = ".0123456789"
+var ok = "yes";
+var temp;
+for (var i=0; i<field.value.length; i++) {
+temp = "" + field.value.substring(i, i+1);
+if (valid.indexOf(temp) == "-1") ok = "no";
+}
+if (ok == "no") {
+var d2;
+alert("{ invalidentry }");
+field.focus();
+field.select();
+return false;
+   }
+return true;
+}
+
+function validateDayField(field) {
+	if( field.value.length > 0 && validateNum(field))
+	{
+	tp = parseFloat(field.value);
+	if( isNaN(tp) )
+		alert( '{ invalidentry1 }');
+
+	if( tp % 0.5 != 0 )
+		{
+		var d1;
+		alert( '{ invalidentry2 }' );
+		field.focus();
+		field.select();
+		}
+	}
+}
 //-->
 </script>
 </HEAD>
 <BODY class="BabBackground">
 <br>
+<form name="rmodify" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadm">
+<input type="hidden" name="idx" value="rlbuul">
+<input type="hidden" name="add" value="modrbu">
+<input type="hidden" name="iduser" value="{ iduser }">
 <table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabSiteAdminFontBackground" align="right" >{ titletxt }</td>
@@ -406,7 +446,9 @@ window.focus();
 <!--#if bview -->
 <tr> 
 <td class="BabSiteAdminFontBackground" nowrap valign="middle">{ description }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">
+<input type="text" name="quantities[]" size="5" maxlength="5" value="{ quantity }" onBlur="validateDayField(this)"></td>
+<input type="hidden" name="idrights[]" value="{ idright }">
 <td class="BabSiteAdminFontBackground" valign="middle">{ consumed }</td>
 <td class="BabSiteAdminFontBackground" valign="middle">{ date }</td>
 <td class="BabSiteAdminFontBackground" nowrap valign="middle">{ dateb }</td>
@@ -418,6 +460,49 @@ window.focus();
 </tr>
 </table>
 <br>
+<center><input type="submit" name="submit" value="{ updatetxt }"></center>
+</form>
+<br>
 </BODY>
 </HTML>
 <!--#end rlistbyuser -->
+
+<!--#begin rlistbyuserunload -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+
+</HEAD>
+<BODY>
+<br><br><br><br>
+<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+</tr>
+<tr align="left" valign="middle">
+<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
+close }</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+<script type="text/javascript">
+	setTimeout("this.close()","1000");
+</script>
+
+</BODY>
+</HTML>
+<!--#end rlistbyuserunload -->
