@@ -720,7 +720,7 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 		copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
 		copy($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name'], $pathx.$arrfile['name']);
 		unlink($pathx.BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$arrfile['name']);
-		$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', ver_major='".$vmajor."', ver_minor='".$vminor."', comment='".$comment."' where id='".$idf."'");
+		$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', ver_major='".$vmajor."', ver_minor='".$vminor."', ver_comment='".$comment."' where id='".$idf."'");
 		$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', comment='".$arrfile['ver_comment']."', idfai='0', confirmed='Y' where id='".$arrfile['edit']."'");
 		if( $arrfold['filenotify'] == 'Y' )
 			fileNotifyMembers($filename, $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
