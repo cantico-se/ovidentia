@@ -851,6 +851,9 @@ if( !isset($pos))
 if( !isset($what))
 	$what = "";
 
+if( !isset($idx))
+	$idx = "";
+
 switch($idx)
 	{
 	case "a":
