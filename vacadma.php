@@ -446,7 +446,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 }
 
 
-function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose)
+function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance)
 	{
 	global $babBody;
 	class temp
@@ -490,7 +490,7 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 		var $tpsel;
 		var $colsel;
 
-		function temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose)
+		function temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance)
 			{
 			$this->typetxt = bab_translate("Type");
 			$this->usertext = bab_translate("User");
@@ -506,6 +506,7 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 			$this->begintxt = bab_translate("Begin");
 			$this->endtxt = bab_translate("End");
 			$this->opentxt = bab_translate("Opened right");
+			$this->balancetxt = bab_translate("Accept negative balance");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted or . !");
@@ -539,6 +540,9 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 
 			if( $vclose == "" )
 				$vclose = "N";
+
+			if( $cbalance == "" )
+				$cbalance = "N";
 
 			if( $vclose == "Y" )
 				{
@@ -585,6 +589,14 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 				$arr = $this->db->db_fetch_array($this->restype);
 				$this->typename = $arr['name'];
 				$this->typeid = $arr['id'];
+				if( $arr['cbalance'] == 'Y' )
+					{
+					$this->tcbalance = 0;
+					}
+				else
+					{
+					$this->tcbalance = 1;
+					}
 				$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$this->typeid."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
 				$this->countcol = $this->db->db_num_rows($this->colres);
 				if( $this->idtype == $this->typeid )
@@ -609,11 +621,11 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 
 		}
 
-	$temp = new temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose);
+	$temp = new temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance);
 	$babBody->babecho(	bab_printTemplate($temp,"vacadma.html", "prightsadd"));
 	}
 
-function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vclose)
+function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance)
 	{
 	global $babBody;
 	class temp
@@ -647,7 +659,7 @@ function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vcl
 		var $yes;
 		var $no;
 
-		function temp($idvr, $description, $nbdays, $dateb, $datee, $vclose)
+		function temp($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance)
 			{
 			$this->idvr = $idvr;
 			$this->typetxt = bab_translate("Type");
@@ -660,6 +672,7 @@ function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vcl
 			$this->endtxt = bab_translate("End");
 			$this->daystxt = bab_translate("Quantity");
 			$this->closetxt = bab_translate("Close right");
+			$this->balancetxt = bab_translate("Accept negative balance");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted or . !");
@@ -705,6 +718,11 @@ function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vcl
 				$vclose = $arr['active'] == "Y"? "N": "Y";
 				}
 
+			if( $cbalance == "" )
+				{
+				$cbalance = $arr['cbalance'] == "Y"? "Y": "N";
+				}
+
 			if( $vclose == "Y" )
 				{
 				$this->nselected = "";
@@ -715,6 +733,16 @@ function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vcl
 				$this->yselected = "";
 				$this->nselected = "selected";
 				}
+			if( $cbalance == "Y" )
+				{
+				$this->cbnselected = "";
+				$this->cbyselected = "selected";
+				}
+			else
+				{
+				$this->cbyselected = "";
+				$this->cbnselected = "selected";
+				}
 			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3";
 			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3";
 
@@ -723,7 +751,7 @@ function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vcl
 			}
 		}
 
-	$temp = new temp($idvr, $description, $nbdays, $dateb, $datee, $vclose);
+	$temp = new temp($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance);
 	$babBody->babecho(	bab_printTemplate($temp,"vacadma.html", "prightsmod"));
 	}
 
@@ -937,7 +965,7 @@ function viewVacationRightPersonnel($idvr)
 	}
 
 
-function saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose)
+function saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance)
 	{
 	global $babBody, $babDB;
 
@@ -1011,7 +1039,7 @@ function saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $da
 		}
 
 
-	$babDB->db_query("insert into ".BAB_VAC_RIGHTS_TBL." (description, id_creditor, id_type, quantity, date_entry, date_begin, date_end, active) values ('".$description."', '".$GLOBALS['BAB_SESS_USERID']."', '".$idtype."', '".$nbdays."', curdate(), '".$dateb."', '".$datee."', '".$vclose."')");
+	$babDB->db_query("insert into ".BAB_VAC_RIGHTS_TBL." (description, id_creditor, id_type, quantity, date_entry, date_begin, date_end, active, cbalance) values ('".$description."', '".$GLOBALS['BAB_SESS_USERID']."', '".$idtype."', '".$nbdays."', curdate(), '".$dateb."', '".$datee."', '".$vclose."', '".$cbalance."')");
 	$id = $babDB->db_insert_id();
 
 	if( $userid != "" )
@@ -1035,7 +1063,7 @@ function saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $da
 	}
 
 
-function updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose)
+function updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance)
 	{
 	global $babBody, $babDB;
 
@@ -1080,7 +1108,7 @@ function updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclo
 		}
 
 
-	$babDB->db_query("update ".BAB_VAC_RIGHTS_TBL." set description='".$description."', id_creditor='".$GLOBALS['BAB_SESS_USERID']."', quantity='".$nbdays."', date_entry=curdate(), date_begin='".$dateb."', date_end='".$datee."', active='".($vclose == "Y"? "N": "Y")."' where id='".$idvr."'");
+	$babDB->db_query("update ".BAB_VAC_RIGHTS_TBL." set description='".$description."', id_creditor='".$GLOBALS['BAB_SESS_USERID']."', quantity='".$nbdays."', date_entry=curdate(), date_begin='".$dateb."', date_end='".$datee."', active='".($vclose == "Y"? "N": "Y")."', cbalance='".$cbalance."' where id='".$idvr."'");
 	return true;
 	}
 
@@ -1132,7 +1160,7 @@ if( isset($add) )
 	{
 	if( $add == "addvr" )
 		{
-		if(!saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose))
+		if(!saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance))
 			$idx ='addvr';
 		else
 			{
@@ -1147,7 +1175,7 @@ if( isset($add) )
 		{
 		if( isset($submit ))
 			{
-			if(!updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose))
+			if(!updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance))
 				$idx ='modvr';
 			else
 				{
@@ -1200,7 +1228,8 @@ switch($idx)
 		if( !isset($dateb)) $dateb ="";
 		if( !isset($nbdays)) $nbdays ="";
 		if( !isset($vclose)) $vclose ="";
-		modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vclose);
+		if( !isset($cbalance)) $cbalance ="";
+		modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
@@ -1218,8 +1247,9 @@ switch($idx)
 		if( !isset($dateb)) $dateb ="";
 		if( !isset($nbdays)) $nbdays ="";
 		if( !isset($vclose)) $vclose ="";
+		if( !isset($cbalance)) $cbalance ="";
 		if( !isset($idtype)) $idtype ="";
-		addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose);
+		addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");

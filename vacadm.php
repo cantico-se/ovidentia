@@ -26,7 +26,7 @@ include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
-function addVacationType($vtid, $what, $tname, $description, $quantity)
+function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance)
 	{
 	global $babBody, $babDB;
 	class temp
@@ -44,7 +44,7 @@ function addVacationType($vtid, $what, $tname, $description, $quantity)
 
 		var $add;
 
-		function temp($vtid, $what, $tname, $description, $quantity)
+		function temp($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance)
 			{
 			global $babDB;
 			$this->what = $what;
@@ -52,6 +52,12 @@ function addVacationType($vtid, $what, $tname, $description, $quantity)
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->quantity = bab_translate("Quantity");
+			$this->colortxt = bab_translate("Color");
+			$this->balancetxt = bab_translate("Accept negative balance");
+			$this->yestxt = bab_translate("Yes");
+			$this->notxt = bab_translate("No");
+			$this->selctorurl = $GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor";
+			$this->tcolor = $tcolor;
 
 			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted and . !");
 
@@ -61,12 +67,34 @@ function addVacationType($vtid, $what, $tname, $description, $quantity)
 				$this->tnameval = $arr['name'];
 				$this->descriptionval = $arr['description'];
 				$this->quantityval = $arr['quantity'];
+				$this->tcolorval = $arr['color'];
+				if( $arr['cbalance'] == 'Y')
+					{
+					$this->yselected = 'selected';
+					$this->nselected = '';
+					}
+				else
+					{
+					$this->yselected = '';
+					$this->nselected = 'selected';
+					}
 				}
 			else
 				{
 				$this->tnameval = $tname;
 				$this->descriptionval = $description;
 				$this->quantityval = $quantity;
+				$this->tcolorval = $tcolor;
+				if( $cbalance == 'N')
+					{
+					$this->nselected = 'selected';
+					$this->yselected = '';
+					}
+				else
+					{
+					$this->nselected = '';
+					$this->yselected = 'selected';
+					}
 				}
 
 			if( $what == "modvt" )
@@ -84,7 +112,7 @@ function addVacationType($vtid, $what, $tname, $description, $quantity)
 		}
 
 	list($count) = $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".BAB_VAC_TYPES_TBL));
-	$temp = new temp($vtid, $what, $tname, $description, $quantity);
+	$temp = new temp($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance);
 	$babBody->babecho(	bab_printTemplate($temp,"vacadm.html", "vtypecreate"));
 	return $count;
 	}
@@ -165,6 +193,7 @@ function listVacationTypes()
 			$this->nametxt = bab_translate("Name");
 			$this->descriptiontxt = bab_translate("Description");
 			$this->quantitytxt = bab_translate("Quantity");
+			$this->colortxt = bab_translate("Color");
 			$this->altaddvr = bab_translate("Allocate vacation rights");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_VAC_TYPES_TBL." order by name asc";
@@ -182,6 +211,7 @@ function listVacationTypes()
 				$this->urlname = $arr['name'];
 				$this->description = $arr['description'];
 				$this->quantity = $arr['quantity'];
+				$this->tcolor = $arr['color'];
 				$this->addurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr&idtype=".$arr['id'];
 				$i++;
 				return true;
@@ -780,7 +810,7 @@ function rlistbyuserUnload($msg)
 	echo bab_printTemplate($temp,"vacadm.html", "rlistbyuserunload");
 	}
 
-function saveVacationType($tname, $description, $quantity, $maxdays=0, $mindays=0, $default=0)
+function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $maxdays=0, $mindays=0, $default=0)
 	{
 	global $babBody;
 	if( empty($tname))
@@ -805,13 +835,13 @@ function saveVacationType($tname, $description, $quantity, $maxdays=0, $mindays=
 		return false;
 		}
 	
-	$req = "insert into ".BAB_VAC_TYPES_TBL." ( name, description, quantity, maxdays, mindays, defaultdays)";
-	$req .= " values ('".$tname."', '" .$description. "', '" .$quantity. "', '" .$maxdays. "', '" .$mindays. "', '" .$default. "')";
+	$req = "insert into ".BAB_VAC_TYPES_TBL." ( name, description, quantity, maxdays, mindays, defaultdays, color, cbalance)";
+	$req .= " values ('".$tname."', '" .$description. "', '" .$quantity. "', '" .$maxdays. "', '" .$mindays. "', '" .$default. "', '" .$tcolor. "', '" .$cbalance. "')";
 	$res = $db->db_query($req);
 	return true;
 	}
 
-function updateVacationType($vtid, $tname, $description, $quantity, $maxdays=0, $mindays=0, $default=0)
+function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cbalance, $maxdays=0, $mindays=0, $default=0)
 	{
 	global $babBody;
 	if( empty($tname))
@@ -836,7 +866,7 @@ function updateVacationType($vtid, $tname, $description, $quantity, $maxdays=0, 
 		return false;
 		}
 	
-	$req = "update ".BAB_VAC_TYPES_TBL." set name='".$tname."', description='".$description."', quantity='".$quantity."', maxdays='".$maxdays."', mindays='".$mindays."', defaultdays='".$default."' where id='".$vtid."'";
+	$req = "update ".BAB_VAC_TYPES_TBL." set name='".$tname."', description='".$description."', quantity='".$quantity."', maxdays='".$maxdays."', mindays='".$mindays."', defaultdays='".$default."', color='".$tcolor."', cbalance='".$cbalance."' where id='".$vtid."'";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -1182,14 +1212,14 @@ if( isset($add) )
 	{
 	if( $add == "addvt" )
 		{
-		if(!saveVacationType($tname, $description, $quantity))
+		if(!saveVacationType($tname, $description, $quantity, $tcolor, $cbalance))
 			$idx ='addvt';
 		}
 	else if( $add == "modvt")
 		{
 		if( isset($bdel))
 			deleteVacationType($vtid);
-		else if(!updateVacationType($vtid, $tname, $description, $quantity))
+		else if(!updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cbalance))
 			$idx ='addvt';
 		}
 	else if( $add == "addvc")
@@ -1376,10 +1406,9 @@ switch($idx)
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";
 		if( !isset($quantity)) $quantity ="";
-		if( !isset($maxdays)) $maxdays ="";
-		if( !isset($mindays)) $mindays ="";
-		if( !isset($defdays)) $defdays ="";
-		addVacationType($vtid, $what, $tname, $description, $quantity, $maxdays, $mindays, $defdays);
+		if( !isset($tcolor)) $tcolor = "";
+		if( !isset($cbalance)) $cbalance = "";
+		addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("modvt", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=modvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
@@ -1399,9 +1428,11 @@ switch($idx)
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";
 		if( !isset($quantity)) $quantity ="";
+		if( !isset($tcolor)) $tcolor = "";
+		if( !isset($cbalance)) $cbalance = "";
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
-		if( addVacationType($vtid, $what, $tname, $description, $quantity) != 0 )
+		if( addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance) != 0 )
 		{
 			$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 			$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");

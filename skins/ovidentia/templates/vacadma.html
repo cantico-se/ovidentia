@@ -192,6 +192,15 @@ endtxt }</a>
 </td>
 </tr>
 <tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ balancetxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="cbalance">
+<option value="Y">{ yes }</option>
+<option value="N">{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
 <td class="BabLoginMenuBackground">&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <input type="submit" name="submit" value="{ add }">&nbsp;&nbsp;<input type="button" name="breset" value="{ reset }" onclick="babReset()">
@@ -213,7 +222,9 @@ var tpsel = { tpsel };
 var colsel = { colsel };
 var tabvacn = new Array({ counttype });
 var tabvaci = new Array({ counttype });
+var tabvacb = new Array({ counttype });
 <!--#in getnexttype -->
+tabvacb[{ iindex }] = { tcbalance };
 tabvacn[{ iindex }] = new Array();
 tabvaci[{ iindex }] = new Array();
 <!--#in getnextcol -->
@@ -224,6 +235,8 @@ tabvaci[{ iindex }][tabvaci[{ iindex }].length] = "{ idcollection }";
 
 function mmvac(index)
 {
+	document.forms.gcreate.cbalance.selectedIndex = tabvacb[index];
+
 	for (i = document.forms.gcreate.collid.length; i >= 2; i--) {
 		document.forms.gcreate.collid.options[i] = null; 
 	}
@@ -232,7 +245,9 @@ function mmvac(index)
 	document.forms.gcreate.collid.options[i+2] = new Option(tabvacn[index][i],tabvaci[index][i]);
 	}
 	if( index == tpsel )
+	{
 		document.forms.gcreate.collid.options[colsel].selected = true;
+	}
 
 }
 mmvac(tpsel);
@@ -344,6 +359,15 @@ document.forms['gcreate'].user.value ='';
 <select name="vclose">
 <option value="Y" { yselected }>{ yes }</option>
 <option value="N" { nselected }>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ balancetxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="cbalance">
+<option value="Y" { cbyselected }>{ yes }</option>
+<option value="N" { cbnselected }>{ no }</option>
 </select>
 </td>
 </tr>
