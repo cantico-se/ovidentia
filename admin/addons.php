@@ -521,7 +521,7 @@ function history($item)
 			list($title) = $db->db_fetch_array($db->db_query("SELECT title FROM ".BAB_ADDONS_TBL." where id='".$item."'"));
 			if (!empty($title))
 				{
-				$this->history = implode(file($GLOBALS['babAddonsPath'].$title.'/history.txt'));
+				$this->history = implode('',file($GLOBALS['babAddonsPath'].$title.'/history.txt'));
 				$this->history = nl2br($this->history);
 				}
 			else
