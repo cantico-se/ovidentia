@@ -151,7 +151,12 @@ function addonsList($upgradeall)
 						{
 						$func_name = $this->arr['title']."_upgrade";
 						if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/init.php"))
+							{
+							$GLOBALS['babAddonFolder'] = $this->arr['title'];
+							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/". $this->arr['title']."/";
+							$GLOBALS['babAddonHtmlPath'] = "addons/". $this->arr['title']."/";
 							require_once( $GLOBALS['babAddonsPath'].$this->arr['title']."/init.php" );
+							}
 						if ( $this->upgradeall )
 							{
 							if ((function_exists($func_name) && $func_name($this->arr['version'],$arr_ini['version'])) || !function_exists($func_name))
