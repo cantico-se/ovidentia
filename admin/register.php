@@ -166,6 +166,18 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		return false;
 		}
 
+	if( empty($email) )
+		{
+		$babBody->msgerror = bab_translate( "Email is required");
+		return false;
+		}
+
+	if( empty($nickname) )
+		{
+		$babBody->msgerror = bab_translate( "Nickname is required");
+		return false;
+		}
+
 	if( empty($password1) || empty($password2))
 		{
 		$babBody->msgerror = bab_translate( "Passwords not match !!");
@@ -234,7 +246,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 
 		if( !$badmin )
 			{
-			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
+			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br />";
 			$fullname = bab_composeUserName($firstname , $lastname);
 			if( $babBody->babsite['email_confirm'] == 2)
 				{
