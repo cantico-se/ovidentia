@@ -42,7 +42,7 @@ function echoLang($path)
 	if( empty($GLOBALS['babLanguage']))
 		return $arr;
 	$handle = opendir($path); 
-	while (false !== ($filename = readdir($handle)))
+	while (false != ($filename = readdir($handle)))
 		{ 
 		if ($filename != "." && $filename != "..")
 			{
@@ -92,7 +92,7 @@ switch($idx)
 
 	case "lang":
 		$tab = array_unique(echoLang($GLOBALS['babInstallPath']));
-		$filename = "lang/lang-".$GLOBALS['babLanguage'].".xml";
+		$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
 		if( !file_exists($filename))
 			{
 			$txt = "";
@@ -120,10 +120,15 @@ switch($idx)
 					}
 				}
 			}
-		$file = fopen($filename, "w");
-		fputs($file, "<".$GLOBALS['babLanguage'].">\r\n".$old.$new."</".$GLOBALS['babLanguage'].">");
-		fclose($file);
-		$str = babTranslate("You language file has been updated") ."( ".$filename." )";
+		$file = @fopen($filename, "w");
+		if( $file )
+			{
+			fputs($file, "<".$GLOBALS['babLanguage'].">\r\n".$old.$new."</".$GLOBALS['babLanguage'].">");
+			fclose($file);
+			$str = babTranslate("You language file has been updated") ."( ".$filename." )";
+			}
+		else
+			$str = babTranslate("Cannot open file for writing") ."( ".$filename." )";
 		break;
 
 
