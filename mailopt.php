@@ -159,7 +159,7 @@ function accountCreate()
 			$this->domain = bab_translate("Domain");
 			$this->prefaccount = bab_translate("Prefered account");
 			$this->prefformat = bab_translate("Prefered format");
-			$this->maxrows = bab_translate("Default number of messages to display per screen");
+			$this->maxrows = bab_translate("Messages to display per screen");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->plain = bab_translate("Plain text");
@@ -815,7 +815,7 @@ switch($idx)
 		break;
 
 	case "addacc":
-		$babBody->title = bab_translate("Add account");
+		$babBody->title = bab_translate("Create an e-mail account");
 		$bemail = bab_mailAccessLevel();
 		accountCreate();
 		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");

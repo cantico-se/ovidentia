@@ -43,24 +43,6 @@ valign="middle">{ allday }</td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ ampm }</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="ampm">
-	<option value="Y"
-	<!--#if arr[ampm] "== Y" -->
-	selected 
-	<!--#endif arr[ampm] -->
-	>{ yes }</option>
-	<option value="N" 
-	<!--#if arr[ampm] "== N" -->
-	selected 
-	<!--#endif arr[ampm] -->
-	>{ no }</option>
-	</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
 valign="middle">{ usebgcolor }</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <select name="usebgcolor">
@@ -73,6 +55,24 @@ valign="middle">{ usebgcolor }</td>
 	<!--#if arr[usebgcolor] "== N" -->
 	selected 
 	<!--#endif arr[usebgcolor] -->
+	>{ no }</option>
+	</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap 
+valign="middle">{ ampm }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="ampm">
+	<option value="Y"
+	<!--#if arr[ampm] "== Y" -->
+	selected 
+	<!--#endif arr[ampm] -->
+	>{ yes }</option>
+	<option value="N" 
+	<!--#if arr[ampm] "== N" -->
+	selected 
+	<!--#endif arr[ampm] -->
 	>{ no }</option>
 	</select>
 </td>

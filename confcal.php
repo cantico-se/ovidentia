@@ -150,7 +150,7 @@ function categoryCalDelete($userid, $id)
 
 		function temp($userid,$id)
 			{
-			$this->message = bab_translate("Are you sure you want to delete this calendar category");
+			$this->message = bab_translate("Are you sure you want to delete this event category");
 			$this->title = bab_getCategoryCalName($id);
 			$this->warning = bab_translate("WARNING: This operation will delete the category with all references"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=confcal&idx=delcat&category=".$id."&action=Yes&userid=".$userid;
@@ -330,7 +330,7 @@ switch($idx)
 	{
 	case "delcat":
 		categoryCalDelete($userid, $item);
-		$babBody->title = bab_translate("Delete calendar category");
+		$babBody->title = bab_translate("Delete event category");
 		$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("modifycat", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=confcal&idx=modifycat&item=".$item);
 		$babBody->addItemMenu("delcat", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=confcal&idx=delcat&item=".$item."&userid=".$userid);

@@ -384,7 +384,7 @@ switch($idx)
 	{
 	case "createcat":
 		categoryCreate($userid, $grpid);
-		$babBody->title = bab_translate("Create a calendar category");
+		$babBody->title = bab_translate("Create event category");
 		$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("createcat", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=confcals&idx=createcat&userid=".$userid);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
@@ -406,7 +406,7 @@ switch($idx)
 	case "listcat":
 	default:
 		categoriesList($grpid, $userid);
-		$babBody->title = bab_translate("Calendar categories list");
+		$babBody->title = bab_translate("Event categories list");
 		$babBody->addItemMenu("listcat", bab_translate("Events categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
 		$babBody->addItemMenu("createcat", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=confcals&idx=createcat&userid=".$userid);
 		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
