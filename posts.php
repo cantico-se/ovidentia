@@ -225,10 +225,7 @@ function listPosts($forum, $thread, $post)
 				$req = "select * from ".BAB_POSTS_TBL." where id='".$this->arrresult['id'][$i]."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
-				$tmp = explode(" ", $arr['date']);
-				$arr0 = explode("-", $tmp[0]);
-				$arr1 = explode(":", $tmp[1]);
-				$this->replydate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
+				$this->replydate = bab_shortDate(bab_mktime($arr['date']), true);
 				$this->replyauthor = $arr['author'];
 				$this->replysubject = $arr['subject'];
 				$res = $this->db->db_query("select email from ".BAB_USERS_TBL." where id='".bab_getUserId( $arr['author'])."'");

@@ -362,7 +362,18 @@ function bab_deleteDbDirectory($id)
 	$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 	if( $arr['id_group'] != 0)
 		return;
+	$res = $babDB->db_query("select id from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."'");
+	}
 	$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id."'");
+	$babDB->db_query("delete from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id_directory='".$id."'");
+	$res = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
+	}
 	$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
 	$babDB->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'");
 }
@@ -419,7 +430,11 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='".$id."' and bgroup='Y'");	
 
 	// delete group directory
-	$db->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$id."'");	
+	$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$id."'");
+	while( $arr = $db->db_fetch_array($res))
+		{
+		bab_deleteDbDirectory($arr['id']);
+		}
 
 	$db->db_query("update ".BAB_OC_ENTITIES_TBL." set id_group='0' where id_group='".$id."'");	
 
@@ -485,6 +500,7 @@ function bab_deleteUser($id)
 	// delete user from BAB_DBDIR_ENTRIES_TBL
 	list($iddu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'"));	
 	$db->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id_user='".$iddu."'");
+	$res = $db->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$iddu."'");	
 	$res = $db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id='".$iddu."'");	
 
 	// delete user from VACATION

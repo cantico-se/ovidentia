@@ -22,6 +22,9 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+define("BAB_DBDIR_MAX_COMMON_FIELDS", 100);
+
+
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
 define("BAB_ARTICLES_TBL", "bab_articles");
@@ -42,8 +45,11 @@ define("BAB_DBDIRVIEW_GROUPS_TBL", "bab_dbdirview_groups");
 define("BAB_DBDIRADD_GROUPS_TBL", "bab_dbdiradd_groups");
 define("BAB_DBDIRUPDATE_GROUPS_TBL", "bab_dbdirupdate_groups");
 define("BAB_DBDIR_FIELDS_TBL", "bab_dbdir_fields");
+define("BAB_DBDIR_FIELDS_DIRECTORY_TBL", "bab_dbdir_fields_directory");
 define("BAB_DBDIR_FIELDSEXTRA_TBL", "bab_dbdir_fieldsextra");
+define("BAB_DBDIR_FIELDSVALUES_TBL", "bab_dbdir_fieldsvalues");
 define("BAB_DBDIR_ENTRIES_TBL", "bab_dbdir_entries");
+define("BAB_DBDIR_ENTRIES_EXTRA_TBL", "bab_dbdir_entries_extra");
 define("BAB_DG_GROUPS_TBL", "bab_dg_groups");
 define("BAB_DG_USERS_GROUPS_TBL", "bab_dg_users_groups");
 define("BAB_FAQ_TREES_TBL", "bab_faq_trees");

@@ -23,12 +23,6 @@
 ************************************************************************/
 include_once "base.php";
 
-function bab_printDate($date)
-	{
-		$arr = explode('-', $date );
-		return $arr[2].'-'.$arr[1].'-'.$arr[0];
-	}
-
 function notifyVacationApprovers($id, $users)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;

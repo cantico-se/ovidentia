@@ -224,12 +224,18 @@ function bab_viewDirectoryUser($id)
 	
 	$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'");
 	$this->showph = false;
-	$this->count = 0;
+	$this->fields = array();
 	$this->access = false;
 	if( $res && $this->db->db_num_rows($res) > 0)
 		{
-		$this->arr = $this->db->db_fetch_array($res);
-		if( $this->arr['id_directory'] == 0 )
+		$arr = $this->db->db_fetch_array($res);
+		$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$id."'");
+		while( $rr = $this->db->db_fetch_array($res))
+			{
+			$arr['babdirf'.$rr['id_fieldx']] = $rr['field_value'];
+			}
+
+		if( $arr['id_directory'] == 0 )
 			{
 			$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id_group != '0'");
 			while( $row = $this->db->db_fetch_array($res))
@@ -242,7 +248,7 @@ function bab_viewDirectoryUser($id)
 						$this->access = true;
 						break;
 						}
-					$res2 = $this->db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->arr['id_user']."' and id_group='".$row['id_group']."'");
+					$res2 = $this->db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['id_user']."' and id_group='".$row['id_group']."'");
 					if( $res2 && $this->db->db_num_rows($res2) > 0 )
 						{
 						$this->access = true;
@@ -252,26 +258,40 @@ function bab_viewDirectoryUser($id)
 
 				}
 			}
-		else if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->arr['id_directory']))
+		else if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id_directory']))
 			{
 			$this->access = true;
 			}
 
 		if( $this->access )
 			{
-			$this->name = $this->arr['givenname']. " ". $this->arr['sn'];
-			if( $this->arr['plen'] > 0 )
+			$this->name = $arr['givenname']. " ". $arr['sn'];
+			if( $arr['plen'] > 0 )
 				{
 				$this->showph = true;
 				}
 
-			$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->arr['id_directory']."&idu=".$id;
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
 
-			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+			$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$arr['id_directory']."&idu=".$id;
+
+			$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$arr['id_directory']."' order by list_ordering asc");
+			while( $row = $this->db->db_fetch_array($res))
 				{
-				$this->count = $this->db->db_num_rows($this->res);
+				if( $row['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$row['id_field']."'"));
+					if( $rr['name'] != 'jpegphoto' )
+						{
+						$this->fields[] = array('name' => translateDirectoryField($rr['description']), 'value' => stripslashes($arr[$rr['name']]));
+						}
+					}
+				else
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->fields[] = array('name' => translateDirectoryField($rr['name']), 'value' => isset($arr["babdirf".$row['id']]) ? stripslashes($arr["babdirf".$row['id']]): '');
+					}
 				}
+
 			}
 		}
 	else
@@ -296,7 +316,7 @@ function summaryDbContact($id, $idu, $update=true)
 			$this->db = $GLOBALS['babDB'];
 			list($idgroup, $allowuu) = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."' order by list_ordering asc");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
 				$this->count = $this->db->db_num_rows($this->res);
@@ -305,17 +325,25 @@ function summaryDbContact($id, $idu, $update=true)
 				{
 				$this->count = 0;
 				}
+
 			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup != 0? 0: $id)."' and id='".$idu."'");
 			$this->showph = false;
-			if( $res && $this->db->db_num_rows($res) > 0)
+			if( $res && $this->db->db_num_rows($res) > 0 )
 				{
 				$this->arr = $this->db->db_fetch_array($res);
+				$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$idu."'");
+				while( $arr = $this->db->db_fetch_array($res))
+					{
+					$this->arr['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
+					}
+				
 				$this->name = stripslashes($this->arr['givenname']). " ". stripslashes($this->arr['sn']);
 				if( $this->arr['plen'] > 0 )
 					{
 					$this->showph = true;
 					}
 
+				
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu;
 
 				$this->del = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
@@ -373,14 +401,41 @@ function summaryDbContact($id, $idu, $update=true)
 				}
 			}
 		
-		function getnextfield()
+		function getnextfield(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = translateDirectoryField($arr['description']);
-				$this->fieldv = stripslashes($this->arr[$arr['name']]);
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$this->fieldn = translateDirectoryField($rr['description']);
+					$this->fieldv = $rr['name'];
+					}
+				else
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->fieldn = translateDirectoryField($rr['name']);
+					$this->fieldv = "babdirf".$arr['id'];
+					}
+
+				if( $this->fieldv == 'jpegphoto' )
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+
+				if( isset($this->arr[$this->fieldv]) )
+					{
+					$this->fieldv = stripslashes($this->arr[$this->fieldv]);
+					}
+				else
+					{
+					$this->fieldv = '';
+					}
+
 				if( strlen($this->fieldv) > 0 )
 					{
 					$this->bfieldv = true;

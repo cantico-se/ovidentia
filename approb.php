@@ -160,7 +160,7 @@ function listWaitingArticles()
 					{
 					$this->bnotes = false;
 					}
-				$this->artdate = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_submission']));
+				$this->artdate = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
 				$this->artpath = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->arttitle = $arr['title'];
 				$this->author = bab_getUserName($arr['id_author']);
@@ -227,7 +227,7 @@ function listWaitingComments()
 			if( $i < $this->wcomcount)
 				{
 				$arr = $babDB->db_fetch_array($this->wcomres);
-				$this->comdate = $arr['date'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date']));
+				$this->comdate = $arr['date'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date']), true);
 				$this->compath = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->comtitle = $arr['subject'];
 				$this->author = $arr['name'];
@@ -298,7 +298,7 @@ function listWaitingFiles()
 				{
 				$arr = $babDB->db_fetch_array($this->wfilesres);
 
-				$this->filedate = $arr['created'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['created']));
+				$this->filedate = $arr['created'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['created']), true);
 				$this->filepath = $arr['path'];
 				$this->filetitle = $arr['name'];
 				$this->author = bab_getUserName($arr['author']);
@@ -377,7 +377,7 @@ function listWaitingPosts()
 			if( $i < $this->wpostscount)
 				{
 				$arr = $babDB->db_fetch_array($this->wpostsres);
-				$this->postdate = $arr['date'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date']));
+				$this->postdate = $arr['date'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date']), true);
 				$this->postpath = $arr['forumname']." / ".$arr['threadtitle'];
 				$this->posttitle = $arr['subject'];
 				$this->author = $arr['author'];
@@ -456,8 +456,8 @@ function listWaitingVacations()
 				$this->url = $GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id'];
 				list($this->total) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
 				$this->urlname = bab_getUserName($arr['id_user']);
-				$this->dateb = bab_printDate($arr['date_begin']);
-				$this->datee = bab_printDate($arr['date_end']);
+				$this->dateb = bab_shortDate(bab_mktime($arr['date_begin']." 00:00:00"), false);
+				$this->datee = bab_shortDate(bab_mktime($arr['date_end']." 00:00:00"), false);
 				$this->entryid = $arr['id'];
 				$i++;
 				return true;

@@ -304,7 +304,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$this->idgroup = $arr['id_group'];
-				$this->rescol = $this->db->db_query("select id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
+				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
 				$this->countcol = $this->db->db_num_rows($this->rescol);
 				}
 			else
@@ -328,44 +328,107 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->accid = $arr['id'];
 				}
 			else
-				$this->accid = 0;			
+				$this->accid = 0;
+
+			$this->select = array();
 			}
 
 		function getnextcol()
 			{
 			static $i = 0;
 			static $tmp = array();
+			static $sqlf = array();
 			if( $i < $this->countcol)
 				{
 				$arr = $this->db->db_fetch_array($this->rescol);
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->coltxt = translateDirectoryField($arr['description']);
-				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$arr['name'];
-				$tmp[] = $arr['name'];
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$this->coltxt = translateDirectoryField($rr['description']);
+					$filedname = $rr['name'];
+					$tmp[] = $filedname;
+					$this->select[] = $filedname;
+					}
+				else
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->coltxt = translateDirectoryField($rr['name']);
+					$filedname = "babdirf".$arr['id'];
+					$sqlf[] = $filedname;
+					$this->select[] = "`".$filedname."`";
+					}
+
+				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
 				$i++;
 				return true;
 				}
 			else
 				{
-				if( count($tmp) > 0 )
+				if( count($tmp) > 0 || count($sqlf) > 0)
 					{
 					$tmp[] = "id";
 					if( $this->xf == "" )
+						{
 						$this->xf = $tmp[0];
-					for( $i=0; $i < count($tmp); $i++)
-						$tmp[$i] = BAB_DBDIR_ENTRIES_TBL.".".$tmp[$i];
+						}
+
 					if( !in_array('email', $tmp))
+						{
 						$tmp[] = 'email';
-					$this->select = implode($tmp, ",");
+						}
+
+					$req = "create temporary table bab_dbdir_temptable select ".implode(',', $tmp)." from ".BAB_DBDIR_ENTRIES_TBL." where 0";
+					$this->db->db_query($req);
+					$req = "alter table bab_dbdir_temptable add unique (id)";
+					$this->db->db_query($req);
+					for( $m=0; $m < count($tmp); $m++)
+						{
+						$tmp[$m] = BAB_DBDIR_ENTRIES_TBL.".".$tmp[$m];
+						}
+
 					if( $this->idgroup > 1 )
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$this->idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".".$this->xf." like '".$this->pos."%' and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."' order by ".$this->xf." ";
+						$req = "insert into bab_dbdir_temptable select ".implode($tmp, ",")." from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$this->idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."'";
 						}
 					else
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." where ".BAB_DBDIR_ENTRIES_TBL.".".$this->xf." like '".$this->pos."%' and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."' order by ".$this->xf." ";
+						$req = "insert into bab_dbdir_temptable select ".implode($tmp, ",")." from ".BAB_DBDIR_ENTRIES_TBL." where ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."'";
 						}
 
+					$this->db->db_query($req);
+					for( $i=0; $i < count($sqlf); $i++)
+						{
+						$this->db->db_query("alter table bab_dbdir_temptable add `".$sqlf[$i]."` VARCHAR( 255 ) NOT NULL");
+						}
+
+					if( count($sqlf) > 0 )
+						{
+						$res = $this->db->db_query("select id from bab_dbdir_temptable");
+						while( $rr = $this->db->db_fetch_array($res))
+							{
+							for( $k = 0; $k < count($sqlf); $k++ )
+								{
+								$tmparr = substr($sqlf[$k], strlen("babdirf"));
+								$sqlfv = array();
+								$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmparr."' and id_entry='".$rr['id']."'");
+								while( $rf = $this->db->db_fetch_array($res2))
+									{
+									$sqlfv[] = "`".$sqlf[$k]."`='".$rf['field_value']."'";
+									}
+								if( count($sqlfv) > 0 )
+									{
+									$req = "update bab_dbdir_temptable set ".implode(',', $sqlfv)." where id='".$rr['id']."'";
+									$this->db->db_query($req);
+									}
+								}
+							}
+						}
+
+					$this->select[] = 'id';
+					if( !in_array('email', $this->select))
+						$this->select[] = 'email';
+
+					$req = "select ".implode(',', $this->select)." from bab_dbdir_temptable where `".$this->xf."` like '".$this->pos."%' order by `".$this->xf."` ";
 					if( $this->ord == "-" )
 						{
 						$req .= "asc";
@@ -375,7 +438,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 						$req .= "desc";
 						}
 
-					$this->res = $this->db->db_query($req);
+					$this->res = $this->db->db_query($req);				
 					$this->count = $this->db->db_num_rows($this->res);
 					}
 				else
@@ -529,11 +592,6 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->error = true;
 				}
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
-			if( $this->res && $this->db->db_num_rows($this->res) > 0)
-				$this->count = $this->db->db_num_rows($this->res);
-			else
-				$this->count = 0;
 			
 			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			$this->idgroup = $arr['id_group'];
@@ -543,6 +601,12 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($res);
+				$res = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$idu."'");
+				while( $arr = $this->db->db_fetch_array($res))
+					{
+					$this->arr['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
+					}
+
 				$this->name = stripslashes($this->arr['givenname']. " ". $this->arr['sn']);
 				if( $this->arr['plen'] > 0 )
 					{
@@ -572,6 +636,17 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					$this->modify = true;
 					}
 				}
+
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and disabled='N' order by id_field asc");
+			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				{
+				$this->count = $this->db->db_num_rows($this->res);
+				}
+			else
+				{
+				$this->count = 0;
+				}
+			
 			}
 		
 		function getnextfield(&$skip)
@@ -580,45 +655,69 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = translateDirectoryField($arr['description']);
-				$this->fieldv = $arr['name'];
-				if( isset($this->fields[$arr['name']]) )
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$this->fvalue = stripslashes($this->fields[$arr['name']]);
+					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$rr = $this->db->db_fetch_array($res);
+					$this->fieldn = translateDirectoryField($rr['description']);
+					$this->fieldv = $rr['name'];
 					}
 				else
 					{
-					$this->fvalue = stripslashes($this->arr[$arr['name']]);
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->fieldn = translateDirectoryField($rr['name']);
+					$this->fieldv = "babdirf".$arr['id'];
 					}
-				$res = $this->db->db_query("select multilignes, required, modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field='".$arr['id']."'");
 
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( $this->fieldv == 'jpegphoto' )
 					{
-					$arr = $this->db->db_fetch_array($res);
-					if( $this->badd || ($this->bupd && $arr['modifiable'] == "Y"))
-						{
-						$this->modify = true;
-						}
-					else
-						{
-						$this->modify = false;
-						if( empty($this->fvalue))
-							{
-							$skip =true;
-							$i++;
-							return true;
-							}
-						}
+					$skip = true;
+					$i++;
+					return true;
+					}
 
-					$this->fieldt = $arr['multilignes'];
-					$this->required = $arr['required'];
+				if( isset($this->fields[$this->fieldv]) )
+					{
+					$this->fvalue = stripslashes($this->fields[$this->fieldv]);
 					}
 				else
 					{
-					$this->required = "N";
-					$this->fieldt = "N";
+					$this->fvalue = isset($this->arr[$this->fieldv])? stripslashes($this->arr[$this->fieldv]): '';
+					}
+
+				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."'");
+				$this->countfxv = $this->db->db_num_rows($this->resfxv); 
+
+				$this->required = $arr['required'];
+				if( $this->countfxv == 0  )
+					{
+					$this->multivalues = false;
+					}
+				elseif( $this->countfxv > 1  )
+					{
+					$this->multivalues = true;
+					}
+				else
+					{
+					$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
+					}
+				$this->fieldt = $arr['multilignes'];
+
+				if( $this->badd || ($this->bupd && $arr['modifiable'] == "Y"))
+					{
+					$this->modify = true;
+					}
+				else
+					{
 					$this->modify = false;
+					if( empty($this->fvalue))
+						{
+						$skip =true;
+						$i++;
+						return true;
+						}
 					}
+
 
 				$i++;
 				return true;
@@ -627,6 +726,30 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				return false;
 			}
 
+		function getnextfxv()
+			{
+			static $i = 0;
+			if( $i < $this->countfxv)
+				{
+				$arr = $this->db->db_fetch_array($this->resfxv);
+				$this->fxvvalue = $arr['field_value'];
+				if( $this->fvalue == $this->fxvvalue )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
 		}
 
 	$temp = new temp($id, $idu, $fields, $refresh);
@@ -692,11 +815,6 @@ function addDbContact($id, $fields)
 				}
 
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
-			if( $this->res && $this->db->db_num_rows($this->res) > 0)
-				$this->count = $this->db->db_num_rows($this->res);
-			else
-				$this->count = 0;
 
 			$this->name = "";
 			$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=";
@@ -705,6 +823,7 @@ function addDbContact($id, $fields)
 			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			if( $this->idgroup >= 1 )
 				{
+				$iddir = 0;
 				$this->buserinfo = true;
 				$this->nickname = bab_translate("Nickname");
 				$this->password = bab_translate("Password");
@@ -715,35 +834,81 @@ function addDbContact($id, $fields)
 				$this->no = bab_translate("No");
 				}
 			else
+				{
+				$iddir = $id;
 				$this->buserinfo = false;
+				}
+
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$iddir."' and disabled='N' order by id_field asc");
+			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				{
+				$this->count = $this->db->db_num_rows($this->res);
+				}
+			else
+				{
+				$this->count = 0;
+				}
+			
 			}
 		
-		function getnextfield()
+		function getnextfield(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = translateDirectoryField($arr['description']);
-				$this->fieldv = $arr['name'];
-				if( isset($this->fields[$arr['name']]) )
-					$this->fvalue = $this->fields[$arr['name']];
-				else
-					$this->fvalue = "";
-				$res = $this->db->db_query("select multilignes, required, modifiable, default_value from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field='".$arr['id']."'");
-
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$arr = $this->db->db_fetch_array($res);
-					$this->fieldt = $arr['multilignes'];
-					$this->required = $arr['required'];
-					if( !empty( $arr['default_value']) && empty($this->fvalue))
-						$this->fvalue = $arr['default_value'];
+					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$rr = $this->db->db_fetch_array($res);
+					$this->fieldn = translateDirectoryField($rr['description']);
+					$this->fieldv = $rr['name'];
 					}
 				else
 					{
-					$this->required = "N";
-					$this->fieldt = "N";
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->fieldn = translateDirectoryField($rr['name']);
+					$this->fieldv = "babdirf".$arr['id'];
+					}
+
+				if( $this->fieldv == 'jpegphoto' )
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+
+				if( isset($this->fields[$this->fieldv]) )
+					{
+					$this->fvalue = $this->fields[$this->fieldv];
+					}
+				else
+					{
+					$this->fvalue = "";
+					}
+
+				$this->resfxv = $this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['id']."'");
+				$this->countfxv = $this->db->db_num_rows($this->resfxv); 
+
+				$this->required = $arr['required'];
+				if( $this->countfxv == 0  )
+					{
+					$this->multivalues = false;
+					}
+				elseif( $this->countfxv > 1  )
+					{
+					$this->multivalues = true;
+					}
+				else
+					{
+					$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
+					}
+
+				$this->fieldt = $arr['multilignes'];
+				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$arr['default_value']."'"));
+					$this->fvalue = $rr['field_value'];
 					}
 
 				$i++;
@@ -751,6 +916,31 @@ function addDbContact($id, $fields)
 				}
 			else
 				return false;
+			}
+
+		function getnextfxv()
+			{
+			static $i = 0;
+			if( $i < $this->countfxv)
+				{
+				$arr = $this->db->db_fetch_array($this->resfxv);
+				$this->fxvvalue = $arr['field_value'];
+				if( $this->fvalue == $this->fxvvalue )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
 			}
 
 		}
@@ -853,11 +1043,13 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 
 			$this->id = $id;
 			$this->pfile = $pfile;
-			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."'");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				$this->count = $this->db->db_num_rows($this->res);
 			else
 				$this->count = 0;
+
 			switch($wsepar)
 				{
 				case "1":
@@ -877,23 +1069,33 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			$this->separ = $separ;
 			}
 
-		function getnextfield()
+		function getnextfield(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$res = $this->db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and id_field='".$arr['id']."'");
-				if( $res && $this->db->db_num_rows($res) > 0)
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
+					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
 					$rr = $this->db->db_fetch_array($res);
-					$this->required = $rr['required'];
+					$this->ofieldname = translateDirectoryField($rr['description']);
+					$this->ofieldv = $rr['name'];
 					}
 				else
-					$this->required = false;
-				
-				$this->ofieldname = translateDirectoryField($arr['description']);
-				$this->ofieldv = $arr['name'];
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->ofieldname = translateDirectoryField($rr['name']);
+					$this->ofieldv = "babdirf".$arr['id'];
+					}
+
+				if( $this->ofieldv == 'jpegphoto' )
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+
 				$i++;
 				return true;
 				}
@@ -911,7 +1113,7 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 				{
 				$this->ffieldid = $i;
 				$this->ffieldname = $this->arr[$i];
-				if( strtolower($this->ofieldname) == strtolower($this->ffieldname) )
+				if( isset($this->ofieldname) && strtolower($this->ofieldname) == strtolower($this->ffieldname) )
 					$this->fselected = "selected";
 				else
 					$this->fselected = "";
@@ -1001,19 +1203,33 @@ function processImportDbFile( $pfile, $id, $separ )
 
 	$db = $GLOBALS['babDB'];
 	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
-	$res = $db->db_query("select id, name from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
-	$req = "";
+
+	$arridfx = array();
+	$arrnamef = array();
+	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."'");
 	while( $arr = $db->db_fetch_array($res))
 		{
-		$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
-		if( $rr['required'] == "Y" && $GLOBALS[$arr['name']] == "")
+		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$fieldname = $rr['name'];
+			$arrnamef[] = $fieldname;
+			}
+		else
+			{
+			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$fieldname = "babdirf".$arr['id'];
+			$arridfx[] = $arr['id'];
+			}
+
+		if( $arr['required'] == "Y" && (!isset($GLOBALS[$fieldname]) || $GLOBALS[$fieldname] == "" ))
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return false;
 			}
+
 		}
-	$db->db_data_seek($res,0);
-	
+
 	if( $idgroup > 0 )
 		{
 		if( empty($GLOBALS['password1']) || empty($GLOBALS['password2']) || strlen($GLOBALS['nickname']) == 0)
@@ -1072,14 +1288,15 @@ function processImportDbFile( $pfile, $id, $separ )
 								break;
 							$rrr = $db->db_fetch_array($res2);
 							$req = "";
-							while( $row = $db->db_fetch_array($res))
+
+							for( $k =0; $k < count($arrnamef); $k++ )
 								{
-								if( $GLOBALS[$row['name']] != "")
+								if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
 									{
-									$req .= $row['name']."='".addslashes($arr[$GLOBALS[$row['name']]])."',";
+									$req .= $arrnamef[$k]."='".addslashes($arr[$GLOBALS[$arrnamef[$k]]])."',";
 									}
 								}
-							$db->db_data_seek($res,0);
+
 							if( !empty($req))
 								{
 								$req = substr($req, 0, strlen($req) -1);
@@ -1087,7 +1304,24 @@ function processImportDbFile( $pfile, $id, $separ )
 								$req .= " where id_directory='0' and id_user='".$rrr['id']."'";
 								$db->db_query($req);
 								}
-							$db->db_data_seek($res,0);
+
+							if( count($arridfx) > 0 )
+								{
+								list($idu) = $db->db_fetch_array($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$rrr['id']."'"));
+								for( $k=0; $k < count($arridfx); $k++ )
+									{
+									$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]."' and  id_entry='".$idu."'");
+									if( $rs && $db->db_num_rows($rs) > 0 )
+										{
+										$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])." where id_fieldx='".$arridfx[$k]."' and id_entry='".$idu."'");
+										}
+									else
+										{
+										$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$arridfx[$k]."', '".$idu."')");
+										}
+									}
+								}
+
 							$db->db_query("update ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['givenname']])."', lastname='".addslashes($arr[$GLOBALS['sn']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."' where id='".$rrr['id']."'");
 							break;
 							}
@@ -1102,11 +1336,11 @@ function processImportDbFile( $pfile, $id, $separ )
 							while( $arr2 = $db->db_fetch_array($res2))
 								{
 								$req = "";
-								while( $row = $db->db_fetch_array($res))
+								for( $k =0; $k < count($arrnamef); $k++ )
 									{
-									if( $GLOBALS[$row['name']] != "" )
+									if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
 										{
-										$req .= $row['name']."='".addslashes($arr[$GLOBALS[$row['name']]])."',";
+										$req .= $arrnamef[$k]."='".addslashes($arr[$GLOBALS[$arrnamef[$k]]])."',";
 										}
 									}
 								if( !empty($req))
@@ -1116,7 +1350,23 @@ function processImportDbFile( $pfile, $id, $separ )
 									$req .= " where id='".$arr2['id']."'";
 									$db->db_query($req);
 									}
-								$db->db_data_seek($res,0);
+
+								if( count($arridfx) > 0 )
+									{
+									for( $k=0; $k < count($arridfx); $k++ )
+										{
+										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]." and  id_entry='".$arr2['id']."'");
+										if( $rs && $db->db_num_rows($rs) > 0 )
+											{
+											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])." where id_fieldx='".$arridfx[$k]."' and id_entry='".$arr2['id']."'");
+											}
+										else
+											{
+											$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$arridfx[$k]."', '".$arr2['id']."')");
+											}
+										}
+									}
+
 								}
 							
 							break;
@@ -1126,15 +1376,15 @@ function processImportDbFile( $pfile, $id, $separ )
 				case 0: // Allow duplicates to be created
 					$req = "";
 					$arrv = array();
-					while( $row = $db->db_fetch_array($res))
+					for( $k =0; $k < count($arrnamef); $k++ )
 						{
-						if( $GLOBALS[$row['name']] != "")
+						if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
 							{
-							$req .= $row['name'].",";
-							array_push( $arrv, $arr[$GLOBALS[$row['name']]]);
+							$req .= $arrnamef[$k].",";
+							array_push( $arrv, $arr[$GLOBALS[$arrnamef[$k]]]);
 							}
 						}
-					$db->db_data_seek($res,0);
+
 					if( !empty($req))
 						{
 						$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (".$req."id_directory) values (";
@@ -1157,6 +1407,15 @@ function processImportDbFile( $pfile, $id, $separ )
 								bab_addUserToGroup($iduser, $idgroup);
 								}
 							}
+
+						if( count($arridfx) > 0 )
+							{
+							for( $k=0; $k < count($arridfx); $k++ )
+								{
+								$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$arridfx[$k]."','".$idu."','".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."')");
+								}
+							}
+
 						}
 					break;
 
@@ -1309,6 +1568,29 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			$db->db_query($req);
 			}
 		}
+
+	foreach( $fields as $key => $value )
+		{
+		if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
+			{
+			$tmp = substr($key, strlen("babdirf"));
+			if( bab_isMagicQuotesGpcOn())
+				{
+				$value = addslashes($value);
+				}
+
+			$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmp."' and  id_entry='".$idu."'");
+			if( $rs && $db->db_num_rows($rs) > 0 )
+				{
+				$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$value."' where id_fieldx='".$tmp."' and id_entry='".$idu."'");
+				}
+			else
+				{
+				$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$value."', '".$tmp."', '".$idu."')");
+				}
+			}
+		}
+
 	return true;
 	}
 
@@ -1335,10 +1617,13 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return false;
 			}
-		if( $idgroup > 0 )
-			$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
-		else
-			$req .= $arr['name'].",";
+		if( isset($fields[$arr['name']]))
+			{
+			if( $idgroup > 0 )
+				$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
+			else
+				$req .= $arr['name'].",";
+			}
 		}
 
 	if( $idgroup > 0 )
@@ -1382,6 +1667,11 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 				$firstname = addslashes($fields['givenname']);
 				$lastname = addslashes($fields['sn']);
 				}
+			else
+				{
+				$firstname = $fields['givenname'];
+				$lastname = $fields['sn'];
+				}
 			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $fields['email'], $nickname, $sendpwd == "Y"? $password1: "" );
 			}
 		}
@@ -1423,11 +1713,28 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		if( !empty($cphoto))
 			$req .= "'".$cphoto."',";
 
-		if( $idgroup > 0 )
-			$req .= "'0', '".$iduser."')";
-		else
-			$req .= "'".$id."', '0')";
+		if( isset($fields[$arr['name']]))
+			{
+			if( $idgroup > 0 )
+				$req .= "'0', '".$iduser."')";
+			else
+				$req .= "'".$id."', '0')";
+			}
 		$db->db_query($req);
+		$iddbu = $db->db_insert_id();
+		}
+
+	foreach( $fields as $key => $value )
+		{
+		if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
+			{
+			$tmp = substr($key, strlen("babdirf"));
+			if( bab_isMagicQuotesGpcOn())
+				{
+				$value = addslashes($value);
+				}
+			$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values ('".$tmp."','".$iddbu."','".$value."')");
+			}
 		}
 	return true;
 	}
@@ -1439,6 +1746,11 @@ function confirmEmptyDb($id)
 	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 	if( $idgroup != 0 ) /* Ovidentia directory */
 		return;
+	$res = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
+	}
 	$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
 	}
 
@@ -1453,6 +1765,7 @@ function deleteDbContact($id, $idu)
 		bab_deleteUser($iddu);
 		return;
 		}
+	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$idu."'");
 	$db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."' and id='".$idu."'");
 	}
 
@@ -1478,12 +1791,28 @@ function exportDbDirectory($id, $wsepar, $separ)
 
 	$output = "";
 	if( $idgroup > 0 )
+		{
 		$output .= bab_translate("Nickname").$separ;
+		}
 
-	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
+	$arridfx = array();
+	$arrnamef = array();
+	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $id)."'");
 	while( $arr = $db->db_fetch_array($res))
 		{
-		$output .= translateDirectoryField($arr['description']).$separ;
+		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+			$rr = $db->db_fetch_array($db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$this->fieldn = translateDirectoryField($rr['description']);
+			$arrnamef[] = $rr['name'];
+			}
+		else
+			{
+			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$this->fieldn = translateDirectoryField($rr['name']);
+			$arridfx[] = $arr['id'];
+			}
+		$output .= translateDirectoryField($this->fieldn).$separ;
 		}
 
 	$output = substr($output, 0, -1);
@@ -1504,11 +1833,25 @@ function exportDbDirectory($id, $wsepar, $separ)
 			$output .= $nickname.$separ;
 			}
 
-		$db->db_data_seek($res,0);
-		while( $arr = $db->db_fetch_array($res))
+		for( $k=0; $k < count($arrnamef); $k++ )
 			{
-			$output .= $row[$arr['name']].$separ;
+			$output .= $row[$arrnamef[$k]].$separ;
 			}
+
+		for( $k=0; $k < count($arridfx); $k++ )
+			{
+			$res3 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry ='".$row['id']."' and id_fieldx='".$arridfx[$k]."'");
+			if( $res3 && $db->db_num_rows($res3))
+				{
+				$rr = $db->db_fetch_array($res3);
+				$output .= $rr['field_value'].$separ;
+				}
+			else
+				{
+				$output .= $separ;
+				}
+			}
+
 		$output = substr($output, 0, -1);
 		$output .= "\n";
 		}
@@ -1548,6 +1891,9 @@ if( isset($modify))
 		if( $modify == "dbc" )
 			{
 			$idx = "dbmod";
+			if(!isset($photof_name) ) { $photof_name = '';}
+			if(!isset($photof) ) { $photof = '';}
+			if(!isset($photod) ) { $photod = '';}
 			if(updateDbContact($id, $idu, $fields, $photof_name,$photof,$photod))
 				{
 				$msg = bab_translate("Your contact has been updated");
@@ -1557,6 +1903,13 @@ if( isset($modify))
 			}
 		else if( $modify == "dbac" && $badd)
 			{
+			if(!isset($photof_name) ) { $photof_name = '';}
+			if(!isset($photof) ) { $photof = '';}
+			if(!isset($password1) ) { $password1 = '';}
+			if(!isset($password2) ) { $password2 = '';}
+			if(!isset($nickname) ) { $nickname = '';}
+			if(!isset($notifyuser) ) { $notifyuser = '';}
+			if(!isset($sendpwd) ) { $sendpwd = '';}
 			if(!confirmAddDbContact($id, $fields, $photof_name,$photof, $password1, $password2, $nickname, $notifyuser, $sendpwd))
 				$idx = "adbc";
 			else
@@ -1581,13 +1934,14 @@ switch($idx)
 		deleteDbContact($id, $idu);
 		/* no break */
 	case "dbcunload":
+		if (!isset($refresh)) {$refresh = '';}
 		contactDbUnload($msg, $refresh);
 		exit();
 		break;
 
 	case "dbmod":
-		if (!isset($fields)) $fields = array();
-		if (!isset($refresh)) $refresh = '';
+		if (!isset($fields)) {$fields = array();}
+		if (!isset($refresh)) {$refresh = '';}
 		modifyDbContact($id, $idu, $fields, $refresh);
 		exit;
 		break;

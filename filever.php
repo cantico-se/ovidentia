@@ -307,9 +307,9 @@ function showHistoricFile($idf, $pos)
 				{
 				global $babDB, $arrfile, $babFileActions;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->date = bab_strftime(bab_mktime($arr['date']), false);
-				$rr = explode(" ", $arr['date']);
-				$this->hour = $rr[1];
+				$time = bab_mktime($arr['date']);
+				$this->date = bab_strftime($time, false);
+				$this->hour = bab_time($time);
 				$this->author = bab_getUserName($arr['author']);
 				$this->comment = $arr['comment'];
 				$this->action = $arr['action'];
@@ -440,9 +440,9 @@ function showVersionHistoricFile($idf, $pos)
 				{
 				global $babDB, $arrfile, $babFileActions;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->date = bab_strftime(bab_mktime($arr['date']), false);
-				$rr = explode(" ", $arr['date']);
-				$this->hour = $rr[1];
+				$time = bab_mktime($arr['date']);
+				$this->date = bab_strftime($time, false);
+				$this->hour = bab_time($time);
 				$this->author = bab_getUserName($arr['author']);
 				$this->comment = $arr['comment'];
 				$this->version = $arr['ver_major'].".".$arr['ver_minor'];

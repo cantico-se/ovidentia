@@ -673,10 +673,10 @@ function listVacationRequests($pos)
 				$this->url = $GLOBALS['babUrlScript']."?tg=vacuser&idx=morve&id=".$arr['id'];
 				list($this->quantity) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
 				$this->urlname = bab_getUserName($arr['id_user']);
-				$this->begindate = bab_printDate($arr['date_begin']);
+				$this->begindate = bab_shortDate(bab_mktime($arr['date_begin']." 00:00:00"), false);
 				if( $arr['day_begin'] != 1)
 					$this->begindate .= " ". $babDayType[$arr['day_begin']];
-				$this->enddate = bab_printDate($arr['date_end']);
+				$this->enddate = bab_shortDate(bab_mktime($arr['date_end']." 00:00:00"), false);
 				if( $arr['day_begin'] != 1)
 					$this->enddate .= " ". $babDayType[$arr['day_end']];
 				switch($arr['status'])

@@ -84,6 +84,15 @@ function bab_formatDate($format, $time)
 				case 'i': /* Minutes with leading zeros */
 					$val = date("i", $time);
 					break;
+				case 'S': /* user short date  */
+					$val = bab_shortDate($time, false);
+					break;
+				case 'L': /* user long date  */
+					$val = bab_longDate($time, false);
+					break;
+				case 'T': /* user time format  */
+					$val = bab_time($time);
+					break;
 				}
 			$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
 			}
@@ -171,15 +180,83 @@ function bab_mktime($time)
 	return mktime( $arr1[0],$arr1[1],$arr1[2],$arr0[1],$arr0[2],$arr0[0]);
 	}
 
+function bab_getDateFormat($format)
+{
+	$format = preg_replace("/(?<!M)M(?!M)/i", "$1%n$2", $format);
+	$format = preg_replace("/(?<!M)MM(?!M)/i", "$1%n$2", $format);
+	$format = preg_replace("/(?<!M)MMM(?!M)/i", "$1%m$2", $format);
+	$format = preg_replace("/(?<!M)M{4,}(?!M)/i", "$1%M$3", $format);
+
+	$format = preg_replace("/(?<!D)D(?!D)/i", "$1%j$2", $format);
+	$format = preg_replace("/(?<!D)DD(?!D)/i", "$1%j$2", $format);
+	$format = preg_replace("/(?<!D)DDD(?!D)/i", "$1%d$2", $format);
+	$format = preg_replace("/(?<!D)D{4,}(?!D)/i", "$1%D$2", $format);
+	
+	$format = preg_replace("/(?<!Y)Y(?!Y)/i", "$1%y$2", $format);
+	$format = preg_replace("/(?<!Y)YY(?!Y)/i", "$1%y$2", $format);
+	$format = preg_replace("/(?<!Y)YYY(?!Y)/i", "$1%Y$2", $format);
+	$format = preg_replace("/(?<!Y)Y{4,}(?!Y)/i", "$1%Y$2", $format);
+
+	return $format;
+}
+
+function bab_getTimeFormat($format)
+{
+	$format = preg_replace("/(?<!h)h(?!h)/", "$1g$2", $format);
+	$format = preg_replace("/(?<!h)h{2,}(?!h)/", "$1h$2", $format);
+
+	$format = preg_replace("/(?<!H)H(?!H)/", "$1G$2", $format);
+	$format = preg_replace("/(?<!H)H{2,}(?!H)/", "$1H$2", $format);
+
+	$format = preg_replace("/(?<!m)m{1,}(?!m)/i", "$1i$2", $format);
+	$format = preg_replace("/(?<!s)s{1,}(?!s)/i", "$1s$2", $format);
+
+	$format = preg_replace("/(?<!t)t{1,}(?!t)/", "$1a$2", $format);
+	$format = preg_replace("/(?<!T)T{1,}(?!T)/", "$1A$2", $format);
+
+	return $format;
+}
+
 function bab_strftime($time, $hour=true)
 	{
-	global $babDays, $babMonths;
+	return bab_longDate($time, true, $hour);
+	}
+
+function bab_shortDate($time, $hour=true)
+	{
 	if( $time < 0)
 		return "";
+
 	if( !$hour )
-		return $babDays[date("w", $time)]." ".date("j", $time)." ".$babMonths[date("n", $time)]." ".date("Y", $time); 
+		{
+		return bab_formatDate($GLOBALS['babShortDateFormat'], $time );
+		}
 	else
-		return $babDays[date("w", $time)]." ".date("j", $time)." ".$babMonths[date("n", $time)]." ".date("Y", $time)." ".date("H", $time).":".date("i", $time); 
+		{
+		return bab_formatDate($GLOBALS['babShortDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
+		}
+	}
+
+function bab_longDate($time, $hour=true)
+	{
+	if( $time < 0)
+		return "";
+
+	if( !$hour )
+		{
+		return bab_formatDate($GLOBALS['babLongDateFormat'], $time );
+		}
+	else
+		{
+		return bab_formatDate($GLOBALS['babLongDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
+		}
+	}
+
+function bab_time($time)
+	{
+	if( $time < 0)
+		return "";
+	return date($GLOBALS['babTimeFormat'], $time);
 	}
 
 function bab_printTemplate( &$class, $file, $section="")
@@ -221,17 +298,7 @@ function bab_printOvmlTemplate( $file, $args=array())
 	$tpl = new babOvTemplate($args);
 	return $tpl->printout(implode("", file($filepath)));
 	}
-/*
-function bab_composeUserName( $F, $L)
-	{
-	global $babBody;
-	if ($babBody->nameorder[0]) eval("\$var0 = \$".$babBody->nameorder[0].";");
-	else $var0 = $F;
-	if ($babBody->nameorder[1]) eval("\$var1 = \$".$babBody->nameorder[1].";");
-	else $var0 = $L;
-	return trim(sprintf("%s %s", $var0 ,$var1));
-	}
-*/
+
 function bab_composeUserName( $F, $L)
 {
 global $babBody;
@@ -1086,7 +1153,6 @@ function babTopcatSection($close)
 	$this->babSectionTemplate("topcatsection.html", "template");
 	$this->title = bab_translate("Topics categories");
 
-	//$res = $babDB->db_query("select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='0' and type='1' order by ordering asc");
 	$res = $babDB->db_query("SELECT tct.id, tct.title FROM ".BAB_TOPCAT_ORDER_TBL." tot left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tot.id_topcat=tct.id WHERE tot.id_parent='0' and tot.type='1' order by tot.ordering asc");
 	while( $row = $babDB->db_fetch_array($res))
 		{
@@ -1103,8 +1169,6 @@ function babTopcatSection($close)
 		}
 	$this->head = bab_translate("List of different topics categories");
 	$this->count = count($this->arrid);
-	$this->count = count($this->arrid);
-
 	}
 
 function topcatGetNext()
@@ -2028,7 +2092,7 @@ function bab_updateUserSettings()
 	if( !empty($BAB_SESS_USERID))
 		{
 
-		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
+		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter, date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
@@ -2048,6 +2112,18 @@ function bab_updateUserSettings()
 			if( $arr['style'] != ""  && is_file("skins/".$GLOBALS['babSkin']."/styles/".$arr['style']))
 				{
 				$GLOBALS['babStyle'] = $arr['style'];
+				}
+
+			if( $arr['date_shortformat'] != '') {
+				$GLOBALS['babShortDateFormat'] = bab_getDateFormat($arr['date_shortformat']) ;
+				}
+
+			if( $arr['date_longformat'] != '') {
+				$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ;
+				}
+
+			if( $arr['time_format'] != '') {
+				$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ;
 				}
 
 			$babBody->lastlog = $arr['lastlog'];
@@ -2276,6 +2352,21 @@ function bab_updateSiteSettings()
 		$GLOBALS['babEmailPassword'] = false ; }
 
 	$GLOBALS['babAdminName'] = $arr['adminname'];
+
+	if( $arr['date_shortformat'] == "") {
+		$GLOBALS['babShortDateFormat'] = bab_getDateFormat("dd/mm/yyyy") ; }
+	else {
+		$GLOBALS['babShortDateFormat'] = bab_getDateFormat($arr['date_shortformat']) ; }
+
+	if( $arr['date_longformat'] == "") {
+		$GLOBALS['babLongDateFormat'] = bab_getDateFormat("ddd dd MMMM yyyy") ; }
+	else {
+		$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ; }
+
+	if( $arr['time_format'] == "") {
+		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm") ; }
+	else {
+		$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ; }
 
 	if( $arr['authentification'] == 1 ) // LDAP authentification
 		{

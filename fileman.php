@@ -255,7 +255,7 @@ function listTrashFiles($id, $gr)
 				else
 					$this->sizef = "???";
 
-				$this->modified = date("d/m/Y H:i", bab_mktime($arr['modified']));
+				$this->modified = bab_shortDate(bab_mktime($arr['modified']), true);
 				$this->postedby = bab_getUserName($arr['modifiedby'] == 0? $arr['author']: $arr['modifiedby']);
 				$i++;
 				return true;
@@ -712,7 +712,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			else
 				$this->sizef = "???";
 
-			$this->modified = date("d/m/Y H:i", bab_mktime($arr['modified']));
+			$this->modified = bab_shortDate(bab_mktime($arr['modified']), true);
 			$this->postedby = bab_getUserName($arr['modifiedby'] == 0? $arr['author']: $arr['modifiedby']);
 			$this->hits = $arr['hits'];
 			if( $arr['readonly'] == "Y" )
@@ -1837,11 +1837,11 @@ function viewFile( $idf)
 				$this->fsize = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb")." ( ".bab_formatSizeFile($fstat[7], false) ." ".bab_translate("Bytes") ." )";
 				
 				$this->fmodifiedtxt = bab_translate("Modified");
-				$this->fmodified = date("d/m/Y H:i", bab_mktime($arr['modified']));
+				$this->fmodified = bab_shortDate(bab_mktime($arr['modified']), true);
 				$this->fmodifiedbytxt = bab_translate("Modified by");
 				$this->fmodifiedby = bab_getUserName($arr['modifiedby']);
 				$this->fcreatedtxt = bab_translate("Created");
-				$this->fcreated = date("d/m/Y H:i", bab_mktime($arr['created']));
+				$this->fcreated = bab_shortDate(bab_mktime($arr['created']), true);
 				$this->fpostedbytxt = bab_translate("Posted by");
 				$this->fpostedby = bab_getUserName($arr['modifiedby'] == 0? $arr['author']: $arr['modifiedby']);
 

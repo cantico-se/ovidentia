@@ -381,7 +381,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				$this->description = $arr['description'];
 				$this->quantity = $arr['quantity'];
 				$this->creditor = bab_getUserName($arr['id_creditor']);
-				$this->date = bab_printDate($arr['date_entry']);
+				$this->date = bab_shortDate(bab_mktime($arr['date_entry']." 00:00:00"), false);
 				$this->bclose = $arr['active'] == "N"? true: false;
 				if( $this->bclose )
 					$this->statusval = $this->closedtxt;

@@ -1114,8 +1114,8 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 	while( $row = $babDB->db_fetch_array($res))
 	{
 		$fullname = bab_getUserName($row['id_user']);
-		$datb = bab_printDate($row['date_begin']);
-		$date = bab_printDate($row['date_end']);
+		$datb = bab_shortDate(bab_mktime($row['date_begin']." 00:00:00"), false);
+		$date = bab_shortDate(bab_mktime($row['date_end']." 00:00:00"), false);
 
 
 		$res2 = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$row['id']."'");

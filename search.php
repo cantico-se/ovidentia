@@ -59,7 +59,6 @@ function finder($req2,$tablename,$option = "OR",$req1="")
 	return bab_sql_finder($req2,$tablename,$option,$req1);
 	}
 
-
 function returnCategoriesHierarchy($topics)
 	{
 	$article_path = new categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
@@ -366,9 +365,34 @@ function searchKeyword($item , $option = "OR")
                 $arr = $this->dirarr[$l];
 				$this->topicid = $arr['id'];
 				$this->topictitle = put_text($arr['name'],30);
-				$req = "SELECT DISTINCT(f.name) name FROM ".BAB_DBDIR_FIELDSEXTRA_TBL." e LEFT JOIN ".BAB_DBDIR_FIELDS_TBL." f ON f.id = e.id_field AND f.name!='jpegphoto' WHERE e.ordering!=0  AND e.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)." GROUP BY f.name ORDER BY e.ordering'";
-				$this->resfieldsfromdir = $this->db->db_query($req);
-				$this->countfieldsfromdir = $this->db->db_num_rows($this->resfieldsfromdir);				
+
+				$req = "select df.id, dfd.name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." dfd left join ".BAB_DBDIR_FIELDSEXTRA_TBL." df ON df.id_directory=dfd.id_directory and df.id_field = ( ".BAB_DBDIR_MAX_COMMON_FIELDS." + dfd.id ) where df.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)."'";
+				$res = $this->db->db_query($req);
+
+				$lk = 0;
+				while ($arr = $this->db->db_fetch_array($res))
+					{
+					$tblxn[$lk] = $arr['id'];
+					$tblxd[$lk] = translateDirectoryField($arr['name']);
+					$lk++;
+					}
+
+				$this->tblxfields = array();
+				$this->countfieldsfromdir = 0;
+				if( $lk > 0 )
+					{
+					$fliped = array_flip($tblxd);
+					ksort($fliped);
+					$lk= 0;
+					foreach($fliped as $value => $key)
+						{
+						$this->tblxfields[$lk]['name'] = $tblxn[$key];
+						$this->tblxfields[$lk]['description'] = $value;
+						$lk++;
+						}
+					$this->countfieldsfromdir = count($this->tblxfields);
+					}
+				
 				$l++;
 				return true;
 				}
@@ -407,9 +431,14 @@ function searchKeyword($item , $option = "OR")
 			static $k = 0;
 			if( $k < $this->countfieldsfromdir)
 				{
-				$arr = $this->db->db_fetch_array($this->resfieldsfromdir);
-				$this->fieldnamefromdir = $arr['name'] ;
+				$this->fieldnamefromdir = "babdirf".$this->tblxfields[$k]['name'] ;
+				$this->name = "babdirf".$this->tblxfields[$k]['name'];
+				$this->description = $this->tblxfields[$k]['description'];
 				$this->fieldindex = $k;
+				if ( isset($this->fields['dirselect_'.$this->j]) && $this->fields['dirselect_'.$this->j] == $this->name)
+					$this->selected = "selected";
+				else	
+					$this->selected = false;
 				$k++;
 				return true;
 				}
@@ -616,7 +645,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$req = "alter table artresults add unique (id)";
 				$this->db->db_query($req);
 
-				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name,email, a.title arttitle, a.body,a.restriction, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
+				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name,email, a.title arttitle, a.body,a.restriction, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
 				$this->db->db_query($req);
 				$req = "alter table comresults add unique (id)";
 				$this->db->db_query($req); 
@@ -654,7 +683,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($this->like || $this->like2)
 						$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
 					
-					$req = "insert into artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
+					$req = "insert into artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, UNIX_TIMESTAMP(a.date) date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
 					$this->db->db_query($req);
 
 					$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
@@ -670,7 +699,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($this->like || $this->like2)
 						$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
 
-					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name author,email,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
+					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
 
 					$this->db->db_query($req);
 					$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
@@ -740,7 +769,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$plus = "( ".$temp1." or ".$temp2.") and";
 				else $plus = "";
 				if ($idthreads != "") { 
-					$req = "insert into forresults select b.id, b.id_thread, F.name topic, F.id id_topic, b.subject title,b.message, author, DATE_FORMAT(b.date, '%d-%m-%Y') date from ".BAB_POSTS_TBL." b, ".BAB_THREADS_TBL." T, ".BAB_FORUMS_TBL." F where b.id_thread=T.id and T.forum=F.id and ".$plus." b.confirmed='Y' and b.id_thread IN (".substr($idthreads,0,-1).") order by ".$order;
+					$req = "insert into forresults select b.id, b.id_thread, F.name topic, F.id id_topic, b.subject title,b.message, author, UNIX_TIMESTAMP(b.date) date from ".BAB_POSTS_TBL." b, ".BAB_THREADS_TBL." T, ".BAB_FORUMS_TBL." F where b.id_thread=T.id and T.forum=F.id and ".$plus." b.confirmed='Y' and b.id_thread IN (".substr($idthreads,0,-1).") order by ".$order;
 					$this->db->db_query($req);
 				}
 
@@ -820,7 +849,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$plus = "";
 				$plus = finder($this->like,"content",$option,$this->like2);
 				if ($plus != "") $plus .= " and";
-				$req = "select id, content, DATE_FORMAT(date, '%d-%m-%Y') date from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."' limit ".$navpos.", ".$babLimit;
+				$req = "select id, content, UNIX_TIMESTAMP(date) date from ".BAB_NOTES_TBL." where ".$plus." id_user='".$BAB_SESS_USERID."' limit ".$navpos.", ".$babLimit;
 				$this->resnot = $this->db->db_query($req);
 				$this->countnot = $this->db->db_num_rows($this->resnot);
 				if( !$this->counttot && $this->countnot > 0 )
@@ -837,7 +866,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->db->db_query($req);
 				bab_fileManagerAccessLevel();
 				$private = false;
-				// open wide
 				$idfile = "";
 				$grpfiles = " and F.bgroup='Y' ";
 
@@ -870,12 +898,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
                 if ($idfile != "") 
 					{
-					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R where F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
+					$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R where F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and ".$plus." F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
                     $this->db->db_query($req);
 					
 					if ($temp6 != "")
 						{
-						$req = "insert into filresults select F.id, F.name title, F.id_owner, description, DATE_FORMAT(created, '%d-%m-%Y') datec, DATE_FORMAT(modified, '%d-%m-%Y') datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M where ".$temp6." and M.id_file=F.id AND F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
+						$req = "insert into filresults select F.id, F.name title, F.id_owner, description, UNIX_TIMESTAMP(created) datec, UNIX_TIMESTAMP(modified) datem, path, bgroup, concat( U.lastname, ' ', U.firstname ) author, folder from ".BAB_FILES_TBL." F, ".BAB_USERS_TBL." U, ".BAB_FM_FOLDERS_TBL." R, ".BAB_FM_FIELDSVAL_TBL." M where ".$temp6." and M.id_file=F.id AND F.author=U.id and (F.id_owner=R.id OR F.bgroup='N') and F.id_owner in (".substr($idfile,0,-1).") ". $grpfiles ." and state='' and confirmed='Y' order by ".$order;
 						$this->db->db_query($req);
 						}
                     }
@@ -940,35 +968,46 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 
 				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
-				$crit_fields = "";
+				$crit_fields = array();
 				
 				for($i = 0 ; $i < FIELDS_TO_SEARCH ; $i++)
 					{
 					$dirselect = isset($this->fields['dirselect_'.$i]) ? $this->fields['dirselect_'.$i] : '';
 					$dirfield = isset($this->fields['dirfield_'.$i]) ? $this->fields['dirfield_'.$i] : '';
 					if ($dirfield !="") 
-						$crit_fields .= " and ".finder($dirfield,$dirselect);
+						$crit_fields[] = finder($dirfield,$dirselect);
 					}
 
+				if( count($crit_fields) > 0 )
+					{
+					$crit_fields = implode(' and ', $crit_fields);
+					}
+				else
+					{
+					$crit_fields = '';
+					}
 				$dir_fields = array('name'=>array(),'description'=>array());
 				
 				$likedir = "(";
 				
+				$arrfields = array();
+				$arrfields[] = 'det.id';
 				$res = $this->db->db_query("SELECT * FROM ".BAB_DBDIR_FIELDS_TBL." WHERE name != 'jpegphoto'");
 				while ($arr = $this->db->db_fetch_array($res))
 					{
+					$arrfields[] = "det.".$arr['name'];
 					$dir_fields['name'][$arr['id']] = $arr['name'];
 					$dir_fields['description'][$arr['id']] = $arr['description'];
 					if ($likedir != "(")
 						$likedir .= " or ";
 					$likedir .= $this->like || $this->like2 ? finder($this->like,$arr['name'],$option,$this->like2) : '';
 					}
-				$likedir .= ") and ";
+				$likedir .= ") ";
 
 				if (!$this->like && !$this->like2)
 					$likedir = '';
 
-				$req = "create temporary table dirresults select *,sn name from ".BAB_DBDIR_ENTRIES_TBL." where 0";
+				$req = "create temporary table dirresults select ".implode(",", $arrfields).",det.sn name from ".BAB_DBDIR_ENTRIES_TBL." det where 0";
 				$this->db->db_query($req);
 				$req = "alter table dirresults add unique (id)";
 				$this->db->db_query($req);
@@ -979,48 +1018,127 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$res = $this->db->db_query($req);
 					$row = $this->db->db_fetch_array($res);
 
-					$diradd = false;
 					if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 						{
 						if( !bab_isMagicQuotesGpcOn())
 							$dirname = addslashes($row['name']);
 						else
 							$dirname = $row['name'];
+	
+						$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and id_field >".BAB_DBDIR_MAX_COMMON_FIELDS);
+						$dbdirfields = array();
+						$dbdirxfields = array();
+						$dbdirfields[] = 'id';
+						while( $row2 = $this->db->db_fetch_array($res))
+							{
+							$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row2['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+							$dbdirxfields[] = "babdirf".$row2['id'];
+							}
+
+						$req = "create temporary table bab_dbdir_temptable select ".implode(',', $arrfields).", det.sn name from ".BAB_DBDIR_ENTRIES_TBL." det where 0";
+						$this->db->db_query($req);
+
 						if( $row['id_group'] > 0 )
 							{
 							list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 							if( $bdir == 'Y' )
 								{
 								$grp = ($row['id_group'] > 1) ? "UG.id_group='".$row['id_group']."' and ":'';
-								$req = "insert into dirresults select g.*, '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where  ".$likedir." ".$grp." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." group by g.id order by sn asc,givenname asc";
+								$req = "insert into bab_dbdir_temptable select ".implode(",", $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det";
+								if( $row['id_group'] > 1 )
+									{
+									$req .= " left join ".BAB_USERS_GROUPS_TBL." UG on UG.id_object=det.id_user";
+									}
+								$req .= " where det.id_directory='0'";
+								if( $row['id_group'] > 1 )
+									{
+									$req .= " and UG.id_group='".$row['id_group']."'";
+									}
 								$this->db->db_query($req);
 								}
 							}
 						else
 							{
-							$req = "insert into dirresults select g.*,'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." group by g.id order by sn asc,givenname asc";
+							$req = "insert into bab_dbdir_temptable select ".implode(",", $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
 							$this->db->db_query($req);
 							}
+
+						if( count($dbdirxfields) > 0 )
+							{
+							for( $m=0; $m < count($dbdirxfields); $m++)
+								{
+								$this->db->db_query("alter table bab_dbdir_temptable add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
+								$this->db->db_query("alter table dirresults add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
+								}
+
+							$res = $this->db->db_query("select id from bab_dbdir_temptable");
+							while( $arr = $this->db->db_fetch_array($res))
+								{
+								$tmp = array();
+								$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$arr['id']."'");
+								while( $rr = $this->db->db_fetch_array($res2))
+									{
+									$tmp[] = "babdirf".$rr['id_fieldx']." = '".$rr['field_value']."'";
+									}
+								if( count($tmp) > 0 )
+									{
+									$this->db->db_query("update bab_dbdir_temptable set ".implode(',', $tmp)." where id='".$arr['id']."'");
+									}
+								}
+							}
+							
+						$req = "insert into dirresults select g.* from bab_dbdir_temptable g";
+						if( !empty($likedir))
+							{
+							$req .= " where ".$likedir;
+							if( !empty($crit_fields))
+								{
+								$req .= " and ".$crit_fields;
+								}
+							}
+						else
+							{
+							if( !empty($crit_fields))
+								{
+								$req .= " where ".$crit_fields;
+								}
+							}
+						$req .= " group by g.id order by sn asc,givenname asc";
+						$this->db->db_query($req);
 						}
-					$req = "SELECT f.name,f.description FROM ".BAB_DBDIR_FIELDSEXTRA_TBL." e,".BAB_DBDIR_FIELDS_TBL." f WHERE f.id=e.id_field AND e.id_directory='".($row['id_group'] != 0? 0: $row['id'])."' AND e.ordering > 0 ORDER BY e.ordering";
 
 					$this->dirfields = array('name'=>array(),'description'=>array());
-					
-					$resfields = $this->db->db_query($req);
-					while($arr = $this->db->db_fetch_array($resfields))
+
+					$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and ordering!='0' order by ordering asc");
+					while( $row3 = $this->db->db_fetch_array($rescol))
 						{
-						$this->dirfields['name'][] = $arr['name'];
-						$this->dirfields['description'][] = $arr['description'];
+						if( $row3['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+							{
+							$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$row3['id_field']."'"));
+							$this->dirfields['name'][] = $rr['name'];
+							$this->dirfields['description'][] = translateDirectoryField($rr['description']);
+							}
+						else
+							{
+							$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row3['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+							$this->arrcols[] = array("babdirf".$row3['id'], translateDirectoryField($rr['name']), 1);
+							$this->dirfields['name'][] = "babdirf".$row3['id'];
+							$this->dirfields['description'][] = translateDirectoryField($rr['name']);
+							}					
 						}
+
 					}
 				else
 					{
 					// all directories
+					$plus = "";
+					$plus = finder($this->like,"field_value",$option,$this->like2);
+					if ($plus != "") $plus .= " and";
+
 					$req = "select id,id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id_group<'2'";
 					$res = $this->db->db_query($req);
 					while ($row = $this->db->db_fetch_array($res))
 						{
-						$diradd = false;
 						if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 							{
 							if( !bab_isMagicQuotesGpcOn())
@@ -1032,16 +1150,58 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 								if( $bdir == 'Y' )
 									{
-									$req = "insert into dirresults select g.*, '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." g , ".BAB_USERS_GROUPS_TBL." UG where ".$likedir." UG.id_object=g.id_user and g.id_directory='0' ".$crit_fields." group by g.id order by sn asc,givenname asc";
+									$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det , ".BAB_USERS_GROUPS_TBL." UG where";
+									if( !empty($likedir))
+										{
+										$req .= " ".$likedir." and";
+										}
+									$req .= " UG.id_object=det.id_user and det.id_directory='0'";
+									if( !empty($crit_fields) )
+										{
+										$req .= " and ".$crit_fields;
+										}
+									$req .= " group by det.id order by sn asc,givenname asc";
 									$this->db->db_query($req);
+
+									$rs2 = $this->db->db_query("select dext.id_entry from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." dext left join ".BAB_DBDIR_ENTRIES_TBL." det on dext.id_entry=det.id left join ".BAB_USERS_GROUPS_TBL." UG on UG.id_object=det.id_user where ".$plus." det.id_directory='0'");
+
+									while( $rr = $this->db->db_fetch_array($rs2))
+										{
+										$rs3 = $this->db->db_query("select id from dirresults where id='".$rr['id_entry']."'");
+										if( !$rs3 || $this->db->db_num_rows($rs3) == 0 )
+											{
+											$this->db->db_query("insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where det.id='".$rr['id_entry']."'");
+											}
+										}								
 									}
 								}
 							else
 								{
-								$req = "insert into dirresults select g.*,'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." g where ".$likedir." id_directory='".($row['id_group'] != 0? 0: $row['id'])."' ".$crit_fields." group by g.id order by sn asc,givenname asc";
+								$req = "insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where";
+								if( !empty($likedir))
+									{
+									$req .= " ".$likedir." and";
+									}
+								$req .= " id_directory='".($row['id_group'] != 0? 0: $row['id'])."'";
+								if( !empty($crit_fields))
+									{
+									$req .= " and ".$crit_fields;
+									}
+								$req .= " group by det.id order by sn asc,givenname asc";
 								$this->db->db_query($req);
+
+								$rs2 = $this->db->db_query("select dext.id_entry from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." dext left join ".BAB_DBDIR_ENTRIES_TBL." det on dext.id_entry=det.id where ".$plus." det.id_directory='".($row['id_group'] != 0? 0: $row['id'])."'");
+								while( $rr = $this->db->db_fetch_array($rs2))
+									{
+									$rs3 = $this->db->db_query("select id from dirresults where id='".$rr['id_entry']."'");
+									if( !$rs3 || $this->db->db_num_rows($rs3) == 0 )
+										{
+										$this->db->db_query("insert into dirresults select ".implode(',', $arrfields).",'".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where det.id='".$rr['id_entry']."'");
+										}
+									}
 								}
 							}
+
 						}
 					$this->dirfields['name'] = array($dir_fields['name'][2],$dir_fields['name'][4]);
 					$this->dirfields['description'] = array($dir_fields['description'][2],$dir_fields['description'][4]);
@@ -1108,7 +1268,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (count($list_id_cal) > 0) 
 					{
-					$req = "insert into ageresults select h.id id,h.title title, h.description description,DATE_FORMAT(h.start_date,'%d-%m-%Y') start_date, h.start_time start_time ,DATE_FORMAT(h.end_date,'%d-%m-%Y') end_date,h.end_time end_time, A.owner owner,A.type type,h.id_cal id_cal, C.name categorie, C.description catdesc from ".BAB_CAL_EVENTS_TBL." h, ".BAB_CALENDAR_TBL." A LEFT JOIN ".BAB_CATEGORIESCAL_TBL." C ON C.id=h.id_cat ".$reqsupc." where ".$reqsup." A.id=h.id_cal".$crit_date." and h.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ".$order;
+					$req = "insert into ageresults select h.id id,h.title title, h.description description,UNIX_TIMESTAMP(h.start_date) start_date, h.start_time start_time ,UNIX_TIMESTAMP(h.end_date) end_date,h.end_time end_time, A.owner owner,A.type type,h.id_cal id_cal, C.name categorie, C.description catdesc from ".BAB_CAL_EVENTS_TBL." h, ".BAB_CALENDAR_TBL." A LEFT JOIN ".BAB_CATEGORIESCAL_TBL." C ON C.id=h.id_cat ".$reqsupc." where ".$reqsup." A.id=h.id_cal".$crit_date." and h.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ".$order;
 					$this->db->db_query($req);
 					}
 
@@ -1168,6 +1328,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 			}
 
+		function dateformat($time)
+			{
+			return bab_shortDate($time, true);
+			}
+
 		function getnextart()
 			{
 			static $i = 0;
@@ -1175,7 +1340,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
 				$this->article = put_text($arr['title']);
-				$this->artdate = $arr['date'];
+				$this->artdate = bab_shortDate($arr['date'], true);
 				$this->artauthor = $arr['author'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
@@ -1215,7 +1380,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countcom)
 				{
 				$arr = $this->db->db_fetch_array($this->rescom);
-				$this->artdate = $arr['date'];
+				$this->artdate = bab_shortDate($arr['date'], true);
 				$this->artauthor = $arr['name'];
 				$this->authormail = $arr['email'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
@@ -1250,7 +1415,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr = $this->db->db_fetch_array($this->resfor);
 				$this->post = put_text($arr['title']);
 				$this->postauthor = $arr['author'];
-				$this->postdate = $arr['date'];
+				$this->postdate = bab_shortDate($arr['date'], true);
 				$this->forum = put_text($arr['topic']);
 				$this->forumurl = $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic'];
 				$this->intro = put_text($arr['message'],300);
@@ -1299,8 +1464,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$arr = $this->db->db_fetch_array($this->resfil);
 				$this->file = put_text($arr['title']);
-				$this->update = $arr['datem'];
-				$this->created = $arr['datec'];
+				$this->update = bab_shortDate($arr['datem'], true);
+				$this->created = bab_shortDate($arr['datec'], true);
                 $this->artauthor = $arr['author'];
 				$this->filedesc = put_text($arr['description']);
 				$this->path = $arr['path'];
@@ -1357,7 +1522,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->content = put_text($arr['content'],400);
 				$this->notauthor = $GLOBALS['BAB_SESS_USER'];
 				$this->notauthormail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
-                $this->notdate = $arr['date'];
+                $this->notdate = bab_shortDate($arr['date'], true);
 				$this->read_more = bab_translate("Edit");
 				$this->noteurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$arr['id'];
 				$i++;
@@ -1442,8 +1607,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr = $this->db->db_fetch_array($this->resage);
 				$this->agetitle = put_text($arr['title']);
 				$this->agedescription = put_text($arr['description'],400);
-				$this->agestart_date = $arr['start_date']." - ".$arr['start_time'];
-				$this->ageend_date = $arr['end_date']." - ".$arr['end_time'];
+				$this->agestart_date = $this->dateformat($arr['start_date'])." - ".$arr['start_time'];
+				$this->ageend_date = $this->dateformat($arr['end_date'])." - ".$arr['end_time'];
 				switch ($arr['type'])
 					{
 					case 1:
@@ -1458,8 +1623,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 				$this->agecat = "".$arr['categorie'];
 				$this->agecatdesc = "".put_text($arr['catdesc'],200);
-				$ex = explode("-",$arr['start_date']);
-				$this->ageurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$ex[0]."&month=".$ex[1]."&year=".$ex[2]."&calid=".$arr['id_cal']."&evtid=".$arr['id']."&view=viewm";
+				$this->ageurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".date('d',$arr['start_date'])."&month=".date('m',$arr['start_date'])."&year=".date('Y',$arr['start_date'])."&calid=".$arr['id_cal']."&evtid=".$arr['id']."&view=viewm";
 				$i++;
 				return true;
 				}
@@ -1753,8 +1917,8 @@ function viewFile($id, $w)
 				$this->title = $this->arr['name'];
 				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
 				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
-				$this->modified = date("d/m/Y H:i", bab_mktime($this->arr['modified']));
-				$this->created = date("d/m/Y H:i", bab_mktime($this->arr['created']));
+				$this->modified = bab_shortDate(bab_mktime($this->arr['modified']), true);
+				$this->created = bab_shortDate(bab_mktime($this->arr['created']), true);
 				$this->postedby = bab_getUserName($this->arr['author']);
 				$this->modifiedby = bab_getUserName($this->arr['modifiedby']);
 				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".urlencode($this->arr['path'])."&file=".urlencode($this->arr['name']);

@@ -118,6 +118,10 @@ if( $tg != "version" || $idx != "upgrade")
 	$babLangFilter->translateTexts();
 	}
 
+//include $babInstallPath."utilit/statincl.php";
+//$babStat =& new bab_StatEvent();
+//$babStat->module($tg); 
+
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 if(!is_dir($babSkinPath)) {
 	$babSkinPath = $babInstallPath."skins/".'ovidentia'."/";
@@ -873,6 +877,7 @@ switch($tg)
 		$babLevelOne = "";
 		$babLevelTwo = "";
 		$incl = "entry";
+		//$babStat->module($incl);
 		$arr = explode("/", $tg);
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")
 			{
@@ -892,14 +897,18 @@ switch($tg)
 						$incl = "addons/".$row['title'];
 						if( is_dir( $GLOBALS['babInstallPath'].$incl))
 							{
+							$module = "";
 							for($i = 2; $i < sizeof($arr); $i++)
-								$incl .= "/".$arr[$i];
+								$module .= "/".$arr[$i];
 							$GLOBALS['babAddonFolder'] = $row['title'];
 							$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
 							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
 							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 							$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 							$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$row['title']."/";
+							//$babStat->addon($row['title']);
+							//$babStat->module($module);
+							$incl .= $module;
 							}
 						else
 							$incl = "entry";
@@ -914,13 +923,24 @@ switch($tg)
 		else
 		{
 			if( $BAB_SESS_LOGGED)
+				{
 				$file = "private.html";
+				}
 			else
+				{
 				$file = "public.html";
+				}
+
 			if( file_exists($GLOBALS['babOvmlPath'].$file))
+				{
 				$incl = "oml";
+				//$babStat->addVariable("file", $file);
+				}
 			else
+				{
 				$incl = "entry";
+				//$babStat->addVariable("file", "");
+				}
 		}
 		break;
 	}

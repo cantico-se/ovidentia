@@ -742,9 +742,9 @@ function listRightsByUser($id)
 						$this->quantity = $arr['quantity'];
 					else
 						$this->quantity = $row['quantity'];
-					$this->date = bab_printDate($row['date_entry']);
-					$this->dateb = bab_printDate($row['date_begin']);
-					$this->datee = bab_printDate($row['date_end']);
+					$this->date = bab_shortDate(bab_mktime($row['date_entry']." 00:00:00"), false);
+					$this->dateb = bab_shortDate(bab_mktime($row['date_begin']." 00:00:00"), false);
+					$this->datee = bab_shortDate(bab_mktime($row['date_end']." 00:00:00"), false);
 					$arr = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$this->iduser."' and ".BAB_VAC_ENTRIES_TBL.".status='Y' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$row['id']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
 					$this->consumed = isset($arr['total'])? $arr['total'] : 0;
 					$this->bview = true;

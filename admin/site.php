@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
+include_once $babInstallPath."utilit/dirincl.php";
 
 $bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber', 'mobile', 'homephone', 'facsimiletelephonenumber', 'title', 'o', 'street', 'l', 'postalcode', 'st', 'homepostaladdress', 'jpegphoto', 'departmentnumber');
 
@@ -105,6 +106,13 @@ function siteModify($id)
 		var $adminnametxt;
 		var $adminnameval;
 
+		var $date_lformat_title;
+		var $date_sformat_title;
+		var $time_format_title;
+		var $date_lformat_val;
+		var $date_sformat_val;
+		var $time_format_val;
+
 		function temp($id)
 			{
 			$this->name = bab_translate("Site name");
@@ -129,6 +137,10 @@ function siteModify($id)
 			$this->smtppass2 = bab_translate("Re-type SMTP password");
 			$this->adminnametxt = bab_translate("Name to use for notification emails");
 			$this->t_mb = bab_translate("Mb");
+			$this->regsettings_title = bab_translate("Date and Time formats");
+			$this->date_lformat_title = bab_translate("Long date format");
+			$this->date_sformat_title = bab_translate("Short date format");
+			$this->time_format_title = bab_translate("Time format");
 
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
@@ -181,6 +193,9 @@ function siteModify($id)
 				$this->dbvalue['user_diskspace'] = round($GLOBALS['babMaxUserSize']/1048576);
 				$this->dbvalue['folder_diskspace'] = round($GLOBALS['babMaxGroupSize']/1048576);
 				$this->dbvalue['maxfilesize'] = round($GLOBALS['babMaxFileSize']/1048576);
+				$this->date_lformat_val = $arr['date_longformat'];
+				$this->date_sformat_val = $arr['date_shortformat'];
+				$this->time_format_val = $arr['time_format'];
 				if( $arr['registration'] == "Y" || $GLOBALS['babCookieIdent'])
 					{
 					$this->nregister = "";
@@ -245,8 +260,77 @@ function siteModify($id)
             $this->skselectedindex = 0;
             $this->stselectedindex = 0;
 
+			$this->arrlfdate = array();
+			$this->arrlfdate[] = "dd MMMM yyyy";
+			$this->arrlfdate[] = "MMMM dd, yyyy";
+			$this->arrlfdate[] = "dddd, MMMM dd, yyyy";
+			$this->arrlfdate[] = "dddd, dd MMMM, yyyy";
+			$this->arrlfdate[] = "dd MMMM, yyyy";
+
+			$this->arrsfdate = array();
+			$this->arrsfdate[] = "M/d/yyyy";
+			$this->arrsfdate[] = "M/d/yy";
+			$this->arrsfdate[] = "MM/dd/yy";
+			$this->arrsfdate[] = "MM/dd/yyyy";
+			$this->arrsfdate[] = "yy/MM/dd";
+			$this->arrsfdate[] = "yyyy-MM-dd";
+			$this->arrsfdate[] = "dd-MMM-yy";
+			
+			$this->arrtime = array();
+			$this->arrtime[] = "HH:mm";
+			$this->arrtime[] = "HH:mm tt";
+			$this->arrtime[] = "HH:mm TT";
+			$this->arrtime[] = "HH:mm:ss tt";
+			$this->arrtime[] = "HH:mm:ss tt";
+			$this->arrtime[] = "h:mm:ss tt";
+			$this->arrtime[] = "hh:mm:ss tt";
+			$this->arrtime[] = "HH:mm:ss";
+			$this->arrtime[] = "H:m:s";
+
 			}
 		
+		function getnextlongdate()
+			{
+			static $i = 0;
+			if( $i < count($this->arrlfdate))
+				{
+                $this->dateval = $this->arrlfdate[$i];
+                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextshortdate()
+			{
+			static $i = 0;
+			if( $i < count($this->arrsfdate))
+				{
+                $this->dateval = $this->arrsfdate[$i];
+                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnexttime()
+			{
+			static $i = 0;
+			if( $i < count($this->arrtime))
+				{
+                $this->timeval = $this->arrtime[$i];
+                $this->timetxt = date( bab_getTimeFormat($this->arrtime[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
 		function getnextlang()
 			{
 			static $i = 0;
@@ -351,24 +435,23 @@ function siteModify($id)
 
 		function getnextlangfilter()
 			{
-				static $i = 0;
-				if( $i < ($GLOBALS['babLangFilter']->countFilters()))
+			static $i = 0;
+			if( $i < ($GLOBALS['babLangFilter']->countFilters()))
 				{
-					$this->langfilterval =
-						$GLOBALS['babLangFilter']->getFilterStr($i);
-					if($this->langfiltersite == $i )
+				$this->langfilterval =	$GLOBALS['babLangFilter']->getFilterStr($i);
+				if($this->langfiltersite == $i )
 					{
-						$this->langfilterselected = "selected";
-			}
-					else
-					{
-						$this->langfilterselected = "";
+					$this->langfilterselected = "selected";
 					}
-					$i++;
-					return true;
-		}
 				else
-					return false;
+					{
+					$this->langfilterselected = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			} //getnextlangfilter
 
 		} // class temp
@@ -408,7 +491,6 @@ function siteAuthentification($id)
 
 				$this->authentificationtxt = bab_translate("Authentification");
 				$this->arrayauth = array(0 => "OVIDENTIA", 1 => "LDAP");
-				$this->arrayauthpasstype = array('text' => 'plaintext', 'md5' => 'md5', 'unix' => 'unix', 'sha' => 'sha-1');
 
 				$this->fieldrequiredtxt = bab_translate("Those fields are required");
 				$this->authpasstxt = bab_translate("Password");
@@ -429,7 +511,7 @@ function siteAuthentification($id)
 					$this->ldpachkcnxchecked = '';
 					}
 
-				$this->resf = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+				$this->resf = $this->db->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
 				if( $this->resf && $this->db->db_num_rows($this->resf) > 0)
 					{
 					$this->countf = $this->db->db_num_rows($this->resf);
@@ -439,14 +521,6 @@ function siteAuthentification($id)
 					{
 					$this->countf = 0;
 					}
-
-				$this->siteattributes = array();
-				$res = $this->db->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
-				while($row = $this->db->db_fetch_array($res))
-					{
-					$this->siteattributes[$row['name']] = $row['x_name'];
-					}
-
 
 				sort($bab_ldapAttributes);
 				$this->countv = count($bab_ldapAttributes);
@@ -479,27 +553,6 @@ function siteAuthentification($id)
 				return false;
 			}
 
-		function getnextpasstype()
-			{
-			static $i = 0;
-			if( $i < count($this->arrayauthpasstype))
-				{
-				list($this->passtypeval, $this->passtypename) = each($this->arrayauthpasstype);
-                if( $this->ldappasstypesite == $this->passtypeval )
-					{
-                    $this->passtypeselected = "selected";
-					}
-                else
-					{
-                    $this->passtypeselected = "";
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
 		function getnextfield()
 			{
 			global $bab_ldapAttributes;
@@ -523,16 +576,31 @@ function siteAuthentification($id)
 				else
 					{
 					$arr = $this->db->db_fetch_array($this->resf);
+					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+						{
+						$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+						$this->ofieldname = translateDirectoryField($rr['description']);
+						$filedname = $rr['name'];
+						}
+					else
+						{
+						$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+						$this->ofieldname = translateDirectoryField($rr['name']);
+						$filedname = "babdirf".$arr['id_field'];
+						}
+
+
 					$this->required = false;				
-					$this->ofieldname = bab_translate($arr['description']);
-					$this->ofieldv = $arr['name'];
-					if( in_array($arr['x_name'], $bab_ldapAttributes) && $this->siteattributes[$this->ofieldv] == $arr['x_name'])
+					$this->ofieldv = $filedname;
+					$this->x_ofieldv = $arr['x_name'];
+
+					if( in_array($arr['x_name'], $bab_ldapAttributes))
 						{
 						$this->ofieldval = '';
 						}
 					else
 						{
-						$this->ofieldval = isset($this->siteattributes[$this->ofieldv])? $this->siteattributes[$this->ofieldv]: '';
+						$this->ofieldval = $arr['x_name'];
 						}
 					}
 				$i++;
@@ -571,7 +639,7 @@ function siteAuthentification($id)
 					}
 				else
 					{
-						if( isset($this->siteattributes[$this->ofieldv]) && $this->ffieldname == $this->siteattributes[$this->ofieldv] )
+						if( $this->ffieldname == $this->x_ofieldv )
 						{
 						$this->fselected = "selected";
 						}
@@ -691,7 +759,7 @@ function siteRegistration($id)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldid = $arr['id_field'];
+				$this->fieldid = $arr['id'];
 				$this->altbg = !$this->altbg;
 
 				if( $arr['registration'] == "Y")
@@ -720,7 +788,7 @@ function siteRegistration($id)
 					$this->mlchecked = "";
 					}
 
-				if (in_array( $this->fieldid, array( 2, 3, 4, 6) ))
+				if (in_array( $arr['id_field'], array( 2, 3, 4, 6) ))
 					{
 					$this->disabled = true;
 					}
@@ -729,9 +797,19 @@ function siteRegistration($id)
 					$this->disabled = false;
 					}
 
-				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->fieldn = translateDirectoryField($arr['description']);
-				$this->fieldv = $arr['name'];
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$res = $this->db->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$rr = $this->db->db_fetch_array($res);
+					$this->fieldn = translateDirectoryField($rr['description']);
+					$this->fieldv = $rr['name'];
+					}
+				else
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->fieldn = translateDirectoryField($rr['name']);
+					$this->fieldv = "babdirf".$arr['id'];
+					}
 				$i++;
 				return true;
 				}
@@ -932,6 +1010,24 @@ function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspa
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
+function siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat)
+	{
+	global $babBody;
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$datelformat = addslashes($datelformat);
+		$datesformat = addslashes($datesformat);
+		$timeformat = addslashes($timeformat);
+		}
+
+	$db = $GLOBALS['babDB'];
+
+	$req = "update ".BAB_SITES_TBL." set date_longformat='".$datelformat."', date_shortformat='".$datesformat."', time_format='".$timeformat."' where id='".$item."'";
+	$db->db_query($req);
+
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+	}
+
 function siteUpdate_authentification($id, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype)
 	{
 	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname;
@@ -969,23 +1065,34 @@ function siteUpdate_authentification($id, $authtype, $host, $ldpapchkcnx, $based
 	$req .= " where id='".$id."'";
 	$db->db_query($req);
 
-	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
-	while( $row = $db->db_fetch_array($res))
+	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+	while( $arr = $db->db_fetch_array($res))
 		{
 		$val = '';
-		if( isset($GLOBALS[$row['name']]) && !empty($GLOBALS[$row['name']]))
+		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 			{
-			$val = $GLOBALS[$row['name']];
+			$rr = $db->db_fetch_array($db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$fieldname = $rr['name'];
 			}
 		else
 			{
-			$var = "i_".$row['name'];
+			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$fieldname = "babdirf".$arr['id_field'];
+			}
+
+		if( isset($GLOBALS[$fieldname]) && !empty($GLOBALS[$fieldname]))
+			{
+			$val = $GLOBALS[$fieldname];
+			}
+		else
+			{
+			$var = "i_".$fieldname;
 			if( isset($GLOBALS[$var]) && !empty($GLOBALS[$var]))
 				{
 				$val = $GLOBALS[$var];
 				}
 			}
-		$db->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$val."' where name='".$row['name']."' and id_site='".$id."'");
+		$db->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$val."' where id_field='".$arr['id_field']."' and id_site='".$id."'");
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
@@ -995,7 +1102,7 @@ function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 	global $babBody, $babDB;
 
 	$babDB->db_query("update ".BAB_SITES_TBL." set display_disclaimer='".$cdp."', email_confirm='".$cen."', idgroup='".$group."' where id='".$item."'");
-	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+	$res = $babDB->db_query("select id from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$item."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( count($rw) > 0 && in_array($arr['id'], $rw))
@@ -1022,7 +1129,7 @@ function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 			{
 			$multilignes = "N";
 			}
-		$req = "update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='".$registration."', required='".$required."', multilignes='".$multilignes."' where id_site='".$item."' and id_field='".$arr['id']."'";
+		$req = "update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='".$registration."', required='".$required."', multilignes='".$multilignes."' where id='".$arr['id']."'";
 		$babDB->db_query($req);
 		}
 }
@@ -1036,6 +1143,7 @@ function confirmDeleteSite($id)
 	$db->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
 	// delete registration settings
 	$db->db_query("delete from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$id."'");
+	$db->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
 	$db->db_query("delete from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$id."'");
 	// delete site
 	$db->db_query("delete from ".BAB_SITES_TBL." where id='".$id."'");
@@ -1081,7 +1189,15 @@ elseif( isset($modify) && $modify=="bloc2")
 			$idx = "modify";
 		}
 	}
-elseif( isset($modify) && $modify =="bloc3")
+elseif( isset($modify) && $modify=="bloc3")
+	{
+	if( !empty($Submit))
+		{
+		if(!siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat))
+			$idx = "modify";
+		}
+	}
+elseif( isset($modify) && $modify =="auth")
 	{
 	if( !empty($Submit))
 		{

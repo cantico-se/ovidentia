@@ -242,7 +242,7 @@ function listArticles($id)
 					}
 				if( $arr['date_publication'] != '0000-00-00 00:00:00' )
 					{
-					$this->datepublication = bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_publication']));
+					$this->datepublication = bab_shortDate(bab_mktime($arr['date_publication']), true);
 					}
 				else
 					{
@@ -250,7 +250,7 @@ function listArticles($id)
 					}
 				if( $arr['date_archiving'] != '0000-00-00 00:00:00' )
 					{
-					$this->datearchiving = bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_archiving']));
+					$this->datearchiving = bab_shortDate(bab_mktime($arr['date_archiving']), true);
 					}
 				else
 					{

@@ -203,10 +203,7 @@ function listThreads($forum, $active, $pos)
 						$res = $this->db->db_query("select date from ".BAB_POSTS_TBL." where id='".$this->arrthread['post']."'");
 						}
 					$ar = $this->db->db_fetch_array($res);
-					$tmp = explode(" ", $ar['date']);
-					$arr0 = explode("-", $tmp[0]);
-					$arr1 = explode(":", $tmp[1]);
-					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
+					$this->lastpostdate = bab_shortDate(bab_mktime($ar['date']), true);
 
 					$this->brecent = false;
 					if( mktime() - bab_mktime($ar['date']) <= DELTA_TIME )

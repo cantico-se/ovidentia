@@ -88,9 +88,9 @@ function listDrafts()
 				$this->deleteurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id'];
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
 				$this->name = $arr['title'];
-				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_submission']));
-				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_publication']));
-				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_archiving']));
+				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
+				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_publication']), true);
+				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_archiving']), true);
 				if( $arr['total'] > 0 )
 					{
 					$this->attachment = true;
@@ -186,7 +186,7 @@ function listSubmitedArticles()
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
 				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=rests&idart=".$arr['id'];
 				$this->name = $arr['title'];
-				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_submission']));
+				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
 				if( $arr['result'] == BAB_ART_STATUS_WAIT )
 					{
 					$this->bdelete = false;
@@ -284,8 +284,8 @@ function listDraftsInTrash()
 				$this->restoreurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=restore&idart=".$arr['id'];
 				$this->previewurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id'];
 				$this->name = $arr['title'];
-				$this->datecreate = bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_creation']));
-				$this->datemodify = bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_modification']));
+				$this->datecreate = bab_shortDate(bab_mktime($arr['date_creation']), true);
+				$this->datemodify = bab_shortDate(bab_mktime($arr['date_modification']), true);
 				$i++;
 				return true;
 				}
@@ -334,8 +334,8 @@ function propertiesArticle($idart)
 				$this->arttitle = $arr['title'];
 				$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->author = bab_getUserName($arr['id_author']);
-				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_publication']));
-				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_formatDate("%j/%n/%Y %H:%i", bab_mktime($arr['date_archiving']));
+				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_publication']), true);
+				$this->datearch = $arr['date_archiving'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_archiving']), true);
 				if( $arr['hpage_public'] == 'Y')
 					{
 					$this->hpages0 = $this->yes;

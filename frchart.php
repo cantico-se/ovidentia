@@ -494,6 +494,7 @@ function displayFrtFrame($ocid, $oeid, $update)
 	die(bab_printTemplate($temp,"frchart.html", "frtframe"));
 }
 
+
 function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 {
 	global $babBody;
@@ -537,13 +538,90 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 				{
 				$this->idgroup = $arr['id_group'];
-				$this->rescol = $this->db->db_query("select dft.name, dft.description from ".BAB_DBDIR_FIELDSEXTRA_TBL." dfxt left join ".BAB_DBDIR_FIELDS_TBL." dft on dfxt.id_field=dft.id where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
-				while( $row = $this->db->db_fetch_array($this->rescol))
+				$res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."'");
+				$dbdirfields = array();
+				$dbdirxfields = array();
+				$dbdirfields[] = 'id';
+				while( $row = $this->db->db_fetch_array($res))
 					{
-					$this->arrcols[] = array('det.'.$row['name'], $row['description'], 1);
+					if( $row['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+						{
+						$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$row['id_field']."'"));
+						if( $rr['name'] != 'jpegphoto')
+							{
+							$dbdirfields[] = $rr['name'];
+							}
+						}
+					else
+						{
+						$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+						$dbdirxfields[] = "babdirf".$row['id'];
+						}					
 					}
-				$this->arrcols[] = array('ocet.name as e_name', 'Entity', 0);
-				$this->arrcols[] = array('ocrt.name as r_name', 'Role', 0);
+
+				$req = "create temporary table bab_dbdir_temptable select ".implode(',', $dbdirfields)." from ".BAB_DBDIR_ENTRIES_TBL." where 0";
+				$this->db->db_query($req);
+				
+				$this->db->db_query("alter table bab_dbdir_temptable add e_name VARCHAR( 255 ) NOT NULL");
+				$this->db->db_query("alter table bab_dbdir_temptable add r_name VARCHAR( 255 ) NOT NULL");
+				$this->db->db_query("alter table bab_dbdir_temptable add id_entity int(11) unsigned NOT NULL");
+
+				$tmparr = array();
+				for($k=0; $k < count($dbdirfields); $k++)
+					{
+					$tmparr[] = "det.".$dbdirfields[$k];
+					}
+				if( $this->idgroup > 1 )
+					{
+					$req = "insert into bab_dbdir_temptable select ".implode(',', $tmparr).", ocet.name as e_name, ocrt.name as r_name, ocet.id as id_entity from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=det.id_user left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where ugt.id_group='".$this->idgroup."' and det.id_directory='0'";
+					}
+				else
+					{
+					$req = "insert into bab_dbdir_temptable select ".implode(',', $tmparr).", ocet.name as e_name, ocrt.name as r_name, ocet.id as id_entity from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where det.id_directory='".($this->idgroup != 0? 0: $this->iddir)."'";
+					}
+				
+				$this->db->db_query($req);
+
+				if( count($dbdirxfields) > 0 )
+					{
+					for( $m=0; $m < count($dbdirxfields); $m++)
+						{
+						$this->db->db_query("alter table bab_dbdir_temptable add ".$dbdirxfields[$m]." VARCHAR( 255 ) NOT NULL");
+						}
+
+					$res = $this->db->db_query("select id from bab_dbdir_temptable");
+					while( $row = $this->db->db_fetch_array($res))
+						{
+						$tmp = array();
+						$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$row['id']."'");
+						while( $rr = $this->db->db_fetch_array($res2))
+							{
+							$tmp[] = "babdirf".$rr['id_fieldx']." = '".$rr['field_value']."'";
+							}
+						if( count($tmp) > 0 )
+							{
+							$this->db->db_query("update bab_dbdir_temptable set ".implode(',', $tmp)." where id='".$row['id']."'");
+							}
+						}
+					}
+
+
+				$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
+				while( $row = $this->db->db_fetch_array($rescol))
+					{
+					if( $row['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+						{
+						$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$row['id_field']."'"));
+						$this->arrcols[] = array($rr['name'], translateDirectoryField($rr['description']), 1);
+						}
+					else
+						{
+						$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($row['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+						$this->arrcols[] = array("babdirf".$row['id'], translateDirectoryField($rr['name']), 1);
+						}					
+					}
+				$this->arrcols[] = array('e_name', bab_translate('Entity'), 0);
+				$this->arrcols[] = array('r_name', bab_translate('Role'), 0);
 				$this->countcol = count($this->arrcols);
 				}
 			else
@@ -560,34 +638,22 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			$this->like = '';
 			if (!empty($q))
 				{
+				$tmplike = array();
 				$qs = addslashes($q);
-				$this->like = "(det.cn like '%".$qs."%'".
-							" or det.sn like '%".$qs."%'".
-							" or det.mn like '%".$qs."%'".
-							" or det.givenname like '%".$qs."%'".
-							" or det.email like '%".$qs."%'".
-							" or det.btel like '%".$qs."%'".
-							" or det.htel like '%".$qs."%'".
-							" or det.mobile like '%".$qs."%'".
-							" or det.bfax like '%".$qs."%'".
-							" or det.title like '%".$qs."%'".
-							" or det.departmentnumber like '%".$qs."%'".
-							" or det.organisationname like '%".$qs."%'".
-							" or det.bstreetaddress like '%".$qs."%'".
-							" or det.bcity like '%".$qs."%'".
-							" or det.bpostalcode like '%".$qs."%'".
-							" or det.bstate like '%".$qs."%'".
-							" or det.bcountry like '%".$qs."%'".
-							" or det.hstreetaddress like '%".$qs."%'".
-							" or det.hcity like '%".$qs."%'".
-							" or det.hpostalcode like '%".$qs."%'".
-							" or det.hstate like '%".$qs."%'".
-							" or det.hcountry like '%".$qs."%'".
-							" or det.user1 like '%".$qs."%'".
-							" or det.user2 like '%".$qs."%'".
-							" or det.user3 like '%".$qs."%'".
-							" or ocet.name like '%".$qs."%'".
-							" or ocrt.name like '%".$qs."%')";
+				for( $k = 0; $k < count($dbdirfields); $k++ )
+					{
+					$tmplike[] = $dbdirfields[$k]." like '%".$qs."%'";
+					}
+
+				for( $k = 0; $k < count($dbdirxfields); $k++ )
+					{
+					$tmplike[] = $dbdirxfields[$k]." like '%".$qs."%'";
+					}
+				
+				if( count($tmplike) > 0 )
+					{
+					$this->like = "(".implode(' or ', $tmplike).")";
+					}
 				}
 
 			}
@@ -599,7 +665,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			if( $i < $this->countcol)
 				{
 				$arr = $this->arrcols[$i];
-				$this->coltxt = bab_translate($arr[1]);
+				$this->coltxt = $arr[1];
 				if( $arr[2] )
 					{
 					$this->colurl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$this->ocid."&oeid=".$this->oeid."&pos=".$this->ord."&xf=".$arr[0]."&q=".urlencode($this->q);
@@ -616,38 +682,26 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 				{
 				if( count($tmp) > 0 )
 					{
-					$tmp[] = "det.id";
+					$tmp[] = "id";
 					if( $this->xf == "" )
 						$this->xf = $tmp[0];
-					if( !in_array('det.email', $tmp))
-						$tmp[] = 'det.email';
-					if( !in_array('det.givenname', $tmp))
-						$tmp[] = 'det.givenname';
-					if( !in_array('det.sn', $tmp))
-						$tmp[] = 'det.sn';
+					if( !in_array('email', $tmp))
+						$tmp[] = 'email';
+					if( !in_array('givenname', $tmp))
+						$tmp[] = 'givenname';
+					if( !in_array('sn', $tmp))
+						$tmp[] = 'sn';
 
-					$tmp[] = 'ocet.id as id_entity';
+					$tmp[] = 'id_entity';
 
 					$this->select = implode($tmp, ",");
 
-					if( $this->idgroup > 1 )
+					$req = "select ".$this->select." from bab_dbdir_temptable where ".$this->xf." like '".$this->pos."%'";
+					if( !empty($this->like))
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=det.id_user left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where ugt.id_group='".$this->idgroup."' and det.id_directory='0' and ".$this->xf." like '".$this->pos."%'";
-						if( !empty($this->like))
-							{
-							$req .= " and ".$this->like." ";
-							}
-						$req .= " order by ".$this->xf." ";
+						$req .= " and ".$this->like." ";
 						}
-					else
-						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrut.id_user=det.id left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id and ocrt.id_oc='".$this->ocid."' left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity where det.id_directory='".($this->idgroup != 0? 0: $this->iddir)."' and ".$this->xf." like '".$this->pos."%'";
-						if( !empty($this->like))
-							{
-							$req .= " and ".$this->like." ";
-							}
-						$req .= " order by ".$this->xf." ";
-						}
+					$req .= " order by ".$this->xf." ";
 
 					if( $this->ord == "-" )
 						{
@@ -1125,6 +1179,7 @@ switch($idx)
 				browseRoles($ocid, $eid, $role, $type, $vpos, $update);
 				break;
 			case "disp5":
+				include_once $babInstallPath."utilit/dirincl.php";
 				if( isset($submit))
 				{
 					$pos ='';

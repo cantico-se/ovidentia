@@ -87,7 +87,7 @@ function dirlist()
 
 		}
 	
-	$temp = new temp($id, $pos, $xf, $badd);
+	$temp = new temp();
 	echo bab_printTemplate($temp, "editorcontdir.html", "dirlist");
 	}
 
@@ -113,9 +113,9 @@ function directory($id, $pos, $xf, $badd)
 			$this->pos = $pos;
 			$this->badd = $badd;
 			$this->xf = $xf;
-			if( $pos[0] == "-" )
+			if( substr($pos,0,1) == "-" )
 				{
-				$this->pos = $pos[1];
+				$this->pos = substr($pos,1);
 				$this->ord = "";
 				}
 			else
@@ -136,7 +136,7 @@ function directory($id, $pos, $xf, $badd)
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$this->idgroup = $arr['id_group'];
-				$this->rescol = $this->db->db_query("select id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
+				$this->rescol = $this->db->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
 				$this->countcol = $this->db->db_num_rows($this->rescol);
 				}
 			else
@@ -167,37 +167,96 @@ function directory($id, $pos, $xf, $badd)
 			{
 			static $i = 0;
 			static $tmp = array();
+			static $sqlf = array();
 			if( $i < $this->countcol)
 				{
 				$arr = $this->db->db_fetch_array($this->rescol);
-				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->coltxt = bab_translate($arr['description']);
-				$this->colurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$arr['name'];
-				$tmp[] = $arr['name'];
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$this->coltxt = translateDirectoryField($rr['description']);
+					$filedname = $rr['name'];
+					$tmp[] = $filedname;
+					$this->select[] = $filedname;
+					}
+				else
+					{
+					$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->coltxt = translateDirectoryField($rr['name']);
+					$filedname = "babdirf".$arr['id'];
+					$sqlf[] = $filedname;
+					$this->select[] = "`".$filedname."`";
+					}
+				$this->colurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$filedname;
 				$i++;
 				return true;
 				}
 			else
 				{
-				if( count($tmp) > 0 )
+				if(  count($tmp) > 0 || count($sqlf) > 0 )
 					{
 					$tmp[] = "id";
 					if( $this->xf == "" )
+						{
 						$this->xf = $tmp[0];
-					for( $i=0; $i < count($tmp); $i++)
-						$tmp[$i] = BAB_DBDIR_ENTRIES_TBL.".".$tmp[$i];
+						}
+
 					if( !in_array('email', $tmp))
+						{
 						$tmp[] = 'email';
-					$this->select = implode($tmp, ",");
+						}
+					$req = "create temporary table bab_dbdir_temptable select ".implode(',', $tmp)." from ".BAB_DBDIR_ENTRIES_TBL." where 0";
+					$this->db->db_query($req);
+					$req = "alter table bab_dbdir_temptable add unique (id)";
+					$this->db->db_query($req);
+					for( $m=0; $m < count($tmp); $m++)
+						{
+						$tmp[$m] = BAB_DBDIR_ENTRIES_TBL.".".$tmp[$m];
+						}
+
 					if( $this->idgroup > 1 )
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$this->idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".".$this->xf." like '".$this->pos."%' and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."' order by ".$this->xf." ";
+						$req = "insert into bab_dbdir_temptable select ".implode($tmp, ",")." from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$this->idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."'";
 						}
 					else
 						{
-						$req = "select ".$this->select." from ".BAB_DBDIR_ENTRIES_TBL." where ".BAB_DBDIR_ENTRIES_TBL.".".$this->xf." like '".$this->pos."%' and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."' order by ".$this->xf." ";
+						$req = "insert into bab_dbdir_temptable select ".implode($tmp, ",")." from ".BAB_DBDIR_ENTRIES_TBL." where ".BAB_DBDIR_ENTRIES_TBL.".id_directory='".($this->idgroup != 0? 0: $this->id)."'";
 						}
 
+					$this->db->db_query($req);
+					for( $j=0; $j < count($sqlf); $j++)
+						{
+						$this->db->db_query("alter table bab_dbdir_temptable add `".$sqlf[$j]."` VARCHAR( 255 ) NOT NULL");
+						}
+
+					if( count($sqlf) > 0 )
+						{
+						$res = $this->db->db_query("select id from bab_dbdir_temptable");
+						while( $rr = $this->db->db_fetch_array($res))
+							{
+							for( $k = 0; $k < count($sqlf); $k++ )
+								{
+								$tmparr = substr($sqlf[$k], strlen("babdirf"));
+								$sqlfv = array();
+								$res2 = $this->db->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$tmparr."' and id_entry='".$rr['id']."'");
+								while( $rf = $this->db->db_fetch_array($res2))
+									{
+									$sqlfv[] = "`".$sqlf[$k]."`='".$rf['field_value']."'";
+									}
+								if( count($sqlfv) > 0 )
+									{
+									$req = "update bab_dbdir_temptable set ".implode(',', $sqlfv)." where id='".$rr['id']."'";
+									$this->db->db_query($req);
+									}
+								}
+							}
+						}
+
+					$this->select[] = 'id';
+					if( !in_array('email', $this->select))
+						$this->select[] = 'email';
+
+					$req = "select ".implode(',', $this->select)." from bab_dbdir_temptable where `".$this->xf."` like '".$this->pos."%' order by `".$this->xf."` ";
 					if( $this->ord == "-" )
 						{
 						$req .= "asc";
@@ -207,7 +266,7 @@ function directory($id, $pos, $xf, $badd)
 						$req .= "desc";
 						}
 
-					$this->res = $this->db->db_query($req);
+					$this->res = $this->db->db_query($req);				
 					$this->count = $this->db->db_num_rows($this->res);
 					}
 				else
@@ -350,6 +409,8 @@ if( !isset($pos ))
 switch($idx)
 	{
 	case "directory":
+		if( !isset($pos )){	$pos = "A"; }
+		if( !isset($xf )){	$xf = ""; }
 		if ($badd) directory($id, $pos, $xf, $badd);
 		elseif (isset($id) && !$badd ) directory($id, $pos, $xf, $badd);
 		else dirlist();

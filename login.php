@@ -222,7 +222,9 @@ function displayRegistration($nickname, $fields, $cagree)
 				{
 				$this->bphoto = false;
 				}
-			$this->res = $babDB->db_query("select sfrt.*, dft.name, dft.description from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDS_TBL." dft on sfrt.id_field=dft.id where sfrt.id_site='".$babBody->babsite['id']."'");
+
+			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babBody->babsite['id']."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+
 			$this->count = $babDB->db_num_rows($this->res);
 
 			$this->respf = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where inscription='Y'");
@@ -237,10 +239,22 @@ function displayRegistration($nickname, $fields, $cagree)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->fieldname = translateDirectoryField($arr['description']);
-				$this->fieldv = $arr['name'];
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'");
+					$rr = $babDB->db_fetch_array($res);
+					$this->fieldname = translateDirectoryField($rr['description']);
+					$this->fieldv = $rr['name'];
+					}
+				else
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->fieldname = translateDirectoryField($rr['name']);
+					$this->fieldv = "babdirf".$arr['id'];
+					}
+
 				$this->bfieldphoto = false;
-				if( isset($this->fields[$arr['name']]))
+				if( isset($this->fields[$this->fieldv]))
 					{
 					$this->fieldval = $this->fields[$arr['name']];
 					}
@@ -248,38 +262,67 @@ function displayRegistration($nickname, $fields, $cagree)
 					{
 					$this->fieldval = '';
 					}
+
+				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$arr['idfx']."'");
+				$this->countfxv = $babDB->db_num_rows($this->resfxv); 
+
+				$this->required = $arr['required'];
+				if( $this->countfxv == 0  )
+					{
+					$this->multivalues = false;
+					}
+				elseif( $this->countfxv > 1  )
+					{
+					$this->multivalues = true;
+					}
+				else
+					{
+					$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
+					}
+
+				$this->fieldt = $arr['multilignes'];
+				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$arr['default_value']."'"));
+					$this->fieldval = $rr['field_value'];
+					}
+
 				if( $this->bphoto && $this->fieldv == "jpegphoto" )
 					{
 					$this->bfieldphoto = true;
 					}
-				if( $arr['registration'] == "Y" )
-					{
-					if( $arr['required'] == "Y")
-						{
-						$this->brequired = true;
-						}
-					else
-						{
-						$this->brequired = false;
-						}
-					if( $arr['multilignes'] == "Y")
-						{
-						$this->bmultilignes = true;
-						}
-					else
-						{
-						$this->bmultilignes = false;
-						}
-					}
-				else
-					{
-					$skip =true;
-					}
+
 				$i++;
 				return true;
 				}
 			else
 				return false;
+			}
+
+		function getnextfxv()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countfxv)
+				{
+				$arr = $babDB->db_fetch_array($this->resfxv);
+				$this->fxvvalue = $arr['field_value'];
+				if( $this->fieldval == $this->fxvvalue )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
 			}
 
 		function getnextprofile()
@@ -486,12 +529,26 @@ function userLogin($nickname,$password)
 		if( $logok )
 			{
 			$updattributes = array();
-			$res = $db->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babBody->babsite['id']."'");
-			while( $row = $db->db_fetch_array($res))
+			$res = $db->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_LDAP_SITES_FIELDS_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babBody->babsite['id']."' and sfxt.id_directory='0'");
+			$arridfx = array();
+
+			while( $arr = $db->db_fetch_array($res))
 				{
-				if( !empty($row['x_name']) )
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					$updattributes[$row['x_name']] = $row['name'];
+					$rr = $db->db_fetch_array($db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+					$fieldname = $rr['name'];
+					}
+				else
+					{
+					$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$fieldname = "babdirf".$arr['id'];
+					$arridfx[$arr['id']] = $arr['idfx'];
+					}
+
+				if( !empty($arr['x_name']) )
+					{
+					$updattributes[$arr['x_name']] = $fieldname;
 					}
 				}
 			
@@ -598,6 +655,7 @@ function userLogin($nickname,$password)
 			$db->db_query($req);
 			$req = "";
 
+			list($idu) = $db->db_fetch_row($db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$iduser."' and id_directory='0'"));
 			if( count($updattributes) > 0 )
 				{
 				reset($updattributes);
@@ -624,7 +682,23 @@ function userLogin($nickname,$password)
 							$req .= ", email='".addslashes(utf8_decode($entries[0][$key][0]))."'";
 							break;
 						default:
-							$req .= ", ".$val."='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+							if( substr($val, 0, strlen("babdirf")) == 'babdirf' )
+								{
+								$tmp = substr($val, strlen("babdirf"));
+								$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$idu."'");
+								if( $rs && $db->db_num_rows($rs) > 0 )
+									{
+									$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes(utf8_decode($entries[0][$key][0]))."' where id_fieldx='".$arridfx[$tmp]."' and id_entry='".$idu."'");
+									}
+								else
+									{
+									$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes(utf8_decode($entries[0][$key][0]))."', '".$arridfx[$tmp]."', '".$idu."')");
+									}
+								}
+							else
+								{
+								$req .= ", ".$val."='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+								}
 							break;
 						}
 					}
@@ -796,11 +870,24 @@ function addNewUser( $nickname, $password1, $password2)
 
 	$bphoto = false;
 
-	$res = $babDB->db_query("select sfrt.*, dft.name from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDS_TBL." dft on sfrt.id_field=dft.id where sfrt.id_site='".$babBody->babsite['id']."' and sfrt.registration='Y'");
+	$res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babBody->babsite['id']."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+
 	$req = "";
+	$arridfx = array();
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		if( $arr['name'] ==  'jpegphoto')
+		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+			$this->fieldv = $rr['name'];
+			}
+		else
+			{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+			$this->fieldv = "babdirf".$arr['id'];
+			}
+
+		if( $this->fieldv ==  'jpegphoto')
 			{
 			if($arr['required'] == 'Y' && !isset($photof_name))
 				{
@@ -814,12 +901,19 @@ function addNewUser( $nickname, $password1, $password2)
 			}
 		else
 			{
-			if( $arr['required'] == 'Y' && empty($fields[$arr['name']]))
+			if( $arr['required'] == 'Y' && empty($fields[$this->fieldv]))
 				{
 				$babBody->msgerror = bab_translate( "You must complete all fields !!");
 				return false;
 				}
-			$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
+			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+				{
+				$req .= $this->fieldv."='".addslashes($fields[$this->fieldv])."',";
+				}
+			else
+				{
+				$arridfx[$arr['id']] = $arr['idfx'];
+				}
 			}
 		}
 
@@ -895,8 +989,31 @@ function addNewUser( $nickname, $password1, $password2)
 			$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
 			$req .= " where id='".$idu."'";
 			$babDB->db_query($req);
+
+			foreach( $fields as $key => $value )
+				{
+				if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
+					{
+					$tmp = substr($key, strlen("babdirf"));
+					if( bab_isMagicQuotesGpcOn())
+						{
+						$value = addslashes($value);
+						}
+					$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$idu."'");
+					if( $rs && $babDB->db_num_rows($rs) > 0 )
+						{
+						$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$value."' where id_fieldx='".$arridfx[$tmp]."' and  id_entry='".$idu."'");
+						}
+					else
+						{
+						$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (field_value, id_fieldx, id_entry) values ('".$value."', '".$arridfx[$tmp]."', '".$idu."')");
+						}
+					}
+				}
+
 			}
 		}
+
 
 	if( count($groups) > 0 )
 		{

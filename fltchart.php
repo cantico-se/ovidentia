@@ -333,12 +333,11 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 		function getnextfield()
 			{
 			static $i = 0;
-			if( $i < $this->count)
+			if( $i < count($this->fields))
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = bab_translate($arr['description']);
-				$this->fieldv = $this->arr[$arr['name']];
-				if( strlen($this->arr[$arr['name']]) > 0 )
+				$this->fieldn = $this->fields[$i]['name'];
+				$this->fieldv = $this->fields[$i]['value'];
+				if( strlen($this->fieldv) > 0 )
 					$this->bfieldv = true;
 				else
 					$this->bfieldv = false;
@@ -347,7 +346,9 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 				return true;
 				}
 			else
+				{
 				return false;
+				}
 			}
 		}
 

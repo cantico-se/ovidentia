@@ -522,11 +522,12 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		$db->db_query($query);
 		$idsite = $db->db_insert_id();
 		$db->db_query("insert into ".BAB_SITES_DISCLAIMERS_TBL." (id_site, disclaimer_text) values ('".$idsite."','')");
-		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+
+		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRAEXTRA_TBL." where id_directory='0'");
 		while( $row = $db->db_fetch_array($resf))
 			{
-			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (name, x_name, id_site) values ('".$row['name']."','','".$idsite."')");
-			$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id']."','N','N', 'N')");
+			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (id_field, x_name, id_site) values ('".$row['name']."','','".$idsite."')");
+			$db->db_query("insert into ".BAB_SITES_FIELDS_REGISTRATION_TBL." (id_site, id_field, registration, required, multilignes) values ('".$idsite."', '".$row['id_field']."','N','N', 'N')");
 			}
 
 		$db->db_query("update ".BAB_SITES_FIELDS_REGISTRATION_TBL." set registration='Y', required='Y' where id_site='".$idsite."' and id_field IN ('2', '4', '6')");	

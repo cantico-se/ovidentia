@@ -167,6 +167,133 @@ function changeNickname($nickname)
 	}
 
 
+function changeRegionalSettings()
+	{
+	global $babBody,$BAB_SESS_USERID;
+	class changeRegionalSettingsCls
+		{
+		var $date_lformat_title;
+		var $date_lformat_val;
+		var $date_sformat_title;
+		var $date_sformat_val;
+		var $time_format_title;
+		var $time_format_val;
+		var $update;
+		var $regsettings_title;
+
+		function changeRegionalSettingsCls()
+			{
+			global $babBody, $babDB;
+			$this->date_lformat_title = bab_translate("Long date format");
+			$this->date_sformat_title = bab_translate("Short date format");
+			$this->time_format_title = bab_translate("Time format");
+			$this->regsettings_title = bab_translate("Date and Time formats");
+
+			$res = $babDB->db_query("select date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
+			$arr = $babDB->db_fetch_array($res);
+			if( empty($arr['date_shortformat']))
+				{
+				$this->date_sformat_val = $babBody->babsite['date_shortformat'];
+				}
+			else
+				{
+				$this->date_sformat_val = $arr['date_shortformat'];
+				}
+			if( empty($arr['date_longformat']))
+				{
+				$this->date_lformat_val = $babBody->babsite['date_longformat'];
+				}
+			else
+				{
+				$this->date_lformat_val = $arr['date_longformat'];
+				}
+			if( empty($arr['time_format']))
+				{
+				$this->time_format_val = $babBody->babsite['time_format'];
+				}
+			else
+				{
+				$this->time_format_val = $arr['time_format'];
+				}
+
+			$this->update = bab_translate("Update");
+
+			$this->arrlfdate = array();
+			$this->arrlfdate[] = "dd MMMM yyyy";
+			$this->arrlfdate[] = "MMMM dd, yyyy";
+			$this->arrlfdate[] = "dddd, MMMM dd, yyyy";
+			$this->arrlfdate[] = "dddd, dd MMMM, yyyy";
+			$this->arrlfdate[] = "dd MMMM, yyyy";
+
+			$this->arrsfdate = array();
+			$this->arrsfdate[] = "M/d/yyyy";
+			$this->arrsfdate[] = "M/d/yy";
+			$this->arrsfdate[] = "MM/dd/yy";
+			$this->arrsfdate[] = "MM/dd/yyyy";
+			$this->arrsfdate[] = "yy/MM/dd";
+			$this->arrsfdate[] = "yyyy-MM-dd";
+			$this->arrsfdate[] = "dd-MMM-yy";
+			
+			$this->arrtime = array();
+			$this->arrtime[] = "HH:mm";
+			$this->arrtime[] = "HH:mm tt";
+			$this->arrtime[] = "HH:mm TT";
+			$this->arrtime[] = "HH:mm:ss tt";
+			$this->arrtime[] = "HH:mm:ss tt";
+			$this->arrtime[] = "h:mm:ss tt";
+			$this->arrtime[] = "hh:mm:ss tt";
+			$this->arrtime[] = "HH:mm:ss";
+			$this->arrtime[] = "H:m:s";
+			}
+
+		function getnextlongdate()
+			{
+			static $i = 0;
+			if( $i < count($this->arrlfdate))
+				{
+                $this->dateval = $this->arrlfdate[$i];
+                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextshortdate()
+			{
+			static $i = 0;
+			if( $i < count($this->arrsfdate))
+				{
+                $this->dateval = $this->arrsfdate[$i];
+                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnexttime()
+			{
+			static $i = 0;
+			if( $i < count($this->arrtime))
+				{
+                $this->timeval = $this->arrtime[$i];
+                $this->timetxt = date( bab_getTimeFormat($this->arrtime[$i]), mktime() );
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+
+		}
+
+	$temp = new changeRegionalSettingsCls();
+	$babBody->babecho(bab_printTemplate($temp,"options.html", "regionalsettings"));
+	}
 
 function changeLanguage()
 	{
@@ -760,6 +887,12 @@ function updateNickname($password, $nickname)
 		}
 	}
 
+function updateRegionalSettings($datelformat, $datesformat, $timeformat)
+{
+	global $babBody, $BAB_SESS_USERID, $babDB;
+	$babDB->db_query("update ".BAB_USERS_TBL." set date_shortformat='".$datesformat."', date_longformat='".$datelformat."', time_format='".$timeformat."' where id='".$BAB_SESS_USERID."'");
+	return true;
+}
 
 function updateProfiles()
 {
@@ -882,7 +1015,13 @@ if( isset($update))
 				$idx = 'global';
 				}
             break;
-        }
+         case "regsettings":
+        	if(!updateRegionalSettings($datelformat, $datesformat, $timeformat))
+				{
+				$idx = 'global';
+				}
+            break;
+       }
 	}
 
 function updateStateSection($c, $w, $closed)
@@ -949,6 +1088,7 @@ switch($idx)
 		changeNickname($nickname);
 		changeSkin($skin);
 		changeLanguage();
+		changeRegionalSettings();
 		changeProfiles();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
