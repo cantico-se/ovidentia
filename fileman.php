@@ -1477,14 +1477,28 @@ function viewFile( $idf, $aclfm)
 				}
 			}
 
-		if( $arr['bgroup'] == "Y" && !empty($BAB_SESS_USERID) )
+		if( $arr['bgroup'] == "Y")
 			{
 			if( (($arr['id_owner'] == 2 || $arr['id_owner'] ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($arr['id_owner']))
 				{
 				$bconfirm = true;
 				$bmanager = true;
 				}
-			$access = true;
+
+			if( $arr['id_owner'] == 2)
+				$access = true;
+			else if(!empty($BAB_SESS_USERID))
+				{
+				if( $arr['id_owner'] == 1)
+					$access = true;
+				else
+					{
+					$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='".$arr['id_owner']."' and id_object='".$BAB_SESS_USERID."'";
+					$res = $db->db_query($req);
+					if( $res && $db->db_num_rows($res) > 0)
+						$access = true;
+					}
+				}
 			}
 		}
 
