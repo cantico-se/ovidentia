@@ -16,7 +16,8 @@ articles.html           modifyarticle       Added { images } and { files }
                                             Added editor.ListFilesUrl('{ urlfiles }') javascript
                                             Added javascript functions onInsertFile() and savef()
                                             Added onFocus() in headtext and bodytext textarea
-                        readmore            Added icone for printing friendly                                         
+                        readmore            Added icone for printing friendly
+                        introlist           Added <a name="art{ arr[id] }"></a>                                        
 
 waiting.html            modifyarticle       Added { images } and { files }
                                             Added editor.ListImagesUrl('{ urlimages }') javascript
