@@ -826,4 +826,11 @@
 <string id="Inbox">Inbox</string>
 <string id="Opened threads">Opened threads</string>
 <string id="Closed threads">Closed threads</string>
+<string id="Can't create directory: ">Can't create directory: </string>
+<string id="Move to folder">Move to folder</string>
+<string id="Information">Information</string>
+<string id="In the same topic">In the same topic</string>
+<string id="List of submitted articles">List of submitted articles</string>
+<string id="Submitted">Submitted</string>
+<string id="There are no submitted article">There are no submitted article</string>
 </en>
