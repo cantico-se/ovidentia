@@ -1,0 +1,111 @@
+<!--#begin delegationlist -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground">&nbsp;{ delegtxt }</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;{ delegdesctxt }</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground">&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ urltxt }</a></td>
+<td class="BabSiteAdminFontBackground">&nbsp;{ delegval }</td>
+<td class="BabSiteAdminFontBackground">&nbsp;<a href="{ urlmem }"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ memberstxt }" border="0" align="middle"></a></td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<!--#end delegationlist -->
+
+<!--#begin delegatcreate -->
+<form name="dgcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ tgval }">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="add" value="{ what }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="gname" size="45" maxlength="255" value="{ grpname }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="description" size="45" maxlength="255" value="{ grpdesc }">
+</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><input type="checkbox" name="delegitems[]" value="{ delegitem }" { checked }></td>
+<td class="BabLoginMenuBackground" valign="middle">{ delegitemdesc }</td>
+</tr>
+<!--#endin getnext -->
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ add }">
+<!--#if bdel -->
+&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ delete }">
+<!--#endif bdel -->
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end delegatcreate -->
+<!--#begin delegatmembers -->
+<form name="memform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="delegat">
+<input type="hidden" name="idx" value="mem">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="memdel" value="del">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="60%" align="center" nowrap 
+valign="middle"><b>{ fullname }</b></td>
+<td class="BabSiteAdminTitleFontBackground" width="40%" align="center" 
+valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" width="40%" align="center" 
+valign="middle">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" align="left" nowrap 
+valign="middle">{ fullnameval }</td>
+<td class="BabSiteAdminFontBackground" align="center" 
+valign="middle">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" align="center" 
+valign="middle"><input type="checkbox" name="users[]" value="{ userid }"></td>
+</tr>
+<!--#endin getnext -->
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="60%" align="center" nowrap 
+valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" width="40%" align="center" 
+valign="middle"><a class="BabAlphabetLink" href="javascript: Start('{ usersbrowurl }', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ userstxt }</a></td>
+<td class="BabSiteAdminTitleFontBackground" width="40%" align="center" 
+valign="middle"><a href="javascript:submitForm('mem', 'memform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ delusers }" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end delegatmembers -->
