@@ -325,16 +325,6 @@ function deleteArticles($art, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function bab_confirmDeleteArticles($items)
-{
-	$arr = explode(",", $items);
-	$cnt = count($arr);
-	$db = $GLOBALS['babDB'];
-	for($i = 0; $i < $cnt; $i++)
-		{
-		bab_confirmDeleteArticle($arr[$i]);
-		}
-}
 
 function addToHomePages($item, $homepage, $art)
 {
