@@ -69,7 +69,7 @@ function accessCalendar($calid)
 			}
 		}
 
-	$temp = new temp($view, $day, $month, $year, $start, $calid);
+	$temp = new temp($calid);
 	$body->babecho(	babPrintTemplate($temp,"calopt.html", "access"));
 }
 
