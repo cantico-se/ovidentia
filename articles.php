@@ -190,10 +190,10 @@ function listArticles($topics, $approver)
 			switch($langFilterValue)
 				{
 					case 2:
-						$req .= " where id_topic='$topics' and confirmed='Y' and archive='N' and lang='".$GLOBALS['babLanguage']."' order by date desc";
+						$req .= " where id_topic='$topics' and confirmed='Y' and archive='N' and (lang='".$GLOBALS['babLanguage']."' or lang='*' or lang='')  order by date desc";
 						break;
 					case 1:
-						$req .= " where id_topic='$topics' and confirmed='Y' and archive='N' and (lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%') order by date desc";
+						$req .= " where id_topic='$topics' and confirmed='Y' and archive='N' and ((lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%') or lang='*' or lang='') order by date desc";
 						break;
 					case 0:
 					default:
