@@ -149,6 +149,17 @@ function bab_confirmDeleteTopic($id)
 	$res = $db->db_query($req);
 	}
 
+function bab_confirmDeleteArticles($items)
+{
+	$arr = explode(",", $items);
+	$cnt = count($arr);
+	$db = $GLOBALS['babDB'];
+	for($i = 0; $i < $cnt; $i++)
+		{
+		bab_confirmDeleteArticle($arr[$i]);
+		}
+}
+
 function bab_confirmDeleteArticle($article)
 	{
 	// delete comments

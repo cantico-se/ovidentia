@@ -406,17 +406,6 @@ function updateCategory($id, $category, $description, $managerid, $cat, $modcom,
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
 
-function bab_confirmDeleteArticles($items)
-{
-	$arr = explode(",", $items);
-	$cnt = count($arr);
-	$db = $GLOBALS['babDB'];
-	for($i = 0; $i < $cnt; $i++)
-		{
-		bab_confirmDeleteArticle($arr[$i]);
-		}
-}
-
 function addToHomePages($item, $homepage, $art)
 {
 	global $idx;

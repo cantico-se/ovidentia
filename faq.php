@@ -245,7 +245,8 @@ function faqPrint($idcat)
 				}
 			else
 				{
-				mysql_data_seek($this->res, 0);
+				if( $this->count > 0 )
+					$this->db_data_seek($this->res, 0);
 				$this->index = 0;
 				return false;
 				}
