@@ -49,7 +49,6 @@ function modifyFolder($fid)
 		var $yactsel;
 		var $nactsel;
 		var $ynfsel;
-		var $ynfsel;
 		var $safm;
 		var $sares;
 		var $sacount;
