@@ -92,7 +92,7 @@ $babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
 				bab_translate("Tuesday"), bab_translate("Wednesday"), bab_translate("Thursday"),
 				bab_translate("Friday"), bab_translate("Saturday"));
 
-$babSearchUrl = "";
+$babSearchUrl = "abcdef";
 $babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts");  
 
 $babJs = $GLOBALS['babScriptPath']."ovidentia.js";
@@ -343,6 +343,14 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/apprflow";
 		break;
+	case "admfms":
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+			$incl = "admin/admfms";
+		break;
+	case "admfm":
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+			$incl = "admin/admfm";
+		break;
 	case "topman":
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "topman";
@@ -497,32 +505,34 @@ switch($tg)
 	case "contact":
 		if( $BAB_SESS_LOGGED && bab_contactsAccess())
 			{
-			$incl = "contact";
-			include $babInstallPath."$incl.php";
+			include $babInstallPath."contact.php";
 			exit;
 			}
 		break;
 	case "address":
 		if( $BAB_SESS_LOGGED)
 			{
-			$incl = "address";
-			include $babInstallPath."$incl.php";
+			include $babInstallPath."address.php";
+			exit;
+			}
+		break;
+	case "lsa":
+		if( $BAB_SESS_LOGGED)
+			{
+			include $babInstallPath."lsa.php";
 			exit;
 			}
 		break;
 	case "month":
-		$incl = "month";
-		include $babInstallPath."$incl.php";
+		include $babInstallPath."month.php";
 		exit;
 		break;
 	case "images":
-		$incl = "images";
-		include $babInstallPath."$incl.php";
+		include $babInstallPath."images.php";
 		exit;
 		break;
 	case "version":
-		$incl = "version";
-		include $babInstallPath."$incl.php";
+		include $babInstallPath."version.php";
 		exit;
 		break;
 	case "entry":

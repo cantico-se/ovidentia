@@ -6,6 +6,24 @@
  ***********************************************************************/
 include $babInstallPath."utilit/fileincl.php";
 
+function notifyApprovers($id, $fid)
+	{
+	global $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+
+	$arr = $babDB->db_fetch_array($babDB->db_query("select idsa from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
+	if( $arr['idsa'] == 0 )
+		{
+		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$id."'");
+		return true;
+		}
+
+	$idfai = makeFlowInstance($arr['idsa'], "fil-".$id);
+	$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$id."'");
+	$nfusers = getWaitingApproversFlowInstance($idfai, true);
+	notifyFileApprovers($id, $nfusers);
+	return false;
+	}
 
 class listFiles
 	{
@@ -18,7 +36,8 @@ class listFiles
 
 	function listFiles($id, $gr, $path, $bmanager, $what ="list")
 		{
-		global $BAB_SESS_USERID, $aclfm;
+		global $babBody, $BAB_SESS_USERID;
+		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		$this->fullpath = bab_getUploadFullPath($gr, $id);
 		$this->path = $path;
 		$this->id = $id;
@@ -28,61 +47,72 @@ class listFiles
 
 		$this->db = $GLOBALS['babDB'];
 		$this->bmanager = $bmanager;
-		for( $i = 0; $i < count($aclfm['id']); $i++)
+		$this->countwf = 0;
+		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 			{
-			if($aclfm['pu'][$i] == 1 && $aclfm['ma'][$i] == 0)
-				$this->arrgrp[] = $aclfm['id'][$i];
+			if( $babBody->aclfm['ma'][$i] == 1 )
+				$this->arrmgrp[] = $babBody->aclfm['id'][$i];
+			else
+				$this->arrgrp[] = $babBody->aclfm['id'][$i];
 
-			if($aclfm['pu'][$i] == 1 && $aclfm['ma'][$i] == 1)
+			if( $babBody->aclfm['id'][$i] == $id )
 				{
-				$this->arrmgrp[] = $aclfm['id'][$i];
+				$this->bdownload = $babBody->aclfm['down'][$i];
+
+				if( $what == "list" && $gr == "Y" && $babBody->aclfm['idsa'][$i] != 0 && isUserApproverFlow($babBody->aclfm['idsa'][$i], $BAB_SESS_USERID) )
+					{
+					$req = "select ".BAB_FILES_TBL.".* from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+					$this->reswf = $this->db->db_query($req);
+					$this->countwf = $this->db->db_num_rows($this->reswf);
+					}
 				}
 			}
 
-			if( $gr == "Y" || ($gr == "N" && !empty($path)))
-				{
-				$this->countmgrp = 0;
-				$this->countgrp = 0;
-				}
-			else 
-				{
-				$this->countmgrp = count($this->arrmgrp);
-				$this->countgrp = count($this->arrgrp);
-				}
+		if( !$this->bdownload )
+			$this->bdownload = $bmanager? true: false;
 
-			if( !empty($path))
-				{
-				$i = strrpos($path, "/");
-				if( !$i )
-					$p = "";
-				else
-					$p = substr( $path, 0, $i);
-				$this->arrdir[] = ". .";
-				$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p;
-				}
+		if( $gr == "Y" || ($gr == "N" && !empty($path)))
+			{
+			$this->countmgrp = 0;
+			$this->countgrp = 0;
+			}
+		else 
+			{
+			$this->countmgrp = count($this->arrmgrp);
+			$this->countgrp = count($this->arrgrp);
+			}
 
-			if( ($gr == "N" && in_array(1, $aclfm['pr']) || $gr == "Y") && is_dir($this->fullpath.$path."/"))
+		if( !empty($path))
+			{
+			$i = strrpos($path, "/");
+			if( !$i )
+				$p = "";
+			else
+				$p = substr( $path, 0, $i);
+			$this->arrdir[] = ". .";
+			$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p;
+			}
+
+		if( is_dir($this->fullpath.$path."/"))
+			{
+			$h = opendir($this->fullpath.$path."/");
+			while (($f = readdir($h)) != false)
 				{
-				$h = opendir($this->fullpath.$path."/");
-				while (($f = readdir($h)) != false)
+				if ($f != "." and $f != "..") 
 					{
-					if ($f != "." and $f != "..") 
+					if (is_dir($this->fullpath.$path."/".$f))
 						{
-						if (is_dir($this->fullpath.$path."/".$f))
-							{
-							$this->arrdir[] = $f;
-							$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
-							}
+						$this->arrdir[] = $f;
+						$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
 						}
 					}
-				closedir($h);
-				$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."'";
-				//if( !$this->bmanager )
-				//	$req .= " and confirmed='Y'";
-				$req .= " order by name asc";
-				$this->res = $this->db->db_query($req);
-				$this->count = $this->db->db_num_rows($this->res);
 				}
+			closedir($h);
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and confirmed='Y'";
+			$req .= " order by name asc";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			}
 		}
 
 	}
@@ -111,7 +141,7 @@ function getDirSize( $dir )
 
 function listTrashFiles($id, $gr)
 	{
-	global $babBody, $aclfm;
+	global $babBody;
 
 	class temp
 		{
@@ -185,7 +215,7 @@ function listTrashFiles($id, $gr)
 
 function showDiskSpace($id, $gr, $path)
 	{
-	global $babBody, $aclfm;
+	global $babBody;
 
 	class temp
 		{
@@ -213,7 +243,7 @@ function showDiskSpace($id, $gr, $path)
 
 		function temp($id, $gr, $path)
 			{
-			global $aclfm;
+			global $babBody;
 			$this->id = $id;
 			$this->gr = $gr;
 			$this->grouptxt = bab_translate("Name");
@@ -224,17 +254,17 @@ function showDiskSpace($id, $gr, $path)
 			$this->bytes = bab_translate("bytes");
 			$this->kilooctet = " ".bab_translate("Kb");
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			for( $i = 0; $i < count($aclfm['id']); $i++)
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 				{
-				if($aclfm['pu'][$i] == 1 && $aclfm['ma'][$i] == 0)
-					$this->arrgrp[] = $aclfm['id'][$i];
+				if( $babBody->aclfm['ma'][$i] == 0)
+					$this->arrgrp[] = $babBody->aclfm['id'][$i];
 
-				if($aclfm['pu'][$i] == 1 && $aclfm['ma'][$i] == 1)
+				if( $babBody->aclfm['ma'][$i] == 1)
 					{
-					$this->arrmgrp[] = $aclfm['id'][$i];
+					$this->arrmgrp[] = $babBody->aclfm['id'][$i];
 					}
 				}
-			if( !empty($GLOBALS['BAB_SESS_USERID'] ) && in_array(1, $aclfm['pr'] ))
+			if( !empty($GLOBALS['BAB_SESS_USERID'] ) && $babBody->ustorage)
 				$this->diskp = 1;
 			else
 				$this->diskp = 0;
@@ -295,7 +325,7 @@ function showDiskSpace($id, $gr, $path)
 				$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize']).$this->kilooctet;
 				//$this->allowedspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize'], false)." " . $this->bytes;
 				$this->remainingspace =  bab_formatSizeFile($GLOBALS['babMaxGroupSize'] - $size).$this->kilooctet;
-				$this->groupname = bab_getGroupName($this->arrgrp[$i]);
+				$this->groupname = bab_getFolderName($this->arrgrp[$i]);
 				$i++;
 				return true;
 				}
@@ -308,7 +338,7 @@ function showDiskSpace($id, $gr, $path)
 			static $i = 0;
 			if( $i < $this->countmgrp)
 				{
-				$this->groupname = bab_getGroupName($this->arrmgrp[$i]);
+				$this->groupname = bab_getFolderName($this->arrmgrp[$i]);
 				$pathx = bab_getUploadFullPath("Y", $this->arrmgrp[$i]);
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_formatSizeFile($size).$this->kilooctet;
@@ -331,7 +361,7 @@ function showDiskSpace($id, $gr, $path)
 
 function browseFiles($id, $gr, $path, $bmanager, $editor)
 	{
-	global $babBody, $aclfm;
+	global $babBody;
 
 	class temp extends listFiles
 		{
@@ -354,7 +384,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			$this->grpfolderimg = bab_printTemplate($this, "config.html", "groupfolder");
 			$this->manfolderimg = bab_printTemplate($this, "config.html", "managerfolder");
 			if( $gr == "Y")
-				$this->rootpath = bab_getGroupName($id);
+				$this->rootpath = bab_getFolderName($id);
 			else
 				$this->rootpath = "";
 			if( !empty($BAB_SESS_USERID))
@@ -383,7 +413,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			static $m = 0;
 			if( $m < $this->countgrp)
 				{
-				$this->name = bab_getGroupName($this->arrgrp[$m]);
+				$this->name = bab_getFolderName($this->arrgrp[$m]);
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$this->arrgrp[$m]."&gr=Y&path=&editor=".$this->editor;
 				$m++;
 				return true;
@@ -397,7 +427,7 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			static $m = 0;
 			if( $m < $this->countmgrp)
 				{
-				$this->name = bab_getGroupName($this->arrmgrp[$m]);
+				$this->name = bab_getFolderName($this->arrmgrp[$m]);
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$this->arrmgrp[$m]."&gr=Y&path=&editor=".$this->editor;
 				$m++;
 				return true;
@@ -445,46 +475,13 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 
 function listFiles($id, $gr, $path, $bmanager)
 	{
-	global $babBody, $aclfm;
+	global $babBody;
 
 	class temp extends listFiles
 		{
-		var $name;
-		var $path;
-		var $fullpath;
-		var $id;
-		var $gr;
-		var $mkdir;
-		var $rename;
-		var $delete;
-		var $directory;
-		var $root;
-		var $rooturl;
-		var $refresh;
-		var $refreshurl;
-		var $bmanager;
-		var $nametxt;
-		var $sizetxt;
-		var $modifiedtxt;
-		var $postedtxt;
-		var $postedby;
-		var $rootpath;
-		var $cuturl;
-		var $download;
-		var $cuttxt;
-		var $paste;
-		var $undo;
-		var $deltxt;
-		var $urldiskspace;
-		var $diskspace;
-		var $hits;
-		var $hitstxt;
-		var $arrext = array();
-		var $arrdir = array();
-
 		function temp($id, $gr, $path, $bmanager)
 			{
-			global $BAB_SESS_USERID, $aclfm;
+			global $BAB_SESS_USERID;
 			$this->listFiles($id, $gr, $path, $bmanager);
 			$this->bytes = bab_translate("bytes");
 			$this->mkdir = bab_translate("Create");
@@ -505,10 +502,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->diskspace = bab_translate("Show disk space usage");
 			$this->hitstxt = bab_translate("Hits");
 
-			if( !empty($BAB_SESS_USERID))
-				$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$BAB_SESS_USERID."&gr=N&path=";
-			else
-				$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=2&gr=Y&path=";
+			$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list";
 			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
 			$this->urldiskspace = $GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".$path;
 
@@ -518,7 +512,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->manfolderimg = bab_printTemplate($this, "config.html", "managerfolder");
 
 			if( $gr == "Y")
-				$this->rootpath = bab_getGroupName($id);
+				$this->rootpath = bab_getFolderName($id);
 			else
 				$this->rootpath = "";
 			$this->bdel = false;
@@ -555,7 +549,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			static $m = 0;
 			if( $m < $this->countgrp)
 				{
-				$this->name = bab_getGroupName($this->arrgrp[$m]);
+				$this->name = bab_getFolderName($this->arrgrp[$m]);
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arrgrp[$m]."&gr=Y&path=";
 				$m++;
 				return true;
@@ -569,7 +563,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			static $m = 0;
 			if( $m < $this->countmgrp)
 				{
-				$this->name = bab_getGroupName($this->arrmgrp[$m]);
+				$this->name = bab_getFolderName($this->arrmgrp[$m]);
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arrmgrp[$m]."&gr=Y&path=";
 				$m++;
 				return true;
@@ -578,27 +572,49 @@ function listFiles($id, $gr, $path, $bmanager)
 				return false;
 			}
 
+		function updateFileInfo($arr)
+			{
+			$ext = strtolower(substr(strrchr($arr['name'], "."), 1));
+			if( !empty($ext) && empty($this->arrext[$ext]))
+				{
+				$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
+				if( empty($this->arrext[$ext]))
+					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");						
+				$this->fileimage = $this->arrext[$ext];
+				}
+			else if( empty($ext))
+				{
+				$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");				
+				}
+			else
+				$this->fileimage = $this->arrext[$ext];
+			$this->name = $arr['name'];
+			
+			if( file_exists($this->fullpath.$arr['path']."/".$arr['name']))
+				{
+				$fstat = stat($this->fullpath.$arr['path']."/".$arr['name']);
+				$this->sizef = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
+				}
+			else
+				$this->sizef = "???";
+
+			$this->modified = date("d/m/Y H:i", bab_mktime($arr['modified']));
+			$this->postedby = bab_getUserName($arr['author']);
+			$this->hits = $arr['hits'];
+			if( $arr['readonly'] == "Y" )
+				$this->readonly = "R";
+			else
+				$this->readonly = "";
+			}
+
 		function getnextfile()
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$ext = strtolower(substr(strrchr($arr['name'], "."), 1));
-				if( !empty($ext) && empty($this->arrext[$ext]))
-					{
-					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
-					if( empty($this->arrext[$ext]))
-						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");						
-					$this->fileimage = $this->arrext[$ext];
-					}
-				else if( empty($ext))
-					{
-					$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");				
-					}
-				else
-					$this->fileimage = $this->arrext[$ext];
-				$this->name = $arr['name'];
+				$this->bconfirmed = 0;
+				$this->updateFileInfo($arr);
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$jfname = str_replace("'", "\'", $arr['name']);
 				$jfname = str_replace('"', "'+String.fromCharCode(34)+'",$jfname);
@@ -606,25 +622,6 @@ function listFiles($id, $gr, $path, $bmanager)
 				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
-				if( file_exists($this->fullpath.$arr['path']."/".$arr['name']))
-					{
-					$fstat = stat($this->fullpath.$arr['path']."/".$arr['name']);
-					$this->sizef = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
-					}
-				else
-					$this->sizef = "???";
-
-				$this->modified = date("d/m/Y H:i", bab_mktime($arr['modified']));
-				$this->postedby = bab_getUserName($arr['author']);
-				if( $this->bmanager && $arr['confirmed'] == "N")
-					$this->bconfirmed = 1;
-				else
-					$this->bconfirmed = 0;
-				$this->hits = $arr['hits'];
-				if( $arr['readonly'] == "Y" )
-					$this->readonly = "R";
-				else
-					$this->readonly = "";
 				$i++;
 				return true;
 				}
@@ -632,36 +629,40 @@ function listFiles($id, $gr, $path, $bmanager)
 				return false;
 			}
 
+		function getnextwfile()
+			{
+			static $i = 0;
+			if( $i < $this->countwf)
+				{
+				$arr = $this->db->db_fetch_array($this->reswf);
+				$this->bconfirmed = 1;
+				$this->updateFileInfo($arr);
+				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$jfname = str_replace("'", "\'", $arr['name']);
+				$jfname = str_replace('"', "'+String.fromCharCode(34)+'",$jfname);
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$jfname;
+				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+
 		function getnextxfile()
 			{
 			static $i = 0;
 			if( $i < $this->xcount)
 				{
 				$arr = $this->db->db_fetch_array($this->xres);
-				$ext = substr(strrchr($arr['name'], "."), 1);
-				if( empty($this->arrext[$ext]))
-					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
-				if( empty($this->arrext[$ext]))
-					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");				
-				$this->fileimage = $this->arrext[$ext];
-				$this->name = $arr['name'];
+				$this->bconfirmed = 0;
+				$this->updateFileInfo($arr);
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$arr['path']."&file=".$arr['name'];
 				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$arr['path']."&file=".$arr['name'];
 				$this->pasteurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=paste&id=".$this->id."&gr=".$this->gr."&path=".$arr['path']."&file=".$arr['name']."&tp=".$this->path;				
-				if( file_exists($this->fullpath.$arr['path']."/".$arr['name']))
-					{
-					$fstat = stat($this->fullpath.$arr['path']."/".$arr['name']);
-					$this->sizef = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
-					}
-				else
-					$this->sizef = "???";
-
-				$this->modified = date("d/m/Y H:i", bab_mktime($arr['modified']));
-				$this->postedby = bab_getUserName($arr['author']);
-				if( $this->bmanager && $arr['confirmed'] == "N")
-					$this->bconfirmed = 1;
-				else
-					$this->bconfirmed = 0;
 				$i++;
 				return true;
 				}
@@ -684,7 +685,7 @@ function listFiles($id, $gr, $path, $bmanager)
 
 function addFile($id, $gr, $path, $description, $keywords)
 	{
-	global $babBody, $aclfm, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID;
 
 	class temp
 		{
@@ -723,7 +724,7 @@ function addFile($id, $gr, $path, $description, $keywords)
 	$access = false;
 	if( $gr == "N" && !empty($BAB_SESS_USERID))
 		{
-		if( in_array(1, $aclfm['pr']) )
+		if( $babBody->ustorage ) 
 			{
 			$access = true;
 			}
@@ -731,20 +732,14 @@ function addFile($id, $gr, $path, $description, $keywords)
 
 	if( $gr == "Y" && !empty($BAB_SESS_USERID))
 		{
-		for( $i = 0; $i < count($aclfm['id']); $i++)
+		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 			{
-			if( $aclfm['id'][$i] == $id && $aclfm['pu'][$i] == 1)
+			if( $babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
 				{
 				$access = true;
 				break;
 				}
 			}
-
-		if( !$access && ( $id == 1 || $id == 2) && bab_isUserAdministrator())
-			$access = true;
-
-		if( !$access && !empty($BAB_SESS_USERID) && bab_isUserGroupManager($id))
-			$access = true;
 		}
 
 	if( !$access )
@@ -757,7 +752,7 @@ function addFile($id, $gr, $path, $description, $keywords)
 	$babBody->babecho(	bab_printTemplate($temp,"fileman.html", "addfile"));
 	}
 
-function notifyApprover($grpname, $file, $path, $approveremail)
+function notifyFileApprovers($id, $users)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include $babInstallPath."utilit/mailincl.php";
@@ -778,40 +773,43 @@ function notifyApprover($grpname, $file, $path, $approveremail)
 		var $groupname;
 
 
-		function tempa($grpname, $file, $path)
+		function tempa($id)
 			{
-            global $BAB_SESS_USER, $BAB_SESS_EMAIL;
-            $this->filename = $file;
+            global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$id."'"));
+            $this->filename = $arr['name'];
             $this->message = bab_translate("A new file is waiting for you");
             $this->from = bab_translate("Author");
             $this->path = bab_translate("Path");
             $this->file = bab_translate("File");
-            $this->group = bab_translate("Group");
-            $this->pathname = $path == ""? "/": $path;
-            $this->groupname = $grpname;
+            $this->group = bab_translate("Folder");
+            $this->pathname = $arr['path'] == ""? "/": $arr['path'];
+            $this->groupname = bab_getFolderName($arr['id_owner']);
             $this->site = bab_translate("Web site");
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
-            if( !empty($BAB_SESS_USER))
-                $this->author = $BAB_SESS_USER;
+            if( !empty($arr['author']))
+				{
+                $this->author = bab_getUserName($arr['author']);
+                $this->authoremail = bab_getUserEmail($arr['author']);
+				}
             else
+				{
                 $this->author = bab_translate("Unknown user");
-
-            if( !empty($BAB_SESS_EMAIL))
-                $this->authoremail = $BAB_SESS_EMAIL;
-            else
                 $this->authoremail = "";
+				}
 			}
 		}
     $mail = bab_mail();
 	if( $mail == false )
 		return;
 	
-    $mail->mailTo($approveremail);
+	for( $i=0; $i < count($users); $i++)
+		$mail->mailTo(bab_getUserEmail($users[$i]), bab_getUserName($users[$i]));
     $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject(bab_translate("New waiting file"));
 
-	$tempa = new tempa($grpname, $file, $path);
+	$tempa = new tempa($id);
 	$message = bab_printTemplate($tempa,"mailinfo.html", "filewait");
     $mail->mailBody($message, "html");
 
@@ -851,48 +849,69 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 
             $this->path = bab_translate("Path");
             $this->file = bab_translate("File");
-            $this->group = bab_translate("Group");
+            $this->group = bab_translate("Folder");
             $this->pathname = $path == ""? "/": $path;
-            $this->groupname = bab_getGroupName($idgrp);
+            $this->groupname = bab_getFolderName($idgrp);
             $this->site = bab_translate("Web site");
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
 			}
 		}
-    $mail = bab_mail();
-	if( $mail == false )
-		return;
 
 	$db = $GLOBALS['babDB'];
-	if( $idgrp == 1)
-		$res = $db->db_query("select id as idu from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
-	else
-		$res = $db->db_query("select id_object as idu from ".BAB_USERS_GROUPS_TBL." where id_group='".$idgrp."'");
-
-	while( $row = $db->db_fetch_array($res))
+	$res = $db->db_query("select id_group from ".BAB_FMDOWNLOAD_GROUPS_TBL." where  id_object='".$idgrp."'");
+	if( $res && $db->db_num_rows($res) > 0 )
 		{
-	    $mail->mailTo(bab_getUserEmail($row['idu']));
+		while( $row = $db->db_fetch_array($res))
+			{
+			$mail = bab_mail();
+			if( $mail == false )
+				return;
+
+			switch($row['id_group'])
+				{
+				case 0:
+				case 1:
+					$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+					break;
+				case 2:
+					return;
+				default:
+					$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
+					break;
+				}
+
+			if( $res2 && $db->db_num_rows($res2) > 0 )
+				{
+				$mail->mailTo($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+
+				while($arr = $db->db_fetch_array($res2))
+					{
+					$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+					}
+
+				$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+				if( $bnew )
+					$mail->mailSubject(bab_translate("New file"));
+				else
+					$mail->mailSubject(bab_translate("File has been updated"));
+
+				$tempa = new tempb($file, $path, $idgrp, $bnew);
+				$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
+				$mail->mailBody($message, "html");
+
+				$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
+				$mail->mailAltBody($message);
+
+				$mail->send();
+				}
+			}
 		}
-
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
-	if( $bnew )
-	    $mail->mailSubject(bab_translate("New waiting file"));
-	else
-		$mail->mailSubject(bab_translate("File has been updated"));
-
-	$tempa = new tempb($file, $path, $idgrp, $bnew);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
-    $mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
-    $mail->mailAltBody($message);
-
-	$mail->send();
 	}
 
 function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywords, $readonly)
 	{
-	global $babBody, $BAB_SESS_USERID, $aclfm;
+	global $babBody, $BAB_SESS_USERID;
 	$access = false;
 	$bmanager = false;
 	$access = false;
@@ -900,7 +919,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 	if( $gr == "N" && !empty($BAB_SESS_USERID))
 		{
-		if( in_array(1, $aclfm['pr']) )
+		if( $babBody->ustorage )
 			{
 			$access = true;
 			$confirmed = "Y";
@@ -909,26 +928,15 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 
 	if( $gr == "Y" && !empty($BAB_SESS_USERID))
 		{
-		for( $i = 0; $i < count($aclfm['id']); $i++)
+		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 			{
-			if( $aclfm['id'][$i] == $id && $aclfm['pu'][$i] == 1)
+			if( $babBody->aclfm['id'][$i] == $id && ( $babBody->aclfm['uplo'][$i] || $babBody->aclfm['ma'][$i] == 1))
 				{
 				$access = true;
 				break;
 				}
 			}
 
-		if( !$access && ( $id == 1 || $id == 2) && bab_isUserAdministrator())
-			{
-			$confirmed = "Y";
-			$access = true;
-			}
-
-		if( !$access && !empty($BAB_SESS_USERID) && bab_isUserGroupManager($id))
-			{
-			$confirmed = "Y";
-			$access = true;
-			}
 		}
 
 
@@ -1021,9 +1029,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	$bnotify = false;
 	if( $gr == "Y" )
 		{
-		$rr = $db->db_fetch_array($db->db_query("select moderate, filenotify from ".BAB_GROUPS_TBL." where id='".$id."'"));
-		if( $rr['moderate'] == "N" )
-			$confirmed = "Y";
+		$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$id."'"));
 		if( $rr['filenotify'] == "Y" )
 			$bnotify = true;
 		}
@@ -1031,35 +1037,24 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	if( $bexist)
 		{
 		$req = "update ".BAB_FILES_TBL." set description='".$description."', keywords='".$keywords."', readonly='".$readonly."', confirmed='".$confirmed."', modified=now(), hits='0', modifiedby='".$idcreator."', state='' where id='".$arr['id']."'";
+		$db->db_query($req);
+		$idf = $arr['id'];
 		}
 	else
 		{
 		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
 		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" . $path. "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
+		$db->db_query($req);
+		$idf = $db->db_insert_id(); 
 		}
 
-	$res = $db->db_query($req);
 
-	if( $confirmed == "N" )
+	if( $gr == "Y" && $confirmed == "N" )
 		{
-		$res = $db->db_query("select * from ".BAB_GROUPS_TBL." where id='".$id."'");
-		if( $res && $db->db_num_rows($res) > 0)
-			{
-			$arr = $db->db_fetch_array($res);
-			if( $arr['manager'] != 0)
-				{
-				$res = $db->db_query("select * from ".BAB_USERS_TBL." where id='".$arr['manager']."'");
-				if( $res && $db->db_num_rows($res) > 0)
-					{
-					$arr2 = $db->db_fetch_array($res);
-					notifyApprover($arr['name'], $filename, $path, $arr2['email']);
-					}
-				}
-			}
+		if( notifyApprovers($idf, $id) && $bnotify)
+			notifyMembers($filename, $path, $id, true);
 		}
 
-	if( $gr == "Y" && $confirmed == "Y" && $bnotify )
-		notifyMembers($filename, $path, $id, true);
 	return true;
 	}
 
@@ -1072,6 +1067,25 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 	if( $res && $db->db_num_rows($res))
 		{
 		$arr = $db->db_fetch_array($res);
+		if( $arr['bgroup'] == "Y" )
+			{
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+				{
+				if( $babBody->aclfm['id'][$i] == $arr['id_owner'] )
+					{
+					if ( $babBody->aclfm['upda'][$i] || $babBody->aclfm['ma'][$i] == 1)
+						{
+						break;
+						}
+					else
+						{
+						$babBody->msgerror = bab_translate("Access denied");
+						return false;
+						}
+					}
+				}
+			}
+
 		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
 		if( substr($arr['path'], -1) == "/")
 			$pathx .= substr($arr['path'], 0 , -1);
@@ -1150,13 +1164,37 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			$req .= ", name='".$fname."'";
 		if( !empty($readonly))
 			$req .= ", readonly='".$readonly."'";
-		if( !empty($confirm))
-			$req .= ", confirmed='".$confirm."'";
 		$req .= " where id='".$idf."'";
 		$res = $db->db_query($req);
-		if( $arr['bgroup'] == "Y" && $confirm == "Y" && $bnotify == "Y")
+		if( $arr['bgroup'] == "Y" )
 			{
-			notifyMembers($arr['name'], $arr['path'], $arr['id_owner'], false);
+			if( $arr['confirmed'] == "N")
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+				$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $confirm == "Y"? true: false);
+				switch($res)
+					{
+					case 0:
+						$db->db_query("delete from ".BAB_FILES_TBL." where id='".$arr['id']."''");
+						unlink($pathx.$arr['name']);
+						break;
+					case 1:
+						deleteFlowInstance($arr['idfai']);
+						$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y', idfai='0' where id = '".$arr['id']."'");
+						if( $bnotify == "Y")
+							{
+							notifyMembers($arr['name'], $arr['path'], $arr['id_owner'], true);
+							}
+						break;
+					default:
+						$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
+						if( count($nfusers) > 0 )
+							notifyFileApprovers($arr['id'], $nfusers);
+						break;
+					}
+				}
+			else if( $bnotify == "Y" && $bmodified)
+				notifyMembers($arr['name'], $arr['path'], $arr['id_owner'], false);
 			}
 		return true;
 		}
@@ -1164,10 +1202,28 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 
 function createDirectory($dirname, $id, $gr, $path)
 	{
-	global $babBody, $BAB_SESS_USERID, $aclfm;
-	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pr']) || $gr == "Y" && ((($id == 2 || $id ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($id)))
-		;
-	else
+	global $babBody, $BAB_SESS_USERID;
+	
+	$bOk = false;
+	switch($gr)
+		{
+		case "N":
+			if( $gr == "N" && $BAB_SESS_USERID == $id && $babBody->ustorage )
+				$bOk = true;
+			break;
+		case "Y":
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++ )
+			{
+			if( $babBody->aclfm['id'][$i] == $id && $babBody->aclfm['ma'][$i] == 1 )
+				{
+				$bOk = true;
+				break;
+				}
+			}
+			break;
+		}
+
+	if( !$bOk )
 		{
 		$babBody->msgerror = bab_translate("You don't have permission to create directory");
 		return false;
@@ -1201,19 +1257,37 @@ function renameDirectory($dirname, $id, $gr, $path)
 	if( empty($path))
 		return false;
 
-	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pr']) || $gr == "Y" && ((($id == 2 || $id ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($id)))
-		;
-	else
-		{
-		$babBody->msgerror = bab_translate("You don't have permission to rename directory");
-		return false;
-		}
-
 	if( empty($dirname))
 		{
 		$babBody->msgerror = bab_translate("Please give a valid directory name");
 		return false;
 		}
+
+	$bOk = false;
+	switch($gr)
+		{
+		case "N":
+			if( $gr == "N" && $BAB_SESS_USERID == $id && $babBody->ustorage )
+				$bOk = true;
+			break;
+		case "Y":
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++ )
+			{
+			if( $babBody->aclfm['id'][$i] == $id && $babBody->aclfm['ma'][$i] == 1 )
+				{
+				$bOk = true;
+				break;
+				}
+			}
+			break;
+		}
+
+	if( !$bOk )
+		{
+		$babBody->msgerror = bab_translate("You don't have permission to rename directory");
+		return false;
+		}
+
 
 	$pathx = bab_getUploadFullPath($gr, $id);
 
@@ -1268,9 +1342,26 @@ function removeDirectory($id, $gr, $path)
 	if( empty($path))
 		return false;
 
-	if( $gr == "N" && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pr']) || $gr == "Y" && ((($id == 2 || $id ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($id)))
-		;
-	else
+	$bOk = false;
+	switch($gr)
+		{
+		case "N":
+			if( $gr == "N" && $BAB_SESS_USERID == $id && $babBody->ustorage )
+				$bOk = true;
+			break;
+		case "Y":
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++ )
+			{
+			if( $babBody->aclfm['id'][$i] == $id && $babBody->aclfm['ma'][$i] == 1 )
+				{
+				$bOk = true;
+				break;
+				}
+			}
+			break;
+		}
+
+	if( !$bOk )
 		{
 		$babBody->msgerror = bab_translate("You don't have permission to remove directory");
 		return false;
@@ -1305,30 +1396,29 @@ function removeDirectory($id, $gr, $path)
 
 function getFile( $file, $id, $gr, $path, $inl)
 	{
-	global $babBody, $BAB_SESS_USERID, $aclfm;
+	global $babBody, $BAB_SESS_USERID;
 	$access = false;
 
-	if( $gr == "N")
+	if( $gr == "N" && $babBody->ustorage)
 		{
-		if( !in_array(1, $aclfm['pr']))
-			$access = false;
-		else
-			$access = true;
+		$access = true;
 		}
 
 	if( $gr == "Y" )
 		{
-		for( $i = 0; $i < count($aclfm['id']); $i++)
-			if( $aclfm['id'][$i] == $id )
+		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 			{
+			if( $babBody->aclfm['id'][$i] == $id && ($babBody->aclfm['down'][$i] || $babBody->aclfm['ma'][$i]))
+				{
 				$access = true;
 				break;
+				}	
 			}
 		}
 
-	$db = $GLOBALS['babDB'];
 	if( $access )
 		{
+		$db = $GLOBALS['babDB'];
 		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
@@ -1343,7 +1433,7 @@ function getFile( $file, $id, $gr, $path, $inl)
 
 	if( !$access )
 		{
-		$babBody->msgerror = bab_translate("Access denied");
+		echo bab_translate("Access denied");
 		return;
 		}
 
@@ -1448,9 +1538,9 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 		}
 	}
 
-function viewFile( $idf, $aclfm)
+function viewFile( $idf)
 	{
-	global $babBody, $BAB_SESS_USERID, $aclfm;
+	global $babBody, $BAB_SESS_USERID;
 	class temp
 		{
 		var $name;
@@ -1481,13 +1571,14 @@ function viewFile( $idf, $aclfm)
 		var $fsizetxt;
 		var $fsize;
 
-		function temp($idf, $arr, $bmanager, $access, $bconfirm)
+		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate)
 			{
 			$this->access = $access;
 			if( $access)
 				{
 				$this->bmanager = $bmanager;
 				$this->bconfirm = $bconfirm;
+				$this->bupdate = $bupdate;
 				$this->idf = $idf;
 
 				$this->description = bab_translate("Description");
@@ -1522,15 +1613,15 @@ function viewFile( $idf, $aclfm)
 				$this->name = bab_translate("Name");
 				$this->nameval = $arr['name'];
 				$this->attribute = bab_translate("Read only");
-				$this->bupdate = false;
 				if( $arr['readonly'] == "Y")
 					{
 					$this->yesselected = "selected";
 					$this->noselected = "";
+					if($this->bupdate)
+						$this->bupdate = false;
 					}
 				else
 					{
-					$this->bupdate = true;
 					$this->noselected = "selected";
 					$this->yesselected = "";
 					}
@@ -1552,10 +1643,10 @@ function viewFile( $idf, $aclfm)
 				$this->no = bab_translate("No");
 				$this->bviewnf = false;
 
-				if( $arr['bgroup'] == "Y" && $arr['id_owner'] != 2 && $this->update)
+				if( $arr['bgroup'] == "Y" && $this->bupdate)
 					{
 					$db = $GLOBALS['babDB'];
-					$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_GROUPS_TBL." where id='".$arr['id_owner']."'"));
+					$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
 					if( $rr['filenotify'] == "N" )
 						{
 						$this->nonfselected = "selected";
@@ -1567,7 +1658,6 @@ function viewFile( $idf, $aclfm)
 						$this->nonfselected = "";
 						}
 					$this->bviewnf = true;
-
 					}
 				}
 			else
@@ -1576,10 +1666,11 @@ function viewFile( $idf, $aclfm)
 				}
 			}
 		}
-
+	echo $babBody->msgerror;
 	$access = false;
 	$bmanager = false;
 	$bconfirm = false;
+	$bupdate = false;
 	$db = $GLOBALS['babDB'];
 	$req = "select * from ".BAB_FILES_TBL." where id='".$idf."'";
 	$res = $db->db_query($req);
@@ -1588,40 +1679,45 @@ function viewFile( $idf, $aclfm)
 		$arr = $db->db_fetch_array($res);
 		if( $arr['bgroup'] == "N" )
 			{
-			if( in_array(1, $aclfm['pr']) && $BAB_SESS_USERID == $arr['id_owner'])
+			if( $babBody->ustorage && $BAB_SESS_USERID == $arr['id_owner'])
 				{
 				$access = true;
 				$bmanager = true;
+				$bupdate = true;
 				}
 			}
 
 		if( $arr['bgroup'] == "Y")
 			{
-			if( (($arr['id_owner'] == 2 || $arr['id_owner'] ==1) && bab_isUserAdministrator()) || bab_isUserGroupManager($arr['id_owner']))
+			if( $arr['confirmed'] == "N" )
 				{
-				$bconfirm = true;
-				$bmanager = true;
+				$res = $db->db_query("select ".BAB_FILES_TBL.".id from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where ".BAB_FILES_TBL.".id='".$arr['id']."' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'");
+				if( $res && $db->db_num_rows($res) > 0 )
+					$bconfirm = true;
 				}
 
-			if( $arr['id_owner'] == 2)
-				$access = true;
-			else if(!empty($BAB_SESS_USERID))
+			for( $i = 0; $i < count($babBody->aclfm['id']); $i++ )
 				{
-				if( $arr['id_owner'] == 1)
-					$access = true;
-				else
+				if( $babBody->aclfm['id'][$i] == $arr['id_owner'] )
 					{
-					$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='".$arr['id_owner']."' and id_object='".$BAB_SESS_USERID."'";
-					$res = $db->db_query($req);
-					if( $res && $db->db_num_rows($res) > 0)
-						$access = true;
+					$access = true;
+					if( $babBody->aclfm['ma'][$i] == 1 && !empty($BAB_SESS_USERID))
+						{
+						$bmanager = true;
+						$bupdate = true;
+						}
+					else if( $babBody->aclfm['upda'][$i] )
+						{
+						$bupdate = true;
+						}
+					break;
 					}
 				}
 			}
 		}
 
 
-	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm);
+	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate);
 	echo bab_printTemplate($temp,"fileman.html", "viewfile");
 	}
 
@@ -1675,7 +1771,18 @@ function restoreFiles($items)
 	}
 	
 /* main */
-$aclfm = bab_fileManagerAccessLevel();
+$upload = false;
+$bmanager = false;
+$access = false;
+bab_fileManagerAccessLevel();
+if( count($babBody->aclfm['id']) == 0 && !$babBody->ustorage )
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+else
+	$access = true;
+
 if(!isset($idx))
 	{
 	$idx = "list";
@@ -1686,12 +1793,7 @@ if(!isset($path))
 	$path = "";
 	}
 
-if(!isset($gr))
-	{
-	$gr = "N";
-	}
-
-if( !empty($BAB_SESS_USERID))
+if( !empty($BAB_SESS_USERID) && $babBody->ustorage)
 	{
 	if(!isset($id))
 		{
@@ -1703,58 +1805,34 @@ if( !empty($BAB_SESS_USERID))
 		}
 	}
 else
-	{	
-	$id = 2;
+	{
+	$id = $babBody->aclfm['id'][0];
 	$gr = "Y";
 	}
 
-$upload = false;
-$bmanager = false;
-$access = false;
 if( $gr == "N" && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id )
 	{
-	if( count($aclfm['pr']) > 0 && in_array(1, $aclfm['pr']) )
+	if( $babBody->ustorage )
 		{
 		$upload = true;
 		$bmanager = true;
-		$access = true;
 		}
-	if( !$access && count($aclfm['pu']) > 0)
-		$access = true;
-
 	}
 
 if( $gr == "Y")
 	{
-	for( $i = 0; $i < count($aclfm['id']); $i++)
+	for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 		{
-		if( $aclfm['id'][$i] == $id && $aclfm['pu'][$i] == 1)
+		if( $babBody->aclfm['id'][$i] == $id )
 			{
-			$access = true;
-			if( !empty( $BAB_SESS_USERID))
-				{
-				if( $id == 2 || $id ==1)
-					{
-					if( bab_isUserAdministrator() )
-						{
-						$bmanager = true;
-						$upload = true;
-						}
-					}
-				else
-					{
-					$bmanager = bab_isUserGroupManager($id);
-					$upload = true;
-					}
-				}
+			if( $babBody->aclfm['ma'][$i] == 1 )
+				$bmanager = true;
+
+			if( $babBody->aclfm['uplo'][$i] )
+				$upload = true;
+			break;
 			}
 		}
-	}
-
-if( !$access)
-	{
-		$babBody->msgerror = bab_translate("Access denied");
-		return;
 	}
 
 if( isset($addf))
@@ -1820,7 +1898,7 @@ switch($idx)
 		break;
 
 	case "viewfile":
-		viewFile($idf, $aclfm);
+		viewFile($idf);
 		exit;
 		break;
 

@@ -472,65 +472,38 @@ function bab_contactsAccess()
 
 function bab_fileManagerAccessLevel()
 	{
-	global $BAB_SESS_USERID;
-	$db = $GLOBALS['babDB'];
-	$aret = array();
-	$badmin = bab_isUserAdministrator();
+	global $babDB, $babBody, $BAB_SESS_USERID;
+	if( isset($babBody->aclfm))
+		return;
 
-	$req = "select * from ".BAB_GROUPS_TBL." where id=2 and (ustorage ='Y' or gstorage ='Y')";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
-		{
-		$arr = $db->db_fetch_array($res);
-		$aret['id'][] = 2;
-		$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
-		$aret['pr'][] = 0;
-		if( $badmin )
-			$aret['ma'][] = 1;
-		else
-			$aret['ma'][] = 0;
-		}
+	$babBody->aclfm = array();
+	$babBody->ustorage = false;
 
-	if( !empty($BAB_SESS_USERID))
+	$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".ustorage ='Y'");
+
+	if( $res && $babDB->db_num_rows($res) > 0 )
+		$babBody->ustorage = true;
+	
+	$res = $babDB->db_query("select id, manager, idsa from ".BAB_FM_FOLDERS_TBL." where active='Y'");
+	while($row = $babDB->db_fetch_array($res))
 		{
-		$req = "select * from ".BAB_GROUPS_TBL." where id=1 and (ustorage ='Y' or gstorage ='Y')";
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 )
+		$uplo = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $row['id']);
+		$down = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $row['id']);
+		$upda = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $row['id']);
+
+		if( $down || $uplo || $upda || $row['manager'] == $BAB_SESS_USERID)
 			{
-			$arr = $db->db_fetch_array($res);
-			$aret['id'][] = 1;
-			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
-			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
-			if( $badmin )
-				$aret['ma'][] = 1;
+			$babBody->aclfm['id'][] = $row['id'];
+			$babBody->aclfm['down'][] = $down;
+			$babBody->aclfm['uplo'][] = $uplo;
+			$babBody->aclfm['upda'][] = $upda;
+			$babBody->aclfm['idsa'][] = $row['idsa'];
+			if( $row['manager'] != 0 && $row['manager'] == $BAB_SESS_USERID)
+				$babBody->aclfm['ma'][] = 1;
 			else
-				$aret['ma'][] = 0;
+				$babBody->aclfm['ma'][] = 0;
 			}
-
-		$req = "select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".gstorage, ".BAB_GROUPS_TBL.".ustorage from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".manager !='".$BAB_SESS_USERID."' and (".BAB_GROUPS_TBL.".ustorage ='Y' or ".BAB_GROUPS_TBL.".gstorage ='Y')";
-		$res = $db->db_query($req);
-		while( $arr = $db->db_fetch_array($res))
-			{
-			$aret['id'][] = $arr['id'];
-			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
-			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
-			$aret['ma'][] = 0;
-			}
-
-
-		$req = "select id, gstorage, ustorage from ".BAB_GROUPS_TBL." where manager='".$BAB_SESS_USERID."' and gstorage='Y'";
-		$res = $db->db_query($req);
-		while( $arr = $db->db_fetch_array($res))
-			{
-			$aret['id'][] = $arr['id'];
-			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
-			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
-			$aret['ma'][] = 1;
-			}
-
-		
 		}
-	return $aret;
 	}
 
 function bab_getUserId( $name )

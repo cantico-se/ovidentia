@@ -129,6 +129,7 @@ function groupsOptions()
 		var $count;
 		var $res;
 		var $burl;
+		var $persdiskspace;
 
 		function temp()
 			{
@@ -138,6 +139,7 @@ function groupsOptions()
 			$this->vacation = bab_translate("Vacation");
 			$this->notes = bab_translate("Notes");
 			$this->contacts = bab_translate("Contacts");
+			$this->persdiskspace = bab_translate("Personal disk space");
 			$this->modify = bab_translate("Update");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -172,6 +174,10 @@ function groupsOptions()
 					$this->concheck = "checked";
 				else
 					$this->concheck = "";
+				if( $this->arr['ustorage'] == "Y")
+					$this->pdscheck = "checked";
+				else
+					$this->pdscheck = "";
 				if( $this->arr['id'] < 3 )
 					$this->urlname = bab_getGroupName($this->arr['id']);
 				else
@@ -231,7 +237,7 @@ function addGroup($name, $description, $managerid, $bemail)
 		}
 	}
 
-function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids)
+function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids)
 {
 
 	$db = $GLOBALS['babDB'];
@@ -257,6 +263,11 @@ function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $con
 		$db->db_query("update ".BAB_GROUPS_TBL." set contacts='Y' where id='".$congrpids[$i]."'"); 
 	}
 
+	for( $i=0; $i < count($congrpids); $i++)
+	{
+		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id='".$pdsgrpids[$i]."'"); 
+	}
+
 	$db->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where type='2'");
 	for( $i = 0; $i < count($calgrpids); $i++)
 	{
@@ -272,7 +283,7 @@ if( isset($add))
 	addGroup($name, $description, $managerid, $bemail);
 
 if( isset($update) && $update == "options")
-	saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids);
+	saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids);
 
 switch($idx)
 	{

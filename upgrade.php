@@ -696,6 +696,143 @@ $ret = upgrade340betas($beta);
 if( !empty($ret))
 	return $ret;
 
+$req = "CREATE TABLE ".BAB_FM_FOLDERS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "folder char(255) NOT NULL default '',";
+$req .= "manager int(11) unsigned NOT NULL default '0',";
+$req .= "idsa int(11) unsigned NOT NULL default '0',";
+$req .= "filenotify enum('N','Y') NOT NULL default 'N',";
+$req .= "active enum('Y','N') NOT NULL default 'Y',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FM_FOLDERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FILES_TBL." ADD idfai INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FMUPLOAD_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FMUPLOAD_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FMDOWNLOAD_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FMDOWNLOAD_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FMUPDATE_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FMUPDATE_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "select * from ".BAB_GROUPS_TBL;
+$res = $db->db_query($req);
+while($row = $db->db_fetch_array($res))
+	{
+	if( $row['id'] == 1 || $row['id'] == 2 )
+		{
+		$rs = $db->db_query("select ".BAB_USERS_TBL.".id from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='3' and ".BAB_USERS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_object and ".BAB_USERS_TBL.".disabled ='0' order by ".BAB_USERS_TBL.".id asc limit 0,1");
+		$rrr = $db->db_fetch_array($rs);
+		$row['manager'] = $rrr['id'];
+		if( $row['id'] == 1)
+			$row['name'] = "Registered users";
+		else if( $row['id'] == 2)
+			$row['name'] = "Unregistered users";
+		}
+
+	$res2 = $db->db_query("select * from ".BAB_USERS_TBL." where id='".$row['manager']."'");
+	if( $row['manager'] != 0 && $res2 && $db->db_num_rows($res2) > 0 )
+		{
+		$res2 = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where formula='".$row['manager']."'");
+		if( !$res2 || $db->db_num_rows($res2) == 0 )
+			{
+			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder) VALUES ('" .bab_getUserName($row['manager']). "', '', '" .  $row['manager']. "', 'N')";
+			$db->db_query($req);
+			$idfa = $db->db_insert_id();
+			$refcount = 0;
+			}
+		else
+			{
+			$arr = $db->db_fetch_array($res2);
+			$idfa = $arr['id'];
+			$refcount = $arr['refcount'];
+			}
+
+		$db->db_query("insert into ".BAB_FM_FOLDERS_TBL." (id, folder, manager, idsa, filenotify, active) values ('".$row['id']."', '".$row['name']."', '".$row['manager']."', '".$idfa."', '".$row['filenotify']."', '".$row['gstorage']."')");
+		$fid = $db->db_insert_id();
+
+		$db->db_query("insert into ".BAB_FMDOWNLOAD_GROUPS_TBL." ( id_object, id_group) values ('".$fid."', '".$row['id']."')");
+		$db->db_query("insert into ".BAB_FMUPLOAD_GROUPS_TBL." ( id_object, id_group) values ('".$fid."', '".$row['id']."')");
+
+		$res2 = $db->db_query("select id from ".BAB_FILES_TBL." where confirmed='N' and bgroup='Y' and id_owner='".$row['id']."'");
+		while($arr = $db->db_fetch_array($res2))
+			{
+			$db->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra) VALUES ('".$idfa."', 'fil-".$arr['id']."')");
+			$idfaia = $db->db_insert_id();
+			$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".++$refcount."' where id='".$idfa."'");
+			$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser, notified) VALUES ('".$idfaia."', '".$row['manager']."', 'Y')");
+			$db->db_query("update ".BAB_FILES_TBL." set idfai='".$idfaia."' where id='".$arr['id']."'");
+			}
+		}
+	else
+		{
+		$db->db_query("insert into ".BAB_FM_FOLDERS_TBL." (id, folder, manager, idsa, filenotify, active) values ('".$row['id']."', '".$row['name']."', '0', '0', '".$row['filenotify']."', '".$row['gstorage']."')");
+		$fid = $db->db_insert_id();
+
+		$db->db_query("insert into ".BAB_FMDOWNLOAD_GROUPS_TBL." ( id_object, id_group) values ('".$fid."', '".$row['id']."')");
+		$db->db_query("insert into ".BAB_FMUPLOAD_GROUPS_TBL." ( id_object, id_group) values ('".$fid."', '".$row['id']."')");
+
+		$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where bgroup='Y' and id_owner='".$row['id']."' and confirmed='N'");
+		}
+	}
+
+$req = "ALTER TABLE ".BAB_GROUPS_TBL." DROP gstorage, DROP filenotify, DROP moderate";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 

@@ -4,6 +4,21 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+function bab_getFolderName($id)
+	{
+	global $babDB;
+	$res = $babDB->db_query("select folder from ".BAB_FM_FOLDERS_TBL." where id='".$id."'");
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return $arr['folder'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
 function bab_getUploadFullPath($gr, $id)
 {
 	if( substr($GLOBALS['babUploadPath'], -1) == "/" )
@@ -74,21 +89,23 @@ function bab_deleteUploadDir($path)
 
 function bab_deleteUploadUserFiles($gr, $id)
 	{
-	$db = $GLOBALS['babDB'];	
+	global $babDB;
 	$pathx = bab_getUploadFullPath($gr, $id);
-	$db->db_query("delete from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'");
+	$babDB->db_query("delete from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'");
 	@bab_deleteUploadDir($pathx);
 	}
 
 function bab_isAccessFileValid($gr, $id)
 	{
-	$aclfm = bab_fileManagerAccessLevel();
+	global $babBody;
+
+	bab_fileManagerAccessLevel();
 	$access = false;
 	if( $gr == "Y")
 		{
-		for( $i = 0; $i < count($aclfm['id']); $i++)
+		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 			{
-			if( $aclfm['id'][$i] == $id && $aclfm['pu'][$i] == 1)
+			if( $babBody->aclfm['id'][$i] == $id && $babBody->aclfm['down'][$i])
 				{
 				$access = true;
 				break;
@@ -97,12 +114,11 @@ function bab_isAccessFileValid($gr, $id)
 		}
 	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
 		{
-		if( in_array(1, $aclfm['pr']))
+		if( $babBody->ustorage)
 			{
 			$access = true;
 			}
 		}
 	return $access;
 	}
-
 ?>
