@@ -8,7 +8,7 @@
 <script type="text/javascript">
 <!--
 { script }
-<!--#if BAB_SESS_LOGGED -->
+<!--#if babSessLimited -->
 var SessTimeoutCounter = 0;
 
 function SessTimeoutCtrl()
@@ -30,7 +30,7 @@ function SessTimeoutCtrl()
 	}
 
 setTimeout('SessTimeoutCtrl()',60000);
-<!--#endif BAB_SESS_LOGGED -->
+<!--#endif babSessLimited -->
 //-->
 </script>
 </HEAD>
