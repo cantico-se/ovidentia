@@ -79,6 +79,7 @@ function addonsList($upgradeall)
 		var $update;
 		var $view;
 		var $viewurl;
+		var $altbg = true;
 
 		function temp($upgradeall)
 			{
@@ -132,7 +133,7 @@ function addonsList($upgradeall)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
+				$this->altbg = !$this->altbg;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->title = $this->arr['title'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=addons&idx=mod&item=".$this->arr['id'];
@@ -249,6 +250,9 @@ function upgrade($id)
 /* main */
 if( !isset($idx))
 	$idx = "list";
+
+if( !isset($upgradeall))
+	$upgradeall = '';
 
 if( isset($update))
 	{
