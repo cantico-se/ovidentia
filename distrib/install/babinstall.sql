@@ -163,6 +163,7 @@ INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 
 INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N', 'Y');
 INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'N', 'Y');
 
+
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_notes'
