@@ -56,7 +56,7 @@ function listCategories()
 			$this->comments = bab_translate("Comment(s)");
 			$this->waiting = bab_translate("Waiting");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$BAB_SESS_USERID."'";
+			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$BAB_SESS_USERID."' ORDER BY ".BAB_TOPICS_TBL.".category";
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
