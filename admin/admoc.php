@@ -59,9 +59,11 @@ function modifyOrgChart($id)
 
 		var $nameval;
 		var $descval;
+		var $id;
 
 		function temp($id)
 			{
+			$this->id = $id;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->update = bab_translate("Update");
@@ -327,7 +329,7 @@ function confirmDeleteOrgChart($id)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	bab_deleteOrgChart($id);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs");
+	//Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs");
 	}
 
 /* main */
@@ -345,7 +347,7 @@ if(!isset($idx))
 if( isset($update) && $update == "updateoc")
 	{
 	if( isset($submit))
-		updateForum($item, $fname, $description);
+		updateOrgChart($item, $fname, $description);
 	else if( isset($bdelete))
 		{
 		$idx = "delete";

@@ -416,15 +416,16 @@ function bab_deleteOrgChart($id)
 	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/treeincl.php";
 
-	$ocinfo = $babDB->db_fetch_array($babDB->db_query("select oct.*, ddt.id as id_dir, ddt.id_group from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where oct.id='".$ocid."'"));
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$id."'"));
+	$ocinfo = $babDB->db_fetch_array($babDB->db_query("select oct.*, ddt.id as id_dir, ddt.id_group from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where oct.id='".$id."'"));
+	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$id."'"));
 	if( $ocinfo['isprimary'] == 'Y' && $ocinfo['id_group'] == 1)
 	{
+		echo "mmmmmmmmmmmmm";
 		return;
 	}
 
 	$ru = array();
-	$res = 	$db->db_query("select id from ".BAB_OC_ROLES_TBL." where id_oc='".$id."'");
+	$res = 	$babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_oc='".$id."'");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
 		$ru[] = $arr['id'];
