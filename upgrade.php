@@ -4768,4 +4768,12 @@ $db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." CHANGE `quantity` `quantity` D
 return $ret;
 }
 
+function upgrade555to556()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+return $ret;
+}
+
 ?>
