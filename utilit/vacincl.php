@@ -532,7 +532,7 @@ function viewVacationCalendar($users, $period = false )
 			static $i =1;
 			if ($this->arr = $this->db->db_fetch_array($this->restypes))
 				{
-				$this->newline = $i % 2 == 0 && $this->counttypes < $i-1;
+				$this->newline = $i % 2 == 0 && $this->counttypes > $i-1;
 				$i++;
 				return true;
 				}
