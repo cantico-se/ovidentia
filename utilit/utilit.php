@@ -1870,6 +1870,8 @@ function bab_updateSiteSettings()
 		}
 	else
 		$GLOBALS['babCookieIdent'] = false;
+
+	$GLOBALS['babAdminName'] = $arr['adminname'];
 }
 
 class babLanguageFilter

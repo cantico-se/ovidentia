@@ -635,11 +635,11 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 		return;
 
 	$mail->mailTo($email);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("New post"));
 
 	$tempb = new tempb($threadTitle, $email, $author);
-	$message = bab_printTemplate($tempb,"mailinfo.html", "newpost");
+	$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "newpost"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempb,"mailinfo.html", "newposttxt");

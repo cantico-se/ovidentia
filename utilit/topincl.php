@@ -80,8 +80,11 @@ class categoriesHierarchy
 			$i++;
 			return true;
 			}
-		else{ $i = 0;
-			return false;}
+		else
+			{ 
+			$i = 0;
+			return false;
+			}
 		}
 }
 
@@ -113,6 +116,22 @@ function bab_getCategoryTitle($id)
 		{
 		$arr = $db->db_fetch_array($res);
 		return $arr['category'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
+function bab_getCategoryDescription($id)
+	{
+	$db = $GLOBALS['babDB'];
+	$query = "select description from ".BAB_TOPICS_TBL." where id='$id'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		return $arr['description'];
 		}
 	else
 		{
@@ -275,15 +294,15 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 			$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
 			$res=$db->db_query($sql);
 			$r = $db->db_fetch_array($res);
-			$mail->mailTo($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
+			$mail->mailBcc($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
 			}
 		}
 
-	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("New article for home page"));
 
 	$tempa = new tempa($top, $title, $homepage0, $homepage1);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "articlehomepage");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "articlehomepage"));
 	$mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "articlehomepagetxt");
@@ -349,12 +368,12 @@ function notifyArticleApprovers($id, $users)
 		return;
 
 	for( $i=0; $i < count($users); $i++)
-		$mail->mailTo(bab_getUserEmail($users[$i]));
-	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+		$mail->mailBcc(bab_getUserEmail($users[$i]));
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("New waiting article"));
 
 	$tempa = new tempa($id);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewait");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "articlewait"));
 	$mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewaittxt");
@@ -421,12 +440,12 @@ function notifyCommentApprovers($idcom, $nfusers)
 			return;
 
 		for( $i=0; $i < count($nfusers); $i++)
-			$mail->mailTo(bab_getUserEmail($nfusers[$i]));
-		$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+			$mail->mailBcc(bab_getUserEmail($nfusers[$i]));
+		$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 		$mail->mailSubject(bab_translate("New waiting comment"));
 
 		$tempa = new tempca($idcom);
-		$message = bab_printTemplate($tempa,"mailinfo.html", "commentwait");
+		$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "commentwait"));
 		$mail->mailBody($message, "html");
 
 		$message = bab_printTemplate($tempa,"mailinfo.html", "commentwaittxt");
@@ -481,11 +500,11 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 		$msg = bab_translate("An article has been published");
 
 
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject($msg);
 
 	$tempc = new tempcc($topicname, $title, $author, $msg);
-	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticle");
+	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "notifyarticle"));
 
 	$messagetxt = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
 
@@ -501,6 +520,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_TOPICSVIEW_GROUPS_TBL." where  id_object='".$topics."'");
+	$arrusers = array();
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
 		while( $row = $db->db_fetch_array($res))
@@ -521,21 +541,11 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 			if( $res2 && $db->db_num_rows($res2) > 0 )
 				{
 				$count = 0;
-				while($arr = $db->db_fetch_array($res2))
+				while(($arr = $db->db_fetch_array($res2)) && $count < 25)
 					{
-					if( !empty($restriction))
-						$add = bab_articleAccessByRestriction($restriction, $arr['id']);
-					else
-						$add = true;
-
-					if( $add )
+					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
 						{
-						$mail->mailTo($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-						$count++;
-						}
-
-					while(($arr = $db->db_fetch_array($res2)) && $count < 25)
-						{
+						$arrusers[] = $arr['id'];
 						if( !empty($restriction))
 							$add = bab_articleAccessByRestriction($restriction, $arr['id']);
 						else
@@ -546,14 +556,14 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 							$count++;
 							}
 						}
-
-					$mail->mailBody($message, "html");
-					$mail->mailAltBody($messagetxt);
-					$mail->send();
-					$mail->clearBcc();
-					$mail->clearTo();
-					$count = 0;
 					}
+
+				$mail->mailBody($message, "html");
+				$mail->mailAltBody($messagetxt);
+				$mail->send();
+				$mail->clearBcc();
+				$mail->clearTo();
+				$count = 0;
 
 				}	
 			}

@@ -499,11 +499,11 @@ function notifyFileAuthor($subject, $version, $author)
 		return;
 
     $mail->mailTo(bab_getUserEmail($author), bab_getUserName($author));
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject($subject);
 
 	$tempc = new tempc($version);
-	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmfileversion");
+	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "confirmfileversion"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmfileversiontxt");

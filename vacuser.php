@@ -80,11 +80,11 @@ function notifyVacationAuthor($id, $subject)
 
 	$mail->mailTo(bab_getUserEmail($row['id_user']), bab_getUserName($row['id_user']));
 
-	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject($subject);
 
 	$tempa = new tempa($row, $subject);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "infovacation");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "infovacation"));
 	$mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "infovacationtxt");

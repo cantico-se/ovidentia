@@ -562,11 +562,11 @@ function notifyArticleAuthor($subject, $msg, $title, $to)
 		return;
 
     $mail->mailTo($to);
-    $mail->mailFrom($from, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($from, $GLOBALS['babAdminName']);
     $mail->mailSubject($subject);
 
 	$tempc = new tempc($msg, $title);
-	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmarticle");
+	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "confirmarticle"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempc,"mailinfo.html", "confirmarticletxt");
@@ -720,7 +720,7 @@ function notifyCommentAuthor($subject, $msg, $idfrom, $to)
     $mail->mailSubject($subject);
 
 	$tempa = new tempa($subject, $msg, $from, $to);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmcomment");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "confirmcomment"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmcommenttxt");

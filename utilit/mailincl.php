@@ -95,6 +95,15 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 	return false; 
 } 
 
+class babMailTemplate
+	{
+	var $mailcontent;
+	function babMailTemplate($msg)
+		{
+		$this->mailcontent = $msg;
+		}
+	}
+
 class babMail
 {
 	var $mail;
@@ -104,7 +113,7 @@ class babMail
 		$this->mail = new phpmailer();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
 		$this->mail->From = $GLOBALS['babAdminEmail'];
-		$this->mail->FromName = bab_translate("Ovidentia Administrator");
+		$this->mail->FromName = $GLOBALS['babAdminName'];
 	}
 
 	function mailFrom($email, $name='')
@@ -197,6 +206,12 @@ class babMail
 	function send()
 	{
 		return $this->mail->Send();
+	}
+
+	function mailTemplate($msg)
+	{
+		$mtmpl = new babMailTemplate($msg);
+		return bab_printTemplate($mtmpl,"mailtemplate.html", "default");
 	}
 }
 

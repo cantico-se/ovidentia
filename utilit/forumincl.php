@@ -147,11 +147,11 @@ function notifyModerator($threadTitle, $email, $author, $forumname)
 		return;
 
 	$mail->mailTo($email);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("New post"));
 
 	$tempa = new tempa($threadTitle, $email, $author, $forumname);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "newpost");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newpost"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");

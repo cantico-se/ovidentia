@@ -74,13 +74,13 @@ function notifyVacationApprovers($id, $users)
 		return;
 
 	for( $i=0; $i < count($users); $i++)
-		$mail->mailTo(bab_getUserEmail($users[$i]), bab_getUserName($users[$i]));
+		$mail->mailBcc(bab_getUserEmail($users[$i]), bab_getUserName($users[$i]));
 
-	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("Vacation request is waiting to be validated"));
 
 	$tempa = new tempa($row);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "newvacation");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newvacation"));
 	$mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "newvacationtxt");

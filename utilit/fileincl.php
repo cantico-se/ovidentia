@@ -197,12 +197,12 @@ function notifyFileApprovers($id, $users, $msg)
 		return;
 	
 	for( $i=0; $i < count($users); $i++)
-		$mail->mailTo(bab_getUserEmail($users[$i]), bab_getUserName($users[$i]));
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+		$mail->mailBcc(bab_getUserEmail($users[$i]), bab_getUserName($users[$i]));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("New waiting file"));
 
 	$tempa = new tempa($id, $msg);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "filewait");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "filewait"));
     $mail->mailBody($message, "html");
 
 	$message = bab_printTemplate($tempa,"mailinfo.html", "filewaittxt");
@@ -251,8 +251,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 	if( $mail == false )
 		return;
 
-	$mail->mailTo($babAdminEmail, bab_translate("Ovidentia Administrator"));
-	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
 	if( $bnew )
 		$mail->mailSubject(bab_translate("New file"));
@@ -260,7 +259,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 		$mail->mailSubject(bab_translate("File has been updated"));
 
 	$tempa = new tempb($file, $path, $idgrp, $msg);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "fileuploaded"));
 
 	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
 

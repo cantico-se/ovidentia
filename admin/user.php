@@ -295,7 +295,7 @@ function notifyUserconfirmation($name, $email)
 		return;
 
 	$mail->mailTo($email, $name);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 	
 
@@ -303,14 +303,14 @@ function notifyUserconfirmation($name, $email)
 	$message .= "<br>". bab_translate("Your registration has been confirmed.");
 	$message .= "<br>". bab_translate("To connect on our site").", ". bab_translate("simply follow this").": ";
 	$tempa = new tempa($name, $message);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userconfirmation");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userconfirmation"));
     $mail->mailBody($message, "html");
 
 	$message = bab_translate("Thank You For Registering at our site") ."\n";
 	$message .= bab_translate("Your registration has been confirmed.")."\n";
 	$message .= bab_translate("To connect on our site").", ". bab_translate("go to this url").": ";
 	$tempa = new tempa($name, $message);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userconfirmationtxt");
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userconfirmationtxt"));
     $mail->mailAltBody($message);
 
 	$mail->send();
