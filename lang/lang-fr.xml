@@ -1187,4 +1187,6 @@
 <string id="Deputy functions">Fonctions déléguées</string>
 <string id="Name to use for notification emails">Nom à utiliser pour les emails de notifications</string>
 <string id="Number of results in research">Nombre de résultats dans la recherche</string>
+<string id="A folder with the same name already exists">Un répertoire avec le même nom existe déja</string>
+<string id="Do you really whant to delete this directory">Voulez-vous vraiment effacer ce répertoire</string>
 </fr>
