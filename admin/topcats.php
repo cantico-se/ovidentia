@@ -159,21 +159,22 @@ function addTopCat($name, $description, $benabled, $template)
 		return;
 		}
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$description = addslashes($description);
+		$name = addslashes($name);
+		$template = addslashes($template);
+		}
+
 	$db = $GLOBALS['babDB'];
 
-	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='$name'");
+	$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$name."'");
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This topic category already exists");
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$description = addslashes($description);
-			$name = addslashes($name);
-			$template = addslashes($template);
-			}
 		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "', '" . $template. "')";
 		$db->db_query($req);
 
