@@ -531,7 +531,7 @@ $approver = bab_isUserApprover($topics);
 switch($idx)
 	{
 	case "Submit":
-		$babBody->title = bab_translate("Submit an article");
+		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticle($topics);
@@ -541,7 +541,7 @@ switch($idx)
 		break;
 
 	case "subfile":
-		$babBody->title = bab_translate("Submit an article");
+		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticleByFile($topics);
