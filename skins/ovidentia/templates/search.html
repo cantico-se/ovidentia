@@ -2,10 +2,7 @@
 <!--#begin search -->
 <form method="post" action="index.php">
 <input type="hidden" name="tg" value="search">
-<input type="hidden" name="sfaq" value="{ sfaq }">
-<input type="hidden" name="sfor" value="{ sfor }">
-<input type="hidden" name="sart" value="{ sart }">
-<input type="hidden" name="snot" value="{ snot }">
+<input type="hidden" name="pat" value="{ pat }">
 <input type="hidden" name="idx" value="find">
   <center>
     <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -120,6 +117,43 @@ function Start(page)
 <!--#endif faqnext -->
 </center>
 <!--#endif countfaq -->
+
+<!--#if countfil "!= 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ filtitle }</td></tr></table>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr align="left"> 
+<!--#in getnextfil -->
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ fileurl }">{ file }</a>&nbsp;{ filedesc }</td>
+  </tr>
+<!--#endin getnextfil -->
+</table>
+<center>{ filpage }
+<!--#if filnext "!= 0" -->
+<a class="BabFaqLink" href="{ artnext }">{ next }</a>
+<!--#endif filnext -->
+</center>
+<!--#endif countfil -->
+
+<!--#if countcon "!= 0" -->
+<br>
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" >{ contitle }</td></tr></table>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr align="left"> 
+<!--#in getnextcon -->
+    <td class="BabFaq1BodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ fullnameurl }">{ fullname }</a></td>
+  </tr>
+<!--#endin getnextcon -->
+</table>
+<center>{ conpage }
+<!--#if connext "!= 0" -->
+<a class="BabFaqLink" href="{ connext }">{ next }</a>
+<!--#endif connext -->
+</center>
+<!--#endif countcon -->
+
 <!--#if countnot "!= 0" -->
 <br>
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
@@ -297,3 +331,132 @@ function Start(page)
 </body>
 </html>
 <!--#end viewfaq -->
+
+<!--#begin viewfil -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+{ babCss }
+</HEAD>
+<BODY class="BabBackground">
+<center>
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr><td class="BabBodyTitleBackground" ><center>{ title }</center></td></tr></table>
+<br>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr><td class="BabBodyTitleBackground" >{ description }</td>
+    <td class="BabFaqQuestionBodyFontBackground" nowrap align="left" valign="middle" align="left">{ 
+      arr[description] }</td>
+  </tr>
+  <tr><td class="BabBodyTitleBackground" >{ keywords }</td>
+    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ arr[keywords] }</td>
+  </tr>
+  <tr><td class="BabBodyTitleBackground" >{ sizetxt }</td>
+    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ size }</td>
+  </tr>
+  <tr><td class="BabBodyTitleBackground" >{ modifiedtxt }</td>
+    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ modified }</td>
+  </tr>
+  <tr><td class="BabBodyTitleBackground" >{ postedbytxt }</td>
+    <td class="BabFaqresponseBodyFontBackground" valign="top" align="left">{ postedby }</td>
+  </tr>
+</table>
+<br>
+<a class="BabFaqLink" href="{ geturl }">{ download }</a>
+</center>
+</body>
+</html>
+<!--#end viewfil -->
+
+<!--#begin viewcon -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+
+  <table class="BabContactsCardCadreFontBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabContactsCardBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr align="left" valign="middle"> 
+            <td class="BabContactsCardErrorsFontBackground" width="91%" colspan="2">{ msgerror } </td>
+          </tr>       
+          <tr align="right" valign="middle"> 
+            <td class="BabContactsCardBodyFontBackground" width="45%" align="left">{ firstname }: </td>
+            <td class="BabContactsCardBodyFontBackground" width="46%" align="left">{ firstnameval }</td>
+          </tr>
+      
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ lastname }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ lastnameval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ email }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ emailval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ compagny }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ compagnyval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ hometel }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ hometelval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ mobiletel }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ mobiletelval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ businesstel }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ businesstelval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ businessfax }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ businessfaxval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ jobtitle }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ jobtitleval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ businessaddress }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ businessaddressval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%">{ homeaddress }:</td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">{ homeaddressval }</td>
+          </tr>
+          <tr> 
+            <td class="BabContactsCardBodyFontBackground" width="45%"> 
+              <input type="button" name="cancel" value="{ cancel }"  onClick="window.close()">
+            </td>
+            <td class="BabContactsCardBodyFontBackground" width="46%">&nbsp;</td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+
+</BODY></HTML>
+<!--#end viewcon -->

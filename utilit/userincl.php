@@ -23,11 +23,13 @@ function isUserApprover($topics)
 function isUserGroupManager($grpid="")
 	{
 	global $BAB_SESS_USERID;
+	if( empty($BAB_SESS_USERID))
+		return false;
+
 	if( empty($grpid))
 		$query = "select * from groups where manager='$BAB_SESS_USERID'";
 	else
 		$query = "select * from groups where manager='$BAB_SESS_USERID' and id='$grpid'";
-
 	$db = new db_mysql();
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -245,17 +247,25 @@ function useVacation($iduser)
 
 function getGroupName($id)
 	{
-	$db = new db_mysql();
-	$query = "select * from groups where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	switch( $id )
 		{
-		$arr = $db->db_fetch_array($res);
-		return $arr[name];
-		}
-	else
-		{
-		return "";
+		case 1:
+			return babTranslate("Registered users");
+		case 2:
+			return babTranslate("Unregistered users");
+		default:
+			$db = new db_mysql();
+			$query = "select * from groups where id='$id'";
+			$res = $db->db_query($query);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				return $arr[name];
+				}
+			else
+				{
+				return "";
+				}
 		}
 	}
 
@@ -298,6 +308,68 @@ function mailAccessLevel()
 	return $bemail;
 	}
 
+function fileManagerAccessLevel()
+	{
+	global $BAB_SESS_USERID;
+	$db = new db_mysql();
+	$aret = array();
+	$badmin = isUserAdministrator();
+
+	$req = "select * from groups where id=2 and (ustorage ='Y' or gstorage ='Y')";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0 )
+		{
+		$arr = $db->db_fetch_array($res);
+		$aret[id][] = 2;
+		$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
+		$aret[pr][] = 0;
+		if( $badmin )
+			$aret[ma][] = 1;
+		else
+			$aret[ma][] = 0;
+		}
+
+	if( !empty($BAB_SESS_USERID))
+		{
+		$req = "select * from groups where id=1 and (ustorage ='Y' or gstorage ='Y')";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 )
+			{
+			$arr = $db->db_fetch_array($res);
+			$aret[id][] = 1;
+			$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
+			$aret[pr][] = $arr[ustorage] == "Y"? 1: 0;
+			if( $badmin )
+				$aret[ma][] = 1;
+			else
+				$aret[ma][] = 0;
+			}
+
+		$req = "select groups.id, groups.gstorage, groups.ustorage from groups join users_groups where id_object='".$BAB_SESS_USERID."' and groups.id=users_groups.id_group and groups.manager !='".$BAB_SESS_USERID."' and (groups.ustorage ='Y' or groups.gstorage ='Y')";
+		$res = $db->db_query($req);
+		while( $arr = $db->db_fetch_array($res))
+			{
+			$aret[id][] = $arr[id];
+			$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
+			$aret[pr][] = $arr[ustorage] == "Y"? 1: 0;
+			$aret[ma][] = 0;
+			}
+
+
+		$req = "select id, gstorage, ustorage from groups where manager='".$BAB_SESS_USERID."' and gstorage='Y'";
+		$res = $db->db_query($req);
+		while( $arr = $db->db_fetch_array($res))
+			{
+			$aret[id][] = $arr[id];
+			$aret[pu][] = $arr[gstorage] == "Y"? 1: 0;
+			$aret[pr][] = $arr[ustorage] == "Y"? 1: 0;
+			$aret[ma][] = 1;
+			}
+
+		
+		}
+	return $aret;
+	}
 
 function getUserId( $name )
 	{

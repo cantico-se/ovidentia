@@ -19,6 +19,7 @@ function listContacts($pos)
 		var $checkall;
 		var $uncheckall;
 		var $pos;
+		var $ord;
 		var $selected;
 		var $allselected;
 		var $allurl;
@@ -28,8 +29,22 @@ function listContacts($pos)
 		function temp($pos)
 			{
 			global $BAB_SESS_USERID;
-			$this->pos = $pos;
-			$this->fullname = babTranslate("Full Name");
+			if( $pos[0] == "-" )
+				{
+				$this->pos = $pos[1];
+				$this->ord = $pos[0];
+				$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and lastname like '".$this->pos."%' order by lastname, firstname asc";
+				$this->fullname = babTranslate("Lastname Firstname");
+				$this->urlfullname = $GLOBALS[babUrl]."index.php?tg=contacts&idx=chg&pos=".$pos;
+				}
+			else
+				{
+				$this->pos = $pos;
+				$this->ord = "";
+				$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$this->pos."%' order by firstname, lastname asc";
+				$this->fullname = babTranslate("Firstname Lastname");
+				$this->urlfullname = $GLOBALS[babUrl]."index.php?tg=contacts&idx=chg&pos=".$pos;
+				}
 			$this->email = babTranslate("Email");
 			$this->compagny = babTranslate("Compagny");
 			$this->htel = babTranslate("Home Tel");
@@ -39,7 +54,6 @@ function listContacts($pos)
 			$this->checkall = babTranslate("Check all");
 			$this->allname = babTranslate("All");
 			$this->db = new db_mysql();
-			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);
 			if( $this->res )
 				$this->count = $this->db->db_num_rows($this->res);
@@ -78,7 +92,10 @@ function listContacts($pos)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=contact&idx=modify&item=".$this->arr[id]."&bliste=1');";
 				$this->urlmail = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr[email]."');";
-				$this->urlname = composeName( $this->arr[firstname], $this->arr[lastname]);
+				if( $this->ord == "-" )
+					$this->urlname = composeName( $this->arr[lastname], $this->arr[firstname]);
+				else
+					$this->urlname = composeName( $this->arr[firstname], $this->arr[lastname]);
 				$i++;
 				return true;
 				}
@@ -94,13 +111,20 @@ function listContacts($pos)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS[babUrl]."index.php?tg=contacts&idx=list&pos=".$this->selectname;
+				$this->selecturl = $GLOBALS[babUrl]."index.php?tg=contacts&idx=list&pos=".$this->ord.$this->selectname;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else 
 					{
-					$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$this->selectname."%'";
+					if( $this->ord == "-" )
+						{
+						$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and lastname like '".$this->selectname."%'";
+						}
+					else
+						{
+						$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$this->selectname."%'";
+						}
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
@@ -209,6 +233,12 @@ switch($idx)
 		$body->addItemMenu("delete", babTranslate("Delete"), "javascript:(submitForm('delete'))");
 		break;
 
+	case "chg":
+		if( $pos[0] == "-")
+			$pos = $pos[1];
+		else
+			$pos = "-" .$pos;
+		/* no break */
 	case "list":
 	default:
 		$body->title = babTranslate("Contacts list");

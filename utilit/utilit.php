@@ -54,8 +54,6 @@ function composeName( $firstname, $lastname)
 function browserAgent()
 	{
 	global $HTTP_USER_AGENT;
-	//$tab = explode(";", $HTTP_USER_AGENT);
-	//if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
 	if( stristr($HTTP_USER_AGENT, "opera"))
 		{
 		return "opera";
@@ -87,41 +85,35 @@ function browserVersion()
 
 function babTranslate($str)
 {
+	static $langcontent;
 	if( empty($GLOBALS[babLanguage]) || empty($str))
 		return $str;
 	$filename = $GLOBALS[babInstallPath]."lang/lang-".$GLOBALS[babLanguage].".xml";
-	if( !file_exists($filename))
-	{
-	$file = @fopen($filename, "w");
-	fclose($file);
-	}
-	$file = @fopen($filename, "r");
-	$txt = fread($file, filesize($filename));
-	fclose($file);
-	$reg = "/<".$GLOBALS[babLanguage].">(.*)<\/".$GLOBALS[babLanguage].">/s";
-	if( preg_match($reg, $txt, $m))
-	{
-		$reg = "/<string\s+([^>]*)>(.*?)<\/string>/s";
-		preg_match_all($reg, $m[1], $m1);
-		for ($i = 0; $i < count($m1[1]); $i++ )
+	if( empty($langcontent))
 		{
-			$reg = "/id=\"(.*?)\"/s";
-			if( preg_match($reg, $m1[1][$i], $m2))
+		if( !file_exists($filename))
 			{
-				if( $m2[1] == $str)
-				{
-					return $m1[2][$i];
-				}
+			$file = @fopen($filename, "w");
+			fclose($file);
 			}
+		$file = @fopen($filename, "r");
+		$langcontent = fread($file, filesize($filename));
+		fclose($file);
 		}
-
-	$out = "<".$GLOBALS[babLanguage].">".$m[1];
-	$out .= "<string id=\"".$str."\">".$str."</string>\r\n";
-	$out .= "</".$GLOBALS[babLanguage].">";
-	$file = fopen($filename, "w");
-	fputs($file, $out);
-	fclose($file);
-	}
+	$reg = "/<".$GLOBALS[babLanguage].">(.*)<string\s+id=\"".$str."\">(.*?)<\/string>(.*)<\/".$GLOBALS[babLanguage].">/s";
+	if( preg_match($reg, $langcontent, $m))
+		return $m[2];
+	else
+		{
+		$reg = "/<".$GLOBALS[babLanguage].">(.*)<\/".$GLOBALS[babLanguage].">/s";
+		preg_match($reg, $langcontent, $m);
+		$langcontent = "<".$GLOBALS[babLanguage].">".$m[1];
+		$langcontent .= "<string id=\"".$str."\">".$str."</string>\r\n";
+		$langcontent .= "</".$GLOBALS[babLanguage].">";
+		$file = fopen($filename, "w");
+		fputs($file, $langcontent);
+		fclose($file);
+		}
 	return $str;
 }
 
@@ -263,6 +255,7 @@ function adminSection()
 	$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=admvacs";
 	$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=admcals";
 	$this->array_urls[babTranslate("Mail")] = $GLOBALS[babUrl]."index.php?tg=maildoms&userid=0&bgrp=y";
+	$this->array_urls[babTranslate("File manager")] = $GLOBALS[babUrl]."index.php?tg=admfiles";
 	$this->title = babTranslate("Administration");
 	$this->head = babTranslate("This section is for Administration");
 	$this->foot = babTranslate("");
@@ -296,10 +289,12 @@ var $titlebgnd;
 var $newcount;
 var $newtext;
 var $newurl;
+var $blogged;
 
 function userSection()
 	{
 	global $body, $BAB_SESS_USERID, $bab, $babSearchUrl;
+	$this->blogged = false;
 	$pgrpid = getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
 	$db = new db_mysql();
@@ -313,43 +308,62 @@ function userSection()
 			break;
 			}
 		}
-	$req = "select * from vacationsman_groups where id_object='$GLOBALS[BAB_SESS_USERID]' or supplier='$GLOBALS[BAB_SESS_USERID]'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 || useVacation($GLOBALS[BAB_SESS_USERID]))
-		$vac = true;
+	
+	$vac = false;
+	$mtopics = false;
+	$bemail = false;
+	$idcal = 0;
+	if( !empty($GLOBALS[BAB_SESS_USER]))
+		{
+		$this->blogged = true;
+		$req = "select * from vacationsman_groups where id_object='".$BAB_SESS_USERID."' or supplier='".$BAB_SESS_USERID."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 || useVacation($BAB_SESS_USERID))
+			$vac = true;
 
-	$req = "select * from topics where id_approver='".$GLOBALS[BAB_SESS_USERID]."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
-		$mtopics = true;
-	else
-		$mtopics = false;
+		$req = "select * from topics where id_approver='".$BAB_SESS_USERID."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 )
+			$mtopics = true;
 
-	$bemail = mailAccessLevel();
-	if( $bemail == 1 || $bemail == 2)
-		$bemail = true;
-	else
-		$bemail = false;
+		$bemail = mailAccessLevel();
+		if( $bemail == 1 || $bemail == 2)
+			$bemail = true;
+		$idcal = getCalendarid($BAB_SESS_USERID, 1);
+		}
 
 	$this->babSectionTemplate("usersection.html", "template");
 	if( $mtopics )
 		$this->array_urls[babTranslate("Topics")] = $GLOBALS[babUrl]."index.php?tg=topics&userid=".$GLOBALS[BAB_SESS_USERID];
-	$this->array_urls[babTranslate("Summary")] = $GLOBALS[babUrl]."index.php?tg=calview";
-	$this->array_urls[babTranslate("Options")] = $GLOBALS[babUrl]."index.php?tg=options";
-	$this->array_urls[babTranslate("Notes")] = $GLOBALS[babUrl]."index.php?tg=notes";
+
+	if( !empty($GLOBALS[BAB_SESS_USER]))
+		{
+		$this->array_urls[babTranslate("Summary")] = $GLOBALS[babUrl]."index.php?tg=calview";
+		$this->array_urls[babTranslate("Options")] = $GLOBALS[babUrl]."index.php?tg=options";
+		$this->array_urls[babTranslate("Notes")] = $GLOBALS[babUrl]."index.php?tg=notes";
+		}
+
 	if( $faq )
 		{
 		$this->array_urls[babTranslate("Faq")] = $GLOBALS[babUrl]."index.php?tg=faq";
-		$babSearchUrl .= "sfaq=1&";
+		$babSearchUrl .= "c";
 		}
 	if( $vac )
 		$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=vacation";
-	$idcal = getCalendarid($BAB_SESS_USERID, 1);
 	if( (getCalendarId(1, 2) != 0  || getCalendarId($pgrpid, 2) != 0) &&  $idcal != 0 )
 		$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&calid=".$idcal;
 	if( $bemail )
 		$this->array_urls[babTranslate("Mail")] = $GLOBALS[babUrl]."index.php?tg=inbox";
-	$this->array_urls[babTranslate("Contacts")] = $GLOBALS[babUrl]."index.php?tg=contacts";
+	if( !empty($GLOBALS[BAB_SESS_USER]))
+		{
+		$this->array_urls[babTranslate("Contacts")] = $GLOBALS[babUrl]."index.php?tg=contacts";
+		$babSearchUrl .= "f";
+		}
+	if( count(fileManagerAccessLevel()) > 0 )
+		{
+		$this->array_urls[babTranslate("File manager")] = $GLOBALS[babUrl]."index.php?tg=fileman";
+		$babSearchUrl .= "e";
+		}
 	$this->title = babTranslate("User's section");
 	$this->head = babTranslate("You are logged on as").":<br><center><b>";
 	if( !empty($GLOBALS[BAB_SESS_USER]))
@@ -722,7 +736,7 @@ function loadSections()
 					if( $sec->count > 0 )
 						{
 						$add = true;
-						$babSearchUrl .= "sart=1&";
+						$babSearchUrl .= "a";
 						}
 					break;
 				case 4: // Forums
@@ -730,15 +744,15 @@ function loadSections()
 					if( $sec->count > 0 )
 						{
 						$add = true;
-						$babSearchUrl .= "sfor=1&";
+						$babSearchUrl .= "b";
 						}
 					break;
 				case 5: // user's section
-					if( isset($LOGGED_IN) && $LOGGED_IN)
-						{
 						$add = true;
 						$sec = new userSection();
-						$babSearchUrl .= "snot=1&";
+					if( isset($LOGGED_IN) && $LOGGED_IN)
+						{
+						$babSearchUrl .= "d";
 						}
 					break;
 				}

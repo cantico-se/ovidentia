@@ -4,8 +4,6 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-//$lvc_include_dir = 'stats/include/';
-//include($lvc_include_dir.'new-visitor.inc.php3');
 unset($LOGGED_IN);
 session_start();
 session_register("BAB_SESS_NICKNAME");
@@ -31,6 +29,7 @@ $babDays = array(babTranslate("Sunday"), babTranslate("Monday"),
 				babTranslate("Friday"), babTranslate("Saturday"));
 
 $babSearchUrl = "";
+$babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts");  
 
 
 function printBody()
@@ -103,7 +102,7 @@ function printBody()
 			$this->search = babTranslate("Search");
 			if( !empty($babSearchUrl))
 				{
-				$this->searchurl = $GLOBALS[babUrl]."index.php?tg=search&".substr($babSearchUrl, 0 ,-1);
+				$this->searchurl = $GLOBALS[babUrl]."index.php?tg=search&pat=".$babSearchUrl;
 				$this->bsearch = 1;
 				}
 			else
@@ -290,6 +289,10 @@ switch($tg)
 		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/site";
 		break;
+	case "admfiles":
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+			$incl = "admin/admfiles";
+		break;
 	case "options":
 		if( $LOGGED_IN)
     		$incl = "options";
@@ -362,6 +365,9 @@ switch($tg)
 		break;
 	case "search":
 		$incl = "search";
+		break;
+	case "fileman":
+		$incl = "fileman";
 		break;
 	case "notes":
 		if( $LOGGED_IN)
