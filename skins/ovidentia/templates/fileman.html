@@ -1,6 +1,5 @@
 
 <!--#begin addfile -->
-
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 <input type="hidden" name="tg" value="fileman">
@@ -60,188 +59,143 @@
 
 
 <!--#begin fileslist -->
-<br>
 <table width="98%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabMailBackground">
 <tr>
-<td class="BabSiteAdminFontBackground" align="center"> 
-<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<td align="center" valign="top" class="BabSiteAdminFontBackground"> 
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
 <tr>
-<td class="BabSiteAdminTitleFontBackground" align="center" ><a class="BabSiteAdminListLink" 
-href="{ rooturl }">{ root }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" 
-href="{ refreshurl }">{ refresh }</a></td>
+<td align="left" valign="middle" class="BabSiteAdminFontBackground" >
+<img src="{ babSkinPath }images/Puces/folder.gif" border="0" align="middle"> 
+                  : { rootpath }/{ path }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="20" height="1" border="0"><a href="{ rooturl }"><img src="{ babSkinPath }images/Puces/root.gif" border="0" alt="{ root }" align="middle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a href="{ refreshurl }"><img src="{ babSkinPath }images/Puces/refresh.gif" alt="{ 
+            refresh }" border="0" align="middle"></a>
+          </td>
 </tr>
 </table>
-<br>
-{ rootpath }/{ path } 
-<br>
-<br>
+
 <table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr> 
-<td class="BabLoginCadreBackground" align="center"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr>
-<td class="BabSiteAdminTitleFontBackground" colspan="2" align="center">&nbsp;{ nametxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="right">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ sizetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center">{ modifiedtxt }&nbsp;</td>
-<td align="center" class="BabSiteAdminTitleFontBackground">{ postedtxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" width="1%">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" width="1%">&nbsp;</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminTitleFontBackground" align="center" width="1%">&nbsp;{ hitstxt }</td>
-<!--#endif bmanager -->
-</tr>
-<!--#in getnextdir -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-<!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name -->
-</td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
+          <td class="BabLoginCadreBackground" align="center"> <table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+              <tr> 
+                <td colspan="2" align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ 
+                  nametxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ 
+                  sizetxt }</td>
+                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground">{ 
+                  modifiedtxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+                <td align="center" valign="middle" class="BabSiteAdminTitleFontBackground">{ 
+                  postedtxt }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+                <td width="1%" align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+                 <!--#if bmanager -->
+                <td width="1%" align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
+                  hitstxt }</td>
+                <!--#endif bmanager -->
+              </tr>
+              <!--#in getnextdir -->
+              <tr> 
+                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+                  <!--#if name "== . ." -->
+                  { upfolderimg }
+                  <!--#else name -->
+                  { usrfolderimg }
+                  <!--#endif name -->
+                </td>
+                <td class="BabSiteAdminFontBackground" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" 
 href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" colspan="6" valign="top">&nbsp;</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
-<!--#endif bmanager -->
-</tr>
-<!--#endin getnextdir -->
-<!--#in getnextgrpdir --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-{ grpfolderimg } 
-</td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
+                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                          </tr>
+              <!--#endin getnextdir -->
+              <!--#in getnextgrpdir -->
+              <tr> 
+                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+                  { grpfolderimg } </td>
+                <td class="BabSiteAdminFontBackground" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" 
 href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" colspan="6" valign="top">&nbsp;</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
-<!--#endif bmanager -->
-</tr>
-<!--#endin getnextgrpdir -->
-<!--#in getnextmgrpdir --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-{ manfolderimg } 
-</td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
+                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+              </tr>
+              <!--#endin getnextgrpdir -->
+              <!--#in getnextmgrpdir -->
+              <tr> 
+                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+                  { manfolderimg } </td>
+                <td class="BabSiteAdminFontBackground" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" 
 href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" colspan="6" valign="top">&nbsp;</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
-<!--#endif bmanager -->
-</tr>
-<!--#endin getnextmgrpdir -->
-<!--#in getnextfile --> <tr valign="middle"> 
-<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
-{ fileimage }
-</td>          
-<td class="BabSiteAdminFontBackground">&nbsp; <a class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ name }</a>&nbsp; 
-</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">&nbsp;{ readonly }</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ sizef } &nbsp;</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" align="right">&nbsp;
-<!--#if bdownload -->
-<a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a>
-<!--#endif bdownload -->
-</td>
-<td class="BabSiteAdminFontBackground" nowrap>&nbsp; 
-<!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" 
-alt="{ cuttxt }" border="0" align="middle"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><img 
-src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle"></a> 
-<!--#endif bmanager -->
-</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" align="center">{ hits }</td>
-<!--#endif bmanager -->
-</tr><!--#endin getnextfile -->
-<!--#in getnextwfile --> <tr valign="middle"> 
-<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
-{ fileimage }
-</td>          
-                <td class="BabSiteAdminFontBackground">&nbsp; <a 
-class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
-                  name }</a>&nbsp; 
+                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+               </tr>
+              <!--#endin getnextmgrpdir -->
+              <!--#in getnextfile -->
+              <tr valign="middle"> 
+                <td width="1%" align="center" class="BabSiteAdminFontBackground"> 
+                  { fileimage } </td>
+                <td class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> <a 
+class="BabSiteFileLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
+                  name }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+                  <!--#if bmanager -->
                   <!--#if bconfirmed "== 1" -->
-                  <font color="#FF0000">* </font>
+                  <a href="{ url }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a> 
                   <!--#endif bconfirmed -->
+                  <!--#endif bmanager -->
                 </td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">&nbsp;{ readonly }</td>
-                <td align="center" nowrap class="BabSiteAdminFontBackground">{ sizef 
-                  } &nbsp;</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" align="right"><a 
-class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a></td>
-<td class="BabSiteAdminFontBackground" nowrap>&nbsp; 
-
-<!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" 
-alt="{ cuttxt }" border="0" align="middle"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><img 
-src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle"></a> 
-<!--#endif bmanager -->
-</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" align="center">{ hits }</td>
-<!--#endif bmanager -->
-</tr><!--#endin getnextwfile -->
-<!--#in getnextxfile --> <tr valign="middle"> 
-<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
-{ fileimage }</td>          
-                <td class="BabSiteAdminFontBackground" colspan="2">&nbsp;{ name }
+                <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+                  <!--#if readonly -->
+                  <img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ readonly }" border="0" align="middle">
+                  <!--#endif readonly -->
                 </td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">&nbsp;{ sizef }&nbsp;</td>
-                <td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" align="center"><a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a></td>
-<td class="BabSiteAdminFontBackground">&nbsp; 
+                <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
+                  sizef } <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="center" nowrap class="BabSiteAdminFontBackground">{ 
+                  modified }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="center" nowrap class="BabSiteAdminFontBackground">{ 
+                  postedby }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="left" nowrap class="BabSiteAdminFontBackground"><a 
+class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a>
+                <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bmanager --><a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteAdminListLink" href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle"></a><!--#endif bmanager --></td><!--#if bmanager --><td align="center" class="BabSiteAdminFontBackground">{ hits }</td><!--#endif bmanager -->
+              </tr>
+              <!--#endin getnextfile -->
+              <!--#in getnextxfile -->
+              <tr valign="middle"> 
+              <td width="1%" align="center" class="BabSiteAdminFontBackground">{ fileimage }</td>
+              <td class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+                  <!--#if bmanager -->
+                  { name }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+                  <!--#if bconfirmed "== 1" -->
+                  <a href="{ url }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a> 
+                  <!--#endif bconfirmed -->
+                  <!--#else bmanager -->
+                  { name } 
+                  <!--#endif bmanager -->
+              </td>
+                <td class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ sizef }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="center" nowrap class="BabSiteAdminFontBackground">{ postedby }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <td align="left" nowrap class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#if bmanager --><a class="BabSiteAdminListLink" href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" align="top"></a><!--#endif bmanager --></td>
+                <!--#if bmanager -->
+                <td class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+                <!--#endif bmanager -->
+              </tr>
+              <!--#endin getnextxfile -->
+            </table></td>
+</tr>
+</table>
 <!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" 
-alt="{ paste }" border="0" align="top"></a> 
+            <form method="post" action="{ babPhpSelf }"><input type="hidden" name="tg" value="fileman"><input type="hidden" name="idx" value="list"><input type="hidden" name="mkdir" value="mkdir"><input type="hidden" name="id" value="{ id }"><input type="hidden" name="gr" value="{ gr }"><input type="hidden" name="path" value="{ path }"><table   border="0" cellspacing="0" cellpadding="2" align="center">
+                    <tr><td class="BabLoginMenuBackground" align="right">{ directory }</td>
+                    <td class="BabLoginMenuBackground" ><input type="text" name="dirname" size="35" value=""></td>
+                    <td nowrap class="BabLoginMenuBackground"><input type="submit" name="create" value="{ mkdir }"> <input type="submit" name="rename" value="{ rename }"><!--#if bdel --> <input type="submit" name="bdel" value="{ delete }"><!--#endif bdel --></td>
+             </tr></table></form><!--#endif bmanager -->
+<!--#if bmanager -->
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            
+          <td align="right" valign="middle">
+		  <a class="BabSiteAdminFileLink" href="javascript: Start('{ urldiskspace }', 'OviFile2', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/driver.gif" alt="{ diskspace }" border="0" align="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
+            diskspace }</a> </td>
+          </tr>
+        </table>
+        
 <!--#endif bmanager -->
-</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminFontBackground">&nbsp;</td>
-<!--#endif bmanager -->
-</tr><!--#endin getnextxfile -->
-</table>
-</td>
-</tr>
-</table>
-<!--#if bmanager -->
-<br>
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="fileman">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="mkdir" value="mkdir">
-<input type="hidden" name="id" value="{ id }">
-<input type="hidden" name="gr" value="{ gr }">
-<input type="hidden" name="path" value="{ path }">
-<table  width="80%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr> 
-<td class="Blackbg" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right">{ directory }</td>
-<td class="BabLoginMenuBackground" width="35%">
-<input type="text" name="dirname" size="35" value="">
-</td>
-<td class="BabLoginMenuBackground" width="35%">
-<input type="submit" name="create" value="{ mkdir }">&nbsp;&nbsp;<input type="submit" name="rename" value="{ rename }">
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
 
-<!--#if bdel -->
-<br><input type="submit" name="bdel" value="{ delete }">
-<!--#endif bdel -->
-</form>
-<br>
-<center><a class="BabSiteAdminListLink" href="javascript: Start('{ urldiskspace }', 'OviFile2', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ diskspace }</a></center>
-<!--#endif bmanager -->
-<br>
 </td>
 </tr>
 </table>
