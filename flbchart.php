@@ -1262,11 +1262,11 @@ switch($idx)
 		break;
 	case "delocu":
 		delUserOrgChartRole($ocid, $oeid, $ocfid);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid."&ltf=1");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid."&rf=1&ltf=1");
 		break;
 	case "addur":
 		addUserOrgChartRole($ocid, $oeid, $orid, $iduser);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid."&ltf=1");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid."&rf=1&ltf=1");
 		/* no break */
 	case "users":
 		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
