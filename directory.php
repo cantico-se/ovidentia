@@ -632,6 +632,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					{
 					$this->showph = true;
 					$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->id."&idu=".$idu;
+					$this->delete = bab_translate("Delete this picture");
 					}
 
 				if( $this->bupd == false && $arr['user_update'] == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
@@ -1294,7 +1295,7 @@ function getLdapContactImage($id, $cn)
 		}
 	}
 
-function updateDbContact($id, $idu, $fields, $file, $tmp_file)
+function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 	{
 	global $babBody;
 	$db = $GLOBALS['babDB'];
@@ -1360,6 +1361,8 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file)
 			}
 		if( !empty($cphoto))
 			$req .= " photo_data='".$cphoto."'";
+		elseif ($photod == "delete")
+			$req .= " photo_data=''";
 		else
 			$req = substr($req, 0, strlen($req) -1);
 
@@ -1602,7 +1605,7 @@ if( isset($modify))
 		if( $modify == "dbc" )
 			{
 			$idx = "dbmod";
-			if(updateDbContact($id, $idu, $fields, $photof_name,$photof))
+			if(updateDbContact($id, $idu, $fields, $photof_name,$photof,$photod))
 				{
 				$msg = bab_translate("Your contact has been updated");
 				$idx = "dbcunload";

@@ -462,9 +462,6 @@ window.focus();
 <td class="BabErrorMessage" align="center" >{ name }</td>
 </tr></table>
 <br>
-<!--#if showph -->
-<center><img src="{ urlimg }" border="0" alt="{ name }"></center>
-<!--#endif showph -->
 <form name="admodify" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="list">
@@ -472,6 +469,11 @@ window.focus();
 <input type="hidden" name="idu" value="{ idu }">
 <input type="hidden" name="refresh" value="{ refresh }">
 <input type="hidden" name="modify" value="{ what }">
+<!--#if showph -->
+<center><img src="{ urlimg }" border="0" alt="{ name }"><br>
+<b>{ delete }&nbsp;:</b>&nbsp;&nbsp;<input type="checkbox" name="photod" value="delete">
+</center>
+<!--#endif showph -->
 <!--#if modify -->
 <center><b>{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value=""></center>
 <br>
