@@ -98,6 +98,7 @@ function startSearch($pat, $item, $what, $pos)
 		var $countfil;
 		var $countcon;
 		var $countdir;
+		var $counttot;
 
 		function temp($pat, $item, $what, $pos)
 			{
@@ -129,6 +130,7 @@ function startSearch($pat, $item, $what, $pos)
 			$this->countfil = 0;
 			$this->countcon = 0;
 			$this->countdir = 0;
+			$this->counttot = false;
 			if( empty($item) || $item == "a")
 				{
 				$req = "create temporary table artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where 0";
@@ -157,6 +159,8 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from artresults limit ".$pos.", ".$babLimit;
 				$this->resart = $this->db->db_query($req);
 				$this->countart = $this->db->db_num_rows($this->resart);
+				if( !$this->counttot && $this->countart > 0 )
+					$this->counttot = true;
 
 				if( $pos + $babLimit < $nbrows )
 					{
@@ -187,6 +191,8 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from comresults limit ".$pos.", ".$babLimit;
 				$this->rescom = $this->db->db_query($req);
 				$this->countcom = $this->db->db_num_rows($this->rescom);
+				if( !$this->counttot && $this->countcom > 0 )
+					$this->counttot = true;
 				}
 
 			if( empty($item) || $item == "b")
@@ -229,6 +235,8 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from forresults limit ".$pos.", ".$babLimit;
 				$this->resfor = $this->db->db_query($req);
 				$this->countfor = $this->db->db_num_rows($this->resfor);
+				if( !$this->counttot && $this->countfor > 0 )
+					$this->counttot = true;
 				}
 
 			if( empty($item) || $item == "c")
@@ -266,6 +274,8 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from faqresults limit ".$pos.", ".$babLimit;
 				$this->resfaq = $this->db->db_query($req);
 				$this->countfaq = $this->db->db_num_rows($this->resfaq);
+				if( !$this->counttot && $this->countfaq > 0 )
+					$this->counttot = true;
 				}
 			
 			if( empty($item) || $item == "e")
@@ -309,6 +319,8 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from filresults limit ".$pos.", ".$babLimit;
 				$this->resfil = $this->db->db_query($req);
 				$this->countfil = $this->db->db_num_rows($this->resfil);
+				if( !$this->counttot && $this->countfil > 0 )
+					$this->counttot = true;
 				}
 
 			if( (empty($item) || $item == "d") && !empty($BAB_SESS_USERID))
@@ -331,6 +343,8 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from ".BAB_NOTES_TBL." where content ".$this->like." and id_user='".$BAB_SESS_USERID."' limit ".$pos.", ".$babLimit;
 				$this->resnot = $this->db->db_query($req);
 				$this->countnot = $this->db->db_num_rows($this->resnot);
+				if( !$this->counttot && $this->countnot > 0 )
+					$this->counttot = true;
 				}
 
 			if( empty($item) || $item == "f")
@@ -360,6 +374,8 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from conresults limit ".$pos.", ".$babLimit;
 				$this->rescon = $this->db->db_query($req);
 				$this->countcon = $this->db->db_num_rows($this->rescon);
+				if( !$this->counttot && $this->countcon > 0 )
+					$this->counttot = true;
 				}
 
 			if( empty($item) || $item == "g")
@@ -424,6 +440,13 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "select * from dirresults limit ".$pos.", ".$babLimit;
 				$this->resdir = $this->db->db_query($req);
 				$this->countdir = $this->db->db_num_rows($this->resdir);
+				if( !$this->counttot && $this->countdir > 0 )
+					$this->counttot = true;
+				}
+
+			if( !$counttot)
+				{
+				$babBody->msgerror = bab_translate("Search result empty");
 				}
 			}
 
