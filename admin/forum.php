@@ -177,7 +177,7 @@ switch($idx)
 	{
 
 	case "Groups":
-		$body->title = babTranslate("List of groups");
+		$body->title = getForumName($item) . ": ".babTranslate("List of groups");
 		aclGroups("forum", "Modify", "forumsview_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
@@ -188,7 +188,7 @@ switch($idx)
 		break;
 
 	case "Reply":
-		$body->title = babTranslate("List of groups");
+		$body->title = getForumName($item) . ": ".babTranslate("List of groups");
 		aclGroups("forum", "Modify", "forumsreply_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
@@ -199,7 +199,7 @@ switch($idx)
 		break;
 
 	case "Post":
-		$body->title = babTranslate("List of groups");
+		$body->title = getForumName($item) . ": ".babTranslate("List of groups");
 		aclGroups("forum", "Modify", "forumspost_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
@@ -210,7 +210,7 @@ switch($idx)
 		break;
 
 	case "Delete":
-		$body->title = babTranslate("Delete a category");
+		$body->title = babTranslate("Delete a forum");
 		deleteForum($item);
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
@@ -222,7 +222,7 @@ switch($idx)
 
 	default:
 	case "Modify":
-		$body->title = babTranslate("Modify a category");
+		$body->title = babTranslate("Modify a forum");
 		modifyForum($item);
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
