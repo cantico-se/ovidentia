@@ -101,7 +101,7 @@ function sectionsList()
 				$this->descval = bab_translate($this->arr['description']);
 				$this->idvalue = $this->arr['id']."-1";
 				list($hidden) = $this->db->db_fetch_row($this->db->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='1' and id_section='".$this->arr['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
-				if( $hidden == "Y")
+				if( !isset($hidden) || $hidden == "Y")
 					$this->secchecked = "";
 				else
 					$this->secchecked = "checked";
@@ -124,7 +124,7 @@ function sectionsList()
 				$this->descval = $this->arr['description'];
 				$this->idvalue = $this->arr['id']."-3";
 				list($hidden) = $this->db->db_fetch_row($this->db->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='3' and id_section='".$this->arr['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
-				if( $hidden == "Y")
+				if( !isset($hidden) || $hidden == "Y")
 					$this->secchecked = "";
 				else
 					$this->secchecked = "checked";
@@ -149,7 +149,7 @@ function sectionsList()
 				$this->accessurl = $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id'];
 				$this->idvalue = $this->arr['id']."-2";
 				list($hidden) = $this->db->db_fetch_row($this->db->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='2' and id_section='".$this->arr['id']."' and  id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
-				if( $hidden == "Y")
+				if( !isset($hidden) || $hidden == "Y")
 					$this->secchecked = "";
 				else
 					$this->secchecked = "checked";

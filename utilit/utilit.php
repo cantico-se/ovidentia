@@ -1459,7 +1459,7 @@ function loadSections()
 		{
 			$objectid = $arr['id'];
 
-			$arrsectioninfo = array('close'=>0, 'bshow'=>true);
+			$arrsectioninfo = array('close'=>0, 'bshow'=>false);
 			$typeid = $arr['type'];
 			$sectionid = $arr['id_section'];
 
@@ -1469,9 +1469,9 @@ function loadSections()
 						{
 							$arrsectioninfo['close'] = 1;
 						}
-					if( $arr['hidden'] == "Y")
+					if( $arr['hidden'] == "N")
 						{
-							$arrsectioninfo['bshow'] = false;
+							$arrsectioninfo['bshow'] = true;
 						}
 				}
 
