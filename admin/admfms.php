@@ -168,8 +168,8 @@ function listFolders()
 				$this->urlupda = $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$arr['id'];
 				$this->urluploname = bab_translate("Upload");
 				$this->urldownname = bab_translate("Download");
-				$this->urlupdaname = bab_translate("Write");
-				$this->access = bab_translate("Acces");
+				$this->urlupdaname = bab_translate("Update");
+				$this->access = bab_translate("Access");
 
 				$i++;
 				return true;
