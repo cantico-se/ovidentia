@@ -591,30 +591,36 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".implode($babBody->topview,",").")" : "";
 				$incom = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and C.id_topic in (".implode($babBody->topview,",").")" : "";
 
-				if ($this->like || $this->like2)
-					$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
-				
-				$req = "insert into artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
-				$this->db->db_query($req);
-
-				$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
-				while( $rr = $this->db->db_fetch_array($res))
+				if (!empty($inart))
 					{
-					if( !bab_articleAccessByRestriction($rr['restriction']))
-						$this->db->db_query("delete from artresults where id='".$rr['id']."'");
+					if ($this->like || $this->like2)
+						$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
+					
+					$req = "insert into artresults SELECT a.id, a.id_topic, a.archive, a.title title,a.head, LEFT(a.body,100) body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." ".$inart." ".$crit_art." order by $order ";
+					$this->db->db_query($req);
+
+					$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
+					while( $rr = $this->db->db_fetch_array($res))
+						{
+						if( !bab_articleAccessByRestriction($rr['restriction']))
+							$this->db->db_query("delete from artresults where id='".$rr['id']."'");
+						}
 					}
 
-				if ($this->like || $this->like2)
-					$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
-
-				$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name author,email,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
-
-				$this->db->db_query($req);
-				$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
-				while( $rr = $this->db->db_fetch_array($res))
+				if (!empty($incom))
 					{
-					if( !bab_articleAccessByRestriction($rr['restriction']))
-						$this->db->db_query("delete from comresults where id='".$rr['id']."'");
+					if ($this->like || $this->like2)
+						$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
+
+					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name author,email,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by $order ";
+
+					$this->db->db_query($req);
+					$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
+					while( $rr = $this->db->db_fetch_array($res))
+						{
+						if( !bab_articleAccessByRestriction($rr['restriction']))
+							$this->db->db_query("delete from comresults where id='".$rr['id']."'");
+						}
 					}
 
 				$req = "select count(*) from artresults";
