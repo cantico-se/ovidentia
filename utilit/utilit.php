@@ -154,12 +154,12 @@ function bab_translate($str)
 function bab_getAddonsMenus($addonName, $what)
 {
 	$addon_urls = array();
-	$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$addonName]['bab_folder'];
+	$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$addonName]['bab_folder'];
 	if( strtolower($GLOBALS['babAddons'][$addonName]['bab_enabled']) == "yes" && is_dir($addonpath))
 		{
 		require_once( $addonpath."/".$GLOBALS['babAddons'][$addonName]['bab_init_file'] );
 		$func = $GLOBALS['babAddons'][$addonName][$what];
-		if( !empty($func) /* && is_callable($func) */)
+		if( !empty($func) && function_exists($func))
 			while( $func($url, $txt))
 				{
 				$addon_urls[$txt] = $url;
@@ -167,6 +167,31 @@ function bab_getAddonsMenus($addonName, $what)
 		}
 	return $addon_urls;
 }
+
+function bab_callAddonsFunction($func)
+{
+	$arr_keys = array_keys($GLOBALS['babAddons']);
+	for( $i = 0; $i < sizeof($arr_keys); $i++)
+		{
+		$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
+		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
+			{
+			require_once( $addonpath."/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_init_file'] );
+			$call = $GLOBALS['babAddons'][$arr_keys[$i]][$func];
+			if( !empty($call)  && function_exists($call) )
+				{
+				$args = func_get_args();
+				$call .= "(";
+				for($k=1; $k < sizeof($args); $k++)
+					eval ( "\$call .= \"$args[$k],\";");
+				$call = substr($call, 0, -1);
+				$call .= ")";
+				eval ( "\$retval = $call;");
+				}
+			}
+		}
+}
+
 class babSection
 {
 var $title;
@@ -320,7 +345,7 @@ function babAdminSection()
 	$arr_keys = array_keys($GLOBALS['babAddons']);
 	for( $i = 0; $i < sizeof($arr_keys); $i++)
 		{
-		$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
+		$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
 		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
 			{
 			$arr  = bab_getAddonsMenus($arr_keys[$i], 'bab_admin_section_load');
@@ -467,7 +492,7 @@ function babUserSection()
 	$arr_keys = array_keys($GLOBALS['babAddons']);
 	for( $i = 0; $i < sizeof($arr_keys); $i++)
 		{
-		$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
+		$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
 		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
 			{
 			$arr  = bab_getAddonsMenus($arr_keys[$i], 'bab_user_section_load');
