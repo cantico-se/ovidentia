@@ -174,6 +174,13 @@ function viewCalendarByUser($id, $month, $year, $period = false)
 				{
 				$this->entries[] = array('id'=> $row['id'], 'db'=> $row['date_begin'], 'de'=> $row['date_end'], 'st' => $row['status']);
 				}
+
+			$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
+
+			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
+			$this->nonWorkingDays = bab_getNonWorkingDays($year);
+			$this->nonWorkingDays = array_merge($this->nonWorkingDays, bab_getNonWorkingDays($year+1));
+
 			}
 
 		function getdayname()
@@ -219,10 +226,8 @@ function viewCalendarByUser($id, $month, $year, $period = false)
 					$dayweek = date("w", $curdate);
 					$this->titledate = bab_longdate($curdate,false);
 					$this->date = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $d);
-					if( $dayweek == 0 || $dayweek == 6)
-						$this->weekend = true;
-					else
-						$this->weekend = false;
+					$this->weekend = !in_array($dayweek, $this->workdays);
+					$this->nonworking = isset($this->nonWorkingDays[$this->date]);
 					$this->bvac = false;
 					$this->bwait = false;
 					for( $k=0; $k < count($this->entries); $k++)
@@ -498,6 +503,7 @@ function addNewVacation($begin,$end, $halfdaybegin, $halfdayend, $remarks, $tota
 {
 	global $babBody, $babDB;
 	$nbdays = array();
+
 
 	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
 
@@ -825,6 +831,7 @@ function viewVacationRequestDetail($id)
 function test_period()
 {
 global $babBody;
+$db = & $GLOBALS['babDB'];
 
 if (!isset($_POST['daybegin']) || 
 	!isset($_POST['monthbegin']) ||
@@ -840,12 +847,26 @@ if (!isset($_POST['daybegin']) ||
 	return false;
 	}
 
-	$begin = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], date("Y") + $_POST['yearbegin'] - 1);
-	$end = mktime( 0,0,0,$_POST['monthend'], $_POST['dayend'], date("Y") + $_POST['yearend'] - 1);
+	$yearbegin = date("Y") + $_POST['yearbegin'] - 1;
+	$yearend = date("Y") + $_POST['yearend'] - 1;
+
+	$begin = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $yearbegin);
+	$end = mktime( 0,0,0,$_POST['monthend'], $_POST['dayend'], $yearend);
 
 	if( $begin > $end || ( $begin == $end && $_POST['halfdaybegin'] != $_POST['halfdayend'] ))
 		{
 		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
+		return false;
+		}
+
+	$date_begin = sprintf("%04d-%02d-%02d", $yearbegin, $_POST['monthbegin'], $_POST['daybegin']);
+	$date_end = sprintf("%04d-%02d-%02d", $yearend, $_POST['monthend'], $_POST['dayend']);
+
+	$res = $db->db_query("SELECT * FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$GLOBALS['BAB_SESS_USERID']."' AND ((date_begin BETWEEN '".$date_begin."' AND '".$date_end."' ) OR ( date_end BETWEEN '".$date_begin."' AND '".$date_end."'))");
+
+	if ($db->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("ERROR: a request is allready defined on this period");
 		return false;
 		}
 

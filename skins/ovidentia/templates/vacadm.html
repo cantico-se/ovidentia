@@ -233,8 +233,8 @@ valign="middle">{ name }:</td>
 			<td width="20%"><a class="BabNameEmailLink" href="{ url }">{ urlname }</a></td>
 			<td>{ collname }</td>
 			<td>{ saname }</td>
-			<td><a href="javascript: Start('{ lrbuurl }', 'VacationWindow', 'width=700,height=380,status=no,resizable=yes,top=200,left=200');"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
-			<td><a href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=880,height=490,status=no,resizable=yes,top=10,left=10');"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
+			<td><a href="{ lrbuurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
+			<td><a href="{ calurl }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
 		</tr> 
 		<!--#endin getnext -->
 		<tr class="BabSiteAdminTitleFontBackground"> 

@@ -253,7 +253,7 @@ function calwin(callback)
 				<td align="right">{ t_use_rules }:</td>
 				<td > 
 					<select name="use_rules" onchange="use_rules_change(this)">
-					<!--#if arr[use_rules] -->
+					<!--#if arr[use_rules] "== Y" -->
 					<option value="N">{ no }</option>
 					<option value="Y" selected>{ yes }</option>
 					<!--#else arr[use_rules] -->
