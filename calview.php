@@ -25,6 +25,23 @@ include_once "base.php";
 include $babInstallPath."utilit/topincl.php";
 include $babInstallPath."utilit/forumincl.php";
 
+function showOthers()
+{
+	global $babBody;
+
+	class tempA
+		{
+
+		function tempA()
+			{
+			}
+		}
+
+	$temp = new tempA();
+	$babBody->babecho( bab_printTemplate($temp,"calview.html", "otherslist"));
+}
+
+
 function upComingEvents($idcal)
 {
 	global $babBody;
@@ -137,299 +154,6 @@ function upComingEvents($idcal)
 
 	$temp = new temp($idcal);
 	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "eventslist"));
-}
-
-function newArticles($days)
-{
-	global $babBody;
-
-	class temp2
-		{
-
-		var $db;
-		var $arrid = array();
-		var $count;
-		var $resarticles;
-		var $countarticles;
-		var $lastlog;
-		var $newarticles;
-		var $nbdays;
-
-		function temp2($days)
-			{
-			global $babBody, $BAB_SESS_USERID;
-			$this->db = $GLOBALS['babDB'];
-
-			$this->nbdays = $days;
-			$this->count = count($babBody->topview);
-			if( $days > 0 )
-				{
-				$this->newarticles = bab_translate("Last articles ( Since seven days before your last visit )");
-				}
-			else
-				{
-				$this->newarticles = bab_translate("New articles");
-				}
-			}
-
-		function getnexttopic()
-			{
-			global $babBody;
-			static $k=0;
-			if( $k < $this->count)
-				{
-				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$babBody->topview[$k]."' and confirmed='Y'and date >= ";
-				if( $this->nbdays > 0)
-					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-				else
-					$req .= "'".$babBody->lastlog."'";
-				$req .= " order by date desc";
-				$this->resarticles = $this->db->db_query($req);
-				$this->countarticles = $this->db->db_num_rows($this->resarticles);
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-			}
-
-
-		function getarticle()
-			{
-			global $babBody;
-			static $k=0;
-			if( $k < $this->countarticles)
-				{
-				$arr = $this->db->db_fetch_array($this->resarticles);
-				$this->title = $arr['title'];
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id'];
-				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
-					$this->author = $author;
-				else
-					$this->author = bab_translate("Anonymous");
-				$this->date = bab_strftime(bab_mktime($arr['date']));
-				$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$arr['id']."' and confirmed='Y' and date >= ";
-				if( $this->nbdays > 0)
-					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-				else
-					$req .= "'".$babBody->lastlog."'";
-				$req .= " order by date desc";
-				$this->rescomments = $this->db->db_query($req);
-				$this->countcomments = $this->db->db_num_rows($this->rescomments);
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-			}
-		}
-
-	$temp = new temp2($days);
-	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "articleslist"));
-}
-
-
-function newComments($days)
-{
-	global $babBody;
-
-	class temp5
-		{
-
-		var $db;
-		var $arrid = array();
-		var $count;
-		var $rescomments;
-		var $countcomments;
-		var $lastlog;
-		var $newcomments;
-		var $nbdays;
-
-		function temp5($days)
-			{
-			global $babBody, $BAB_SESS_USERID;
-			$this->db = $GLOBALS['babDB'];
-
-			$this->nbdays = $days;
-			$this->count = count($babBody->topview);
-			if( $days > 0 )
-				{
-				$this->newcomments = bab_translate("Last comments ( Since seven days before your last visit )");
-				}
-			else
-				{
-				$this->newcomments = bab_translate("New comments");
-				}
-			}
-
-		function getnexttopiccom()
-			{
-			global $babBody;
-			static $k=0;
-			if( $k < $this->count)
-				{
-				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$babBody->topview[$k]."' and confirmed='Y'and date >= ";
-				if( $this->nbdays > 0)
-					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-				else
-					$req .= "'".$babBody->lastlog."'";
-				$req .= " order by date desc";
-				$this->rescomments = $this->db->db_query($req);
-				$this->countcomments = $this->db->db_num_rows($this->rescomments);
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-			}
-
-		function getcomment()
-			{
-			static $k=0;
-			if( $k < $this->countcomments)
-				{
-				$arr = $this->db->db_fetch_array($this->rescomments);
-				$this->title = $arr['subject'];
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id'];
-				$this->author = $arr['name'];
-				$this->date = bab_strftime(bab_mktime($arr['date']));
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-			}
-		}
-
-	$temp = new temp5($days);
-	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "commentslist"));
-}
-
-function newThreads($nbdays)
-{
-	global $babBody;
-
-	class temp3
-		{
-
-		var $db;
-		var $arrid = array();
-		var $count;
-		var $resthread;
-		var $countarticles;
-		var $lastlog;
-		var $newposts;
-		var $posts;
-		var $nbdays;
-		var $forumname;
-
-		function temp3($nbdays)
-			{
-			global $BAB_SESS_USERID;
-			$this->db = $GLOBALS['babDB'];
-
-			$this->nbdays = $nbdays;
-			$req = "select id from ".BAB_FORUMS_TBL."";
-			$res = $this->db->db_query($req);
-			while( $row = $this->db->db_fetch_array($res))
-				{
-				if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
-					{
-					array_push($this->arrid, $row['id']);
-					}
-				}
-			$this->count = count($this->arrid);
-			if( $nbdays > 0)
-				$this->newposts = bab_translate("Last posts ( Since seven days before your last visit )");
-			else
-				$this->newposts = bab_translate("New posts");
-			}
-
-		function getnextforum()
-			{
-			static $k=0;
-			if( $k < $this->count)
-				{
-				$req = "select id, post from ".BAB_THREADS_TBL." where forum='".$this->arrid[$k]."' order by date desc";
-				$this->resthread = $this->db->db_query($req);
-				$this->countthreads = $this->db->db_num_rows($this->resthread);
-				$this->forumname = bab_getForumName($this->arrid[$k]);
-				$this->forum = $this->arrid[$k];
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-			}
-
-		function getnextthread()
-			{
-			global $babBody;
-			static $m=0;
-			if( $m < $this->countthreads)
-				{
-				$this->total = 0;
-				$arr = $this->db->db_fetch_array($this->resthread);
-				$req = "select * from ".BAB_POSTS_TBL." where id_thread='".$arr['id']."' and confirmed='Y' and date >=";
-				if( $this->nbdays > 0)
-					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-				else
-					$req .= "'".$babBody->lastlog."'";
-				$this->resposts = $this->db->db_query($req);
-				$this->total = $this->db->db_num_rows($this->resposts);
-				$this->ipost = 0;
-				$req = "select subject from ".BAB_POSTS_TBL." where id='".$arr['post']."' and confirmed='Y'";
-				$res = $this->db->db_query($req);
-				$arr2 = $this->db->db_fetch_array($res);
-				$this->posts = $arr2['subject'];
-				$m++;
-				return true;
-				}
-			else
-				{
-				$m = 0;
-				return false;
-				}
-			}
-
-		function getpost()
-			{
-			if( $this->ipost < $this->total)
-				{
-				$arr = $this->db->db_fetch_array($this->resposts);
-				//$this->total--;
-				$this->date = bab_strftime(bab_mktime($arr['date']));
-				$this->title = $arr['subject'];
-				$this->titleurl = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->forum."&thread=".$arr['id_thread']."&post=".$arr['id'];
-				$this->ipost++;
-				return true;
-				}
-			else
-				{
-				$this->ipost = 0;
-				return false;
-				}
-			}
-
-		}
-
-	$temp = new temp3($nbdays);
-	$babBody->babecho(	bab_printTemplate($temp,"calview.html", "threadslist"));
 }
 
 function newEmails()
@@ -572,46 +296,15 @@ if(!isset($idx))
 
 switch($idx)
 	{
-	case "com":
-		$babBody->title = bab_translate("Summary");
-		newComments(0);
-		$babBody->addItemMenu("com", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
-		break;
-	case "art":
-		$babBody->title = bab_translate("Summary");
-		newArticles(0);
-		$babBody->addItemMenu("art", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
-		break;
-	case "for":
-		$babBody->title = bab_translate("Summary");
-		newThreads(0);
-		$babBody->addItemMenu("for", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
-		break;
-	case "fil":
-		$babBody->title = bab_translate("Summary");
-		newFiles(0);
-		$babBody->addItemMenu("fil", bab_translate("Summary"), $GLOBALS['babUrlScript']."?tg=calview");
-		break;
 	default:
 	case "view":
 		$babBody->title = bab_translate("Summary");
+		showOthers();
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( $idcal != 0 || $babBody->calaccess || bab_calendarAccess() != 0 )
 		{
 			upComingEvents($idcal);
-			/*
-			$babBody->addItemMenu("viewm", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&calid=".$idcal);
-			if( bab_isUserGroupManager())
-				{
-				$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
-				}
-			*/
 		}
-		newArticles(7);
-		newComments(7);
-		newThreads(7);
-		newFiles(7);
 		$bemail = bab_mailAccessLevel();
 		if( $bemail == 1 || $bemail == 2)
 			{

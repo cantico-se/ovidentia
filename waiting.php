@@ -387,6 +387,74 @@ function readComment($topics, $article, $com)
 	}
 
 
+function viewArticle($article)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $content;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $more;
+		var $topics;
+		var $baCss;
+		var $close;
+		var $head;
+
+
+		function temp($article)
+			{
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->close = bab_translate("Close");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->content = bab_replace($this->arr['body']);
+			$this->head = bab_replace($this->arr['head']);
+			}
+		}
+	
+	$temp = new temp($article);
+	echo bab_printTemplate($temp,"articles.html", "articleview");
+	}
+
+function viewComment($com)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $content;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $close;
+		var $title;
+
+
+		function temp($com)
+			{
+			$this->close = bab_translate("Close");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$com."'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->title = bab_replace($this->arr['subject']);
+			$this->content = bab_replace($this->arr['message']);
+			}
+		}
+	
+	$temp = new temp($com);
+	echo bab_printTemplate($temp,"comments.html", "commentview");
+	}
+
 function confirmComment($article, $topics, $com)
 	{
 	global $babBody;
@@ -722,6 +790,26 @@ $babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
 
 switch($idx)
 	{
+	case "viewa":
+		if( $uaapp )
+		{
+		viewArticle($article);
+		exit;
+		}
+		else
+			$babBody->title = bab_translate("Access denied");
+		break;
+
+	case "viewc":
+		if( $ucapp )
+		{
+		viewComment($com);
+		exit;
+		}
+		else
+			$babBody->title = bab_translate("Access denied");
+		break;
+
 	case "More":
 		if( $uaapp )
 		{

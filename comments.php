@@ -227,6 +227,47 @@ function deleteComment($topics, $article, $com, $newc)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+
+function viewComment($com)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $content;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $close;
+		var $title;
+
+
+		function temp($com)
+			{
+			$this->close = bab_translate("Close");
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$com."' and confirmed='Y'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->arr['id_topic']))
+				{
+				$this->title = bab_replace($this->arr['subject']);
+				$this->content = bab_replace($this->arr['message']);
+				}
+			else
+				{
+				$this->title = '';
+				$this->content = bab_translate("Access denied");
+				}
+			}
+		}
+	
+	$temp = new temp($com);
+	echo bab_printTemplate($temp,"comments.html", "commentview");
+	}
+
 function saveComment($topics, $article, $name, $subject, $message, $com)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL;
@@ -333,6 +374,10 @@ $babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
 
 switch($idx)
 	{
+	case "viewc":
+		viewComment($com);
+		exit;
+		break;
 
 	case "addComment":
 		$babBody->title = bab_getArticleTitle($article);

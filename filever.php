@@ -755,18 +755,7 @@ function confirmFile($idf, $bconfirm )
 			break;
 		case 1:
 			deleteFlowInstance($arr['idfai']);
-			copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
-			copy($pathx.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$arrfile['name'], $pathx.$arrfile['name']);
-			unlink($pathx.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$arrfile['name']);
-			$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified='".$arr['date']."', modifiedby='".$arr['author']."', ver_major='".$arr['ver_major']."', ver_minor='".$arr['ver_minor']."', ver_comment='".addslashes($arr['comment'])."' where id='".$idf."'");
-
-			$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$arr['author']."', '".BAB_FACTION_COMMIT."', '".addslashes($arr['comment'])."', '".$arr['ver_major'].".".$arr['ver_minor']."')");
-			$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='0', confirmed='Y', ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', comment='".addslashes($arrfile['ver_comment'])."' where id='".$arrfile['edit']."'");
-			notifyFileAuthor(bab_translate("Your new file version has been accepted"), $arr['ver_major'].".".$arr['ver_minor'], $arr['author']);
-			if( $arrfold['filenotify'] == "Y")
-				{
-				fileNotifyMembers($arrfile['name'], $arrfile['path'], $arrfile['id_owner'], bab_translate("A new version file has been uploaded"));
-				}
+			acceptFileVersion($arrfile, $arr, $arrfold['filenotify']);
 			break;
 		default:
 			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);

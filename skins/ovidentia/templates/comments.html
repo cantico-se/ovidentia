@@ -251,3 +251,42 @@ BabSiteAdminListLink" href="{ subjecturl }">{ subjectname }</a> </td>
 <br>
 <br>
 <!--#end commentread -->
+
+<!--#begin commentview -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabTopicsAdminArticleViewFontBackground">
+<br>
+<table width="92%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
+<tr> 
+<td class="BabTopicsTitleBackground" align="center" nowrap><b>{ title }</b></td>
+</tr>
+<tr>
+<td class="BabTopicsBackground">{ content }</td>
+</tr>
+<tr> 
+<td colspan="2" align="center"> <br>
+<a href="javascript:this.close()" class="BabSiteAdminListLink">{ close }</a> <br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+<!--#end commentview -->
+

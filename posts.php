@@ -647,6 +647,40 @@ function notifyThreadAuthor($threadTitle, $email, $author)
 	$mail->send();
 	}
 
+function viewPost($thread, $post)
+	{
+	global $babBody;
+
+	class temp
+		{
+	
+		var $postmessage;
+		var $postsubject;
+		var $postdate;
+		var $postauthor;
+		var $title;
+		var $close;
+
+		function temp($thread, $post)
+			{
+			$db = $GLOBALS['babDB'];
+			$req = "select forum from ".BAB_THREADS_TBL." where id='".$thread."'";
+			$arr = $db->db_fetch_array($db->db_query($req));
+			$this->title = bab_getForumName($arr['forum']);
+			$req = "select * from ".BAB_POSTS_TBL." where id='".$post."'";
+			$arr = $db->db_fetch_array($db->db_query($req));
+			$this->postdate = bab_strftime(bab_mktime($arr['date']));
+			$this->postauthor = $arr['author'];
+			$this->postsubject = bab_replace($arr['subject']);
+			$this->postmessage = bab_replace($arr['message']);
+			$this->close = bab_translate("Close");
+			}
+		}
+	
+	$temp = new temp($thread, $post);
+	echo bab_printTemplate($temp,"posts.html", "postview");
+	}
+
 
 function saveReply($forum, $thread, $post, $name, $subject, $message)
 	{
@@ -905,6 +939,16 @@ $babLevelTwo = bab_getForumName($forum);
 
 switch($idx)
 	{
+	case "viewp":
+		if( $moderator )
+			{
+			viewPost($thread, $post);
+			exit;
+			}
+		else
+			$babBody->title = bab_translate("Access denied");
+		break;
+
 	case "reply":
 		if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum))
 			{

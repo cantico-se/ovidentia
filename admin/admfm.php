@@ -374,6 +374,52 @@ function updateFolder($fid, $fname, $managerid, $active, $said, $notification, $
 			$managerid = 0;
 		if( empty($said))
 			$said = 0;
+
+		list($idsafolder, $bnotify) = $babDB->db_fetch_row($babDB->db_query("select idsa, filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'"));
+		if( $idsafolder != $said )
+			{
+			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$fid."' and bgroup='Y' and confirmed='N'");
+			while( $row = $babDB->db_fetch_array($res))
+				{
+				if( $row['idfai'] != 0 )
+					deleteFlowInstance($row['idfai']);
+				if( $said == 0 )
+					{
+					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
+					}
+				else
+					{
+					$idfai = makeFlowInstance($said, "fil-".$row['id']);
+					$babDB->db_query("update ".BAB_FILES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
+					$nfusers = getWaitingApproversFlowInstance($idfai, true);
+					if( count($nfusers) > 0 )
+						notifyFileApprovers($row['id'], $nfusers, bab_translate("A new file is waiting for you"));
+					}
+
+				$res2 = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$row['id']."' and confirmed='N'");
+				while( $rrr = $babDB->db_fetch_array($res2))
+					{
+					if( $rrr['idfai'] != 0 )
+						deleteFlowInstance($rrr['idfai']);
+					if( $said == 0 )
+						{
+						acceptFileVersion($row, $rrr, $bnotify);
+						}
+					else
+						{
+						$idfai = makeFlowInstance($said, "filv-".$rrr['id']);
+						$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='".$idfai."' where id='".$rrr['id']."'");
+						$nfusers = getWaitingApproversFlowInstance($idfai, true);
+						if( count($nfusers) > 0 )
+							notifyFileApprovers($row['id'], $nfusers, bab_translate("A new version file is waiting for you"));
+						}
+					}
+
+
+				}
+			}
+
+		
 		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', manager='".$managerid."', idsa='".$said."', filenotify='".$notification."', active='".$active."', version='".$version."' where id ='".$fid."'");
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;
