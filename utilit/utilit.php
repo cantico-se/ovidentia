@@ -1899,9 +1899,10 @@ function printout()
 	if (!empty($icalendars->id_percal))
 		$this->idcals[] = $icalendars->id_percal;
 
+
 	foreach($icalendars->pubcal as $id => $pubcal)
 		{
-		if ($pubcal['group'])
+		if ($pubcal['view'])
 			$this->idcals[] = $id;
 		}
 

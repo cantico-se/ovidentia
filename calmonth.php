@@ -379,7 +379,8 @@ switch($idx)
 			cal_month_free($calid, $date);
 			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
-			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date));
+			if ($GLOBALS['BAB_SESS_LOGGED'])
+				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date));
 			}
 		break;
 	case "viewm":
@@ -397,7 +398,8 @@ switch($idx)
 			cal_month($calid, $date);
 			$babBody->addItemMenu("view", $babBody->title, $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
-			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date));
+			if ($GLOBALS['BAB_SESS_LOGGED'])
+				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calid."&date=".$date));
 			}
 		break;
 	}

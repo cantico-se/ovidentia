@@ -215,7 +215,6 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
-					$this->daysel = $this->dayend;
 					$k++;
 					}
 				else
@@ -250,7 +249,6 @@ function newEvent()
 				$i = 1;
 				if( $k == 0 )
 					{
-					$this->monthsel = $this->monthend;
 					$k++;
 					}
 				else
@@ -282,7 +280,6 @@ function newEvent()
 				$i = 0;
 				if( $k == 0 )
 					{
-					$this->yearsel = $this->yearend;
 					$k++;
 					}
 				else

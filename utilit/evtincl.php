@@ -273,7 +273,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 
-			$res = $babDB->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where  id_object='".$idclas[$i]."'");
+			$res = $babDB->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where  id_object='".$idcals[$i]."'");
 			$arrusers = array();
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{

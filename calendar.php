@@ -321,7 +321,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['description'] : '';
 					$evt['color'] = !empty($this->mcals->categories[$arr['id_cat']]) ? $this->mcals->categories[$arr['id_cat']]['bgcolor'] : $arr['color'];
 					$evt['creator'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_getUserName($arr['id_creator']) : '';
-					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && $arr['private'] == 'Y';
+					$evt['private'] = $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && (isset($arr['private']) && $arr['private'] == 'Y');
 					$evt['nbowners'] = $arr['nbowners']+1;
 					}
 				}
