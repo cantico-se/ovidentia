@@ -370,7 +370,7 @@ CREATE TABLE bab_topics_categories (
    PRIMARY KEY (id)
 );
 
-INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y');
+INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '');
 
 # --------------------------------------------------------
 #
