@@ -31,7 +31,7 @@ function addCategory($cat)
 			$this->description = babTranslate("Description");
 			$this->approver = babTranslate("Approver");
 			$this->add = babTranslate("Add");
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	

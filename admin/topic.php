@@ -186,7 +186,7 @@ function modifyCategory($id)
 			$res = $this->db->db_query($req);
 			$r = $this->db->db_fetch_array($res);
 			$this->approvername = composeName($r['firstname'], $r['lastname']);
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
