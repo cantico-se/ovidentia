@@ -228,11 +228,11 @@ function browseLdapDirectory($id, $pos)
 				$this->btel = "";
 				$this->htel = "";
 				$this->email = "";
-				$this->cn = quoted_printable_decode($this->entries[$i]['cn'][0]);
-				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".$this->cn."&pos=".$this->pos;
-				$this->btel = isset($this->entries[$i]['telephonenumber'][0])?quoted_printable_decode($this->entries[$i]['telephonenumber'][0]):"";
-				$this->htel = isset($this->entries[$i]['homephone'][0])?quoted_printable_decode($this->entries[$i]['homephone'][0]):"";
-				$this->email = isset($this->entries[$i]['mail'][0])?$this->entries[$i]['mail'][0]:"";
+				$this->cn = utf8_decode($this->entries[$i]['cn'][0]);
+				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".quoted_printable_decode($this->entries[$i]['cn'][0])."&pos=".$this->pos;
+				$this->btel = isset($this->entries[$i]['telephonenumber'][0])?utf8_decode($this->entries[$i]['telephonenumber'][0]):"";
+				$this->htel = isset($this->entries[$i]['homephone'][0])?utf8_decode($this->entries[$i]['homephone'][0]):"";
+				$this->email = isset($this->entries[$i]['mail'][0])?utf8_decode($this->entries[$i]['mail'][0]):"";
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->email;
 				$i++;
 				return true;
@@ -539,7 +539,7 @@ function summaryLdapContact($id, $cn)
 				$this->ldap->bind($arr['userdn'], $arr['adpass']);
 				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".$cn."))");
 				$this->ldap->close();
-				$this->name = $this->entries[0]['cn'][0];
+				$this->name = utf8_decode($this->entries[0]['cn'][0]);
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".$cn;
 				}
 			$this->bfieldv = true;
