@@ -114,7 +114,7 @@ function listUsers($pos, $grp)
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp;
 			$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp;
-			if( $babBody->currentAdmGroup == 0)
+			if( $babBody->currentAdmGroup == 0 && $this->grp == 3 )
 				$this->bmodname = true;
 			else
 				$this->bmodname = false;
@@ -378,6 +378,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Users list");
 			$cnt = listUsers($pos, $grp);
+			if ($grp != 0) $babBody->addItemMenu("cancel", bab_translate("Cancel"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
