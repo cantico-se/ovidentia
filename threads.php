@@ -100,7 +100,7 @@ function listThreads($forum, $active, $pos)
 			$row = $this->db->db_fetch_array($this->db->db_query("select display from ".BAB_FORUMS_TBL." where id='".$forum."'"));
 			$maxrows = $row['display'];
 
-			$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='$forum' and active='$active'";
+			$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='$forum' and active='".$active."'";
 			$this->res = $this->db->db_query($req);
 			$row = $this->db->db_fetch_array($this->res);
 			$total = $row["total"];
@@ -140,7 +140,7 @@ function listThreads($forum, $active, $pos)
 					}
 				}
 
-			$req = "select tt.* from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.lastpost=pt.id where forum='".$forum."' and active='Y' order by pt.date desc";
+			$req = "select tt.* from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.lastpost=pt.id where forum='".$forum."' and active='".$active."' order by pt.date desc";
 			if( $total > $maxrows)
 				{
 				$req .= " limit ".$pos.",".$maxrows;
