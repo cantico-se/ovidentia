@@ -137,7 +137,7 @@ class zip
 
  function Extract ( $zn, $to, $index = Array(-1),$createpath =true )
  {
-   if(!@is_dir($to)) @mkdir($to,0777);
+   if(!@is_dir($to)) mkdir($to,0777);
    $ok = 0; $zip = @fopen($zn,'rb');
    if(!$zip) return(-1);
    $cdir = $this->ReadCentralDir($zip,$zn);
