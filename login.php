@@ -38,7 +38,7 @@ function displayLogin($url)
 			$this->password = bab_translate("Password");
 			$this->login = bab_translate("Login");
 			$this->referer = $url;
-			$this->life = bab_translate("Remmember my login");
+			$this->life = bab_translate("Remember my login");
 			$this->nolife = bab_translate("No");
 			$this->oneday = bab_translate("one day");
 			$this->oneweek = bab_translate("one week");
