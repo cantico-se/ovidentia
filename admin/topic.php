@@ -383,6 +383,7 @@ function viewArticle($article)
 
 function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom)
 	{
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
 	if( empty($category))
 		{
@@ -406,15 +407,17 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$id."'"));
 	if( $arr['idsaart'] != $saart )
 		{
-		if( $saart == 0 )
-			$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='0', confirmed = 'Y' where id_topic='".$id."' and confirmed='N' and archive='N'");
-		else
+		$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and confirmed='N' and archive='N'");
+		while( $row = $db->db_fetch_array($res))
 			{
-			$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and confirmed='N' and archive='N'");
-			while( $row = $db->db_fetch_array($res))
+			if( $row['idfai'] != 0 )
+				deleteFlowInstance($row['idfai']);
+			if( $saart == 0 )
 				{
-				if( $row['idfai'] != 0 )
-					deleteFlowInstance($row['idfai']);
+				$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
+				}
+			else
+				{
 				$idfai = makeFlowInstance($saart, "art-".$row['id']);
 				$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
 				$nfusers = getWaitingApproversFlowInstance($idfai, true);
@@ -425,15 +428,15 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 
 	if( $arr['idsacom'] != $sacom )
 		{
-		if( $sacom == 0 )
-			$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='0', confirmed = 'Y' where id_topic='".$id."' and confirmed='N'");
-		else
+		$res = $db->db_query("select * from ".BAB_COMMENTS_TBL." where id_topic='".$id."' and confirmed='N'");
+		while( $row = $db->db_fetch_array($res))
 			{
-			$res = $db->db_query("select * from ".BAB_COMMENTS_TBL." where id_topic='".$id."' and confirmed='N'");
-			while( $row = $db->db_fetch_array($res))
+			if( $row['idfai'] != 0 )
+				deleteFlowInstance($row['idfai']);
+			if( $sacom == 0 )
+				$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
+			else
 				{
-				if( $row['idfai'] != 0 )
-					deleteFlowInstance($row['idfai']);
 				$idfai = makeFlowInstance($saart, "com-".$row['id']);
 				$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
 				$nfusers = getWaitingApproversFlowInstance($idfai, true);

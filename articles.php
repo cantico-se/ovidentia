@@ -85,7 +85,7 @@ function listArticles($topics, $approver)
 					$res = $this->db->db_query($req);			
 					$ar = $this->db->db_fetch_array($res);
 					$totalw = $ar['total'];
-					if( $total > 0 || ( $totalw > 0 && $this->approver ))
+					if( $total > 0 || ( $totalw > 0 && bab_isUserCommentApprover($this->topics) ))
 						{
 						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
 						if( $totalw > 0 )
