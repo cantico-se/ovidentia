@@ -1677,4 +1677,13 @@
 <string id="ERROR: No members">ERREUR: Pas de membres</string>
 <string id="Fields with the same e-mail address are duplicates">Les lignes avec la même adresse e-mail qu'une entrée de l'annuaire sont des doublons</string>
 <string id="Period days">Jours dans la période sélectionnée</string>
+<string id="Waiting appointments">Evénements en attente</string>
+<string id="Appointment">Evénement</string>
+<string id="Warning! This appointment is recurrent !">Attention! cet événement est répétitif !</string>
+<string id="A new event has been scheduled">Un événement a été programmé</string>
+<string id="New waiting event">Nouveau événement en attente</string>
+<string id="Appointment canceled by ">Evénement refusé par </string>
+<string id="The following appointment has been canceled">L'événement suivant a été refusé</string>
+<string id="Appointment modifed by ">Evénement modifié par </string>
+<string id="The following appointment has been modified">L'événement suivant a été modifié</string>
 </fr>
