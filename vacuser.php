@@ -765,7 +765,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end from ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
+	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end, day_begin, day_end from ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
 	$arr = $babDB->db_fetch_array($res);
 
 	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $action);
@@ -792,8 +792,10 @@ function confirmVacationRequest($veid, $remarks, $action)
 			$idcal = bab_getCalendarId($arr['id_user'], 1);
 			if( $idcal != 0 )
 				{
+				$tbegin = $arr['day_begin'] == 3? '12:00:00': '00:00:00' 
+				$tend = $arr['day_end'] == 2? '12:00:00': '23:59:59' 
 				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, start_date, start_time, end_date, end_time, id_creator, hash) values ";
-				$req .= "('".$idcal."', '".bab_translate("Vacation")."', '".$arr['date_begin']."', '00:00:00', '".$arr['date_end']."', '23:59:59', '0', 'V_".$veid."')";
+				$req .= "('".$idcal."', '".bab_translate("Vacation")."', '".$arr['date_begin']."', '".$tbegin."', '".$arr['date_end']."', '".$tend."', '0', 'V_".$veid."')";
 				$babDB->db_query($req);
 				}
 			$subject = bab_translate("Your vacation request has been accepted");
