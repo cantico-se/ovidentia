@@ -2043,8 +2043,18 @@ function bab_updateUserSettings()
 {
 	global $babDB, $babBody,$BAB_SESS_USERID;
 
-	if( !empty($BAB_SESS_USERID))
+	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
+	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
+
+
+	$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."' and (remote_addr!='".$GLOBALS['REMOTE_ADDR']."' or forwarded_for!='".$GLOBALS['HTTP_X_FORWARDED_FOR']."')");
+	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
+		die(bab_translate("Access denied"));
+		}
+
+	if( !empty($BAB_SESS_USERID))
+		{		
 		$res=$babDB->db_query("select id_group, isprimary from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."'");
 		$babBody->ovgroups[1]['member'] = 'Y'; /* registered user */
 		while( $arr = $babDB->db_fetch_array($res))
@@ -2303,8 +2313,6 @@ function bab_updateUserSettings()
 			}
 		}
 	
-	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
-	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
 	$res = $babDB->db_query("select id, id_dggroup from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
