@@ -2670,7 +2670,127 @@ class bab_FaqNext extends bab_Faq
 
 }
 
+class bab_FaqSubCategories extends bab_handler
+{
+	var $res;
+	var $index;
+	var $count;
+	var $faqinfo;
 
+	function bab_FaqSubCategories( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->count = 0;
+		$faqid = $ctx->get_value('faqid');
+		if( $faqid != '')
+			{
+			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $faqid))
+				{
+				$this->faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$faqid."'"));
+				$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where idcat='".$faqid."'");
+				$this->count = $babDB->db_num_rows($this->res);
+				}
+
+			}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			if( $this->faqinfo['id_root'] == $arr['id'] )
+			{
+			$this->ctx->curctx->push('SubFaqName', $faqinfo['category']);
+			}
+			else
+			{
+			$this->ctx->curctx->push('SubFaqName', $arr['name']);
+			}
+			$this->ctx->curctx->push('FaqId', $arr['idcat']);
+			$this->ctx->curctx->push('SubFaqId', $arr['id']);
+			$this->ctx->curctx->push('SubFaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']."&idscat=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+class bab_FaqSubCategory extends bab_handler
+{
+	var $res;
+	var $index;
+	var $count;
+	var $faqinfo;
+	var $IdEntries = array();
+
+	function bab_FaqSubCategory( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->count = 0;
+		$faqsubcatid = $ctx->get_value('faqsubcatid');
+		if( $faqsubcatid !== false && $faqsubcatid !== '' )
+		{
+			$res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where idcat IN (".$faqid.")");
+			while( $row = $babDB->db_fetch_array($res))
+				{
+				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id_cat']))
+					{
+					array_push($this->IdEntries, $row['id']);
+					}
+				}
+		}
+
+		$this->count = count($this->IdEntries);
+		if( $this->count > 0 )
+			{
+			$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id IN (".implode(',', $this->IdEntries).")");
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			if( empty($arr['name']) )
+			{
+			$faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$arr['idcat']."'"));
+			$this->ctx->curctx->push('SubFaqName', $faqinfo['category']);
+			}
+			else
+			{
+			$this->ctx->curctx->push('SubFaqName', $arr['name']);
+			}
+			$this->ctx->curctx->push('FaqId', $arr['idcat']);
+			$this->ctx->curctx->push('SubFaqId', $arr['id']);
+			$this->ctx->curctx->push('SubFaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']."&idscat=".$arr['id']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
 
 
 class bab_FaqQuestions extends bab_handler
@@ -2685,9 +2805,16 @@ class bab_FaqQuestions extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$faqid = $ctx->get_value('faqid');
+		$faqsubcatid = $ctx->get_value('faqsubcatid');
 		$req = "select id, idcat from ".BAB_FAQQR_TBL;
 		if( $faqid !== false && $faqid !== '' )
+			{
 			$req .= " where idcat IN (".$faqid.")";
+			if( $faqsubcatid !== false && $faqsubcatid !== '' )
+				$req .= " and id_subcat IN (".$faqsubcatid.")";
+			}
+		elseif( $faqsubcatid !== false && $faqsubcatid !== '' )
+			$req .= " where id_subcat IN (".$faqsubcatid.")";
 
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
@@ -2718,7 +2845,7 @@ class bab_FaqQuestions extends bab_handler
 			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response'],'OVML'));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
-			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
