@@ -53,7 +53,7 @@ function listCategories($cat)
 			$this->waiting = bab_translate("Waiting");
 			$this->txtsubmit = bab_translate("Submit");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and  ".BAB_TOPICS_TBL.".id_cat='".$cat."'";
+			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and  ".BAB_TOPICS_TBL.".id_cat='".$cat."' order by ordering asc";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
