@@ -325,6 +325,11 @@ function newReply($forum, $thread, $post)
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+
+			$this->postdate = bab_strftime(bab_mktime($arr['date']));
+			$this->postauthor = $arr['author'];
+			$this->postsubject = $arr['subject'];
+			$this->postmessage = bab_replace($arr['message']);
 			}
 		}
 
