@@ -1,6 +1,6 @@
 <?php
 
-function listbms()
+function favorites_list()
 {
 	global $babBody;
 
@@ -17,11 +17,10 @@ function listbms()
 
 		function temp()
 			{
-			$this->favorites = "Favorites";
-			$this->bmdeltext = "Delete";
-			$this->favorites = "Favorites";
+			$this->favorites = bab_translate("Favorites", "favorites");
+			$this->bmdeltext = bab_translate("Delete", "favorites");
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select * from bm_list where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
+			$this->res = $this->db->db_query("select * from favorites_list where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
 			$this->count = $this->db->db_num_rows($this->res);
 			}
 
@@ -47,7 +46,7 @@ function listbms()
 }
 
 
-function addbm()
+function favorites_add()
 	{
 	global $babBody;
 	class temp
@@ -58,9 +57,9 @@ function addbm()
 
 		function temp()
 			{
-			$this->url = "Url";
-			$this->description = "Description";
-			$this->add = "Add";
+			$this->url = bab_translate("Url", "favorites");
+			$this->description = bab_translate("Description", "favorites");
+			$this->add = bab_translate("Add", "favorites");
 			}
 		}
 
@@ -75,33 +74,34 @@ if( !isset($idx ))
 if( isset($add) && $add == "bm")
 {
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("insert into bm_list (url, description, id_owner) values ('".$url."', '".$description."', '".$GLOBALS['BAB_SESS_USERID']."')");
+	$res = $db->db_query("insert into favorites_list (url, description, id_owner) values ('".$url."', '".$description."', '".$GLOBALS['BAB_SESS_USERID']."')");
 }
 
 if( $idx == "del")
 	{
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("delete from bm_list where id='".$id."'");
+	$res = $db->db_query("delete from favorites_list where id='".$id."'");
 	$idx = "list";
 	}
 
 switch($idx)
 	{
 	case "new":
-		$babBody->title = "Add favori";
-		addbm();
-		$babBody->addItemMenu("list", "Liste", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("new", "Add", $GLOBALS['babAddonUrl']."main&idx=new");
+		$babBody->title = bab_translate("Add favorite", "favorites");
+		favorites_add();
+		$babBody->addItemMenu("list", bab_translate("List", "favorites"), $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("new", bab_translate("Add", "favorites"), $GLOBALS['babAddonUrl']."main&idx=new");
 		break;
 
 	case "list":
 	default:
-		$babBody->title = "Your favorites";
-		listbms();
-		$babBody->addItemMenu("list", "Liste", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("new", "Add", $GLOBALS['babAddonUrl']."main&idx=new");
+		$babBody->title = bab_translate("Your favorites", "favorites");
+		favorites_list();
+		$babBody->addItemMenu("list", bab_translate("List", "favorites"), $GLOBALS['babAddonUrl']."main&idx=list");
+		$babBody->addItemMenu("new", bab_translate("Add", "favorites"), $GLOBALS['babAddonUrl']."main&idx=new");
 		break;
 	}
 
 $babBody->setCurrentItemMenu($idx);
 ?>
+

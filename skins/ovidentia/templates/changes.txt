@@ -28,7 +28,7 @@ admfiles.html					        changed action="index.php" to action="{ babPhpSelf }"
                         admfileslist    Removed Javascript
 adminsection.html       template        Added <!--#in addAddonUrl --> ... <!--#endin addAddonUrl -->
 admvacs.html					        changed action="index.php" to action="{ babPhpSelf }"
-artcileprint.html
+artcileprint.html                       Added { head } variable
 articles.html					        changed action="index.php" to action="{ babPhpSelf }"
                         introlist       Added <!--#if barch --> ... <!--#endif barch -->
                                         Added <!--#if blen "> 0" --> ... <!--#endif blen -->
