@@ -140,4 +140,40 @@ function bab_getCalendarOwnerName($idcal, $type)
 		}
 }
 
+function bab_isCalendarAccessValid($calid)
+	{
+	$db = $GLOBALS['babDB'];
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_CALENDAR_TBL." where id='".$calid."'"));
+	switch($arr['type'])
+		{
+		case 1:
+			if( $arr['owner'] == $GLOBALS['BAB_SESS_USERID'])
+				return true;
+			else
+				{
+				$res = $db->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+				if( $res && $db->db_num_rows($res) > 0 )
+					return true;			
+				}
+			break;
+
+		case 2:
+			$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group='".$arr['owner']."'");
+			if( $res && $db->db_num_rows($res) > 0 )
+				return true;			
+			break;
+		case 3:
+			$res = $db->db_query("select * from ".BAB_RESOURCESCAL_TBL." where id='".$arr['owner']."'");
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				$arr = $db->db_fetch_array($res);
+				if( $arr['id_group'] == 1 && !empty($GLOBALS['BAB_SESS_USERID']))
+					return true;
+				$res = $db->db_query("select * from ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and id_group='".$arr['id_group']."'");
+				return true;
+				}
+			break;
+		}
+	return false;
+	}
 ?>
