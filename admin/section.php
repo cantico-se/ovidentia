@@ -205,7 +205,7 @@ switch($idx)
 		sectionDelete($item);
 		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Access"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=section&idx=Delete&item=".$item);
 		break;
 	case "Groups":
@@ -213,7 +213,7 @@ switch($idx)
 		aclGroups("section", "Modify", "sections_groups", $item, "aclsec");
 		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Access"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=section&idx=Delete&item=".$item);
 		break;
 	default:
@@ -222,7 +222,7 @@ switch($idx)
 		sectionModify($item);
 		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("Access"),$GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=section&idx=Delete&item=".$item);
 		break;
 	}
