@@ -36,8 +36,8 @@ function accessCalendar($calid)
 			{
 			$this->db = $GLOBALS['babDB'];
 			$this->calid = $calid;
-			$this->userstxt = bab_translate("Users");
-			$this->textinfo = bab_translate("Enter user name. ( You can enter multiple users separated by comma )");
+			$this->userstxt = bab_translate("User");
+			$this->textinfo = bab_translate("Add user");
 			$this->addusers = bab_translate("Update access");
 			$this->useraccess = bab_translate("Access");
 			$this->fullname = bab_translate("Fullname");
@@ -49,6 +49,7 @@ function accessCalendar($calid)
 			$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			}
 
 		function getnext()
@@ -61,6 +62,7 @@ function accessCalendar($calid)
 				$res = $this->db->db_query($req);
 				$this->arr = $this->db->db_fetch_array($res);
 				$this->fullnameval = bab_composeUserName($this->arr['firstname'], $this->arr['lastname']);
+				$this->userid = $arr['id_user'];
 				switch( $arr['bwrite'])
 					{
 					case 1:
@@ -88,38 +90,37 @@ function accessCalendar($calid)
 	$babBody->babecho(	bab_printTemplate($temp,"calopt.html", "access"));
 }
 
-function addAccessUsers( $users, $calid, $baccess, $del )
+function addAccessUsers( $userid, $calid, $baccess)
 {
 
 	$db = $GLOBALS['babDB'];
-	$arr = explode(",", $users);
-
-	for( $i = 0; $i < count($arr); $i++)
+	$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$userid."'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$iduser = bab_getUserId($arr[$i]);
-		if( $iduser > 0)
-			{
-			$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$iduser."'";
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$rr = $db->db_fetch_array($res);
-				if( $del )
-					$req = "delete from ".BAB_CALACCESS_USERS_TBL." where id='".$rr['id']."'";
-				else
-					$req = "update ".BAB_CALACCESS_USERS_TBL." set id_user='".$iduser."', bwrite='".$baccess."' where id='".$rr['id']."'";
-				$res = $db->db_query($req);
-				}
-			else if($del == false)
-				{
-				$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$calid."', '".$iduser."', '".$baccess."')";
-				$res = $db->db_query($req);
-				}
-			}
+		$rr = $db->db_fetch_array($res);
+		$req = "update ".BAB_CALACCESS_USERS_TBL." set id_user='".$userid."', bwrite='".$baccess."' where id='".$rr['id']."'";
+		$res = $db->db_query($req);
+		}
+	else
+		{
+		$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$calid."', '".$userid."', '".$baccess."')";
+		$res = $db->db_query($req);
 		}
 
 }
 
+function delAccessUsers( $users, $calid)
+{
+
+	$db = $GLOBALS['babDB'];
+
+	for( $i = 0; $i < count($users); $i++)
+		{
+		$db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$users[$i]."'");
+		}
+
+}
 
 function calendarOptions($calid)
 	{
@@ -131,8 +132,12 @@ function calendarOptions($calid)
 		var $dayid;
 		var $dayname;
 		var $allday;
-		var $viewcateg;
+		var $ampm;
 		var $usebgcolor;
+		var $elapstime;
+		var $etval;
+		var $etselected;
+		var $minutes;
 
 		var $modify;
 		var $yes;
@@ -144,11 +149,13 @@ function calendarOptions($calid)
 			$this->calid = $calid;
 			$this->startday = bab_translate("First day of week");
 			$this->allday = bab_translate("On create new event, check")." ". bab_translate("All day");
-			$this->viewcateg = bab_translate("View calendar categories");
+			$this->ampm = bab_translate("Use AM PM");
 			$this->usebgcolor = bab_translate("Use bacground color for events");
 			$this->modify = bab_translate("Modify");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->elapstime = bab_translate("Echelle du temps");
+			$this->minutes = bab_translate("Minutes");
 			$db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $db->db_query($req);
@@ -178,13 +185,51 @@ function calendarOptions($calid)
 				}
 
 			}
+		function getnextet()
+			{
+			static $i = 0;
+			if( $i < 5 )
+				{
+				switch($i)
+					{
+					case 0:
+						$this->etval = 5;
+						break;
+					case 1:
+						$this->etval = 10;
+						break;
+					case 2:
+						$this->etval = 15;
+						break;
+					case 3:
+						$this->etval = 30;
+						break;
+					case 4:
+						$this->etval = 60;
+						break;
+					}
+
+				if( $this->etval == $this->arr['elapstime'])
+					$this->etselected = "selected";
+				else
+					$this->etselected = "";
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
 		}
 
 	$temp = new temp($calid);
 	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
 	}
 
-function updateCalOptions($startday, $allday, $viewcat, $usebgcolor)
+function updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
@@ -192,12 +237,12 @@ function updateCalOptions($startday, $allday, $viewcat, $usebgcolor)
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$req = "update ".BAB_CALOPTIONS_TBL." set startday='$startday', allday='$allday', viewcat='$viewcat', usebgcolor='$usebgcolor' where id_user='$BAB_SESS_USERID'";
+		$req = "update ".BAB_CALOPTIONS_TBL." set startday='".$startday."', allday='".$allday."', ampm='".$ampm."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."' where id_user='".$BAB_SESS_USERID."'";
 		}
 	else
 		{
-		$req = "insert into ".BAB_CALOPTIONS_TBL." ( id_user, startday, allday, viewcat, usebgcolor) values ";
-		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$viewcat."', '".$usebgcolor."')";
+		$req = "insert into ".BAB_CALOPTIONS_TBL." ( id_user, startday, allday, ampm, usebgcolor, elapstime) values ";
+		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$ampm."', '".$usebgcolor."', '".$elapstime."')";
 		}
 	$res = $db->db_query($req);
 
@@ -210,18 +255,17 @@ if(!isset($idx))
 	}
 
 
-if( isset($accessuser) && $accessuser == "add")
+if( isset($accessadd) )
 {
-	if( !empty($del))
-		$del = true;
-	else
-		$del = false;
-	addAccessUsers($users, $idcal, $baccess, $del);
+	addAccessUsers($userid, $idcal, $baccess);
 }
-
+if( isset($accessdel) )
+{
+	delAccessUsers($users, $idcal);
+}
 if( isset($modify) && $modify == "options")
 	{
-	updateCalOptions($startday, $allday, $viewcat, $usebgcolor);
+	updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime);
 	}
 
 switch($idx)

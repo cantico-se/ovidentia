@@ -4,8 +4,47 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-
-function getAvailableCalendars()
+function isCalUpdate($mcals)
+{
+global $BAB_SESS_USERID;
+$db = $GLOBALS['babDB'];
+for($i = 0; $i < count($mcals); $i++)
+	{
+	$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where id='".$mcals[$i]."'");
+	$arr = $db->db_fetch_array($res);
+	switch($arr['type'])
+		{
+		case 1:
+			if( $arr['owner'] == $BAB_SESS_USERID)
+			{
+				return 1;
+			}
+			else
+				{
+				$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$arr['id']."' and id_user='".$BAB_SESS_USERID."'";
+				$res = $db->db_query($req);
+				if( $res && $db->db_num_rows($res) > 0)
+					{
+					$row = $db->db_fetch_array($res);
+					if($row['bwrite'] == "1" || $row['bwrite'] == "2")
+						return 1;
+					}
+				}
+			break;
+		case 2:
+			if( bab_isUserGroupManager($arr['owner']))
+				return 1;
+			break;
+		case 3:
+			return 1;
+			break;
+		default:
+			break;	
+		}
+	}
+	return 0;
+}
+function getAvailableUsersCalendars()
 {
 	global $BAB_SESS_USERID,$BAB_SESS_USER;
 	$tab = array();
@@ -23,38 +62,58 @@ function getAvailableCalendars()
 		$rr['idcal'] = $row['id_cal'];
 		array_push($tab, $rr);
 	}
+	return $tab;
+}	
 
 
-	$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object=$BAB_SESS_USERID and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
+function getAvailableGroupsCalendars()
+{
+	global $BAB_SESS_USERID,$BAB_SESS_USER;
+	$tab = array();
+	$rr = array();
+
+	$db = $GLOBALS['babDB'];
+	$req = "select ".BAB_GROUPS_TBL.".name, ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 	$resgroups = $db->db_query($req);
-	if( $resgroups )
+	while($arr = $db->db_fetch_array($resgroups))
+	{
+		$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='2' and actif='Y'");
+		while( $arr2 = $db->db_fetch_array($res))
 		{
-		$countgroups = $db->db_num_rows($resgroups); 
+			$rr['name'] = $arr['name'];
+			$rr['idcal'] = $arr2['id'];
+			array_push($tab, $rr);
 		}
+
+	}
+
+	return $tab;
+}
+
+
+function getAvailableResourcesCalendars()
+{
+	global $BAB_SESS_USERID,$BAB_SESS_USER;
+	$tab = array();
+	$rr = array();
+
+	$db = $GLOBALS['babDB'];
+
+	$req = "select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
+	$resgroups = $db->db_query($req);
 
 	$req = "select * from ".BAB_RESOURCESCAL_TBL." where id_group='1'";
-	if( $countgroups > 0)
-		{
-		for( $i = 0; $i < $countgroups; $i++)
-			{
-			$arr = $db->db_fetch_array($resgroups);
-			$rr['name'] = $arr['name'];
-			$rr['idcal'] = bab_getCalendarId($arr['id'], 2);
-			if( $rr['idcal'] != 0)
-				array_push($tab, $rr);
-			$req .= " or id_group='".$arr['id']."'"; 
-			}
-		$db->db_data_seek($resgroups, 0);
-		}
-	$resres = $db->db_query($req);
-	$countres = $db->db_num_rows($resres);
-	for( $i = 0; $i < $countres; $i++)
-		{
-		$arr = $db->db_fetch_array($resres);
+	while($arr = $db->db_fetch_array($resgroups))
+	{
+		$req .= " or id_group='".$arr['id']."'"; 
+	}
+	$res = $db->db_query($req);
+	while($arr = $db->db_fetch_array($res))
+	{
 		$rr['name'] = $arr['name'];
 		$rr['idcal'] = bab_getCalendarId($arr['id'], 3);
 		array_push($tab, $rr);
-		}
+	}
 	return $tab;
 }
 
@@ -70,7 +129,89 @@ function getEventsResult($calid, $day, $month, $year)
 	return $db->db_query($req);
 }
 
-function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
+
+function calendarForm($calid, $day, $month, $year, $view)
+{
+	global $babBody;
+
+	class tempform
+		{
+		function tempform($calid, $day, $month, $year, $view)
+			{
+			$this->usrcalendarstxt = bab_translate("Users calendars");
+			$this->grpcalendarstxt = bab_translate("Groups calendars");
+			$this->rescalendarstxt = bab_translate("Resources calendars");
+			$this->mcals = explode(",", $calid);
+			$this->usrcalendars = getAvailableUsersCalendars();
+			$this->grpcalendars = getAvailableGroupsCalendars();
+			$this->rescalendars = getAvailableResourcesCalendars();
+			$this->maxcals = max(count($this->usrcalendars), count($this->grpcalendars), count($this->rescalendars));
+			$this->viewthis = bab_translate("View those calendars");
+			$this->viewcurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$this->mcals[0];
+			$this->viewctxt = bab_translate("View categories");
+			$this->day = $day;
+			$this->month = $month;
+			$this->year = $year;
+			$this->view = $view;
+			}
+
+		function getnextrow()
+			{
+			static $i = 0;
+			if( $i < $this->maxcals)
+				{
+				$this->busrcal = false;
+				$this->brescal = false;
+				$this->bgrpcal = false;
+				if( $i < count($this->usrcalendars))
+					{
+					$this->usrcalname = $this->usrcalendars[$i]['name'];
+					$this->usrcalid = $this->usrcalendars[$i]['idcal'];
+					if( count($this->mcals) > 0 && in_array($this->usrcalid, $this->mcals))
+						$this->usrsel = "checked";
+					else
+						$this->usrsel = "";
+					$this->busrcal = true;
+					}
+				if( $i < count($this->grpcalendars))
+					{
+					$this->grpcalname = $this->grpcalendars[$i]['name'];
+					$this->grpcalid = $this->grpcalendars[$i]['idcal'];
+					if( count($this->mcals) > 0 && in_array($this->grpcalid, $this->mcals))
+						$this->grpsel = "checked";
+					else
+						$this->grpsel = "";
+					$this->bgrpcal = true;
+					}
+				if( $i < count($this->rescalendars))
+					{
+					$this->rescalname = $this->rescalendars[$i]['name'];
+					$this->rescalid = $this->rescalendars[$i]['idcal'];
+					if( count($this->mcals) > 0 && in_array($this->rescalid, $this->mcals))
+						$this->ressel = "checked";
+					else
+						$this->ressel = "";
+					$this->brescal = true;
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+
+		}
+
+	$temp = new tempform($calid, $day, $month, $year, $view);
+	$babBody->babecho(bab_printTemplate($temp,"calendar.html", "calform"));
+	
+}
+
+function calendarMonth($calid, $day, $month, $year)
 {
 	global $babBody;
 
@@ -104,10 +245,11 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		var $babCalendarStartDay;
 		var $babCalendarUsebgColor;
 	
-		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
+		function temp($calid, $day, $month, $year)
 			{
 			global $BAB_SESS_USERID, $babMonths;
 			$this->db = $GLOBALS['babDB'];
+			$this->mcals = explode(",", $calid);
 			$this->view = "viewm";
 			$this->w = 0;
 			$this->nbevent = 0;
@@ -116,13 +258,12 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->month = $month;
 			$this->year = $year;
 			$this->calid = $calid;
-			$this->caltype = $caltype;
-			$this->viewthis = bab_translate("View this calendar");
 			$this->new = bab_translate("New");
 			$this->maxevent = 6;
 			$this->plus = "";
 			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
+			$this->ampm = false;
 			$this->babCalendarStartDay = 0;
 			$this->babCalendarUsebgColor = "Y";
 			if( $res && $this->db->db_num_rows($res) > 0)
@@ -130,47 +271,11 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$arr = $this->db->db_fetch_array($res);
 				$this->babCalendarStartDay = $arr['startday'];
 				$this->babCalendarUsebgColor = $arr['usebgcolor'];
+				if( $arr['ampm'] == "Y")
+					$this->ampm = true;
 				}
 
-			switch($caltype)
-				{
-				case 1:
-					if( $owner == $BAB_SESS_USERID)
-						$this->bowner = 1;
-					else
-						{
-						$this->bowner = 0;
-						$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
-						$res = $this->db->db_query($req);
-						if( $res && $this->db->db_num_rows($res) > 0)
-							{
-							$row = $this->db->db_fetch_array($res);
-							if($row['bwrite'] == "1" || $row['bwrite'] == "2")
-								$this->bowner = 1;
-							}
-						}
-					$grpid = bab_getPrimaryGroupId($owner);
-					if( bab_isUserGroupManager($grpid))
-						$this->bmanager = 1;
-					else
-						$this->bmanager = 0;
-					break;
-				case 2:
-					if( bab_isUserGroupManager($owner))
-						$this->bowner = 1;
-					else
-						$this->bowner = 0;
-					$this->bmanager = 0;
-					break;
-				case 3:
-					$this->bowner = 1;
-					$this->bmanager = 0;
-					break;
-				default:
-					$this->bowner = 0;
-					$this->bmanager = 0;
-					break;	
-				}
+			$this->bowner = isCalUpdate($this->mcals);
 
 			$this->previousmonth = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&day=".$day;
 			$this->previousmonth .= "&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
@@ -198,7 +303,6 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 
 			$this->monthname = $babMonths[date("n", mktime( 0,0,0, $month, 1, $year))]. "  ". $year;
 			$this->firstday = date("w", mktime(0,0,0,$this->month,1,$this->year));
-			$this->calendars = getAvailableCalendars();
 			}
 
 		function getdayname()
@@ -238,7 +342,6 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			static $total = 0;
 			if( $d < 7)
 				{
-				$this->plus = "";
 				$this->currentmonth = 1;
 				$this->currentday = 0;
 				$this->nbevent = 0;
@@ -249,10 +352,10 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				if( $b < 0)
 					$b += 7;
 
-				$day = (7 * ($this->w-1)) + $d - $b +1 ;
-				if( $day <= 0 || $day > $this->totaldays)
+				$this->mday = (7 * ($this->w-1)) + $d - $b +1 ;
+				if( $this->mday <= 0 || $this->mday > $this->totaldays)
 					$this->currentmonth = 0;
-				$mktime = mktime(0,0,0,$this->month, $day,$this->year);
+				$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 				$dday = date("j", $mktime);
 				if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 					{
@@ -261,26 +364,6 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->daynumbername = $dday;
 				$this->daynumberurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$dday."&month=".date("n", $mktime). "&year=".date("Y", $mktime). "&calid=".$this->calid;
 				$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$dday."&month=".date("n", $mktime). "&year=".date("Y", $mktime)."&calid=".$this->calid."&view=viewm";
-				$this->resevent = getEventsResult($this->calid, $day, $this->month, $this->year);
-				$this->countevent = $this->db->db_num_rows($this->resevent);
-				if( $this->countevent > $this->maxevent)
-					{
-					$this->nbevent = $this->maxevent;
-					}
-				else
-					$this->nbevent = $this->countevent;
-				if( $this->caltype == 1)
-					{
-					$idcal = bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2);
-					$this->resgrpevent = getEventsResult($idcal, $day, $this->month, $this->year);
-					$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
-					//$this->nbevent += $this->countgrpevent;
-					}
-				if( $this->countgrpevent + $this->countevent > $this->maxevent)
-					$this->plus = "+++";
-				else
-					$this->plus = "";
-
 				$d++;
 				return true;
 				}
@@ -294,14 +377,13 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		function getnextcal()
 			{
 			static $k=0;
-			if( $k < count($this->calendars))
+			if( $k < count($this->mcals))
 				{
-				if( $this->calid == $this->calendars[$k]['idcal'])
-					$this->selected = "selected";
-				else
-					$this->selected = "";
-				$this->vcalid = $this->calendars[$k]['idcal'];
-				$this->vcalname = $this->calendars[$k]['name'];
+				$this->fullname = htmlentities(bab_getCalendarOwnerName($this->mcals[$k], 0));
+				//$this->fullnameten = htmlentities(substr($this->fullname, 0, 22));
+				$this->fullnameten = htmlentities($this->fullname);
+				$this->resevent = getEventsResult($this->mcals[$k], $this->mday, $this->month, $this->year);
+				$this->countevent = $this->db->db_num_rows($this->resevent);
 				$k++;
 				return true;
 				}
@@ -315,20 +397,26 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		function getevent()
 			{
 			static $k=0;
-			$this->notempty = 0;
-			if( $k < $this->nbevent)
+			if( $k < $this->countevent)
 				{
-				$this->notempty = 1;
 				$this->bgcolor = "";
 				$this->title = "";
 				$this->titleten = "";
 				$this->hourten = "";
 				$arr = $this->db->db_fetch_array($this->resevent);
-				$this->title = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title'];
-				//$this->titleten = substr($arr['start_time'], 0 ,5). " ". substr($arr['title'], 0, 20) ;
-				$this->hourten = substr($arr['start_time'], 0 ,5);
+				if( $this->ampm )
+					$this->title = htmlentities(bab_toAmPm(substr($arr['start_time'], 0 ,5)). " " . bab_toAmPm(substr($arr['end_time'], 0 ,5)). " " .$arr['title']);
+				else
+					$this->title = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']);
+				if( $this->ampm )
+					$this->hourten = htmlentities(bab_toAmPm(substr($arr['start_time'], 0 ,5)));
+				else
+					$this->hourten = htmlentities(substr($arr['start_time'], 0 ,5));
+				$this->titleten = htmlentities($arr['title']) ;
+/*
 				$this->titleten = htmlentities(substr($arr['title'], 0, 10)) ;
-				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$this->calid. "&evtid=".$arr['id']. "&view=viewm";
+*/
+				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']."&evtid=".$arr['id']. "&view=viewm";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
 					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
@@ -349,62 +437,17 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				}
 			}
 
-		function getgroupevent()
-			{
-			static $k=0;
-			if( $k < $this->maxevent - $this->nbevent)
-				{
-				$this->bgcolor = "";
-				$this->titleten = "";
-				$this->hourten = "";
-				$this->titletenurl = "";
-				$this->notempty = 0;
-				if( $k < $this->countgrpevent)
-					{
-					$this->notempty = 1;
-					$arr = $this->db->db_fetch_array($this->resgrpevent);
-					$this->title = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title'];
-					//$this->titleten = substr($arr['start_time'], 0 ,5). " ". substr($arr['title'], 0, 20) ;
-					$this->hourten = substr($arr['start_time'], 0 ,5);
-					$this->titleten = htmlentities(substr($arr['title'], 0, 10)) ;
-					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewm";
-					if( $this->babCalendarUsebgColor == "Y")
-						{
-						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
-						$res = $this->db->db_query($req);
-						if( $res && $this->db->db_num_rows($res) > 0)
-							{
-							$arr = $this->db->db_fetch_array($res);
-							$this->bgcolor = $arr['bgcolor'];
-							}
-						}
-					}
-				else
-					{
-					$this->bgcolor = "";
-					$this->title = "";
-					$this->titleten = "";
-					}
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-			}
-
 		}
 
-	$temp = new temp($calid, $day, $month, $year, $caltype, $owner, $bmanager);
+	$temp = new temp($calid, $day, $month, $year);
 	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", "calmonth"));
+	calendarForm($calid, $day, $month, $year, "viewm");
 	return $temp->count;
 
 }
 
 
-function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
+function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 {
 	global $babBody;
 
@@ -439,13 +482,13 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		var $babCalendarUsebgColor;
 
 		
-		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
+		function temp($calid, $day, $month, $year, $caltype, $owner)
 			{
 			global $BAB_SESS_USERID;
+			$this->mcals = explode(",", $calid);
 			$this->db = $GLOBALS['babDB'];
 			$this->view = "viewq";
 			$this->calid = $calid;
-			$this->caltype = $caltype;
 			$this->month = $month;
 			$this->year = $year;
 			$this->day = $day;
@@ -453,51 +496,16 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$res = $this->db->db_query($req);
 			$this->babCalendarStartDay = 0;
 			$this->babCalendarUsebgColor = "Y";
+			$this->ampm = false;
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
 				$this->babCalendarStartDay = $arr['startday'];
 				$this->babCalendarUsebgColor = $arr['usebgcolor'];
+				if( $arr['ampm'] == "Y")
+					$this->ampm = true;
 				}
-			switch($caltype)
-				{
-				case 1:
-					if( $owner == $BAB_SESS_USERID)
-						$this->bowner = 1;
-					else
-						{
-						$this->bowner = 0;
-						$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
-						$res = $this->db->db_query($req);
-						if( $res && $this->db->db_num_rows($res) > 0)
-							{
-							$row = $this->db->db_fetch_array($res);
-							if($row['bwrite'] == "1" || $row['bwrite'] == "2")
-								$this->bowner = 1;
-							}
-						}
-					$grpid = bab_getPrimaryGroupId($owner);
-					if( bab_isUserGroupManager($grpid))
-						$this->bmanager = 1;
-					else
-						$this->bmanager = 0;
-					break;
-				case 2:
-					if( bab_isUserGroupManager($owner))
-						$this->bowner = 1;
-					else
-						$this->bowner = 0;
-					$this->bmanager = 0;
-					break;
-				case 3:
-					$this->bowner = 1;
-					$this->bmanager = 0;
-					break;
-				default:
-					$this->bowner = 0;
-					$this->bmanager = 0;
-					break;	
-				}
+			$this->bowner = isCalUpdate($this->mcals);
 			$this->curday = date("w", mktime(0,0,0,$month, $day, $year));
 			$d = $day - 7;
 			if( $d == 0)
@@ -535,31 +543,6 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->new = bab_translate("New");
 			$this->gotodayname = bab_translate("Go to Today");
 			$this->gotodayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j")."&month=".date("n")."&year=".date("Y"). "&calid=".$this->calid;
-			$this->calendars = getAvailableCalendars();
-			$this->viewthis = bab_translate("View this calendar");
-
-
-			}
-
-		function getnextcal()
-			{
-			static $k=0;
-			if( $k < count($this->calendars))
-				{
-				if( $this->calid == $this->calendars[$k]['idcal'])
-					$this->selected = "selected";
-				else
-					$this->selected = "";
-				$this->vcalid = $this->calendars[$k]['idcal'];
-				$this->vcalname = $this->calendars[$k]['name'];
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
 			}
 
 		function getday()
@@ -573,24 +556,13 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$a = $this->curday - $this->babCalendarStartDay;
 				if( $a < 0)
 					$a += 7;
-				$day = $this->day - $a + $i;
+				$this->mday = $this->day - $a + $i;
 				if( $day == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 					{
 					$this->currentday = 1;
 					}
-				$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $day, $this->year), false);
-				$this->resevent = getEventsResult($this->calid, $day, $this->month, $this->year);
-				$this->countevent = $this->db->db_num_rows($this->resevent);
-				$this->nbevent += $this->countevent;
-				if( $this->caltype == 1)
-					{
-					$idcal = bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2);
-					$this->resgrpevent = getEventsResult($idcal, $day, $this->month, $this->year);
-					$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
-					//$this->nbevent += $this->countgrpevent;
-					}
-				
-				$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$day."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=viewq";
+				$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $this->mday, $this->year), false);
+				$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->mday."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=viewq";
 				$i++;
 				return true;
 				}
@@ -598,28 +570,15 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				return false;
 			}
 
-		function getevent()
+		function getnextcal()
 			{
 			static $k=0;
-			if( $k < $this->countevent)
+			if( $k < count($this->mcals))
 				{
-				$this->bgcolor = "";
-				$this->title = "";
-				$this->titleten = "";
-				$arr = $this->db->db_fetch_array($this->resevent);
-				$this->title = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title'];
-				$this->titleten = htmlentities($this->title) ;
-				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
-				if( $this->babCalendarUsebgColor == "Y")
-					{
-					$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
-					$res = $this->db->db_query($req);
-					if( $res && $this->db->db_num_rows($res) > 0)
-						{
-						$arr = $this->db->db_fetch_array($res);
-						$this->bgcolor = $arr['bgcolor'];
-						}
-					}
+				$this->fullname = htmlentities(bab_getCalendarOwnerName($this->mcals[$k], 0));
+				$this->fullnameten = htmlentities(substr($this->fullname, 0, 10));
+				$this->resevent = getEventsResult($this->mcals[$k], $this->mday, $this->month, $this->year);
+				$this->countevent = $this->db->db_num_rows($this->resevent);
 				$k++;
 				return true;
 				}
@@ -630,17 +589,22 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				}
 			}
 
-		function getgroupevent()
+		function getevent()
 			{
 			static $k=0;
-			if( $k < $this->countgrpevent)
+			if( $k < $this->countevent)
 				{
 				$this->bgcolor = "";
 				$this->title = "";
-				$this->titleten = "";
-				$arr = $this->db->db_fetch_array($this->resgrpevent);
-				$this->title = substr($arr['start_time'], 0, 5). " " . substr($arr['end_time'], 0, 5). " " .$arr['title'];
-				$this->titleten = htmlentities($this->title);
+				$arr = $this->db->db_fetch_array($this->resevent);
+				if( $this->ampm )
+					{
+					$this->title = htmlentities(bab_toAmPm(substr($arr['start_time'], 0 ,5)). " " . bab_toAmPm(substr($arr['end_time'], 0 ,5)). " " .$arr['title']);
+					}
+				else
+					{
+					$this->title = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']);
+					}
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
@@ -664,13 +628,14 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 
 		}
 
-	$temp = new temp($calid, $day, $month, $year, $caltype, $owner, $bmanager);
+	$temp = new temp($calid, $day, $month, $year, $caltype, $owner);
 	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", "calweek"));
+	calendarForm($calid, $day, $month, $year, "viewq");
 	return $temp->count;
 
 }
 
-function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager)
+function calendarDay($calid, $day, $month, $year, $starttime)
 {
 	global $babBody;
 
@@ -707,66 +672,34 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 		var $prevdaytxt;
 		var $nextdaytxt;
 	
-		function temp($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager)
+		function temp($calid, $day, $month, $year, $starttime)
 			{
 			global $BAB_SESS_USERID;
 			$this->prevdaytxt = bab_translate("Previous day");
 			$this->nextdaytxt = bab_translate("Next day");
 			$this->prevtimetxt = bab_translate("Previous time");
 			$this->nexttimetxt = bab_translate("Next time");
+			$this->mcals = explode(",", $calid);
 			$this->db = $GLOBALS['babDB'];
-			$this->view = "viewd";
 			$this->colspan ="";
 			$this->firsttime ="";
 			$this->calid = $calid;
-			$this->caltype = $caltype;
 			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
+			$this->elapstime = 30;
+			$this->ampm = false;
 			$this->babCalendarUsebgColor = "Y";
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
 				$this->babCalendarUsebgColor = $arr['usebgcolor'];
+				if( isset($arr['elapstime'] ) && $arr['elapstime'] != "" )
+					$this->elapstime = $arr['elapstime'];
+				if( $arr['ampm'] == "Y")
+					$this->ampm = true;
 				}
-			switch($caltype)
-				{
-				case 1:
-					if( $owner == $BAB_SESS_USERID)
-						$this->bowner = 1;
-					else
-						{
-						$this->bowner = 0;
-						$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$BAB_SESS_USERID."'";
-						$res = $this->db->db_query($req);
-						if( $res && $this->db->db_num_rows($res) > 0)
-							{
-							$row = $this->db->db_fetch_array($res);
-							if($row['bwrite'] == "1" || $row['bwrite'] == "2")
-								$this->bowner = 1;
-							}
-						}
-					$grpid = bab_getPrimaryGroupId($owner);
-					if( bab_isUserGroupManager($grpid))
-						$this->bmanager = 1;
-					else
-						$this->bmanager = 0;
-					break;
-				case 2:
-					if( bab_isUserGroupManager($owner))
-						$this->bowner = 1;
-					else
-						$this->bowner = 0;
-					$this->bmanager = 0;
-					break;
-				case 3:
-					$this->bowner = 1;
-					$this->bmanager = 0;
-					break;
-				default:
-					$this->bowner = 0;
-					$this->bmanager = 0;
-					break;	
-				}
+
+			$this->bowner = isCalUpdate($this->mcals);
 			$this->prevdayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".date("j", mktime( 0,0,0, $month, $day-1, $year));
 			$this->prevdayurl .= "&month=".date("n", mktime( 0,0,0, $month, $day-1, $year));
 			$this->prevdayurl .= "&year=".date("Y", mktime( 0,0,0, $month, $day-1, $year)). "&calid=".$this->calid."&start=".$starttime;
@@ -780,7 +713,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 				$this->prevtimeurl .= "&year=".date("Y", mktime( 0,0,0, $month, $day-1, $year)). "&calid=".$this->calid."&start=3";
 				$this->nexttimeurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$day."&month=".$month."&year=".$year."&calid=".$this->calid."&start=2";
 				$this->starttime = 0;
-				$this->maxidx = 16;
+				$this->maxidx = 8*(60/$this->elapstime);
 				}
 			else if( $starttime == 3)
 				{
@@ -789,14 +722,14 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 				$this->nexttimeurl .= "&year=".date("Y", mktime( 0,0,0, $month, $day+1, $year)). "&calid=".$this->calid."&start=1";
 				$this->prevtimeurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$day."&month=".$month."&year=".$year."&calid=".$this->calid."&start=2";
 				$this->starttime = 19;
-				$this->maxidx = 10;
+				$this->maxidx = 5*(60/$this->elapstime);
 				}
 			else
 				{
 				$this->starttime = 8;
 				$this->prevtimeurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$day."&month=".$month."&year=".$year."&calid=".$this->calid."&start=1";
 				$this->nexttimeurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$day."&month=".$month."&year=".$year."&calid=".$this->calid."&start=3";
-				$this->maxidx = 22;
+				$this->maxidx = 11*(60/$this->elapstime);
 			}
 
 			$this->month = $month;
@@ -838,63 +771,47 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 			$this->next = bab_translate("Next");
 			$this->gotodayname = bab_translate("Go to Today");
 			$this->gotodayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".date("j")."&month=".date("n")."&year=".date("Y"). "&calid=".$this->calid;
-			$this->resevent = getEventsResult($this->calid, $this->day, $this->month, $this->year);
-			$this->countevent = $this->db->db_num_rows($this->resevent);
-			$this->nbevent += $this->countevent;
-			if( $this->caltype == 1)
-				{
-				$idgrp = bab_getPrimaryGroupId($BAB_SESS_USERID);
-				$this->grpname = bab_getGroupName($idgrp);
-				$idcal = bab_getCalendarId($idgrp, 2);
-				$this->resgrpevent = getEventsResult($idcal, $this->day, $this->month, $this->year);
-				$this->countgrpevent = $this->db->db_num_rows($this->resgrpevent);
-				$this->nbevent += $this->countgrpevent;
-				}
-			$this->colspan = $this->nbevent;
-			$this->calendars = getAvailableCalendars();
-			$this->viewthis = bab_translate("View this calendar");
-			}
-
-		function getnextcal()
-			{
-			static $k=0;
-			if( $k < count($this->calendars))
-				{
-				if( $this->calid == $this->calendars[$k]['idcal'])
-					$this->selected = "selected";
-				else
-					$this->selected = "";
-				$this->vcalid = $this->calendars[$k]['idcal'];
-				$this->vcalname = $this->calendars[$k]['name'];
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
+			$this->alternate = false;
+			$this->evtarr = array();
 			}
 
 		function getnexthour()
 			{
 			static $i = 0;
-			if( $this->countevent > 0)
-				$this->db->db_data_seek($this->resevent,0);
-			if( $this->countgrpevent > 0)
-				$this->db->db_data_seek($this->resgrpevent,0);
 			if( $i < $this->maxidx)
 				{
-				$this->curhour = $this->starttime * 60 + $i * 30;
-				$this->hour = sprintf("%02d:<sup>%02d</sup>", $this->curhour/60, $this->curhour%60);
-				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->day."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=viewd";
-				if( $i % 2)
+				$this->idxhour = $i;
+				$this->curhour = $this->starttime * 60 + $i * $this->elapstime;
+				$st = sprintf("%02d:%02d", $this->curhour/60, $this->curhour%60);
+				if( $this->ampm)
 					{
-					$this->bgcolor = "white";
+					$h = explode(" ", bab_toAmPm($st));
+					$hh = explode(":", $h[0]);
+					$this->hour = sprintf("%02d<sup>%s</sup>%02d", $hh[0], $h[1], $hh[1]);
+					if( $i == 0 )
+						$this->hour = sprintf("%02d<sup>%s", $hh[0], $h[1]);
+					else if( $hh[0] == "12" && $hh[1] == "00")
+						$this->hour = sprintf("%02d<sup>%s", $hh[0], $h[1]);
+					else if( $hh[1] != "00")
+						$this->hour = sprintf("__<sup>%02d</sup>", $hh[1]);
+					else
+						$this->hour = sprintf("%02d<sup>%02d</sup>", $hh[0], $hh[1]);
 					}
 				else
 					{
-					$this->bgcolor = "";
+					if( $this->curhour%60 == 0)
+						$this->hour = sprintf("%02d<sup>%02d</sup>", $this->curhour/60, $this->curhour%60);
+					else
+						$this->hour = sprintf("__<sup>%02d</sup>", $this->curhour%60);
+					}
+				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->day."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=viewd&st=".$st;
+				if( $i % 2)
+					{
+					$this->altbgcolor = true;
+					}
+				else
+					{
+					$this->altbgcolor = false;
 					}
 				$i++;
 				return true;
@@ -906,74 +823,123 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 				}
 			}
 
-		function getnextevent()
+		function getnextcalname()
 			{
-			static $k = 0;
-			if( $k < $this->countevent)
+			static $k=0;
+			if( $k < count($this->mcals))
 				{
-				$this->bgcolor = "white";
-				$this->notempty = 0;
-				$hourmin = $this->curhour;
-				$hourmax = $this->curhour  + 30;
-				$arr = $this->db->db_fetch_array($this->resevent);
-				$a = substr($arr['start_time'], 0,2) * 60 + substr($arr['start_time'], 3,2);
-				$b = substr($arr['end_time'], 0,2) * 60 + substr($arr['end_time'], 3,2);
-				if( $b < $hourmin || $a >= $hourmax)
+				$this->fullname = htmlentities(bab_getCalendarOwnerName($this->mcals[$k], 0));
+				$this->fullnameten = htmlentities(substr($this->fullname, 0, 10));
+				$resevent = getEventsResult($this->mcals[$k], $this->day, $this->month, $this->year);
+				$tab = array();
+				for($i =0; $i < $this->maxidx; $i++)
+					$tab[$i] = 0;
+				$tabevents = array();
+				$tabevents[0] = $tab;
+				while( $arr = $this->db->db_fetch_array($resevent) )
 					{
-					$this->bgcolor = "";
-					$this->titleten = "";
-					$this->notempty = 0;
-					}
-				else
-					{
-					$this->notempty = 1;
-					$this->titleten = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']);
-					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewd";
-
-					if( $this->babCalendarUsebgColor == "Y")
+					$tab = array();
+					for($i =0; $i < $this->maxidx; $i++)
 						{
-						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
-						$res = $this->db->db_query($req);
-						if( $res && $this->db->db_num_rows($res) > 0)
+						$hourmin = $this->starttime * 60 + $i * $this->elapstime;
+						$hourmax = $hourmin  + $this->elapstime;
+						$a = substr($arr['start_time'], 0,2) * 60 + substr($arr['start_time'], 3,2);
+						$b = substr($arr['end_time'], 0,2) * 60 + substr($arr['end_time'], 3,2);
+						if( $b < $hourmin || $a >= $hourmax)
+							$tab[$i] = 0;
+						else
+							$tab[$i] = $arr['id'];
+						}
+
+					if( count($tabevents) == 0 )
+						$tabevents[0] = $tab;
+					else
+						{
+						$new = false;
+						for( $j = 0; $j < count($tabevents); $j++)
 							{
-							$arr = $this->db->db_fetch_array($res);
-							$this->bgcolor = $arr['bgcolor'];
+							for($n=0; $n < count($tabevents[$j]); $n++)
+								if( $tab[$n] != 0 && $tabevents[$j][$n] !=0)
+									{
+									break;
+									}
+							if( $n >= count($tabevents[$j]) )
+								{
+								$new = true;
+								break;
+								}
+							}
+						
+						if( !$new )
+							{
+							$tabevents[count($tabevents)] = $tab;
+							}
+						else
+							{
+							for($n=0; $n < count($tab); $n++)
+								if( $tab[$n] != 0 )
+									$tabevents[$j][$n] = $tab[$n]; 
 							}
 						}
 					}
+				$this->evtarr[$k] = $tabevents;
+				$this->colspan = count($tabevents);
+				$k++;
+				$this->alternate = !$this->alternate;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				$this->alternate = false;
+				return false;
+				}
+			}
+
+		function getnextcal()
+			{
+			static $k=0;
+			if( $k < count($this->mcals))
+				{
+				$this->idxmcals = $k;
+				$this->alternate = !$this->alternate;
 				$k++;
 				return true;
 				}
 			else
 				{
 				$k = 0;
+				$this->alternate = false;
 				return false;
 				}
 			}
-		
-		function getnextgrpevent()
+
+		function getnextevent()
 			{
 			static $k = 0;
-			if( $k < $this->countgrpevent)
+			if( $k < count($this->evtarr[$this->idxmcals]))
 				{
 				$this->bgcolor = "white";
 				$this->notempty = 0;
-				$hourmin = $this->curhour;
-				$hourmax = $this->curhour  + 30;
-				$arr = $this->db->db_fetch_array($this->resgrpevent);
-				$a = substr($arr['start_time'], 0,2) * 60 + substr($arr['start_time'], 3,2);
-				$b = substr($arr['end_time'], 0,2) * 60 + substr($arr['end_time'], 3,2);
-				if( $b < $hourmin || $a >= $hourmax)
+				if( $this->evtarr[$this->idxmcals][$k][$this->idxhour] == 0)
 					{
-					$this->notempty = 0;
 					$this->bgcolor = "";
 					$this->titleten = "";
+					$this->title = "";
+					$this->notempty = 0;
 					}
 				else
 					{
 					$this->notempty = 1;
-					$this->titleten = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']." (".$this->grpname.")");
+					$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$this->evtarr[$this->idxmcals][$k][$this->idxhour]."'"));
+
+					if( $this->ampm)
+						$this->title = htmlentities(bab_toAmPm(substr($arr['start_time'], 0 ,5)). " " . bab_toAmPm(substr($arr['end_time'], 0 ,5)). " " .$arr['title']);
+					else
+						$this->title = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']);
+					$this->titleten = htmlentities($arr['title']);
 					$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewd";
+
 					if( $this->babCalendarUsebgColor == "Y")
 						{
 						$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id='".$arr['id_cat']."'";
@@ -998,8 +964,9 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 		}
 
 
-	$temp = new temp($calid, $day, $month, $year, $starttime, $caltype, $owner, $bmanager);
+	$temp = new temp($calid, $day, $month, $year, $starttime);
 	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", "calday"));
+	calendarForm($calid, $day, $month, $year, "viewd");
 	return $temp->count;
 
 }
@@ -1083,15 +1050,8 @@ function categoriesList($calid)
 			}
 		}
 
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
-	$res = $db->db_query($req);
-	$arr = $db->db_fetch_array($res);
-	if( $arr['viewcat'] == "Y")
-		{
-		$temp = new temp2($calid);
-		$babBody->babecho(	bab_printTemplate($temp, "calendar.html", "categorieslist"));
-		}
+	$temp = new temp2($calid);
+	return bab_printTemplate($temp, "calendar.html", "categorieslist");
 	}
 
 /* main */
@@ -1102,7 +1062,13 @@ if(!isset($idx))
 
 if( isset($viewcal) && $viewcal == "view")
 {
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$idx."&calid=".$calendar."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
+	if( !isset($usrcals))
+		$usrcals = array();
+	if( !isset($grpcals))
+		$grpcals = array();
+	if( !isset($rescals))
+		$rescals = array();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$idx."&calid=".implode(",", array_merge($usrcals, $grpcals, $rescals))."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
 }
 
 if( empty($month))
@@ -1117,14 +1083,16 @@ if( empty($day))
 switch($idx)
 	{
 
+	case "viewc":
+		echo categoriesList($calid);
+		exit;
 	case "viewd":
 		if( !bab_isCalendarAccessValid($calid) )
 			$babBody->title = bab_translate("Acces denied");
 		else
 			{
-			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
-			calendarDay($calid, $day, $month, $year, $start, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
-			categoriesList($calid);
+			$babBody->title = bab_translate("Calendar");
+			calendarDay($calid, $day, $month, $year, $start);
 			}
 		break;
 	case "viewq":
@@ -1132,9 +1100,8 @@ switch($idx)
 			$babBody->title = bab_translate("Acces denied");
 		else
 			{
-			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
-			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
-			categoriesList($calid);
+			$babBody->title = bab_translate("Calendar");
+			calendarWeek($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid));
 			}
 		break;
 	default:
@@ -1143,9 +1110,8 @@ switch($idx)
 			$babBody->title = bab_translate("Acces denied");
 		else
 			{
-			$babBody->title = bab_translate("Calendar").": ".bab_getCalendarOwnerName($calid, 0);
-			calendarMonth($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid), bab_isUserGroupManager());
-			categoriesList($calid);
+			$babBody->title = bab_translate("Calendar");
+			calendarMonth($calid, $day, $month, $year, bab_getCalendarType($calid), bab_getCalendarOwner($calid));
 			}
 		break;
 	}

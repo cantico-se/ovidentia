@@ -62,7 +62,7 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <td width="50" valign="middle"> 
 <select name="timeend">
 <!--#in getnexttime -->
-<option value="{ time }" { selected }>{ time }</option>
+<option value="{ timeval }" { selected }>{ time }</option>
 <!--#endin getnexttime -->
 </select >
 </td>
@@ -117,6 +117,19 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <input type="text" name="title" size="45" maxlength="100" value="{ titleval }">
 </td>
 </tr>
+<!--#if bcategory "== 1" -->
+<tr> 
+<td align="right" valign="middle">{ category }</td>
+<td colspan="4" valign="middle"> 
+<select name="category">
+<option value="" selected ></option>
+<!--#in getnextcat -->
+<option value="{ catid }">{ catname }</option>
+<!--#endin getnextcat -->
+</select>
+</td>
+</tr>
+<!--#endif bcategory -->
 <!-- toolbar -->
 <!--#if msie "== 1" -->
 <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
@@ -151,19 +164,36 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <!--#endif msie -->
 </td>
 </tr>
-<!--#if bcategory "== 1" -->
+
+
 <tr> 
-<td align="right" valign="middle">{ category }</td>
-<td colspan="4" valign="middle"> 
-<select name="category">
-<option value="" selected ></option>
-<!--#in getnextcat -->
-<option value="{ catid }">{ catname }</option>
-<!--#endin getnextcat -->
-</select>
+<td colspan="2" align="center" valign="middle">{ usrcalendarstxt }</td>
+<td colspan="2" align="center" valign="middle">{ grpcalendarstxt }</td>
+<td colspan="2" align="center" valign="middle">{ rescalendarstxt }</td>
+</tr>
+
+<!--#in getnextrow -->
+<tr> 
+<td colspan="2" align="left" valign="middle">
+<!--#if busrcal -->
+<input type="checkbox" name="usrcals[]" value="{ usrcalid }" { usrsel }>{ usrcalname }
+<!--#else busrcal -->&nbsp;
+<!--#endif busrcal -->
+</td>
+<td colspan="2" align="left" valign="middle">
+<!--#if bgrpcal -->
+<input type="checkbox" name="grpcals[]" value="{ grpcalid }" { grpsel }>{ grpcalname }
+<!--#else bgrpcal -->&nbsp;
+<!--#endif bgrpcal -->
+</td>
+<td colspan="2" align="left" valign="middle">
+<!--#if brescal -->
+<input type="checkbox" name="rescals[]" value="{ rescalid }" { ressel }>{ rescalname }
+<!--#else brescal -->&nbsp;
+<!--#endif brescal -->
 </td>
 </tr>
-<!--#endif bcategory -->
+<!--#endin getnextrow -->
 
 <!--#if msie "== 1" -->
 <tr> 
@@ -264,7 +294,7 @@ dateendtxt }</a>:</td>
 <td valign="middle"> 
 <select name="timebegin">
 <!--#in getnexttime -->
-<option value="{ time }" { selected }>{ time }</option>
+<option value="{ timeval }" { selected }>{ time }</option>
 <!--#endin getnexttime -->
 </select >
 </td>
@@ -361,8 +391,12 @@ dateendtxt }</a>:</td>
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
+	<META http-equiv="Pragma" content="no-cache">
+	<META name="Generator" content="Ovidentia">
+	<META name="Author" content="Ovidentia Community">
+	<META name="Keywords" content="">
+	<META name="Description" content="">
+	{ babCss }
 <script type="text/javascript">
 <!--
 //-->
@@ -445,7 +479,11 @@ dateendtxt }</a>:</td>
 <HTML>
 <HEAD>
 <TITLE>{ sitename }</TITLE>
-{ babMeta }
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
 { babCss }
 <script type="text/javascript">
 <!--
