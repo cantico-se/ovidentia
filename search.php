@@ -193,7 +193,6 @@ function searchKeyword($item , $option = "OR")
 		var $what;
 		var $what2;
 		var $dirarr = array();
-		var $search;
 
 		function tempb($item ,$option )
 			{
