@@ -767,7 +767,7 @@ CREATE TABLE `bab_sites` (
 ) TYPE=MyISAM AUTO_INCREMENT=16 ;
 
 
-INSERT INTO bab_sites (name, description, lang, adminemail,  adminname, skin, style) values ('Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia', 'ovidentia.css');
+INSERT INTO bab_sites (name, description, lang, adminemail,  adminname, skin, style) values ('Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_mp', 'ovidentia.css');
 
 # --------------------------------------------------------
 #
