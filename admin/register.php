@@ -50,7 +50,7 @@ function notifyUserRegistration($link, $name, $email)
 
 	$mail = bab_mail();
 	if( $mail == false )
-		return;
+		return false;
     $mail->mailTo($email, $name);
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("Registration Confirmation"));
@@ -72,7 +72,14 @@ function notifyUserRegistration($link, $name, $email)
 	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt");
 
 	$mail->mailAltBody($message);
-    $mail->send();
+
+	$retry = 0;
+	while ( true !== $ret = $mail->send() && $retry < 5 )
+		{
+		$retry++;
+		}
+
+	return $ret;
 	}
 
 function notifyAdminRegistration($name, $useremail, $warning)
@@ -271,8 +278,13 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 				{
 				$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
 				$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($nickname);
-				notifyUserRegistration($link, $fullname, $email);
 				$warning = "";
+				if (!notifyUserRegistration($link, $fullname, $email))
+					{
+					$babBody->msgerror = bab_translate("ERROR: Email message can't be sent !!");
+					$warning = "( ". bab_translate("The user has not received his confirmation email")." )";
+					}
+				
 				}
 			else
 				{

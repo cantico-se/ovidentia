@@ -312,6 +312,7 @@
 <string id="ERROR: You must provide topic manager !!">ERREUR: Vous devez indiquer un gestionnaire pour le thème d'articles !!</string>
 <string id="ERROR: You must provide manager !!">ERREUR: Vous devez indiquer un gestionnaire !!</string>
 <string id="ERROR: Your email is not valid !!">ERREUR: Votre adresse de messagerie n'est pas correct !!</string>
+<string id="ERROR: Email message can't be sent !!">ERREUR: Le message n'a pas pu être envoyé !!</string>
 <string id="Edit request vacation">Modifier une demande de congé</string>
 <string id="Edit">Editer</string>
 <string id="Email a new password">Envoyer un nouveau mot de passe par e-mail</string>
@@ -1586,4 +1587,5 @@
 <string id="Available calendars">Agendas disponibles</string>
 <string id="Selected calendars">Agendas sélectionnés</string>
 <string id="Use calendar options">Utiliser les options de l'agenda</string>
+<string id="The user has not received his confirmation email">L'utilisateur n'a pas recu son email de confirmation</string>
 </fr>
