@@ -59,7 +59,7 @@ function modifyCategory($id)
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
 			$this->managername = composeName( $this->arr2['firstname'], $this->arr2['lastname']);
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browser() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;

@@ -75,7 +75,7 @@ function sectionModify($id)
 				else
 					$this->ischecked = "";
 				}
-			if( $arr['jscript'] == "N" && strtolower(browserAgent()) == "msie")
+			if(( $arr['jscript'] == "N" && strtolower(browserAgent()) == "msie") && (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	

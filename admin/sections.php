@@ -264,7 +264,7 @@ function sectionCreate($jscript)
 			$this->right = babTranslate("Right");
 			$this->script = babTranslate("PHP script");
 			$this->jscript = $jscript;
-			if( $jscript == 0 && strtolower(browserAgent()) == "msie")
+			if(( $jscript == 0 && strtolower(browserAgent()) == "msie") && (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
