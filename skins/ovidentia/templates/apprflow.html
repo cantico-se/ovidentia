@@ -14,9 +14,21 @@ if(ctrlf != null)
 this.focus();
 }
 
+function v_all()
+{
+for (i = 0; i < document.forms.sccreate.elements.length; i++)
+	{
+	objCtrl = document.forms.sccreate.elements[i];
+	if (objCtrl.name.substring(0,2) == 'fn')
+		objCtrl.disabled = false;
+	}
+}
+
 function savef(t)
 {
 ctrlf = t;
+v_all();
+t.disabled = true;
 }
 
 var op = null;
@@ -30,7 +42,7 @@ else
 //-->
 </script>
 
-<form name="sccreate" method="post" action="{ babPhpSelf }">
+<form name="sccreate" method="post" action="{ babPhpSelf }" onsubmit="v_all();op.close()">
 <input type="hidden" name="tg" value="apprflow">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="rows" value="{ rows }">
@@ -52,8 +64,9 @@ else
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ frow }</td>
 <!--#in getnextcol --> 
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="fn{ findex }" size="20" value="{ fieldval }" onFocus="savef(this)">
+<td class="BabLoginMenuBackground" valign="middle" nowrap>
+<input type="text" name="fn{ findex }" size="18" value="{ fieldval }" onfocus="savef(this)">
+<a href="#" onclick="fn{ findex }.value='';fh{ findex }.value='';savef(fn{ findex })"><img border="0" src="{ babSkinPath }images/Puces/del.gif" width="12" height="13"></a>
 <input type="hidden" name="fh{ findex }" value="{ fieldid }">
 </td>
 <!--#endin getnextcol --> 
