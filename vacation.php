@@ -94,8 +94,8 @@ function listVacations()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->datebegin = bab_strftime(bab_mktime($this->arr['datebegin']), false) . "  " . $babDayType[$this->arr['daybegin]'];
-				$this->dateend = bab_strftime(bab_mktime($this->arr['dateend']), false) . "  " . $babDayType[$this->arr['dayend]'];
+				$this->datebegin = bab_strftime(bab_mktime($this->arr['datebegin']), false) . "  " . $babDayType[$this->arr['daybegin']];
+				$this->dateend = bab_strftime(bab_mktime($this->arr['dateend']), false) . "  " . $babDayType[$this->arr['dayend']];
 				$this->statusval = getStatusName($this->arr['status']);
 				$req = "select * from vacations_types where id='".$this->arr['type']."'";
 				$r = $this->db->db_query($req);
