@@ -276,7 +276,8 @@ function newThread($forum)
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
 				}
-			$this->editor = bab_editor('', 'message', 'threadcr');
+			$message = isset($_POST['message']) ? $_POST['message'] : '';
+			$this->editor = bab_editor($message, 'message', 'threadcr');
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);
 
 			if( bab_isForumModerated($forum))
@@ -297,13 +298,13 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 	if( empty($message))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a content for your message")." !";
-		return;
+		return false;
 		}
 
 	if( empty($subject))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a subject for your message")." !";
-		return;
+		return false;
 		}
 
 	if( empty($BAB_SESS_USER))
@@ -387,7 +388,10 @@ if( isset($add) && $add == "addthread" && bab_isAccessValid(BAB_FORUMSPOST_GROUP
 	{
 	if (!isset($uname)) $uname = '';
 	if (!isset($notifyme)) $notifyme = '';
-	saveThread($forum, $uname, $subject, $message, $notifyme);
+	if (!saveThread($forum, $uname, $subject, $message, $notifyme))
+		{
+		$idx = "newthread";
+		}
 	}
 
 $babLevelTwo = bab_getForumName($forum);
