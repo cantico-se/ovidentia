@@ -22,10 +22,10 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/topincl.php";
-include $babInstallPath."utilit/forumincl.php";
-include $babInstallPath."utilit/fileincl.php";
-include $babInstallPath."utilit/calincl.php";
+include_once $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/forumincl.php";
+include_once $babInstallPath."utilit/fileincl.php";
+include_once $babInstallPath."utilit/calincl.php";
 
 $babLimit = 5;
 $navbaritems = 10;
