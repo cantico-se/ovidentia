@@ -185,7 +185,7 @@ function newEvent()
 			$this->daysel = $this->daybegin;
 			$this->monthsel = $this->monthbegin;
 			$this->yearsel = $this->yearbegin;
-			$this->timesel = $this->timebegin;
+			$this->timesel = isset($_GET['st']) ? $_GET['st'] : $this->timebegin;
 			}
 
 		function getnextday()

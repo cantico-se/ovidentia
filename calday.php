@@ -88,7 +88,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					else
 						$this->hour = sprintf("__<sup>%02d</sup>", $curhour%60);
 					}
-				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->day."&month=".$this->month. "&year=".$this->year."&calid=".$this->idcals."&view=viewd&st=".$st;
+				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".$st;
 				if( $i % 2)
 					{
 					$this->altbgcolor = true;
@@ -133,7 +133,7 @@ class cal_dayCls extends cal_wmdbaseCls
 	function getnexteventcol()
 		{
 		global $babBody;
-		if( $this->icols < $this->cols)
+		if( $this->icols < $this->cols || ($this->cols == 0 && $this->icols == 0))
 			{
 			$i = 0;
 			while( $i < count($this->harray[$this->cindex-1][$this->icols]))
@@ -181,7 +181,6 @@ class cal_dayCls extends cal_wmdbaseCls
 					$this->nbowners = $arr['nbowners'];
 					$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 					$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
-					$this->newurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&st=".$this->starttime."&view=viewd";
 					break;
 					}
 				else

@@ -14,6 +14,7 @@ table.bab_calnavbar {
 	background-color:#fff;
 	padding:4px;
 	border:#000 1px solid;
+	white-space:nowrap;
 	}
 
 .bab_calnavbar .prev a, .bab_calnavbar .next a {
