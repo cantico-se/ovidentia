@@ -38,6 +38,8 @@ function listThreads($forum, $active, $pos)
 		var $bottomname;
 		var $nextname;
 		var $prevname;
+		var $moderator;
+		var $disabled;
 
 		function temp($forum, $active, $pos)
 			{
@@ -55,8 +57,9 @@ function listThreads($forum, $active, $pos)
 			$this->repliesname = babTranslate("Replies");
 			$this->views = babTranslate("Views");
 			$this->lastpost = babTranslate("Last Post");
-			$this->db = new db_mysql();
+			$this->moderator = isUserModerator($forum, $GLOBALS['BAB_SESS_USERID']);
 
+			$this->db = new db_mysql();
 			$req = "select count(*) as total from threads where forum='$forum' and active='$active'";
 			$this->res = $this->db->db_query($req);
 			$row = $this->db->db_fetch_array($this->res);
@@ -121,7 +124,6 @@ function listThreads($forum, $active, $pos)
 					$this->arrpost = $this->db->db_fetch_array($res);
 					$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->arrthread['id']."&views=1";
 					$this->subjectname = $this->arrpost['subject'];
-					$this->replies = $this->db->db_num_rows($res);
 					$req = "select * from posts where id_thread='".$this->arrthread['id']."' and id='".$this->arrthread['lastpost']."'";
 					$res = $this->db->db_query($req);
 					$arr = $this->db->db_fetch_array($res);
@@ -136,6 +138,10 @@ function listThreads($forum, $active, $pos)
 					$res = $this->db->db_query($req);
 					$row = $this->db->db_fetch_array($res);
 					$this->replies = $row["total"];
+					if( $this->replies == 0 && $this->moderator == false )
+						$this->disabled = 1;
+					else
+						$this->disabled = 0;
 					}
 				$req = "select count(*) as total from posts where id_thread='".$this->arrthread['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
