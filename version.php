@@ -26,7 +26,7 @@ include $babInstallPath."version.inc";
 
 function upgrade()
 {
-$bab_versions = array("310", "320", "330", "331", "332", "333", "340", "341", "342", "343", "400", "401", "402", "403", "404", "405", "406", "407", "408");
+$bab_versions = array("310", "320", "330", "331", "332", "333", "340", "341", "342", "343", "400", "401", "402", "403", "404", "405", "406", "407", "408","409");
 
 $ret = "";
 $db = $GLOBALS['babDB'];
@@ -234,11 +234,13 @@ if( !isset($idx))
 $str = "";
 switch($idx)
 	{
-	case "upgrade";
+	case "upgrade":
 		$str = upgrade();
 		break;
 
-	case "addons";
+	case "addons":
+		if( !bab_isUserAdministrator())
+			exit;
 		if (!isset($to)) $to = $GLOBALS['babInstallPath'];
 		if (isset($from))
 			cpaddons($from,$to);
