@@ -819,6 +819,7 @@ function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keyw
 
 	if( $gr == "N" )
 		{
+		$confirm = "Y";
 		if( in_array(1, $aclfm['pr']) )
 			{
 			$db = $GLOBALS['babDB'];
