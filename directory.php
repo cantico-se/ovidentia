@@ -1334,7 +1334,7 @@ function processImportDbFile( $pfile, $id, $separ )
 						}
 					else
 						{
-						$res2 = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where email='".$arr[$GLOBALS['email']]."' and id_directory='".$id."'");
+						$res2 = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where email='".(isset($arr[$GLOBALS['email']]) ? $arr[$GLOBALS['email']] : '')."' and id_directory='".$id."'");
 						if( $res2 && $db->db_num_rows($res2 ) > 0 )
 							{
 							if( $GLOBALS['duphand'] == 2 )
@@ -1387,7 +1387,8 @@ function processImportDbFile( $pfile, $id, $separ )
 						if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
 							{
 							$req .= $arrnamef[$k].",";
-							array_push( $arrv, $arr[$GLOBALS[$arrnamef[$k]]]);
+							$val = isset($arr[$GLOBALS[$arrnamef[$k]]]) ? $arr[$GLOBALS[$arrnamef[$k]]] : '';
+							array_push( $arrv, $val);
 							}
 						}
 
@@ -1418,7 +1419,8 @@ function processImportDbFile( $pfile, $id, $separ )
 							{
 							for( $k=0; $k < count($arridfx); $k++ )
 								{
-								$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$arridfx[$k]."','".$idu."','".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."')");
+								$val = isset($arr[$GLOBALS["babdirf".$arridfx[$k]]]) ? addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]]) : '';
+								$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$arridfx[$k]."','".$idu."','".$val."')");
 								}
 							}
 
