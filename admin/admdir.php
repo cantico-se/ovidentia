@@ -65,9 +65,8 @@ function listAds()
 			$this->ldaptitle = bab_translate("Ldap Directories list");
 			$this->databasetitle = bab_translate("Databases Directories list");
 			$this->add = bab_translate("Add");
-			$this->gmodify = bab_translate("Modify");
 			$this->gview = bab_translate("View");
-			$this->gadd = bab_translate("Add");
+			$this->grights = bab_translate("Rights");
 			$this->urladdldap = $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap";
 			$this->urladddb = $GLOBALS['babUrlScript']."?tg=admdir&idx=db";
 			$this->db = $GLOBALS['babDB'];
@@ -116,9 +115,7 @@ function listAds()
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$arr['id'];
 				$this->urlname = $arr['name'];
-				$this->gviewurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=gviewd&id=".$arr['id'];
-				$this->gaddurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=gadd&id=".$arr['id'];
-				$this->gmodifyurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=gmodify&id=".$arr['id'];
+				$this->grightsurl = $GLOBALS['babUrlScript']."?tg=admdir&idx=db_rights&id=".$arr['id'];
 				$i++;
 				return true;
 				}
@@ -845,10 +842,10 @@ if( isset($action) && $action == "Yes")
 
 if( isset($aclview))
 	{
-	if (!isset($groups)) { $groups = array(); }
-	aclUpdate($table, $item, $groups, $what);
-	$id = $item;
+	maclGroups();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
 	}
+
 
 if( isset($update) )
 	{
@@ -868,13 +865,17 @@ switch($idx)
 		$babBody->addItemMenu("gviewl", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gviewl&id=".$id);
 		break;
 
-	case "gviewd":
+	case "db_rights":
 		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
-		aclGroups("admdir", "list", BAB_DBDIRVIEW_GROUPS_TBL, $id, "aclview");
+
+		$macl = new macl("admdir", "list", $id, "aclview");
+        $macl->addtable( BAB_DBDIRVIEW_GROUPS_TBL, bab_translate("View"));
+		$macl->addtable( BAB_DBDIRUPDATE_GROUPS_TBL, bab_translate("Modify"));
+		$macl->addtable( BAB_DBDIRADD_GROUPS_TBL, bab_translate("Add"));
+        $macl->babecho();
+
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
-		$babBody->addItemMenu("gviewd", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gviewd&id=".$id);
-		$babBody->addItemMenu("gmodify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gmodify&id=".$id);
-		$babBody->addItemMenu("gadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admdir&idx=gadd&id=".$id);
+		$babBody->addItemMenu("db_rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admdir&idx=db_rights&id=".$id);
 		break;
 
 	case "gmodify":
