@@ -1,73 +1,105 @@
-<!--#begin aclgroups -->
+<!--#begin maclgroups --> 
+<script type="text/javascript">
+<!--
+function macl_lock(what,groups)
+	{
+	var f = document.forms.macl;
+	var what = document.getElementById(what);
+	var groups = document.getElementById(groups);
+	if (what.value != "") 
+		{groups.disabled = true;}
+	else {groups.disabled = false;}
+	}
+	
+function macl_switch_view_on(tbl)
+	{
+	var nav = navigator.userAgent.toLowerCase();
+	if (!document.getElementById || nav.indexOf('konqueror') != -1) return false;
+	<!--#in getnexttable -->
+	if (typeof tbl == 'undefined')
+		var tbl = '{ table }';
 
+	document.getElementById('macl_tr_table_{ table }').style.display = 'none';
+	document.getElementById('macl_link_table_{ table }').className = '';
+	<!--#endin getnexttable -->
 
+	document.getElementById('macl_tr_table_'+tbl).style.display = '';
+	document.getElementById('macl_link_table_'+tbl).className = 'BabMenuActiveBackground';
+	}
+-->
+</script>
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="{ target }">
 <input type="hidden" name="idx" value="{ index }">
 <input type="hidden" name="item" value="{ id }">
-<input type="hidden" name="table" value="{ table }">
+<input type="hidden" name="table" value="">
+<input type="hidden" name="what" value="">
 <input type="hidden" name="{ return }" value="update">
 
 <table  width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
-<script type="text/javascript">
-<!--
-function lock()
-	{
-	var sel = document.getElementsByTagName("SELECT");
-	for (var i = 0; i < sel.length; i++ )
-		{
-		if ( sel[i].name == 'what' )
-			{var obj = sel[i];}
-		if ( sel[i].name == 'groups[]' )
-			{var groups = sel[i];}
-		}
-	if (obj.value != "") 
-		{groups.disabled = true;}
-	else {groups.disabled = false;}
-	}
--->
-</script>
-<select name="what" id="what" onchange = "lock();">
-<option value="">{ listgroups }</option>
-<option value="-1" { what[disabled] }>{ disabled }</option>
-<option value="0" { what[everybody] }>{ everybody }</option>
-<!--#if ballsite -->
-<option value="1" { what[users] }>{ users }</option>
-<option value="2" { what[guests] }>{ guests }</option>
-<!--#endif ballsite -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> { name }: </td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
-<select multiple name="groups[]" id="groups" size="10">
-<!--#in getnextgroup -->
-<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
-<!--#endin getnextgroup -->
-</select>
-</td>
-</tr>
-<tr valign="middle"> 
-<td class="BabLoginMenuBackground" align="center" valign="middle"> 
-<input type="submit" name="submit" value="{ updategroups }">
-</td>
-</tr>
-</table>
-</td>
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table  width="100%" border="0" cellspacing="0" cellpadding="6" align="center">
+		<!--#if multiple -->
+		<tr>
+			<td class="BabLoginMenuBackground">
+			<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<!--#in getnexttable -->
+				<tr>
+					<td align="center" class="BabMenuTabBackground" style="cursor:pointer ; cursor:hand;" id="macl_link_table_{ table }" onclick="macl_switch_view_on('{ table }')">
+					{ title }
+					</td>
+				</tr>
+				<!--#endin getnexttable -->
+			</table>
+			</td>
+		</tr>
+		<!--#endif multiple -->
+		<!--#in getnexttable -->
+		<tr id="macl_tr_table_{ table }"> 
+			   <td class="BabLoginMenuBackground" align="center" nowrap valign="middle">
+					<select name="macl_what_{ table }" id="macl_what_{ table }" onChange="macl_lock('macl_what_{ table }','macl_groups_{ table }');" >
+						<!--#if listgroups --><option value="">{ listgroups }</option><!--#endif listgroups -->
+						<!--#if disabled --><option value="-1" { what[disabled] }>{ disabled }</option><!--#endif disabled -->
+						<!--#if everybody --><option value="0" { what[everybody] }>{ everybody }</option><!--#endif everybody -->
+						<!--#if ballsite -->
+						<!--#if users --><option value="1" { what[users] }>{ users }</option><!--#endif users -->
+						<!--#if guests --><option value="2" { what[guests] }>{ guests }</option><!--#endif guests -->
+						<!--#endif ballsite -->
+				  </select> 
+				 <!--#if listgroups -->
+					  <div align="center" style="padding:0.5em">
+					  { name }:
+					  </div>
+				 <select multiple name="macl_groups_{ table }[]" id="macl_groups_{ table }" size="10">
+					<!--#in getnextgroup -->
+					<option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
+					<!--#endin getnextgroup -->
+				</select>
+			<script type="text/javascript">
+			<!--
+			macl_lock('macl_what_{ table }','macl_groups_{ table }');
+			-->
+			</script>
+			<!--#endif listgroups -->
+			</td>
+		</tr>
+		<!--#endin getnexttable -->
+		<tr valign="middle"> 
+			<td class="BabLoginMenuBackground" align="center" valign="middle"> 
+			<input type="submit" value="{ updategroups }">
+			</td>
+		</tr>
+		</table>
+	</td>
 </tr>
 </table>
 </form>
+<!--#if multiple -->
 <script type="text/javascript">
 <!--
-lock();
+ macl_switch_view_on();
 -->
 </script>
-<!--#end aclgroups -->
+<!--#endif multiple -->
+<!--#end maclgroups -->
