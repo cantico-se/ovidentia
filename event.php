@@ -1338,7 +1338,7 @@ switch($idx)
 
 	case "delete":
 		$babBody->title = bab_translate("Delete calendar event");
-		deleteEvent($calid, $evtid, $day, $month, $year, $view, $bupdrec);
+		deleteEvent($calid, $evtid, $curday, $curmonth, $curyear, $view, $bupdrec);
 		if( bab_isUserGroupManager())
 			{
 			$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
