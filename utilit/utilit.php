@@ -960,8 +960,8 @@ function babUserSection($close)
 			$this->array_urls[bab_translate("Publication")] = $GLOBALS['babUrlScript']."?tg=artedit";
 			}
 
-		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if( count($arrschi) > 0 )
+		$babBody->waitapprobations = bab_isWaitingApprobations();
+		if( $babBody->waitapprobations )
 			{
 			$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=approb";
 			}
@@ -1482,6 +1482,7 @@ var $ovgroups; /* all ovidentia groups */
 var $babsite;
 var $ocids; /* orgnization chart ids */
 var $ampm; /* true: use am/pm */
+var $waitapprobations; /* true if there are waiting approbations */
 
 //var $aclfm;
 //var $babsite;
@@ -1510,6 +1511,7 @@ function babBody()
 	$this->usergroups = array();
 	$this->saarray = array();
 	$this->babaddons = array();
+	$this->waitapprobations = false;
 
 	$res = $babDB->db_query("select * from ".BAB_GROUPS_TBL."");
 	while( $arr = $babDB->db_fetch_array($res))

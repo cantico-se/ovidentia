@@ -225,9 +225,9 @@ function bab_getWaitingIdSAInstance($iduser)
 	static $wIdSAInstance = array();
 	if( !isset($wIdSAInstance[$iduser]))
 		{
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$wIdSAInstance[$iduser] = getWaitingApprobations($iduser);
-	}
+		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+		$wIdSAInstance[$iduser] = getWaitingApprobations($iduser);
+		}
 
 	return $wIdSAInstance[$iduser]['idschi'];
 	}
@@ -242,6 +242,41 @@ function bab_getWaitingIdSA($iduser)
 	}
 
 	return $wIdSA[$iduser]['idsch'];
+	}
+
+
+function bab_isWaitingApprobations()
+	{
+		global $babDB;
+
+		$arr = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		if( count($arr) > 0 )
+		{
+			return true;
+		}
+
+		$result = false;
+
+		$arrf = array();
+
+		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'");
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $arr['id']) )
+				{
+				$arrf[] = $arr['id'];
+				}
+			}
+
+		if( count($arrf) > 0 )
+			{
+			list($posts) = $babDB->db_fetch_row($babDB->db_query("select count(pt.id) from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on pt.id_thread=tt.id left join ".BAB_POSTS_TBL." pt2 on tt.post=pt2.id left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.confirmed='N' and ft.id IN(".implode(',', $arrf).")"));
+			if( $posts > 0 )
+				{
+				$result = true;
+				}
+			}
+		return $result;
 	}
 
 function bab_getWaitingArticles($topics)

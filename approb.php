@@ -1006,17 +1006,15 @@ switch($idx)
 
 	case "all":
 	default:
-		if( count($approbinit) == 0 )
-		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
-		exit;
-		}
 		$babBody->title = bab_translate("Approbations");
+		if( $babBody->waitapprobations  || count($approbinit) > 0 )
+		{
 		listWaitingArticles();
 		listWaitingComments();
 		listWaitingFiles();
 		listWaitingPosts();
 		listWaitingVacations();
+		}
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;
 	}
