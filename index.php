@@ -46,7 +46,7 @@ if (!empty($_FILES)) {
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
 
-$babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
+$babPhpSelf = substr($SCRIPT_NAME,-strpos(strrev($SCRIPT_NAME),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
