@@ -238,7 +238,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 		{
 		global $babBody;
 		$arr = array();
-		if( $this->mcals->getNextFreeEvent($this->cdate." 00:00:00", $this->cdate." 23:59:59", $arr))
+		if( $this->mcals->getNextFreeEvent($this->cdate." 00:00:00", $this->cdate." 23:59:00", $arr))
 			{
 			$this->free = $arr[2] == 0;
 			$time = bab_mktime($arr[0]);

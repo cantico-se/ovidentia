@@ -238,7 +238,7 @@ class bab_mcalendars
 		}
 
 
-	function getNextFreeEvent($startdate, $enddate, &$arr) /* YYYY-MM-DD */
+	function getNextFreeEvent($startdate, $enddate, &$arr)
 		{
 		static $i =0;
 		while( $i < count($this->freeevents) )
