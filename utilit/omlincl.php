@@ -304,7 +304,7 @@ class bab_ArticlesHomePages extends bab_handler
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
 				{
-				if( $filter == false || in_array($arr['id_topic'], $babBody->topview))
+				if( $filter == false || isset($babBody->topview[$arr['id_topic']]))
 					{
 					$this->IdEntries[] = $arr['id'];
 					}
@@ -605,7 +605,7 @@ class bab_ArticleTopics extends bab_handler
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if(in_array($row['id_topcat'], $babBody->topview))
+			if(isset($babBody->topview[$row['id_topcat']]))
 				{
 				array_push($this->IdEntries, $row['id_topcat']);
 				}
@@ -663,9 +663,9 @@ class bab_ArticleTopic extends bab_handler
 		$this->topicid = $ctx->get_value('topicid');
 
 		if( $this->topicid === false || $this->topicid === '' )
-			$this->IdEntries = $babBody->topview;
+			$this->IdEntries = array_keys($babBody->topview);
 		else
-			$this->IdEntries = array_values(array_intersect($babBody->topview, explode(',', $this->topicid)));
+			$this->IdEntries = array_values(array_intersect(array_keys($babBody->topview), explode(',', $this->topicid)));
 		$this->count = count($this->IdEntries);
 
 		if( $this->count > 0 )
@@ -760,9 +760,9 @@ class bab_Articles extends bab_handler
 		$this->bab_handler($ctx);
 		$topicid = $ctx->get_value('topicid');
 		if( $topicid === false || $topicid === '' )
-			$topicid = $babBody->topview;
+			$topicid = array_keys($babBody->topview);
 		else
-			$topicid = array_intersect($babBody->topview, explode(',', $topicid));
+			$topicid = array_intersect(array_keys($babBody->topview), explode(',', $topicid));
 
 		if( count($topicid) > 0)
 		{
@@ -1896,9 +1896,9 @@ class bab_RecentArticles extends bab_handler
 		$this->last = $ctx->get_value('last');
 		$this->topicid = $ctx->get_value('topicid');
 		if( $this->topicid === false || $this->topicid === '' )
-			$this->topicid = $babBody->topview;
+			$this->topicid = array_keys($babBody->topview);
 		else
-			$this->topicid = array_intersect($babBody->topview, explode(',', $this->topicid));
+			$this->topicid = array_intersect(array_keys($babBody->topview), explode(',', $this->topicid));
 
 		if( count($this->topicid) > 0 )
 			{
@@ -2025,7 +2025,7 @@ class bab_RecentComments extends bab_handler
 			}
 		else if( count($babBody->topview) > 0 )
 			{
-			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y' and id_topic IN (".implode(',', $babBody->topview).")";
+			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y' and id_topic IN (".implode(',', array_keys($babBody->topview)).")";
 			}
 		
 		if( $req != '' )

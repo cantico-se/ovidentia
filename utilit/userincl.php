@@ -147,7 +147,7 @@ function bab_toAmPm($str)
 function bab_isUserTopicManager($topics)
 	{
 	global $babBody, $BAB_SESS_USERID;
-	if( count($babBody->topman) > 0 && in_array($topics, $babBody->topman))
+	if( count($babBody->topman) > 0 && isset($babBody->topman[$topics]))
 		{
 		return true;
 		}
@@ -438,15 +438,16 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
 function bab_isAccessValid($table, $idobject, $iduser='')
 {
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
+
 	if( $iduser != '')
 		{
 		return bab_isAccessValidByUser($table, $idobject, $iduser);
 		}
 
 	$ok = false;
-	if( !isset($babBody->ovgroups[1][$table]))
+	if( !isset($babBody->acltables[$table]))
 		{
-		$babBody->ovgroups[1][$table] = array();
+		$babBody->acltables[$table] = array();
 		$db = $GLOBALS['babDB'];
 		$res = $db->db_query("select * from ".$table."");
 		while( $row = $db->db_fetch_array($res))
@@ -454,33 +455,34 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 			switch($row['id_group'])
 				{
 				case "0": // everybody
-					$babBody->ovgroups[1][$table][] = $row['id_object'];
-					$babBody->ovgroups[2][$table][] = $row['id_object'];
+					$babBody->acltables[$table][$row['id_object']][1] = 1;
+					$babBody->acltables[$table][$row['id_object']][2] = 1;
 					break;
 				case "1": // users
-					$babBody->ovgroups[1][$table][] = $row['id_object'];
+					$babBody->acltables[$table][$row['id_object']][1] = 1;
 					break;
 				case "2": // guests
-					$babBody->ovgroups[2][$table][] = $row['id_object'];
+					$babBody->acltables[$table][$row['id_object']][2] = 1;
 					break;
 				default:  //groups
-					$babBody->ovgroups[$row['id_group']][$table][] = $row['id_object'];
+					$babBody->acltables[$table][$row['id_object']][$row['id_group']]=1;
 					break;
 				}
 
 			}
 		}
 
+
 	if( !$BAB_SESS_LOGGED )
 		{
-		if( isset($babBody->ovgroups[2][$table]) && in_array($idobject,$babBody->ovgroups[2][$table]))
+		if( isset($babBody->acltables[$table][$idobject][2]))
 			{
 			$ok = true;
 			}
 		}
 	else
 	{
-		if( isset($babBody->ovgroups[1][$table]) && in_array($idobject,$babBody->ovgroups[1][$table]))
+		if( isset($babBody->acltables[$table][$idobject][1]))
 			{
 			$ok = true;
 			}
@@ -488,7 +490,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 		{
 			for( $i = 0; $i < count($babBody->usergroups); $i++)
 			{
-				if( isset($babBody->ovgroups[$babBody->usergroups[$i]][$table]) && in_array($idobject, $babBody->ovgroups[$babBody->usergroups[$i]][$table]))
+				if( isset($babBody->acltables[$table][$idobject][$babBody->usergroups[$i]]))
 				{
 					$ok = true;
 					break;
@@ -1257,7 +1259,7 @@ function bab_replace_ref( &$txt, $remove = '')
 								if( $res && $db->db_num_rows($res) > 0)
 									$arr = $db->db_fetch_array($res);
 								}
-							if(in_array($arr['id_topic'], $babBody->topview) && bab_articleAccessByRestriction($arr['restriction']))
+							if(isset($babBody->topview[$arr['id_topic']]) && bab_articleAccessByRestriction($arr['restriction']))
 								{
 								$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 								}

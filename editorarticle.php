@@ -128,7 +128,7 @@ function browse($topics,$cat,$cb)
 			if( $i < $this->countcat)
 				{
 				$arr = $this->db->db_fetch_array($this->rescat);
-				if (in_array($arr['id'],$babBody->topcatview))
+				if (isset($babBody->topcatview[$arr['id']]))
 					{
 					$this->displaycat = true;
 					$this->title = bab_getTopicCategoryTitle($arr['id']);
@@ -152,7 +152,7 @@ function browse($topics,$cat,$cb)
 			if( $i < $this->counttop)
 				{
 				$arr = $this->db->db_fetch_array($this->restop);
-				if (in_array($arr['id'],$babBody->topview) && $this->topics == 0 )
+				if (isset($babBody->topview[$arr['id']]) && $this->topics == 0 )
 					{
 					$this->displaytop = true;
 					$this->title = strip_tags($arr['category']);
@@ -183,7 +183,7 @@ function browse($topics,$cat,$cb)
 					return true;
 					}
 
-				if (in_array($arr['id_topic'],$babBody->topview))
+				if (isset($babBody->topview[$arr['id_topic']]))
 					{
 					$this->display = true;
 					if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))

@@ -79,7 +79,7 @@ function sectionsList()
 			$res = $this->db->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." c where ".BAB_TOPICS_TBL.".id_cat=c.id and c.optional='Y' AND c.enabled='Y'");
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if( in_array($row['id'], $babBody->topview) )
+				if( isset($babBody->topview[$row['id']]) )
 					{
 					if( !in_array($row['id_cat'], $this->arrcatid))
 						array_push($this->arrcatid, $row['id_cat']);
@@ -220,7 +220,7 @@ function enableOptionalSections($sections)
 		$res = $db->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id");
 		while( $row = $db->db_fetch_array($res))
 			{
-			if( in_array($row['id'], $babBody->topview) )
+			if( isset($babBody->topview[$row['id']]) )
 				{
 				if( !in_array($row['id_cat'], $arrcatid))
 					array_push($arrcatid, $row['id_cat']);

@@ -60,7 +60,7 @@ function listCategories()
 			$this->db = $GLOBALS['babDB'];
 			if( count($babBody->topman) > 0 )
 				{
-				$this->rescat = $this->db->db_query("SELECT DISTINCT(o.id_topcat) id, c.title title FROM ".BAB_TOPCAT_ORDER_TBL." o , ".BAB_TOPICS_CATEGORIES_TBL." c, ".BAB_TOPICS_TBL." t WHERE c.id=o.id_topcat AND t.id_cat=c.id AND t.id IN (".implode(',', $babBody->topman).") GROUP BY o.id_topcat ORDER BY o.ordering");
+				$this->rescat = $this->db->db_query("SELECT DISTINCT(o.id_topcat) id, c.title title FROM ".BAB_TOPCAT_ORDER_TBL." o , ".BAB_TOPICS_CATEGORIES_TBL." c, ".BAB_TOPICS_TBL." t WHERE c.id=o.id_topcat AND t.id_cat=c.id AND t.id IN (".implode(',', array_keys($babBody->topman)).") GROUP BY o.id_topcat ORDER BY o.ordering");
 				$this->countcat = $this->db->db_num_rows($this->rescat);
 				}
 			else
@@ -77,7 +77,7 @@ function listCategories()
 				{
 				$arr = $this->db->db_fetch_array($this->rescat);
 				$this->catname = $arr['title'];
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$arr['id']."' and id IN (".implode(',', $babBody->topman).") ORDER BY category";
+				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$arr['id']."' and id IN (".implode(',', array_keys($babBody->topman)).") ORDER BY category";
 				$this->res = $this->db->db_query($req);
 				$this->count = $this->db->db_num_rows($this->res);
 				$j++;
@@ -571,7 +571,7 @@ function viewArticleProperties($item, $idart)
 
 				if( count($babBody->topman) > 0 )
 					{
-					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".implode(',', $babBody->topman).")");
+					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".implode(',', array_keys($babBody->topman)).")");
 					$this->counttopics = $babDB->db_num_rows($this->restopics);
 
 					if( $arrart['totalf'] > 0 )

@@ -415,7 +415,7 @@ function showChoiceTopic()
 					$this->bcontent = false;
 					}
 				$babBodyPopup->title = bab_translate("Choose the topic");
-				$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', $babBody->topsub).") order by id_cat");
+				$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', array_keys($babBody->topsub)).") order by id_cat");
 				$this->count = $babDB->db_num_rows($this->res);
 				$this->steptitle = bab_translate("list of topics");
 				$this->nexttxt = bab_translate("Next");
@@ -488,15 +488,15 @@ function showChoiceTopicModify()
 				{
 				if( count($babBody->topsub) > 0 )
 					{
-					$tmp[] = "(id IN (".implode(',', $babBody->topsub).") and allow_update != '0' )";
+					$tmp[] = "(id IN (".implode(',', array_keys($babBody->topsub)).") and allow_update != '0' )";
 					}
 				if( count($babBody->topman) > 0 )
 					{
-					$tmp[] = "(id IN (".implode(',', $babBody->topman).") and allow_manupdate != '0' )";
+					$tmp[] = "(id IN (".implode(',', array_keys($babBody->topman)).") and allow_manupdate != '0' )";
 					}
 				if( count($babBody->topmod) > 0 )
 					{
-					$tmp[] = "(id IN (".implode(',', $babBody->topmod)."))";
+					$tmp[] = "(id IN (".implode(',', array_keys($babBody->topmod))."))";
 					}
 				$req = "select id, description, category from ".BAB_TOPICS_TBL." where ";
 				$req .= implode(' or ', $tmp)." order by id_cat";
@@ -592,11 +592,11 @@ function showChoiceArticleModify($topicid)
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
-				if( (count($babBody->topmod) && in_array($topicid, $babBody->topmod)) || ($arr['allow_manupdate'] != '0' && count($babBody->topman) && in_array($topicid, $babBody->topman)) )
+				if( (count($babBody->topmod) && isset($babBody->topmod[$topicid])) || ($arr['allow_manupdate'] != '0' && count($babBody->topman) && isset($babBody->topman[$topicid])) )
 					{
 					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' order by at.ordering asc";
 					}
-				elseif( $arr['allow_update'] && count($babBody->topsub) && in_array($topicid, $babBody->topsub))
+				elseif( $arr['allow_update'] && count($babBody->topsub) && isset($babBody->topsub[$topicid]))
 					{
 					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' order by at.ordering asc";
 					}
@@ -734,7 +734,7 @@ function showEditArticle()
 					if( $res && $babDB->db_num_rows($res) == 1 )
 						{
 						$arr = $babDB->db_fetch_array($res);
-						if( ($arr['allow_update'] != '0' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] ) || (count($babBody->topmod) > 0 && in_array($arr['id_topic'], $babBody->topmod )) || ($arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
+						if( ($arr['allow_update'] != '0' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] ) || (count($babBody->topmod) > 0 && isset($babBody->topmod[$arr['id_topic']] )) || ($arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
 							{
 							$topicid = $arr['id_topic'];
 							$this->access = true;
@@ -747,7 +747,7 @@ function showEditArticle()
 					}
 				elseif( $topicid != 0 )
 					{
-					if( count($babBody->topsub) > 0 && in_array($topicid, $babBody->topsub ))
+					if( count($babBody->topsub) > 0 && isset($babBody->topsub[$topicid] ))
 						{
 						$res = $babDB->db_query("select tt.article_tmpl from ".BAB_TOPICS_TBL." tt  where id='".$topicid."'");
 						if( $res && $babDB->db_num_rows($res) == 1 )
@@ -1038,7 +1038,7 @@ function showSetArticleProperties($idart)
 
 				if( count($babBody->topsub) > 0 )
 					{
-					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".implode(',', $babBody->topsub).")");
+					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".implode(',', array_keys($babBody->topsub)).")");
 					$this->counttopics = $babDB->db_num_rows($this->restopics);
 					}
 				else
@@ -1089,7 +1089,7 @@ function showSetArticleProperties($idart)
 
 				$this->drafttopic = $topicid == '' ? $arr['id_topic']: $topicid;
 				/* Traiter le cas de modification d'article */
-				if( count($babBody->topsub) == 0 || !in_array($this->drafttopic, $babBody->topsub ))
+				if( count($babBody->topsub) == 0 || !isset($babBody->topsub[$this->drafttopic]))
 					{
 					$this->drafttopic = 0;
 					}
@@ -1902,7 +1902,7 @@ function updatePropertiesArticleDraft()
 	if( !isset($approbid)) { $approbid = '0';} 
 
 	/* Traiter le cas de modification d'article */
-	if( count($babBody->topsub) == 0 || !in_array($topicid, $babBody->topsub ))
+	if( count($babBody->topsub) == 0 || !isset($babBody->topsub[$topicid] ))
 		{
 		$topicid= 0;
 		}

@@ -73,12 +73,12 @@ function listTopicCategory($cat)
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if($row['type'] == '2' && in_array($row['id_topcat'], $babBody->topview))
+				if($row['type'] == '2' && isset($babBody->topview[$row['id_topcat']]))
 					{
 					array_push($this->arrid, array($row['id_topcat'], 2));
 					array_push($arrtop, $row['id_topcat']);
 					}
-				else if( $row['type'] == '1' && in_array($row['id_topcat'], $babBody->topcatview ))
+				else if( $row['type'] == '1' && isset($babBody->topcatview[$row['id_topcat']]))
 					{
 					array_push($this->arrid, array($row['id_topcat'], 1));
 					array_push($arrtopcat, $row['id_topcat']);

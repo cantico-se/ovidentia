@@ -209,7 +209,7 @@ function saveComment($topics, $article, $name, $subject, $message, $com, &$msger
 	}
 
 /* main */
-if( count($babBody->topview) == 0 || !in_array($topics, $babBody->topview))
+if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]))
 {
 	$idx = 'denied';
 }

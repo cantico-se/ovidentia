@@ -1173,7 +1173,7 @@ function babTopcatSection($close)
 	$res = $babDB->db_query("SELECT tct.id, tct.title FROM ".BAB_TOPCAT_ORDER_TBL." tot left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tot.id_topcat=tct.id WHERE tot.id_parent='0' and tot.type='1' order by tot.ordering asc");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if( in_array($row['id'], $babBody->topcatview) )
+		if( isset($babBody->topcatview[$row['id']]) )
 			{
 			if( $close )
 				{
@@ -1234,7 +1234,7 @@ function babTopicsSection($cat, $close)
 	$res = $babDB->db_query($req);
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		if( $arr['type'] == 2 && in_array($arr['id'], $babBody->topview))
+		if( $arr['type'] == 2 && isset($babBody->topview[$arr['id']]))
 			{
 			if( $close )
 				{
@@ -1252,7 +1252,7 @@ function babTopicsSection($cat, $close)
 				or ($whatToFilter == 2 and ($arr['lang'] == $GLOBALS['babLanguage'])))
 				array_push($this->arrid, $arr['topid']);
 			}
-		else if( $arr['type'] == 1 && in_array($arr['id'], $babBody->topcatview))
+		else if( $arr['type'] == 1 && isset($babBody->topcatview[$arr['id']]))
 			{
 			if( $close )
 				{
@@ -1477,6 +1477,7 @@ var $babsite;
 var $ocids; /* orgnization chart ids */
 var $ampm; /* true: use am/pm */
 var $waitapprobations; /* true if there are waiting approbations */
+var $acltables = array();
 
 //var $aclfm;
 //var $babsite;
@@ -2053,54 +2054,66 @@ function bab_updateUserSettings()
 		$babBody->babaddons[$arr['id']] = $arr;
 		}
 
-	$res = $babDB->db_query("select id, id_cat from ".BAB_TOPICS_TBL."");
-	while( $row = $babDB->db_fetch_array($res))
+	if( !empty($BAB_SESS_USERID))
 		{
-		if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $row['id']))
-			{
-			$babBody->topman[] = $row['id'];
-			}
-
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
-			{
-			$babBody->topview[] = $row['id'];
-			if( count($babBody->topcatview) == 0 || !in_array($row['id_cat'], $babBody->topcatview))
-				{
-				$babBody->topcatview[] = $row['id_cat'];
-				}
-			}
-		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $row['id']) )
-			{
-			$babBody->topsub[] = $row['id'];
-			}
-		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $row['id']) )
-			{
-			$babBody->topcom[] = $row['id'];
-			}
-		if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $row['id']))
-			{
-			$babBody->topmod[] = $row['id'];
-			}
+		$sqlgrp = implode(',', array_merge($babBody->usergroups, array(0,1)));
+		}
+	else
+		{
+		$sqlgrp = "0,2";
 		}
 
-	$babBody->ocids = bab_orgchartAccess();
+	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSMAN_GROUPS_TBL." where id_group in(".$sqlgrp.")");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		$babBody->topman[$row['id_object']] = 1;
+		}
+
+	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSSUB_GROUPS_TBL." where id_group in(".$sqlgrp.")");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		$babBody->topsub[$row['id_object']] = 1;
+		}
+
+	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSCOM_GROUPS_TBL." where id_group in(".$sqlgrp.")");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		$babBody->topcom[$row['id_object']] = 1;
+		}
+
+	$res = $babDB->db_query("select distinct * from ".BAB_TOPICSMOD_GROUPS_TBL." where id_group in(".$sqlgrp.")");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		$babBody->topmod[$row['id_object']] = 1;
+		}
+
+	$res = $babDB->db_query("select distinct *, tt.id_cat as id_cat from ".BAB_TOPICSVIEW_GROUPS_TBL." tgp left join ".BAB_TOPICS_TBL." tt on tt.id=tgp.id_object where tgp.id_group in(".$sqlgrp.")");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		$babBody->topview[$row['id_object']] = 1;
+		if( !isset($babBody->topcatview[$row['id_cat']]))
+			{
+			$babBody->topcatview[$row['id_cat']] = 1;
+			}
+		}
 
 	if(!empty($babBody->topcatview))
 		{
 		$topcats = $babBody->topcatview;
-		for( $i=0; $i < count($topcats); $i++ )
+		foreach( $topcats as $cat => $val)
 			{
-			$cat = $topcats[$i];
 			while( $babBody->topcats[$cat]['parent'] != 0 )
 				{
-				if( !in_array($babBody->topcats[$cat]['parent'], $babBody->topcatview))
+				if( !isset($babBody->topcatview[$babBody->topcats[$cat]['parent']]))
 					{
-					$babBody->topcatview[] = $babBody->topcats[$cat]['parent'];
+					$babBody->topcatview[$babBody->topcats[$cat]['parent']] = 1;
 					}
 				$cat = $babBody->topcats[$cat]['parent'];
 				}
+			}
 		}
-		}
+
+	$babBody->ocids = bab_orgchartAccess();
 
 	$babBody->isSuperAdmin = false;
 
@@ -2148,7 +2161,7 @@ function bab_updateUserSettings()
 				$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where date >= '".$babBody->lastlog."'");
 				while( $row = $babDB->db_fetch_array($res))
 					{
-					if( in_array($row['id_topic'], $babBody->topview) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
+					if( isset($babBody->topview[$row['id_topic']]) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
 						{
 						$babBody->newarticles++;
 						}
@@ -2157,7 +2170,7 @@ function bab_updateUserSettings()
 				$res = $babDB->db_query("select id_topic from ".BAB_COMMENTS_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
 				while( $row = $babDB->db_fetch_array($res))
 					{
-					if( in_array($row['id_topic'], $babBody->topview) )
+					if( isset($babBody->topview[$row['id_topic']]) )
 						{
 						$babBody->newcomments++;
 						}

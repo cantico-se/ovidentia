@@ -1210,7 +1210,7 @@ function getDocumentArticle($idf, $topics)
 /* main */
 $arrtop = array();
 
-if( count($babBody->topview) == 0 || !in_array($topics, $babBody->topview))
+if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	$idx = 'denied';
