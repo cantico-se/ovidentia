@@ -453,6 +453,7 @@ function articlePrint($topics, $article)
 		{
 	
 		var $content;
+		var $head;
 		var $title;
 		var $url;
 
@@ -466,6 +467,7 @@ function articlePrint($topics, $article)
 			if( $this->count > 0 )
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
 				$this->title = bab_getArticleTitle($this->arr['id']);
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
