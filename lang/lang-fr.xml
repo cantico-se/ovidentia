@@ -1712,4 +1712,14 @@
 <string id="Workflow approbations">Approbations de workflow</string>
 <string id="Ovidentia Editor">Utilisation de l'éditeur</string>
 <string id="OvML">Appels directs de fichiers OvML</string>
+<string id="plaintext">En clair</string>
+<string id="md5">md5</string>
+<string id="The Unix crypt() hash, based on DES">Basé sur le cryptage DES</string>
+<string id="sha-1">sha-1</string>
+<string id="md5 encoded with base64">md5 encodé en base 64</string>
+<string id="Salted SHA-1">SHA-1 salé</string>
+<string id="Salted MD5">MD5 salé</string>
+<string id="In">Dans</string>
+<string id="Restrict to">Restreindre à</string>
+<string id="Roles and entities">Fonctions et entités</string>
 </fr>
