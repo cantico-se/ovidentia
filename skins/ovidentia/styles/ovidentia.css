@@ -4,9 +4,13 @@ body {  margin: 0px 0px; background: #FFFFFF;font-family: arial;font-size:10px}
 INPUT { font-family: Verdana;font-size:10px; color:#000000;background-color:#FFFFFF;border-width:1;border-color:#000000;font-weight:bold }
 
 /* general links */
-a:link {color: #cccccc }
-a:active {color: #FF3333 }
-a:visited {COLOR: #cccccc }
+a:link {color: #3366FF }
+a:hover {color: red }
+a:visited {COLOR: #3366FF }
+
+/* general Font */
+TD { font-family :  Arial, Verdana, sans-serif; font-size : 10px }
+
 /*copyrightlink*/
 a.copy:link {color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
 a.copy:active {color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
@@ -149,6 +153,10 @@ a.BabTopicsFooterMoreLink:Hover {COLOR: black; font : 10px Verdana, Arial, sans-
 
 .BabTopicsButtonBackground {background: #FFFFFF }
 
+a.BabTopicsTitleNavigationLink:Link { COLOR: white; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsTitleNavigationLink:Visited { COLOR: white; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsTitleNavigationLink:Hover {COLOR: white; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
 /********** AGENDA **** CALENDAR ******************************/
 
 .BabCalendarCadreBackground {background: #D1D1D9}
@@ -247,9 +255,10 @@ a.BabFaqAdminTitleLink:Hover { COLOR: #009933 ; font : 10px Verdana, Arial, sans
 .BabSiteAdminSmall {background: #D1D1D9; COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
 .BabSiteAdminFontBackground {background: #FFFFFF; COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif }
 .BabSiteAdminFont { COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif }
-a.BabSiteAdminListLink:Link { COLOR: #000000  ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
-a.BabSiteAdminListLink:Visited { COLOR: #000000 ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
-a.BabSiteAdminListLink:Hover { COLOR: #009933 ; font : 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+a.BabSiteAdminListLink:Link { COLOR: blue  ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}
+a.BabSiteAdminListLink:Visited { COLOR: blue ; font : 11px Verdana, Arial, sans-serif;text-decoration: underline}
+a.BabSiteAdminListLink:Hover { COLOR: blue ; font : 11px Verdana, Arial, sans-serif; text-decoration: none }
 
 /********* FAQ **** NOTES ********************************/
 a.BabFaqLink:Link { COLOR: #0000CC  ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
@@ -295,6 +304,18 @@ a.BabToChoiceMailPopupToLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial
 a.BabToChoiceMailPopupNavigLink:Link { COLOR: #111166  ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold  }
 a.BabToChoiceMailPopupNavigLink:Visited { COLOR: #111166 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
 a.BabToChoiceMailPopupNavigLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+
+
+/**** FILE MANAGER **********************************************/
+
+a.BabSiteFileLink:Link { COLOR: #000000  ; font : 11px Verdana, Arial, sans-serif;text-decoration: none;  FONT-WEIGHT: bold }
+a.BabSiteFileLink:Visited { COLOR: #000000 ; font : 11px Verdana, Arial, sans-serif;text-decoration: none;  FONT-WEIGHT: bold }
+a.BabSiteFileLink:Hover { COLOR: #009933 ; font : 11px Verdana, Arial, sans-serif; text-decoration: underline;  FONT-WEIGHT: bold }
+
+a.BabSiteAdminFileLink:Link { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabSiteAdminFileLink:Visited { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabSiteAdminFileLink:Hover {COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
 
 
 /**** SCRIPT FOR FORMATTING MESSAGES WYSIWYG ********************/
