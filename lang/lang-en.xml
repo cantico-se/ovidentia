@@ -1,280 +1,607 @@
-<us><string id="January">January</string>
-
-<string id="February">February</string>
-
-<string id="March">March</string>
-
-<string id="April">April</string>
-
-<string id="May">May</string>
-
-<string id="June">June</string>
-
-<string id="July">July</string>
-
-<string id="August">August</string>
-
-<string id="September">September</string>
-
-<string id="October">October</string>
-
-<string id="November">November</string>
-
-<string id="December">December</string>
-
-<string id="Sunday">Sunday</string>
-
-<string id="Monday">Monday</string>
-
-<string id="Tuesday">Tuesday</string>
-
-<string id="Wednesday">Wednesday</string>
-
-<string id="Thursday">Thursday</string>
-
-<string id="Friday">Friday</string>
-
-<string id="Saturday">Saturday</string>
-
-<string id="List">List</string>
-
-<string id="Upload">Upload</string>
-
-<string id="bytes">bytes</string>
-
-<string id="Create">Create</string>
-
-<string id="Create directory">Create directory</string>
-
-<string id="Home folder">Home folder</string>
-
-<string id="Refresh">Refresh</string>
-
-<string id="Name">Name</string>
-
-<string id="Size">Size</string>
-
-<string id="Modified">Modified</string>
-
-<string id="Posted by">Posted by</string>
-
-<string id="Registered users">Registered users</string>
-
+<en>
 <string id="Sites">Sites</string>
-
 <string id="Sections">Sections</string>
-
-<string id="Users">Users</string>
-
-<string id="Groups">Groups</string>
-
-<string id="Faq">Faq</string>
-
-<string id="Topics">Topics</string>
-
 <string id="Forums">Forums</string>
-
-<string id="Vacation">Vacation</string>
-
-<string id="Calendar">Calendar</string>
-
-<string id="Mail">Mail</string>
-
-<string id="File manager">File manager</string>
-
-<string id="Administration">Administration</string>
-
-<string id="This section is for Administration">This section is for Administration</string>
-
-<string id="Summary">Summary</string>
-
 <string id="Options">Options</string>
-
-<string id="Notes">Notes</string>
-
-<string id="Contacts">Contacts</string>
-
-<string id="User's section">User's section</string>
-
-<string id="You are logged on as">You are logged on as</string>
-
-<string id="List of different topics">List of different topics</string>
-
-<string id="Topics with asterisk have waiting articles or comments ">Topics with asterisk have waiting articles or comments </string>
-
-<string id="Waiting comments">Waiting comments</string>
-
-<string id="Waiting articles">Waiting articles</string>
-
 <string id="List of different forums">List of different forums</string>
-
 <string id="Home">Home</string>
-
-<string id="Logout">Logout</string>
-
-<string id="Search">Search</string>
-
-<string id="Articles">Articles</string>
-
-<string id="Comments">Comments</string>
-
-<string id="Replies">Replies</string>
-
-<string id="Upload file to">Upload file to</string>
-
-<string id="Description">Description</string>
-
-<string id="Keywords">Keywords</string>
-
-<string id="Add">Add</string>
-
-<string id="Read only">Read only</string>
-
-<string id="Yes">Yes</string>
-
-<string id="No">No</string>
-
-<string id="Update file">Update file</string>
-
-<string id="Update">Update</string>
-
-<string id="Confirm">Confirm</string>
-
-<string id="Access denied">Access denied</string>
-
-<string id="List of articles">List of articles</string>
-
-<string id="Read More">Read More</string>
-
-<string id="A file with the same name already exists">A file with the same name already exists</string>
-
-<string id="Trash">Trash</string>
-
-<string id="Full Name">Full Name</string>
-
-<string id="Public">Public</string>
-
-<string id="Private">Private</string>
-
-<string id="Unregistered users">Unregistered users</string>
-
-<string id="Delete">Delete</string>
-
-<string id="Restore">Restore</string>
-
-<string id="First Name">First Name</string>
-
-<string id="Last Name">Last Name</string>
-
-<string id="Nickname">Nickname</string>
-
-<string id="Email">Email</string>
-
-<string id="Password">Password</string>
-
-<string id="Update Info">Update Info</string>
-
-<string id="Change user info">Change user info</string>
-
 <string id="Old Password">Old Password</string>
-
-<string id="New Password">New Password</string>
-
-<string id="Retype New Password">Retype New Password</string>
-
-<string id="Update Password">Update Password</string>
-
-<string id="Change password">Change password</string>
-
 <string id="Prefered language">Prefered language</string>
-
-<string id="Update Language">Update Language</string>
-
-<string id="Mail options">Mail options</string>
-
-<string id="Account">Account</string>
-
-<string id="Domain">Domain</string>
-
-<string id="Accounts">Accounts</string>
-
-<string id="Signatures">Signatures</string>
-
-<string id="User's Domains">User's Domains</string>
-
-<string id="Calendar Options">Calendar Options</string>
-
-<string id="First day of week">First day of week</string>
-
-<string id="On create new event, check">On create new event, check</string>
-
-<string id="All day">All day</string>
-
-<string id="View calendar categories">View calendar categories</string>
-
-<string id="Use bacground color for events">Use bacground color for events</string>
-
-<string id="Modify">Modify</string>
-
-<string id="Access">Access</string>
-
-<string id="Categories">Categories</string>
-
-<string id="Resources">Resources</string>
-
-<string id="Enter user name. ( You can enter multiple users separated by comma )">Enter user name. ( You can enter multiple users separated by comma )</string>
-
-<string id="Update access">Update access</string>
-
-<string id="User can update my calendar">User can update my calendar</string>
-
-<string id="Fullname">Fullname</string>
-
-<string id="Delete users">Delete users</string>
-
-<string id="Manager">Manager</string>
-
-<string id="Groups list">Groups list</string>
-
+<string id="January">January</string>
+<string id="February">February</string>
+<string id="March">March</string>
+<string id="April">April</string>
+<string id="May">May</string>
+<string id="June">June</string>
+<string id="July">July</string>
+<string id="August">August</string>
+<string id="September">September</string>
+<string id="October">October</string>
+<string id="November">November</string>
+<string id="December">December</string>
+<string id="Sunday">Sunday</string>
+<string id="Monday">Monday</string>
+<string id="Tuesday">Tuesday</string>
+<string id="Wednesday">Wednesday</string>
+<string id="Thursday">Thursday</string>
+<string id="Friday">Friday</string>
+<string id="Saturday">Saturday</string>
+<string id="Users">Users</string>
+<string id="Groups">Groups</string>
+<string id="Faq">Faq</string>
+<string id="Topics">Topics</string>
+<string id="Vacation">Vacation</string>
+<string id="Calendar">Calendar</string>
+<string id="Mail">Mail</string>
+<string id="Administration">Administration</string>
+<string id="This section is for Administration">This section is for Administration</string>
+<string id="Summary">Summary</string>
+<string id="Notes">Notes</string>
+<string id="Contacts">Contacts</string>
+<string id="User's section">Users section</string>
+<string id="You are logged as">You are logged on as</string>
 <string id="Anonymous">Anonymous</string>
-
-<string id="Access denied xxx">Access denied xxx</string>
-
-<string id="You don't have permission to create directory">You don't have permission to create directory</string>
-
-<string id="Rename">Rename</string>
-
-<string id="Create or rename directory">Create or rename directory</string>
-
-<string id="Directory">Directory</string>
-
-<string id="Delete directory">Delete directory</string>
-
-<string id="A new file is waiting for you">A new file is waiting for you</string>
-
-<string id="Author">Author</string>
-
-<string id="Path">Path</string>
-
-<string id="File">File</string>
-
+<string id="List of different topics">List of different topics</string>
+<string id="Topics with asterisk have waiting articles or comments ">Topics with an asterisk have waiting articles or comments </string>
+<string id="Waiting comments">Waiting comments</string>
+<string id="Waiting articles">Waiting articles</string>
+<string id="Whole day">Whole day</string>
+<string id="Morning">Morning</string>
+<string id="Afternoon">Afternoon</string>
+<string id="ERROR: You must choose a valid item !!">ERROR: You must choose a valid item !!</string>
+<string id="Groups Names">Groups Names</string>
+<string id="Update Groups">Update Groups</string>
+<string id="None">None</string>
+<string id="All">All</string>
+<string id="Registered Users">Registered Users</string>
+<string id="Groups List">Groups List</string>
+<string id="Registered users">Registered users</string>
+<string id="Categories">Categories</string>
+<string id="Resources">Resources</string>
+<string id="Site name">Site name</string>
+<string id="Description">Description</string>
+<string id="Lang">Lang</string>
+<string id="Email site">Email site</string>
+<string id="Modify">Modify</string>
+<string id="Unregistered users home page">Unregistered users home page</string>
+<string id="---- Proposed Home articles ----">---- Proposed Home articles ----</string>
+<string id="---- Home page articles ----">---- Home page articles ----</string>
+<string id="Move Up">Move Up</string>
+<string id="Move Down">Move Down</string>
+<string id="Registered users home page">Registered users home page</string>
+<string id="Are you sure you want to delete this site">Are you sure you want to delete this site</string>
+<string id="WARNING: This operation will delete the site and all references">WARNING: This operation will delete the site and all references</string>
+<string id="Yes">Yes</string>
+<string id="No">No</string>
+<string id="ERROR: You must provide a name !!">ERROR: You must provide a name !!</string>
+<string id="ERROR: This site already exists">ERROR: This site already exists</string>
+<string id="Delete">Delete</string>
+<string id="Full Name">Full Name</string>
+<string id="Email">Email</string>
+<string id="First Name">First Name</string>
+<string id="Last Name">Last Name</string>
+<string id="Nickname">Nickname</string>
+<string id="Password">Password</string>
+<string id="Retype Paasword">Retype Password</string>
+<string id="Register">Register</string>
+<string id="Create a user">Create a user</string>
+<string id="Create">Create</string>
+<string id="Users list">Users list</string>
+<string id="Update">Update</string>
+<string id="ERROR: You must choose a valid user !!">ERROR: You must choose a valid user !!</string>
+<string id="Can user change password ?">Can user change password ?</string>
+<string id="Account confirmed ?">Account confirmed ?</string>
+<string id="Account disabled ?">Account disabled ?</string>
+<string id="Primary group">Primary group</string>
 <string id="Group">Group</string>
-
+<string id="Sorry, you cannot delete this user. He is already logged">Sorry, you cannot delete this user. He is already logged</string>
+<string id="Are you sure you want to delete this user">Are you sure you want to delete this user</string>
+<string id="WARNING: This operation will delete the user and all references">WARNING: This operation will delete the user and all references</string>
+<string id="Delete a user">Delete a user</string>
+<string id=" is member of"> is member of</string>
+<string id="User">User</string>
+<string id="Modify a user">Modify a user</string>
+<string id="ERROR: You must choose a valid group !!">ERROR: You must choose a valid group !!</string>
+<string id="Name">Name</string>
+<string id="Manager">Manager</string>
+<string id="Use email">Use email</string>
+<string id="Modify Group">Modify Group</string>
+<string id="Are you sure you want to delete this group">Are you sure you want to delete this group</string>
+<string id="WARNING: This operation will delete the group with all references">WARNING: This operation will delete the group with all references</string>
+<string id="Use Vacation">Use Vacation</string>
+<string id="Update Vacation">Update Vacation</string>
+<string id="Approver">Confirm</string>
+<string id="Are you sure you want to delete those members">Are you sure you want to delete those members</string>
+<string id="WARNING: This operation will delete members and their references">WARNING: This operation will delete members and their references</string>
+<string id="Please select at least one item">Please select at least one item</string>
+<string id="ERROR: Th group doesn't exist">ERROR: Th group doesn't exist</string>
+<string id="The manager doesn't exist">The manager doesn't exist</string>
+<string id="You must provide at least the first approver">You must provide at least the first responsible who confirms</string>
+<string id="The first approver doesn't exist">The first responsible doesn't exist</string>
+<string id="Delete group's members">Delete group's members</string>
+<string id="Members">Members</string>
+<string id="Group's members">Group's members</string>
+<string id="Add">Add</string>
+<string id="Delete group">Delete group</string>
+<string id="group">group</string>
+<string id="Topic">Topic</string>
+<string id="Article">Article</string>
+<string id="ERROR: You must provide a category !!">ERROR: You must provide a category !!</string>
+<string id="ERROR: You must provide an approver !!">ERROR: You must provide a responsible who confirms !!</string>
+<string id="ERROR: This topic already exists">ERROR: This topic already exists</string>
+<string id="ERROR: The approver doesn't exist !!">ERROR: The responsible doesn't exist !!</string>
+<string id="Add a new topic">Add a new topic</string>
+<string id="List of all topics">List of all topics</string>
+<string id="There is no topic">There is no topic</string>
+<string id="Category">Category</string>
+<string id="ERROR: You must provide a manager !!">ERROR: You must provide a manager !!</string>
+<string id="ERROR: This category already exists">ERROR: This category already exists</string>
+<string id="ERROR: The manager doesn't exist !!">ERROR: The manager doesn't exist !!</string>
+<string id="Add a new categorie">Add a new category</string>
+<string id="Faqs">Faqs</string>
+<string id="Add Category">Add Category</string>
+<string id="List of all categories">List of all categories</string>
+<string id="Title">Title</string>
+<string id="Uncheck all">Uncheck all</string>
+<string id="Check all">Check all</string>
+<string id="Unregistered users's home page">Unregistered users home page</string>
+<string id="Registered users's home page">Registered users home page</string>
+<string id="Are you sure you want to delete those articles">Are you sure you want to delete those articles</string>
+<string id="WARNING: This operation will delete articles and their comments">WARNING: This operation will delete articles and their comments</string>
+<string id="ERROR: You must choose a valid category !!">ERROR: You must choose a valid category !!</string>
+<string id="Update Topic">Update Topic</string>
+<string id="Are you sure you want to delete this topic">Are you sure you want to delete this topic</string>
+<string id="WARNING: This operation will delete the topic, articles and comments">WARNING: This operation will delete the topic, articles and comments</string>
+<string id="Close">Close</string>
+<string id="Delete articles">Delete articles</string>
+<string id="Articles">Articles</string>
+<string id="List of articles">List of articles</string>
+<string id="List of groups">List of groups</string>
+<string id="Comments">Comments</string>
+<string id="Submit">Submit</string>
+<string id="Delete a topic">Delete a topic</string>
+<string id="Modify a topic">Modify a topic</string>
+<string id="Update Category">Update Category</string>
+<string id="Are you sure you want to delete this faq">Are you sure you want to delete this faq</string>
+<string id="WARNING: This operation will delete category with all questions/responses">WARNING: This operation will delete category with all questions/responses</string>
+<string id="Modify a category">Modify a category</string>
+<string id="Liste of groups">List of groups</string>
+<string id="Delete a category">Delete a category</string>
+<string id="Add Group">Add Group</string>
+<string id="This group already exists">This group already exists</string>
+<string id="Create a group">Create a group</string>
+<string id="Groups list">Groups list</string>
+<string id="Position">Position</string>
+<string id="Content">Content</string>
+<string id="Left">Left</string>
+<string id="Right">Right</string>
+<string id="PHP script">PHP script</string>
+<string id="ERROR: You must provide a title !!">ERROR: You must provide a title !!</string>
+<string id="ERROR: This section already exists">ERROR: This section already exists</string>
+<string id="Create section">Create section</string>
+<string id="Sections list">Sections list</string>
+<string id="There is no section">There is no section</string>
+<string id="ERROR: You must choose a valid section !!">ERROR: You must choose a valid section !!</string>
+<string id="Are you sure you want to delete this section">Are you sure you want to delete this section</string>
+<string id="WARNING: This operation will delete the section and all references">WARNING: This operation will delete the section and all references</string>
+<string id=" is visible by groups"> is visible by groups</string>
+<string id="Create site">Create site</string>
+<string id="Sites list">Sites list</string>
+<string id="There is no site">There is no site</string>
+<string id="link">link</string>
+<string id="Thank You For Registering at our site">Thank You For Registering at our site</string>
+<string id="To confirm your registration">To confirm your registration</string>
+<string id="simply follow this">simply follow this</string>
+<string id="Registration Confirmation">Registration Confirmation</string>
+<string id="Your site recorded a new registration on behalf of">Your site recorded a new registration on behalf of</string>
+<string id="You must complete all fields !!">You must complete all fields !!</string>
+<string id="Passwords not match !!">Passwords not match !!</string>
+<string id="Password must be at least 6 characters !!">Password must be at least 6 characters !!</string>
+<string id="Your email is not valid !!">Your email is not valid !!</string>
+<string id="This nickname already exists !!">This nickname already exists !!</string>
+<string id="Firstname and Lastname already exists !!">Firstname and Name already exists !!</string>
+<string id="You will receive an email which let you confirm your registration.">You will receive an email which let you confirm your registration.</string>
+<string id="User not found or password incorrect">User not found or password incorrect</string>
+<string id="Sorry, this account is already used elsewhere">Sorry, this account is already used elsewhere</string>
+<string id="Sorry, your account is disabled. Please contact your adminsitrator">Sorry, your account is disabled. Please contact your adminsitrator</string>
+<string id="SUCCESS - You Are Now Logged In">SUCCESS - You Are Now Logged In</string>
+<string id="Sorry - You haven't Confirmed Your Account Yet">Sorry - You haven't Confirmed Your Account Yet</string>
+<string id="User Not Found">User Not Found</string>
+<string id="User Account Updated - You can now log to our site">User Account Updated - You can now log to our site</string>
+<string id="Update failed">Update failed</string>
+<string id="User not found or bad password">User not found or bad password</string>
+<string id="Nothing Changed">Nothing Changed</string>
+<string id="Password Changed">Password Changed</string>
+<string id="ERROR: Old password incorrect !!">ERROR: Old password incorrect !!</string>
+<string id="Incorrect nickname">Incorrect nickname</string>
+<string id="Your password has been reset to">Your password has been reset to</string>
+<string id="Password Reset">Password Reset</string>
+<string id="Your new password has been emailed to you.">Your new password has been emailed to you.</string>
+<string id="ERROR - Nickname is required">ERROR - Nickname is required</string>
+<string id="Moderator">Moderator</string>
+<string id="Messages Per Page">Messages Per Page</string>
+<string id="Moderation">Moderation</string>
+<string id="Active">Active</string>
+<string id="Moderator Email">Moderator Email</string>
+<string id="ERROR: You must provide a name">ERROR: You must provide a name</string>
+<string id="ERROR: You must provide a moderator">ERROR: You must provide a moderator</string>
+<string id="ERROR: This forum already exists">ERROR: This forum already exists</string>
+<string id="ERROR: The moderator doesn't exist !!">ERROR: The moderator doesn't exist !!</string>
+<string id="Add a new forum">Add a new forum</string>
+<string id="List of all forums">List of all forums</string>
+<string id="There is no forum">There is no forum</string>
+<string id="ERROR: You must choose a valid forum">ERROR: You must choose a valid forum</string>
+<string id="Update Forum">Update Forum</string>
+<string id="Are you sure you want to delete this forum">Are you sure you want to delete this forum</string>
+<string id="WARNING: This operation will delete the forum and all posts">WARNING: This operation will delete the forum and all posts</string>
+<string id="Post">Post</string>
+<string id="Reply">Reply</string>
+<string id="Default days number">Default days number</string>
+<string id="Max days number">Max days number</string>
+<string id="Max days authorized">Max days authorized</string>
+<string id="Days">Days</string>
+<string id="Max">Max</string>
+<string id="Add status">Add status</string>
+<string id="This vacation already exists">This vacation already exists</string>
+<string id="You must provide a name">You must provide a name</string>
+<string id="This state already exists">This state already exists</string>
+<string id="Add a new vacation status">Add a new vacation status</string>
+<string id="Vacations">Vacations</string>
+<string id="Add Vacation Type">Add Vacation Type</string>
+<string id="Status">Status</string>
+<string id="Add Status">Add Status</string>
+<string id="Add a new vacation">Add a new vacation</string>
+<string id="List of all status">List of all status</string>
+<string id="List of all vacations">List of all vacations</string>
+<string id="There is no vacation definition">There is no vacation definition</string>
+<string id="You must choose a valid vacation">You must choose a valid vacation</string>
+<string id="Are you sure you want to delete this vacation">Are you sure you want to delete this vacation</string>
+<string id="WARNING: This operation will delete the vacation and all references">WARNING: This operation will delete the vacation and all references</string>
+<string id="You must choose a valid status">You must choose a valid status</string>
+<string id="Modify Status">Modify Status</string>
+<string id="Are you sure you want to delete this status">Are you sure you want to delete this status</string>
+<string id="WARNING: This operation will delete the status and all references">WARNING: This operation will delete the status and all references</string>
+<string id="The state doesn't exist">The state doesn't exist</string>
+<string id="Delete vacation">Delete vacation</string>
+<string id="Modify status">Modify status</string>
+<string id="delete status">delete status</string>
+<string id="Modify vacation">Modify vacation</string>
+<string id="Disabled">Disabled</string>
+<string id="Everybody">Everybody</string>
+<string id="Unregistered Users">Unregistered Users</string>
+<string id="Read More">Read More</string>
+<string id="by">by</string>
+<string id="Read more">Read more</string>
+<string id="Document Tag">Document Tag</string>
+<string id="Introduction Tag">Introduction Tag</string>
+<string id="Filename">Filename</string>
+<string id="Add article">Add article</string>
+<string id="Are you sure you want to delete the article">Are you sure you want to delete the article</string>
+<string id="WARNING: This operation will delete the article with all its comments">WARNING: This operation will delete the article with all its comments</string>
+<string id="Head">Head</string>
+<string id="Body">Body</string>
+<string id="Add Article">Add Article</string>
+<string id="A new article is waiting for you">A new article is waiting for you</string>
+<string id="Author">Author</string>
 <string id="Web site">Web site</string>
-
 <string id="Date">Date</string>
-
-<string id="New waiting file">New waiting file</string>
-
-<string id="Cannot remove directory">Cannot remove directory</string>
-
+<string id="Unknown user">Unknown user</string>
+<string id="New waiting article">New waiting article</string>
+<string id="ERROR: You must provide a file name">ERROR: You must provide a file name</string>
+<string id="ERROR: You must provide a title">ERROR: You must provide a title</string>
+<string id="Submit an article">Submit an article</string>
+<string id="File">File</string>
+<string id="Print Friendly">Print Friendly</string>
+<string id="Delete article">Delete article</string>
+<string id="Cancel">Cancel</string>
+<string id="Waiting">Waiting</string>
+<string id="Today, there is no articles">There are no articles</string>
+<string id="Subject">Subject</string>
+<string id="Message">Message</string>
+<string id="Add comment">Add comment</string>
+<string id="By">By</string>
+<string id="Are you sure you want to delete this comment">Are you sure you want to delete this comment</string>
+<string id="WARNING: This operation will delete the comment with all its replys">WARNING: This operation will delete the comment with all its replys</string>
+<string id="A new comment is waiting for you">A new comment is waiting for you</string>
+<string id="New waiting comment">New waiting comment</string>
+<string id="A new Comment is waiting for you on topic: \n  ">A new Comment is waiting for you on topic: \n  </string>
+<string id="List">List</string>
+<string id="Add Comment">Add Comment</string>
+<string id="Delete Comment">Delete Comment</string>
+<string id="List of comments">List of comments</string>
+<string id="Today, there is no comment on this article">Today, there is no comment on this article</string>
+<string id="Logout">Logout</string>
+<string id="Login">Login</string>
+<string id="Submiter">Author</string>
+<string id="Action">Action</string>
+<string id="Confirm">Confirm</string>
+<string id="Refuse">Refuse</string>
+<string id="Add to unregistered users's home page">Add to unregistered users home page</string>
+<string id="Add to registered users's home page">Add to registered users home page</string>
+<string id="Send an email to submiter">Send an email to author</string>
+<string id="About your article">About your article</string>
+<string id="Your article has been accepted">Your article has been accepted</string>
+<string id="Your article has been refused">Your article has been refused</string>
+<string id="About your comment">About your comment</string>
+<string id="Waiting Comment">Waiting Comment</string>
+<string id="Confirm a comment">Confirm a comment</string>
+<string id="Modified by">Modified by</string>
+<string id="on">on</string>
+<string id="Edit">Edit</string>
+<string id="New reply">New reply</string>
+<string id="Update reply">Update reply</string>
+<string id="Are you sure you want to delete this thread">Are you sure you want to delete this thread</string>
+<string id="WARNING: This operation will delete the thread and all references">WARNING: This operation will delete the thread and all references</string>
+<string id="A new post has been registered on thread">A new post has been registered on thread</string>
+<string id="Thread">Thread</string>
+<string id="New post">New post</string>
+<string id="ERROR: You must provide a content for your message">ERROR: You must provide a content for your message</string>
+<string id="ERROR: You must provide a subject for your message">ERROR: You must provide a subject for your message</string>
+<string id="Close thread">Close thread</string>
+<string id="Open thread">Open thread</string>
+<string id="Delete thread">Delete thread</string>
+<string id="Threads">Threads</string>
+<string id="Send">Send</string>
+<string id="From">From</string>
+<string id="To">To</string>
+<string id="Cc">Cc</string>
+<string id="Bcc">Bcc</string>
+<string id="Attachments">Attachments</string>
+<string id="Format">Format</string>
+<string id="Plain text">Plain text</string>
+<string id="Html">Html</string>
+<string id="Select signature">Select signature</string>
+<string id="Select destinataire">Select contact</string>
+<string id="You must fill to field !!">You must fill the TO field !!</string>
+<string id="You must fill subject field !!">You must fill subject field !!</string>
+<string id="You must fill message field !!">You must fill message field !!</string>
+<string id="Error occured when sending email !!">Error occured when sending email !!</string>
+<string id="Invalid mail domain !!">Invalid mail domain !!</string>
+<string id="Invalid mail account !!">Invalid mail account !!</string>
+<string id="ERROR">ERROR</string>
+<string id="Original Message">Original Message</string>
+<string id="Your message has been sent">Your message has been sent</string>
+<string id="Compose">Compose</string>
+<string id="View this account">View this account</string>
+<string id="Uncheck all mails">Uncheck all mails</string>
+<string id="Check all mails">Check all mails</string>
+<string id="Add to contacts">Add to contacts</string>
+<string id="Reply to all">Reply to all</string>
+<string id="Forward">Forward</string>
+<string id="none">none</string>
+<string id="Refresh">Refresh</string>
+<string id="Account">Account</string>
+<string id="Domain">Domain</string>
+<string id="User Name">User Name</string>
+<string id="Retype Password">Retype Password</string>
+<string id="Prefered account">Prefered account</string>
+<string id="Prefered format">Prefered format</string>
+<string id="Default number of messages to display per screen">Default number of messages to display per screen</string>
+<string id="Add Account">Add Account</string>
+<string id="Modify Account">Modify Account</string>
+<string id="Are you sure you want to delete this mail account">Are you sure you want to delete this mail account</string>
+<string id="WARNING: This operation will delete the account and all references">WARNING: This operation will delete the account and all references</string>
+<string id="Signature">Signature</string>
+<string id="ERROR: You must complete all required fields !!">ERROR: You must complete all required fields !!</string>
+<string id="ERROR: Passwords not match !!">ERROR: Passwords not match !!</string>
+<string id="ERROR: Your email is not valid !!">ERROR: Your email is not valid !!</string>
+<string id="ERROR: This email account already exists !!">ERROR: This email account already exists !!</string>
+<string id="ERROR: You must provide account field !!">ERROR: You must provide account field !!</string>
+<string id="ERROR: You must provide signature !!">ERROR: You must provide signature !!</string>
+<string id="Delete account">Delete account</string>
+<string id="Accounts">Accounts</string>
+<string id="User's Domains">Users Domains</string>
+<string id="Group's Domains">Groups Domains</string>
+<string id="Add account">Add account</string>
+<string id="Modify account">Modify account</string>
+<string id="Modify Signature">Modify Signature</string>
+<string id="Signatures">Signatures</string>
+<string id="Add Signature">Add Signature</string>
+<string id="Mail options">Mail options</string>
+<string id="Enter user name. ( You can enter multiple users separated by comma )">Enter user name. ( You can enter multiple users separated by comma )</string>
+<string id="Update access">Update access</string>
+<string id="User can update my calendar">User can update my calendar</string>
+<string id="Fullname">Fullname</string>
+<string id="Delete users">Delete users</string>
+<string id="First day of week">First day of week</string>
+<string id="On create new event, check">On create new event, check</string>
+<string id="All day">All day</string>
+<string id="View calendar categories">View calendar categories</string>
+<string id="Use bacground color for events">Use background color for events</string>
+<string id="Calendar Options">Calendar Options</string>
+<string id="Access">Access</string>
+<string id="Add Event">Add Event</string>
+<string id="Type">Type</string>
+<string id="Begin date">Begin date</string>
+<string id="End date">End date</string>
+<string id="Vacation type">Vacation type</string>
+<string id="Add Vacation">Add Vacation</string>
+<string id="Remarks">Remarks</string>
+<string id="days">days</string>
+<string id="ERROR: End date must be older">ERROR: End date must be older</string>
+<string id="Vacation request is waiting to be validated">Vacation request is waiting to be validated</string>
+<string id="Mr/Mrs">Mr/Mrs</string>
+<string id="request a vacation">request a vacation</string>
+<string id="from">from</string>
+<string id="to">to</string>
+<string id="Group name">Group name</string>
+<string id="User email">User email</string>
+<string id="Refused">Refused</string>
+<string id="Accepted">Accepted</string>
+<string id="Reasons of refusal">Reasons of refusal</string>
+<string id="Vacation request">Vacation request</string>
+<string id="Request date">Request date</string>
+<string id="has been accepted">has been accepted</string>
+<string id="has a new status">has a new status</string>
+<string id="is waiting to be validated">is waiting to be validated</string>
+<string id="Search">Search</string>
+<string id="Compagny">Company</string>
+<string id="Home Tel">Home Tel</string>
+<string id="Mobile Tel">Mobile Tel</string>
+<string id="Business Tel">Business Tel</string>
+<string id="Business Fax">Business Fax</string>
+<string id="Job Title">Job Title</string>
+<string id="Business Address">Business Address</string>
+<string id="Home Address">Home Address</string>
+<string id="Add Contact">Add Contact</string>
+<string id="Update Contact">Update Contact</string>
+<string id="Your contacts list has been updated">Your contacts list has been updated</string>
+<string id="ERROR: You must provide a first name">ERROR: You must provide a first name</string>
+<string id="ERROR: You must provide a valid email address">ERROR: You must provide a valid email address</string>
+<string id="ERROR: This contact already exists">ERROR: This contact already exists</string>
+<string id="Modify contact">Modify contact</string>
+<string id="Create contact">Create contact</string>
+<string id="You site is already up to date">Your site is already up to date</string>
+<string id="You language file has been updated">Your language file has been updated</string>
+<string id="Until date">Until date</string>
+<string id="Private">Private</string>
+<string id="Week recurrence">Week recurrence</string>
+<string id="Or">Or</string>
+<string id="Repeat">Repeat</string>
+<string id="Everyday">Everyday</string>
+<string id="Update Event">Update Event</string>
+<string id="Are you sure you want to delete this event">Are you sure you want to delete this event</string>
+<string id="WARNING: This operation will delete event permanently">WARNING: This operation will delete event permanently</string>
+<string id="You must provide a title">You must provide a title</string>
+<string id="End date must be older">End date must be older</string>
+<string id="View this calendar">View this calendar</string>
+<string id="New">New</string>
+<string id="Month">Month</string>
+<string id="Week">Week</string>
+<string id="Day">Day</string>
+<string id="Go to Today">Go to Today</string>
+<string id="Previous">Previous</string>
+<string id="Next">Next</string>
+<string id="Create a notes">Create a note</string>
+<string id="Notes list">Notes list</string>
+<string id="Return to Questions">Return to Questions</string>
+<string id="Question">Question</string>
+<string id="Response">Response</string>
+<string id="ERROR: You must choose a valid question !!">ERROR: You must choose a valid question !!</string>
+<string id="Update Question">Update Question</string>
+<string id="Are you sure you want to delete this question">Are you sure you want to delete this question</string>
+<string id="WARNING: This operation will delete question and its response">WARNING: This operation will delete question and its response</string>
+<string id="ERROR: You must provide question and response !!">ERROR: You must provide question and response !!</string>
+<string id="Questions">Questions</string>
+<string id="Add Question">Add Question</string>
+<string id="Delete question">Delete question</string>
+<string id="List of questions">List of questions</string>
+<string id="Add question">Add question</string>
+<string id="Modify question">Modify question</string>
+<string id="List of all faqs">List of all faqs</string>
+<string id="Starter">Starter</string>
+<string id="Replies">Replies</string>
+<string id="Views">Views</string>
+<string id="Last Post">Last Post</string>
+<string id="Notify me whenever someone replies ( only valid for registered users )">Notify me whenever someone replies ( only valid for registered users )</string>
+<string id="New thread">New thread</string>
+<string id="Closed">Closed</string>
+<string id="Your nickname">Your nickname</string>
+<string id="Please provide a valid email.">Please provide a valid email.</string>
+<string id="We will send you an email for confirmation before you can use our services">We will send you an email for confirmation before you can use our services</string>
+<string id="Lost Password">Lost Password</string>
+<string id="Email a new password">Email a new password</string>
+<string id="Upcoming Events">Upcoming Events</string>
+<string id="New articles">New articles</string>
+<string id="New posts">New posts</string>
+<string id="Post(s)">Post(s)</string>
+<string id="New mails">New mails</string>
+<string id="Incoming mail server">Incoming mail server</string>
+<string id="Outgoing mail server">Outgoing mail server</string>
+<string id="Incoming mail server port">Incoming mail server port</string>
+<string id="Outgoing mail server port">Outgoing mail server port</string>
+<string id="Access method">Access method</string>
+<string id="Add Domain">Add Domain</string>
+<string id="You must provide an incoming mail server">You must provide an incoming mail server</string>
+<string id="You must provide an outgoing mail server">You must provide an outgoing mail server</string>
+<string id="You must select at least one group">You must select at least one group</string>
+<string id="ERROR: This domain already exists">ERROR: This domain already exists</string>
+<string id="Create a global mail domain">Create a global mail domain</string>
+<string id="Create a group mail domain">Create a group mail domain</string>
+<string id="Create a private mail domain">Create a private mail domain</string>
+<string id="Domains">Domains</string>
+<string id="Global domains list">Global domains list</string>
+<string id="Group domains list">Group domains list</string>
+<string id="Private domains list">Private domains list</string>
+<string id="You must choose a valid domain !!">You must choose a valid domain !!</string>
+<string id="Modify mail domain">Modify mail domain</string>
+<string id="Are you sure you want to delete this mail domain">Are you sure you want to delete this mail domain</string>
+<string id="WARNING: This operation will delete the domain with all references">WARNING: This operation will delete the domain with all references</string>
+<string id="You must provide a name !!">You must provide a name !!</string>
+<string id="Mail domain doesn't exist">Mail domain doesn't exist</string>
+<string id="Delete doamain mail">Delete mail domain</string>
+<string id="mail domain">mail domain</string>
+<string id="ERROR: You must choose a valid notes">ERROR: You must choose a valid note</string>
+<string id="Update Notes">Update Note</string>
+<string id="Modify a notes">Modify a note</string>
+<string id="Contact / List">Contact / List</string>
+<string id="Find">Find</string>
+<string id="New Password">New Password</string>
+<string id="Retype New Password">Retype New Password</string>
+<string id="Update Password">Update Password</string>
+<string id="Change password">Change password</string>
+<string id="Sorry, You cannot change your password. Please contact administrator">Sorry, You cannot change your password. Please contact administrator</string>
+<string id="Update Info">Update Info</string>
+<string id="Change user info">Change user info</string>
+<string id="Update Language">Update Language</string>
+<string id="Password incorrect">Password incorrect</string>
+<string id="Are you sure you want to delete those contacts">Are you sure you want to delete those contacts</string>
+<string id="WARNING: This operation will delete contacts and their references">WARNING: This operation will delete contacts and their references</string>
+<string id="Delete contact">Delete contact</string>
+<string id="Contacts list">Contacts list</string>
+<string id="Color">Color</string>
+<string id="Add Resource">Add Resource</string>
+<string id="This resource already exists">This resource already exists</string>
+<string id="Create a calendar category">Create a calendar category</string>
+<string id="Create Calendar resource">Create Calendar resource</string>
+<string id="Calendar resources list">Calendar resources list</string>
+<string id="Calendar categories list">Calendar categories list</string>
+<string id="You must choose a valid category !!">You must choose a valid category !!</string>
+<string id="Modify Category">Modify Category</string>
+<string id="ERROR: You must choose a valid resource !!">ERROR: You must choose a valid resource !!</string>
+<string id="Modify Resource">Modify Resource</string>
+<string id="Are you sure you want to delete this calendar category">Are you sure you want to delete this calendar category</string>
+<string id="File manager">File manager</string>
+<string id="You are logged on as">You are logged on as</string>
+<string id="Prefered skin">Prefered skin</string>
+<string id="Update Skin">Update Skin</string>
+<string id="Upload">Upload</string>
+<string id="Trash">Trash</string>
+<string id="bytes">bytes</string>
+<string id="Rename">Rename</string>
+<string id="Delete directory">Delete directory</string>
+<string id="Directory">Directory</string>
 <string id="Download">Download</string>
-
 <string id="Cut">Cut</string>
-
 <string id="Paste">Paste</string>
-
 <string id="Undo">Undo</string>
-<string id="starttime">starttime</string>
-<string id="endtime">endtime</string>
-</us>
+<string id="Home folder">Home</string>
+<string id="Size">Size</string>
+<string id="Modified">Modified</string>
+<string id="Posted by">Posted by</string>
+<string id="Show disk space usage">Show disk space usage</string>
+<string id="Upload file to">Upload file to</string>
+<string id="Bytes">Bytes</string>
+<string id="Keywords">Keywords</string>
+<string id="Read only">Read only</string>
+<string id="A new file is waiting for you">A new file is waiting for you</string>
+<string id="Path">Path</string>
+<string id="New waiting file">New waiting file</string>
+<string id="Public">Public</string>
+<string id="Unregistered users">Unregistered users</string>
+<string id="Update file">Update file</string>
+<string id="Firstname">Firstname</string>
+<string id="Lastname">Name</string>
+<string id="Used">Used</string>
+<string id="Allowed">Allowed</string>
+<string id="Remaining">Remaining</string>
+<string id="Personnal Folder">Personal Folder</string>
+<string id="Global space">Global space</string>
+<string id="A file with the same name already exists">A file with the same name already exists</string>
+<string id="The file could not be uploaded">The file could not be uploaded</string>
+<string id="Last articles">Last articles</string>
+<string id="Last comments">Last comments</string>
+<string id="Last posts">Last posts</string>
+<string id="Waiting mails">Waiting mails</string>
+<string id="Firstname Lastname">Firstname Name</string>
+</en>
