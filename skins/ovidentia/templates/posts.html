@@ -27,6 +27,7 @@
 <input type="hidden" name="forum" value="{ forum }">
 <input type="hidden" name="thread" value="{ thread }">
 <input type="hidden" name="postid" value="{ postid }">
+<input type="hidden" name="flat" value="{ flat }">
 <input type="hidden" name="add" value="addreply">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -118,6 +119,7 @@
 <input type="hidden" name="forum" value="{ forum }">
 <input type="hidden" name="thread" value="{ thread }">
 <input type="hidden" name="post" value="{ post }">
+<input type="hidden" name="flat" value="{ flat }">
 <input type="hidden" name="update" value="updatereply">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -306,3 +308,60 @@ alt=""><!--#else parent --><img src="{ babSkinPath }images/Puces/Puce-h.gif" wid
 </table>
 <br>
 <!--#end newpostslist -->
+
+<!--#begin postslistflat -->
+<!--#in getnext -->
+<table border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
+  <tr>
+    <td valign="middle"> 
+      <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+        <tr> 
+          <td colspan="2" valign="middle" class="BabForumTopicsNavTitle">
+<a class="BabForumTopicsNavContribution" href="{ replysubjecturl }">{ postsubject }</a>
+</td>
+
+          
+          </td>
+        </tr>
+        
+          <!--#if what "== N" --><tr> 
+		  <td colspan="2" align="right" valign="middle" class="BabForumBackground">  
+                      <img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+class="BabForumTopicsConfirm" href="{ confirmurl }">{ 
+            confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+class="BabForumTopicsConfirm" href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+                  </td></tr>
+		  	     <!--#else what --><!--#if more --><tr>
+		  <td colspan="2" align="right" valign="middle" class="BabForumBackground">  
+       <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
+            more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+      </td>   </tr><!--#else more --><!--#endif more -->
+		   <!--#endif what -->
+		  
+		  
+		  
+		  
+		  
+     
+        <tr>
+          <td colspan="2" class="BabForumBackground">{ postmessage }</td>
+        </tr>
+        <tr> 
+          <td class="BabForumTopicsNavDate" nowrap width="100%" valign="middle">{ 
+            postdate }</td>
+          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="middle" ><!--#if replymail "!= 0" -->
+<a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ postauthor }</a>
+<!--#else replymail -->
+{ postauthor }
+<!--#endif replymail -->
+</td>
+        </tr>
+      </table>
+</td>
+</tr>
+</table>
+<br>
+<!--#endin  getnext -->
+<br>
+<!--#end postslistflat -->
