@@ -1358,10 +1358,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					if (isset($addon_id) && is_numeric($addon_id))
 						{
-						$first_addon_searchresults[$addon_id] = $this->addons->callSearchFunction($addon_id);
-						$nbrows = $first_addon_searchresults[$addon_id][1];
 						$navpos = $this->navitem == 'as-'.$addon_id ? $this->navpos : 0;
 						$this->addons->pos = $navpos;
+
+						$first_addon_searchresults[$addon_id] = $this->addons->callSearchFunction($addon_id);
+						$nbrows = $first_addon_searchresults[$addon_id][1];
+						
 						$navbar_i = navbar($GLOBALS['babLimit'],$nbrows,'as-'.$addon_id,$navpos);
 						if ($nbrows > 0)
 							$this->addonsdata[] = array($addon_id, $addon_title, $navbar_i, $first_addon_searchresults);
