@@ -3762,7 +3762,7 @@ while( $arr = $db->db_fetch_array($res))
 $db->db_query("ALTER TABLE ".BAB_RESOURCESCAL_TBL." RENAME ".BAB_CAL_RESOURCES_TBL."");
 $db->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." DROP id_group");
 $db->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD id_dgowner INT( 11 ) UNSIGNED NOT NULL");
-$db->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD INDEX ( `id_dgowner` ));
+$db->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD INDEX ( `id_dgowner` )");
 
 $db->db_query("ALTER TABLE ".BAB_CATEGORIESCAL_TBL." RENAME ".BAB_CAL_CATEGORIES_TBL."");
 $db->db_query("ALTER TABLE ".BAB_CAL_CATEGORIES_TBL." DROP id_group");
