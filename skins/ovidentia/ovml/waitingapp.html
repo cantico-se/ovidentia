@@ -126,12 +126,9 @@
 <OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
 <td width="120"><OVPostDate date="%j/%n/%Y - %H:%i"></td>
 <td align="right"><span style="font-Size:9">
-<OCRecentThreads>
-<OCIfEqual expr1="<OVPostThreadId>" expr2="<OVtemp>">
-<OCForums forumid="<OVPostForumId>"><OVForumName striptags="1" strlen="20,..."></OCForums>
-/ <OVPostTitle striptags="1" strlen="20,...">
-</OCIfEqual>
-</OCRecentThreads>/</span>
+<OCForum forumid="<OVPostForumId>"><OVForumName striptags="1" strlen="20,..."> / </OCForum>
+<OCPost postid="<OVPostThreadId>"><OVPostTitle striptags="1" strlen="20,..."> / </OCPost>
+</span>
 </td>
 <td align="left">
 <a class="BabSummaryLinkColor" href="javascript: Start('<OVPostPopupUrl>', 'OviPost', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVPostTitle striptags="1" strlen="100,..."></a></td>

@@ -1127,6 +1127,7 @@
 <string id="one month">un mois</string>
 <string id="one year">une année</string>
 <string id="infinite">infinie</string>
-<string id="Automatic connection time">durée de la connection automatique</string>
-<string id="no automatic connection">pas de connection automatique</string>
+<string id="Automatic connection time">Durée de la connection automatique</string>
+<string id="Waiting files">Fichiers en attente</string>
+<string id="New Articles">Nouveaux articles</string>
 </fr>
