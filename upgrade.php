@@ -4444,7 +4444,7 @@ function upgrade550to551()
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
-$n = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_MIME_TYPES_TBL." WHERE ext='pdf'"));
+list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_MIME_TYPES_TBL." WHERE ext='pdf'"));
 if ($n == 0)
 	{
 	$db->db_query("INSERT INTO ".BAB_MIME_TYPES_TBL." (ext, mimetype) VALUES ('pdf','application/pdf')");
