@@ -609,7 +609,7 @@ if( !isset($pos))
 
 if( isset($add) && $add == "addreply")
 	{
-	saveReply($forum, $thread, $postid, $name, $subject, $message);
+	saveReply($forum, $thread, $postid, $author, $subject, $message);
 	$post = $postid;
 	}
 
