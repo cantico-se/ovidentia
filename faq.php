@@ -1011,8 +1011,14 @@ function deleteSubCategory($item, $idscat, $ids)
 
 	$db = $GLOBALS['babDB'];
 
-	$query = "delete from ".BAB_FAQ_SUBCAT_TBL." where id='".$ids."'";
-	$db->db_query($query);
+	list($idnode) = $db->db_fetch_array($db->db_query("select id_node from ".BAB_FAQ_SUBCAT_TBL." where id='".$ids."'"));
+	$babTree = new bab_dbtree(BAB_FAQ_TREES_TBL, $item);
+	if( $babTree->remove($idnode) )
+		{
+		$db->db_query("delete from ".BAB_FAQ_SUBCAT_TBL." where id='".$ids."'");
+		$db->db_query("delete from ".BAB_FAQQR_TBL." where idcat='".$item."' and id_subcat='".$ids."'");
+		}
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
 	}
 

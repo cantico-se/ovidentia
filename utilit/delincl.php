@@ -271,16 +271,18 @@ function bab_deleteFaq($id)
 	$db = $GLOBALS['babDB'];
 
 	// delete questions/responses for this faq
-	$req = "delete from ".BAB_FAQQR_TBL." where idcat='$id'";
-	$res = $db->db_query($req);	
+	$db->db_query("delete from ".BAB_FAQQR_TBL." where idcat='".$id."'");	
+
+	$db->db_query("delete from ".BAB_FAQ_TREES_TBL." where id_user='".$id."'");	
 
 	// delete faq from groups
-	$req = "delete from ".BAB_FAQCAT_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);	
+	$db->db_query("delete from ".BAB_FAQCAT_GROUPS_TBL." where id_object='".$id."'");	
+	$db->db_query("delete from ".BAB_FAQMANAGERS_GROUPS_TBL." where id_object='".$id."'");	
+
+	$db->db_query("delete from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$id."'");
 
 	// delete faq
-	$req = "delete from ".BAB_FAQCAT_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	$db->db_query("delete from ".BAB_FAQCAT_TBL." where id='".$id."'");
 }
 
 function bab_deleteUploadDir($path)
