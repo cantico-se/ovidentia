@@ -577,14 +577,16 @@ function database()
 			$this->t_data = bab_translate("Export table data");
 			$this->t_drop_table = bab_translate("Add 'DROP TABLE' instructions");
 			
-			if (isset($_POST)) $this->val = $_POST;
+			if (isset($_POST) && count($_POST) > 0)
+				$this->val = $_POST;
 			else
 				{
 				$el_to_init = array('structure','data','drop_table');
 				foreach($el_to_init as $el)
+					{
 					$this->val[$el] = true;
+					}
 				}
-			
 			}
 			
 		}
@@ -795,14 +797,17 @@ class bab_sqlExport
 			$this->dumpPush("CREATE TABLE `".$name."` (");
 			
 			$this->autoCommaStart();
+			}
 			
-			$this->table_collumn = array();
-			$describe = $this->db->db_query("DESCRIBE ".$name);
-			while($collumn = $this->db->db_fetch_array($describe))
-				{
-				$this->handleCollumn($collumn);
-				}
-				
+		$this->table_collumn = array();
+		$describe = $this->db->db_query("DESCRIBE ".$name);
+		while($collumn = $this->db->db_fetch_array($describe))
+			{
+			$this->handleCollumn($collumn);
+			}
+			
+		if ($this->opt_structure)
+			{
 			$key = $this->db->db_query("SHOW KEYS FROM ".$name);
 			while($line = $this->db->db_fetch_array($key))
 				{
@@ -835,15 +840,18 @@ class bab_sqlExport
 		{
 		$this->table_collumn[] = $collumn['Field'];
 		$this->collumn_type[$collumn['Field']] = $collumn['Type'];
-		$str = $collumn['Field'].' '.$collumn['Type'];
-		if (!empty($collumn['Default']) )
-			$str .= ' DEFAULT \''.$collumn['Default'].'\'';
-		if ($collumn['Null'] != 'YES')
-            $str .= ' NOT NULL';
-        if (!empty($collumn['Extra']))
-            $str .= ' ' . $collumn['Extra'];
-			
-		$this->dumpPush($str);
+		if ($this->opt_structure)
+			{
+			$str = $collumn['Field'].' '.$collumn['Type'];
+			if (!empty($collumn['Default']) )
+				$str .= ' DEFAULT \''.$collumn['Default'].'\'';
+			if ($collumn['Null'] != 'YES')
+				$str .= ' NOT NULL';
+			if (!empty($collumn['Extra']))
+				$str .= ' ' . $collumn['Extra'];
+				
+			$this->dumpPush($str);
+			}
 		}
 		
 	function handleKey(&$row)
