@@ -190,7 +190,9 @@ function viewVersion()
 			$this->srcversiontxt = babTranslate("Php version");
 			$this->srcversion = phpversion();//$GLOBALS['CurrentVersion'];
 			$this->baseversiontxt = babTranslate("Database server version");
-			$this->baseversion = @mysql_get_server_info();
+			$db = new db_mysql();
+			$arr = $db->db_fetch_array($db->db_query("show variables like 'version'"));
+			$this->baseversion = $arr['Value'];
 			$this->urlphpinfo = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=sites&idx=phpinfo');";
 			$this->phpinfo = "phpinfo";
 			}
