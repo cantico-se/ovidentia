@@ -40,6 +40,8 @@ function browseGroups($cb)
 		var $res;
 
 		var $groupid;
+		var $groupname;
+		var $jgroupname;
 
 		function temp($cb)
 			{
@@ -48,7 +50,7 @@ function browseGroups($cb)
 			$this->cb = $cb;
 
 			$this->fullname = bab_translate("Group");
-			$this->res = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."'");
+			$this->res = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
 			$this->count = $this->db->db_num_rows($this->res);
 			}
 
@@ -61,12 +63,14 @@ function browseGroups($cb)
 				$this->groupid = $arr['id'];
 				if( $this->arr['id'] < 3 )
 					{
-					$this->groupname = str_replace("'"," ",bab_getGroupName($arr['id']));
+					$this->groupname = bab_getGroupName($arr['id']);
 					}
 				else
 					{
-					$this->groupname = str_replace("'"," ",$arr['name']);
+					$this->groupname = $arr['name'];
 					}
+				$this->jgroupname = str_replace("'", "\'", $this->groupname);
+				$this->jgroupname = str_replace('"', "'+String.fromCharCode(34)+'",$this->jgroupname);				
 				$i++;
 				return true;
 				}
