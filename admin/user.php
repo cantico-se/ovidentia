@@ -412,6 +412,10 @@ function confirmDeleteUser($id)
 	// delete files owned by this user
 	bab_deleteUploadUserFiles("N", $id);
 
+	// delete user from BAB_DBDIR_ENTRIES_TBL
+	$req = "delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'";
+	$res = $db->db_query($req);	
+
 	// delete user
 	$req = "delete from ".BAB_USERS_TBL." where id='$id'";
 	$res = $db->db_query($req);

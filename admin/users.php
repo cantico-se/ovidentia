@@ -279,7 +279,7 @@ function listUsers($pos, $grp)
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "userslist"));
 	return $temp->count;
 	}
-
+/*
 function userCreate($firstname, $lastname, $nickname, $email)
 	{
 	global $babBody;
@@ -324,7 +324,7 @@ function userCreate($firstname, $lastname, $nickname, $email)
 	$temp = new temp($firstname, $lastname, $nickname, $email);
 	$babBody->babecho(	bab_printTemplate($temp,"users.html", "usercreate"));
 	}
-
+*/
 function updateGroup( $grp, $users, $userst)
 {
 	$db = $GLOBALS['babDB'];
@@ -351,63 +351,6 @@ function updateGroup( $grp, $users, $userst)
 		}
 	}
 }
-
-function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
-	{
-	global $babBody, $babAdminEmail, $babInstallPath;
-
-	class tempa
-		{
-        var $sitename;
-        var $linkurl;
-        var $linkname;
-		var $username;
-		var $message;
-
-
-		function tempa($name, $msg)
-			{
-            global $babSiteName;
-            $this->linkurl = $link;
-            $this->linkname = bab_translate("link");
-            $this->username = $name;
-			$this->sitename = $babSiteName;
-			$this->message = $msg;
-			}
-		}
-
-	$mail = bab_mail();
-	if( $mail == false )
-		return;
-    $mail->mailTo($email, $name);
-    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
-    $mail->mailSubject(bab_translate("Registration Confirmation"));
-	
-	$message = bab_translate("You have been registered on our site") ."<br>";
-	$message .= bab_translate("Nickname") .": ". $nickname;
-	if( !empty($pwd))
-		{
-		$message .= " / ". bab_translate("Password") .": ". $pwd;
-		}
-
-	$tempa = new tempa($name, $message);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistration2");
-
-    $mail->mailBody($message, "html");
-
-	$message = bab_translate("You have been registered on our site")."\n";
-	$message .= bab_translate("Nickname") .": ". $nickname;
-	if( !empty($pwd))
-		{
-		$message .= " / ". bab_translate("Password") .": ". $pwd;
-		}
-
-	$tempa = new tempa($name, $message);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt2");
-
-	$mail->mailAltBody($message);
-    $mail->send();
-	}
 
 /* main */
 if( !isset($pos))
@@ -460,17 +403,19 @@ switch($idx)
 		browseUsers($pos, $cb);
 		exit;
 		break;
+	/*
 	case "Create":
 		$babBody->title = bab_translate("Create a user");
 		userCreate($firstname, $lastname, $nickname, $email);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
 		break;
+	*/
 	case "List":
 		$babBody->title = bab_translate("Users list");
 		$cnt = listUsers($pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 		break;
 	default:
 		break;

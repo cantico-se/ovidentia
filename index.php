@@ -462,6 +462,12 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
 			$incl = "admin/addons";
 		break;
+	case "admdir":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Directories");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+			$incl = "admin/admdir";
+		break;
 	case "options":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Options");
@@ -572,6 +578,12 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "vacapp";
 		break;
+	case "directory":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Directories");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "directory";
+		break;
 	case "lusers":
 		$babLevelOne = "";
 		$babLevelTwo = "";
@@ -667,6 +679,10 @@ switch($tg)
 		break;
 	case "version":
 		include $babInstallPath."version.php";
+		exit;
+		break;
+	case "ovtemplate":
+		include $babInstallPath."ovtemplate.php";
 		exit;
 		break;
 	case "accden":

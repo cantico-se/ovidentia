@@ -228,6 +228,7 @@ valign="middle">{ group }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ vacation } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notes } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ contacts } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ directory } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ persdiskspace } </td>
 </tr>
 <!--#in getnext -->
@@ -251,6 +252,9 @@ valign="middle">{ group }</td>
 <input type="checkbox" name="congrpids[]" { concheck } value="{ grpid }">
 </td>
 <td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="dirgrpids[]" { dircheck } value="{ grpid }">
+</td>
+<td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="pdsgrpids[]" { pdscheck } value="{ grpid }">
 </td>
 </tr>        
@@ -261,7 +265,7 @@ valign="middle">{ group }</td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('calgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('vacgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('vacgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td width="1%" align="center"><a href="javascript:onCheckAll('notgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td width="1%" align="center"><a href="javascript:onCheckAll('congrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('congrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td><td width="1%" align="center"><a href="javascript:onCheckAll('pdsgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('pdsgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
+<td width="1%" align="center"><a href="javascript:onCheckAll('congrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('congrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td><td width="1%" align="center"><a href="javascript:onCheckAll('dirgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('dirgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td><td width="1%" align="center"><a href="javascript:onCheckAll('pdsgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('pdsgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
 </table>
 </td>
 </tr>

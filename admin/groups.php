@@ -121,6 +121,7 @@ function groupsOptions()
 		var $vacation;
 		var $notes;
 		var $contacts;
+		var $directory;
 		var $url;
 		var $urlname;
 		var $group;
@@ -141,6 +142,7 @@ function groupsOptions()
 			$this->notes = bab_translate("Notes");
 			$this->contacts = bab_translate("Contacts");
 			$this->persdiskspace = bab_translate("Personal disk space");
+			$this->directory = bab_translate("Directory");
 			$this->modify = bab_translate("Update");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -179,10 +181,19 @@ function groupsOptions()
 					$this->pdscheck = "checked";
 				else
 					$this->pdscheck = "";
-				if( $this->arr['id'] < 3 )
-					$this->urlname = bab_getGroupName($this->arr['id']);
+
+				if( $this->arr['directory'] == "Y")
+					$this->dircheck = "checked";
 				else
+					$this->dircheck = "";
+				if( $this->arr['id'] < 3 )
+					{
+					$this->urlname = bab_getGroupName($this->arr['id']);
+					}
+				else
+					{
 					$this->urlname = $this->arr['name'];
+					}
 
 				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='".$this->arr['id']."' and type='2'"));
 				if( $arr['actif'] == "Y")
@@ -238,12 +249,12 @@ function addGroup($name, $description, $managerid, $bemail)
 		}
 	}
 
-function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids)
+function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids)
 {
 
 	$db = $GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', vacation='N', notes='N', contacts='N', ustorage='N'"); 
+	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', vacation='N', notes='N', contacts='N', ustorage='N', directory='N'"); 
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{
 		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id='".$mailgrpids[$i]."'"); 
@@ -274,6 +285,18 @@ function saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $con
 	{
 		$res = $db->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where owner='".$calgrpids[$i]."' and type='2'");
 	}
+
+	for( $i=0; $i < count($dirgrpids); $i++)
+	{
+		$db->db_query("update ".BAB_GROUPS_TBL." set directory='Y' where id='".$dirgrpids[$i]."'");
+		$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$dirgrpids[$i]."'");
+		if( !$res || $db->db_num_rows($res) == 0 )
+		{
+			$db->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group) values ('".bab_getGroupName($dirgrpids[$i])."','','".$dirgrpids[$i]."')");
+		}
+
+
+	}
 }
 
 /* main */
@@ -284,7 +307,7 @@ if( isset($add))
 	addGroup($name, $description, $managerid, $bemail);
 
 if( isset($update) && $update == "options")
-	saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids);
+	saveGroupsOptions($mailgrpids, $vacgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids);
 
 switch($idx)
 	{

@@ -804,7 +804,7 @@ while($row = $db->db_fetch_array($res))
 			$refcount = $arr['refcount'];
 			}
 
-		$db->db_query("insert into ".BAB_FM_FOLDERS_TBL." (id, folder, manager, idsa, filenotify, active) values ('".$row['id']."', '".$row['name']."', '".$row['manager']."', '".$idfa."', '".$row['filenotify']."', '".$row['gstorage']."')");
+		$db->db_query("insert into ".BAB_FM_FOLDERS_TBL." (id, folder, manager, idsa, filenotify, active) values ('".$row['id']."', '".addslashes($row['name'])."', '".$row['manager']."', '".$idfa."', '".$row['filenotify']."', '".$row['gstorage']."')");
 		$fid = $db->db_insert_id();
 
 		$res2 = $db->db_query("select id from ".BAB_FILES_TBL." where confirmed='N' and bgroup='Y' and id_owner='".$row['id']."'");
@@ -819,7 +819,7 @@ while($row = $db->db_fetch_array($res))
 		}
 	else
 		{
-		$db->db_query("insert into ".BAB_FM_FOLDERS_TBL." (id, folder, manager, idsa, filenotify, active) values ('".$row['id']."', '".$row['name']."', '0', '0', '".$row['filenotify']."', '".$row['gstorage']."')");
+		$db->db_query("insert into ".BAB_FM_FOLDERS_TBL." (id, folder, manager, idsa, filenotify, active) values ('".$row['id']."', '".addslashes($row['name'])."', '0', '0', '".$row['filenotify']."', '".$row['gstorage']."')");
 		$fid = $db->db_insert_id();
 
 		$db->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where bgroup='Y' and id_owner='".$row['id']."' and confirmed='N'");
@@ -1008,6 +1008,262 @@ $db->db_query("ALTER TABLE ".BAB_VACATIONS_TBL." ADD INDEX(datebegin)");
 $db->db_query("ALTER TABLE ".BAB_VACATIONS_TBL." ADD INDEX(dateend)");
 $db->db_query("ALTER TABLE ".BAB_VACATIONS_TBL." ADD INDEX(type)");
 
+return $ret;
+}
+
+function upgrade342to343()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_GROUPS_TBL." ADD `directory` ENUM('N','Y') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$db->db_query("update ".BAB_GROUPS_TBL." set directory='Y' where id='1'");
+
+$req = "CREATE TABLE ".BAB_LDAP_DIRECTORIES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "host tinytext NOT NULL,";
+$req .= "basedn text NOT NULL,";
+$req .= "userdn text NOT NULL,";
+$req .= "password tinyblob NOT NULL,";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_LDAP_DIRECTORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_DB_DIRECTORIES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "description varchar(255) NOT NULL default '',";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_DB_DIRECTORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (id, name, description, host, basedn, userdn, password) select id, name, description, host, basedn, userdn, password from ad_directories where ldap='Y'";
+$res = $db->db_query($req);
+
+$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (id, name, description) select id, name, description from ad_directories where ldap='N'";
+$res = $db->db_query($req);
+
+$req = "CREATE TABLE ".BAB_LDAPDIRVIEW_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_LDAPDIRVIEW_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_DBDIRVIEW_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_DBDIRVIEW_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "select id, ldap from ad_directories";
+$res = $db->db_query($req);
+
+while( $arr = $db->db_fetch_array($res))
+	{
+	$req = "select * from ad_dirview_groups where id_object='".$arr['id']."'";
+	$res2 = $db->db_query($req);
+	while( $arr2 = $db->db_fetch_array($res2))
+		{
+		if( $arr['ldap'] == 'Y')
+			$db->db_query("insert into ".BAB_LDAPDIRVIEW_GROUPS_TBL." ( id_object, id_group) values ('".$arr2['id_object']."', '".$arr2['id_group']."')");
+		else
+			$db->db_query("insert into ".BAB_DBDIRVIEW_GROUPS_TBL." ( id_object, id_group) values ('".$arr2['id_object']."', '".$arr2['id_group']."')");
+		}
+	}
+
+$req = "CREATE TABLE ".BAB_DBDIRADD_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_DBDIRADD_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "insert into ".BAB_DBDIRADD_GROUPS_TBL." (id_object, id_group) select id_object, id_group from ad_diradd_groups";
+$res = $db->db_query($req);
+
+$req = "CREATE TABLE ".BAB_DBDIRUPDATE_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_DBDIRUPDATE_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "insert into ".BAB_DBDIRUPDATE_GROUPS_TBL." (id_object, id_group) select id_object, id_group from ad_dirupdate_groups";
+$res = $db->db_query($req);
+
+$req = "CREATE TABLE ".BAB_DBDIR_FIELDS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "x_name varchar(255) NOT NULL default '',";
+$req .= "description tinytext NOT NULL,";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_DBDIR_FIELDS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "insert into ".BAB_DBDIR_FIELDS_TBL." select * from ad_fields";
+$res = $db->db_query($req);
+
+$req = "CREATE TABLE ".BAB_DBDIR_FIELDSEXTRA_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_directory int(11) unsigned NOT NULL default '0',";
+$req .= "id_field int(11) unsigned NOT NULL default '0',";
+$req .= "default_value text NOT NULL,";
+$req .= "modifiable enum('N','Y') NOT NULL default 'N',";
+$req .= "required enum('N','Y') NOT NULL default 'N',";
+$req .= "multilignes enum('N','Y') NOT NULL default 'N',";
+$req .= "ordering int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_DBDIR_FIELDSEXTRA_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." select * from ad_directories_fields";
+$res = $db->db_query($req);
+
+$req = "CREATE TABLE ".BAB_DBDIR_ENTRIES_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "cn varchar(255) NOT NULL default '',";
+$req .= "sn varchar(255) NOT NULL default '',";
+$req .= "mn varchar(255) NOT NULL default '',";
+$req .= "givenname varchar(255) NOT NULL default '',";
+$req .= "jpegphoto varchar(255) NOT NULL default '',";
+$req .= "email text NOT NULL,";
+$req .= "btel varchar(255) NOT NULL default '',";
+$req .= "mobile varchar(255) NOT NULL default '',";
+$req .= "htel varchar(255) NOT NULL default '',";
+$req .= "bfax varchar(255) NOT NULL default '',";
+$req .= "title varchar(255) NOT NULL default '',";
+$req .= "departmentnumber varchar(255) NOT NULL default '',";
+$req .= "organisationname varchar(255) NOT NULL default '',";
+$req .= "bstreetaddress text NOT NULL,";
+$req .= "bcity varchar(255) NOT NULL default '',";
+$req .= "bpostalcode varchar(10) NOT NULL default '',";
+$req .= "bstate varchar(255) NOT NULL default '',";
+$req .= "bcountry varchar(255) NOT NULL default '',";
+$req .= "hstreetaddress text NOT NULL,";
+$req .= "hcity varchar(255) NOT NULL default '',";
+$req .= "hpostalcode varchar(10) NOT NULL default '',";
+$req .= "hstate varchar(255) NOT NULL default '',";
+$req .= "hcountry varchar(255) NOT NULL default '',";
+$req .= "user1 text NOT NULL,";
+$req .= "user2 text NOT NULL,";
+$req .= "user3 text NOT NULL,";
+$req .= "photo_data longblob NOT NULL,";
+$req .= "photo_type varchar(20) NOT NULL default '',";
+$req .= "id_directory int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_DBDIR_ENTRIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." select * from ad_dbentries";
+$res = $db->db_query($req);
+
+$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group) values ('Ovidentia', 'Ovidentia directory', '1')";
+$res = $db->db_query($req);
+$iddir = $db->db_insert_id();
+
+$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+while( $arr = $db->db_fetch_array($res))
+	{
+	/* id_directory = '0' means entry is owned by Ovidentia directory */
+	$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes) VALUES ('0', '" . $arr['id']. "', '', 'N', 'N', 'N')";
+	$db->db_query($req);
+	}
+
+
+$req = "ALTER TABLE ".BAB_DBDIR_ENTRIES_TBL." ADD id_user INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_DBDIR_ENTRIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "select * from ".BAB_USERS_TBL."";
+$res = $db->db_query($req);
+/* id_directory = '0' means entry is owned by Ovidentia directory */
+while($arr = $db->db_fetch_array($res))
+	{
+	$req = "insert into ".BAB_DBDIR_ENTRIES." (sn, givenname, email, id_directory, id_user) values ('".addslashes($arr['lastname'])."', '".addslashes($arr['firstname'])."', '".addslashes($arr['email'])."', '0', '".$arr['id']."')";
+	$db->db_query($req);
+	}
 return $ret;
 }
 ?>

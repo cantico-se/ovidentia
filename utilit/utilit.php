@@ -447,6 +447,7 @@ function babAdminSection($close)
 	$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y";
 	$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfms";
 	$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
+	$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=admdir";
 	$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
 	$this->head = bab_translate("This section is for Administration");
 	$this->foot = bab_translate("");
@@ -608,6 +609,7 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=fileman";
 		}
 
+	$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
 	$res = $babDB->db_query("select id, title from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $babDB->db_fetch_array($res))
 		{

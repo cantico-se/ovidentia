@@ -5,6 +5,8 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include_once "base.php";
+include $babInstallPath."admin/register.php";
+
 function changePassword()
 	{
 	global $babBody,$BAB_SESS_USERID;
@@ -40,7 +42,7 @@ function changePassword()
 		$babBody->msgerror = bab_translate("Sorry, You cannot change your password. Please contact administrator");
 	}
 
-function changeUserInfo($firstname, $lastname, $nickname, $email)
+function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)
 	{
 	global $babBody,$BAB_SESS_USERID;
 	class temp
@@ -49,24 +51,28 @@ function changeUserInfo($firstname, $lastname, $nickname, $email)
 		var $lastname;
 		var $nickname;
 		var $email;
+		var $middlename;
 		var $firstnameval;
 		var $lastnameval;
 		var $nicknameval;
+		var $middlenameval;
 		var $emailval;
 
 		var $password;
 		var $update;
 		var $title;
 
-		function temp($firstname, $lastname, $nickname, $email)
+		function temp($firstname, $middlename, $lastname, $nickname, $email)
 			{
 			$this->firstnameval = $firstname != ""? $firstname: "";
 			$this->lastnameval = $lastname != ""? $lastname: "";
 			$this->nicknameval = $nickname != ""? $nickname: "";
+			$this->middlenameval = $middlename != ""? $middlename: "";
 			$this->emailval = $email != ""? $email: "";
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
 			$this->nickname = bab_translate("Nickname");
+			$this->middlename = bab_translate("Middle Name");
 			$this->email = bab_translate("Email");
 
 			$this->password = bab_translate("Password");
@@ -80,7 +86,7 @@ function changeUserInfo($firstname, $lastname, $nickname, $email)
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
-	$temp = new temp($firstname, $lastname, $nickname, $email);
+	$temp = new temp($firstname, $middlename, $lastname, $nickname, $email);
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changeuserinfo"));
 	}
 
@@ -337,10 +343,50 @@ function changeSkin($skin)
     $babBody->babecho(	bab_printTemplate($tempc,"options.html", "changeskin"));
     }
 
+function userChangePassword($oldpwd, $newpwd)
+	{
+	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
+
+	$new_password1=strtolower($newpwd);
+	$sql="select * from ".BAB_USERS_TBL." where id='". $BAB_SESS_USERID ."'";
+	$db = $GLOBALS['babDB'];
+	$result=$db->db_query($sql);
+	if ($db->db_num_rows($result) < 1)
+		{
+		$babBody->msgerror = bab_translate("User not found or bad password");
+		return false;
+		}
+	else
+		{
+		$arr = $db->db_fetch_array($result);
+		$oldpwd2 = md5(strtolower($oldpwd));
+		if( $oldpwd2 == $arr['password'])
+			{
+			$sql="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd)). "' ".
+				"where id='". $BAB_SESS_USERID . "'";
+			$result=$db->db_query($sql);
+			if ($db->db_affected_rows() < 1)
+				{
+				$babBody->msgerror = bab_translate("Nothing Changed");
+				return false;
+				}
+			else
+				{
+				$babBody->msgerror = bab_translate("Password Changed");
+				return true;
+				}
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("ERROR: Old password incorrect !!");
+			return false;
+			}
+		}
+	}
+
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
 	global $babBody, $babInstallPath;
-	include $babInstallPath."admin/register.php";
 
 	if( empty($oldpwd) || empty($newpwd1) || empty($newpwd2))
 		{
@@ -386,12 +432,12 @@ function updateSkin($skin, $style)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
-function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
+function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email)
 	{
 	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 
 	$password = strtolower($password);
-	$req = "select * from ".BAB_USERS_TBL." where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
+	$req = "select id from ".BAB_USERS_TBL." where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($req);
 	if (!$res || $db->db_num_rows($res) < 1)
@@ -416,7 +462,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 		
 		if( $BAB_SESS_NICKNAME != $nickname )
 			{
-			$req = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
+			$req = "select id from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
 			$res = $db->db_query($req);
 			if( $db->db_num_rows($res) > 0)
 				{
@@ -425,19 +471,23 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 				}
 			}
 
-		if( $arr['firstname'] != $firstname || $arr['lastname'] != $lastname )
-			{
-			if( bab_getUserId($firstname. " " . $lastname) != 0)
-				{
-				$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
-				return false;
-				}
-			}
-		$hash=md5($nickname.$BAB_HASH_VAR);
 		$replace = array( " " => "", "-" => "");
-		$hashname = md5(strtolower(strtr($firstname.$lastname, $replace)));
+		$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
+		$query = "select id from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$BAB_SESS_USERID."'";	
+		$res = $db->db_query($query);
+		if( $db->db_num_rows($res) > 0)
+			{
+			$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
+			return false;
+			}
+
+		$hash=md5($nickname.$BAB_HASH_VAR);
 		$req = "update ".BAB_USERS_TBL." set firstname='".$firstname."', lastname='".$lastname."', nickname='".$nickname."', email='".$email."', confirm_hash='".$hash."', hashname='".$hashname."' where id='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
+
+		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set sn='".$firstname."', mn='".$middlename."', givenname='".$lastname."', email='".$email."' where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
+		$res = $db->db_query($req);
+
 		$BAB_SESS_NICKNAME = $nickname;
 		$BAB_SESS_USER = bab_composeUserName($firstname, $lastname);
 		$BAB_SESS_EMAIL = $email;
@@ -474,10 +524,11 @@ if( isset($update))
         	updateSkin($skin, $style);
             break;
         case "userinfo":
-        	if(updateUserInfo($password, $firstname, $lastname, $nickname, $email))
+        	if(updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email))
 				{
 				unset($firstname);
 				unset($lastname);
+				unset($middlename);
 				unset($nickname);
 				unset($email);
 				}
@@ -505,18 +556,19 @@ function updateStateSection($c, $w, $closed)
 	Header("Location: ". $HTTP_REFERER);
 	}
 
-if( !isset($firstname) &&  !isset($lastname) && !isset($nickname) && !isset($email))
+if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email))
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'";
+	$req = "select sn, mn, givenname, email from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$firstname = $arr['firstname'];
-		$lastname = $arr['lastname'];
-		$nickname = $arr['nickname'];
+		$firstname = $arr['sn'];
+		$lastname = $arr['givenname'];
+		$middlename = $arr['mn'];
 		$email = $arr['email'];
+		$nickname = bab_getUserNickname($BAB_SESS_USERID);
 		}
 	}
 
@@ -534,7 +586,7 @@ switch($idx)
 	case "global":
 		//$babBody->title = bab_translate("");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		changeUserInfo($firstname, $lastname, $nickname, $email);
+		changeUserInfo($firstname, $middlename, $lastname, $nickname, $email);
 		changePassword();
 		changeSkin($skin);
 		changeLanguage();

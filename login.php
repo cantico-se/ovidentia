@@ -47,36 +47,6 @@ function emailPassword()
 	$babBody->babecho(	bab_printTemplate($temp,"login.html", "emailpassword"));
 	}
 
-function signOn( $nickname, $password)
-	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID;
-	if( empty($nickname) || empty($password))
-		{
-		$babBody->msgerror = bab_translate("You must complete all fields !!");
-		return false;
-		}
-
-	if( !userLogin($nickname, $password))
-		return false;
-
-	$db = $GLOBALS['babDB'];
-	$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		$db->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id='".$BAB_SESS_USERID."'");
-		}
-
-	$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."' where id='".$arr['id']."'");
-		}
-
-	return true;
-	}
-
 function signOff()
 	{
 	global $babBody, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
@@ -116,12 +86,13 @@ function signOff()
 	Header("Location: ". $GLOBALS['babPhpSelf']);
 	}
 
-function userCreate($firstname, $lastname, $nickname, $email)
+function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 	{
 	global $babBody;
 	class temp
 		{
 		var $firstname;
+		var $middlename;
 		var $lastname;
 		var $nickname;
 		var $email;
@@ -129,18 +100,21 @@ function userCreate($firstname, $lastname, $nickname, $email)
 		var $repassword;
 		var $adduser;
 		var $firstnameval;
+		var $middlenameval;
 		var $lastnameval;
 		var $nicknameval;
 		var $emailval;
 		var $infotxt;
 
-		function temp($firstname, $lastname, $nickname, $email)
+		function temp($firstname, $middlename, $lastname, $nickname, $email)
 			{
 			$this->firstnameval = $firstname != ""? $firstname: "";
+			$this->middlenameval = $middlename != ""? $middlename: "";
 			$this->lastnameval = $lastname != ""? $lastname: "";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->emailval = $email != ""? $email: "";
 			$this->firstname = bab_translate("First Name");
+			$this->middlename = bab_translate("Middle Name");
 			$this->lastname = bab_translate("Last Name");
 			$this->nickname = bab_translate("Nickname");
 			$this->email = bab_translate("Email");
@@ -152,8 +126,203 @@ function userCreate($firstname, $lastname, $nickname, $email)
 			}
 		}
 
-	$temp = new temp($firstname, $lastname, $nickname, $email);
+	$temp = new temp($firstname, $middlename, $lastname, $nickname, $email);
 	$babBody->babecho(	bab_printTemplate($temp,"login.html", "usercreate"));
+	}
+
+function signOn( $nickname, $password)
+	{
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID;
+	if( empty($nickname) || empty($password))
+		{
+		$babBody->msgerror = bab_translate("You must complete all fields !!");
+		return false;
+		}
+
+	if( !userLogin($nickname, $password))
+		return false;
+
+	$db = $GLOBALS['babDB'];
+	$res=$db->db_query("select datelog from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		$db->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$arr['datelog']."' where id='".$BAB_SESS_USERID."'");
+		}
+
+	$res=$db->db_query("select * from ".BAB_USERS_LOG_TBL." where id_user='0' and sessid='".session_id()."'");
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."' where id='".$arr['id']."'");
+		}
+
+	return true;
+	}
+
+function sendPassword ($nickname)
+	{
+	global $babBody, $BAB_HASH_VAR, $babAdminEmail;
+
+	if (!empty($nickname))
+		{
+		$req="select * from ".BAB_USERS_TBL." where nickname='$nickname'";
+		$db = $GLOBALS['babDB'];
+		$res = $db->db_query($req);
+		if (!$res || $db->db_num_rows($res) < 1)
+			{
+			$babBody->msgerror = bab_translate("Incorrect nickname");
+			return false;
+			}
+		else
+			{
+			$arr = $db->db_fetch_array($res);
+			$new_pass=strtolower(random_password(8));
+
+			//update the database to include the new password
+			$req="update ".BAB_USERS_TBL." set password='". md5($new_pass) ."' where nickname='$nickname'";
+			$res=$db->db_query($req);
+
+			//send a simple email with the new password
+			notifyUserPassword($new_pass, $arr['email']);
+			$babBody->msgerror = bab_translate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
+			return true;
+			}
+		}
+	else
+		{
+		$babBody->msgerror = bab_translate("ERROR - Nickname is required");
+		return false;
+		}
+}
+
+function userLogin($nickname,$password)
+	{
+	global $babBody;
+	$password=strtolower($password);
+	$sql="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='". md5($password) ."'";
+	$db = $GLOBALS['babDB'];
+	$result=$db->db_query($sql);
+	if ($db->db_num_rows($result) < 1)
+		{
+		$babBody->msgerror = bab_translate("User not found or password incorrect");
+		return false;
+		} 
+	else 
+		{
+		$arr = $db->db_fetch_array($result);
+		if( $arr['disabled'] == '1')
+			{
+			$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your adminsitrator");
+			return false;
+			}
+		if ($arr['is_confirmed'] == '1')
+			{
+			if( isset($_SESSION))
+				{
+				$_SESSION['BAB_SESS_NICKNAME'] = $arr['nickname'];
+				$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
+				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
+				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
+				$_SESSION['BAB_SESS_HASHID'] = $arr['confirm_hash'];
+				$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
+				$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
+				$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
+				$GLOBALS['BAB_SESS_USERID'] = $_SESSION['BAB_SESS_USERID'];
+				$GLOBALS['BAB_SESS_HASHID'] = $_SESSION['BAB_SESS_HASHID'];
+				}
+			else
+				{
+				$GLOBALS['BAB_SESS_NICKNAME'] = $arr['nickname'];
+				$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
+				$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
+				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
+				$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
+				}
+			return true;
+			}
+		else
+			{
+			$babBody->msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
+			return false;
+			}
+		}
+	}
+	
+function confirmUser($hash, $nickname)
+	{
+	global $BAB_HASH_VAR, $babBody;
+	$new_hash=md5($nickname.$BAB_HASH_VAR);
+	if ($new_hash && ($new_hash==$hash))
+		{
+		$sql="select * from ".BAB_USERS_TBL." where confirm_hash='$hash'";
+		$db = $GLOBALS['babDB'];
+		$result=$db->db_query($sql);
+		if( $db->db_num_rows($result) < 1)
+			{
+			$babBody->msgerror = bab_translate("User Not Found") ." !";
+			return false;
+			}
+		else
+			{
+			$arr = $db->db_fetch_array($result);
+			$babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
+			$sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE id='".$arr['id']."'";
+			$db->db_query($sql);
+			$arr2 = $db->db_fetch_array($db->db_query("select idgroup from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+			if( $arr2['idgroup'] != 0)
+				{
+				$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['id']."' and id_group='".$arr2['idgroup']."'");
+				if( !$res || $db->db_num_rows($res) < 1)
+					{
+					$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$arr2['idgroup']. "', '" . $arr['id']. "')");
+					}
+				}
+			return true;
+			}
+		}
+	else
+		{
+		$babBody->msgerror = bab_translate("Update failed");
+		return false;
+		}
+
+	}
+	
+function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2)
+	{
+	global $babBody, $babDB;
+	if( empty($email) || empty($firstname) || empty($lastname) || empty($password1) || empty($password2))
+		{
+		$babBody->msgerror = bab_translate( "You must complete all fields !!");
+		return false;
+		}
+	if( $password1 != $password2)
+		{
+		$babBody->msgerror = bab_translate("Passwords not match !!");
+		return;
+		}
+	if ( strlen($password1) < 6 )
+		{
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
+	if ( !bab_isEmailValid($fields['email']))
+		{
+		$babBody->msgerror = bab_translate("Your email is not valid !!");
+		return false;
+		}
+
+	$iduser = registerUser($firstname, $middlename, $lastname, $email,$nickname, $password1, $password2, false);
+	if( $iduser == false )
+		return false;
+
+	$req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (sn, mn, givenname, email ,id_directory, id_user) values ('".$firstname."', '".$middlename."', '".$lastname."', '".$email."', '0', '".$iduser."')";
+
+	$babDB->db_query($req);
+
+	return true;
 	}
 
 /* main */
@@ -175,7 +344,7 @@ if( isset($login) && $login == "login")
 
 if( isset($adduser) && $adduser == "register" && $r['registration'] == 'Y')
 	{
-	if( !addUser( $firstname, $lastname, $nickname, $email, $password1, $password2, false))
+	if( !addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2))
 		$cmd = "register";
 	}
 
@@ -186,6 +355,10 @@ if( isset($sendpassword) && $sendpassword == "send")
 
 switch($cmd)
 	{
+	case "confirm":
+		confirmUser( $hash, $name);
+		break;
+
 	case "signoff":
 		signOff();
 		break;
@@ -196,7 +369,7 @@ switch($cmd)
 		if( $r['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
-		userCreate($firstname, $lastname, $nickname, $email);
+		userCreate($firstname, $middlename, $lastname, $nickname, $email);
 		break;
 
 	case "emailpwd":
@@ -219,5 +392,4 @@ switch($cmd)
 		break;
 	}
 $babBody->setCurrentItemMenu($cmd);
-
 ?>
