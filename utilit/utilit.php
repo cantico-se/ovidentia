@@ -1542,9 +1542,7 @@ function bab_updateUserSettings()
 			if( $BAB_SESS_USERID != "" )
 			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
 			$req .= ")";
-			
-			if( $this->nbdays !== false)
-				$req .= " and f.modified >= '".$babBody->lastlog."'";
+			$req .= " and f.modified >= '".$babBody->lastlog."'";
 
 			list($babBody->newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
 			}
