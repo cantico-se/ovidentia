@@ -193,26 +193,31 @@
 <!--#begin newpostslist -->
 <!--#if postid "> 0" -->
 <table border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
-<tr>
-<td>
-<table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr> 
-<td class="BabForumTopicsNavTitle" width="100%">{ postsubject }</td>
+  <tr>
+    <td valign="middle"> 
+      <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+        <tr> 
+          <td class="BabForumTopicsNavTitle" width="100%" valign="middle">{ postsubject 
+            }</td>
 <!--#if what "== N" -->
-<td class="BabForumTopicsNavTitle" colspan="2" valign="middle" align="right"><a 
-class="BabForumTopicsConfirm" href="{ confirmurl }">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+          <td class="BabForumTopicsNavTitle"  valign="middle" align="right" nowrap><img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+class="BabForumTopicsConfirm" href="{ confirmurl }">{ 
+            confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
 class="BabForumTopicsConfirm" href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
 class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 <!--#else what -->
-<td colspan="3" class="BabForumTopicsNavTitle" align="right"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td> 
+          <td colspan="3" class="BabForumTopicsNavTitle" align="right" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
+            more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td> 
 <!--#endif what -->
 </tr>
 <tr> 
 <td colspan="3" class="BabForumBackground">{ postmessage }</td>
 </tr>
 <tr> 
-<td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
-<td class="BabForumTopicsNavAuthor" nowrap width="40%">{ postauthor }</td>
+          <td class="BabForumTopicsNavDate" nowrap width="60%" valign="middle">{ 
+            postdate }</td>
+          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="middle" colspan="2">{ 
+            postauthor }</td>
 </tr>
 </table>
 </td>
@@ -230,14 +235,28 @@ class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ bab
 <!--#in getnext -->
 <!--#if alternate "== 0" -->
 <tr>
-<td align="center"><!--#if confirmed "== C" --><IMG src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" width="15" height="13" border=0 alt="{ confirmed }"><!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
+  <td align="center">
+    <!--#if confirmed "== C" -->
+   <!--#if current "== 1" -->
+<IMG src="{ babSkinPath }images/Puces/PuceArrowRight.gif" border=0 alt="{ confirmed }">
+<!--#else current -->
+<a class="BabForumTopicsNavContribution" href="{ replysubjecturl }"><IMG src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }"></a>
+<!--#endif current -->
+    <!--#else confirmed -->
+    &nbsp;
+    <!--#endif confirmed -->
+  </td>
 <td>
 <table class="BabForumTopicsNavTreeBody" cellspacing="0" cellpadding="0" border="0">
 <!--#else alternate -->
 <tr>
-<td align="center"><!--#if confirmed "== C" --><IMG 
-src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" width="15" height="13" 
-border=0 alt="{ confirmed }"><!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
+<td align="center"><!--#if confirmed "== C" -->
+<!--#if current "== 1" -->
+<IMG src="{ babSkinPath }images/Puces/PuceArrowRight.gif" border=0 alt="{ confirmed }">
+<!--#else current -->
+<a class="BabForumTopicsNavContribution" href="{ replysubjecturl }"><IMG src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }"></a>
+<!--#endif current -->
+<!--#else confirmed -->&nbsp;<!--#endif confirmed --></td>
 <td>
 <table cellspacing="0" cellpadding="0" border="0">
 <!--#endif alternate -->
