@@ -24,7 +24,7 @@
 include_once "base.php";
 
 
-function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple)
+function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
 	global $babBody;
 	class temp
@@ -34,7 +34,7 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple)
 		var $name;
 		var $description;
 
-		function temp($pname, $pdesc, $grpids, $cinscription, $cmultiple)
+		function temp($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -47,6 +47,7 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple)
 			$this->checkall = bab_translate("Check all");
 			$this->inscriptiontxt = bab_translate("Add in inscription form");
 			$this->multiplicitytxt = bab_translate("Let user choose multiple groups");
+			$this->requiredtxt = bab_translate("Required");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->res = $babDB->db_query("select id, name, description from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
@@ -73,6 +74,14 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple)
 			else
 				{
 				$this->cmulcheck = '';
+				}
+			if( $crequired == 'Y')
+				{
+				$this->creqcheck = 'checked';
+				}
+			else
+				{
+				$this->creqcheck = '';
 				}
 			$this->grpids = $grpids;
 			}
@@ -103,12 +112,12 @@ function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple)
 			}
 		}
 
-	$temp = new temp($pname, $pdesc, $grpids, $cinscription, $cmultiple);
+	$temp = new temp($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired);
 	$babBody->babecho(	bab_printTemplate($temp,"profiles.html", "profilecreate"));
 	}
 
 
-function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultiple)
+function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
 	global $babBody;
 	class temp
@@ -118,7 +127,7 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 		var $name;
 		var $description;
 
-		function temp($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultiple)
+		function temp($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -131,6 +140,7 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 			$this->checkall = bab_translate("Check all");
 			$this->inscriptiontxt = bab_translate("Add in inscription form");
 			$this->multiplicitytxt = bab_translate("Let user choose multiple groups");
+			$this->requiredtxt = bab_translate("Required");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 
@@ -186,6 +196,11 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 				$cmultiple = $arr['multiplicity'];
 				}
 
+			if( empty($crequired)) 
+				{
+				$crequired = $arr['required'];
+				}
+
 			if( $cinscription == 'Y')
 				{
 				$this->cinscheck = 'checked';
@@ -202,6 +217,14 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 			else
 				{
 				$this->cmulcheck = '';
+				}
+			if( $crequired == 'Y')
+				{
+				$this->creqcheck = 'checked';
+				}
+			else
+				{
+				$this->creqcheck = '';
 				}
 			}
 
@@ -231,7 +254,7 @@ function profileModify($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultipl
 			}
 		}
 
-	$temp = new temp($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultiple);
+	$temp = new temp($idprof,$pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired);
 	$babBody->babecho(	bab_printTemplate($temp,"profiles.html", "profilecreate"));
 	}
 
@@ -322,7 +345,7 @@ function profileDelete($idprof)
 	}
 
 
-function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple)
+function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
 	global $babBody, $babDB;
 
@@ -367,7 +390,15 @@ function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple)
 			{
 			$multiplicity = 'N';
 			}
-		$babDB->db_query("insert into ".BAB_PROFILES_TBL." (name, description, multiplicity, inscription, id_dgowner) VALUES ('" .$pname. "', '" . $pdesc. "', '".$multiplicity."', '" . $inscription. "', '".$babBody->currentAdmGroup."')");
+		if( $crequired == 'Y')
+			{
+			$required = 'Y';
+			}
+		else
+			{
+			$required = 'N';
+			}
+		$babDB->db_query("insert into ".BAB_PROFILES_TBL." (name, description, multiplicity, inscription, required, id_dgowner) VALUES ('" .$pname. "', '" . $pdesc. "', '".$multiplicity."', '" . $inscription."', '" . $required. "', '".$babBody->currentAdmGroup."')");
 		$id = $babDB->db_insert_id();
 		for( $i = 0; $i < count($grpids); $i++ )
 			{
@@ -383,7 +414,7 @@ function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple)
 
 	}
 
-function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple)
+function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
 	global $babBody, $babDB;
 
@@ -428,7 +459,15 @@ function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultip
 			{
 			$multiplicity = 'N';
 			}
-		$babDB->db_query("update ".BAB_PROFILES_TBL." set name='" .$pname. "', description='" . $pdesc. "', multiplicity='".$multiplicity."', inscription='" . $inscription. "', id_dgowner='".$babBody->currentAdmGroup."' where id='".$idprof."'");
+		if( $crequired == 'Y')
+			{
+			$required = 'Y';
+			}
+		else
+			{
+			$required = 'N';
+			}
+		$babDB->db_query("update ".BAB_PROFILES_TBL." set name='" .$pname. "', description='" . $pdesc. "', multiplicity='".$multiplicity."', inscription='" . $inscription."', required='" . $required. "', id_dgowner='".$babBody->currentAdmGroup."' where id='".$idprof."'");
 		$babDB->db_query("delete from ".BAB_PROFILES_GROUPSSET_TBL." where id_object='".$idprof."'");
 		for( $i = 0; $i < count($grpids); $i++ )
 			{
@@ -471,7 +510,8 @@ if( isset($add))
 		if( !isset($grpids)){$grpids = array();}
 		if( !isset($cinscription)){$cinscription = "";}
 		if( !isset($cmultiple)){$cmultiple = "";}
-		if(!saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple))
+		if( !isset($crequired)){$crequired = "";}
+		if(!saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired))
 		{
 			$idx = 'padd';
 		}
@@ -489,7 +529,8 @@ if( isset($add))
 			if( !isset($grpids)){$grpids = array();}
 			if( !isset($cinscription)){$cinscription = "";}
 			if( !isset($cmultiple)){$cmultiple = "";}
-			if(!updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple))
+			if( !isset($crequired)){$crequired = "";}
+			if(!updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired))
 			{
 				$idx = 'pmod';
 			}
@@ -554,7 +595,8 @@ switch($idx)
 			if( !isset($grpids)){$grpids = array();}
 			if( !isset($cinscription)){$cinscription = "";}
 			if( !isset($cmultiple)){$cmultiple = "";}
-			profileModify($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple);
+			if( !isset($crequired)){$crequired = "";}
+			profileModify($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired);
 			$babBody->title = bab_translate("Create a new profile");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
@@ -574,7 +616,8 @@ switch($idx)
 			if( !isset($grpids)){$grpids = array();}
 			if( !isset($cinscription)){$cinscription = "";}
 			if( !isset($cmultiple)){$cmultiple = "";}
-			profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple);
+			if( !isset($crequired)){$crequired = "";}
+			profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired);
 			$babBody->title = bab_translate("Create a new profile");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			$babBody->addItemMenu("plist", bab_translate("Profiles"), $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");

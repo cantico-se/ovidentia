@@ -248,7 +248,7 @@
 <table border="0" width="90%" cellpadding="2" cellspacing="0">
 <tr class="BabSiteAdminTitleFontBackground">
 <td valign="middle" width="1%">&nbsp;</td>
-<td valign="middle">{ pdesc } </td>
+<td valign="middle"><!--#if brequired --><font color="red">*</font><!--#endif brequired -->&nbsp;{ pdesc } </td>
 </tr>
 <!--#if bmultiplicity -->
 <!--#in getnextgrp -->
@@ -258,7 +258,7 @@
 <tr class="BabForumBackground1">
 <!--#endif altbg --> 
 <td valign="middle" width="1%" align="right"> 
-<input type="checkbox" name="grpids[]" { grpcheck } value="{ grpid }">
+<input type="checkbox" name="grpids-{ idprofile }[]" { grpcheck } value="{ grpid }">
 </td>
 <td valign="middle">{ grpdesc }</td>
 </tr>
@@ -266,10 +266,10 @@
 <tr class="BabSiteAdminTitleFontBackground">
 <td valign="middle" width="1%">&nbsp;</td>
 <td valign="middle">
-<select name="grpids[]">
+<select name="grpids-{ idprofile }[]">
 <option value=""></option>
 <!--#in getnextgrp -->
-<option value="{ grpid }">{ grpdesc }</option>
+<option value="{ grpid }" { grpcheck }>{ grpdesc }</option>
 <!--#endin getnextgrp -->
 </select>
 </td>

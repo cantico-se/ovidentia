@@ -393,7 +393,7 @@ mm(sksel);
 <table border="0" width="90%" cellpadding="2" cellspacing="0">
 <tr class="BabSiteAdminTitleFontBackground">
 <td valign="middle" width="1%">&nbsp;</td>
-<td valign="middle">{ pdesc } </td>
+<td valign="middle"><!--#if brequired --><font color="red">*</font><!--#endif brequired -->&nbsp;{ pdesc } </td>
 </tr>
 <!--#if bmultiplicity -->
 <!--#in getnextgrp -->
@@ -403,7 +403,7 @@ mm(sksel);
 <tr class="BabForumBackground1">
 <!--#endif altbg --> 
 <td valign="middle" width="1%" align="right"> 
-<input type="checkbox" name="grpids[]" { grpcheck } value="{ grpid }">
+<input type="checkbox" name="grpids-{ idprofile }[]" { grpcheck } value="{ grpid }">
 </td>
 <td valign="middle">{ grpdesc }</td>
 </tr>        
@@ -412,10 +412,10 @@ mm(sksel);
 <tr class="BabSiteAdminFontBackground">
 <td valign="middle" width="1%">&nbsp;</td>
 <td valign="middle">
-<select name="grpids[]">
+<select name="grpids-{ idprofile }[]">
 <option value=""></option>
 <!--#in getnextgrp -->
-<option value="{ grpid }">{ grpdesc }</option>
+<option value="{ grpid }" { grpcheck }>{ grpdesc }</option>
 <!--#endin getnextgrp -->
 </select>
 </td>
@@ -427,7 +427,9 @@ mm(sksel);
 <!--#endin getnextprofile -->
 </td>
 </tr>
-
+<tr> 
+<td class="BabLoginMenuBackground" nowrap valign="middle" align="center"><font color="red">*</font>&nbsp;{ requiredtxt }</td>
+</tr>
 <tr> 
 <td class="BabLoginMenuBackground" valign="middle" align="center"> 
 <input type="submit" name="submit" value="{ updatetxt }">

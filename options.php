@@ -458,6 +458,7 @@ function changeProfiles()
 			global $babBody,$babDB;
 			$this->profilestxt = bab_translate("Profiles");
 			$this->updatetxt = bab_translate("Update");
+			$this->requiredtxt = bab_translate("Those fields are required");
 			$this->res = $babDB->db_query("select * from ".BAB_PROFILES_TBL."");
 			$this->countpf = $babDB->db_num_rows($this->res);
 			$this->altbg = true;
@@ -474,6 +475,7 @@ function changeProfiles()
 					{
 					$this->pname = $arr['name'];
 					$this->pdesc = $arr['description'];
+					$this->idprofile = $arr['id'];
 					$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$arr['id']."'");
 					$this->countgrp = $babDB->db_num_rows($this->resgrp);
 					if( $arr['multiplicity'] == 'Y' )
@@ -483,6 +485,15 @@ function changeProfiles()
 					else
 						{
 						$this->bmultiplicity = false;
+						}
+
+					if( $arr['required'] == "Y")
+						{
+						$this->brequired = true;
+						}
+					else
+						{
+						$this->brequired = false;
 						}
 					}
 				else
@@ -510,9 +521,16 @@ function changeProfiles()
 				$this->grpid = $arr['id'];
 				$this->grpname = $arr['name'];
 				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
-				if( count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups))
+				if( (isset($GLOBALS["grpids-".$this->idprofile]) && count($GLOBALS["grpids-".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids-".$this->idprofile])) || (count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups)))
 					{
-					$this->grpcheck = 'checked';
+					if( $this->bmultiplicity == true )
+						{
+						$this->grpcheck = 'checked';
+						}
+					else
+						{
+						$this->grpcheck = 'selected';
+						}
 					}
 				else
 					{
@@ -743,29 +761,70 @@ function updateNickname($password, $nickname)
 	}
 
 
-function updateProfiles($grpids)
+function updateProfiles()
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select id from ".BAB_PROFILES_TBL."");
+	$res = $babDB->db_query("select id, required from ".BAB_PROFILES_TBL."");
+	$addgroups = array();
+	$delgroups = array();
 	while( $arr = $babDB->db_fetch_array($res))
 	{
 	if( bab_IsAccessValid(BAB_PROFILES_GROUPS_TBL, $arr['id']))
 		{
+		if( isset($GLOBALS["grpids-".$arr['id']]))
+			{
+			$grpvar = $GLOBALS["grpids-".$arr['id']];
+			}
+		else
+			{
+			$grpvar = array();
+			}
+
+		if($arr['required'] == 'Y' && (count($grpvar) == 0 || empty($grpvar[0])))
+			{
+			$babBody->msgerror = bab_translate( "You must complete all fields !!");
+			return false;
+			}
+
+		for( $i = 0; $i < count($grpvar ); $i++ )
+			{
+			if( count($groups) == 0 || !in_array($grpvar[$i], $groups))
+				{
+				$groups[] = $grpvar[$i];
+				}
+			}
+
 		$resgrp = $babDB->db_query("select pgt.id_group from ".BAB_PROFILES_GROUPSSET_TBL." pgt where pgt.id_object ='".$arr['id']."'");
 		while( $row = $babDB->db_fetch_array($resgrp))
 			{
-			if( count($grpids) > 0  && in_array($row['id_group'], $grpids ))
+			if( count($grpvar) > 0  && in_array($row['id_group'], $grpvar ) )
 				{
-				bab_addUserToGroup($GLOBALS['BAB_SESS_USERID'], $row['id_group']);
+				if( count($addgroups) ==  0  || !in_array($row['id_group'], $addgroups))
+					{
+					$addgroups[] = $row['id_group'];
+					}
 				}
 			else
 				{
-				bab_removeUserFromGroup($GLOBALS['BAB_SESS_USERID'], $row['id_group']);
+				if( count($delgroups) ==  0  || !in_array($row['id_group'], $delgroups))
+					{
+					$delgroups[] = $row['id_group'];
+					}
 				}
 			}
 		}
 	}
+
+	for( $i=0; $i < count($addgroups); $i++ )
+	{
+		bab_addUserToGroup($GLOBALS['BAB_SESS_USERID'], $addgroups[$i]);
+	}
+	for( $i=0; $i < count($delgroups); $i++ )
+	{
+		bab_removeUserFromGroup($GLOBALS['BAB_SESS_USERID'], $delgroups[$i]);
+	}
+	return true;
 }
 
 /* main */
@@ -818,7 +877,10 @@ if( isset($update))
 				}
             break;
         case "profiles":
-        	updateProfiles($grpids);
+        	if(!updateProfiles())
+				{
+				$idx = 'global';
+				}
             break;
         }
 	}
@@ -878,8 +940,8 @@ switch($idx)
 	case "changePasswordUnload":
 		changePasswordUnload($msg);
 		break;
-	default:
 	case "global":
+	default:
 		
 		$babBody->title = bab_translate("Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);

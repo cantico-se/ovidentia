@@ -171,13 +171,13 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 	}
 
 
-function displayRegistration($nickname, $fields, $cagree, $grpids)
+function displayRegistration($nickname, $fields, $cagree)
 	{
 	global $babBody, $babDB;
 	class temp
 		{
 
-		function temp($nickname, $fields, $cagree, $grpids)
+		function temp($nickname, $fields, $cagree)
 			{
 			global $babBody, $babDB;
 			$this->nickname = bab_translate("Nickname");
@@ -203,7 +203,6 @@ function displayRegistration($nickname, $fields, $cagree, $grpids)
 
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->fields = $fields;
-			$this->grpids = $grpids;
 
 			if( $cagree == 'Y' )
 				{
@@ -292,6 +291,7 @@ function displayRegistration($nickname, $fields, $cagree, $grpids)
 				$arr = $babDB->db_fetch_array($this->respf);
 				$this->pname = $arr['name'];
 				$this->pdesc = $arr['description'];
+				$this->idprofile = $arr['id'];
 				if( $arr['multiplicity'] == 'Y' )
 					{
 					$this->bmultiplicity = true;
@@ -299,6 +299,14 @@ function displayRegistration($nickname, $fields, $cagree, $grpids)
 				else
 					{
 					$this->bmultiplicity = false;
+					}
+				if( $arr['required'] == "Y")
+					{
+					$this->brequired = true;
+					}
+				else
+					{
+					$this->brequired = false;
 					}
 				$this->resgrp = $babDB->db_query("select gt.* from ".BAB_PROFILES_GROUPSSET_TBL." pgt left join ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id where pgt.id_object ='".$arr['id']."'");
 				$this->countgrp = $babDB->db_num_rows($this->resgrp);
@@ -323,9 +331,16 @@ function displayRegistration($nickname, $fields, $cagree, $grpids)
 				$this->grpid = $arr['id'];
 				$this->grpname = $arr['name'];
 				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
-				if( count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups))
+				if( isset($GLOBALS["grpids-".$this->idprofile]) && count($GLOBALS["grpids-".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids-".$this->idprofile]))
 					{
-					$this->grpcheck = 'checked';
+					if( $this->bmultiplicity == true )
+						{
+						$this->grpcheck = 'checked';
+						}
+					else
+						{
+						$this->grpcheck = 'selected';
+						}
 					}
 				else
 					{
@@ -344,7 +359,7 @@ function displayRegistration($nickname, $fields, $cagree, $grpids)
 		
 		}
 
-	$temp = new temp($nickname, $fields, $cagree, $grpids);
+	$temp = new temp($nickname, $fields, $cagree);
 	$babBody->babecho( bab_printTemplate($temp,"login.html", "registration"));
 	}
 
@@ -747,47 +762,10 @@ function confirmUser($hash, $nickname)
 
 	}
 	
-function addNewUser2( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2)
-	{
-	global $babBody, $babDB;
-	if( empty($nickname) || empty($email) || empty($firstname) || empty($lastname) || empty($password1) || empty($password2))
-		{
-		$babBody->msgerror = bab_translate( "You must complete all fields !!");
-		return false;
-		}
-	if( $password1 != $password2)
-		{
-		$babBody->msgerror = bab_translate("Passwords not match !!");
-		return;
-		}
-	if ( strlen($password1) < 6 )
-		{
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
-		return false;
-		}
-
-	if ( strpos($nickname, ' ') !== false )
-		{
-		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
-		return false;
-		}
-
-	if ( !bab_isEmailValid($email))
-		{
-		$babBody->msgerror = bab_translate("Your email is not valid !!");
-		return false;
-		}
-
-	$iduser = registerUser($firstname, $lastname, $middlename, $email,$nickname, $password1, $password2, false);
-	if( $iduser == false )
-		return false;
-
-	return true;
-	}
 
 function addNewUser( $nickname, $password1, $password2)
 	{
-	global $babBody, $babDB, $fields, $cagree, $photof, $photof_name, $grpids;
+	global $babBody, $babDB, $fields, $cagree, $photof, $photof_name;
 	if( empty($nickname) || empty($fields['email']) || empty($fields['givenname']) || empty($fields['sn']) || empty($password1) || empty($password2))
 		{
 		$babBody->msgerror = bab_translate( "You must complete all fields !!");
@@ -851,6 +829,34 @@ function addNewUser( $nickname, $password1, $password2)
 		return false;
 		}
 
+	$res = $babDB->db_query("select id, required from ".BAB_PROFILES_TBL." where inscription='Y'");
+	$groups = array();
+	while( $arr = $babDB->db_fetch_array($res))
+		{
+		if( isset($GLOBALS["grpids-".$arr['id']]))
+			{
+			$grpvar = $GLOBALS["grpids-".$arr['id']];
+			}
+		else
+			{
+			$grpvar = array();
+			}
+
+		if($arr['required'] == 'Y' && (count($grpvar) == 0 || empty($grpvar[0])))
+			{
+			$babBody->msgerror = bab_translate( "You must complete all fields !!");
+			return false;
+			}
+
+		for( $i = 0; $i < count($grpvar ); $i++ )
+			{
+			if( count($groups) == 0 || !in_array($grpvar[$i], $groups))
+				{
+				$groups[] = $grpvar[$i];
+				}
+			}
+		}
+
 	$iduser = registerUser($fields['givenname'], $fields['sn'], $fields['givenname'], $fields['email'],$nickname, $password1, $password2, false);
 	if( $iduser == false )
 		{
@@ -892,11 +898,11 @@ function addNewUser( $nickname, $password1, $password2)
 			}
 		}
 
-	if( isset($grpids) && count($grpids) > 0 )
+	if( count($groups) > 0 )
 		{
-		for( $i = 0; $i < count($grpids); $i++ )
+		for( $i = 0; $i < count($groups); $i++ )
 			{
-			bab_addUserToGroup($iduser, $grpids[$i]);
+			bab_addUserToGroup($iduser, $groups[$i]);
 			}
 		}
 	return true;
@@ -929,7 +935,6 @@ if( isset($login) && $login == "login")
 	}
 else if( isset($adduser) && $adduser == "register" && $babBody->babsite['registration'] == 'Y')
 	{
-	//if( !addNewUser2( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2))
 	if( !addNewUser( $nickname, $password1, $password2))
 		$cmd = "register";
 	}
@@ -976,8 +981,7 @@ switch($cmd)
 		if( !isset($cagree)) { $cagree = '';}
 		//userCreate($firstname, $middlename, $lastname, $nickname, $email);
 		if( !isset($fields)) { $fields = array();}
-		if( !isset($grpids)) { $grpids = array();}
-		displayRegistration($nickname, $fields, $cagree, $grpids);
+		displayRegistration($nickname, $fields, $cagree);
 		break;
 
 	case "emailpwd":
