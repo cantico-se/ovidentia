@@ -116,7 +116,7 @@ function deleteArticles($art, $item)
 				if( $i < count($art) -1)
 					$items .= ",";
 				}
-			$this->warning = babTranslate("WARNING: This operation will delete artciles and their comments"). "!";
+			$this->warning = babTranslate("WARNING: This operation will delete articles and their comments"). "!";
 			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=topic&idx=Deletea&item=".$item."&action=Yes&items=".$items;
 			$this->yes = babTranslate("Yes");
 			$this->urlno = $GLOBALS[babUrl]."index.php?tg=topic&idx=Articles&item=".$item;
