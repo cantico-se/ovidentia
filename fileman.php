@@ -653,13 +653,15 @@ function listFiles($id, $gr, $path, $bmanager)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->bconfirmed = 0;
 				$this->updateFileInfo($arr);
-				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$ufile = urlencode($arr['name']);
+				$upath = urlencode($this->path);
+				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;
 				$jfname = str_replace("'", "\'", $arr['name']);
 				$jfname = str_replace('"', "'+String.fromCharCode(34)+'",$jfname);
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->jpath."&file=".$jfname;
-				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
-				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
-				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".urlencode($this->jpath)."&file=".urlencode($jfname);
+				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;
+				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;				
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;				
 				$i++;
 				return true;
 				}
@@ -675,13 +677,15 @@ function listFiles($id, $gr, $path, $bmanager)
 				$arr = $this->db->db_fetch_array($this->reswf);
 				$this->bconfirmed = 1;
 				$this->updateFileInfo($arr);
-				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
+				$ufile = urlencode($arr['name']);
+				$upath = urlencode($this->path);
+				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;
 				$jfname = str_replace("'", "\'", $arr['name']);
 				$jfname = str_replace('"', "'+String.fromCharCode(34)+'",$jfname);
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->jpath."&file=".$jfname;
-				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
-				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
-				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".urlencode($this->jpath)."&file=".urlencode($jfname);
+				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;
+				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;				
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;				
 				$i++;
 				return true;
 				}
@@ -698,9 +702,11 @@ function listFiles($id, $gr, $path, $bmanager)
 				$arr = $this->db->db_fetch_array($this->xres);
 				$this->bconfirmed = 0;
 				$this->updateFileInfo($arr);
-				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$arr['path']."&file=".$arr['name'];
-				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$arr['path']."&file=".$arr['name'];
-				$this->pasteurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=paste&id=".$this->id."&gr=".$this->gr."&path=".$arr['path']."&file=".$arr['name']."&tp=".$this->path;				
+				$ufile = urlencode($arr['name']);
+				$upath = urlencode($arr['path']);
+				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;
+				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile;
+				$this->pasteurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=paste&id=".$this->id."&gr=".$this->gr."&path=".$upath."&file=".$ufile."&tp=".$this->path;				
 				$i++;
 				return true;
 				}
@@ -1712,7 +1718,7 @@ function viewFile( $idf)
 				$this->fpostedbytxt = bab_translate("Posted by");
 				$this->fpostedby = bab_getUserName($arr['author']);
 
-				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".$arr['path']."&file=".$arr['name'];
+				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']);
 				$this->download = bab_translate("Download");
 
 				$this->file = bab_translate("File");
@@ -1876,7 +1882,7 @@ function fileUnload($id, $gr, $path)
 			$this->close = bab_translate("Close");
 			$path = str_replace("'", "\'", $path);
 			$path = str_replace('"', "'+String.fromCharCode(34)+'",$path);
-			$this->redirecturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
+			$this->redirecturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".urlencode($path);
 			}
 		}
 
@@ -2075,31 +2081,34 @@ switch($idx)
 	case "trash":
 		$babBody->title = bab_translate("Trash");
 		listTrashFiles($id, $gr);
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$upath = urlencode($path);
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $upload)
-			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $bmanager)
-			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
 		break;
 
 	case "add":
 		$babBody->title = bab_translate("Upload file to")." /".$path. " ( ".bab_formatSizeFile($GLOBALS['babMaxFileSize'])." ".bab_translate("Kb") . " ".bab_translate("Max")." )";
+		$upath = urlencode($path);
 		addFile($id, $gr, $path, $description, $keywords);
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $upload)
-			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $bmanager)
-			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
 		break;
 
 	case "disk":
 		$babBody->title = bab_translate("File manager");
+		$upath = urlencode($path);
 		showDiskSpace($id, $gr, $path);
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $upload)
-			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $bmanager)
-			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
 		break;
 
 	case "cut":
@@ -2108,11 +2117,12 @@ switch($idx)
 	default:
 	case "list":
 		$babBody->title = bab_translate("File manager");
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
+		$upath = urlencode($path);
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $upload)
-			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=add&id=".$id."&gr=".$gr."&path=".$upath);
 		if( $bmanager)
-			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
+			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$upath);
 		listFiles($id, $gr, $path, $bmanager);
 		break;
 	}
