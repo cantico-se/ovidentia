@@ -91,7 +91,7 @@ $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
 if( !isset($tg))
-	$tg = 'entry';
+	$tg = '';
 
 if( $tg != "version" )
 	{
