@@ -35,6 +35,27 @@ function bab_printOvml($content, $args)
 	return $tpl->printout($content);
 	}
 
+function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
+{
+	$url = $GLOBALS['babUrlScript']."?tg=month&callback=".$callback;
+	if( !empty($month))
+	{
+		$url .= "&month=".$month;
+	}
+	if( !empty($year))
+	{
+		$url .= "&year=".$year;
+	}
+	if( !empty($low))
+	{
+		$url .= "&ymin=".$low;
+	}
+	if( !empty($high))
+	{
+		$url .= "&ymax=".$high;
+	}
+	return "javascript:Start('".$url."','OVCalendarPopup','width=250,height=250,status=no,resizable=no,top=200,left=200')";
+}
 
 function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 	{
@@ -1012,6 +1033,45 @@ function bab_getGroupEmails($id)
 		return "";
 		}
 }
+
+function bab_getGroupsMembers($ids)
+	{
+	if (!is_array($ids))
+		{
+		$ids = array($ids);
+		}
+
+	if( is_array($ids) && count($ids) > 0 )
+		{
+		if( in_array(1, $ids))
+			{
+			$req = "SELECT id, email, firstname, lastname FROM ".BAB_USERS_TBL." where disabled='0' and is_confirmed='1'";
+			}
+		else
+			{
+			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE u.disabled='0' and u.is_confirmed='1' and g.id_group IN (".implode(',', $ids).") AND g.id_object=u.id";
+			}
+
+		$db = $GLOBALS['babDB'];
+		$res = $db->db_query($req);
+		$users = array();
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$i = 0;
+			while ($arr = $db->db_fetch_array($res))
+				{
+				$users[$i]['id'] = $arr['id'];
+				$users[$i]['name'] = bab_composeUserName($arr['firstname'],$arr['lastname']);
+				$users[$i]['email'] = $arr['email'];
+				$i++;
+				}
+			return $users;
+			}
+		}
+	else
+		return false;
+	}
+
 
 function bab_getOrgChartRoleUsers($idroles)
 {
