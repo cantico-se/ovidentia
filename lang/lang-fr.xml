@@ -1452,7 +1452,7 @@
 <string id="Attendees">Invités</string>
 <string id="Availability">Disponibilité</string>
 <string id="No repeat">Pas de répétition</string>
-<string id="Daily">Journalier</string>
+<string id="Daily">Quotidien</string>
 <string id="Weekly">Hebdomadaire</string>
 <string id="Monthly">Mensuel</string>
 <string id="Yearly">Annuel</string>
@@ -1510,10 +1510,11 @@
 <string id="Calendars">Agendas</string>
 <string id="Next year">Année suivante</string>
 <string id="New event">Nouvel évènement</string>
-<string id="Day view">Vue journalière</string>
+<string id="Day view">Vue quotidienne</string>
 <string id="Collectifs">Collectifs</string>
 <string id="Push right">Déplacer vers la droite</string>
 <string id="Push left">Déplacer vers la gauche</string>
 <string id="Record">Enregistrer</string>
 <string id="Successful recording">Enregistrement réussi</string>
+<string id="PublicCalendar">Collectifs</string>
 </fr>

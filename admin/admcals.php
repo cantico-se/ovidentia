@@ -685,7 +685,7 @@ switch($idx)
 		if( !isset($caldesc)) {	$caldesc = ""; }
 		calendarsAddResource($calname, $caldesc);
 		$babBody->title = bab_translate("Add resource calendar");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
@@ -699,7 +699,7 @@ switch($idx)
 		if( !isset($caldesc)) {	$caldesc = ""; }
 		calendarsAddPublic($calname, $caldesc);
 		$babBody->title = bab_translate("Add public calendar");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
@@ -711,7 +711,7 @@ switch($idx)
 	case "user":
 		calendarsPersonal();
 		$babBody->title = bab_translate("Personal calendars List");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
 		if( $babBody->isSuperAdmin )
@@ -722,7 +722,7 @@ switch($idx)
 	case "res":
 		calendarsResource();
 		$babBody->title = bab_translate("Resources calendars List");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
@@ -735,7 +735,7 @@ switch($idx)
 	default:
 		calendarsPublic();
 		$babBody->title = bab_translate("Public calendars List");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");

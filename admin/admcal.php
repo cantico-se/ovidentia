@@ -292,7 +292,7 @@ switch($idx)
 		$macl->filter(0,0,1,0,1);
         $macl->babecho();
 
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("rigthsr", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admcal&idx=rightsp&idcal=".$idcal);
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
@@ -309,7 +309,7 @@ switch($idx)
 		$macl->filter(0,0,1,0,1);
         $macl->babecho();
 
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("rigthsp", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admcal&idx=rightsp&idcal=".$idcal);
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
@@ -321,7 +321,7 @@ switch($idx)
 		if( !isset($bgcolor)) {	$bgcolor = ""; }
 		modifyCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 		$babBody->title = bab_translate("Modify event category");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
 		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
@@ -332,7 +332,7 @@ switch($idx)
 		if( !isset($caldesc)) {	$caldesc = ""; }
 		modifyCalendarResource($idcal, $calname, $caldesc);
 		$babBody->title = bab_translate("Resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE);
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
 		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
@@ -343,7 +343,7 @@ switch($idx)
 		if( !isset($caldesc)) {	$caldesc = ""; }
 		modifyCalendarPublic($idcal, $calname, $caldesc);
 		$babBody->title = bab_translate("Public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE);
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admcal&idx=modp");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("user", bab_translate("Personal"), $GLOBALS['babUrlScript']."?tg=admcals&idx=user");
