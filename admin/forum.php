@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/acl.php";
-include $babInstallPath."utilit/forumincl.php";
+include_once $babInstallPath."admin/acl.php";
+include_once $babInstallPath."utilit/forumincl.php";
 
 function modifyForum($id)
 	{
@@ -185,14 +185,20 @@ if( isset($update) && $update == "updateforum")
 
 if( isset($aclview))
 	{
+	if(!isset($groups)) { $groups = array();}
 	aclUpdate($table, $item, $groups, $what);
 	if( $table == BAB_FORUMSVIEW_GROUPS_TBL )
+		{
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-	else if( $table == BAB_FORUMSREPLY_GROUPS_TBL )
+		}
+	elseif( $table == BAB_FORUMSREPLY_GROUPS_TBL )
+		{
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-	else if( $table == BAB_FORUMSPOST_GROUPS_TBL )
+		}
+	else
+		{
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
-	exit;
+		}
 	}
 
 if( isset($action) && $action == "Yes")

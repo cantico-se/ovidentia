@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/forumincl.php";
+include_once $babInstallPath."utilit/forumincl.php";
 
 function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 	{

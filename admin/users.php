@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/register.php";
-include $babInstallPath."utilit/lusersincl.php";
+include_once $babInstallPath."admin/register.php";
+include_once $babInstallPath."utilit/lusersincl.php";
 
 function listUsers($pos, $grp)
 	{

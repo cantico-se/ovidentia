@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/class.phpmailer.php";
-include $babInstallPath."utilit/class.smtp.php";
+include_once $babInstallPath."utilit/class.phpmailer.php";
+include_once $babInstallPath."utilit/class.smtp.php";
 
 function bab_getMimeType($type, $subtype)
 	{ 

@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/acl.php";
+include_once $babInstallPath."admin/acl.php";
 
 define("ORG_MAX_REQUESTS_LIST", 100);
 

@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/acl.php";
-include $babInstallPath."utilit/vacincl.php";
+include_once $babInstallPath."admin/acl.php";
+include_once $babInstallPath."utilit/vacincl.php";
 
 function modifyVacation($id)
 	{

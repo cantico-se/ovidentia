@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."admin/acl.php";
+include_once $babInstallPath."admin/acl.php";
 
 function getFaqName($id)
 	{

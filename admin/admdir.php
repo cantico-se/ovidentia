@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-include $babInstallPath."utilit/dirincl.php";
-include $babInstallPath."admin/acl.php";
+include_once $babInstallPath."utilit/dirincl.php";
+include_once $babInstallPath."admin/acl.php";
 
 function listAds()
 {

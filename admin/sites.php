@@ -444,7 +444,7 @@ function viewVersion()
 
 		function temp()
 			{
-			include $GLOBALS['babInstallPath']."version.inc";
+			include_once $GLOBALS['babInstallPath']."version.inc";
 			$this->srcversiontxt = bab_translate("Ovidentia version");
 			$this->phpversiontxt = bab_translate("Php version");
 			$this->phpversion = phpversion();
