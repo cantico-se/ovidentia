@@ -273,6 +273,7 @@ function cal_day_free($calids, $date, $starttime)
 	global $babBody;
 
 	$temp = new cal_dayCls("free", $calids, $date, $starttime);
+	$temp->updateFreeAccess();
 	$temp->printout("calday.html", "calfreeday");
 }
 
