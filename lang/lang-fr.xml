@@ -55,7 +55,7 @@
 <string id="Rename">Renommer</string>
 <string id="Delete directory">Supprimer le répertoire</string>
 <string id="Directory">Répertoire</string>
-<string id="Download">Transférer</string>
+<string id="Download">Télécharger</string>
 <string id="Cut">Couper</string>
 <string id="Paste">Coller</string>
 <string id="Undo">Annuler</string>
@@ -808,7 +808,7 @@
 <string id="Time scale">Echelle du temps</string>
 <string id="Minutes">Minutes</string>
 <string id="Folder">Répertoire</string>
-<string id="A new file has been uploaded">Un nou fichier a été chargé</string>
+<string id="A new file has been uploaded">Un nouveau fichier a été chargé</string>
 <string id="File has been updated">Le fichier a été mis à jour</string>
 <string id="New file">Nouveau fichier</string>
 <string id="Notify members group">Notifier les membres du groupe</string>
@@ -816,12 +816,12 @@
 <string id="Send password with email">Envoyer le mot de passe avec l'email</string>
 <string id="You have been registered on our site">Vous avez été rnregistré sur notre sîte</string>
 <string id="Create new topic">Créer un nouveau sujet</string>
-<string id="Personal disk space">Esapce disque personnel</string>
+<string id="Personal disk space">Espace disque personnel</string>
 <string id="Threads Per Page">Sujets par page</string>
 <string id="Notify">Notifier</string>
 <string id="Approbation schema">Schéma d'approbation</string>
 <string id="Notification">Notification</string>
-<string id="Folders">Répertoire</string>
+<string id="Folders">Répertoires</string>
 <string id="Write">Mis à jour</string>
 <string id="Acces">Accès</string>
 <string id="Add a new folder">Ajouter un répertoire</string>
