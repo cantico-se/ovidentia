@@ -427,6 +427,8 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 				else
 					$this->fileimage = $this->arrext[$ext];
 				$this->name = $arr['name'];
+				$this->jname = str_replace("'", "\'", $arr['name']);
+				$this->jname = str_replace('"', "'+String.fromCharCode(34)+'",$this->jname);
 				$this->description = $arr['description'];
 				$this->idf = $arr['id'];
 				$i++;
@@ -1249,7 +1251,7 @@ function getFile( $file, $id, $gr, $path, $inl)
 	$db = $GLOBALS['babDB'];
 	if( $access )
 		{
-		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
 			{
