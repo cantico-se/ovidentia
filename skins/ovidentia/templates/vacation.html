@@ -45,7 +45,7 @@ function dateEnd(day, month, year)
 //-->
 </SCRIPT>
 
-<form name="vacform" method="post" action="index.php" >
+<form name="vacform" method="post" action="{ babPhpSelf }" >
 <input type="hidden" name="tg" value="vacation">
 <input type="hidden" name="idx" value="confirmvac">
 <input type="hidden" name="newvacation" value="newvacation">
@@ -149,7 +149,7 @@ function dateEnd(day, month, year)
 <br><br><br><br><br>
 <!--#begin confirmvacation -->
 <BR>
-<form method="post" action="index.php" enctype="multipart/form-data">
+<form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="vacation">
 <input type="hidden" name="idx" value="">
 <input type="hidden" name="begindate" value="{ begindate }">

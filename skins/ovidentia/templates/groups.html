@@ -3,7 +3,7 @@
 
 <!--#begin groupscreate -->
 
-<form method="post" action="index.php">
+<form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="groups">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="add" value="add">
@@ -89,7 +89,7 @@
 <br><br><br><br>
 <!--#begin groupsmodify -->
 
-<form method="post" action="index.php">
+<form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
@@ -163,7 +163,7 @@ document.forms.listform.submit();
 }
 </script>
 
-<form method="post" action="index.php" name="listform">
+<form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Deletem">
 <input type="hidden" name="item" value="{ grpid }">
@@ -229,7 +229,7 @@ valign="middle">{ group }</td>
 </table>
 <br>
 
-<form method="post" action="index.php">
+<form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Vacation">
 <input type="hidden" name="item" value="{ groupid }">

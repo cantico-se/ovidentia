@@ -1,6 +1,6 @@
 
 <!--#begin categorycreate -->
-<form name="catcr" method="post" action="index.php">
+<form name="catcr" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="topics">
 <input type="hidden" name="idx" value="Categories">
 <input type="hidden" name="add" value="add">
@@ -127,7 +127,7 @@ href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>
 <br><br><br><br>
 <!--#begin categorymodify -->
 
-<form name="catmod" method="post" action="index.php">
+<form name="catmod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="topic">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
@@ -245,7 +245,7 @@ document.forms.listform.submit();
 }
 
 </script>
-<form method="post" action="index.php" name="listform">
+<form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topic">
 <input type="hidden" name="idx" value="deletea">
 <input type="hidden" name="item" value="{ item }">

@@ -9,7 +9,7 @@ document.forms.listform.submit();
 }
 </script>
 
-<form method="post" action="index.php" name="listform">
+<form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="users">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="pos" value="{ pos }">
@@ -71,7 +71,7 @@ arr[email] }</a></td>
 <!--#begin usercreate -->
 
 
-<form method="post" action="index.php">
+<form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="users">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="adduser" value="register">
@@ -135,7 +135,7 @@ valign="middle">{ email }:</td>
 <br><br><br><br>
 <!--#begin usersmodify -->
 
-<form method="post" action="index.php">
+<form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
@@ -238,7 +238,7 @@ document.forms.listform.idx.value = cmd;
 document.forms.listform.submit();
 }
 </script>
-<form method="post" action="index.php" name="listform">
+<form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ id }">

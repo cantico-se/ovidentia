@@ -1,7 +1,7 @@
 
 <!--#begin sectionscreate -->
 
-<form name="seccreate" method="post" action="index.php">
+<form name="seccreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="sections">
 <input type="hidden" name="idx" value="0">
 <input type="hidden" name="js" value="{ jscript }">
@@ -122,7 +122,7 @@ document.forms.listform.idx.value = cmd;
 document.forms.listform.submit();
 }
 </script>
-<form method="post" action="index.php" name="listform">
+<form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="sections">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="update" value="disable">
@@ -194,7 +194,7 @@ valign="middle">&nbsp;</td>
 <br>
 <br>
 <!--#begin sectionsmodify --> 
-<form name="secmod" method="post" action="index.php">
+<form name="secmod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="section">
 <input type="hidden" name="idx" value="modify">
 <input type="hidden" name="item" value="{ id }">
@@ -359,7 +359,7 @@ function selectAll(list)
 //-->
 </script>
 
-<form method="post" name="secorderf" action="index.php">
+<form method="post" name="secorderf" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="sections">
 <input type="hidden" name="idx" value="order">
 <input type="hidden" name="update" value="order">
