@@ -1,45 +1,43 @@
 // I18N constants
-
 HTMLArea.I18N = {
 	tooltips: {
-		bold:           "Bold",
-		italic:         "Italic",
-		underline:      "Underline",
-		strikethrough:  "Strikethrough",
-		subscript:      "Subscript",
-		superscript:    "Superscript",
-		justifyleft:    "Justify Left",
-		justifycenter:  "Justify Center",
-		justifyright:   "Justify Right",
-		justifyfull:    "Justify Full",
-		orderedlist:    "Ordered List",
-		unorderedlist:  "Bulleted List",
-		outdent:        "Decrease Indent",
-		indent:         "Increase Indent",
-		forecolor:      "Font Color",
-		backcolor:      "Background Color",
-		horizontalrule: "Horizontal Rule",
-		createlink:     "Insert Web Link",
-		insertimage:    "Insert Image",
-		inserttable:    "Insert Table",
-		htmlmode:       "Toggle HTML Source",
-		popupeditor:    "Enlarge Editor",
-		about:          "About this editor",
-		help:           "Help using editor",
-		textindicator:  "Current style",
-		babimage:		"Insert Ovidentia image",
-		bablink:		"Insert Web Link",
-		cleanhtml:		"Clean HTML code",
-		copy:			"Copy",
-		cut:			"Cut",
-		paste:			"Paste",
-		babfile:		"Insert Ovidentia file link ",
-		undo:			"Undo",
-		redo:			"Redo"
+		bold:           "fett",
+		italic:         "kursiv",
+		underline:      "unterstrichen",
+		strikethrough:  "durchgestrichen",
+		subscript:      "tiefgestellt",
+		superscript:    "hochgestellt",
+		justifyleft:    "links ausrichten",
+		justifycenter:  "zentriert ausrichten",
+		justifyright:   "rechts ausrichten",
+		justifyfull:    "Blocksatz",
+		orderedlist:    "Aufzählung",
+		unorderedlist:  "Auflistung",
+		outdent:        "Einzug verringern",
+		indent:         "Einzug vergrößern",
+		forecolor:      "Schriftfarbe",
+		backcolor:      "Hintergrundfarbe",
+		horizontalrule: "Horizontale Linie",
+		createlink:     "Web Link einfügen",
+		insertimage:    "Bild einfügen",
+		inserttable:    "Tabelle einfügen",
+		htmlmode:       "HTML-Code anzeigen",
+		popupeditor:    "Editor in neuem Fenster",
+		about:          "Über diesen Editor",
+		help:           "Hilfe zum Editor",
+		textindicator:  "Current style"
+		babimage:		"Ovidentia Bild einfügen",
+		bablink:		"Ovidentia Link einfügen",
+		cleanhtml:		"HTML Code bereinigen",
+		copy:			"kopieren",
+		cut:			"ausschneiden",
+		paste:		"einfügen",
+		babfile:		"Ovidentia Dateilink einfügen",
+		undo:			"rückgängig",
+		redo:			"wiederholen"
 	}
 };
 
-
 HTMLArea.messages = {
-		cleanHTML:     "Warrning : cleaning HTML can remove page-setting of the document"
+		cleanHTML:     "Achtung : Reinigen des HTML-Code kann die Seiteneinstellungen des Dokumentes löschen"
 };
