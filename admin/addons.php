@@ -149,7 +149,8 @@ function addonsList($upgradeall)
 					if ( compare_versions($this->arr['version'],$arr_ini['version']) || $this->arr['version'] == "" )
 						{
 						$func_name = $this->arr['title']."_upgrade";
-						bab_callAddonsFunction($func_name);
+						if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/init.php"))
+							require_once( $GLOBALS['babAddonsPath'].$this->arr['title']."/init.php" );
 						if ( $this->upgradeall )
 							{
 							if ((function_exists($func_name) && $func_name($this->arr['version'],$arr_ini['version'])) || !function_exists($func_name))
@@ -219,7 +220,7 @@ function upgrade($id)
 			$func_name = $row['title']."_upgrade";
 			if ( compare_versions($row['version'],$arr_ini['version']) || $row['version'] == "" )
 				{
-				bab_callAddonsFunction($func_name);
+				require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
 				if ((function_exists($func_name) && $func_name($row['version'],$arr_ini['version'])) || !function_exists($func_name))
 					{
 					$req = "update ".BAB_ADDONS_TBL." set version='".$arr_ini['version']."' where id='".$id."'";

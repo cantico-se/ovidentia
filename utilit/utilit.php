@@ -748,7 +748,7 @@ function babUserSection($close)
 			break;
 			}
 		}
-	$res = $babDB->db_query("select id, title from ".BAB_ADDONS_TBL." where enabled='Y'");
+	$res = $babDB->db_query("select id, title,version from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		$acces =false;
