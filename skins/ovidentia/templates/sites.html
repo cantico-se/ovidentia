@@ -1254,8 +1254,14 @@ hideShowCnx();
 		<td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: bab_popup('{ urleditdp }',6);">{ editdptxt }</a>&nbsp;)</td>
 	</tr>
 	<tr class="BabSiteAdminFontBackground">
-		<td align="right"><input type="checkbox" name="cen" value="Y" { enchecked } /></td>
-		<td>{ emailnotification }</td>
+		<td align="right">
+			<select name="cen">
+				<!--#in getnextoption -->
+				<option value="{ optid }" { optsel }>{ optname }</option>
+				<!--#endin getnextoption -->
+			</select>
+		</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr class="BabSiteAdminFontBackground">
 		<td align="right">

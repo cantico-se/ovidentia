@@ -4364,15 +4364,38 @@ return $ret;
 
 function upgrade544to545()
 {
-	$ret = "";
-	$db = & $GLOBALS['babDB'];
-	$res = $db->db_query("ALTER TABLE `".BAB_SITES_NONWORKING_CONFIG_TBL."` ADD `nw_text` VARCHAR( 128 ) NOT NULL");
-	if( !$res)
-		{
-		$ret = "Alteration of <b>".BAB_SITES_NONWORKING_CONFIG_TBL."</b> table failed !<br>";
-		return $ret;
-		}
-
+$ret = "";
+$db = & $GLOBALS['babDB'];
+$res = $db->db_query("ALTER TABLE `".BAB_SITES_NONWORKING_CONFIG_TBL."` ADD `nw_text` VARCHAR( 128 ) NOT NULL");
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_NONWORKING_CONFIG_TBL."</b> table failed !<br>";
 	return $ret;
+	}
+
+$res = $db->db_query("select id, email_confirm from ".BAB_SITES_TBL."");
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." CHANGE `email_confirm` `email_confirm` TINYINT( 2 ) UNSIGNED DEFAULT '0' NOT NULL ";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+while( $arr = $db->db_fetch_array($res))
+	{
+	if( $arr['email_confirm'] == 'Y')
+		{
+		$ec = 0;
+		}
+	else
+		{
+		$ec = 1;
+		}
+	$db->db_query("update ".BAB_SITES_TBL." set email_confirm='".$ec."' where id='".$arr['id']."'");	
+	}
+
+return $ret;
 }
 ?>

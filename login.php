@@ -1063,6 +1063,17 @@ else if( isset($adduser) && $adduser == "register" && $babBody->babsite['registr
 	{
 	if( !addNewUser( $nickname, $password1, $password2))
 		$cmd = "register";
+	elseif( $babBody->babsite['email_confirm'] == 2 )
+		{
+		if( !signOn( $nickname, $password1, $lifetime))
+			{
+			$cmd = 'signon';
+			}
+		else
+			{
+			Header("Location: ". $GLOBALS['babUrlScript']);
+			}
+		}
 	}
 else if( isset($sendpassword) && $sendpassword == "send")
 	{

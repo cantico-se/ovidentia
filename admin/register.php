@@ -136,52 +136,6 @@ function notifyAdminRegistration($name, $useremail, $warning)
     $mail->send();
 	}
 
-function addUser( $nickname, $password1, $password2, $badmin)
-	{
-	global $babBody;
-	if( empty($password1) || empty($password2))
-		{
-		$babBody->msgerror = bab_translate( "Passwords not match !!");
-		return false;
-		}
-	if( $password1 != $password2)
-		{
-		$babBody->msgerror = bab_translate("Passwords not match !!");
-		return;
-		}
-	if ( strlen($password1) < 6 )
-		{
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
-		return false;
-		}
-
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("This nickname already exists !!");
-		return false;
-		}
-/*
-	$replace = array( " " => "", "-" => "");
-
-	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
-	$query = "select * from ".BAB_USERS_TBL." where hashname='".$hash."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
-		return false;
-		}
-*/
-
-	if(!registerUser($nickname, $password1, $password2, $badmin))
-		return false;
-
-	return true;
-	}
-
 /* generate a random password given a len */
 function random_password($length)
 	{
@@ -222,13 +176,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return;
 		}
-	/* removed by NA 01/10/2004 Version 5.4.4
-	if ( strlen($password1) < 6 )
-		{
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
-		return false;
-		}
-	*/
+
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
 	$res = $db->db_query($query);
@@ -255,7 +203,20 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 	if( $badmin )
 		$isconfirmed = 1;
 	else
-		$isconfirmed = 0;
+		{
+		switch( $babBody->babsite['email_confirm'] )
+			{
+			case 1: // Don't validate adresse email
+				$isconfirmed = 0;
+				break;
+			case 2: // Confirm account without address email validation
+				$isconfirmed = 1;
+				break;
+			default: //Confirm account by validationg address email
+				$isconfirmed = 0;
+				break;
+			}
+		}
 
 	$db = $GLOBALS['babDB'];
 
@@ -275,7 +236,15 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 			{
 			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
 			$fullname = bab_composeUserName($firstname , $lastname);
-			if( isset($babBody->babsite['email_confirm']) && $babBody->babsite['email_confirm'] == 'Y')
+			if( $babBody->babsite['email_confirm'] == 2)
+				{
+				$warning = "( ". bab_translate("Account user is already confirmed")." )";
+				}
+			elseif( $babBody->babsite['email_confirm'] == 1 )
+				{
+				$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
+				}
+			else
 				{
 				$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
 				$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($nickname);
@@ -284,12 +253,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 					{
 					$babBody->msgerror = bab_translate("ERROR: Email message can't be sent !!");
 					$warning = "( ". bab_translate("The user has not received his confirmation email")." )";
-					}
-				
-				}
-			else
-				{
-				$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
+					}				
 				}
 			notifyAdminRegistration($fullname, $email, $warning);
 			}

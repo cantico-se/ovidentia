@@ -797,7 +797,7 @@ function siteRegistration($id)
 			$this->disclaimer = bab_translate("Display link to Disclaimer/Privacy Statement");
 			$this->editdptxt = bab_translate("Edit");
 			$this->groupregistration = bab_translate("Default group for confirmed users");
-			$this->emailnotification = bab_translate("Send email confirmation")."?";
+			$this->confirmationstxt = array(bab_translate("Confirm account by validationg address email"), bab_translate("Don't validate adresse email"), bab_translate("Confirm account without address email validation"));
 			$this->none = bab_translate("None");
 			$this->add = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
@@ -817,14 +817,6 @@ function siteRegistration($id)
 			$this->grpcount = $this->db->db_num_rows($this->grpres);
 
 			$this->arrsite = $this->db->db_fetch_array($this->db->db_query("select email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$id."'"));
-			if( $this->arrsite['email_confirm'] == "Y")
-				{
-				$this->enchecked = "checked";
-				}
-			else
-				{
-				$this->enchecked = "";
-				}
 			if( $this->arrsite['display_disclaimer'] == "Y")
 				{
 				$this->dpchecked = "checked";
@@ -924,6 +916,29 @@ function siteRegistration($id)
 				}
 			}
 
+		function getnextoption()
+			{
+			static $i = 0;
+			if( $i < count($this->confirmationstxt))
+				{
+                $this->optname = $this->confirmationstxt[$i];
+                $this->optid = $i;
+				if( $this->arrsite['email_confirm'] == $i )
+					{
+					$this->optsel = "selected";
+					}
+				else
+					{
+					$this->optsel = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
 		}
 
 	$temp = new temp($id);
@@ -1335,7 +1350,7 @@ if( isset($update) )
 		if (!isset($rw)) { $rw = array(); }
 		if (!isset($req)) { $req = array(); }
 		if (!isset($cdp)) { $cdp = 'N'; }
-		if (!isset($cen)) { $cen = 'N'; }
+		if (!isset($cen)) { $cen = '0'; }
 		siteUpdateRegistration($item, $rw, $req, $ml, $cdp, $cen, $group);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		exit;
