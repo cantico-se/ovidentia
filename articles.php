@@ -1,10 +1,25 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include "base.php";
+include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);
@@ -46,7 +61,7 @@ function listArticles($topics, $approver)
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
-			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserCommentApprover($topics))
+			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserApprover($topics))
 				$this->com = true;
 			else
 				$this->com = false;
@@ -82,11 +97,11 @@ function listArticles($topics, $approver)
 					$ar = $this->db->db_fetch_array($res);
 					$total = $ar['total'];
 
-					$req = "select count(".BAB_COMMENTS_TBL.".id) as total from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-					$res = $this->db->db_query($req);			
+					$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='N'";
+					$res = $this->db->db_query($req);
 					$ar = $this->db->db_fetch_array($res);
 					$totalw = $ar['total'];
-					if( $total > 0 || ( $totalw > 0 && bab_isUserCommentApprover($this->topics) ))
+					if( $total > 0 || ( $totalw > 0 && $this->approver ))
 						{
 						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'];
 						if( $totalw > 0 )
@@ -206,7 +221,7 @@ function listOldArticles($topics, $pos, $approver)
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
-			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserCommentApprover($topics))
+			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserApprover($topics))
 				$this->com = true;
 			else
 				$this->com = false;
@@ -451,6 +466,9 @@ function modifyArticle($topics, $article)
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
 			$this->topicstxt = bab_translate("Topic");
+			$this->notifymembers = bab_translate("Notify group members by mail");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
@@ -469,11 +487,23 @@ function modifyArticle($topics, $article)
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
-				$this->msie = 0;
+				$this->msie = 0;	
 
 			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$GLOBALS['BAB_SESS_USERID']."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+
+			$arr = $this->db->db_fetch_array($this->db->db_query("select notify from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			if( $arr['notify'] == "N" )
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
+			else
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
 			}
 
 		function getnexttopic()
@@ -584,30 +614,66 @@ function articlePrint($topics, $article)
 	echo bab_printTemplate($temp,"articleprint.html");
 	}
 
-function notifyApprovers($id, $topics)
+function notifyApprover($top, $title, $approveremail)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_TOPICS_TBL." where id='".$topics."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		if( $arr['idsaart'] == 0 )
-			{
-			$db->db_query("update ".BAB_ARTICLES_TBL." set confirmed='Y' where id='".$id."'");
-			return true;
-			}
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
-		$res = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$arr['idsaart']."'");
-		if( $res && $db->db_num_rows($res) > 0)
+	class tempa
+		{
+		var $articletitle;
+		var $message;
+        var $from;
+        var $author;
+        var $category;
+        var $categoryname;
+        var $title;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($top, $title)
 			{
-			$idfai = makeFlowInstance($arr['idsaart'], "art-".$id);
-			$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='".$idfai."' where id='".$id."'");
-			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			notifyArticleApprovers($id, $nfusers);
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->articletitle = $title;
+            $this->message = bab_translate("A new article is waiting for you");
+            $this->from = bab_translate("Author");
+            $this->category = bab_translate("Topic");
+            $this->title = bab_translate("Title");
+            $this->categoryname = $top;
+            $this->site = bab_translate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = bab_translate("Date");
+            $this->dateval = bab_strftime(mktime());
+            if( !empty($BAB_SESS_USER))
+                $this->author = $BAB_SESS_USER;
+            else
+                $this->author = bab_translate("Unknown user");
+
+            if( !empty($BAB_SESS_EMAIL))
+                $this->authoremail = $BAB_SESS_EMAIL;
+            else
+                $this->authoremail = "";
 			}
 		}
+	
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
+
+	$mail->mailTo($approveremail);
+	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+	$mail->mailSubject(bab_translate("New waiting article"));
+
+	$tempa = new tempa($top, $title);
+	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewait");
+	$mail->mailBody($message, "html");
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewaittxt");
+	$mail->mailAltBody($message);
+
+	$mail->send();
 	}
 
 function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
@@ -639,11 +705,28 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	$bodytext = addslashes($bodytext);
 
 	$db = $GLOBALS['babDB'];
-	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date, title, body, head) values ";
-	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', 'N', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, title, body, head) values ";
+	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
-	notifyApprovers($id, $topics);
+
+	//##: mail to approver
+	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+        $top = $arr['category'];
+		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$arr = $db->db_fetch_array($res);
+			//$message = bab_translate("A new article is waiting for you"). ":\n". $title ."\n";
+            notifyApprover($top, stripslashes($title), $arr['email']);
+			//mail ($arr['email'],bab_translate("New waiting article"),$message,"From: ".$babAdminEmail);
+			}
+		}
 	}
 
 
@@ -664,8 +747,9 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date) values ";
-	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', 'N', now())";
+
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date) values ";
+	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now())";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
@@ -680,12 +764,26 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	$req = "update ".BAB_ARTICLES_TBL." set head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', title='".addslashes($title)."' where id='".$id."'";
 	$res = $db->db_query($req);
 
-	notifyApprovers($id, $topics);
+	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+        $top = $arr['category'];
+		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$arr = $db->db_fetch_array($res);
+            notifyApprover($top, stripslashes($title), $arr['email']);
+			//mail ($arr['email'],bab_translate("New waiting article"),$message,"From: ".$babAdminEmail);
+			}
+		}
 	return true;
 	}
 
 //@@: warn this function is duplicated in waiting.php file 
-function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid)
+function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif)
 	{
 	global $babBody;
 
@@ -710,6 +808,11 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."' where id='".$article."'";
 	$res = $db->db_query($req);
 
+	if( $bnotif == "Y" )
+		{
+		$arr = $db->db_fetch_array($db->db_query("select category from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+		notifyArticleGroupMembers($arr['category'], $topics, $title, bab_getArticleAuthor($article), 'mod');
+		}
 	}
 
 
@@ -730,33 +833,27 @@ if( isset($addarticle))
 if( isset($addart) && $addart == "add")
 	{
 	if( saveArticle($title, $headtext, $bodytext, $topics))
-		$idx = "Articles";
+	$idx = "Articles";
 	else
 		$idx = "Submit";
 	}
 
-if( isset($action) && $action == "Yes" && bab_isUserTopicManager($topics))
+if( isset($action) && $action == "Yes" && bab_isUserApprover($topics))
 	{
 	bab_confirmDeleteArticle($article);
 	}
 
 if( isset($modify))
 	{
-	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid);
+	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif);
 	$idx = "Articles";
 	}
 
-$approver = bab_isUserTopicManager($topics);
-$uaapp = bab_isUserArticleApprover($topics);
-$ucapp = bab_isUserCommentApprover($topics);
-if( $approver || $uaapp || $ucapp )
-	$access = true;
-else
-	$access = false;
-if( $uaapp )
+$approver = bab_isUserApprover($topics);
+if( $approver )
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$topics."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+	$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and confirmed='N'";
 	$res = $db->db_query($req);
 	$new = $db->db_num_rows($res);
 	}
@@ -772,7 +869,7 @@ switch($idx)
 
 	case "Submit":
 		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
-		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticle($title, $headtext, $bodytext, $topics);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
@@ -783,7 +880,7 @@ switch($idx)
 
 	case "subfile":
 		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
-		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
 			submitArticleByFile($topics);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
@@ -798,10 +895,10 @@ switch($idx)
 
 	case "More":
 		$babBody->title = bab_getCategoryTitle($topics);
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $access)
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
 			$barch = readMore($topics, $article);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 				{
 				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 				if( $barch > 0 )
@@ -813,7 +910,7 @@ switch($idx)
 					$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article);
 					}
 				}
-			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $access)
+			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 				{
 				$babBody->addItemMenu("Comments", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
 				}
@@ -840,17 +937,17 @@ switch($idx)
 		break;
 
 	case "Print":
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics) || $access)
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics) || $approver)
 			articlePrint($topics, $article);
 		exit();
 		break;
 
 	case "larch":
 		$babBody->title = bab_translate("List of old articles");
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $access)
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
 			$nbarch = listOldArticles($topics, $pos, $approver);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
@@ -865,15 +962,15 @@ switch($idx)
 	default:
 	case "Articles":
 		$babBody->title = bab_translate("List of articles");
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $access)
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $approver)
 			{
 			$arr = listArticles($topics, $approver);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
 				if( $arr[1] > 0 )
 					$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
-				if( isset($new) && $new > 0 && $uaapp)
+				if( $approver && isset($new) && $new > 0 )
 					$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
 				}
 			if( $arr[0] < 1)

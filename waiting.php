@@ -1,9 +1,23 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
 include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
@@ -205,6 +219,9 @@ function confirmArticle($article, $topics)
 			$this->refuse = bab_translate("Refuse");
 			$this->homepage0 = bab_translate("Add to unregistered users home page");
 			$this->homepage1 = bab_translate("Add to registered users home page");
+			$this->notifymembers = bab_translate("Notify group members by mail");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
 			$this->what = bab_translate("Send an email to author");
 			$this->message = bab_translate("Message");
 			$this->confval = "article";
@@ -222,6 +239,17 @@ function confirmArticle($article, $topics)
 				$arr2 = $this->db->db_fetch_array($this->res);
 				$this->fullname = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
 				$this->author = $arr['id_author'];
+				}
+			$arr = $this->db->db_fetch_array($this->db->db_query("select notify from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			if( $arr['notify'] == "N" )
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
+			else
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
 				}
 			}
 		}
@@ -426,63 +454,65 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 	$mail->send();
 	}
 
-function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1)
+function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1, $bnotify)
 	{
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 
-	$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."'";
-	$res = $db->db_query($req);
-	$arrart = $db->db_fetch_array($res);
+	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+	$res = $db->db_query($query);
+	$arr = $db->db_fetch_array($res);
+	$title = $arr['title'];
 
-	$bret = $action == "1"? true: false;
-	$res = updateFlowInstance($arrart['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
+	$query = "select * from ".BAB_USERS_TBL." where id='$author'";
+	$res = $db->db_query($query);
+	$arr = $db->db_fetch_array($res);
 
-	switch($res)
+	$query = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
+	$res = $db->db_query($query);
+	$arr2 = $db->db_fetch_array($res);
+	$topicname = $arr2['category'];
+
+	$query = "select * from ".BAB_USERS_TBL." where id='".$arr2['id_approver']."'";
+	$res = $db->db_query($query);
+	$arr2 = $db->db_fetch_array($res);
+
+	if( $action == "1")
 		{
-		case 0:
-			bab_confirmDeleteArticle($article);
-			$subject = bab_translate("Your article has been refused");
-			break;
-		case 1:
-			deleteFlowInstance($arrart['idfai']);
-			$db->db_query("update ".BAB_ARTICLES_TBL." set confirmed='Y', idfai='0' where id = '".$article."'");
-			$subject = bab_translate("Your article has been accepted");
+		$query = "update ".BAB_ARTICLES_TBL." set confirmed='Y' where id = '$article'";
+		$subject = bab_translate("Your article has been accepted");
+		$res = $db->db_query($query);
+
+		$query = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+		$res = $db->db_query($query);
+		if( $res && $db->db_num_rows($res) > 0)
+			{
+			$arr3 = $db->db_fetch_array($res);
+			if( $homepage0 == "2")
+				{
+				$query = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage0. "')";
+				$res = $db->db_query($query);
+				}
+
+			if( $homepage1 == "1")
+				{
+				$query = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage1. "')";
+				$res = $db->db_query($query);
+				}
+
 			if( $homepage0 == "2" || $homepage1 == "1" )
 				{
-				$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-				$res = $db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0)
-					{
-					$arr = $db->db_fetch_array($res);
-					if( $homepage0 == "2")
-						{
-						$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr['id']. "', '" . $homepage0. "')";
-						$res = $db->db_query($req);
-						}
-
-					if( $homepage1 == "1")
-						{
-						$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr['id']. "', '" . $homepage1. "')";
-						$res = $db->db_query($req);
-						}
-
-					if( $homepage0 == "2" || $homepage1 == "1" )
-						{
-						$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
-						$res = $db->db_query($req);
-						$arrtop = $db->db_fetch_array($res);
-						notifyArticleHomePage($arrtop['category'], $arrart['title'], $homepage0, $homepage1);
-						}
-					}
+				notifyArticleHomePage($topicname, $title, $homepage0, $homepage1);
 				}
-			break;
-		default:
-			$subject = bab_translate("About your article");
-			$nfusers = getWaitingApproversFlowInstance($arrart['idfai'], true);
-			if( count($nfusers) > 0 )
-				notifyArticleApprovers($article, $nfusers);
-			break;
+			}
+
+		if( $bnotify == "Y" )
+			notifyArticleGroupMembers($topicname, $topics, $title, bab_getArticleAuthor($article), 'add');
+		}
+	else
+		{
+		bab_confirmDeleteArticle($article);
+		$subject = bab_translate("Your article has been refused");
 		}
 
 	if( $send == "1")
@@ -490,7 +520,8 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		$msg = nl2br($message);
 		if( bab_isMagicQuotesGpcOn())
 			$msg = stripslashes($msg);
-        notifyArticleAuthor($subject, $msg, $arrart['title'], bab_getUserEmail($GLOBALS['BAB_SESS_USERID']), bab_getUserEmail($author));
+        notifyArticleAuthor($subject, $msg, $title, $arr2['email'], $arr['email']);
+		//mail ($arr['email'],$subject,$title . "\n". $msg,"From: ".$arr2['email']);
 		}
 	}
 
@@ -580,29 +611,22 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
 
-	$bret = $action == "1"? true: false;
-	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
-	switch($res)
+	if( $action == "1")
 		{
-		case 0:
-			$subject = "Your comment has been refused";
-			bab_deleteComments($com);
-			break;
-		case 1:
-			$subject = "Your comment has been accepted";
-			deleteFlowInstance($arr['idfai']);
-			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y', idfai='0' where id = '".$com."'");
-			break;
-		default:
-			$subject = "About your comment";
-			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-			if( count($nfusers) > 0 )
-				notifyCommentApprovers($com, $nfusers);
-			break;
+		$query = "update ".BAB_COMMENTS_TBL." set confirmed='Y' where id = '$com'";
 		}
-
-	if( $send == "1" && $arr['email'] != "")
+	else
 		{
+		$query = "delete from ".BAB_COMMENTS_TBL." where id = '$com'";
+		}
+	$res = $db->db_query($query);
+
+	if( $send == "1")
+		{
+		if( $action == "1")
+			$subject = "Your comment has been accepted";
+		else
+			$subject = "Your comment has been refused";
 		$msg = nl2br($message);
 		if( bab_isMagicQuotesGpcOn())
 			$msg = stripslashes($msg);
@@ -616,131 +640,94 @@ if(!isset($idx))
 	$idx = "Waiting";
 	}
 
-
-$uaapp = bab_isUserArticleApprover($topics);
-$ucapp = bab_isUserCommentApprover($topics);
-
-if( !$uaapp && !$ucapp )
+if( !bab_isUserApprover($topics))
 	return;
 
-if( $uaapp && isset($modify))
+if( isset($modify))
 	{
 	updateArticle($topics, $article, $title, $headtext, $bodytext);
 	}
 
 if( isset($confirm) )
 	{
-	if($uaapp && $confirm == "article")
-		updateConfirmArticle($topics, $article, $action, $send, $author, $message,$homepage0, $homepage1);
-	if($ucapp && $confirm == "comment")
+	if($confirm == "article")
+		updateConfirmArticle($topics, $article, $action, $send, $author, $message,$homepage0, $homepage1, $bnotif);
+	if($confirm == "comment")
 		updateConfirmComment($topics, $article, $action, $send, $author, $message, $comment, $new);
 	}
 
 $db = $GLOBALS['babDB'];
-if( $uaapp )
-{
-	$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$topics."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-	$res = $db->db_query($req);
-	$new = $db->db_num_rows($res);
-}
-
-if( $ucapp )
-	{
-	$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$article."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-	$res = $db->db_query($req);			
-	$newc = $db->db_num_rows($res);
-	}
+$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." where id_article='".$article."' and confirmed='N'";
+$res = $db->db_query($req);			
+$newc = $db->db_num_rows($res);
+$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and confirmed='N'";
+$res = $db->db_query($req);			
+$new = $db->db_num_rows($res);
 
 switch($idx)
 	{
 	case "More":
-		if( $uaapp )
-		{
-			$babBody->title = bab_getCategoryTitle($topics);
-			readMore($topics, $article);
-			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
-			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article);
-			$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article);
-		}
-		else
-			$babBody->title = bab_translate("Access denied");
-
+		$babBody->title = bab_getCategoryTitle($topics);
+		readMore($topics, $article);
+		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article);
+		$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article);
 		break;
 
 	case "Modify":
-		if( $uaapp )
-		{
-			$babBody->title = bab_getArticleTitle($article);
-			modifyArticle($topics, $article);
-			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
-			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article);
-			$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article);
-		}
-		else
-			$babBody->title = bab_translate("Access denied");
+		$babBody->title = bab_getArticleTitle($article);
+		modifyArticle($topics, $article);
+		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article);
+		$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article);
 		break;
 
 	case "Confirm":
-		if( $uaapp )
-		{
-			$babBody->title = bab_getArticleTitle($article);
-			confirmArticle($article, $topics);
-			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
-			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article);
-			$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article);
-		}
-		else
-			$babBody->title = bab_translate("Access denied");
+		$babBody->title = bab_getArticleTitle($article);
+		confirmArticle($article, $topics);
+		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article);
+		$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article);
 		break;
 
 	case "WaitingC":
-		if( $ucapp )
+		if( $newc > 0)
 		{
-		if( $newc > 0 )
-			{
-			$babBody->title = bab_translate("Waiting comments");
-			$babBody->addItemMenu("List", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
-			$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article);
-			listWaitingComments($topics, $article);
+		$babBody->title = bab_translate("Waiting comments");
+		$babBody->addItemMenu("List", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
+		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article);
+		listWaitingComments($topics, $article);
 			}
 		else
 			{
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 			exit;
 			}
-		}
-		else
-			$babBody->title = bab_translate("Access denied");
+
 		break;
 
 	case "ReadC":
-		if( $ucapp )
-		{
 		$babBody->title = bab_translate("Waiting Comment");
 		$babBody->addItemMenu("List", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
 		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article);
-		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article);
 		readComment($topics, $article, $com);
 		confirmComment($article, $topics, $com);
-		}
-		else
-			$babBody->title = bab_translate("Access denied");
 		break;
 
 	default:
 	case "Waiting":
-		if( $uaapp && $new > 0)
+		if( $new > 0)
 		{
-			$babBody->title = bab_getCategoryTitle($topics);
+		$babBody->title = bab_getCategoryTitle($topics);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
-			listArticles($topics, $new);
+		listArticles($topics, $new);
 		}
 		else
-		{
+			{
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 			exit;
-		}
+			}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

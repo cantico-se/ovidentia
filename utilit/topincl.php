@@ -1,9 +1,23 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
 include $babInstallPath."utilit/imgincl.php";
 
@@ -137,7 +151,6 @@ function bab_confirmDeleteTopic($id)
 
 function bab_confirmDeleteArticle($article)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	// delete comments
 	$db = $GLOBALS['babDB'];
 	$req = "delete from ".BAB_COMMENTS_TBL." where id_article='".$article."'";
@@ -150,8 +163,6 @@ function bab_confirmDeleteArticle($article)
 	deleteImages($arr['head'], $article, "art");
 	deleteImages($arr['body'], $article, "art");
 	
-	if( $arr['idfai'] != 0 )
-		deleteFlowInstance($arr['idfai']);
 	// delete article
 	$req = "delete from ".BAB_ARTICLES_TBL." where id='".$article."'";
 	$res = $db->db_query($req);
@@ -169,11 +180,7 @@ function bab_deleteComments($com)
 			bab_deleteComments($arr['id']);
 			}
 		}
-
-	$arr = $db->db_fetch_array($db->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$com."'"));
-	if( $arr['idfai'] != 0)
-		deleteFlowInstance($arr['idfai']);
-	$req = "delete from ".BAB_COMMENTS_TBL." where id='".$com."'";
+	$req = "delete from ".BAB_COMMENTS_TBL." where id='$com'";
 	$res = $db->db_query($req);	
 	}
 
@@ -261,147 +268,102 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	}
 
 
-function notifyArticleApprovers($id, $users)
+function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what = 'add')
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include_once $babInstallPath."utilit/mailincl.php";
 
-	if(!class_exists("tempa"))
+	if(!class_exists("tempcc"))
 		{
-		class tempa
+		class tempcc
 			{
-			var $articletitle;
 			var $message;
 			var $from;
 			var $author;
-			var $category;
-			var $categoryname;
+			var $about;
 			var $title;
+			var $titlename;
 			var $site;
 			var $sitename;
 			var $date;
 			var $dateval;
 
 
-			function tempa($id)
+			function tempcc($topicname, $title, $author, $msg)
 				{
 				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$db = $GLOBALS['babDB'];
-				$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$id."'"));
-				$this->articletitle = $arr['title'];
-				$this->message = bab_translate("A new article is waiting for you");
-				$this->from = bab_translate("Author");
-				$this->category = bab_translate("Topic");
+				$this->topic = bab_translate("Topic");
+				$this->topicname = $topicname;
 				$this->title = bab_translate("Title");
-				$rr = $db->db_fetch_array($db->db_query("select category from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
-				$this->categoryname = $rr['category'];
+				$this->authorname = $author;
+				$this->author = bab_translate("Author");
+				$this->titlename = $title;
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
-				if( !empty($arr['id_author']) && $arr['id_author'] != 0)
-					{
-					$this->author = bab_getUserName($arr['id_author']);
-					$this->authoremail = bab_getUserEmail($arr['id_author']);
-					}
-				else
-					{
-					$this->author = bab_translate("Unknown user");
-					$this->authoremail = "";
-					}
+				$this->message = $msg;
 				}
 			}
-		}
-
-	$mail = bab_mail();
+		}	
+    $mail = bab_mail();
 	if( $mail == false )
 		return;
 
-	for( $i=0; $i < count($users); $i++)
-		$mail->mailTo(bab_getUserEmail($users[$i]));
-	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
-	$mail->mailSubject(bab_translate("New waiting article"));
+	if( $what == 'mod' )
+		$msg = bab_translate("An article has been modified");
+	else
+		$msg = bab_translate("An article has been published");
 
-	$tempa = new tempa($id);
-	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewait");
-	$mail->mailBody($message, "html");
 
-	$message = bab_printTemplate($tempa,"mailinfo.html", "articlewaittxt");
-	$mail->mailAltBody($message);
+    $mail->mailTo($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
+    $mail->mailSubject($msg);
 
-	$mail->send();
-	}
+	$tempc = new tempcc($topicname, $title, $author, $msg);
+	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticle");
+    $mail->mailBody($message, "html");
 
-function notifyCommentApprovers($idcom, $nfusers)
-	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-    include $babInstallPath."utilit/mailincl.php";
+	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
+    $mail->mailAltBody($message);
 
-	if(!class_exists("tempa"))
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select id_group from ".BAB_TOPICSVIEW_GROUPS_TBL." where  id_object='".$topics."'");
+	if( $res && $db->db_num_rows($res) > 0 )
 		{
-		class tempca
+		while( $row = $db->db_fetch_array($res))
 			{
-			var $article;
-			var $articlename;
-			var $message;
-			var $from;
-			var $author;
-			var $category;
-			var $categoryname;
-			var $subject;
-			var $subjectname;
-			var $title;
-			var $site;
-			var $sitename;
-			var $date;
-			var $dateval;
-
-			function tempca($idcom)
+			switch($row['id_group'])
 				{
-				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-				$db = $GLOBALS['babDB'];
-				$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$idcom."'"));
-
-				$this->message = bab_translate("A new comment is waiting for you");
-				$this->from = bab_translate("Author");
-				$this->subject = bab_translate("Subject");
-				$this->subjectname = $arr['subject'];
-				$this->article = bab_translate("Article");
-				$this->articlename = bab_getArticleTitle($arr['id_article']);
-				$this->category = bab_translate("Topic");
-				$this->categoryname = bab_getCategoryTitle($arr['id_topic']);
-				$this->site = bab_translate("Web site");
-				$this->sitename = $babSiteName;
-				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
-				if( !empty($BAB_SESS_USER))
-					$this->author = $BAB_SESS_USER;
-				else
-					$this->author = bab_translate("Unknown user");
-
-				if( !empty($BAB_SESS_EMAIL))
-					$this->authoremail = $BAB_SESS_EMAIL;
-				else
-					$this->authoremail = "";
+				case 0:
+				case 1:
+					$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+					break;
+				case 2:
+					return;
+				default:
+					$res2 = $db->db_query("select ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".email, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed='1' and disabled='0' and ".BAB_USERS_GROUPS_TBL.".id_group='".$row['id_group']."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_USERS_TBL.".id");
+					break;
 				}
+
+			if( $res2 && $db->db_num_rows($res2) > 0 )
+				{
+				$count = 0;
+				while(($arr = $db->db_fetch_array($res2)))
+					{
+					$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+					$count++;
+					if( $count == 25 )
+						{
+						$mail->send();
+						$mail->clearBcc();
+						$count = 0;
+						}
+					}
+
+				if( $count > 0 )
+					$mail->send();
+				}	
 			}
-		
-		$mail = bab_mail();
-		if( $mail == false )
-			return;
-
-		for( $i=0; $i < count($nfusers); $i++)
-			$mail->mailTo(bab_getUserEmail($nfusers[$i]));
-		$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
-		$mail->mailSubject(bab_translate("New waiting comment"));
-
-		$tempa = new tempca($idcom);
-		$message = bab_printTemplate($tempa,"mailinfo.html", "commentwait");
-		$mail->mailBody($message, "html");
-
-		$message = bab_printTemplate($tempa,"mailinfo.html", "commentwaittxt");
-		$mail->mailAltBody($message);
-		$mail->send();
-		}
+		}	
 	}
 ?>

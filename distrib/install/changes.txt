@@ -1,23 +1,16 @@
 /************************************************************************/
-Septembre 2002: Version 3.4.1b
+Juillet 2002: Version 3.3.4
 /************************************************************************/
-- Enhanced Approval flow files
-- Files Manager is now independant from groups structure
-( Administrators can create folders as many as they want )
+- Possibility to enable or disable mail, notes, calendar and contacts by group
+- Groups members can be notified when article has been submited or updated
+- Groups members can be notified when file has been uploaded or changed
+- Possibility to move article from one topic to an another topic 
+- Possibility to order forums and topics in sections 
+- Possibility to assign user to one group after registration
 - Administrator can notify user when they create user and send him nickname and password
 - Improved performance
 - Improved security
-- Improved Calendar access: user can specify multiple users to access his calendar
-- Fixed some minors bugs
-
-/************************************************************************/
-August 2002: Version 3.4.0b
-/************************************************************************/
-- Improved calendar ( pm/am, scale time, multiple views...)
-- Possibility to order forums and topics in sections 
-- Possibility to move article from topic to another topic 
-- Now topics can be not moderate
-- Enhanced Approval flow articles and comments
+- Possibility to upload and link images to faq
 - Fixed some minors bugs
 
 /************************************************************************/

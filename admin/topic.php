@@ -1,9 +1,23 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
 include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/topincl.php";
@@ -154,7 +168,7 @@ function deleteArticles($art, $item, $userid)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom)
+function modifyCategory($id, $cat, $category, $description, $managerid, $modcom, $bnotif)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -177,21 +191,21 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $msie;
 		var $count;
 		var $topcat;
-		var $modcom;
+		var $modcomtxt;
 		var $yes;
 		var $no;
 		var $yesselected;
 		var $noselected;
 		var $delete;
 
-		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom)
+		function temp($id, $cat, $category, $description, $managerid, $modcom, $bnotif)
 			{
 			$this->topcat = bab_translate("Topic category");
 			$this->title = bab_translate("Topic");
 			$this->desctitle = bab_translate("Description");
 			$this->approver = bab_translate("Topic manager");
-			$this->modcom = bab_translate("Approbation schema for comments");
-			$this->modart = bab_translate("Approbation schema for articles");
+			$this->modcomtxt = bab_translate("Moderate comments");
+			$this->notiftxt = bab_translate("Notify group members by mail");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Update Topic");
@@ -229,26 +243,40 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				}
 			$this->managerval = bab_getUserName($this->managerid);
 
-			if(empty($sacom))
-				$this->sacom = $this->arr['idsacom'];
+			if(empty($modcom))
+				$modcom = $this->arr['mod_com'];
+
+			if($modcom == "N")
+				{
+				$this->modcomnsel = "selected";
+				$this->modcomysel = "";
+				}
 			else
-				$this->sacom = $sacom;
-			if(empty($saart))
-				$this->saart = $this->arr['idsaart'];
+				{
+				$this->modcomnsel = "";
+				$this->modcomysel = "selected";
+				}
+
+			if(empty($bnotif))
+				$bnotif = $this->arr['notify'];
+
+			if( $bnotif == "N")
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
 			else
-				$this->saart = $saart;
+				{
+				$this->notifnsel = "";
+				$this->notifysel = "selected";
+				}
+
 			$this->bdel = true;
 			
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL."";
-			$this->sares = $this->db->db_query($req);
-			if( !$this->sares )
-				$this->sacount = 0;
-			else
-				$this->sacount = $this->db->db_num_rows($this->sares);
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
@@ -277,44 +305,9 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				return false;
 			}
 		
-		function getnextschapp()
-			{
-			static $i = 0;
-			static $j = 0;
-			if( $i < $this->sacount)
-				{
-				$arr = $this->db->db_fetch_array($this->sares);
-				$this->saname = $arr['name'];
-				$this->said = $arr['id'];
-				if( !$j )
-					{
-					if( $this->said == $this->saart )
-						$this->saartsel = "selected";
-					else
-						$this->saartsel = "";
-					}
-				else
-					{
-					if( $this->said == $this->sacom )
-						$this->sacomsel = "selected";
-					else
-						$this->sacomsel = "";
-					}
-				$i++;
-				return true;
-				}
-			else
-				{
-				if( $this->sacount > 0 )
-					$this->db->db_data_seek($this->sares, 0);
-				$i = 0;
-				$j++;
-				return false;
-				}
-			}
 		}
 
-	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom);
+	$temp = new temp($id, $cat, $category, $description, $managerid, $modcom, $bnotif);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -386,9 +379,8 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"topics.html", "articleview");
 	}
 
-function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom)
+function updateCategory($id, $category, $description, $managerid, $cat, $modcom, $bnotif)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
 	if( empty($category))
 		{
@@ -409,47 +401,7 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 		}
 
 	$db = $GLOBALS['babDB'];
-	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$id."'"));
-	if( $arr['idsaart'] != $saart )
-		{
-		$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and confirmed='N' and archive='N'");
-		while( $row = $db->db_fetch_array($res))
-			{
-			if( $row['idfai'] != 0 )
-				deleteFlowInstance($row['idfai']);
-			if( $saart == 0 )
-				{
-				$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
-				}
-			else
-				{
-				$idfai = makeFlowInstance($saart, "art-".$row['id']);
-				$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
-				$nfusers = getWaitingApproversFlowInstance($idfai, true);
-				notifyArticleApprovers($row['id'], $nfusers);
-				}
-			}
-		}
-
-	if( $arr['idsacom'] != $sacom )
-		{
-		$res = $db->db_query("select * from ".BAB_COMMENTS_TBL." where id_topic='".$id."' and confirmed='N'");
-		while( $row = $db->db_fetch_array($res))
-			{
-			if( $row['idfai'] != 0 )
-				deleteFlowInstance($row['idfai']);
-			if( $sacom == 0 )
-				$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='0', confirmed = 'Y' where id='".$row['id']."'");
-			else
-				{
-				$idfai = makeFlowInstance($saart, "com-".$row['id']);
-				$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
-				$nfusers = getWaitingApproversFlowInstance($idfai, true);
-				notifyCommentApprovers($row['id'], $nfusers);
-				}
-			}
-		}
-	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', mod_com='".$modcom."', notify='".$bnotif."' where id = '".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
@@ -529,7 +481,7 @@ if( isset($add) && $adminid >0)
 	{
 	if( isset($Submit))
 		{
-		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom))
+		if(!updateCategory($item, $category, $description, $managerid, $ncat, $modcom, $bnotif))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -660,7 +612,7 @@ switch($idx)
 		$babBody->title = bab_translate("Modify a topic");
 		if( $adminid > 0)
 		{
-		modifyCategory($item, $ncat, $category, $description, $managerid, $saart, $sacom);
+		modifyCategory($item, $ncat, $category, $description, $managerid, $modcom, $bnotif);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);

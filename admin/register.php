@@ -1,9 +1,23 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
 include $babInstallPath."utilit/mailincl.php";
 
@@ -201,28 +215,28 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 
 		if( !$badmin )
 			{
-			$result=$db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
-			if( $result && $db->db_num_rows($result) > 0 )
-				{
-				$r = $db->db_fetch_array($result);
-				}
+		$result=$db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
+		if( $result && $db->db_num_rows($result) > 0 )
+			{
+			$r = $db->db_fetch_array($result);
+			}
 
-			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
-			$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
-			$link = $GLOBALS['babUrlScript']."?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
-			//mail ($email,bab_translate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
-			$fullname = bab_composeUserName($firstname , $lastname);
-			if( $r['email_confirm'] == 'Y')
-				{
-				notifyUserRegistration($link, $fullname, $email);
-				$warning = "";
-				}
-			else
-				{
-				$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
-				}
-			notifyAdminRegistration($fullname, $email, $warning);
-			//$babBody->msgerror = $msg;
+		$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
+		$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
+		$link = $GLOBALS['babUrlScript']."?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
+		//mail ($email,bab_translate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+		$fullname = bab_composeUserName($firstname , $lastname);
+		if( $r['email_confirm'] == 'Y')
+			{
+			notifyUserRegistration($link, $fullname, $email);
+			$warning = "";
+			}
+		else
+			{
+			$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
+			}
+		notifyAdminRegistration($fullname, $email, $warning);
+		//$babBody->msgerror = $msg;
 			}
 		bab_callAddonsFunction('onUserCreate', $id);
 		return true;

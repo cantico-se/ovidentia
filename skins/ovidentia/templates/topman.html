@@ -14,8 +14,18 @@
 <a class="BabTopicsAdminNumberLink" href="{ urlarticles }">{ nbarticles }&nbsp;{ 
 articles }</a>&nbsp;|&nbsp;{ waiting }: 
 <!--#endif nbarticles -->
+<!--#if newa "> 0" -->
+&nbsp;<a class="BabTopicsAdminNumberLink" href="{ urlnewa }">{ newa }&nbsp;{ articles 
+}</a> 
+<!--#else newa -->
 &nbsp;{ newa }&nbsp;{ articles } 
+<!--#endif newa -->
+<!--#if newc "> 0" -->
+&nbsp;<a class="BabTopicsAdminNumberLink" href="{ urlnewc }">{ newc }&nbsp;{ comments 
+}</a> 
+<!--#else newc -->
 &nbsp;{ newc }&nbsp;{ comments } 
+<!--#endif newc -->
 </td>
 </tr>
 <tr> 
@@ -55,7 +65,7 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="hart1[]" value="{ articleid }" { checked1 }>
 </td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', 'OviTopA', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
+<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
@@ -103,27 +113,33 @@ articles }</a>&nbsp;|&nbsp;{ waiting }:
 { babCss }
 <script type="text/javascript">
 <!--
-window.focus();
 //-->
 </script>
 </HEAD>
 <BODY class="BabTopicsAdminArticleViewFontBackground">
 <br>
-<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0">
-<tr>
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] 
-}</b></td>
+<table width="92%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
+<tr> 
+<td class="BabTopicsTitleBackground" align="center" nowrap><b>{ arr[title] }</b></td>
 </tr>
-<tr><td>{ head }</td></tr>
 <tr>
-<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+<td class="BabTopicsBackground">{ head }</td>
 </tr>
-<tr><td>{ content }</td></tr>
+<tr> 
+<td>&nbsp;</td>
+</tr>
 <tr>
-<td colspan="2" align="center">
-<br>
-<a href="javascript:this.close()">{ close }</a>
-<br>
+<td class="BabTopicsBackground">{ content }</td>
+</tr>
+<tr> 
+<td colspan="2" align="center"> <br>
+<a href="javascript:this.close()" class="BabSiteAdminListLink">{ close }</a> <br>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 </table>
@@ -149,7 +165,7 @@ window.focus();
 <td align="left" valign="middle" width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
-<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', 'OviTopB', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
+<td valign="middle" width="90%"><a class="BabTopicsAdminTitleLink" href="javascript: Start('{ urltitle }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ title }</a></td>
 <!--#endin getnext -->
 </tr>
 <tr> 

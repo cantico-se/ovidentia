@@ -1,9 +1,23 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
 include $babInstallPath."utilit/defines.php";
 include $babInstallPath."utilit/dbutil.php";
@@ -179,7 +193,7 @@ function bab_translate($str, $folder = "", $lang="")
 	for( $i = 0; $i < count($babLA[$tag][1]); $i++)
 		{
 		if( $babLA[$tag][1][$i] == $str )
-			{
+{
 			return $babLA[$tag][2][$i];
 			}
 		}
@@ -255,15 +269,15 @@ function bab_callAddonsFunction($func)
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 			if( is_file($addonpath."/init.php" ))
 				{
+				$GLOBALS['babAddonFolder'] = $row['title'];
+				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 				require_once( $addonpath."/init.php" );
 				$call = $row['title']."_".$func;
 				if( !empty($call)  && function_exists($call) )
 					{
-					$GLOBALS['babAddonFolder'] = $row['title'];
-					$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
-					$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 					$args = func_get_args();
 					$call .= "(";
 					for($k=1; $k < sizeof($args); $k++)
@@ -284,15 +298,15 @@ function bab_getAddonsMenus($row, $what)
 	$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 	if( is_file($addonpath."/init.php" ))
 		{
+		$GLOBALS['babAddonFolder'] = $row['title'];
+		$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+		$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 		require_once( $addonpath."/init.php" );
 		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
 			{
-			$GLOBALS['babAddonFolder'] = $row['title'];
-			$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
-			$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 			while( $func($url, $txt))
 				{
 				$addon_urls[$txt] = $url;
@@ -445,8 +459,7 @@ function babAdminSection($close)
 	$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=admvacs";
 	$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=admcals";
 	$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y";
-	$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfms";
-	$this->array_urls[bab_translate("Approbations")] = $GLOBALS['babUrlScript']."?tg=apprflow";
+	$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=admfiles";
 	$this->array_urls[bab_translate("Add-ons")] = $GLOBALS['babUrlScript']."?tg=addons";
 	$this->head = bab_translate("This section is for Administration");
 	$this->foot = bab_translate("");
@@ -602,8 +615,7 @@ function babUserSection($close)
 		{
 		$this->array_urls[bab_translate("Contacts")] = $GLOBALS['babUrlScript']."?tg=contacts";
 		}
-	bab_fileManagerAccessLevel();
-	if( $babBody->ustorage || count($babBody->aclfm) > 0 )
+	if( count(bab_fileManagerAccessLevel()) > 0 )
 		{
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=fileman";
 		}
@@ -720,7 +732,7 @@ function babTopcatSection($close)
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
 			{
 			if( $close )
-				{
+			{
 				$this->count = 1;
 				return;
 				}
@@ -777,17 +789,17 @@ function babTopicsSection($cat, $close)
 	$r = $babDB->db_fetch_array($babDB->db_query("select description, title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
 	$this->title = $r['title'];
 	$this->head = $r['description'];
-	$req = "select id from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
+	$req = "select id, id_approver from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
 	$res = $babDB->db_query($req);
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) || bab_isUserTopicManager($row['id']))
-			{
+		if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) || $GLOBALS['BAB_SESS_USERID'] == $row['id_approver'])
+		{
 			if( $close )
-				{
+			{
 				$this->count = 1;
 				return;
-				}
+			}
 			array_push($this->arrid, $row['id']);
 			}
 		}
@@ -810,27 +822,26 @@ function babTopicsSection($cat, $close)
 
 function topicsGetNext()
 	{
-	global $babDB, $babBody, $BAB_SESS_USERID, $babInstallPath;
-	include_once $babInstallPath."utilit/afincl.php";
+	global $babDB, $babBody, $BAB_SESS_USERID;
 	static $i = 0;
 	if( $i < $this->count)
 		{
-		$req = "select id, idsaart, category  from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'";
+		$req = "select * from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'";
 		$res = $babDB->db_query($req);
 		$this->newa = "";
 		$this->newc = "";
 		if( $res && $babDB->db_num_rows($res) > 0)
 			{
 			$this->arr = $babDB->db_fetch_array($res);
-			if( isUserApproverFlow($this->arr['idsaart'], $BAB_SESS_USERID))
+			if( $BAB_SESS_USERID == $this->arr['id_approver'])
 				{
 				$this->bfooter = 1;
-				$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $babDB->db_query($req);
 				if($babDB->db_num_rows($res) > 0)
 					$this->newa = "a";
 
-				$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $babDB->db_query($req);
 				if($babDB->db_num_rows($res) > 0)
 					$this->newc = "c";
@@ -875,8 +886,8 @@ function babForumsSection($close)
 		if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 			{
 			array_push($this->arrid, $row['id']);
+				}
 			}
-		}
 	$this->head = bab_translate("List of different forums");
 	$this->waitingf = bab_translate("Waiting posts");
 	$this->bfooter = 0;
@@ -1003,11 +1014,11 @@ function isSectionClose($idsec, $type)
 		{
 		$arr2 = $babDB->db_fetch_array($res2);
 		if( $arr2['closed'] == "Y")
-			{
+{
 			$close = 1;
 			}
 		else
-			{
+		{
 			$close = 0;
 			}
 		}
@@ -1015,7 +1026,7 @@ function isSectionClose($idsec, $type)
 		{
 		$close = 0;
 		}
-	else
+		else
 		{
 		$close = 0;
 		}
@@ -1090,20 +1101,20 @@ function loadSections()
 					$r = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ADDONS_TBL." where id='".$arr['id_section']."'"));
 					if( $r['enabled'] == "Y" && is_file($GLOBALS['babAddonsPath'].$r['title']."/init.php"))
 						{
+						$GLOBALS['babAddonFolder'] = $r['title'];
+						$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
+						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$r['id']."/";
+						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$r['title']."/";
+						$GLOBALS['babAddonHtmlPath'] = "addons/".$r['title']."/";
 						require_once( $GLOBALS['babAddonsPath'].$r['title']."/init.php" );
 						$func = $r['title']."_onSectionCreate";
 						if( function_exists($func))
 							{
-							$GLOBALS['babAddonFolder'] = $r['title'];
-							$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
-							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$r['id']."/";
-							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$r['title']."/";
-							$GLOBALS['babAddonHtmlPath'] = "addons/".$r['title']."/";
 							if( $func($stitle, $scontent))
 								{
 								$add = true;
 								if( !$close )
-									$sec = new babSection($stitle, $scontent);
+								$sec = new babSection($stitle, $scontent);
 								else
 									$sec = new babSection($stitle, "");
 								}
@@ -1121,10 +1132,10 @@ function loadSections()
 						{
 						$arr2 = $babDB->db_fetch_array($res2);
 						if( !$close )
-							{
-							if( $arr2['script'] == "Y")
-								eval("\$arr2['content'] = \"".$arr2['content']."\";");
-							$sec = new babSection($arr2['title'], $arr2['content']);
+						{
+						if( $arr2['script'] == "Y")
+							eval("\$arr2['content'] = \"".$arr2['content']."\";");
+						$sec = new babSection($arr2['title'], $arr2['content']);
 							}
 						else
 							$sec = new babSection($arr2['title'], "");
@@ -1143,8 +1154,8 @@ function loadSections()
 			if(empty($BAB_SESS_USERID))
 				$sec->bbox = 0;
 			if( $sec->close )
-				$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&idx=ob&s=".$arr['id_section']."&w=".$arr['type'];
-			else
+					$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&idx=ob&s=".$arr['id_section']."&w=".$arr['type'];
+				else
 				$sec->boxurl = $GLOBALS['babUrlScript']."?tg=options&idx=cb&s=".$arr['id_section']."&w=".$arr['type'];
 			$babBody->addSection($sec);
 			}

@@ -90,24 +90,20 @@ else
 <input type="hidden" name="managerid" value="{ managerid }"></td>
 </tr>
 <tr> 
-<td nowrap align="right">{ modart }:</td> 
+<td nowrap align="right">{ modcomtxt }:</td> 
 <td nowrap>
-<select name="saart">
-<option value="0">{ none }</option>
-<!--#in getnextschapp -->
-<option value="{ said }" { saartsel }>{ saname }</option>
- <!--#endin getnextschapp -->
+<select name="modcom">
+<option value="Y" { modcomysel }>{ yes }</option>
+<option value="N" { modcomnsel }>{ no }</option>
 </select>
 </td>
 </tr>
 <tr> 
-<td nowrap align="right">{ modcom }:</td> 
+<td nowrap align="right">{ notiftxt }:</td> 
 <td nowrap>
-<select name="sacom">
-<option value="0">{ none }</option>
-<!--#in getnextschapp -->
-<option value="{ said }" { sacomsel }>{ saname }</option>
- <!--#endin getnextschapp -->
+<select name="bnotif">
+<option value="Y" { notifysel }>{ yes }</option>
+<option value="N" { notifnsel }>{ no }</option>
 </select>
 </td>
 </tr>
@@ -341,27 +337,33 @@ editor.CloseInitSection();
 { babCss }
 <script type="text/javascript">
 <!--
-window.focus();
 //-->
 </script>
 </HEAD>
 <BODY class="BabTopicsAdminArticleViewFontBackground">
 <br>
-<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0">
-<tr>
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] 
-}</b></td>
+<table width="92%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
+<tr> 
+<td class="BabTopicsTitleBackground" align="center" nowrap><b>{ arr[title] }</b></td>
 </tr>
-<tr><td>{ head }</td></tr>
 <tr>
-<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+<td class="BabTopicsBackground">{ head }</td>
 </tr>
-<tr><td>{ content }</td></tr>
+<tr> 
+<td>&nbsp;</td>
+</tr>
 <tr>
-<td colspan="2" align="center">
-<br>
-<a href="javascript:this.close()">{ close }</a>
-<br>
+<td class="BabTopicsBackground">{ content }</td>
+</tr>
+<tr> 
+<td colspan="2" align="center"> <br>
+<a href="javascript:this.close()" class="BabSiteAdminListLink">{ close }</a> <br>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 </table>

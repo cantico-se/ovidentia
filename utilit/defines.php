@@ -1,9 +1,23 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
@@ -18,13 +32,6 @@ define("BAB_CONTACTS_TBL", "bab_contacts");
 define("BAB_FAQCAT_TBL", "bab_faqcat");
 define("BAB_FAQCAT_GROUPS_TBL", "bab_faqcat_groups");
 define("BAB_FAQQR_TBL", "bab_faqqr");
-define("BAB_FA_INSTANCES_TBL", "bab_fa_instances");
-define("BAB_FAR_INSTANCES_TBL", "bab_far_instances");
-define("BAB_FLOW_APPROVERS_TBL", "bab_flow_approvers");
-define("BAB_FM_FOLDERS_TBL", "bab_fm_folders");
-define("BAB_FMUPLOAD_GROUPS_TBL", "bab_fmupload_groups");
-define("BAB_FMDOWNLOAD_GROUPS_TBL", "bab_fmdownload_groups");
-define("BAB_FMUPDATE_GROUPS_TBL", "bab_fmupdate_groups");
 define("BAB_FILES_TBL", "bab_files");
 define("BAB_FORUMS_TBL", "bab_forums");
 define("BAB_FORUMSPOST_GROUPS_TBL", "bab_forumspost_groups");

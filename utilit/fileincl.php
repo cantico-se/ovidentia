@@ -1,24 +1,24 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
-function bab_getFolderName($id)
-	{
-	global $babDB;
-	$res = $babDB->db_query("select folder from ".BAB_FM_FOLDERS_TBL." where id='".$id."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['folder'];
-		}
-	else
-		{
-		return "";
-		}
-	}
 
 function bab_getUploadFullPath($gr, $id)
 {
@@ -90,23 +90,21 @@ function bab_deleteUploadDir($path)
 
 function bab_deleteUploadUserFiles($gr, $id)
 	{
-	global $babDB;
+	$db = $GLOBALS['babDB'];	
 	$pathx = bab_getUploadFullPath($gr, $id);
-	$babDB->db_query("delete from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'");
+	$db->db_query("delete from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'");
 	@bab_deleteUploadDir($pathx);
 	}
 
 function bab_isAccessFileValid($gr, $id)
 	{
-	global $babBody;
-
-	bab_fileManagerAccessLevel();
+	$aclfm = bab_fileManagerAccessLevel();
 	$access = false;
 	if( $gr == "Y")
 		{
-		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+		for( $i = 0; $i < count($aclfm['id']); $i++)
 			{
-			if( $babBody->aclfm['id'][$i] == $id && $babBody->aclfm['down'][$i])
+			if( $aclfm['id'][$i] == $id && $aclfm['pu'][$i] == 1)
 				{
 				$access = true;
 				break;
@@ -115,11 +113,12 @@ function bab_isAccessFileValid($gr, $id)
 		}
 	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
 		{
-		if( $babBody->ustorage)
+		if( in_array(1, $aclfm['pr']))
 			{
 			$access = true;
 			}
 		}
 	return $access;
 	}
+
 ?>

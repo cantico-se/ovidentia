@@ -132,39 +132,15 @@ href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }
 </td>          
-<td class="BabSiteAdminFontBackground">&nbsp; <a class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ name }</a>&nbsp; 
-</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">&nbsp;{ readonly }</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ sizef } &nbsp;</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
-<td align="center" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
-<td class="BabSiteAdminFontBackground" align="right">&nbsp;
-<!--#if bdownload -->
-<a class="BabSiteAdminListLink" href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle"></a>
-<!--#endif bdownload -->
-</td>
-<td class="BabSiteAdminFontBackground" nowrap>&nbsp; 
-<!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" 
-alt="{ cuttxt }" border="0" align="middle"></a>&nbsp;<a class="BabSiteAdminListLink" href="{ delurl }"><img 
-src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle"></a> 
-<!--#endif bmanager -->
-</td>
-<!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" align="center">{ hits }</td>
-<!--#endif bmanager -->
-</tr><!--#endin getnextfile -->
-<!--#in getnextwfile --> <tr valign="middle"> 
-<td class="BabSiteAdminFontBackground" width="1%" align="center"> 
-{ fileimage }
-</td>          
                 <td class="BabSiteAdminFontBackground">&nbsp; <a 
 class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
                   name }</a>&nbsp; 
-                  <!--#if bconfirmed "== 1" -->
-                  <font color="#FF0000">* </font>
-                  <!--#endif bconfirmed -->
-                </td>
+<!--#if bmanager -->
+<!--#if bconfirmed "== 1" -->
+* 
+<!--#endif bconfirmed -->
+<!--#endif bmanager -->
+</td>
 <td align="center" nowrap class="BabSiteAdminFontBackground">&nbsp;{ readonly }</td>
                 <td align="center" nowrap class="BabSiteAdminFontBackground">{ sizef 
                   } &nbsp;</td>
@@ -183,12 +159,20 @@ src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="mid
 <!--#if bmanager -->
 <td class="BabSiteAdminFontBackground" align="center">{ hits }</td>
 <!--#endif bmanager -->
-</tr><!--#endin getnextwfile -->
+</tr><!--#endin getnextfile -->
 <!--#in getnextxfile --> <tr valign="middle"> 
 <td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }</td>          
-                <td class="BabSiteAdminFontBackground" colspan="2">&nbsp;{ name }
-                </td>
+<td class="BabSiteAdminFontBackground">&nbsp; 
+<!--#if bmanager -->
+<a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
+<!--#if bconfirmed "== 1" -->
+* 
+<!--#endif bconfirmed -->
+<!--#else bmanager -->
+{ name } 
+<!--#endif bmanager -->
+</td>
 <td align="center" nowrap class="BabSiteAdminFontBackground">&nbsp;{ sizef }&nbsp;</td>
                 <td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
 <td align="center" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
@@ -441,6 +425,7 @@ window.focus();
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#if bmanager -->
 <!--#if bupdate -->
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
@@ -448,8 +433,6 @@ window.focus();
 <input type="file" name="uploadf" size="30" maxlength="255" value="">
 </td>
 </tr>
-<!--#endif bupdate -->
-<!--#if bmanager -->
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
 <td class="BabLoginMenuBackground" width="70%" valign="middle">
@@ -478,6 +461,7 @@ window.focus();
 </td>
 </tr>
 <!--#endif bviewnf -->
+<!--#endif bupdate -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
 <td class="BabLoginMenuBackground" valign="middle">
@@ -487,7 +471,6 @@ window.focus();
 </select>
 </td>
 </tr>
-<!--#endif bmanager -->
 <!--#if bconfirm -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ confirm }</td>
@@ -499,14 +482,13 @@ window.focus();
 </td>
 </tr>
 <!--#endif bconfirm -->
-<!--#if bsubmit -->
 <tr>
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle">
 <input type="submit" name="submit" value="{ update }">
 </td>
 </tr>
-<!--#endif bsubmit -->
+<!--#endif bmanager -->
 </table>
 </td>
 </tr>
@@ -531,7 +513,7 @@ window.focus();
 </script>
 
 </HEAD>
-<BODY onUnload="this.opener.location.reload()">
+<BODY onUnload="this.opener.location.href='{ url }'">
 <br><br><br><br>
 
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">

@@ -1,14 +1,28 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
 include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom)
+function addCategory($cat, $ncat, $category, $description, $managerid, $modcom, $bnotif)
 	{
 	global $babBody;
 	class temp
@@ -24,18 +38,19 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 		var $res;
 		var $selected;
 		var $topcat;
-		var $modcom;
+		var $modcomtxt;
+		var $notiftxt;
 		var $yes;
 		var $no;
 
-		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom)
+		function temp($cat, $ncat, $category, $description, $managerid, $modcom, $bnotif)
 			{
 			$this->topcat = bab_translate("Topic category");
 			$this->title = bab_translate("Topic");
 			$this->desctitle = bab_translate("Description");
 			$this->approver = bab_translate("Topic manager");
-			$this->modcom = bab_translate("Approbation schema for comments");
-			$this->modart = bab_translate("Approbation schema for articles");
+			$this->modcomtxt = bab_translate("Moderate comments");
+			$this->notiftxt = bab_translate("Notify group members by mail");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -61,14 +76,35 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 				$this->managerid = $managerid;
 				$this->managerval = bab_getUserName($managerid);
 				}
-			if(empty($sacom))
-				$this->sacom = 0;
+
+			if(empty($modcom))
+				$modcom = "Y";
+
+			if($modcom == "N")
+				{
+				$this->modcomnsel = "selected";
+				$this->modcomysel = "";
+				}
 			else
-				$this->sacom = $sacom;
-			if(empty($saart))
-				$this->saart = 0;
+				{
+				$this->modcomnsel = "";
+				$this->modcomysel = "selected";
+				}
+
+			if(empty($bnotif))
+				$bnotif = "N";
+
+			if( $bnotif == "N")
+				{
+				$this->notifnsel = "selected";
+				$this->notifysel = "";
+				}
 			else
-				$this->saart = $saart;
+				{
+				$this->notifnsel = "";
+				$this->notifysel = "selected";
+				}
+
 			if(empty($ncat))
 				$this->ncat = $cat;
 			else
@@ -84,12 +120,6 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL."";
-			$this->sares = $this->db->db_query($req);
-			if( !$this->sares )
-				$this->sacount = 0;
-			else
-				$this->sacount = $this->db->db_num_rows($this->sares);
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			}
 
@@ -112,33 +142,9 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 				return false;
 			}
 
-		function getnextschapp()
-			{
-			static $i = 0;
-			if( $i < $this->sacount)
-				{
-				$arr = $this->db->db_fetch_array($this->sares);
-				$this->saname = $arr['name'];
-				$this->said = $arr['id'];
-				if( $this->said == $this->saart )
-					$this->saartsel = "selected";
-				else
-					$this->saartsel = "";
-				$this->sacomsel = "";
-				$i++;
-				return true;
-				}
-			else
-				{
-				if( $this->sacount > 0 )
-					$this->db->db_data_seek($this->sares, 0);
-				$i = 0;
-				return false;
-				}
-			}
 		}
 
-	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom);
+	$temp = new temp($cat, $ncat, $category, $description, $managerid, $modcom, $bnotif);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -271,7 +277,7 @@ function orderCategories($cat, $adminid, $catname)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $managerid)
+function saveCategory($category, $description, $cat, $modcom, $managerid, $bnotif)
 	{
 	global $babBody;
 	if( empty($category))
@@ -303,7 +309,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid)
 		}
 	$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_TOPICS_TBL." where id_cat='".$cat."'"));
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, mod_com, ordering, notify) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $modcom. "', '" . ($arr[0]+1). "', '" . $bnotify. "')";
 	$db->db_query($query);
 	return true;
 	}
@@ -333,7 +339,7 @@ if(!isset($idx))
 
 if( isset($add) && $adminid > 0)
 	{
-	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid))
+	if(!saveCategory($category, $description, $ncat, $modcom, $managerid, $bnotif))
 		$idx = "addtopic";
 	else
 		{
@@ -352,7 +358,7 @@ switch($idx)
 		$babBody->title = bab_translate("Create new topic");
 		if( $adminid > 0)
 		{
-		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom);
+		addCategory($cat, $ncat, $category, $description, $managerid, $modcom, $bnotif);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);

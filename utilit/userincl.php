@@ -1,76 +1,34 @@
 <?php
 /************************************************************************
  * Ovidentia                                                            *
- ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
+ ************************************************************************
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation; either version 2, or (at your option)  *
+ * any later version.													*
+ *																		*
+ * This program is distributed in the hope that it will be useful, but  *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of			*
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
+ * See the  GNU General Public License for more details.				*
+ *																		*
+ * You should have received a copy of the GNU General Public License	*
+ * along with this program; if not, write to the Free Software			*
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
+ * USA.																	*
+************************************************************************/
 include_once "base.php";
-function bab_toAmPm($str)
-{
-	$arr = explode(":", $str);
-	$arr[0] = intval($arr[0]);
-	$arr[1] = intval($arr[1]);
 
-	if( $arr[0] < 12 )
-	{
-		if( $arr[0] == 0)
-			$arr[0] = 12;
-		return sprintf("%02d:%02d AM", $arr[0], $arr[1]);
-	}
-	else
-	{
-		if( $arr[0] > 12)
-			$arr[0] -= 12;
-		return sprintf("%02d:%02d PM", $arr[0], $arr[1]);
-	}
-		
-}
-
-function bab_isUserTopicManager($topics)
+function bab_isUserApprover($topics)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
-	$query = "select id from ".BAB_TOPICS_TBL." where id='".$topics."' and id_approver='".$BAB_SESS_USERID."'";
+	$query = "select id from ".BAB_TOPICS_TBL." where id='$topics' and id_approver='$BAB_SESS_USERID'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		return true;
-		}
-	else
-		{
-		return false;
-		}
-	}
-
-function bab_isUserArticleApprover($topics)
-	{
-	global $BAB_SESS_USERID;
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$db = $GLOBALS['babDB'];
-	$query = "select idsaart from ".BAB_TOPICS_TBL." where id='".$topics."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return isUserApproverFlow($arr['idsaart'], $BAB_SESS_USERID);
-		}
-	else
-		{
-		return false;
-		}
-	}
-
-function bab_isUserCommentApprover($topics)
-	{
-	global $BAB_SESS_USERID;
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$db = $GLOBALS['babDB'];
-	$query = "select idsacom from ".BAB_TOPICS_TBL." where id='".$topics."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return isUserApproverFlow($arr['idsacom'], $BAB_SESS_USERID);
 		}
 	else
 		{
@@ -473,46 +431,65 @@ function bab_contactsAccess()
 
 function bab_fileManagerAccessLevel()
 	{
-	global $babDB, $babBody, $BAB_SESS_USERID;
-	if( isset($babBody->aclfm))
-		return;
+	global $BAB_SESS_USERID;
+	$db = $GLOBALS['babDB'];
+	$aret = array();
+	$badmin = bab_isUserAdministrator();
 
-	$babBody->aclfm = array();
-	$babBody->ustorage = false;
-
-	$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".ustorage ='Y'");
-
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	$req = "select * from ".BAB_GROUPS_TBL." where id=2 and (ustorage ='Y' or gstorage ='Y')";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0 )
 		{
-		$babBody->ustorage = true;
+		$arr = $db->db_fetch_array($res);
+		$aret['id'][] = 2;
+		$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+		$aret['pr'][] = 0;
+		if( $badmin )
+			$aret['ma'][] = 1;
+		else
+			$aret['ma'][] = 0;
 		}
-	else
-		{
-		$arr = $babDB->db_fetch_array($babDB->db_query("select ustorage from ".BAB_GROUPS_TBL." where id='1'"));
-		if( $arr['ustorage'] == "Y")
-			$babBody->ustorage = true;
-		}
-	
-	$res = $babDB->db_query("select id, manager, idsa from ".BAB_FM_FOLDERS_TBL." where active='Y'");
-	while($row = $babDB->db_fetch_array($res))
-		{
-		$uplo = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $row['id']);
-		$down = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $row['id']);
-		$upda = bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $row['id']);
 
-		if( $down || $uplo || $upda || $row['manager'] == $BAB_SESS_USERID)
+	if( !empty($BAB_SESS_USERID))
+		{
+		$req = "select * from ".BAB_GROUPS_TBL." where id=1 and (ustorage ='Y' or gstorage ='Y')";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 )
 			{
-			$babBody->aclfm['id'][] = $row['id'];
-			$babBody->aclfm['down'][] = $down;
-			$babBody->aclfm['uplo'][] = $uplo;
-			$babBody->aclfm['upda'][] = $upda;
-			$babBody->aclfm['idsa'][] = $row['idsa'];
-			if( $row['manager'] != 0 && $row['manager'] == $BAB_SESS_USERID)
-				$babBody->aclfm['ma'][] = 1;
+			$arr = $db->db_fetch_array($res);
+			$aret['id'][] = 1;
+			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
+			if( $badmin )
+				$aret['ma'][] = 1;
 			else
-				$babBody->aclfm['ma'][] = 0;
+				$aret['ma'][] = 0;
 			}
+
+		$req = "select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".gstorage, ".BAB_GROUPS_TBL.".ustorage from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".manager !='".$BAB_SESS_USERID."' and (".BAB_GROUPS_TBL.".ustorage ='Y' or ".BAB_GROUPS_TBL.".gstorage ='Y')";
+		$res = $db->db_query($req);
+		while( $arr = $db->db_fetch_array($res))
+			{
+			$aret['id'][] = $arr['id'];
+			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
+			$aret['ma'][] = 0;
+			}
+
+
+		$req = "select id, gstorage, ustorage from ".BAB_GROUPS_TBL." where manager='".$BAB_SESS_USERID."' and gstorage='Y'";
+		$res = $db->db_query($req);
+		while( $arr = $db->db_fetch_array($res))
+			{
+			$aret['id'][] = $arr['id'];
+			$aret['pu'][] = $arr['gstorage'] == "Y"? 1: 0;
+			$aret['pr'][] = $arr['ustorage'] == "Y"? 1: 0;
+			$aret['ma'][] = 1;
+			}
+
+		
 		}
+	return $aret;
 	}
 
 function bab_getUserId( $name )
