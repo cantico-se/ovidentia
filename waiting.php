@@ -290,8 +290,8 @@ function confirmArticle($article, $topics)
 				}
 			else
 				{
-				$this->notifnsel = "selected";
-				$this->notifysel = "";
+				$this->notifysel = "selected";
+				$this->notifnsel = "";
 				}
 			}
 		}

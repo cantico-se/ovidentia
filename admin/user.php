@@ -500,22 +500,12 @@ function updatePassword($item, $newpwd1, $newpwd2, $newnick)
 		$req="update ".BAB_USERS_TBL." set confirm_hash='".$hash."', nickname='".$newnick."'".
 			"where id='". $item . "'";
 		$res = $db->db_query($req);
-		if ($db->db_affected_rows() < 1)
-			{
-			$babBody->msgerror = bab_translate("Nothing Changed");
-			return false;
-			}
 		}
 
 	if( (!empty($newpwd1) && !empty($newpwd2)) && $newpwd1 == $newpwd2)
 		{
 		$req="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' where id='". $item . "'";
 		$res = $db->db_query($req);
-		if ($db->db_affected_rows() < 1)
-			{
-			$babBody->msgerror = bab_translate("Nothing Changed");
-			return false;
-			}
 		}
 
 	return true;

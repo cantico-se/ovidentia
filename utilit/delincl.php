@@ -335,7 +335,10 @@ function bab_deleteGroup($id)
 	// delete user from BAB_MAIL_DOMAINS_TBL
 	$db->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='".$id."' and bgroup='Y'");	
 
-    // delete group
+	// delete group directory
+	$db->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$id."'");	
+
+	// delete group
 	$db->db_query("delete from ".BAB_GROUPS_TBL." where id='".$id."'");
 	bab_callAddonsFunction('onGroupDelete', $id);
 }
