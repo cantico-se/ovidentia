@@ -33,7 +33,7 @@ function getResizedImage($file, $fullpath, $w, $h)
 
 		$imgsize = @getimagesize($imgf);
 
-		if( !$this->gdi || ($imgsize[2] == 1 && !(imagetypes() & IMG_GIF)) || ($imgsize[2] == 2 && !(imagetypes() & IMG_JPG)) || ($imgsize[2] == 3 && !(imagetypes() & IMG_PNG)) )
+		if( !$gdi || ($imgsize[2] == 1 && !(imagetypes() & IMG_GIF)) || ($imgsize[2] == 2 && !(imagetypes() & IMG_JPG)) || ($imgsize[2] == 3 && !(imagetypes() & IMG_PNG)) )
 			$gdi = false;
 
 		if( $gdi )
@@ -79,16 +79,17 @@ function getResizedImage($file, $fullpath, $w, $h)
 				{
 				$wtmp = imagesx($tmp);
 				$htmp = imagesy($tmp);
+
 				if( $w == "" )
 					$w = $wtmp;
 				if( $h == "" )
 					$h = $htmp;
-				if( $wtmp > $htmp )
+				if( $wtmp > $w )
 					{
 					$wimg = $w;
 					$himg = (real)( ((real)(($wimg/$wtmp)*100) * $wtmp)/100);          
 					}  
-				else if ($htmp > $wtmp)  
+				else if ($htmp > $h)  
 					{  
 					$himg = $h;  
 					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
@@ -98,6 +99,7 @@ function getResizedImage($file, $fullpath, $w, $h)
 					$himg = $h;  
 					$wimg = $w;  
 					}
+				
 				$out = imagecreate($wimg, $himg);
 				imagecopyresized($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
 				imagedestroy($tmp);
