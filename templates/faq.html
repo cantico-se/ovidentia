@@ -73,18 +73,66 @@
 <input type="hidden" name="addquestion" value="addquestion">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<tr>
+<input type="text" name="question" style="VISIBILITY: hidden" size="0">
+<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="response"></textarea>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>&nbsp;</td>
+<td width="103">
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+<!-- -->
+
 <tr>
 <td width="107" align="right">{ question }</td>
-<td width="103"><input type="text" name="question" size="80" maxlength="100"></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "question", "0", "100%", "20");
+</SCRIPT>
+<!--#else msie -->
+	<input type="text" name="question" size="80" maxlength="100"></td>
+<!--#endif msie -->
+
 </tr>
 <tr>
 <td width="107" align="right">{ response }</td>
-<td width="103"><textarea cols="50" rows="10" name="response"></textarea></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(1, "response", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+	<textarea cols="50" rows="10" name="response"></textarea></td>
+<!--#endif msie -->
 </tr>
+
+<!--#if msie "== 1" -->
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.FinalInstantiate(1);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 <tr>
 <td width="107" align="right">&nbsp;</td>
 <td width="103"><input type="submit" name="submit" value="{ add }"></td>
 </tr>
+<!--#endif msie -->
 </table>
 </center>
 </form>
@@ -106,18 +154,66 @@
 <input type="hidden" name="updatequestion" value="updatequestion">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<tr>
+<input type="text" name="question" style="VISIBILITY: hidden" size="0" value="{ arr[question] }">
+<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="response">{ arr[response] }</textarea>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>&nbsp;</td>
+<td width="103">
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+<!-- -->
+
 <tr>
 <td width="107" align="right">{ question }</td>
-<td width="103"><input type="text" name="question" size="80" maxlength="80" value="{ arr[question] }"></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "question", "0", "100%", "20");
+</SCRIPT>
+<!--#else msie -->
+	<input type="text" name="question" size="80" maxlength="80" value="{ arr[question] }"></td>
+<!--#endif msie -->
 </tr>
 <tr>
 <td width="107" align="right">{ response }</td>
-<td width="103"><textarea cols="50" rows="10" name="response">{ arr[response] }</textarea></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(1, "response", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+	<textarea cols="50" rows="10" name="response">{ arr[response] }</textarea></td>
+<!--#endif msie -->
 </tr>
+
+<!--#if msie "== 1" -->
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.FinalInstantiate(1);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 <tr>
 <td width="107" align="right">&nbsp;</td>
 <td width="103"><input type="submit" name="submit" value="{ add }"></td>
 </tr>
+<!--#endif msie -->
+
 </table>
 </center>
 </form>

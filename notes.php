@@ -1,9 +1,4 @@
 <?php
-/************************************************************************
- * Ovidentia                                                            *
- ************************************************************************
- * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
 
 function notesCreate()
 	{
@@ -12,11 +7,16 @@ function notesCreate()
 		{
 		var $notes;
 		var $create;
+		var $msie;
 
 		function temp()
 			{
 			$this->create = babTranslate("Create");
 			$this->notes = babTranslate("Content");
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 
@@ -66,7 +66,6 @@ function notesList()
 				}
 			else
 				return false;
-
 			}
 		}
 
@@ -106,6 +105,7 @@ switch($idx)
 		$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=notes&idx=List");
 		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=notes&idx=Create");
 		break;
+
 	default:
 	case "List":
 		$body->title = babTranslate("Notes list");

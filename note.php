@@ -1,9 +1,4 @@
 <?php
-/************************************************************************
- * Ovidentia                                                            *
- ************************************************************************
- * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
- ***********************************************************************/
 
 function notesModify($id)
 	{
@@ -21,6 +16,7 @@ function notesModify($id)
 		var $db;
 		var $arr = array();
 		var $res;
+		var $msie;
 
 		function temp($id)
 			{
@@ -30,6 +26,10 @@ function notesModify($id)
 			$req = "select * from notes where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 
@@ -66,6 +66,7 @@ switch($idx)
 	case "Delete":
 		deleteNotes($item);
 		$idx = "List";
+
 	default:
 	case "Modify":
 		$body->title = babTranslate("Modify a notes");

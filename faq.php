@@ -286,6 +286,7 @@ function addQuestion($idcat)
 		var $response;
 		var $add;
 		var $idcat;
+		var $msie;
 
 		function temp($id)
 			{
@@ -293,6 +294,10 @@ function addQuestion($idcat)
 			$this->response = babTranslate("Response");
 			$this->add = babTranslate("Add");
 			$this->idcat = $id;
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 
@@ -318,6 +323,7 @@ function modifyQuestion($item, $idq)
 		var $db;
 		var $arr = array();
 		var $res;
+		var $msie;
 
 		function temp($idcat, $idq)
 			{
@@ -329,9 +335,12 @@ function modifyQuestion($item, $idq)
 			$req = "select * from faqqr where id='$idq'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
-
 	$temp = new temp($item, $idq);
 	$body->babecho(	babPrintTemplate($temp,"faq.html", "admquestionmodify"));
 	}

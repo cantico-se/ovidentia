@@ -20,14 +20,52 @@
 <input type="hidden" name="create" value="create">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<tr>
+<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content"></textarea>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>&nbsp;</td>
+<td width="103">
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+<!-- -->
+
 <tr>
 <td width="107" align="right">{ notes }</td>
-<td width="103"><textarea cols="50" rows="10" name="content"></textarea></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "content", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+	<textarea cols="50" rows="10" name="content"></textarea></td>
+<!--#endif msie -->
 </tr>
+
+<!--#if msie "== 1" -->
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ create }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 <tr>
 <td width="107" align="right">&nbsp;</td>
 <td width="103"><input type="submit" name="submit" value="{ create }"></td>
 </tr>
+<!--#endif msie -->
 </table>
 </center>
 </form>
@@ -69,14 +107,53 @@
 <input type="hidden" name="update" value="update">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<tr>
+<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="content">{ arr[content] }</textarea>
+</tr>
+<tr>
+<td width="107" align="right" nowrap>&nbsp;</td>
+<td width="103">
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+<!-- -->
+
 <tr>
 <td width="107" align="right">{ notes }</td>
-<td width="103"><textarea cols="50" rows="10" name="content">{ arr[content] }</textarea></td>
+<td width="103">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "content", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+	<textarea cols="50" rows="10" name="content">{ arr[content] }</textarea></td>
+<!--#endif msie -->
 </tr>
+
+<!--#if msie "== 1" -->
+<tr>
+<td width="107" align="right">&nbsp;</td>
+<td width="103"><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 <tr>
 <td width="107" align="right">&nbsp;</td>
 <td width="103"><input type="submit" name="submit" value="{ modify }"></td>
 </tr>
+<!--#endif msie -->
+
 </table>
 </center>
 </form>
