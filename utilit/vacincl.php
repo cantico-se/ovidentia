@@ -407,7 +407,7 @@ function viewVacationCalendar($users, $period = false )
 			while( $row = $this->db->db_fetch_array($res))
 				{
 				$colors = array();
-				$req = "select e.quantity,t.color from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
+				$req = "select e.quantity,t.color,e.id_type from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
 
 				$res2 = $this->db->db_query($req);
 				while ($arr = $this->db->db_fetch_array($res2))
@@ -424,10 +424,14 @@ function viewVacationCalendar($users, $period = false )
 										'id_user' => $row['id_user'],
 										'db'=> $row['date_begin'],
 										'de'=> $row['date_end'],
+										'hdb' => $row['day_begin'],
+										'hde' => $row['day_end'],
 										'st' => $row['status'],
 										'color' => $colors
 										);
 					}
+
+				
 				}
 
 
@@ -490,7 +494,7 @@ function viewVacationCalendar($users, $period = false )
 					$this->username = '';
 					}
 				
-				if (isset($this->u_workdays[$this->id_user]))
+				if (!empty($this->u_workdays[$this->id_user]))
 					$this->workdays = $this->u_workdays[$this->id_user];
 				else
 					$this->workdays = $this->d_workdays;
@@ -530,6 +534,10 @@ function viewVacationCalendar($users, $period = false )
 							$this->month_users[] = $this->entries[$k]['id_user'];
 						}
 					}
+				if (count($this->month_users) == 0 && $this->nbusers == 1)
+					{
+					$this->month_users = $this->idusers;
+					}
 				$this->nb_month_users = count($this->month_users);
 				
 
@@ -568,6 +576,19 @@ function viewVacationCalendar($users, $period = false )
 								$this->bwait = true;
 							else
 								$this->bvac = true;
+
+							$this->classname = 'used';
+							if ($this->date == $this->entries[$k]['db'] && $this->entries[$k]['hdb'] == 2)
+								$this->classname .= ' morning';
+
+							if ($this->date == $this->entries[$k]['db'] && $this->entries[$k]['hdb'] == 3)
+								$this->classname .= ' afternoon';
+
+							if ($this->date == $this->entries[$k]['de'] && $this->entries[$k]['hde'] == 2)
+								$this->classname .= ' morning';
+
+							if ($this->date == $this->entries[$k]['de'] && $this->entries[$k]['hde'] == 3)
+								$this->classname .= ' afternoon';
 
 							if (!$this->nonworking && !$this->weekend)
 								{

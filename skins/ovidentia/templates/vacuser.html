@@ -490,10 +490,10 @@ window.focus();
 				<td  class="weekend" title="{ titledate } : { t_weekend }">
 				<!--#else weekend -->
 					<!--#if bvac -->
-					<td class="used" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacapprovedtxt }">ok
+					<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacapprovedtxt }">ok
 					<!--#else bvac -->
 						<!--#if bwait -->
-						<td class="used" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacwaitingtxt }">?
+						<td class="{ classname }" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacwaitingtxt }">?
 						<!--#else bwait -->
 						<td <!--#if period --> class="free" onclick="setPeriod(this)" <!--#else period --> class="default" <!--#endif period -->  id="{ date }" title="{ titledate }">
 						<!--#endif bwait -->

@@ -139,6 +139,24 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$this->datebegin = bab_longdate($begin,false);
 			$this->dateend = bab_longdate($end,false);
 
+			if ($this->halfdaybegin == 2)
+				{
+				$this->datebegin .= ' '.bab_translate("Morning");
+				}
+			elseif ($this->halfdaybegin == 3)
+				{
+				$this->datebegin .= ' '.bab_translate("Afternoon");
+				}
+
+			if ($this->halfdayend == 2)
+				{
+				$this->dateend .= ' '.bab_translate("Morning");
+				}
+			elseif ($this->halfdayend == 3)
+				{
+				$this->dateend .= ' '.bab_translate("Afternoon");
+				}
+
 			$this->remarks = isset($_POST['remarks']) ? stripslashes($_POST['remarks']) : '';
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->id_user."&popup=1";
 
@@ -645,10 +663,16 @@ if (!isset($_POST['daybegin']) ||
 	$begin = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $yearbegin);
 	$end = mktime( 0,0,0,$_POST['monthend'], $_POST['dayend'], $yearend);
 
-	if( $begin > $end || ( $begin == $end && $_POST['halfdaybegin'] != $_POST['halfdayend'] ))
+	if( $begin > $end || ( $begin == $end && $_POST['halfdaybegin'] > $_POST['halfdayend'] ) || ($begin == $end && $_POST['halfdaybegin'] == 1 && $_POST['halfdayend'] != 1) || ($begin == $end && $_POST['halfdaybegin'] != 1 && $_POST['halfdayend'] == 1) )
 		{
 		$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
 		return false;
+		}
+
+	if ($begin == $end && $_POST['halfdaybegin'] == 2 && $_POST['halfdayend'] == 3)
+		{
+		$_POST['halfdaybegin'] = 1;
+		$_POST['halfdayend'] = 1;
 		}
 
 	$date_begin = sprintf("%04d-%02d-%02d", $yearbegin, $_POST['monthbegin'], $_POST['daybegin']);

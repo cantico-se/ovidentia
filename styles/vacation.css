@@ -79,6 +79,16 @@
 
 #vacationcalendar .used {
 	background-color:#E2DCBF;
+	background-position:50% 50%;
+	background-repeat:no-repeat;
+	}
+
+#vacationcalendar .used.morning {
+	background-image:url('../skins/ovidentia/images/vac-morning.gif');
+	}
+
+#vacationcalendar .used.afternoon {
+	background-image:url('../skins/ovidentia/images/vac-afternoon.gif');
 	}
 
 #vacationcalendar .noday {
