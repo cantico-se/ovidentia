@@ -139,7 +139,7 @@ function modifyArticle($topics, $article)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->headval = htmlentities($this->arr['head']);
 				$this->bodyval = htmlentities($this->arr['body']);
-				$this->titleval = $this->arr['title'];
+				$this->titleval = htmlentities($this->arr['title']);
 				}
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
@@ -496,10 +496,12 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 		{
 		$headtext = stripslashes($headtext);
 		$bodytext = stripslashes($bodytext);
+		$title = stripslashes($title);
 		}
 
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
+	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
 	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext' where id='$article'";
 	$res = $db->db_query($req);		

@@ -685,10 +685,12 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext)
 		{
 		$headtext = stripslashes($headtext);
 		$bodytext = stripslashes($bodytext);
+		$title = stripslashes($title);
 		}
 
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
+	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
 	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='$headtext', body='$bodytext' where id='$article'";
 	$res = $db->db_query($req);
