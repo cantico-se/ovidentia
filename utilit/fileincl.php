@@ -116,7 +116,6 @@ function bab_deleteUploadDir($path)
 	{
 	if (file_exists($path))
 		{
-	    chmod($file,0777);
 		if (is_dir($path))
 			{
 			$handle = opendir($path);

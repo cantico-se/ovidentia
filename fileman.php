@@ -43,11 +43,22 @@ function notifyApprovers($id, $fid)
 	return false;
 	}
 
-function deleteFile($idf)
+function deleteFile($idf, $name, $path)
 	{
 	global $babDB;
+
+	if( is_dir($path.BAB_FVERSION_FOLDER."/"))
+		{
+		$res = $babDB->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			unlink($path.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$name);
+			}
+		}
+	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
+	$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$idf."'");
 	$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."'");
-	$db->db_query("delete from ".BAB_FILES_TBL." where id='".$idf."'");
+	$babDB->db_query("delete from ".BAB_FILES_TBL." where id='".$idf."'");
 	}
 
 class listFiles
@@ -1286,7 +1297,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				switch($res)
 					{
 					case 0:
-						deleteFile($arr['id']);
+						deleteFile($arr['id'], $arr['name'], $pathx);
 						unlink($pathx.$arr['name']);
 						break;
 					case 1:
@@ -1497,7 +1508,7 @@ function removeDirectory($id, $gr, $path)
 		while( $arr = $db->db_fetch_array($res))
 			{
 			if( @unlink($pathx.$path."/".$arr['name']))
-				deleteFile($arr['id']);
+				deleteFile($arr['id'], $arr['name'], $pathx.$path."/");
 			}
 
 		if( $pos = strrpos($path, "/"))
@@ -1650,8 +1661,23 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 	if( rename( $pathx.$path."/".$file, $pathx.$tp."/".$file))
 		{
 		$db = $GLOBALS['babDB'];
-		$req = "update ".BAB_FILES_TBL." set state='', path='".addslashes($tp)."' where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
-		$res = $db->db_query($req);
+		list($idf) = $db->db_fetch_row($db->db_query("select id from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'"));
+
+		$db->db_query("update ".BAB_FILES_TBL." set state='', path='".addslashes($tp)."' where id='".$idf."'");
+
+		if( is_dir($pathx.$path."/".BAB_FVERSION_FOLDER."/"))
+			{
+			if( !is_dir($pathx.$tp."/".BAB_FVERSION_FOLDER))
+				mkdir($pathx.$tp."/".BAB_FVERSION_FOLDER, 0700);
+
+			$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
+			while($arr = $db->db_fetch_array($res))
+				{
+				$filename = $arr['ver_major'].",".$arr['ver_minor'].",".$file;
+				rename($pathx.$path."/".BAB_FVERSION_FOLDER."/".$filename, $pathx.$tp."/".BAB_FVERSION_FOLDER."/".$filename);
+				}
+			}
+
 		return true;
 		}
 	else
@@ -1974,7 +2000,7 @@ function deleteFiles($items, $gr, $id)
 				{
 				if( unlink($pathx.$arr['path']."/".$arr['name']))
 					{
-					deleteFile($items[$i]);
+					deleteFile($items[$i], $arr['name'], $pathx.$arr['path']."/");
 					}
 
 				}

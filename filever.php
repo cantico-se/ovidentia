@@ -250,7 +250,7 @@ function showHistoricFile($idf, $pos)
 				{
 				$this->bmanager = true;
 				$this->cleantxt = bab_translate("Clean log");
-				$this->datetxt = bab_translate("Date")." ( ".bab_translate("dd-mm-yyyy")." )";
+				$this->datetxt2 = bab_translate("Date")." ( ".bab_translate("dd-mm-yyyy")." )";
 				$this->cleanmsg = bab_translate("Clean all log entries before a given date");
 				}
 			else
