@@ -957,8 +957,8 @@ CREATE TABLE bab_ini (
 );
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
-INSERT INTO bab_ini VALUES ('ver_minor', '4');
-INSERT INTO bab_ini VALUES ('ver_build', '3');
+INSERT INTO bab_ini VALUES ('ver_minor', '5');
+INSERT INTO bab_ini VALUES ('ver_build', '0');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1401,6 +1401,7 @@ CREATE TABLE bab_vac_rights (
   id_type int(11) unsigned NOT NULL default '0',
   description varchar(255) NOT NULL default '',
   active enum('Y','N') NOT NULL default 'Y',
+  cbalance enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (id),
   KEY id_type (id_type),
   KEY date_entry (date_entry)
@@ -1418,6 +1419,8 @@ CREATE TABLE bab_vac_types (
   maxdays decimal(3,1) NOT NULL default '0.0',
   mindays decimal(3,1) NOT NULL default '0.0',
   defaultdays decimal(3,1) NOT NULL default '0.0',
+  color varchar(6) NOT NULL default '',
+  cbalance enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (id)
 );
 

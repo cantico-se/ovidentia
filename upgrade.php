@@ -4221,4 +4221,37 @@ function upgrade542to543()
 return $ret;
 
 }
+
+function upgrade543to550()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_VAC_TYPES_TBL." ADD `color` VARCHAR( 6 ) NOT NULL ";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_VAC_TYPES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_VAC_TYPES_TBL." ADD `cbalance` ENUM( 'Y', 'N' ) DEFAULT 'Y' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_VAC_TYPES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_VAC_RIGHTS_TBL." ADD `cbalance` ENUM( 'Y', 'N' ) DEFAULT 'Y' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_VAC_RIGHTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
+}
+
 ?>
