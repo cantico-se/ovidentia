@@ -80,7 +80,92 @@ href="{ previousmonth }">&lt; </a> </td>
 </tr></table>
 <!--#end calmonth -->
 
-<!--#begin calweek -->
+<!--#begin calweekcols -->
+<table width="100%" cellpadding="5" cellspacing="0" align="center">
+<tr> 
+<td class="BabCalendarMenuBackground" width="25%" valign="middle" > &nbsp;
+		<a class="BabCalendarNavLinkColor" href="{ previousyear }">&lt;&lt;&lt;</a>
+		&nbsp;&nbsp;&nbsp; 
+		<a class="BabCalendarNavLinkColor" href="{ previousmonth }">&lt;&lt; </a>
+		&nbsp;&nbsp;&nbsp; 
+		<a class="BabCalendarNavLinkColor" href="{ previousweek }">&lt; </a> 
+</td>		
+<td class="BabCalendarMenuBackground" width="10%" align="center" valign="middle"> &nbsp;<a class="BabCalendarNavLinkColor" href="{ monthurl }">{ monthurlname }&nbsp;</a>
+</td>
+<td width="10%" align="center" valign="middle" class="BabCalendarMenuActiveBackground">
+&nbsp;{ weekurlname }&nbsp;
+</td>
+<td class="BabCalendarMenuBackground" width="10%" align="center" valign="middle">
+&nbsp;<a class="BabCalendarNavLinkColor" href="{ dayurl }">{ dayurlname }</a>&nbsp;
+</td>
+<td class="BabCalendarMenuBackground" width="20%" align="center" valign="middle"> &nbsp;<a class="BabCalendarNavLinkColor" href="{ gotodayurl }">{ gotodayname }</a>&nbsp; 
+</td>
+<td class="BabCalendarMenuBackground" width="25%" align="right" valign="middle">
+<a class="BabCalendarNavLinkColor" href="{ nextweek }">&gt;</a>&nbsp;&nbsp;&nbsp;
+<a class="BabCalendarNavLinkColor" href="{ nextmonth }">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;
+<a class="BabCalendarNavLinkColor" href="{ nextyear }">&gt;&gt;&gt;</a>&nbsp;
+
+</td>
+</tr>
+</table>
+		<table width="20%" cellpadding="2" cellspacing="0" align="center">
+		<tr>
+		<td class="BabCalendarMenuActiveBackground" align="center" valign="middle">{ monthname }</td>
+		</tr>
+		</table>&nbsp;
+ <br>
+
+
+<table class="BabCalendarBodyBackground" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
+<tr bgcolor="#a0a0a0">
+<!--#in getdayname -->
+	    <th width="14%" class="BabCalendarDays">{ dayname }</th>
+<!--#endin getdayname -->	
+</tr>
+<tr>
+	<!--#in getday -->
+		
+        <!--#if currentmonth "== 1" -->
+        <td valign="top" <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#else currentday --> class="BabMonthCalendarCurentDayBackground" <!--#endif currentday --> width="0" height="0">
+                 
+            
+           
+           
+           
+        <!--#else currentmonth -->
+        <td valign="top" class="BabCalendarBodyBadMonthBackground"width="0" height="0">
+        <!--#endif currentmonth -->
+        <div class="HeaderDayCalendar"><table width="100%" border="0" align="center">
+		<tr><td align="left" valign="middle">
+        <a class="BabMonthCalendarDayNumber" href="{ daynumberurl }">{ daynumbername }</a></td>
+		<!--#if bowner "== 1" -->		
+		<td align="right" valign="middle"><a class="BabDayCalendarEventLink" href="{ neweventurl }"><IMG SRC="{ babSkinPath }images/Puces/PuceNewEvent.png" WIDTH="12" HEIGHT="11" BORDER=0 ALT="{ new }" align="absmiddle"></a></td>
+		<!--#endif bowner -->
+        </tr></table>
+        </div>		
+		
+        <!--#in getnextcal -->
+        <!--#if countevent "> 0" -->
+<table width="100%" border="0" align="center">
+		<tr><td align="center" valign="middle">
+		<div class="BabCalendarBodyFont" style="width : 0px" title="{ fullname }" nowrap>
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="3" height="1" border="0">{ fullnameten }
+            </div>
+        </td></tr></table>
+        <!--#endif countevent -->
+        <!--#in getevent -->
+  
+            <div class="BabCalendarBodyFont" style="background-color : { bgcolor }; width : 0px" title="{ title }" nowrap>
+            { hourten }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="3" height="1" border="0"><a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
+            </div>
+		<!--#endin getevent -->
+        <!--#endin getnextcal -->
+     </td> 
+	<!--#endin getday -->
+</tr></table>
+<!--#end calweekcols -->
+
+<!--#begin calweekrows -->
 <table width="100%" cellpadding="5" cellspacing="0" align="center">
 <tr> 
 <td class="BabCalendarMenuBackground" width="25%" valign="middle" > &nbsp;
@@ -143,7 +228,7 @@ href="{ titletenurl }">{ title }</a>
 </tr>					
 <!--#endin getday -->
 </table>
-<!--#end calweek -->
+<!--#end calweekrows -->
 
 <br><br><br>
 

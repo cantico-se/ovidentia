@@ -569,8 +569,7 @@ function babUserSection($close)
 			$vac = true;
 			}
 
-		$req = "select id from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'";
-		$res = $babDB->db_query($req);
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			$mtopics = true;
 
@@ -600,7 +599,14 @@ function babUserSection($close)
 	if( $idcal != 0 )
 		{
 		$babBody->calaccess = true;
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&calid=".$idcal;
+		list($view) = $babDB->db_fetch_row($babDB->db_query("select defaultview from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'"));
+		switch($view)
+			{
+			case '1': $view='viewq'; break;
+			case '2': $view='viewd'; break;
+			default: $view='viewm'; break;
+			}
+		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$idcal;
 		}
 	if( $bemail )
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";

@@ -303,6 +303,13 @@ function calendarOptions($calid)
 		var $etval;
 		var $etselected;
 		var $minutes;
+		var $defaultview;
+		var $defaultviewweek;
+		var $dvval;
+		var $dvselected;
+		var $arrdv;
+		var $arrdvw;
+
 
 		var $modify;
 		var $yes;
@@ -321,10 +328,14 @@ function calendarOptions($calid)
 			$this->no = bab_translate("No");
 			$this->elapstime = bab_translate("Time scale");
 			$this->minutes = bab_translate("Minutes");
+			$this->defaultview = bab_translate("Calendar default view");
+			$this->defaultviewweek = bab_translate("Week default view");
 			$db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
+			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
+			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
 			}
 
 		function getnextday()
@@ -350,6 +361,51 @@ function calendarOptions($calid)
 				}
 
 			}
+
+		function getnextdv()
+			{
+			static $i = 0;
+			if( $i < count($this->arrdv) )
+				{
+				if( $i == $this->arr['defaultview'])
+					$this->dvselected = "selected";
+				else
+					$this->dvselected = "";
+				$this->dvvalid = $i;
+				$this->dvval = $this->arrdv[$i];		
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+
+		function getnextdvw()
+			{
+			static $i = 0;
+			if( $i < count($this->arrdvw) )
+				{
+				if( $i == $this->arr['defaultviewweek'])
+					$this->dvselected = "selected";
+				else
+					$this->dvselected = "";
+				$this->dvvalid = $i;
+				$this->dvval = $this->arrdvw[$i];		
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+
 		function getnextet()
 			{
 			static $i = 0;
@@ -394,7 +450,7 @@ function calendarOptions($calid)
 	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
 	}
 
-function updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime)
+function updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime, $defaultview, $defaultviewweek)
 	{
 	global $BAB_SESS_USERID;
 	$db = $GLOBALS['babDB'];
@@ -402,12 +458,12 @@ function updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime)
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$req = "update ".BAB_CALOPTIONS_TBL." set startday='".$startday."', allday='".$allday."', ampm='".$ampm."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."' where id_user='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_CALOPTIONS_TBL." set startday='".$startday."', allday='".$allday."', ampm='".$ampm."', usebgcolor='".$usebgcolor."', elapstime='".$elapstime."', defaultview='".$defaultview."', defaultviewweek='".$defaultviewweek."' where id_user='".$BAB_SESS_USERID."'";
 		}
 	else
 		{
-		$req = "insert into ".BAB_CALOPTIONS_TBL." ( id_user, startday, allday, ampm, usebgcolor, elapstime) values ";
-		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$ampm."', '".$usebgcolor."', '".$elapstime."')";
+		$req = "insert into ".BAB_CALOPTIONS_TBL." ( id_user, startday, allday, ampm, usebgcolor, elapstime, defaultview, defaultviewweek) values ";
+		$req .= "('".$BAB_SESS_USERID."', '".$startday."', '".$allday."', '".$ampm."', '".$usebgcolor."', '".$elapstime."', '".$defaultview."', '".$defaultviewweek."')";
 		}
 	$res = $db->db_query($req);
 
@@ -432,7 +488,7 @@ if( isset($accessdel) )
 }
 if( isset($modify) && $modify == "options")
 	{
-	updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime);
+	updateCalOptions($startday, $allday, $ampm, $usebgcolor, $elapstime, $defaultview, $defaultviewweek);
 	}
 
 switch($idx)
@@ -486,5 +542,4 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
 ?>

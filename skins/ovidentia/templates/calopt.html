@@ -89,6 +89,28 @@ valign="middle">{ elapstime }</td>
 </td>
 </tr>
 <tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap 
+valign="middle">{ defaultview }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="defaultview">
+<!--#in getnextdv -->
+<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+<!--#endin getnextdv -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap 
+valign="middle">{ defaultviewweek }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="defaultviewweek">
+<!--#in getnextdvw -->
+<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+<!--#endin getnextdvw -->
+</select>
+</td>
+</tr>
+<tr> 
 <td class="BabLoginMenuBackground">&nbsp; </td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <input type="submit" name="submit" value="{ modify }">

@@ -479,11 +479,12 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 		var $db;
 		var $babCalendarStartDay;
 		var $babCalendarUsebgColor;
+		var $defview;
 
 		
 		function temp($calid, $day, $month, $year, $caltype, $owner)
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $babMonths;
 			$this->mcals = explode(",", $calid);
 			$this->db = $GLOBALS['babDB'];
 			$this->view = "viewq";
@@ -496,6 +497,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 			$this->babCalendarStartDay = 0;
 			$this->babCalendarUsebgColor = "Y";
 			$this->ampm = false;
+			$this->defview = 0;
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
@@ -503,6 +505,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 				$this->babCalendarUsebgColor = $arr['usebgcolor'];
 				if( $arr['ampm'] == "Y")
 					$this->ampm = true;
+				$this->defview = $arr['defaultviewweek'];
 				}
 			$this->bowner = isCalUpdate($this->mcals);
 			$this->curday = date("w", mktime(0,0,0,$month, $day, $year));
@@ -542,6 +545,25 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 			$this->new = bab_translate("New");
 			$this->gotodayname = bab_translate("Go to Today");
 			$this->gotodayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewq&day=".date("j")."&month=".date("n")."&year=".date("Y"). "&calid=".$this->calid;
+			$this->delta = $this->curday - $this->babCalendarStartDay;
+			if( $this->delta < 0)
+				$this->delta += 7;
+			$this->monthname = $babMonths[date("n", mktime( 0,0,0, $this->month, $this->day - $this->delta, $this->year))]. "  ". $this->year;
+			}
+
+		function getdayname()
+			{
+			global $babDays;
+			static $i = 0;
+			if( $i < 7)
+				{
+				$this->mday = $this->day - $this->delta + $i;
+				$this->dayname = $babDays[date("w", mktime( 0,0,0, $this->month, $this->mday, $this->year))];
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			}
 
 		function getday()
@@ -552,14 +574,16 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 				{
 				$this->currentday = 0;
 				$this->nbevent = 0;
-				$a = $this->curday - $this->babCalendarStartDay;
-				if( $a < 0)
-					$a += 7;
-				$this->mday = $this->day - $a + $i;
+				$this->mday = $this->day - $this->delta + $i;
+				if( $this->month == date("n", mktime(0,0,0,$this->month, $this->mday,$this->year)))
+					$this->currentmonth = 1;
+				else
+					$this->currentmonth = 0;
 				if( $day == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 					{
 					$this->currentday = 1;
 					}
+				$this->daynumbername = date("j", mktime(0,0,0,$this->month, $this->mday,$this->year));
 				$this->dayname = bab_strftime(mktime( 0,0,0, $this->month, $this->mday, $this->year), false);
 				$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$this->mday."&month=".$this->month. "&year=".$this->year."&calid=".$this->calid."&view=viewq";
 				$i++;
@@ -595,6 +619,8 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 				{
 				$this->bgcolor = "";
 				$this->title = "";
+				$this->titleten = "";
+				$this->hourten = "";
 				$arr = $this->db->db_fetch_array($this->resevent);
 				if( $this->ampm )
 					{
@@ -604,6 +630,11 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 					{
 					$this->title = htmlentities(substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5). " " .$arr['title']);
 					}
+				if( $this->ampm )
+					$this->hourten = htmlentities(bab_toAmPm(substr($arr['start_time'], 0 ,5)));
+				else
+					$this->hourten = htmlentities(substr($arr['start_time'], 0 ,5));
+				$this->titleten = htmlentities(substr($arr['title'], 0, 10)) ;
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id']. "&view=viewq";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
@@ -628,7 +659,11 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner)
 		}
 
 	$temp = new temp($calid, $day, $month, $year, $caltype, $owner);
-	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", "calweek"));
+	if( $temp->defview )
+		$tpl = "calweekrows";
+	else
+		$tpl = "calweekcols";
+	$babBody->babecho(	bab_printTemplate($temp,"calendar.html", $tpl));
 	calendarForm($calid, $day, $month, $year, "viewq");
 	return $temp->count;
 

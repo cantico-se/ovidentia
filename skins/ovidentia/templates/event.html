@@ -6,7 +6,7 @@
 <input type="hidden" name="curday" value="{ curday }">
 <input type="hidden" name="curmonth" value="{ curmonth }">
 <input type="hidden" name="curyear" value="{ curyear }">
-<input type="hidden" name="curview" value="{ curview }">
+<input type="hidden" name="view" value="{ curview }">
 <input type="hidden" name="calid" value="{ calid }">
 <input type="hidden" name="addevent" value="add">
 <table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -231,7 +231,7 @@ href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250
 <input type="hidden" name="curday" value="{ curday }">
 <input type="hidden" name="curmonth" value="{ curmonth }">
 <input type="hidden" name="curyear" value="{ curyear }">
-<input type="hidden" name="curview" value="{ curview }">
+<input type="hidden" name="view" value="{ curview }">
 <input type="hidden" name="calid" value="{ calid }">
 <input type="hidden" name="evtid" value="{ evtid }">
 <input type="hidden" name="modifyevent" value="modify">
@@ -338,6 +338,21 @@ dateendtxt }</a>:</td>
 </td>
 </tr>
 <!--#endif bcategory -->
+<!--#if brecevt -->
+<tr> 
+<td colspan="5" valign="middle" align="center">{ updaterec }
+</td>
+</tr>
+<tr> 
+<td align="right" valign="middle">&nbsp;</td>
+<td colspan="4" valign="middle"> 
+<select name="bupdrec">
+<option value="1">{ all }</option>
+<option value="2" selected>{ thisone }</option>
+</select>
+</td>
+</tr>
+<!--#endif brecevt -->
 <tr> 
 <td>&nbsp;</td>
 <td colspan="4"> 
@@ -416,6 +431,8 @@ window.focus();
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
+<tr align="center" valign="middle"> 
+<td> 
 <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
 <script src="{ babScriptPath }editor.js"></script>
 <td> 
@@ -443,6 +460,20 @@ window.focus();
 <!--#endif msie -->
 </td>
 </tr>
+<!--#if brecevt -->
+<tr> 
+<td valign="middle" align="center">{ updaterec }
+</td>
+</tr>
+<tr> 
+<td valign="middle" align="center"> 
+<select name="bupdrec">
+<option value="1">{ all }</option>
+<option value="2" selected>{ thisone }</option>
+</select>
+</td>
+</tr>
+<!--#endif brecevt -->
 <!--#if msie "== 1" -->
 <tr> 
 <td align="center" valign="middle">

@@ -499,6 +499,10 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 		var $curview;
 		var $descurl;
 		var $delete;
+		var $brecevt;
+		var $all;
+		var $thisone;
+		var $updaterec;
 
 		function temp($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 			{
@@ -512,9 +516,18 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 			$this->caltype = bab_getCalendarType($calendarid);
 			$babBody->title = bab_translate("Calendar"). "  ". bab_getCalendarOwnerName($this->calid, $this->caltype);
 
-			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id='$evtid'";
-			$res = $this->db->db_query($req);
+			$res = $this->db->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='$evtid'");
 			$this->evtarr = $this->db->db_fetch_array($res);
+			if( $this->evtarr['hash'] != "" && $this->evtarr['hash'][0] == 'R')
+				{
+				$this->brecevt = true;
+				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
+				$this->updaterec .= " ".bab_translate("If you choose to update all occurrences, dates are not be updated !");
+				$this->all = bab_translate("All");
+				$this->thisone = bab_translate("This occurence");
+				}
+			else
+				$this->brecevt = false;
 			$this->evtarr['description'] = bab_replace($this->evtarr['description']);
 			$this->ymin = 2;
 			$this->ymax = 5;
@@ -783,7 +796,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 	$babBody->babecho(	bab_printTemplate($temp,"event.html", "modifyevent"));
 	}
 
-function deleteEvent($calid, $evtid, $day, $month, $year, $view)
+function deleteEvent($calid, $evtid, $day, $month, $year, $view, $bupdrec)
 	{
 	global $babBody;
 	
@@ -799,19 +812,27 @@ function deleteEvent($calid, $evtid, $day, $month, $year, $view)
 		var $topics;
 		var $article;
 
-		function temp($calid, $evtid, $day, $month, $year, $view)
+		function temp($calid, $evtid, $day, $month, $year, $view, $bupdrec)
 			{
-			$this->message = bab_translate("Are you sure you want to delete this event");
+			if( $bupdrec == "1" )
+				{
+				$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all occurrences");
+				$this->warning = bab_translate("WARNING: This operation will delete all occurrences permanently"). "!";
+				}
+			else
+				{
+				$this->message = bab_translate("Are you sure you want to delete this event");
+				$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
+				}
 			$this->title = bab_getCalendarEventTitle($evtid);
-			$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=event&idx=viewm&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&action=Yes&view=".$view;
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=event&idx=viewm&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&action=Yes&view=".$view."&bupdrec=".$bupdrec;
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&view=".$view;
 			$this->no = bab_translate("No");
 			}
 		}
 
-	$temp = new temp($calid, $evtid, $day, $month, $year, $view);
+	$temp = new temp($calid, $evtid, $day, $month, $year, $view, $bupdrec);
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
@@ -864,6 +885,10 @@ function editDescription($calid, $evtid)
 		var $arr = array();
 		var $res;
 		var $msie;
+		var $brecevt;
+		var $all;
+		var $thisone;
+		var $updaterec;
 
 		function temp($calid, $evtid)
 			{
@@ -878,6 +903,15 @@ function editDescription($calid, $evtid)
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+			if( $this->arr['hash'] != "" && $this->arr['hash'][0] == 'R')
+				{
+				$this->brecevt = true;
+				$this->updaterec = bab_translate("This is recurring event. Do you want to update this ocuurence or series?");
+				$this->all = bab_translate("All");
+				$this->thisone = bab_translate("This occurence");
+				}
+			else
+				$this->brecevt = false;
 			}
 		}
 
@@ -906,7 +940,7 @@ function eventUnload()
 	echo bab_printTemplate($temp,"event.html", "eventunload");
 	}
 
-function insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid)
+function insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, $md5)
 	{
 	$db = $GLOBALS['babDB'];
 	for( $k=0; $k < count($tabcals); $k++)
@@ -946,8 +980,8 @@ function insertEvent($tabcals, $title, $description, $startdate, $starttime, $en
 					}
 				break;
 			}
-		$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat, id_creator) values ";
-		$req .= "('".$tabcals[$k]."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."', '".$creator."')";
+		$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat, id_creator, hash) values ";
+		$req .= "('".$tabcals[$k]."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."', '".$creator."', '".$md5."')";
 		$db->db_query($req);
 		}
 	}
@@ -1002,7 +1036,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 				{
 				$tab[$days[$i]] = 1;
 				}
-
+/*
 			for( $i = 6; $i >= 0; $i--)
 				{
 				if($i > 0 && $tab[$i] != 0 && $tab[$i-1] != 0)
@@ -1011,6 +1045,8 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 					$tab[$i] = 0;
 					}
 				}
+*/
+			$md5 = "R_".md5(uniqid(rand(),1));
 			for( $i=0; $i < 7; $i++)
 				{
 				if( $tab[$i] != 0 )
@@ -1043,7 +1079,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 							$enddate = sprintf("%04d-%02d-%02d", Date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 							$endtime = sprintf("%s:00", $timeend);
 							}
-						insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid);
+						insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, $md5);
 						$nextday += 7;
 						}
 					}
@@ -1066,7 +1102,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 				$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 				$endtime = sprintf("%s:00", $timeend);
 				}
-			insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid);
+			insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, "");
 			}
 
 	}
@@ -1095,12 +1131,12 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 		$endtime = sprintf("%s:00", $timeend);
 		}
-	insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid);
+	insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, "");
 	}
 	return true;	
 }
 
-function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category)
+function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category, $bupdrec)
 {
 	global $babBody;
 	
@@ -1123,36 +1159,66 @@ function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebe
 	else
 		$catid = $category;
 
-	$begin = mktime( 0,0,0,$monthbegin, $daybegin, $yearbegin );
-	$end = mktime( 0,0,0,$monthend, $dayend, $yearend );
+	if( $bupdrec == "1" )
+	{
+		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
+		$arr = $db->db_fetch_array($res);
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', id_cat='".$catid."' where id_cal='".$calid."' and hash='".$arr['hash']."'";
+		$db->db_query($req);
+	}
+	else
+	{
+		$begin = mktime( 0,0,0,$monthbegin, $daybegin, $yearbegin );
+		$end = mktime( 0,0,0,$monthend, $dayend, $yearend );
 
-	if( $begin > $end )
+		if( $begin > $end )
+			{
+			$babBody->msgerror = bab_translate("End date must be older")." !!";
+			return;
+			}
+
+		$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
+		$starttime = sprintf("%s:00", $timebegin);
+		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
+		$endtime = sprintf("%s:00", $timeend);
+
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', start_date='".$startdate."', start_time='".$starttime."', end_date='".$enddate."', end_time='".$endtime."', id_cat='".$catid."' where id='".$evtid."'";
+		$db->db_query($req);
+	}
+
+}
+
+function confirmDeleteEvent($calid, $evtid, $bupdrec)
+{
+	$db = $GLOBALS['babDB'];
+	if( $bupdrec == "1" )
 		{
-		$babBody->msgerror = bab_translate("End date must be older")." !!";
-		return;
+		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
+		$arr = $db->db_fetch_array($res);
+		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and hash='".$arr['hash']."'");
+		}
+	else
+		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='$evtid'");
+
+}
+
+function updateDescription($calid, $evtid, $content, $bupdrec)
+{
+	$db = $GLOBALS['babDB'];
+	
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$content = addslashes($content);
 		}
 
-	$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
-	$starttime = sprintf("%s:00", $timebegin);
-	$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
-	$endtime = sprintf("%s:00", $timeend);
-
-	$req = "update ".BAB_CAL_EVENTS_TBL." set title='$title', start_date='$startdate', start_time='$starttime', end_date='$enddate', end_time='$endtime', id_cat='$catid' where id='$evtid'";
-	$db->db_query($req);
-
-}
-
-function confirmDeleteEvent($calid, $evtid)
-{
-	$db = $GLOBALS['babDB'];
-	$req = "delete from ".BAB_CAL_EVENTS_TBL." where id='$evtid'";
-	$res = $db->db_query($req);	
-}
-
-function updateDescription($calid, $evtid, $content)
-{
-	$db = $GLOBALS['babDB'];
-	$db->db_query("update ".BAB_CAL_EVENTS_TBL." set description='".$content."' where id='".$evtid."'");
+	if( $bupdrec == "1" )
+		{
+		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
+		$arr = $db->db_fetch_array($res);
+		$db->db_query("update ".BAB_CAL_EVENTS_TBL." set description='".$content."' where id_cal='".$calid."' and hash='".$arr['hash']."'");
+		}
+	else
+		$db->db_query("update ".BAB_CAL_EVENTS_TBL." set description='".$content."' where id='".$evtid."'");
 }
 
 function isUpdateEvent($calid, $evtid)
@@ -1204,13 +1270,13 @@ if( !isset($idx))
 
 if( isset($action) && $action == "Yes")
 	{
-	confirmDeleteEvent($calid, $evtid);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+	confirmDeleteEvent($calid, $evtid, $bupdrec);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
 	}
 
 if( isset($update) && $update == "desc")
 	{
-	updateDescription($calid, $evtid, $content);
+	updateDescription($calid, $evtid, $content, $bupdrec);
 	$idx = "unload";
 	}
 
@@ -1218,8 +1284,8 @@ if( isset($modifyevent) && $modifyevent == "modify")
 	{
 	if( isset($Submit))
 		{
-		updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+		updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category, $bupdrec);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
 		}
 	else if( isset($evtdel))
 		{
@@ -1243,13 +1309,13 @@ if( isset($addevent) && $addevent == "add")
 		$day = $daybegin;
 		$month = $monthbegin;
 		$year = $yearbegin;
-		$view = $curview;
+		$view = $view;
 		$st = $timebegin;
 		$idx = "newevent";
 		$mcals = implode(",", array_merge($usrcals, $grpcals, $rescals));
 		}
 	else
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
 	}
 
 if( !bab_isCalendarAccessValid($calid) )
@@ -1271,7 +1337,8 @@ switch($idx)
 		break;
 
 	case "delete":
-		deleteEvent($calid, $evtid, $day, $month, $year, $view);
+		$babBody->title = bab_translate("Delete calendar event");
+		deleteEvent($calid, $evtid, $day, $month, $year, $view, $bupdrec);
 		if( bab_isUserGroupManager())
 			{
 			$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
