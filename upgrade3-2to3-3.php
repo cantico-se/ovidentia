@@ -120,6 +120,22 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE ".BAB_USERS_LOG_TBL." ADD remote_addr varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_USERS_LOG_TBL." ADD forwarded_for varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 $req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD mod_com ENUM('Y','N') DEFAULT 'Y' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
@@ -135,6 +151,44 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+$req = "CREATE TABLE ".BAB_ADDONS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "title varchar(255) NOT NULL default '',";
+$req .= "enabled enum('Y','N') NOT NULL default 'Y',";
+$req .= "PRIMARY KEY  (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ADDONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "CREATE TABLE ".BAB_ADDONS_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
+$req .= "PRIMARY KEY (id)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_ADDONS_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE favorites_list (";
+$req .= "id INT(11) UNSIGNED NOT NULL auto_increment, ";
+$req .= "id_owner INT(11) UNSIGNED NOT NULL, ";
+$req .= "url TINYTEXT NOT NULL, ";
+$req .= "description TEXT NOT NULL,";
+$req .= "PRIMARY KEY (id)";
+$req .= ");";
+$res = $db->db_query($req);
 
 return $ret;
 }
