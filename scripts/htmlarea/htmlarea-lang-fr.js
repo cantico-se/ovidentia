@@ -37,7 +37,18 @@ HTMLArea.I18N = {
 		undo:			"Annuler",
 		redo:			"Rétablir",
 		babarticle:		"Lien d'article Ovidentia"
-	}
+	},
+	formatblock : {
+		"Titre 1": "h1",
+		"Titre 2": "h2",
+		"Titre 3": "h3",
+		"Titre 4": "h4",
+		"Titre 5": "h5",
+		"Titre 6": "h6",
+		"Normal": "p",
+		"Adresse": "address",
+		"Formaté": "pre"
+		}
 };
 
 

@@ -182,6 +182,9 @@ HTMLArea.Config = function (babLanguage) {
 			btn[1] = HTMLArea.I18N.tooltips[i];
 		}
 	}
+
+	if (typeof HTMLArea.I18N.formatblock != "undefined")
+		this.formatblock = HTMLArea.I18N.formatblock;
 };
 
 /** Helper function: replace all TEXTAREA-s in the document with HTMLArea-s. */
