@@ -32,7 +32,8 @@ $babDG = array(	array("groups", bab_translate("Groups")),
 				array("mails", bab_translate("Mail")),
 				array("directories", bab_translate("Directories")),
 				array("approbations", bab_translate("Approbations")),
-				array("filemanager", bab_translate("File manager"))
+				array("filemanager", bab_translate("File manager")),
+				array("orgchart", bab_translate("Charts"))
 				);
 
 
