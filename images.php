@@ -175,7 +175,7 @@ function listImages($editor)
 			$this->imgurl = $GLOBALS['babUrl'].$filename;
 			if( $imgsize[0] > 50 || $imgsize[1] > 50)
 				{
-				if( $imgsize[2] == 1 && !(imagetypes() & IMG_GIF) )
+				if( ($imgsize[2] == 1 && !(imagetypes() & IMG_GIF)) || ($imgsize[2] == 2 && !(imagetypes() & IMG_JPG)) || ($imgsize[2] == 3 && !(imagetypes() & IMG_PNG)) )
 					$this->gd = false;
 				else
 					$this->gd = $this->gdi;
