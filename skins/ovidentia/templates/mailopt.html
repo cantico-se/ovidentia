@@ -1,0 +1,843 @@
+<!--#begin accountcreate -->
+
+<form method="post" action="index.php">
+
+<input type="hidden" name="tg" value="mailopt">
+
+<input type="hidden" name="idx" value="listacc">
+
+<input type="hidden" name="addacc" value="add">
+
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+      <tr> 
+
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                fullname }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="text" name="fullname" size="30" maxlength="100" value="{ username }">
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                email }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="text" name="email" size="30" maxlength="100" value="{ useremail }">
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                account }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="text" name="account" size="30" maxlength="100">
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                password }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="password" name="password1" size="20" maxlength="100">
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                repassword }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="password" name="password2" size="20" maxlength="100">
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle" height="30">{ 
+
+                domain }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle" height="30"> 
+
+                <select name="domain">
+
+                  <!--#in getnextadm -->
+
+                  <option value="{ domid }">{ domname }</option>
+
+                  <!--#endin getnextadm -->
+
+                  <!--#in getnextgrp -->
+
+                  <option value="{ domid }">{ domname }</option>
+
+                  <!--#endin getnextgrp -->
+
+                  <!--#in getnextusr -->
+
+                  <option value="{ domid }">{ domname }</option>
+
+                  <!--#endin getnextusr -->
+
+                </select>
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                prefaccount }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <select name="prefacc">
+
+                  <option value="N" selected>{ no }</option>
+
+                  <option value="Y" >{ yes }</option>
+
+                </select>
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                prefformat }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <select name="prefformat">
+
+                  <option value="plain">{ plain }</option>
+
+                  <option value="html">{ html }</option>
+
+                </select>
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                maxrows }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="text" name="maxrows" size="3" maxlength="2" value="15">
+
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="submit" name="Submit" value="{ addacc }">
+
+              </td>
+
+            </tr>
+
+          </table>
+
+        </td>
+
+      </tr>
+
+    </table>
+
+  </form>
+
+<!--#end accountcreate -->
+
+<br>
+
+<br><br><br><br>
+
+<!--#begin accountmodify -->
+
+
+
+
+
+<form method="post" action="index.php">
+
+<input type="hidden" name="tg" value="mailopt">
+
+<input type="hidden" name="idx" value="listacc">
+
+<input type="hidden" name="item" value="{ item }">
+
+<input type="hidden" name="modacc" value="modify">
+
+
+
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+    <tr> 
+
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              fullname }</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="text" name="fullname" size="30" maxlength="100" value="{ arr[name] }">
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              email }:</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="text" name="email" size="30" maxlength="100" value="{ arr[email] }">
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              account }</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="text" name="account" size="30" maxlength="100" value="{ arr[account] }">
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              password }:</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="password" name="password1" size="20" maxlength="100">
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              repassword }:</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="password" name="password2" size="20" maxlength="100">
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              domain }:</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <select name="domain">
+
+                <!--#in getnextadm -->
+
+                <option value="{ domid }" { domselect }>{ domname }</option>
+
+                <!--#endin getnextadm -->
+
+                <!--#in getnextgrp -->
+
+                <option value="{ domid }" { domselect }>{ domname }</option>
+
+                <!--#endin getnextgrp -->
+
+                <!--#in getnextusr -->
+
+                <option value="{ domid }" { domselect }>{ domname }</option>
+
+                <!--#endin getnextusr -->
+
+              </select>
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              prefaccount }</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <select name="prefacc">
+
+                <option value="N" { accselect }>{ no }</option>
+
+                <option value="Y" { accselect }>{ yes }</option>
+
+              </select>
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              prefformat }:</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <select name="prefformat">
+
+                <option value="plain" { plainselect }>{ plain }</option>
+
+                <option value="html" { htmlselect }>{ html }</option>
+
+              </select>
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              maxrows }:</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="text" name="maxrows" size="3" maxlength="2" value="{ arr[maxrows] }">
+
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="submit" name="Submit" value="{ modacc }">
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </td>
+
+    </tr>
+
+  </table>
+
+</form>
+
+<!--#end accountmodify -->
+
+<br>
+
+<br><br><br><br>
+
+<!--#begin accountslist -->
+
+<center>
+
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+    <tr> 
+
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+          <tr> 
+
+            <td class="BabMailOptionSignTitleFontBackground" width="1%" align="center" nowrap valign="middle">&nbsp;</td>
+
+            <td class="BabMailOptionSignTitleFontBackground" width="24%" align="center" valign="middle"><b>{ 
+
+              name }</b> </td>
+
+            <td class="BabMailOptionSignTitleFontBackground" width="30%" align="center" valign="middle"><b>{ 
+
+              email }</b></td>
+
+            <td class="BabMailOptionSignTitleFontBackground" width="40%" align="center" valign="middle"><b>{ 
+
+              accname }</b></td>
+
+            <td class="BabMailOptionSignTitleFontBackground" width="10%" align="center" valign="middle"><b>{ 
+
+              domname }</b></td>
+
+          </tr>
+
+		  <!--#in getnext -->
+
+          <tr valign="middle"> 
+
+            <td class="BabLoginMenuBackground" align="center" width="1%">
+
+            <!--#if prefered "== P" -->
+
+<IMG SRC="{ babSkinPath }images/{ babLanguage }/Puces/PuceMailDefault.gif" WIDTH="11" HEIGHT="11" BORDER=0 ALT="{ prefered }">
+
+<!--#else prefered -->
+
+&nbsp;
+
+<!--#endif prefered --></td>
+
+            <td class="BabLoginMenuBackground" align="left" width="24%"><a class="BabMailOptionsLink" href="{ url }">{ 
+
+              arr[name] }</a> </td>
+
+            <td class="BabLoginMenuBackground" align="left" width="30%">&nbsp;{ 
+
+              arr[email] }</td>
+
+            <td class="BabLoginMenuBackground" align="center" width="35%">&nbsp;{ 
+
+              arr[account] }</td>
+
+            <td class="BabLoginMenuBackground" align="left" width="10%">{ domnameval 
+
+              }</td>
+
+          </tr>
+
+		  <!--#endin getnext -->
+
+        </table>
+
+      </td>
+
+    </tr>
+
+  </table>
+
+</center>
+
+<!--#end accountslist -->
+
+<br><br><br><br><br>
+
+<!--#begin signatureslist -->
+
+<center>
+
+<!--#in getnext -->
+
+  <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+    <tr> 
+
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+          <tr> 
+
+            <td class="BabMailOptionSignTitleFontBackground" align="left"  valign="middle"><b>{ 
+
+              arr[name] }</b></td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" align="left"  valign="middle">{ 
+
+              content }</td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" align="left"  valign="middle"><a class="BabMailOptionsLink" href="{ editurl }">{ 
+
+              editname }</a>&nbsp;&nbsp;<a class="BabMailOptionsLink" href="{ delurl }">{ 
+
+              delname }</a></td>
+
+          </tr>
+
+        </table>
+
+      </td>
+
+    </tr>
+
+  </table>
+
+  <br>
+
+<!--#endin getnext -->
+
+</center>
+
+<!--#end signatureslist -->
+
+<br><br><br><br>
+
+<!--#begin signaturecreate -->
+<!--#if bhtml "== 1" -->
+<script language="JavaScript">
+<!--
+function mm()
+{
+  document.forms.sigform.addsig.value = "";
+  document.forms.sigform.idx.value = "addsig";
+  document.forms.sigform.submit.click();
+}
+//-->
+</script>
+<!--#endif bhtml -->
+
+<form method="post" name="sigform" action="index.php">
+
+<input type="hidden" name="tg" value="mailopt">
+
+<input type="hidden" name="idx" value="listsig">
+
+<input type="hidden" name="addsig" value="add">
+
+
+
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+    <tr> 
+
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              name }</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+              <input type="text" name="name" size="30" maxlength="100" value="{ nameval }">
+
+            </td>
+
+          </tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
+<tr>
+<td class="BabLoginMenuBackground" align="right" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground"><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="signature">{ signatureval }</textarea></td>
+</tr>
+<tr>
+<td class="BabLoginMenuBackground" align="right" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" >
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              signature }</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "signature", "sigform", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+              <textarea cols="40" rows="10" name="signature">{ signatureval }</textarea>
+<!--#endif msie -->
+            </td>
+
+          </tr>
+
+          <tr> 
+
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+              html }:</td>
+
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+<select name="html" 
+<!--#if bhtml "== 1" -->
+onChange="mm()"<!--#endif bhtml -->>
+<option value="N" { textselected }>{ no }</option>
+<option value="Y" { htmlselected }>{ yes }</option>
+</select>
+            </td></tr>
+<!--#if msie "== 1" -->
+<tr>
+<td class="BabLoginMenuBackground" align="right">&nbsp;</td>
+<td class="BabLoginMenuBackground" ><input onclick=SetVals() type="submit" name="submit" value="{ add }" align="left"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
+          <tr valign="middle"> 
+
+            <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
+
+            <td class="BabLoginMenuBackground" align="left"> 
+
+              <input type="submit" name="submit" value="{ add }">
+
+            </td>
+
+          </tr>
+<!--#endif msie -->
+
+        </table>
+
+      </td>
+
+    </tr>
+
+  </table>
+
+</form>
+
+<!--#end signaturecreate -->
+
+<br>
+
+<br><br><br><br>
+
+<!--#begin signaturemodify -->
+<!--#if bhtml "== 1" -->
+<script language="JavaScript">
+<!--
+function mm()
+{
+  document.forms.sigform.modsig.value = "";
+  document.forms.sigform.idx.value = "modsig";
+  document.forms.sigform.submit.click();
+}
+//-->
+</script>
+<!--#endif bhtml -->
+
+<form method="post" name="sigform" action="index.php">
+
+<input type="hidden" name="tg" value="mailopt">
+
+<input type="hidden" name="idx" value="listsig">
+
+<input type="hidden" name="sigid" value="{ id }">
+
+<input type="hidden" name="modsig" value="modify">
+
+<center>
+
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+      <tr> 
+
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                name }</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <input type="text" name="name" size="30" maxlength="100" value="{ nameval }">
+
+              </td>
+
+            </tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
+<tr>
+<td class="BabLoginMenuBackground" align="right" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground"><textarea cols="0" rows="0" style="VISIBILITY: hidden" name="signature">{ signatureval }</textarea></td>
+</tr>
+<tr>
+<td class="BabLoginMenuBackground" align="right" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground">
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                signature }</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "signature", "sigform", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+                <textarea cols="40" rows="10" name="signature">{ signatureval }</textarea>
+<!--#endif msie -->
+              </td>
+
+            </tr>
+
+            <tr> 
+
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+
+                html }:</td>
+
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+
+                <select name="html"
+<!--#if bhtml "== 1" -->
+onChange="mm()"<!--#endif bhtml -->>
+                  <option value="N" { noselected }>{ no }</option>
+
+                  <option value="Y" { yesselected }>{ yes }</option>
+
+                </select>
+
+              </td>
+
+            </tr>
+<!--#if msie "== 1" -->
+<tr>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
+
+            <tr valign="middle"> 
+
+              <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
+
+              <td class="BabLoginMenuBackground" align="left"> 
+
+                <input type="submit" name="submit" value="{ add }">
+
+              </td>
+
+            </tr>
+<!--#endif msie -->
+
+          </table>
+
+        </td>
+
+      </tr>
+
+    </table>
+
+  </center>
+
+</form>
+
+<!--#end signaturemodify -->
+
+<br>
+
+<br><br><br><br>
+
+</BODY>
+
+</HTML>
+

@@ -1,0 +1,241 @@
+
+<!--#begin categorylist -->
+
+<!--#in getnext -->
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabFaqTitleFontBackground" nowrap align="left" valign="middle"><a class="BabFaqLink" href="{ urlcategory }">{ 
+      namecategory }</a> </td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabFaqBodyFontBackground" valign="top">{ arr[description] } </td>
+  </tr>
+</table>
+<br>
+<!--#endin getnext -->
+
+<!--#end categorylist -->
+<br><br><br><br><br>
+<!--#begin questionlist -->
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center"><!--#in getnext -->
+  <tr colspan="2" align="left"> 
+    <td class="BabFaqBodyFontBackground" valign="top"><a class="BabFaqLink" href="{ questionurl }">{ 
+      question }</a></td>
+  </tr><!--#endin getnext -->
+</table>
+<br>
+
+<!--#end questionlist -->
+<br><br><br><br><br>
+<!--#begin admquestionlist -->
+<!--#in getnext -->
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr colspan="2" align="left"> 
+    <td class="BabFaqBodyFontBackground" valign="top" height="90%">{ arr[question] 
+      }</td>
+    <td class="BabFaqBodyFontBackground" valign="top" width="10%"><a class="BabFaqLink" href="{ editurl }">{ 
+      editname }</a></td>
+  </tr>
+</table>
+<br>
+<!--#endin getnext -->
+
+<!--#end admquestionlist -->
+<!--#begin admquestioncreate -->
+
+
+<form name="qcreate" method="post" action="index.php">
+<input type="hidden" name="tg" value="faq">
+<input type="hidden" name="idx" value="questions">
+<input type="hidden" name="item" value="{ idcat }">
+<input type="hidden" name="addquestion" value="addquestion">
+  <table class="BabFaqCadreFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabFaqBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr class="" align="left"> 
+            <td align="center" valign="middle"> </td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%" align="center"> 
+              <script language="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+</script>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%">
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="response"></textarea>
+			  <input type="text" name="question" style="visibility: hidden" size="0">
+            </td>
+          </tr> <!--#endif msie -->
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%"> { question }</td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+			<!--#if msie "== 1" -->
+			<script language="JavaScript">
+			editor.InFrame(0, "question", "qcreate", "100%", "20");
+			</script>
+			<!--#else msie -->
+              <input type="text" name="question" size="80" maxlength="100">
+			  <!--#endif msie -->
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%">{ response }</td>
+          </tr>
+         
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
+	editor.InFrame(1, "response", "qcreate", "100%", "160");
+</script>
+              <!--#else msie -->
+              <textarea cols="50" rows="20" name="response"></textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <script language="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.FinalInstantiate(1);
+	editor.CloseInitSection();
+</script>
+          <!--#else msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+
+
+<!--#end admquestioncreate -->
+<br><br><br><br><br>
+<!--#begin admquestionmodify -->
+
+
+
+<form name="qmod" method="post" action="index.php">
+<input type="hidden" name="tg" value="faq">
+<input type="hidden" name="idx" value="questions">
+<input type="hidden" name="item" value="{ idcat }">
+<input type="hidden" name="idq" value="{ arr[id] }">
+<input type="hidden" name="updatequestion" value="updatequestion">
+  <table class="BabFaqCadreFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabFaqBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr class="" align="left"> 
+            <td align="center" valign="middle"> </td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%" align="center"> 
+              <script language="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+</script>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="response">{ arr[response] }</textarea>
+              <input type="text" name="question" style="visibility: hidden" size="0" value="{ arr[question] }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%"> { question }</td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
+			editor.InFrame(0, "question", "qmod", "100%", "20");
+			</script>
+              <!--#else msie -->
+              <input type="text" name="question" size="80" maxlength="100"  value="{ arr[question] }">
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td class="BabFaqTitleFontBackground" width="91%">{ response }</td>
+          </tr>
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
+	editor.InFrame(1, "response", "qmod", "100%", "160");
+</script>
+              <!--#else msie -->
+              <textarea cols="50" rows="20" name="response">{ arr[response] }</textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <script language="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.FinalInstantiate(1);
+	editor.CloseInitSection();
+</script>
+          <!--#else msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input type="submit" name="submit" value="{ add }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+
+
+<br>
+<!--#end admquestionmodify -->
+<br><br><br><br><br>
+<!--#begin viewquestion -->
+<br>
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabFaqQuestionBodyFontBackground" nowrap align="left" valign="middle">{ 
+      arr[question] }</td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabFaqresponseBodyFontBackground" valign="top">{ arr[response] }</td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabFaqTitleFontBackground" valign="top"><a class="BabFaqLink" href="{ returnurl }">{ 
+      return }</a></td>
+  </tr>
+</table>
+<br>
+<!--#end viewquestion -->

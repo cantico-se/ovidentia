@@ -1,0 +1,857 @@
+/* >>>>>******************************************* DEBUT GENERAL ********************************************** */
+
+/* Couleur des mots de la fonction recherche */
+.Babhighlight { BACKGROUND: #FF0000 }
+
+/* Couleur des liens non definis */
+:link {color: blue }
+:active {color: blue }
+:visited {color: blue}
+
+/* Couleur du fond de la page */
+.BabBackground { BACKGROUND: #FF8000 }
+
+/* Couleur du fond du corps de la page */
+.BabBodyBackground { BACKGROUND: #FF8000 }
+
+/* Couleur du fond de l'entete */
+.BabHeaderBackground	{ BACKGROUND: #FF8000 }
+
+/* Couleur du fond de la barre du menu connexion */
+.BabCnxMenuBackground { BACKGROUND: #FFFF99 }
+
+/* Couleur du fond de la barre du menu */
+.BabMenuBackground { BACKGROUND: #FFFFFF }
+
+/* Police et Couleur du fond du footer  */
+.BabFooterBackground { BACKGROUND: #FFFFFF ;COLOR: #000000; font-family : Verdana, Arial; font-size : 10px }
+
+/* Police de caractere slogan */
+.BabSloganFont {	FONT-WEIGHT: bold; COLOR: #000000; font-family : Verdana, Arial; font-size : 15px }
+
+/* Couleur du lien de connexion */
+.BabCnxLink:Link { COLOR: black;  font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+.BabCnxLink:Visited { COLOR: black ;  font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+.BabCnxLink:Hover {COLOR: blue ;  font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur des liens du menu */
+.BabMenuLink:Link { COLOR: red;  font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabMenuLink:Visited { COLOR: red ;  font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabMenuLink:Hover {COLOR: blue ;  font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Police et Couleur du fond du menu Actif */
+.BabMenuActiveBackground { BACKGROUND: #FF8000 ;COLOR: #000000; font-family : Verdana, Arial; font-size : 10px ;FONT-WEIGHT: bold }
+
+/* Couleur du fond des colones de section */
+.BabSectionsColBackground { BACKGROUND: #FFFFFF }
+
+/* police du titre des sections */
+.BabTitleSectionFont { COLOR: black;  font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police du titre des pages du corps du site (articles , forums , ....) */
+.BabBodyTitleBackground { BACKGROUND: #FFFFFF; COLOR: black;  font:12px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police des messages d'erreur du site  */
+.BabErrorMessage { BACKGROUND: #FFFFFF; COLOR: Red;  font:12px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du corps des warnings */
+.BabWarningBodyBackground { BACKGROUND: #ffffff; COLOR: black;  font: 12px Verdana, Arial}
+
+/* Couleur de fond et police du titre des warnings */
+.BabWarningTitleBackground { BACKGROUND: #ffffff; COLOR: red;  font: 12px Verdana, Arial}
+
+/* Couleur de fond et police de l'objet concerné par les warnings */
+.BabWarningObjectBackground { BACKGROUND: #ffffff; COLOR: black;  font: 12px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur des liens des warnings */
+.BabWarningLinkColor:Link { COLOR: blue; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabWarningLinkColor:Visited { COLOR: blue; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabWarningLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police du formulaire de login */
+.BabLoginMenuBackground { BACKGROUND: #FF6600; COLOR: white;  font: 12px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur de fond du cadre du formulaire de login */
+.BabLoginCadreBackground { BACKGROUND: #FFFFff}
+
+/* ******************************************* FIN GENERAL ********************************************** */
+
+/* >>>>>******************************************* DEBUT SECTION GENERAL ************************************ */
+
+/* couleur de fond du titre des sections */
+.BabTitleSectionBackground { BACKGROUND: #FFFF99 }
+
+/* couleur de fond des sections */
+.BabSectionBackground { BACKGROUND: #FF6600 }
+
+/* police du corps des sections */
+.BabBodySection {COLOR: black ;  font: 10px Verdana,Arial }
+
+/* police du header du corps des sections */
+.BabHeaderBodySection { COLOR: #FFFFFF ;  font: 10px Verdana,Arial}
+
+/* police du footer du corps des sections */
+.BabFooterBodySection {COLOR: #FFFFFF;  font: 10px Verdana,Arial}
+
+/* Couleur des liens des sections du noyau */
+.BabSectionsLinkColor:Link { COLOR: black }
+.BabSectionsLinkColor:Visited { COLOR: black }
+.BabSectionsLinkColor:Hover { COLOR: yellow }
+
+/* ******************************************* FIN SECTION GENERAL************************************** */
+
+/* >>>>>******************************************* DEBUT SECTION CALENDRIER********************************* */
+
+/* Couleur de fond et police des jours ( L M M J V S D ) de la section calendrier */
+.BabCalendarDaySection { BACKGROUND: #FFFFFF ; COLOR:#000000;  font:11px Verdana,Arial ; FONT-WEIGHT:bold }
+
+/*Police des jours de la section calendrier */
+.BabCalendarDayNumberSection { COLOR:#FFFFFF ;  font:10px Verdana,Arial}
+
+/*Couleur de fond et Police du jour courant de la section calendrier */
+.BabCalendarCurrentDayNumberSection { BACKGROUND:#FFFF99 ; COLOR:#000000;  font:10px Verdana,Arial }
+
+/* ******************************************* FIN  SECTION CALENDRIER********************************* */
+
+/* >>>>>******************************************* DEBUT SECTION SOMMAIRE********************************* */
+
+/* Couleur de fond et police du titre des parties du sommaire */
+.BabSummaryTitleFontBackground {BACKGROUND:#FFFF99 ; COLOR: black ;  font:12px Verdana,Arial ; FONT-WEIGHT:bold }
+
+/* Couleur de fond et police du contenu du sommaire */
+.BabSummaryContentBackground { BACKGROUND: #FFFFFF; COLOR: black;  font: 10px Verdana, Arial }
+
+/* Couleur des liens du sommaire */
+.BabSummaryLinkColor:Link { COLOR: black; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabSummaryLinkColor:Visited { COLOR: black; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabSummaryLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* police du nombre de mail dans le sommaire */
+.BabSummaryNbrMessage { COLOR: red;  font: 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN SECTION SOMMAIRE********************************* */
+
+/* Couleur de fond et police du titre des articles */
+.BabTopicsTitleBackground { BACKGROUND: #FFFF99; COLOR: black;  font: 10px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du corps des articles */
+.BabTopicsBackground { BACKGROUND: #FFFFFF; COLOR: black;  font: 11px Verdana, Arial}
+
+/* Couleur de fond et police de l'editeur des articles */
+.BabTopicsAuthorBackground { BACKGROUND: #CCCCCC; COLOR: black;  font: 10px Verdana, Arial}
+
+/* Couleur des liens du footer des articles */
+.BabTopicsFooterLinkColor:Link { COLOR: blue; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabTopicsFooterLinkColor:Visited { COLOR: blue; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+.BabTopicsFooterLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+
+/* >>>>>******************************************* DEBUT AGENDA********************************* */
+
+/* Couleur des liens de la navigation dans le calendrier mensuel*/
+.BabCalendarNavLinkColor:Link { COLOR: red; font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+.BabCalendarNavLinkColor:Visited { COLOR: red; font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+.BabCalendarNavLinkColor:Hover {COLOR: black ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens du changement de presentation du  calendrier mensuel*/
+.BabCalendarpresentationLinkColor:Link { COLOR: blue; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabCalendarpresentationLinkColor:Visited { COLOR: blue; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabCalendarpresentationLinkColor:Hover {COLOR: red ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du menu actif de presentation ( jour / mois / semaine ) du calendrier mensuel*/
+.BabCalendarMenuActiveBackground { BACKGROUND: #FF6600; COLOR: white;  font: 12px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur de fond du cadre du calendrier mensuel*/
+.BabCalendarCadreBackground { BACKGROUND: #FF6600 }
+
+/* Couleur de fond du corps du calendrier mensuel*/
+.BabCalendarBodyBackground { BACKGROUND: #FFFFFF  }
+
+/* Couleur de fond des cellules des autres mois calendrier mensuel*/
+.BabCalendarBodyBadMonthBackground { BACKGROUND: #CCCCCC  }
+
+/* Couleur de fond du jour en cours du calendrier mensuel*/
+.BabMonthCalendarCurentDayBackground { BACKGROUND: #FFFF66  }
+
+/* Police du corps du calendrier mensuel */
+.BabCalendarBodyFont { COLOR: black;  font: 9px Verdana, Arial}
+
+/* Police de la legende des evenements du calendrier mensuel */
+.BabMonthCalendarEventLegendFont { COLOR: black;  font: 10px Verdana, Arial}
+
+/* Police du titre de la legende des evenements du calendrier mensuel */
+.BabMonthCalendarEventLegendTitleFont { COLOR: black;  font: 12px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur de fond et Police des jours (L M M J V S D ) du calendrier mensuel */
+.BabCalendarDayFont { BACKGROUND: #FFFF99 ; COLOR: black;  font: 12px Verdana, Arial; FONT-WEIGHT: bold}
+
+/* Couleur de fond et Police du mois en cour du calendrier mensuel*/
+.BabCalendarCurentMonthfont { BACKGROUND: #FFFFFF ; COLOR: black; font: 12px CVerdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et Police de l'heure d'un rdv du calendrier mensuel*/
+.BabMonthCalendarEventHourfont { BACKGROUND: #FFFFFF ; COLOR: green; font: 8px Verdana, Aria }
+
+/* Couleur des liens du numero du jour d'une celule du  calendrier mensuel*/
+.BabMonthCalendarDayNumberLinkColor:Link { COLOR: blue; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabMonthCalendarDayNumberLinkColor:Visited { COLOR: blue; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabMonthCalendarDayNumberLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens de nouveau d'une celule du  calendrier mensuel*/
+.BabMonthCalendarNewLinkColor:Link { COLOR: #999999 ; font: 8px   Verdana, Arial }
+.BabMonthCalendarNewLinkColor:Visited { COLOR: #999999; font : 8px  Verdana, Arial }
+.BabMonthCalendarNewLinkColor:Hover {COLOR: red ; font : 8px  Verdana, Arial }
+
+/* Couleur des liens evenements du  calendrier mensuel*/
+.BabMonthCalendarEventLinkColor:Link { COLOR: black ; font: 10px  Verdana, Arial }
+.BabMonthCalendarEventLinkColor:Visited { COLOR: black; font : 10px Verdana, Arial }
+.BabMonthCalendarEventLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial }
+
+/* Couleur de fond et Police de cellules du calendrier mensuel */
+.BabMonthCalendarDayCellsFont { BACKGROUND: #FFFFff}
+
+
+
+/* Couleur des liens evenements du  calendrier Quotidien*/
+.BabDayCalendarEventLink:Link { COLOR: black ; font: 10px  Verdana, Arial }
+.BabDayCalendarEventLink:Visited { COLOR: black; font : 10px Verdana, Arial }
+.BabDayCalendarEventLink:Hover {COLOR: red ; font : 10px Verdana, Arial }
+
+
+/* Police du titre du jour du calendrier mensuel */
+.BabDayCalendarTitleFont { COLOR: black;  font: 12px Verdana, Arial; FONT-WEIGHT: bold ; BACKGROUND: #FFFF99}
+
+/* Couleur des liens de navigation du  calendrier Quotidien*/
+.BabDayCalendarNavigLink:Link { COLOR: black ; font: 12px  Verdana, Arial }
+.BabDayCalendarNavigLink:Visited { COLOR: black; font : 12px Verdana, Arial }
+.BabDayCalendarNavigLink:Hover {COLOR: green ; font : 12px Verdana, Arial }
+
+/* Couleur des liens des heures du jour d'une celule du  calendrier Quotidien*/
+.BabDayCalendarHourLink:Link { COLOR: blue; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabDayCalendarHourLink:Visited { COLOR: blue; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabDayCalendarHourLink:Hover {COLOR: red ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN AGENDA********************************* */
+
+/* >>>>>******************************************* DEBUT MESSAGERIE***************************** */
+
+
+
+/* Couleur de fond de la messagerie*/
+.BabMailBackground { BACKGROUND: #FFFFFF}
+
+/* Couleur de fond des titres la messagerie*/
+.BabMailTitleBackground { BACKGROUND: #FFFF99}
+
+/* Couleur des liens des titres de la messagerie*/
+.BabInboxMessageTitleLinkColor:Link { COLOR: black ; font: 10px  Verdana, Arial ; FONT-WEIGHT: bold}
+.BabInboxMessageTitleLinkColor:Visited { COLOR: black; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabInboxMessageTitleLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens des expediteur de la messagerie*/
+.BabInboxMessageSendfromLinkColor:Link { COLOR: blue ; font: 10px  Verdana, Arial }
+.BabInboxMessageSendfromLinkColor:Visited { COLOR: blue; font : 10px Verdana, Arial }
+.BabInboxMessageSendfromLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial }
+
+/* Couleur des liens des objets de la messagerie*/
+.BabInboxMessageobjectLinkColor:Link { COLOR: blue ; font: 10px  Verdana, Arial }
+.BabInboxMessageobjectLinkColor:Visited { COLOR: blue; font : 10px Verdana, Arial }
+.BabInboxMessageobjectLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial }
+
+/* Couleur des liens de la suite de l'affichage de la messagerie*/
+.BabInboxMessageSuiteLinkColor:Link { COLOR: blue ; font: 10px  Verdana, Arial }
+.BabInboxMessageSuiteLinkColor:Visited { COLOR: blue; font : 10px Verdana, Arial }
+.BabInboxMessageSuiteLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial }
+
+/* Police de la position dans les pages de message de la messagerie*/
+.BabInboxCurrentPageFont { COLOR: black; font: 10px Verdana, Aria }
+
+/* Police de la date des messages de la messagerie*/
+.BabInboxMessagedateFont { COLOR: black; font: 10px Verdana, Aria }
+
+/* ******************************************* FIN MESSAGERIE***************************** */
+
+/* >>>>>******************************************* DEBUT FORUMS********************************* */
+
+/* Couleur de fond des forums */
+.BabForumBackground { BACKGROUND: #FFFFFF; COLOR: black; font: 10px Verdana, Arial}
+
+/* Couleur de fond des titres des forums */
+.BabForumTitleBackground { BACKGROUND: #FFFF99;COLOR: black; font: 10px Verdana, Arial ; FONT-WEIGHT: bold }
+
+/* Couleur de fond de la navigation des forums */
+.BabForumNavigationBackground { BACKGROUND: #FF6600}
+
+/* Couleur des liens des sujets des forums*/
+.BabForumTopicsLinkColor:Link { COLOR: blue ; font: 10px  Verdana, Arial }
+.BabForumTopicsLinkColor:Visited { COLOR: blue; font : 10px Verdana, Arial }
+.BabForumTopicsLinkColor:Hover {COLOR: red ; font : 10px Verdana, Arial }
+
+/* Couleur des liens de navigation des forums*/
+.BabForumNavigationLinkColor:Link { COLOR: white ; font: 12px  Verdana, Arial ; FONT-WEIGHT: bold }
+.BabForumNavigationLinkColor:Visited { COLOR: white; font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+.BabForumNavigationLinkColor:Hover {COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  (titre) */
+.BabForumTopicsNavFontTitleBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99 ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  (corps) */
+.BabForumTopicsNavBodyFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  ( Date - Pied) */
+.BabForumTopicsNavFooterDateFontBackground { COLOR: red ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99 ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  (Auteur - Pied) */
+.BabForumTopicsNavFooterAuthorFontBackground { COLOR: blue ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99 ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  ( Suite - Pied ) */
+.BabForumTopicsNavFooterConfirmFontBackground { COLOR: blue ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99 ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans la navigation d'un sujet des forums (Confirmation - Pied ) */
+.BabForumTopicsNavFooterConfirmLink:Link { COLOR: blue ; font : 10px Verdana, Arial  }
+.BabForumTopicsNavFooterConfirmLink:Visited { COLOR: blue ; font : 10px Verdana, Arial}
+.BabForumTopicsNavFooterConfirmLink:Hover { COLOR: red ; font : 10px Verdana, Arial }
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  ( Titre - Arborescence ) */
+.BabForumTopicsNavTreeTitleFontBackground { COLOR: white ; font : 12px Verdana, Arial ; BACKGROUND: #FF6600 ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  ( Corps - Arborescence ) */
+.BabForumTopicsNavTreeBodyFontBackground { COLOR: red ; font : 12px Verdana, Arial ; BACKGROUND: #FFFFFF ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  ( Corps - Arborescence - Date) */
+.BabForumTopicsNavTreeBodyDateFontBackground { COLOR: #999999 ; font: 9px Verdana, Arial ; BACKGROUND: #FFFFFF }
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  ( Corps - Arborescence - Auteur) */
+.BabForumTopicsNavTreeBodyAuthorFontBackground { COLOR: black ; font : 9px Verdana, Arial ; BACKGROUND: #FFFFFF ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans la navigation d'un sujet des forums (Arborescence - Contributions ) */
+.BabForumTopicsNavContibutionLink:Link { COLOR: black  ; font : 9px Verdana, Arial  }
+.BabForumTopicsNavContibutionLink:Visited { COLOR: black ; font : 9px Verdana, Arial}
+.BabForumTopicsNavContibutionLink:Hover { COLOR: blue ; font : 9px Verdana, Arial }
+
+/* Couleur de fond et police dans la navigation d'un sujet des forums  ( Contribution en cours - Arborescence ) */
+.BabForumTopicsNavTreeLiveFontBackground { COLOR: red ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF ; FONT-WEIGHT: bold}
+
+
+/* ******************************************* FIN FORUMS********************************* */
+
+/* >>>>>******************************************* DEBUT FAQS********************************* */
+
+/* Couleur de fond du titre dans l'administration  des faqs */
+BabFaqAdminTitleBackground { BACKGROUND: #FFFF66}
+
+/* Couleur des liens des titres de l'adminitration des faqs*/
+.BabFaqAdminTitleLink:Link { COLOR: black ; font : 10px Verdana, Arial  ; FONT-WEIGHT: bold}
+.BabFaqAdminTitleLink:Visited { COLOR: black ; font : 10px Verdana, Arial  ; FONT-WEIGHT: bold}
+.BabFaqAdminTitleLink:Hover { COLOR: red ; font : 10px Verdana, Arial  ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration du titre des faq */
+.BabFaqAdminBodyFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600}
+
+/* ******************************************* FIN FAQS********************************* */
+
+
+/* >>>>>******************************************* DEBUT ADMINISTRATION UTILISATEURS******** */
+
+/* Couleur des liens de l'adminitration des utilisateurs (Navigation)*/
+.BabUserAdminNavigationLink:Link { COLOR: red ; font : 12px Verdana, Arial  ; FONT-WEIGHT: bold}
+.BabUserAdminNavigationLink:Visited { COLOR: red ; font : 12px Verdana, Arial  ; FONT-WEIGHT: bold}
+.BabUserAdminNavigationLink:Hover { COLOR: blue ; font : 12px Verdana, Arial  ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des utilisateurs (Navigation) */
+.BabUserAdminNavigationFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+
+/* Couleur de fond et police dans l'administration des utilisateurs (Titre) */
+.BabUserAdminTitleFontBackground { COLOR: White ; font : 12px Verdana, Arial ; BACKGROUND: #FF6600; FONT-WEIGHT: bold}
+
+/* Couleur de fond  dans l'administration des utilisateurs (Corps) */
+.BabUserAdminBodyBackground { BACKGROUND: #FFFF99 }
+
+/* Couleur des liens de l'adminitration des utilisateurs (Nom-Corps)*/
+.BabUserAdminNameBodyLink:Link { COLOR: black ; font : 10px Verdana, Arial }
+.BabUserAdminNameBodyLink:Visited { COLOR: black ; font : 10px Verdana, Arial}
+.BabUserAdminNameBodyLink:Hover { COLOR: blue ; font : 10px Verdana, Arial }
+
+/* Couleur des liens de l'adminitration des utilisateurs (Email-Corps)*/
+.BabUserAdminNameEmailLink:Link { COLOR: blue ; font : 10px Verdana, Arial ; font-style: italic }
+.BabUserAdminNameEmailLink:Visited { COLOR: blue ; font : 10px Verdana, Arial; font-style: italic}
+.BabUserAdminNameEmailLink:Hover { COLOR: red ; font : 10px Verdana, Arial ; font-style: italic}
+
+/* ******************************************* FIN ADMINISTRATION UTILISATEURS******** */
+
+/* >>>>>******************************************* DEBUT OPTIONS************************** */
+
+/* Couleur de fond et police du titre dans les options du calendrier (Affichage des droits - Affection des droits) */
+.BabCaledarOptionRightTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99 ;; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du titre dans les options de la messagerie (signature - mail) */
+.BabMailOptionSignTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99 ;; FONT-WEIGHT: bold}
+
+/* Couleur des liens des options de la messagerie */
+.BabMailOptionsLink:Link { COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabMailOptionsLink:Visited { COLOR: blue ; font : 12px Verdana, Arial; FONT-WEIGHT: bold}
+.BabMailOptionsLink:Hover { COLOR: red ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN ADMINISTRATION UTILISATEURS******** */
+
+/* >>>>>******************************************* DEBUT ADMINISTRATION CONGES************ */
+
+/* Couleur de fond et police dans l'administration des congés (Titre) */
+.BabVacAdminTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99}
+
+/* Couleur des liens dans l'administration des congés (Liste ) */
+.BabVacAdminListLink:Link { COLOR: blue  ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabVacAdminListLink:Visited { COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabVacAdminListLink:Hover { COLOR: red ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN ADMINISTRATION CONGES************* */
+
+/* >>>>>******************************************* DEBUT ADMINISTRATION SITES************ */
+
+/* Couleur de fond et police dans l'administration des sites (Titre) */
+.BabSiteAdminTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99}
+
+/* Couleur de fond et police dans l'administration des sites (Titre) */
+.BabSiteAdminTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99}
+
+/* Couleur de fond et police dans l'administration des sites (Liste - Description) */
+.BabSiteAdminDescriptionFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600 ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des sites (Liste - Email) */
+.BabSiteAdminEmailFontBackground { COLOR: White ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600 ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des sites (Liste - Langue) */
+.BabSiteAdminLanguageFontBackground { COLOR: Black ; font : 10px Verdana, Arial; BACKGROUND: #FF6600 ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans l'administration des sites (Liste - Site ) */
+.BabSiteAdminListLink:Link { COLOR: blue  ; font : 12px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabSiteAdminListLink:Visited { COLOR: blue ; font : 12px Verdana, Arial; FONT-WEIGHT: bold}
+.BabSiteAdminListLink:Hover { COLOR: red ; font : 12px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police dans l'administration des sites (Corps) */
+.BabSectionsAdminBodyFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FF6600}
+
+/* ******************************************* FIN ADMINISTRATION SITES************* */
+
+/* >>>>>******************************************* DEBUT ADMINISTRATION SECTIONS********** */
+
+
+/* Couleur de fond et police dans l'administration des sections (Titre) */
+.BabSectionsAdminTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des sections (Cadre) */
+.BabSectionsAdminCadreFontBackground { COLOR: white ; font : 12px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des sections (Titre) */
+.BabSectionsAdminTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99 ;; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans l'administration des sections (Liste ) */
+.BabSectionsAdminListLink:Link { COLOR: blue  ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabSectionsAdminListLink:Visited { COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabSectionsAdminListLink:Hover { COLOR: red ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN ADMINISTRATION SECTIONS********** */
+
+/* >>>>>******************************************* DEBUT ADMINISTRATION GROUPES********** */
+
+/* Couleur de fond et police dans l'administration des groupes (Titre) */
+.BabGroupsAdminTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans l'administration des groupes (Liste ) */
+.BabGroupsAdminListLink:Link { COLOR: blue  ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabGroupsAdminListLink:Visited { COLOR: blue ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabGroupsAdminListLink:Hover { COLOR: red ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des groupes (Descriptions) */
+.BabGroupsAdminDescriptionFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600 }
+
+/* Couleur de fond et police dans l'administration des groupes (Administrateur) */
+.BabGroupsAdminAdminFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600 }
+
+/* Couleur de fond et police dans l'administration des groupes (Email) */
+.BabGroupsAdminEmailFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600 }
+
+/* Couleur de fond et police dans l'administration des groupes (Titre - Liste des membres) */
+.BabGroupsAdminMenbersListTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans l'administration des groupes (Liste ) */
+.BabGroupsAdminMenbersListLink:Link { COLOR: blue  ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabGroupsAdminMenbersListLink:Visited { COLOR: blue ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabGroupsAdminMenbersListLink:Hover { COLOR: red ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des groupes (Titre groupe - Liste des membres) */
+.BabGroupsAdminMenbersListGroupTitleFontBackground { COLOR: white ; font : 12px Verdana, Arial ; BACKGROUND: red; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN ADMINISTRATION GROUPES********** */
+
+/* >>>>>******************************************* DEBUT ADMINISTRATION THEME D'ARTICLES********** */
+
+/* Couleur de fond et police dans l'administration des themes d'articles (Corps) */
+.BabTopicsAdminListBodyFontBackground { COLOR: black ; font : 10px Verdana, Arial ; BACKGROUND: white}
+
+/* Couleur de fond et police dans l'administration des themes d'articles (Titre - Liste) */
+.BabTopicsAdminListTitleFontBackground { COLOR: black ; font : 12px Verdana, Arial ; BACKGROUND: #FF6600}
+
+/* Couleur des liens dans l'administration des themes d'articles (Liste ) */
+.BabTopicsAdminTitleLink:Link { COLOR: white  ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabTopicsAdminTitleLink:Visited { COLOR: white ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabTopicsAdminTitleLink:Hover { COLOR: green ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans l'administration des themes d'articles (Liste - Nbr articles) */
+.BabTopicsAdminNumberLink:Link { COLOR: white  ; font : 10px Verdana, Arial  }
+.BabTopicsAdminNumberLink:Visited { COLOR: white ; font : 10px Verdana, Arial }
+.BabTopicsAdminNumberLink:Hover { COLOR: green ; font : 10px Verdana, Arial }
+
+/* Couleur de fond et police dans l'administration des themes d'articles (Titre - Nbr articles) */
+.BabTopicsAdminListTitleFontBackground { COLOR: black ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600}
+
+/* Couleur de fond et police dans l'administration des themes d'articles (choix - articles) */
+.BabTopicsAdminChoiceFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND:#CCCCCC; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans l'administration des themes d'articles (choix - articles ) */
+.BabTopicsAdminChoiceLink:Link { COLOR: blue  ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabTopicsAdminChoiceLink:Visited { COLOR: blue ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabTopicsAdminChoiceLink:Hover { COLOR: green ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des themes d'articles (choix - articles) */
+.BabTopicsAdminChoiceTitleFontBackground { COLOR: black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99}
+
+/* Couleur de fond et police dans la visualisations des articles */
+.BabTopicsAdminArticleViewFontBackground { BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police dans la visualisations des articles (titre - article ) */
+.BabTopicsAdminArticleViewTitleFontBackground {COLOR: White ; font : 14px Verdana, Arial ;  BACKGROUND: #FF6600}
+
+/* ******************************************* FIN ADMINISTRATION THEME D'ARTICLES************/
+
+/* >>>>>******************************************* DEBUT CONTACTS*********************************/
+
+/* Couleur de fond et police dans les contacts ( Corps ) */
+.BabTopicsContactsBodyFontBackground {COLOR: black ; font : 10px Verdana, Arial ;  BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police du cadre des contacts (fiches) */
+.BabContactsCardCadreFontBackground { COLOR: white ; font : 12px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du corps des contacts (fiches) */
+.BabContactsCardBodyFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du corps des contacts (Erreur) */
+.BabContactsCardErrorsFontBackground { COLOR: red ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans l'administration des contacts (titre - liste) */
+.BabContactsTitleFontBackground { COLOR: black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans les contacts (nom ) */
+.BabTopicsContactsNameLink:Link { COLOR: blue  ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabTopicsContactsNameLink:Visited { COLOR: blue ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabTopicsContactsNameLink:Hover { COLOR: green ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans les contacts (Email ) */
+.BabTopicsContactsEmailLink:Link { COLOR: black  ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabTopicsContactsEmailLink:Visited { COLOR: black ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabTopicsContactsEmailLink:Hover { COLOR: green ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans les contacts (Alphabet ) */
+.BabTopicsContactsAlphabetLink:Link { COLOR: green ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabTopicsContactsAlphabetLink:Visited { COLOR: green ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabTopicsContactsAlphabetLink:Hover { COLOR: red ; font : 10px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN CONTACTS*************************************/
+
+/* >>>>>******************************************* DEBUT MESSAGERIE*********************************/
+
+/* Couleur de fond et police de "de" l'editeur de mail*/
+.BabMailEditFromFontBackground { COLOR: black; font: 12px Verdana, Arial ; FONT-WEIGHT: bold; BACKGROUND: #CCCCCC }
+
+/*  Couleur de fond et police du cadre l'editeur de mail*/
+.BabMailEditCadreFontBackground{ BACKGROUND: #000000}
+
+/*  Couleur de fond et police du corps de l'editeur de mail*/
+.BabMailEditBodyFontBackground{ BACKGROUND: #FFFFFF}
+
+/*  Couleur de fond et police du champ "Format" de l'editeur de mail*/
+.BabMailEditFormatFontBackground{ COLOR: black; font: 12px Verdana, Arial ; FONT-WEIGHT: bold ; BACKGROUND: #FFFFCC}
+
+/*  Couleur de fond et police du champ "sujet" de l'editeur de mail*/
+.BabMailEditSubjectFontBackground{ COLOR: black; font: 12px Verdana, Arial ; FONT-WEIGHT: bold ; BACKGROUND: #FFFFCC}
+
+/*  Couleur de fond et police du champ "Fichiers Joints" de l'editeur de mail*/
+.BabMailEditJointFontBackground{ COLOR: black; font: 12px Verdana, Arial ; FONT-WEIGHT: bold ; BACKGROUND: #FFFF99}
+
+/*  Couleur de fond et police du champ "a -cc -bcc" de l'editeur de mail*/
+.BabMailEditForFontBackground{ COLOR: black; font: 12px Verdana, Arial ; FONT-WEIGHT: bold ; BACKGROUND: #FFFF99}
+
+/*  Couleur de fond et police du champ "signature" de l'editeur de mail*/
+.BabMailEditSignFontBackground{ COLOR: black; font: 12px Verdana, Arial ; FONT-WEIGHT: bold ; BACKGROUND: #FFFF99}
+
+/* Couleur des liens dans les contacts (Alphabet ) */
+.BabMailEditLink:Link { COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabMailEditLink:Visited { COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabMailEditLink:Hover { COLOR: red ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans les choix des recepteurs des mails (a cc bcc ) */
+.BabMailCardToLink:Link { COLOR: White ; font : 14px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabMailCardToLink:Visited { COLOR: White ; font : 14px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabMailCardToLink:Hover { COLOR: green ; font : 14px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens pour la fermeture de la fenetre  choix des recepteurs d'un mail  */
+.BabMailCardClose:Link { COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold }
+.BabMailCardClose:Visited { COLOR: blue ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+.BabMailCardClose:Hover { COLOR: green ; font : 12px Verdana, Arial ; FONT-WEIGHT: bold}
+
+/* Couleur des liens dans la lecture des mails */
+.BabMailViewLink:Link { COLOR: blue  ; font : 10px Verdana, Arial  }
+.BabMailViewLink:Visited { COLOR: blue ; font : 10px Verdana, Arial}
+.BabMailViewLink:Hover { COLOR: red ; font : 10px Verdana, Arial }
+
+/* Couleur de fond et police dans la lecture des mails ( From ) */
+.BabMailViewFromFontBackground { COLOR: black ; font : 12px Verdana, Arial ; BACKGROUND: #CCCCCC; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la lecture des mails ( To ) */
+.BabMailViewToFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la lecture des mails ( Attachement ) */
+.BabMailViewAttachementFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la lecture des mails ( Objet ) */
+.BabMailViewObjectFontBackground { COLOR: white ; font : 12px Verdana, Arial ; BACKGROUND: #FF6600; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la lecture des mails ( Date ) */
+.BabMailViewDateFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police dans la lecture des mails ( message ) */
+.BabMailViewMessageFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police dans la lecture des mails ( cc ) */
+.BabMailViewCCFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFCC; FONT-WEIGHT: bold}
+
+
+/* ******************************************* FIN MESSAGERIE*********************************/
+
+/* >>>>>******************************************* DEBUT NOTES************************************/
+
+/* Couleur des liens dans les notes */
+.BabNotesLink:Link { COLOR: blue  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabNotesLink:Visited { COLOR: blue ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabNotesLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police dans les notes (Corps) */
+.BabNotesBodyFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police dansles notes (Titre) */
+.BabNotesTitleFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN NOTES************************************/
+
+/* >>>>>******************************************* DEBUT FAQ************************************/
+
+/* Couleur des liens des faqs */
+.BabFaqLink:Link { COLOR: blue  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabFaqLink:Visited { COLOR: blue ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabFaqLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police des faqs (Response - Corps) */
+.BabFaqResponseBodyFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police des faqs (Question - Corps) */
+.BabFaqQuestionBodyFontBackground { COLOR: Blue ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+/* Couleur de fond et police de l'editeur de faqs (Corps) */
+.BabFaqBodyFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600}
+
+/* Couleur de fond et police des faqs (Titre) */
+.BabFaqTitleFontBackground { COLOR: Black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du cadre des faqs  */
+.BabFaqCadreFontBackground { COLOR: white ; font : 12px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+/* ******************************************* FIN FAQ************************************/
+
+
+/* >>>>>******************************************* DEBUT CONGES*******************************/
+
+/* Couleur des liens des vacances */
+.BabVacationLink:Link { COLOR: blue  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabVacationLink:Visited { COLOR: blue ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabVacationLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police des vacances ( corps ) */
+.BabVacationBodyFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600}
+
+/* Couleur de fond et police des vacances ( titre ) */
+.BabVacationTitleFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du cadre des vacances ( cadre ) */
+.BabVacationCadreFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+
+/* ******************************************* FIN CONGES*******************************/
+
+
+
+
+
+/* >>>>>Début : Classes utilisées par le script de saisie en mode formaté avec conversion HTML */
+.ButtonNormal {
+	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; BACKGROUND-COLOR: #CCCCCC
+}
+.ButtonPressed {
+	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; BORDER-LEFT: buttonshadow 1px solid; BORDER-BOTTOM: buttonhighlight 1px solid; BACKGROUND-COLOR: #CCCCCC
+}
+.ButtonMouseOver {
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; BACKGROUND-COLOR: #CCCCCC
+}
+.ButtonDisabled {
+	BORDER-RIGHT: buttonface 1px solid; BORDER-TOP: buttonface 1px solid; BORDER-LEFT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid; BACKGROUND-COLOR: #CCCCCC
+}
+.Image {
+	WIDTH: 22px; HEIGHT: 22px
+}
+.Toolbar {
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; BORDER-LEFT: buttonhighlight 1px solid; BORDER-BOTTOM: buttonshadow 1px solid; HEIGHT: 30px; BACKGROUND-COLOR: #CCCCCC
+}
+.Divider {
+	BORDER-RIGHT: buttonhighlight 1px solid; BORDER-TOP: buttonshadow 1px solid; BORDER-LEFT: buttonshadow 1px solid; WIDTH: 2px; BORDER-BOTTOM: buttonhighlight 1px solid; HEIGHT: 24px; BACKGROUND-COLOR: #CCCCCC
+}
+.Swatch {
+	BORDER-RIGHT: buttonshadow 1px solid; BORDER-TOP: buttonhighlight 1px solid; BORDER-LEFT: buttonhighlight 1px solid; WIDTH: 3px; BORDER-BOTTOM: buttonshadow 1px solid; HEIGHT: 24px; BACKGROUND-COLOR: #CCCCCC
+}
+.Space {
+	WIDTH: 0px; HEIGHT: 24px; BACKGROUND-COLOR: buttonface
+}
+.List {
+	BACKGROUND: #ffffff; FONT: 8px verdana,arial,sans-serif ; COLOR: BLACK
+}
+.Text {
+	FONT: 8pt verdana,arial,sans-serif
+}
+.Heading {
+	BACKGROUND: #ffffff; COLOR: BLACK
+}
+ /* Fin : Classes utilisées par le script de saisie en mode formaté avec conversion HTML */
+
+ /* >>>>>******************************************* DEBUT EDITEUR ARTICLES************************/
+
+
+/* Couleur de fond et police du cadre de l'editeur dans l'administration des articles  */
+.BabTopicsAdminCadreEditorFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police du corps de l'editeur dans l'administration des articles  */
+.BabTopicsAdminBodyEditorFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police des titres de l'editeur dans l'administration des articles */
+.BabTopicsAdminTitleEditorFontBackground { COLOR: black ; font : 12px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+
+/* ******************************************* FIN EDITEUR ARTICLES*******************************/
+
+ /* >>>>>******************************************* DEBUT FICHIER ARTICLE*******************************/
+
+
+/* Couleur de fond et police du cadre d'ajout par fichier des articles  */
+.BabTopicsCadreFilesFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/*  Couleur de fond et police du corps d'ajout par fichier des articles  */
+.BabTopicsBodyFilesrFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600; FONT-WEIGHT: bold}
+
+
+/* ******************************************* FIN FICHIER ARTICLE*******************************/
+
+
+
+/* ******************************************* DeBUT EVENEMENT*******************************/
+/* Couleur des liens de l'editeur d'evenement */
+.BabEventEditorLink:Link { COLOR: blue  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabEventEditorLink:Visited { COLOR: blue ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabEventEditorLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police du corps de l'editeur d'evenement */
+.BabEventEditorBodyFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600}
+
+/* Couleur de fond et police du titre l'editeur d'evenement */
+.BabEventEditorTitleFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFF99; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du cadre de l'editeur d'evenement */
+.BabEventEditorCadreFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+
+/* ******************************************* FIN EVENEMENT*******************************/
+
+/* ******************************************* DeBUT COMMENTAIRE *******************************/
+/* Couleur des liens de l'editeur d'evenement */
+.BabCommentLink:Link { COLOR: blue  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabCommentLink:Visited { COLOR: blue ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabCommentLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur de fond et police du corps des commentaires */
+.BabCommentBodyFontBackground { COLOR: black ; font : 10px Verdana, Arial ; BACKGROUND: #FF6600; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du titre des commentaires */
+.BabCommentTitleFontBackground { COLOR: white ; font : 12px Verdana, Arial ; BACKGROUND: #FF6600; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police de la partie commentaire des commentaires */
+.BabCommentFontBackground { COLOR: Black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police du cadre des commentaires */
+.BabCommentCadreFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du corps dans la liste des commentaires */
+.BabCommentListCadreFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF}
+
+/* Couleur de fond et police du corps dans la liste des commentaires */
+.BabCommentListBodyFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #0099FF; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police de la date dans la liste des commentaires */
+.BabCommentListDateFontBackground { COLOR: black ; font : 10px Verdana, Arial ; BACKGROUND: #0099FF}
+
+/* Couleur des liens dans la liste de commentaires d'evenement */
+.BabCommentsListLink:Link { COLOR: Yellow  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabCommentsListLink:Visited { COLOR: yellow ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabCommentsListLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+
+/* ******************************************* FIN COMMENTAIRE *******************************/
+
+/* ******************************************* DEBUT CREATION FIL DE DISCUSSION *******************************/
+
+/* Couleur de fond et police du corps lors de la creation d'un nouveau fil de discussion */
+.BabThreadCreateBodyFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #0099FF}
+
+/* Couleur de fond et police du cadre d'un nouveau fil de discussion */
+.BabThreadCreateCadreFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+
+/* ******************************************* FIN CREATION FIL DE DISCUSSION *******************************/
+
+/* ******************************************* DEBUT Liste destinataires messagerie *******************************/
+
+/* Couleur de fond et police du corps des destinataires messagerie */
+.BabToChoiceMailPopupBodyFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #0099FF}
+
+/* Couleur de fond et police du cadre des destinataires messagerie */
+.BabToChoiceMailPopupCadreFontBackground { COLOR: white ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+/* Couleur de fond et police du cadre des destinataires messagerie */
+.BabToChoiceMailPopupTitleFontBackground { COLOR: black ; font : 10px Verdana, Arial ; BACKGROUND: #FFFFFF; FONT-WEIGHT: bold}
+
+/* Couleur des liens de la fermeture de popup des destinataires messagerie */
+.BabToChoiceMailPopupCloseLink:Link { COLOR: red  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabToChoiceMailPopupCloseLink:Visited { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabToChoiceMailPopupCloseLink:Hover { COLOR: green ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur des liens des choix to cc bcc  des destinataires messagerie */
+.BabToChoiceMailPopupToLink:Link { COLOR: white  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabToChoiceMailPopupToLink:Visited { COLOR: white ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabToChoiceMailPopupToLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+/* Couleur des liens de la navigation annuaire  des destinataires messagerie  */
+.BabToChoiceMailPopupNavigLink:Link { COLOR: Yellow  ; font : 10px Verdana, Arial; FONT-WEIGHT: bold  }
+.BabToChoiceMailPopupNavigLink:Visited { COLOR: yellow ; font : 10px Verdana, Arial; FONT-WEIGHT: bold}
+.BabToChoiceMailPopupNavigLink:Hover { COLOR: red ; font : 10px Verdana, Arial; FONT-WEIGHT: bold }
+
+
+
+/* ******************************************* FIN Liste destinataires messagerie *******************************/
+
+
+
+

@@ -1,0 +1,160 @@
+
+<!--#begin caloptions -->
+
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="calopt">
+<input type="hidden" name="idx" value="options">
+<input type="hidden" name="calid" value="{ calid }">
+<input type="hidden" name="modify" value="options">
+<center>
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                startday }</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <select name="startday">
+                  <!--#in getnextday -->
+                  <option value="{ dayid }" { selected }>{ dayname }</option>
+                  <!--#endin getnextday -->
+                </select>
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                allday }</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+                <select name="allday">
+                  <option value="Y"
+                  <!--#if arr[allday] "== Y" -->
+                  selected
+                  <!--#endif arr[allday] -->
+                  >{ yes }</option>
+                  <option value="N" 
+                  <!--#if arr[allday] "== N" -->
+                  selected
+                  <!--#endif arr[allday] -->
+                  >{ no }</option>
+                </select>
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                viewcateg }</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <select name="viewcat">
+                  <option value="Y"
+                  <!--#if arr[viewcat] "== Y" -->
+                  selected 
+                  <!--#endif arr[viewcat] -->
+                  >{ yes }</option>
+                  <option value="N" 
+                  <!--#if arr[viewcat] "== N" -->
+                  selected 
+                  <!--#endif arr[viewcat] -->
+                  >{ no }</option>
+                </select>
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                usebgcolor }</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <select name="usebgcolor">
+                  <option value="Y"  
+                  <!--#if arr[usebgcolor] "== Y" -->
+                  selected 
+                  <!--#endif arr[usebgcolor] -->
+                  >{ yes }</option>
+                  <option value="N" 
+                  <!--#if arr[usebgcolor] "== N" -->
+                  selected 
+                  <!--#endif arr[usebgcolor] -->
+                  >{ no }</option>
+                </select>
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
+              <td class="BabLoginMenuBackground" align="center"> 
+                <input type="submit" name="submit" value="{ modify }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</form>
+<!--#end caloptions -->
+<!--#begin access -->
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabCaledarOptionRightTitleFontBackground" width="70%" align="center" nowrap valign="middle"><b>{ 
+              fullname }</b></td>
+            <td class="BabCaledarOptionRightTitleFontBackground" width="30%" align="center" valign="middle"><b>{ 
+              accessname }</b> </td>
+          </tr>
+		  <!--#in getnext -->
+          <tr> 
+            <td class="BabLoginMenuBackground" width="70%" align="center" nowrap valign="middle">{ 
+              fullnameval }</td>
+            <td class="BabLoginMenuBackground" width="30%" align="center" valign="middle">{ 
+              yesno } </td>
+          </tr>
+		  <!--#endin getnext -->
+        </table>
+      </td>
+    </tr>
+  </table>
+
+<br>
+
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="calopt">
+<input type="hidden" name="idx" value="access">
+<input type="hidden" name="idcal" value="{ calid }">
+<input type="hidden" name="accessuser" value="add">
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabCaledarOptionRightTitleFontBackground" colspan="2" align="left" valign="middle">{ 
+              textinfo } </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              userstxt }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="users" size="30" maxlength="100">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="checkbox" name="baccess" value="y">
+              &nbsp;&nbsp;{ useraccess } </td>
+          </tr>
+          <tr valign="middle"> 
+            <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
+            <td class="BabLoginMenuBackground" align="center"> 
+              <input type="submit" name="Submit" value="{ addusers }">
+              <input type="submit" name="del" value="{ delusers }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<!--#end access -->
+</HTML>

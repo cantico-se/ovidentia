@@ -1,0 +1,157 @@
+
+<!--#begin changepassword -->
+
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="options">
+<input type="hidden" name="update" value="password">
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              oldpwd }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="password" name="oldpwd" size="20" maxlength="15">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              newpwd }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="password" name="newpwd1" size="20" maxlength="15">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              renewpwd }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="password" name="newpwd2" size="20" maxlength="15">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="submit" name="submit" value="{ update }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+<!--#end changepassword -->
+<!--#begin changeuserinfo -->
+<br>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center"><tr><td class="BabBodyTitleBackground" align="center" valign="center">{ title }</td></tr></table>
+<br>
+
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="options">
+<input type="hidden" name="update" value="userinfo">
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              password }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="password" name="password" size="20" maxlength="15">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              firstname }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="firstname" size="30" maxlength="60" value="{ firstnameval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              lastname }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="lastname" size="30" maxlength="60" value="{ lastnameval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              nickname }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+              <input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+              email }:</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="text" name="email" size="30" maxlength="60" value="{ emailval }">
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
+              <input type="submit" name="submit" value="{ update }">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+<!--#end changeuserinfo -->
+<br>
+<br><br><br><br>
+<!--#begin changelang -->
+<br>
+
+
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="options">
+<input type="hidden" name="update" value="lang">
+  <center>
+    <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+              <td class="BabLoginMenuBackground" align="center" nowrap valign="middle">
+                <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+                  <tr> 
+                    <td class="BabLoginCadreBackground" align="center" valign="middle" width="95%"> 
+                      <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+                        <tr valign="middle"> 
+                          <td class="BabLoginMenuBackground" colspan="2" align="center">{ 
+                            title } </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" align="center" nowrap valign="middle">
+                <select name="lang">
+                  <!--#in getnextlang -->
+                  <option value="{ langval }" { langselected }>{ langname }</option>
+                  <!--#endin getnextlang -->
+                </select>
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" align="center"> 
+                <input type="submit" name="submit" value="{ update }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</form>
+<!--#end changelang -->
+

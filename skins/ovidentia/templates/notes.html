@@ -1,0 +1,157 @@
+
+<!--#begin notescreate -->
+
+
+<form name="notcreate" method="post" action="index.php">
+<input type="hidden" name="tg" value="notes">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="create" value="create">
+  <table class="BabSectionsAdminCadreFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabSectionsAdminBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr class="BabSectionsAdminTitleFontBackground" align="left"> 
+            <td align="center" valign="middle">{ notes }</td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content"></textarea>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <script language="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+</script>
+            </td>
+          </tr>
+          <!--#endif msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
+	editor.InFrame(0, "content", "notcreate", "90%", "160");
+</script>
+              <!--#else msie -->
+              <textarea cols="50" rows="20" name="content"></textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input onClick=SetVals() type="submit" name="submit" value="{ create }">
+            </td>
+          </tr>
+          <script language="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</script>
+          <!--#else msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <input type="submit" name="submit" value="{ create }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<!--#end notescreate -->
+<br><br><br><br><br>
+<!--#begin noteslist -->
+<!--#in getnext -->
+<table class="BabTopicsAdminListBodyFontBackground" border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td class="BabNotesTitleFontBackground" nowrap align="left" valign="middle" width="90%">{ 
+      arr[date] } </td>
+    <td class="BabNotesTitleFontBackground" nowrap align="right" valign="middle" width="10%"><a class="BabNotesLink" href="{ editurl }">{ 
+      editname }</a> </td>
+  </tr>
+  <tr colspan="2" align="left"> 
+    <td class="BabNotesBodyFontBackground" colspan="2" valign="top"> { arr[content] } </td>
+  </tr>
+</table>
+<br>
+<!--#endin getnext -->
+
+<!--#end noteslist -->
+
+<br><br><br><br><br>
+<!--#begin notesmodify -->
+
+
+
+<form name="notemod" method="post" action="index.php">
+<input type="hidden" name="tg" value="note">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="update" value="update">
+  <table class="BabSectionsAdminCadreFontBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabSectionsAdminBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr class="BabSectionsAdminTitleFontBackground" align="left"> 
+            <td align="center" valign="middle">{ notes }</td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+          <script src="{ babScriptPath }SaisieFormatee.js"></script>
+          <tr align="right" valign="middle"> 
+            <td width="91%"> 
+              <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ arr[content] }</textarea>
+            </td>
+          </tr>
+          <tr align="center" valign="middle"> 
+            <td width="91%"> 
+              <script language="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+</script>
+            </td>
+          </tr>
+          <!--#endif msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
+	editor.InFrame(0, "content", "notemod", "90%", "160");
+</script>
+              <!--#else msie -->
+              <textarea cols="50" rows="20" name="content">{ arr[content] }</textarea>
+              <!--#endif msie -->
+            </td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="91%" align="center" valign="middle">
+              <input onClick=SetVals() type="submit" name="submit" value="{ modify }">
+            </td>
+          </tr>
+          <script language="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</script>
+          <!--#else msie -->
+          <tr> 
+            <td width="91%" align="center" valign="middle">
+              <input type="submit" name="submit" value="{ modify }">
+            </td>
+          </tr>
+          <!--#endif msie -->
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<!--#end notesmodify -->

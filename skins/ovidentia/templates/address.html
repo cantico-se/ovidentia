@@ -1,0 +1,135 @@
+<!--#begin addresslist -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listcontact.elements.length; i++)
+		{
+		objCtrl = document.forms.listcontact.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function updateDestination(target)
+{
+var pad = "";
+var address = "";
+var editval = "";
+
+for( i =0; i < document.listcontact.length; i++)
+{
+if( document.listcontact.elements[i].type = "checkbox")
+	{
+	if( document.listcontact.elements[i].checked )
+		{
+		if( address != "")
+			pad = ",";
+		else
+			pad ="";
+		address = address+pad+document.listcontact.elements[i].value;
+		document.listcontact.elements[i].checked = false;
+		}
+	}
+}
+if( self.opener.window.document.composef.elements[target].value)
+	editval = self.opener.window.document.composef.elements[target].value;
+else
+	editval = "";
+if( editval != "" && address != "")
+	pad = ",";
+else
+	pad = "";
+self.opener.window.document.composef.elements[target].value = editval+pad+address;
+}
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+
+
+<form method="post" name="listcontact" action="index.php">
+<center><a class="BabToChoiceMailPopupCloseLink"  href="{ closeurl }">{ closename }</a><br><br><a class="BabToChoiceMailPopupToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ tobccurl }">{ tobccname }</a>
+</center><br>
+<table class="BabToChoiceMailPopupCadreFontBackground" border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+    <tr> 
+      <td> 
+        <table class="BabToChoiceMailPopupBodyFontBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+          <tr> 
+            <td class="BabToChoiceMailPopupBodyFontBackground" colspan="7"> 
+              <!--#if allselected "== 1" -->
+              { allname }&nbsp;&nbsp; 
+              <!--#else allselected -->
+              <a class="BabToChoiceMailPopupNavigLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
+              <!--#endif allselected -->
+              <!--#in getnextselect -->
+              <!--#if selected "== 1" -->
+              { selectname }&nbsp;&nbsp; 
+              <!--#else selected -->
+              <a class="BabToChoiceMailPopupNavigLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
+              <!--#endif selected -->
+              <!--#endin getnextselect -->
+            </td>
+          </tr>
+          <tr> 
+            <td class="BabToChoiceMailPopupTitleFontBackground" width="1%" height="19" colspan="2"><a href="javascript:onCheckAll('tocheck', true)"><img src="{ babSkinPath }images/{ babLanguage }/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('tocheck', false)"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+            <td class="BabToChoiceMailPopupTitleFontBackground" align="left" valign="middle" height="19" >{ 
+              fullname }</td>
+            <td class="BabToChoiceMailPopupTitleFontBackground" align="left" valign="middle" height="19" >{ 
+              email }</td>
+          </tr>
+        <!--#in getnextcontact -->
+          <tr> 
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" width="0%"> 
+              <input type="checkbox" name="tocheck[]" value="{ checkval }">
+            </td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" width="1%"><IMG SRC="{ babSkinPath }images/{ babLanguage }/Puces/PuceCardPerso.gif" WIDTH="21" HEIGHT="21" BORDER=0 ALT="Perso"></td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" nowrap>{ nameval }</td>
+            <!--#if accid "!= 0" -->
+            <!--#else accid -->
+            &nbsp;<a href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a> 
+            <!--#endif accid -->
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle">{ 
+              emailval }&nbsp;</td>
+          </tr><!--#endin getnextcontact --><!--#in getnextgroupmember -->
+          <tr> 
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" width="0%"> 
+              <input type="checkbox" name="tocheck[]" value="{ checkval }">
+              </td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" width="1%"><IMG SRC="{ babSkinPath }images/{ babLanguage }/Puces/PuceCardGroup.gif" WIDTH="21" HEIGHT="18" BORDER=0 ALT="Group"></td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" nowrap>{ nameval }</td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle">{ 
+              emailval }&nbsp;</td>
+          </tr><!--#endin getnextgroupmember --><!--#in getnextgroup -->
+          <tr> 
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" width="0%"> 
+              <input type="checkbox" name="tocheck[]" value="{ checkval }">
+             </td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" width="1%"><IMG SRC="{ babSkinPath }images/{ babLanguage }/Puces/PuceCardMailing.gif" WIDTH="20" HEIGHT="23" BORDER=0 ALT="Mailing"></td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle" nowrap>{ nameval }</td>
+            <td class="BabToChoiceMailPopupBodyFontBackground" align="left" valign="middle">{ 
+              emailval }&nbsp;</td>
+          </tr>
+          <!--#endin getnextgroup -->
+        </table>
+      </td>
+    </tr>
+  </table>
+  <br><center><a class="BabToChoiceMailPopupToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ tobccurl }">{ tobccname }</a><br><br><a class="BabToChoiceMailPopupCloseLink"  href="{ closeurl }">{ closename }</a>
+</center>
+</form>
+</BODY>
+</HTML>
+<!--#end addresslist -->

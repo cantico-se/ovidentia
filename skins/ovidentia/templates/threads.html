@@ -1,0 +1,175 @@
+
+<!--#begin threadlist -->
+
+  <br>
+  
+<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+      <td>
+        
+      <table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+        <tr align="left" valign="middle"> 
+          <td  width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ topurl }">{ 
+            topname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ prevurl }">{ 
+            prevname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ nexturl }">{ 
+            nextname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ bottomurl }">{ 
+            bottomname }</a>&nbsp </td>
+          <td width="96%" height="20">&nbsp;</td>
+        </tr>
+      </table>
+        
+        
+            
+      <table border="0" width="100%" cellpadding="2" cellspacing="0">
+        <tr> 
+                	<td class="BabForumTitleBackground" width="10%">&nbsp;</td>
+                    
+          <td class="BabForumTitleBackground" width="60%">{ thread }</td>
+                    
+          <td class="BabForumTitleBackground" width="20%" align="center">{ 
+            starter }</td>
+                    
+          <td class="BabForumTitleBackground" width="5%" align="center"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceForumContrib.gif" alt="{ repliesname }"></td>                  
+               		
+          <td class="BabForumTitleBackground" width="5%" align="center"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceForumConsult.gif" alt="{ views }"></td>                  
+                    
+          <td class="BabForumTitleBackground" width="10%" align="center">{ 
+            lastpost }</td>
+                </tr>
+                <!--#in getnext -->
+                
+              	<tr valign="middle"> 
+                <!--#if status "== *" -->
+                	
+          <td class="BabForumBackground" width="1%" align="center"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceForumWaiting.gif" alt=""></td>
+                  	<!--#else status -->
+                  	<!--#if arrthread[active] "== Y" -->
+                    
+          <td class="BabForumBackground" width="1%" align="center"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceForumOpen.gif" alt=""></td>
+                 	<!--#else arrthread[active] -->
+                  	
+          <td class="BabForumBackground" width="1%" align="center"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceForumClose.gif" alt=""></td>
+                  	<!--#endif arrthread[active] -->
+              	<!--#endif status -->
+                  
+                	
+          <td class="BabForumBackground" width="60%" align="left"><a class="BabForumTopicsLinkColor" href="{ subjecturl }">{ 
+            subjectname }</a></td>
+                  	
+          <td class="BabForumBackground" nowrap width="20%" align="center">{ 
+            arrpost[author] }</td>
+                    
+          <td class="BabForumBackground" width="5%" nowrap align="center">{ 
+            replies }</td>                  
+                	
+          <td class="BabForumBackground" width="5%" nowrap align="center">{ 
+            arrthread[views] }</td>
+                  	<td class="BabForumBackground" width="10%" nowrap align="left">{ lastpostdate }</td>
+                </tr>
+                <!--#endin getnext -->
+                <tr> 
+                  <td colspan="6"> </td>
+                </tr>
+              </table>
+    
+        
+      <table class="BabForumNavigationBackground" border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+        <tr valign="middle" align="left"> 
+          <td  width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ topurl }">{ 
+            topname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ prevurl }">{ 
+            prevname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ nexturl }">{ 
+            nextname }</a>&nbsp </td>
+          <td width="1%" height="20"> <a class="BabForumNavigationLinkColor" href="{ bottomurl }">{ 
+            bottomname }</a>&nbsp </td>
+          <td width="96%" height="20">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+    </tr>
+  </table>
+
+<!--#end threadlist -->
+<br><br><br><br><br>
+<!--#begin threadcreate -->
+
+<table class="BabThreadCreateCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center"><tr><td>
+<form name="threadcr" method="post" action="index.php">
+<input type="hidden" name="tg" value="threads">
+<input type="hidden" name="idx" value="addthread">
+<input type="hidden" name="forum" value="{ forum }">
+<input type="hidden" name="add" value="addthread">
+
+<table class="BabThreadCreateBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+<tr>
+<td align="right" nowrap>{ name }:</td>
+<td nowrap>
+<!--#if anonyme "== 0" --><b>{ username }</b><!--#endif anonyme -->
+<!--#if anonyme "== 1" --><input type="text" name="name" size="60" maxlength="60"><!--#endif anonyme -->
+</td>
+</tr>
+<tr>
+<td align="right" nowrap>{ subject }:</td>
+<td><input type="text" name="subject" size="60" maxlength="60" value=""></td>
+</tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="{ babScriptPath }SaisieFormatee.js"></SCRIPT>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td><textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message"></textarea></td>
+</tr>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td>
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+<tr>
+<td align="right" nowrap>{ message }:</td>
+<td>
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "message", "threadcr", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+<textarea cols="60" rows="20" name="message"></textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="checkbox" name="notifyme" value="Y">{ notifyme }</td>
+</tr>
+<!--#if msie "== 1" -->
+<tr>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ add }"></td>
+</tr>
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
+<tr>
+<td align="right">&nbsp;</td>
+<td><input type="submit" name="submit" value="{ add }"></td>
+</tr>
+<!--#endif msie -->
+</table>
+
+
+</td>
+</tr>
+</table>
+</form>
+<!--#end threadcreate -->

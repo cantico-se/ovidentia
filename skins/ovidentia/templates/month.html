@@ -1,0 +1,49 @@
+
+<table class="BabSectionBackground" width="150" cellpadding="3" cellspacing="0" border="0" align="center" valign="middle">
+  <tr> 
+    <td> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tr> 
+          <td align="center" valign="middle"> 
+            <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td width="20" align="center" valign="middle"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceAgenda.gif" width="15" height="15"></td>
+                <td class="BabTitleSectionFont" width="130" align="center" valign="middle">{ curmonth } { curyear } </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr> 
+          <td  valign="middle" align="center" width="100%"> 
+            <table class="BabCalendarDayNumberSection" width="150" cellpadding="0">
+              <tr> 
+                <!--#in getnextday3 -->
+                <td class="BabCalendarDaySection" align="center" valign="middle">{ day3 }</td>
+                <!--#endin getnextday3 -->
+              </tr>
+              <!--#in getnextweek -->
+              <tr> 
+                <!--#in getnextday -->
+               <td bgcolor="{ bgcolor }" align="center" valign="middle"><a class="BabSectionsLinkColor" href="{ dayurl }">{ day }</a>     </td>      
+                               
+               <!--#endin getnextday -->
+              </tr>
+              <!--#endin getnextweek -->
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<table align="center" valign="middle">
+<tr>
+<td bgcolor="white"><b>{ prevyear }</b></td>
+<td bgcolor="white"><b>{ prevmonth }</b></td>
+<td bgcolor="white" colspan=3 align="center"><b>{ today }</b></td>
+<td bgcolor="white"><b>{ nextmonth }</b></td>
+<td bgcolor="white"><b>{ nextyear }</b></td>
+</tr>
+</table>
+
+

@@ -1,0 +1,276 @@
+<!--#begin userslist -->
+<script language="javascript">
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="users">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="pos" value="{ pos }">
+<input type="hidden" name="grp" value="{ grp }">
+
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+  <tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabUserAdminNavigationFontBackground" colspan="4">
+<!--#if allselected "== 1" -->
+{ allname }&nbsp;&nbsp;
+<!--#else allselected -->
+<a class="BabUserAdminNavigationLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp;
+<!--#endif allselected -->
+<!--#in getnextselect -->
+<!--#if selected "== 1" -->
+{ selectname }&nbsp;&nbsp;
+<!--#else selected -->
+<a class="BabUserAdminNavigationLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp;
+<!--#endif selected -->
+<!--#endin getnextselect -->
+          </td>
+        </tr>
+        <tr> 
+          <td class="BabUserAdminTitleFontBackground" width="1%" align="right" nowrap valign="middle">&nbsp;</td>
+          <td class="BabUserAdminTitleFontBackground" width="33%" align="left" valign="middle"><b>{ 
+            fullname }</b> </td>
+          <td class="BabUserAdminTitleFontBackground" width="33%" align="left" valign="middle"><b>{ 
+            email }</b></td>
+          <td class="BabUserAdminTitleFontBackground" width="33%" align="center" valign="middle"><a class="BabUserAdminNameBodyLink" href="{ groupurl }"><b>{ 
+            group }</b></a></td>
+        </tr>
+        <!--#in getnext -->
+        <tr> 
+          <td class="BabUserAdminBodyBackground" width="1%" align="right" nowrap valign="middle"> 
+            <!--#if status "== *" -->
+            <img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceOnline.gif" alt=""> 
+            <!--#endif status -->&nbsp;
+          </td>
+          <td class="BabUserAdminBodyBackground" width="33%" align="left" valign="middle"><a class="BabUserAdminNameBodyLink" href="{ url }">{ 
+            urlname }</a> </td>
+          <td class="BabUserAdminBodyBackground" width="33%" align="left" valign="middle"><a class="BabUserAdminNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ 
+            arr[email] }</a></td>
+          <td class="BabUserAdminBodyBackground" width="33%" align="center" valign="middle"><input type="checkbox" name="users[]" value="{ userid }" { checked }></td>
+		</tr>
+        <!--#endin getnext -->
+      </table>
+    </td>
+  </tr>
+</table>
+<input type="hidden" name="userst" value="{ userst }">
+</form>
+<br>
+<!--#end userslist -->
+    <br>
+    <br><br><br><br>
+<!--#begin usercreate -->
+
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="users">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="adduser" value="register">
+<center>
+    <table  width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                firstname }: </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <input type="text" name="firstname" size="30" maxlength="60" value="{ firstnameval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                lastname }: </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <input type="text" name="lastname" size="30" maxlength="60" value="{ lastnameval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                nickname } </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                email }:</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <input type="text" name="email" size="30" maxlength="60" value="{ emailval }">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                password }: </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <input type="password" name="password1" size="20" maxlength="15">
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                repassword }: </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <input type="password" name="password2" size="20" maxlength="15">
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
+              <td class="BabLoginMenuBackground" valign="middle" align="left"> 
+                <input type="submit" name="Submit" value="{ adduser }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</form>
+<!--#end usercreate -->
+<br>
+<br><br><br><br>
+<!--#begin usersmodify -->
+
+
+
+<form method="post" action="index.php">
+<input type="hidden" name="tg" value="user">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ arr[id] }">
+<input type="hidden" name="modify" value="modify">
+<center>
+    <table  width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
+      <tr> 
+        <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+          <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                changepassword } </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <select name="changepwd">
+                  <option value="0"  
+                  <!--#if arr[changepwd] "== 0" -->
+                  selected 
+                  <!--#endif arr[changepwd] -->
+                  >{ no }</option>
+                  <option value="1" 
+                  <!--#if arr[changepwd] "== 1" -->
+                  selected 
+                  <!--#endif arr[changepwd] -->
+                  >{ yes }</option>
+                </select>
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                isconfirmed }</td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <select name="is_confirmed">
+                  <option value="0" 
+                  <!--#if arr[is_confirmed] "== 0" -->
+                  selected 
+                  <!--#endif arr[is_confirmed] -->
+                  >{ no }</option>
+                  <option value="1"  
+                  <!--#if arr[is_confirmed] "== 1" -->
+                  selected 
+                  <!--#endif arr[is_confirmed] -->
+                  >{ yes }</option>
+                </select>
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                isdisabled } </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <select name="disabled">
+                  <option value="0"
+                  <!--#if arr[disabled] "== 0" -->
+                  selected 
+                  <!--#endif arr[disabled] -->
+                  >{ no }</option>
+                  <option value="1" 
+                  <!--#if arr[disabled] "== 1" -->
+                  selected 
+                  <!--#endif arr[disabled] -->
+                  >{ yes }</option>
+                </select>
+              </td>
+            </tr>
+            <tr> 
+              <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
+                primarygroup } </td>
+              <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle"> 
+                <select name="group">
+                  <option value="" >{ none }</option>
+                  <!--#in getnext -->
+                  <option value="{ groupid }" { selected }>{ groupname }</option>
+                  <!--#endin getnext -->
+                </select>
+              </td>
+            </tr>
+            <tr valign="middle"> 
+              <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
+              <td class="BabLoginMenuBackground" align="left"> 
+                <input type="submit" name="submit2" value="{ modify }">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</form>
+<!--#end usersmodify -->
+<br>
+<br><br><br><br>
+<!--#begin usersgroups -->
+<script language="javascript">
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="user">
+<input type="hidden" name="idx" value="Modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="updategroups" value="update">
+  <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+        <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr> 
+          <td class="BabUserAdminTitleFontBackground" width="2%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabUserAdminTitleFontBackground" width="10%" align="right" nowrap valign="middle">&nbsp;</td>
+            <td class="BabUserAdminTitleFontBackground" width="88%" align="left" valign="middle"> { group }
+             </td>
+        </tr>
+		<!--#in getnextgroup -->
+		<tr>
+          <td class="BabUserAdminBodyBackground" width="2%" align="center" valign="middle"><input type="checkbox" name="groups[]" value="{ groupid  }" { checked }></td>
+            <td class="BabUserAdminBodyBackground" width="10%" align="center" valign="middle" nowrap> 
+              <!--#if primary "== Y" -->
+              <img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceDefaultGroup.gif"  alt="{ primary }">
+              <!--#endif primary -->&nbsp;
+            </td>
+            <td class="BabUserAdminBodyBackground" width="88%" align="left" valign="middle"><a class="BabUserAdminNameBodyLink" href="{ groupurl }">{ groupname }</a> </td>
+		  </tr>
+		<!--#endin getnextgroup -->
+      </table>
+    </td>
+  </tr>
+</table>
+<input type="hidden" name="groupst" value="{ groupst }">
+</form>
+<!--#end usersgroups -->
+
+

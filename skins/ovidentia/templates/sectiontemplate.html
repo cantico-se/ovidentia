@@ -1,0 +1,42 @@
+<!-- Présentations des sections -->
+      <!--#begin default -->
+<table class="BabSectionBackground" width="150" cellpadding="3" cellspacing="0" border="0">
+  <tr> 
+    <td> 
+      <table  width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tr> 
+          <td align="center" valign="middle"> 
+            <table class="BabTitleSectionBackground" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td width="20" align="center" valign="middle"><img src="{ babSkinPath }images/{ babLanguage }/Puces/Puce.gif"></td>
+                <td class="BabTitleSectionFont" width="130" align="center" valign="middle"><b>{ 
+                  title }</b> </td>
+        <!--#if bbox "== 1" --> 
+        <!--#if close "== 0" --> 
+                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceSectionClose.gif" border="0"></a></td>
+        <!--#else close --> 
+                <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceSectionOpen.gif" border="0"></a></td>
+        <!--#endif close --> 
+        <!--#endif bbox --> 
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!--#if close "== 0" --> 
+        <tr> 
+          <td  valign="middle" align="center" width="100%"> 
+            <table  width="100%" cellpadding="0" cellspacing="0">
+              <tr> 
+                <td class="BabHeaderBodySection">{ content }<br>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!--#endif close --> 
+      </table>
+    </td>
+  </tr>
+</table>
+<BR>
+<!--#end default -->

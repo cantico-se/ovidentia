@@ -1,0 +1,283 @@
+<!-- Définition de Partie Sommaire -->
+
+<!--#begin eventslist -->
+<br>
+<table border="0" width="40%" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td align="center" valign="middle" width="20%">&nbsp;</td>
+    <td align="center" valign="middle" width="80%"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td class="BabSummaryTitleFontBackground" width="20%" align="center" valign="middle"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceSummary.gif" width="19" height="16"></td>
+          <td class="BabSummaryTitleFontBackground" width="80%" valign="middle">{ newevents }</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br>
+
+
+
+<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tr><td>
+
+<table border="0" width="100%" cellpadding="3" cellspacing="0">
+
+
+
+<!--#in getevent -->
+
+<!--#if alternate "== 1" --><tr><td  class="BabSummaryContentBackground" width="10%" nowrap>{ date }</td>
+          <td  class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+<td  class="BabSummaryContentBackground" width="10%" nowrap>{ time }</td></tr>
+
+<!--#else alternate -->
+
+<tr><td class="BabSummaryContentBackground" width="10%" nowrap>{ date }</td>
+
+          <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+<td class="BabSummaryContentBackground" width="10%" nowrap>{ time }</td></tr>
+
+<!--#endif alternate -->
+
+<!--#endin getevent -->
+
+<!--#in getgrpevent -->
+
+<!--#if alternate "== 1" -->
+<tr><td class="BabSummaryContentBackground"  width="10%" nowrap>{ date }</td>
+          <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+<td class="BabSummaryContentBackground"  width="10%" nowrap>{ time }</td></tr>
+
+<!--#else alternate -->
+
+<tr><td class="BabSummaryContentBackground" width="10%" nowrap>{ date }</td>
+
+          <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+<td class="BabSummaryContentBackground" width="10%" nowrap>{ time }</td></tr>
+
+<!--#endif alternate -->
+
+<!--#endin getgrpevent -->
+
+
+
+</table>
+
+</td></tr>
+
+</table>
+
+
+
+<br>
+
+<!--#end eventslist -->
+
+<br><br><br><br><br>
+<!--#begin articleslist -->
+&nbsp; 
+<table border="0" width="40%" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td align="center" valign="middle" width="20%">&nbsp;</td>
+    <td align="center" valign="middle" width="80%"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td class="BabSummaryTitleFontBackground" width="20%" align="center" valign="middle"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceSummary.gif" width="19" height="16"></td>
+          <td class="BabSummaryTitleFontBackground" width="80%" valign="middle">{ 
+            newarticles }</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br>
+<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tr><td>
+
+<table  border="0" width="100%" cellpadding="3" cellspacing="0">
+
+
+
+<!--#in getnexttopic -->
+
+<!--#in getarticle -->
+
+<tr><td class="BabSummaryContentBackground" width="30%" nowrap>{ date }</td>
+          <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+<td class="BabSummaryContentBackground" width="10%" nowrap>{ author }</td></tr>
+
+<!--#endin getarticle -->
+
+<!--#endin getnexttopic -->
+
+
+
+</table>
+
+</td></tr>
+
+</table>
+<br>
+&nbsp; 
+<table border="0" width="40%" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td align="center" valign="middle" width="20%">&nbsp;</td>
+    <td align="center" valign="middle" width="80%"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td class="BabSummaryTitleFontBackground" width="20%" align="center" valign="middle"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceSummary.gif" width="19" height="16"></td>
+          <td class="BabSummaryTitleFontBackground" width="80%" valign="middle">{ 
+            newcomments }</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br>
+<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tr><td>
+
+<table  border="0" width="100%" cellpadding="3" cellspacing="0">
+
+
+
+<!--#in getnexttopiccom -->
+
+<!--#in getcomment -->
+
+<tr><td class="BabSummaryContentBackground" width="30%" nowrap>{ date }</td>
+          <td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+<td class="BabSummaryContentBackground" width="10%" nowrap>{ author }</td></tr>
+
+<!--#endin getcomment -->
+
+<!--#endin getnexttopiccom -->
+
+
+
+</table>
+
+</td></tr>
+
+</table>
+
+
+
+<!--#end articleslist -->
+
+<br><br><br><br>
+
+<!--#begin threadslist -->
+
+
+<BR>
+&nbsp; 
+<table border="0" width="40%" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td align="center" valign="middle" width="20%">&nbsp;</td>
+    <td align="center" valign="middle" width="80%"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td class="BabSummaryTitleFontBackground" width="20%" align="center" valign="middle"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceSummary.gif" width="19" height="16"></td>
+          <td class="BabSummaryTitleFontBackground" width="80%" valign="middle">{ 
+            newposts }</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br>
+
+
+
+<table border="0" width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tr><td>
+
+<table border="0" width="100%" cellpadding="3" cellspacing="0">
+
+<!--#in getnextforum -->
+
+<!--#in getnextthread -->
+<!--#if total "> 0" -->
+<tr><td class="BabSummaryContentBackground" colspan="2"><b>{ posts }</b></td></tr>
+<!--#endif total -->
+<!--#in getpost -->
+
+<tr><td class="BabSummaryContentBackground" width="30%" nowrap>{ date }</td>
+          <td  class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
+            title }</a></td>
+</tr>
+
+<!--#endin getpost -->
+
+<!--#endin getnextthread -->
+
+<!--#endin getnextforum -->
+
+
+
+</table>
+
+</td></tr>
+
+</table>
+
+<!--#end threadslist -->
+<br>
+<br><br><br><br>
+
+<!--#begin mailslist -->
+
+<br>
+&nbsp; 
+<table border="0" width="40%" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td align="center" valign="middle" width="20%">&nbsp;</td>
+    <td align="center" valign="middle" width="80%"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td class="BabSummaryTitleFontBackground" width="20%" align="center" valign="middle"><img src="{ babSkinPath }images/{ babLanguage }/Puces/PuceSummary.gif" width="19" height="16"></td>
+          <td class="BabSummaryTitleFontBackground" width="80%" valign="middle">{ 
+            newmails }</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br>
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="95%">
+  <tr><td>
+
+<table class="BabSummaryContentBackground" border="0" width="100%" cellpadding="3" cellspacing="0">
+
+
+
+<!--#in getmail -->
+
+<tr>
+          <td class="BabSummaryContentBackground" width="30%" nowrap align="center" valign="middle"><a class="BabSummaryLinkColor" href="{ domainurl }">{ domain }</a></td>
+          <td class="BabSummaryNbrMessage" width="70%" align="center" valign="middle">{ 
+            nbemails }</td>
+        </tr>
+
+<!--#endin getmail -->
+
+
+
+</table>
+
+</td></tr>
+
+</table>
+
+
+
+<!--#end mailslist -->
