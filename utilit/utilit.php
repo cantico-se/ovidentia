@@ -192,62 +192,107 @@ function bab_browserVersion()
 		}
 	return 0;
 	}
+
 function babLoadLanguage($lang, $folder, &$arr)
 	{
 	if( empty($folder))
 		{
+		$filename_c = "lang/lang-".$lang.".dat";
 		$filename_m = "lang/lang-".$lang.".xml";
 		$filename = $GLOBALS['babInstallPath']."lang/lang-".$lang.".xml";
-		if (file_exists($filename) && file_exists($filename_m))
+		}
+	else
+		{
+		$filename_c = "lang/addons-".$folder."-lang-".$lang.".dat";
+		$filename_m = "lang/addons/".$folder."/lang-".$lang.".xml";
+		$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$lang.".xml";
+		}
+	
+	if (!file_exists($filename))
+		{
+		$filename = false;
+		}
+	else
+		{
+		$time = filemtime($filename);
+		}
+
+	if (!file_exists($filename_m))
+		{
+		$filename_m = false;
+		}
+	else
+		{
+		$time_m = filemtime($filename_m);
+		}
+
+	if (!file_exists($filename_c))
+		{
+		$bfile_c = false;
+		}
+	else
+		{
+		$bfile_c = true;
+		$time_c = filemtime($filename_c);
+		}
+
+	if( !$filename && !$filename_c)
+		{
+		return;
+		}
+
+	if( !$bfile_c || (($filename && ($time > $time_c)) || ($filename_m && ($time > $time_c)) ))
+		{
+		if( $filename )
 			{
-			if (filesize($filename_m) > 30000 )
+			$file = @fopen($filename, "r");
+			if( $file )
 				{
-				$filename = $filename_m;
-				unset($filename_m);
+				$tmp = fread($file, filesize($filename));
+				fclose($file);
+				preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
+				preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", isset($m[1]) ? $m[1] : '' , $tmparr);
 				}
+			}
+
+		if( isset($tmparr[0]))
+			{
+			for( $i = 0; $i < count($tmparr[0]); $i++ )
+				{
+				$arr[$tmparr[1][$i]] = $tmparr[2][$i];
+				}
+			}
+
+		if ($filename_m)
+			{
+			$file = @fopen($filename_m, "r");
+			if( $file )
+				{
+				$tmp = fread($file, filesize($filename_m));
+				fclose($file);
+				preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
+				preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", $m[1], $arr_replace);
+				for( $i = 0; $i < count($arr_replace[0]); $i++ )
+					{
+					$arr[$arr_replace[1][$i]] = $arr_replace[2][$i];
+					}
+				}
+			}
+
+		$file = @fopen($filename_c, 'w');
+		if( $file )
+			{
+			fwrite($file, serialize($arr));
+			fclose($file);
 			}
 		}
 	else
 		{
-		$filename = "lang/addons/".$folder."/lang-".$lang.".xml";
-		if (!file_exists($filename))
-			$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$lang.".xml";
-		}
-	
-	$file = @fopen($filename, "r");
-	if( $file )
-		{
-		$tmp = fread($file, filesize($filename));
-		fclose($file);
-		preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
-		preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", isset($m[1]) ? $m[1] : '' , $arr);
-		}
-		
-	if (isset($filename_m) && file_exists($filename_m))
-		{
-		$file = @fopen($filename_m, "r");
-		if( $file )
-			{
-			$tmp = fread($file, filesize($filename_m));
+			$file = @fopen($filename_c, 'r');
+			$arr = unserialize(fread($file, filesize($filename_c)));
 			fclose($file);
-			preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
-			preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", $m[1], $arr_replace);
-			foreach($arr_replace[1] as $key => $value)
-				{
-				$arr_tmp = array_flip($arr[1]);
-				if ($arr_tmp[$value] != "")
-					{
-					$arr[2][$arr_tmp[$value]] = $arr_replace[2][$key];
-					}
-				else
-					{
-					$arr[0][] = $arr_replace[0][$key];
-					$arr[1][] = $arr_replace[1][$key];
-					$arr[2][] = $arr_replace[2][$key];
-					}
-				}
-			}
 		}
+
 	}
 
 
@@ -269,14 +314,14 @@ function bab_translate($str, $folder = "", $lang="")
 	if( !isset($babLA[$tag]))
 		babLoadLanguage($lang, $folder, $babLA[$tag]);
 
-	for( $i = 0; $i < count($babLA[$tag][1]); $i++)
+	if(isset($babLA[$tag][$str]))
 		{
-		if( $babLA[$tag][1][$i] == $str )
-			{
-			return $babLA[$tag][2][$i];
-			}
+			return $babLA[$tag][$str];
 		}
-	return $str;
+	else
+		{
+			return $str;
+		}
 }
 
 function bab_translate_old($str, $folder = "")
