@@ -2274,14 +2274,33 @@ function bab_updateSiteSettings()
 			}
 		}
 
-	$res = $babDB->db_query("select id,id_author, id_topic, date_submission from ".BAB_ART_DRAFTS_TBL." where result='".BAB_ART_STATUS_DRAFT."' and date_submission <= now() and date_submission !='0000-00-00 00:00:00'");
+	$res = $babDB->db_query("select id,id_author, id_topic, id_article, date_submission from ".BAB_ART_DRAFTS_TBL." where result='".BAB_ART_STATUS_DRAFT."' and date_submission <= now() and date_submission !='0000-00-00 00:00:00'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
 	include_once $GLOBALS['babInstallPath']."utilit/artincl.php";
 	while( $arr  = $babDB->db_fetch_array($res))
 		{
-		if(  $arr['id_topic'] != 0 && bab_isAccessValidByUser(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic'], $arr['id_author']))
+		$bsubmit = false;
+		if( $arr['id_article'] != 0 )
+			{
+			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$arr['id_article']."'");
+			if( $res && $babDB->db_num_rows($res) == 1 )
+				{
+				$rr = $babDB->db_fetch_array($res);
+				if( ( $rr['allow_update'] != '0' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $rr['id_topic'], $arr['id_author']) || ( $rr['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'], $arr['id_author'])))
+					{
+					$bsubmit = true;
+					}
+				}
+			}
+
+		if( $arr['id_topic'] != 0 && bab_isAccessValidByUser(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic'], $arr['id_author']))
+			{
+			$bsubmit = true;
+			}
+
+		if( $bsubmit )
 			{
 			bab_submitArticleDraft($arr['id']);
 			}
