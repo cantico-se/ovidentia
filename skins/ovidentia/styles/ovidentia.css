@@ -139,9 +139,15 @@ a.BabSummaryLinkColor:Hover {COLOR: #FF3333 ; font : 10px Verdana, Arial, sans-s
 .BabTopicsBackground { BACKGROUND: #FFFFFF; COLOR: #000000;  font: 11px Verdana, Arial, sans-serif}
 .BabTopicsAuthorBackground {background: #E6E6F7; COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
 
-a.BabTopicsFooterLink:Link { COLOR: #111166; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
-a.BabTopicsFooterLink:Visited { COLOR: #111166; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
-a.BabTopicsFooterLink:Hover {COLOR: #009933; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold }
+a.BabTopicsFooterLink:Link { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterLink:Visited { COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterLink:Hover {COLOR: #4990B1; font : 9px Verdana, Arial, sans-serif; text-decoration: underline }
+
+a.BabTopicsFooterMoreLink:Link { COLOR: black; font : 10px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterMoreLink:Visited { COLOR: black; font : 10px Verdana, Arial, sans-serif; text-decoration: none }
+a.BabTopicsFooterMoreLink:Hover {COLOR: black; font : 10px Verdana, Arial, sans-serif; text-decoration: underline }
+
+.BabTopicsButtonBackground {background: #FFFFFF }
 
 /********** AGENDA **** CALENDAR ******************************/
 
@@ -151,9 +157,6 @@ a.BabTopicsFooterLink:Hover {COLOR: #009933; font : 10px Verdana, Arial, sans-se
 .BabCalendarBodyBackground { BACKGROUND: #000000 ; font: 10px Verdana, Arial, sans-serif }
 .BabCalendarBodyBadMonthBackground {background: #CCCCCC ; font: 10px Verdana, Arial, sans-serif}
 .BabMonthCalendarCurentDayBackground { BACKGROUND: #E6E6F7 ; font: 10px Verdana, Arial, sans-serif }
-.BabMonthAltCalendarCurentDayBackground { BACKGROUND: #D1D1D9 ; font: 10px Verdana, Arial, sans-serif }
-.BabMonthAlt2CalendarCurentDayBackground { BACKGROUND: #CCCCCC ; font: 10px Verdana, Arial, sans-serif }
-.BabMonthAltCalendarCurentUserBackground { BACKGROUND: #999999 ; font: 10px Verdana, Arial, sans-serif }
 /*also in use on inbox  */
 .BabCalendarBodyFont { COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
 
