@@ -2157,7 +2157,19 @@ class bab_RecentFiles extends bab_handler
 
 		if( count($arrid) > 0 )
 			{
-			$req = "select distinct f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".implode(',', $arrid).")";
+			$req = "select distinct f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
+			$path = $ctx->get_value('path');
+			if( $path === false || $path === '' )
+				{
+				$path = '';
+				}
+			if( $path != '' )
+				{
+				$req .= " and f.path='".addslashes($path)."'";
+				}
+
+			$req .= " and f.id_owner IN (".implode(',', $arrid).")";
+
 			if( $this->nbdays !== false)
 				$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
