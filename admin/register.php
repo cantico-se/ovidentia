@@ -200,7 +200,7 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 
 function userLogin($nickname,$password)
 	{
-	global $babBody, $BAB_SESS_NICKNAME, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID;
+	global $babBody;
 	$password=strtolower($password);
 	$sql="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='". md5($password) ."'";
 	$db = $GLOBALS['babDB'];
@@ -227,12 +227,22 @@ function userLogin($nickname,$password)
 			}
 		if ($arr['is_confirmed'] == '1')
 			{
-			$BAB_SESS_NICKNAME = $arr['nickname'];
-			$BAB_SESS_USER = bab_composeUserName($arr['firstname'], $arr['lastname']);
-			$BAB_SESS_EMAIL = $arr['email'];
-			$BAB_SESS_USERID = $arr['id'];
-			$BAB_SESS_HASHID = $arr['confirm_hash'];
-			$babBody->msgerror =  bab_translate("SUCCESS - You Are Now Logged In");
+			if( isset($_SESSION))
+				{
+				$_SESSION['BAB_SESS_NICKNAME'] = $arr['nickname'];
+				$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
+				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
+				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
+				$_SESSION['BAB_SESS_HASHID'] = $arr['confirm_hash'];
+				}
+			else
+				{
+				$GLOBALS['BAB_SESS_NICKNAME'] = $arr['nickname'];
+				$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
+				$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
+				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
+				$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
+				}
 			return true;
 			}
 		else

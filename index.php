@@ -4,14 +4,47 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-unset($BAB_SESS_LOGGED);
 session_start();
-session_register("BAB_SESS_NICKNAME");
-session_register("BAB_SESS_USER");
-session_register("BAB_SESS_EMAIL");
-session_register("BAB_SESS_USERID");
-session_register("BAB_SESS_HASHID");
+if (!session_is_registered('BAB_SESS_NICKNAME')) { session_register("BAB_SESS_NICKNAME"); $BAB_SESS_NICKNAME = ""; }
+if (!session_is_registered('BAB_SESS_USER')) { session_register("BAB_SESS_USER"); $BAB_SESS_USER = ""; }
+if (!session_is_registered('BAB_SESS_EMAIL')) { session_register("BAB_SESS_EMAIL"); $BAB_SESS_EMAIL = ""; }
+if (!session_is_registered('BAB_SESS_USERID')) { session_register("BAB_SESS_USERID"); $BAB_SESS_USERID = ""; }
+if (!session_is_registered('BAB_SESS_HASHID')) { session_register("BAB_SESS_HASHID"); $BAB_SESS_HASHID = ""; }
+if (!empty($_GET)) {
+        extract($_GET);
+} else if (!empty($HTTP_GET_VARS)) {
+	extract($HTTP_GET_VARS);
+} // end if
+
+if (!empty($_POST)) {
+	extract($_POST);
+} else if (!empty($HTTP_POST_VARS)) {
+	extract($HTTP_POST_VARS);
+} // end if
+
+if (!empty($_SESSION)) {
+	extract($_SESSION);
+} else if (!empty($HTTP_SESSION_VARS)) {
+	extract($HTTP_SESSION_VARS);
+} // end if
+
+if (!empty($_SERVER) && isset($_SERVER['SCRIPT_NAME'])) {
+	$SCRIPT_NAME = $_SERVER['SCRIPT_NAME'];
+} else if (!empty($HTTP_SERVER_VARS) && isset($HTTP_SERVER_VARS['SCRIPT_NAME'])) {
+	$SCRIPT_NAME = $HTTP_SERVER_VARS['SCRIPT_NAME'];
+} // end if
+
+if (!empty($_FILES)) {
+	while (list($name, $value) = each($_FILES)) {
+		$$name = $value['tmp_name'];
+	}
+} else if (!empty($HTTP_POST_FILES)) {
+	while (list($name, $value) = each($HTTP_POST_FILES)) {
+		$$name = $value['tmp_name'];
+	}
+} // end if
 include $babInstallPath."utilit/utilit.php";
+unset($BAB_SESS_LOGGED);
 
 $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
