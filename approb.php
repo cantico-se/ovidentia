@@ -474,6 +474,104 @@ function listWaitingVacations()
 }
 
 
+function listWaitingAddons()
+{
+	global $babBody;
+
+	class listWaitingAddonsCls
+		{
+		var $altbg = true;
+		var $arrAddons = array();
+		var $firstcall = false;
+
+		var $addonTitle;
+		var $url;
+		var $text;
+		var $description;
+
+		function listWaitingAddonsCls()
+			{
+			$babBody = & $GLOBALS['babBody'];
+			reset($babBody->babaddons);
+			while( list($key,$row)=each($babBody->babaddons) ) 
+				{ 
+				$acces =false;
+				if (is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+					$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+				else $acces =true;
+				if($row['access'] && (($arr_ini['version'] == $row['version']) || $acces))
+					{
+					$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+					if( is_file($addonpath."/init.php" ))
+						{
+						$this->_setGlobals($row['id'],$row['title']);
+						require_once( $addonpath."/init.php" );
+
+						if( function_exists($this->call) )
+							{
+							$this->arrAddons[$row['id']] = $row['title'];
+							
+							}
+						}
+					}
+				}
+			
+			}
+
+		function _setGlobals($id,$title)
+			{
+			$GLOBALS['babAddonFolder'] = $title;
+			$GLOBALS['babAddonTarget'] = "addon/".$id;
+			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$id."/";
+			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$title."/";
+			$GLOBALS['babAddonHtmlPath'] = "addons/".$title."/";
+			$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$title."/";
+
+			$this->call = $title."_getWaitingItem";
+			}
+
+		function getnextaddon()
+			{
+			$this->addonTitle = ''; 
+			$this->url = ''; 
+			$this->text = ''; 
+			$this->description = '';
+			
+			
+			if (list($this->addonId, $title) = each($this->arrAddons))
+				{
+				$this->_setGlobals($this->addonId,$title);
+				call_user_func_array($this->call, array(&$this->addonTitle, &$this->url, &$this->text, &$this->description));
+				$this->firstcall = true;
+				return true;
+				}
+			return false;
+			}
+
+		function getnextitem()
+			{
+			$this->altbg = !$this->altbg;
+			if ($this->firstcall)
+				{
+				
+				$this->firstcall = false;
+				return true;
+				}
+
+			//$this->addonTitle = ''; 
+			$this->url = ''; 
+			$this->text = ''; 
+			$this->description = '';
+
+			return call_user_func_array($this->call, array(&$this->addonTitle, &$this->url, &$this->text, &$this->description));
+			}
+		}
+	
+	$temp = new listWaitingAddonsCls();
+	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingAddons"));
+}
+
+
 function confirmWaitingVacation($id)
 	{
 	global $babBody;
@@ -1007,14 +1105,17 @@ switch($idx)
 	case "all":
 	default:
 		$babBody->title = bab_translate("Approbations");
-		if( $babBody->waitapprobations  || count($approbinit) > 0 )
-		{
+
+		//if( $babBody->waitapprobations  || count($approbinit) > 0 )
+		//{
 		listWaitingArticles();
 		listWaitingComments();
 		listWaitingFiles();
 		listWaitingPosts();
 		listWaitingVacations();
-		}
+		listWaitingAddons();
+		
+		//}
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;
 	}
