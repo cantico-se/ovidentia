@@ -585,7 +585,7 @@ function notifyEventUpdate($evtid, $bdelete)
 					}
 				break;
 			case BAB_CAL_PUB_TYPE:
-				$res2 = $babDB->db_query("select id_group from ".BAB_CAL_RES_PUB_GROUPS_TBL." where id_object='".$arr['id_cal']."'");
+				$res2 = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_object='".$arr['id_cal']."'");
 				while( $row = $babDB->db_fetch_array($res2) && !$all)
 					{
 					switch($row['id_group'])
