@@ -2089,7 +2089,7 @@ function viewDirectoryUser($id, $what)
 			list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
 			if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 				{
-				if( $row['id_group'] == 1 && $GLOBALS['BAB_SESS_USERID'] != "" )
+				if( $row['id_group'] == 1 )
 					{
 					$access = true;
 					break;
