@@ -435,7 +435,8 @@ fulltext(document.forms.ocemove2.permid);
 var ctrlf = null;
 function onApprover(id, fn)
 {
-var dummy;
+if( op != null )
+	op.close();
 this.document.location.href='{ addururl }' + id;
 this.focus();
 }
