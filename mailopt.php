@@ -47,6 +47,7 @@ function accountsList()
 		var $domname;
 		var $email;
 		var $accname;
+		var $prefered;
 				
 		var $arr = array();
 		var $db;
@@ -76,6 +77,10 @@ function accountsList()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->domnameval = getDomainName($this->arr[domain]);
 				$this->url = $GLOBALS[babUrl]."index.php?tg=mailopt&idx=modacc&item=".$this->arr[id];
+				if( $this->arr[prefered] == "Y")
+					$this->prefered = "P";
+				else
+					$this->prefered = "";
 				$i++;
 				return true;
 				}
@@ -604,9 +609,8 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 		return;
 		}
 	*/
-
 	$db = new db_mysql();
-	if( $prefered == "Y" )
+	if( $prefacc == "Y" )
 		{
 		$req = "update mail_accounts set prefered='N' where owner='".$BAB_SESS_USERID."'";	
 		$res = $db->db_query($req);

@@ -151,7 +151,7 @@
 <tr>
 <td align="right" nowrap>{ prefformat }:</td>
 <td>
-<select name="prefacc">
+<select name="prefformat">
 <option value="plain" { plainselect }>{ plain }</option>
 <option value="html" { htmlselect }>{ html }</option>
 </select>
@@ -179,12 +179,14 @@
 <table class="BabListContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
 <TBODY>
 <tr>
+<td class="BabListTitleBgnd" align="center" nowrap><b>&nbsp;</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ name }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ email }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ accname }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ domname }</b></td>
 <!--#in getnext -->
-<tr><td nowrap>
+<tr><td>{ prefered }</td>
+<td nowrap>
 <a class=BabMenuLink href="{ url }">{ arr[name] }</a>
 </td><td nowrap>&nbsp;{ arr[email] }</td><td nowrap>&nbsp;{ arr[account] }</td><td nowrap>&nbsp;{ domnameval }</td>
 </tr>
