@@ -299,7 +299,7 @@ function orderTopcat($idp)
 			$this->create = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
 			if( $idp == 0 && $babBody->isSuperAdmin )
-				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." id_parent='0' order by ordering asc";
+				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='0' order by ordering asc";
 			else
 				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$idp."' order by ordering asc";
 			$this->res = $this->db->db_query($req);
