@@ -1604,7 +1604,7 @@ $bmanager = false;
 $access = false;
 if( $gr == "N" && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id )
 	{
-	if( in_array(1, $aclfm['pr']) )
+	if( count($aclfm['pr']) > 0 && in_array(1, $aclfm['pr']) )
 		{
 		$upload = true;
 		$bmanager = true;
