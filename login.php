@@ -856,7 +856,7 @@ function addNewUser( $nickname, $password1, $password2)
 
 	if( $bphoto && !empty($photof_name) && $photof_name != "none")
 		{
-		if ($babBody->babsite['imgsize']*1000 < filesize($tmp_photof))
+		if ($babBody->babsite['imgsize']*1000 < filesize($photof))
 			{
 			$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
 			return false;
