@@ -905,8 +905,8 @@ CREATE TABLE bab_ini (
 );
 
 INSERT INTO bab_ini VALUES ('ver_major', '3');
-INSERT INTO bab_ini VALUES ('ver_minor', '3');
-INSERT INTO bab_ini VALUES ('ver_build', '1');
+INSERT INTO bab_ini VALUES ('ver_minor', '4');
+INSERT INTO bab_ini VALUES ('ver_build', '0');
 
 #
 # Structure de la table `bab_images_temp`
