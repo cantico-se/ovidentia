@@ -123,6 +123,7 @@ function groupList()
 		var $count;
 		var $res;
 		var $checked;
+		var $altbg = true;
 
 		function temp()
 			{

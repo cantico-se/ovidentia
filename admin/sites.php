@@ -222,22 +222,22 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			if (!isset($this->dbvalue['change_nickname'])) $this->dbvalue['change_nickname'] = "Y";
 			if (!isset($this->dbvalue['name_order'])) $this->dbvalue['name_order'] = "F L";
 			
-			if ($this->dbvalue['total_diskspace'] == 0) 
+			if (empty($this->dbvalue['total_diskspace'])) 
 				{
 				if ($GLOBALS['babMaxTotalSize'] > 0) $this->dbvalue['total_diskspace'] = round($GLOBALS['babMaxTotalSize']/1048576);
 				else $this->dbvalue['total_diskspace'] = "200";
 				}
-			if ($this->dbvalue['user_diskspace'] == 0)
+			if (empty($this->dbvalue['user_diskspace']))
 				{
 				if ($GLOBALS['babMaxUserSize'] > 0) $this->dbvalue['user_diskspace'] = round($GLOBALS['babMaxUserSize']/1048576);
 				else $this->dbvalue['user_diskspace'] = "50";
 				}
-			if ($this->dbvalue['folder_diskspace'] == 0)
+			if (empty($this->dbvalue['folder_diskspace']))
 				{
 				if ($GLOBALS['babMaxGroupSize'] > 0) $this->dbvalue['folder_diskspace'] = round($GLOBALS['babMaxGroupSize']/1048576);
 				else $this->dbvalue['folder_diskspace'] = "100";
 				}
-			if ($this->dbvalue['maxfilesize'] == 0)
+			if (empty($this->dbvalue['maxfilesize']))
 				{
 				if ($GLOBALS['babMaxFileSize'] > 0) $this->dbvalue['maxfilesize'] = round($GLOBALS['babMaxFileSize']/1048576);
 				else $this->dbvalue['maxfilesize'] = "50";
@@ -245,7 +245,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 
 			$this->nameval = $name == ""? $GLOBALS['babSiteName']: $name;
 			$this->descriptionval = $description == ""? "": $description;
-			$this->langval = $lang == ""? $GLOBALS['babLanguage']: $lang;
+			$this->langval = !isset($_POST['lang']) ? $GLOBALS['babLanguage']: $_POST['lang'];
 			$this->siteemailval = $siteemail == ""? $GLOBALS['babAdminEmail']: $siteemail;
 			$this->adminnameval = $adminname == ""? $GLOBALS['babAdminName']: $adminname;
 			$this->serverval = $server == ""? "": $server;
@@ -580,6 +580,14 @@ switch($idx)
 
 	case "create":
 		$babBody->title = bab_translate("Create site");
+		if (!isset($name)) $name='';
+		if (!isset($description)) $description='';
+		if (!isset($siteemail)) $siteemail='';
+		if (!isset($server)) $server='';
+		if (!isset($serverport)) $serverport='';
+		if (!isset($smtpuser)) $smtpuser='';
+		if (!isset($smtppass)) $smtppass='';
+		if (!isset($adminname)) $adminname='';
 		siteCreate($name, $description, $siteemail, $server, $serverport, $smtpuser, $smtppass, $adminname);
 		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sites&idx=create");

@@ -82,8 +82,11 @@ function cookieUserLogin($nickname,$password)
 		}
 	}
 
-if (trim($HTTP_COOKIE_VARS['c_nickname']) != "" && trim($HTTP_COOKIE_VARS['c_password']) != "" && !$GLOBALS['BAB_SESS_USERID'])
+if (!isset($_COOKIE['c_nickname'])) $_COOKIE['c_nickname'] = '';
+if (!isset($_COOKIE['c_password'])) $_COOKIE['c_password'] = '';
+
+if (trim($_COOKIE['c_nickname']) != "" && trim($_COOKIE['c_password']) != "" && !$GLOBALS['BAB_SESS_USERID'])
 	{
-	cookieUserLogin($HTTP_COOKIE_VARS['c_nickname'],$HTTP_COOKIE_VARS['c_password']);
+	cookieUserLogin($_COOKIE['c_nickname'],$_COOKIE['c_password']);
 	}
 ?>

@@ -69,6 +69,7 @@ function sectionsList()
 		var $accessurl;
 		var $groups;
 		var $opttxt;
+		var $altbg = true;
 
 		function temp()
 			{
@@ -197,7 +198,7 @@ function sectionsOrder()
 		var $id;
 		var $arr = array();
 		var $db;
-		var $count;
+		var $count = 0;
 		var $res;
 		var $moveup;
 		var $movedown;

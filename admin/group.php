@@ -167,6 +167,7 @@ function groupMembers($id)
 		var $res;
 		var $bmodname;
 		var $bdel;
+		var $altbg = true;
 
 		function temp($id)
 			{
