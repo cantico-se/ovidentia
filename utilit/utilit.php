@@ -151,6 +151,22 @@ function bab_translate($str)
 	return $str;
 }
 
+function bab_getAddonsMenus($addonName, $what)
+{
+	$addon_urls = array();
+	$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$addonName]['bab_folder'];
+	if( strtolower($GLOBALS['babAddons'][$addonName]['bab_enabled']) == "yes" && is_dir($addonpath))
+		{
+		require_once( $addonpath."/".$GLOBALS['babAddons'][$addonName]['bab_init_file'] );
+		$func = $GLOBALS['babAddons'][$addonName][$what];
+		if( !empty($func) /* && is_callable($func) */)
+			while( $func($url, $txt))
+				{
+				$addon_urls[$txt] = $url;
+				}
+		}
+	return $addon_urls;
+}
 class babSection
 {
 var $title;
@@ -307,13 +323,12 @@ function babAdminSection()
 		$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
 		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
 			{
-			include( $addonpath."/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_init_file'] );
-			$func = $GLOBALS['babAddons'][$arr_keys[$i]]['bab_user_section_load'];
-			if( !empty($func) /* && is_callable($func) */)
-				while( $func($url, $txt))
-					{
-					$this->addon_urls[$txt] = $url;
-					}
+			$arr  = bab_getAddonsMenus($arr_keys[$i], 'bab_admin_section_load');
+			reset ($arr);
+			while (list ($txt, $url) = each ($arr))
+				{
+				$this->addon_urls[$txt] = $url;
+				}
 			}
 		}
 	}
@@ -455,13 +470,12 @@ function babUserSection()
 		$addonpath = $GLOBALS['babInstallPath']."addons/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
 		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
 			{
-			include( $addonpath."/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_init_file'] );
-			$func = $GLOBALS['babAddons'][$arr_keys[$i]]['bab_user_section_load'];
-			if( !empty($func) /* && is_callable($func) */)
-				while( $func($url, $txt))
-					{
-					$this->addon_urls[$txt] = $url;
-					}
+			$arr  = bab_getAddonsMenus($arr_keys[$i], 'bab_user_section_load');
+			reset ($arr);
+			while (list ($txt, $url) = each ($arr))
+				{
+				$this->addon_urls[$txt] = $url;
+				}
 			}
 		}
 	}
