@@ -59,7 +59,7 @@
 <h5>{ head }</h5>
 <ul>
 	<!--#in forumsGetNext -->
-	<li><a href="{ url }">{ text }</a> <!--#if waiting "== *" --> <a href="{ url }">{ waitingpostsimg }</a> <!--#endif waiting --></li>
+	<li><a href="{ url }">{ text } <!--#if waiting "== *" --> { waitingpostsimg }<!--#endif waiting --></a></li>
 	<!--#endin forumsGetNext --> 
 </ul>
 <!--#if blogged --> 
