@@ -12,7 +12,7 @@ include $babInstallPath."utilit/utilit.php";
 userIsloggedin();
 updateActivity();
 
-if( isUserAdministrator())
+if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 	{
 	$sec = new adminSection();
 	$body->addSection($sec);
@@ -211,70 +211,70 @@ switch($tg)
 		$incl = "login";
 		break;
 	case "sections":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/sections";
 		break;
 	case "section":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/section";
 		break;
 	case "register":
 		$incl = "admin/register";
 		break;
 	case "users":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/users";
 		break;
 	case "user":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/user";
 		break;
 	case "groups":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/groups";
 		break;
 	case "group":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/group";
 		break;
 	case "admfaqs":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admfaqs";
 		break;
 	case "admfaq":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admfaq";
 		break;
 	case "topics":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/topics";
 		break;
 	case "topic":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/topic";
 		break;
 	case "forums":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/forums";
 		break;
 	case "forum":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/forum";
 		break;
 	case "admvacs":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admvacs";
 		break;
 	case "admvac":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admvac";
 		break;
 	case "admcals":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admcals";
 		break;
 	case "admcal":
-		if( isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
 			$incl = "admin/admcal";
 		break;
 	case "confcals":
@@ -291,6 +291,9 @@ switch($tg)
 		break;
 	case "calview":
 		$incl = "calview";
+		break;
+	case "calopt":
+		$incl = "calopt";
 		break;
 	case "vacation":
 		$incl = "vacation";
