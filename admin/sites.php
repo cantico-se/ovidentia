@@ -219,22 +219,22 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			
 			if ($this->dbvalue['total_diskspace'] == 0) 
 				{
-				if ($GLOBALS['babMaxTotalSize'] > 0) $this->dbvalue['total_diskspace'] = $GLOBALS['babMaxTotalSize']/1048576;
+				if ($GLOBALS['babMaxTotalSize'] > 0) $this->dbvalue['total_diskspace'] = round($GLOBALS['babMaxTotalSize']/1048576);
 				else $this->dbvalue['total_diskspace'] = "200";
 				}
 			if ($this->dbvalue['user_diskspace'] == 0)
 				{
-				if ($GLOBALS['babMaxUserSize'] > 0) $this->dbvalue['user_diskspace'] = $GLOBALS['babMaxUserSize']/1048576;
+				if ($GLOBALS['babMaxUserSize'] > 0) $this->dbvalue['user_diskspace'] = round($GLOBALS['babMaxUserSize']/1048576);
 				else $this->dbvalue['user_diskspace'] = "50";
 				}
 			if ($this->dbvalue['folder_diskspace'] == 0)
 				{
-				if ($GLOBALS['babMaxGroupSize'] > 0) $this->dbvalue['folder_diskspace'] = $GLOBALS['babMaxGroupSize']/1048576;
+				if ($GLOBALS['babMaxGroupSize'] > 0) $this->dbvalue['folder_diskspace'] = round($GLOBALS['babMaxGroupSize']/1048576);
 				else $this->dbvalue['folder_diskspace'] = "100";
 				}
 			if ($this->dbvalue['maxfilesize'] == 0)
 				{
-				if ($GLOBALS['babMaxFileSize'] > 0) $this->dbvalue['maxfilesize'] = $GLOBALS['babMaxFileSize']/1048576;
+				if ($GLOBALS['babMaxFileSize'] > 0) $this->dbvalue['maxfilesize'] = round($GLOBALS['babMaxFileSize']/1048576);
 				else $this->dbvalue['maxfilesize'] = "50";
 				}
 
