@@ -255,15 +255,15 @@ function bab_callAddonsFunction($func)
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 			if( is_file($addonpath."/init.php" ))
 				{
+				$GLOBALS['babAddonFolder'] = $row['title'];
+				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
+				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 				require_once( $addonpath."/init.php" );
 				$call = $row['title']."_".$func;
 				if( !empty($call)  && function_exists($call) )
 					{
-					$GLOBALS['babAddonFolder'] = $row['title'];
-					$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
-					$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 					$args = func_get_args();
 					$call .= "(";
 					for($k=1; $k < sizeof($args); $k++)
@@ -284,15 +284,15 @@ function bab_getAddonsMenus($row, $what)
 	$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 	if( is_file($addonpath."/init.php" ))
 		{
+		$GLOBALS['babAddonFolder'] = $row['title'];
+		$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
+		$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 		require_once( $addonpath."/init.php" );
 		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
 			{
-			$GLOBALS['babAddonFolder'] = $row['title'];
-			$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
-			$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 			while( $func($url, $txt))
 				{
 				$addon_urls[$txt] = $url;
@@ -1090,15 +1090,15 @@ function loadSections()
 					$r = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ADDONS_TBL." where id='".$arr['id_section']."'"));
 					if( $r['enabled'] == "Y" && is_file($GLOBALS['babAddonsPath'].$r['title']."/init.php"))
 						{
+						$GLOBALS['babAddonFolder'] = $r['title'];
+						$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
+						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$r['id']."/";
+						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$r['title']."/";
+						$GLOBALS['babAddonHtmlPath'] = "addons/".$r['title']."/";
 						require_once( $GLOBALS['babAddonsPath'].$r['title']."/init.php" );
 						$func = $r['title']."_onSectionCreate";
 						if( function_exists($func))
 							{
-							$GLOBALS['babAddonFolder'] = $r['title'];
-							$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
-							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$r['id']."/";
-							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$r['title']."/";
-							$GLOBALS['babAddonHtmlPath'] = "addons/".$r['title']."/";
 							if( $func($stitle, $scontent))
 								{
 								$add = true;
