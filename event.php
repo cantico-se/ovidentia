@@ -1080,6 +1080,7 @@ function addEvent(&$message)
 		$arrnotify = createEvent(explode(',', $GLOBALS['calid']), $id_owner, $title, $description, $location, $begin, $end, $category, $color, $bprivate, $block, $bfree, '', $arralert);
 		}
 
+
 	if( count($arrnotify) > 0 )
 		{
 		$arrusr = array();
@@ -1097,10 +1098,10 @@ function addEvent(&$message)
 						}
 					break;
 				case BAB_CAL_PUB_TYPE:
-					$arrres[] = $arrnotify[$i];
+					$arrpub[] = $arrnotify[$i];
 					break;
 				case BAB_CAL_RES_TYPE:
-					$arrpub[] = $arrnotify[$i];
+					$arrres[] = $arrnotify[$i];
 					break;
 				}
 			}
