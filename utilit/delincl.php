@@ -420,7 +420,6 @@ function bab_deleteOrgChart($id)
 	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$id."'"));
 	if( $ocinfo['isprimary'] == 'Y' && $ocinfo['id_group'] == 1)
 	{
-		echo "mmmmmmmmmmmmm";
 		return;
 	}
 
