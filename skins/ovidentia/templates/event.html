@@ -348,7 +348,7 @@
 	<tr> 
 		<td colspan="2">&nbsp;</td>
 	</tr>
-	<!--#if bcategory "== 1" -->
+	<!--#if rescount -->
 	<tr> 
 		<td align="right">{ category }:</td>
 		<td> 
@@ -360,7 +360,11 @@
 			</select>
 		</td>
 	</tr>
-	<!--#endif bcategory -->
+	<!--#endif rescount -->
+	<tr> 
+		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
+		<td><div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ colorvalue }"></div><input type="hidden" name="color" value="{ colorvalue }" /></td>
+	</tr>
 	
 	<tr> 
 		<td>&nbsp;</td>
@@ -381,177 +385,6 @@
 <!--#end modifyevent -->
 
 
-<!--#begin viewevent -->
-<br />
-<br />
-<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="5">
-	<tr class="BabLoginMenuBackground"> 
-		<td width="35%" nowrap>{ titlename }</td>
-		<td width="65%">{ title } </td>
-	</tr>
-	<tr class="BabLoginMenuBackground"> 
-		<td nowrap>{  startdatename }</td>
-		<td>{ startdate } </td>
-	</tr>
-	<tr class="BabLoginMenuBackground"> 
-		<td nowrap>{ enddatename }</td>
-		<td>{ enddate } </td>
-	</tr>
-	<tr class="BabLoginMenuBackground"> 
-		<td nowrap>{ descriptionname }</td>
-		<td>{ description }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<!--#end viewevent -->
-
-<!--#begin descmodify -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-	{ babMeta }
-	{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<body>
-<br />
-<form name="descmod" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="event" />
-<input type="hidden" name="idx" value="updesc" />
-<input type="hidden" name="calid" value="{ calid }" />
-<input type="hidden" name="evtid" value="{ evtid }" />
-<input type="hidden" name="update" value="desc" />
-<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td align="center" valign="middle">{ evtdesc }</td>
-	</tr>
-	<!-- Instanciation de la barre d'outils -->
-	<!--#if msie "== 1" -->
-	<!--#if babOldEditor -->
-	<tr align="center" valign="middle"> 
-		<td> 
-		<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-		<script src="{ babScriptPath }editor.js"></script>
-		<td><textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ arr[description] }</textarea></td>
-	</tr>
-	<tr align="center" valign="middle"> 
-		<td> 
-			 <script language="JavaScript"> 
-			var idGenerator = new IDGenerator(0);
-			var editor = new Editor(idGenerator, '{ babEditorImages }');
-			editor.ToolBar();
-			</script>
-		</td>
-	</tr>
-	<!--#else babOldEditor -->
-	<style type="text/css">
-	@import url({ babUrl }{ babScriptPath }htmlarea/htmlarea.css);
-	</style>
-
-	<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-	<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
-	<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-	<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
-	<script language="JavaScript">
-	initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
-	</script>
-	<!--#endif babOldEditor -->
-	<!--#endif msie -->
-	<tr> 
-		<td align="center"> 
-		<!--#if msie "== 1" -->
-		<!--#if babOldEditor -->
-						<script language="JavaScript">
-			editor.InFrame(0, "content", "descmod", "90%", "160");
-						</script>
-		<!--#else babOldEditor -->
-		<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','content')">
-		</iframe>
-		<textarea id="content" name="content"  onfocus="savef(this)" style="width:100%" rows="20">{ arr[description] }</textarea>
-		<!--#endif babOldEditor -->
-		<!--#else msie -->
-		<textarea onfocus="savef(this)" style="width:100%" rows="20" id="content" name="content">{ arr[description] }</textarea>
-		<!--#endif msie -->
-		</td>
-	</tr>
-	<!--#if brecevt -->
-	<tr> 
-		<td align="center">{ updaterec }</td>
-	</tr>
-	<tr> 
-		<td align="center"> 
-			<select name="bupdrec">
-			<option value="1">{ all }</option>
-			<option value="2" selected>{ thisone }</option>
-			</select>
-		</td>
-	</tr>
-	<!--#endif brecevt -->
-	<tr> 
-		<td align="center">
-		<!--#if msie "== 1" -->
-		<!--#if babOldEditor -->
-		<input onClick=SetVals() type="submit" name="submit" value="{ modify }" />
-				<script language="JavaScript">
-				editor.FinalInstantiate(0);
-				editor.CloseInitSection();
-				</script>
-		<!--#else babOldEditor -->
-		<input type="submit" name="submit" value="{ modify }" />
-		<!--#endif babOldEditor -->
-		<!--#else msie -->
-		<input type="submit" name="submit" value="{ modify }" />
-		<!--#endif msie -->
-		<br />
-		</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-</form>
-<!--#if msie "!= 1" -->
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
-
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-
-savef(document.descmod.headtext);
-//-->
-</script>
-<!--#endif msie -->
-<br />
-</body>
-</HTML>
-<!--#end descmodify -->
 
 <!--#begin eventunload -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

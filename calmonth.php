@@ -169,23 +169,30 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 			if( $this->status == BAB_CAL_STATUS_NONE )
 				{
-				$this->statusurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=confvent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 				$this->bstatus = true;
 				if( $iarr['type'] == BAB_CAL_USER_TYPE && $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
 					{
-					$this->bstatusurl = true;
+					$this->bstatuswc = true;
 					}
 				else
 					{
-					$this->bstatusurl = false;
+					$this->bstatuswc = false;
 					}
 				}
 			else
 				{
 				$this->bstatus = false;
 				}
-			$this->bgcolor = $arr['color'];
-			//$this->bgcolor = $this->icals[$this->cindex]->getCategoryColor($arr['id_cat']);
+			if( $arr['id_cat'] == 0 )
+				{
+				$this->category = '';
+				}
+			else
+				{
+				$this->category = $this->mcals->getCategoryName($arr['id_cat']);
+				}
+
+			$this->bgcolor = empty($arr['color'])? ($arr['id_cat'] != 0? $this->mcals->getCategoryColor($arr['id_cat']):''): $arr['color'];
 			$this->idevent = $arr['id'];
 			$time = bab_mktime($arr['start_date']);
 			$this->starttime = bab_time($time);
@@ -195,6 +202,10 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->enddate = bab_shortDate($time, false);
 			$this->id_cat = $arr['id_cat'];
 			$this->id_creator = $arr['id_creator'];
+			if( $this->id_creator != 0 )
+				{
+				$this->creatorname = bab_getUserName($this->id_creator); 
+				}
 			$this->hash = $arr['hash'];
 			$this->bprivate = $arr['bprivate'];
 			$this->block = $arr['block'];
@@ -207,7 +218,11 @@ class cal_monthCls  extends cal_wmdbaseCls
 			switch( $iarr['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
-					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $iarr['access'] != BAB_CAL_ACCESS_VIEW )
+					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $iarr['access'] == BAB_CAL_ACCESS_FULL )
+						{
+						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
+						}
+					elseif( $iarr['idowner'] !=  $GLOBALS['BAB_SESS_USERID'] && $iarr['access'] == BAB_CAL_ACCESS_UPDATE && $this->id_creator ==  $GLOBALS['BAB_SESS_USERID'])
 						{
 						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
 						}

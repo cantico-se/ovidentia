@@ -79,6 +79,9 @@ document.onmousemove = bab_tooltipPosition;
 				<h5>
 					<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
 					<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
+					<!--#if id_creator -->
+					<p><strong>{ t_creator } : </strong> { creatorname }</p>
+					<!--#endif id_creator -->
 					<!--#if category -->
 					<p><strong>{ t_category } : </strong> { category }</p>
 					<!--#endif category -->
@@ -87,6 +90,13 @@ document.onmousemove = bab_tooltipPosition;
 			</div>
 			<!--#if nbowners -->
 			<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+			<!--#if bstatus -->
+			<!--#if bstatuswc -->
+			<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
+			<!--#else bstatuswc -->
+			<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
+			<!--#endif bstatuswc -->
+			<!--#endif bstatus -->
 			<!--#endif nbowners -->
 			<!--#else first -->
 			&nbsp;

@@ -48,6 +48,7 @@ function displayAttendees($evtid, $idcal)
 				$this->fullnametxt = bab_translate("Attendee");
 				$this->statusdef = array(BAB_CAL_STATUS_ACCEPTED => bab_translate("Accepted"), BAB_CAL_STATUS_NONE => "", BAB_CAL_STATUS_DECLINED => bab_translate("Declined"));
 				$this->statustxt = bab_translate("Response");
+				list($this->idcreator) = $babDB->db_fetch_row($babDB->db_query("select id_creator from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
 				$res = $babDB->db_query("select ceo.* from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo where ceo.id_event='".$evtid."'");
 				$this->arrinfo = array();
 				while( $arr = $babDB->db_fetch_array($res))
@@ -55,9 +56,33 @@ function displayAttendees($evtid, $idcal)
 					if( bab_isCalendarAccessValid($arr['id_cal']))
 						{
 						$this->arrinfo[] = array('idcal' => $arr['id_cal'], 'status' => $arr['status']);
+						if( $babBody->icalendars->id_percal == $arr['id_cal'] )
+							{
+							switch($arr['status'] )
+								{
+								case BAB_CAL_STATUS_NONE:
+									$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED,BAB_CAL_STATUS_DECLINED);
+									break;
+								case BAB_CAL_STATUS_ACCEPTED:
+									$this->statusarray = array(BAB_CAL_STATUS_DECLINED);
+									break;
+								case BAB_CAL_STATUS_DECLINED:
+									$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED);
+									break;
+								}
+							}
 						}
 					}
 				$this->count = count($this->arrinfo);
+				$this->countstatus = count($this->statusarray);
+				if( $this->countstatus )
+					{
+					$this->updatetxt = bab_translate("Update");
+					$this->confirmtxt = bab_translate("Confirm");
+					$this->commenttxt = bab_translate("Raison");
+					$this->accepttxt = bab_translate("Accept");
+					$this->declinetxt = bab_translate("Decline");
+					}
 				}
 			else
 				{
@@ -72,8 +97,43 @@ function displayAttendees($evtid, $idcal)
 			if( $i < $this->count)
 				{
 				$this->altbg = $this->altbg ? false : true;
-				$this->fullname = $babBody->icalendars->getCalendarName($this->arrinfo[$i]['idcal']);
+				$arr = $babBody->icalendars->getCalendarInfo($this->arrinfo[$i]['idcal']);
+				$this->fullname = $arr['name'];
+				$this->bcreator = false;
+				if( $GLOBALS['BAB_SESS_USERID'] ==  $this->idcreator )
+					{
+					$this->countstatus = 0;
+					}
+				if( $arr['idowner'] ==  $this->idcreator )
+					{
+					$this->bcreator = true;
+					}
 				$this->status = $this->statusdef[$this->arrinfo[$i]['status']];
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
+		function getnextstatus()
+			{
+			global $babBody;
+			static $i = 0;
+			if( $i < $this->countstatus)
+				{
+				$this->statusname = $this->statusdef[$this->statusarray[$i]];
+				switch($this->statusarray[$i])
+					{
+					case BAB_CAL_STATUS_ACCEPTED:
+						$this->statusval = "Y";
+						break;
+					case BAB_CAL_STATUS_DECLINED:
+						$this->statusval = "N";
+						break;
+					}
 				$i++;
 				return true;
 				}

@@ -3808,7 +3808,7 @@ while( $arr = $db->db_fetch_array($res))
 	$db->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal) VALUES ('".$arr['id']."','".$arr['id_cal']."')");
 	}
 
-$db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD `color` VARCHAR( 8 ) DEFAULT 'FFFFFF' NOT NULL");
+$db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD `color` VARCHAR( 8 ) DEFAULT '' NOT NULL");
 
 $db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD `bprivate` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL , ADD `block` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL , ADD `bfree` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL");
 

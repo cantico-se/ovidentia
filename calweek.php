@@ -246,6 +246,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				while( $i < count($this->harray[$this->cindex-1][$this->icols]))
 					{
 					$arr = & $this->harray[$this->cindex-1][$this->icols][$i];
+					$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 					if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
 						{
 						if( !isset($this->bfirstevents[$this->cindex-1][$arr['id']]) )
@@ -260,6 +261,23 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->bevent = true;
 						$this->idcal = $arr['id_cal'];
 						$this->status = $arr['status'];
+						if( $this->status == BAB_CAL_STATUS_NONE )
+							{
+							$this->bstatus = true;
+							if( $iarr['type'] == BAB_CAL_USER_TYPE && $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+								{
+								$this->bstatuswc = true;
+								}
+							else
+								{
+								$this->bstatuswc = false;
+								}
+							}
+						else
+							{
+							$this->bstatus = false;
+							}
+
 						if( $arr['id_cat'] == 0 )
 							{
 							$this->bgcolor = $arr['color'];
@@ -277,6 +295,10 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->enddate = bab_shortDate($time, false);
 						$this->id_cat = $arr['id_cat'];
 						$this->id_creator = $arr['id_creator'];
+						if( $this->id_creator != 0 )
+							{
+							$this->creatorname = bab_getUserName($this->id_creator); 
+							}
 						$this->hash = $arr['hash'];
 						$this->bprivate = $arr['bprivate'];
 						$this->block = $arr['block'];
@@ -287,7 +309,7 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->nbowners = $arr['nbowners'];
 						$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 						$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-						$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
+						$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&view=viewd&date=".$this->currentdate."&cci=".$this->currentidcals;
 						break;
 						}
 					$i++;

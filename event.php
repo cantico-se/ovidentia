@@ -368,6 +368,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			global $babBody, $BAB_SESS_USERID, $babBodyPopup;
 
 			$this->delete = bab_translate("Delete");
+			$this->t_color = bab_translate("Color");
 			$this->db = $GLOBALS['babDB'];
 			$this->calid = $idcal;
 			$this->evtid = $evtid;
@@ -437,6 +438,36 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->editor = bab_editor($this->evtarr['description'], 'evtdesc', 'vacform',150);
 			$this->elapstime = $babBody->icalendars->elapstime;
 			$this->ampm = $babBody->ampm;
+			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
+
+			$this->rescat = $this->db->db_query("select * from ".BAB_CAL_CATEGORIES_TBL."");
+			$this->rescount = $this->db->db_num_rows($this->rescat);
+			}
+
+		function getnextcat()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < count($this->rescount))
+				{
+				$arr = $babDB->db_fetch_array($this->rescat);
+				$this->catid = $arr['id'];
+				$this->catname = $arr['name'];
+				if( $this->evtarr['id_cat'] == $this->catid )
+					{
+					$this->selected = "selected";
+					}
+				else
+					{
+					$this->selected = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
 
 		function getnextday()
@@ -616,109 +647,6 @@ function deleteEvent()
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function viewEvent($evtid)
-	{
-	global $babBody;
-	
-	class temp extends bab_event
-		{
-		var $title;
-		var $titlename;
-		var $startdatename;
-		var $startdate;
-		var $enddatename;
-		var $enddate;
-		var $descriptionname;
-		var $description;
-
-		function temp($evtid)
-			{
-			$this->bab_event();
-
-
-
-
-			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'";
-			$res = $this->db->db_query($req);
-			$arr = $this->db->db_fetch_array($res);
-			$this->title = $arr['title'];
-			$this->description = bab_replace($arr['description']);
-			$this->startdate = bab_strftime(bab_mktime($arr['start_date']), false) . " " . substr($arr['start_time'], 0 ,5);
-			$this->enddate = bab_strftime(bab_mktime($arr['end_date']), false) . " " . substr($arr['end_time'], 0 ,5);
-			}
-		}
-
-	$temp = new temp($calid, $evtid);
-	$babBody->babecho(	bab_printTemplate($temp,"event.html", "viewevent"));
-	}
-
-function editDescription($calid, $evtid)
-	{
-	global $babBody;
-
-	class temp
-		{
-		var $evtdesc;
-		var $modify;
-
-		var $db;
-		var $arr = array();
-		var $res;
-		var $msie;
-		var $brecevt;
-		var $all;
-		var $thisone;
-		var $updaterec;
-
-		function temp($calid, $evtid)
-			{
-			$this->evtdesc = bab_translate("Description");
-			$this->modify = bab_translate("Update");
-			
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				$this->msie = 1;
-			else
-				$this->msie = 0;	
-			if( $this->arr['hash'] != "" && $this->arr['hash'][0] == 'R')
-				{
-				$this->brecevt = true;
-				$this->updaterec = bab_translate("This is recurring event. Do you want to update this ocuurence or series?");
-				$this->all = bab_translate("All");
-				$this->thisone = bab_translate("This occurence");
-				}
-			else
-				$this->brecevt = false;
-			}
-		}
-
-	$temp = new temp($calid, $evtid);
-	echo bab_printTemplate($temp,"event.html", "descmodify");
-	}
-
-function eventUnload()
-	{
-	class temp
-		{
-		var $babCss;
-		var $message;
-		var $close;
-		var $url;
-		var $bliste;
-
-		function temp()
-			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$this->message = bab_translate("Your event has been updated");
-			}
-		}
-
-	$temp = new temp();
-	echo bab_printTemplate($temp,"event.html", "eventunload");
-	}
 
 function insertEvent($tabcals, $title, $description, $startdate,  $enddate, $catid, $color, $md5)
 	{
@@ -772,7 +700,7 @@ function addEvent(&$message)
 	$title = post_string('title');
 		
 	$category = empty($_POST['category']) ? '0' : $_POST['category'];
-	$color = empty($_POST['color']) ? 'FFFFFF' : $_POST['color'];
+	$color = empty($_POST['color']) ? '' : $_POST['color'];
 
 	$yearbegin = $_POST['yearbegin'];
 	$monthbegin = $_POST['monthbegin'];
@@ -999,7 +927,7 @@ function updateEvent(&$message)
 	{
 		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'");
 		$arr = $db->db_fetch_array($res);
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."' where hash='".$arr['hash']."'";
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."', color='".$_POST['color']."' where hash='".$arr['hash']."'";
 		$db->db_query($req);
 	}
 	else
@@ -1016,7 +944,7 @@ function updateEvent(&$message)
 		$startdate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearbegin'], $_POST['monthbegin'], $_POST['daybegin'], $_POST['timebegin']);
 		$enddate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearend'], $_POST['monthend'], $_POST['dayend'], $_POST['timeend']);
 
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', start_date='".$startdate."', end_date='".$enddate."', id_cat='".$catid."' where id='".$_POST['evtid']."'";
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', start_date='".$startdate."', end_date='".$enddate."', id_cat='".$catid."', color='".$_POST['color']."' where id='".$_POST['evtid']."'";
 		$db->db_query($req);
 	}
 
