@@ -439,7 +439,7 @@ function bab_contactsAccess()
 	$db = $GLOBALS['babDB'];
 
 	$arr = $db->db_fetch_array($db->db_query("select contacts from ".BAB_GROUPS_TBL." where id='1'"));
-	if( $arr['notes'] == "Y" )
+	if( $arr['contacts'] == "Y" )
 		return true;
 
 	$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and contacts='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group");
