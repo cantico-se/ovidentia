@@ -397,7 +397,7 @@ function printChartNode(&$obj, $id)
 {
 	if( count($obj->babTree->nodes) > 0 )
 		{
-		$temp = new orgtemp(&$obj, $id);
+		$temp = new orgtemp($obj, $id);
 		return bab_printTemplate($temp, "frchart.html", "display_node");
 		}
 	else
@@ -449,8 +449,6 @@ function displayChartTree($ocid, $oeid, $update, $iduser)
 				$this->updateurlt = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
 				}
 			$this->currentoe = $oeid."&iduser=".$iduser;
-			/* lire uniquement à partir du root XXXXXXXXXX*/
-			//$this->res = $babDB->db_query("select ocet.* from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
 			
 			$this->res = $babDB->db_query("select ocet.*, ocet.id as identity, ocut.id_user, det.sn, det.givenname from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt on ocrt.id_oc=ocet.id_oc and ocrt.id_entity=ocet.id and ocrt.type='1' LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocut on ocut.id_role=ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocut.id_user where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
 
