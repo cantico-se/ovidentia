@@ -145,7 +145,7 @@ document.onmousemove = bab_tooltipPosition;
 						</td>
 						<!--#else bevent -->
 						<!--#if allow_create -->		
-						<td class="free" onmouseover="this.className='freeover';bab_showOnMouse('calfree_{ dayname }{ mday }',1);" onmouseout="this.className='free';bab_showOnMouse('calfree_{ dayname }{ mday }',0);" onclick="bab_popup('{ hoururl }',5)">{ h_start }</td>
+						<td class="free" onmouseover="this.className='freeover';bab_showOnMouse('calfree_{ dayname }{ currday }',1);" onmouseout="this.className='free';bab_showOnMouse('calfree_{ dayname }{ currday }',0);" onclick="bab_popup('{ hoururl }',5)">{ h_start }</td>
 						<!--#else allow_create -->		
 						<td>&nbsp;</td>
 						<!--#endif allow_create -->		

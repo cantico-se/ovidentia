@@ -91,11 +91,14 @@ class cal_weekCls extends cal_wmdbaseCls
 				{
 				$this->currentmonth = 1;
 				}
+
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
 			$this->week = bab_translate("Week").' '.date('W',$mktime);
 			$this->daynumbername = $dday;
+
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
+			
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 				{
 				$this->currentday = 1;
@@ -143,6 +146,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					{
 					$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
 					}
+				
 				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->mday,$this->year);
 				if( $i % 2)
 					{
@@ -187,7 +191,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				{
 				$this->currentday = 0;
 				}
-			
+			$this->currday = date("j", $mktime);
 			$this->daynumberurl = $this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
 			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm";
 			$this->harray = array();
