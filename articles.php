@@ -480,7 +480,7 @@ function modifyArticle($topics, $article)
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "modifyarticle"));
 	}
 
-function submitArticle($topics)
+function submitArticle($title, $headtext, $bodytext, $topics)
 	{
 	global $babBody;
 
@@ -495,8 +495,20 @@ function submitArticle($topics)
 		var $msie;
 		var $notearticle;
 
-		function temp($topics)
+		function temp($title, $headtext, $bodytext, $topics)
 			{
+			if( empty($title))
+				$this->titleval = "";
+			else
+				$this->titleval = $title;
+			if( empty($headtext))
+				$this->headval = "";
+			else
+				$this->headval = $headtext;
+			if( empty($bodytext))
+				$this->bodyval = "";
+			else
+				$this->bodyval = $bodytext;
 			$this->topics = $topics;
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");
@@ -510,7 +522,7 @@ function submitArticle($topics)
 			}
 		}
 	
-	$temp = new temp($topics);
+	$temp = new temp($title, $headtext, $bodytext, $topics);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "createarticle"));
 	}
 
@@ -672,8 +684,15 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	if( empty($title))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a title");
-		return;
+		return false;
 		}
+
+	if( empty($headtext))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a head for your article");
+		return false;
+		}
+
 	$db = $GLOBALS['babDB'];
 
 	if( !bab_isMagicQuotesGpcOn())
@@ -703,6 +722,7 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 			//mail ($arr['email'],bab_translate("New waiting article"),$message,"From: ".$babAdminEmail);
 			}
 		}
+	return true;
 	}
 
 //@@: warn this function is duplicated in waiting.php file 
@@ -749,8 +769,10 @@ if( isset($addarticle))
 
 if( isset($addart) && $addart == "add")
 	{
-	saveArticle($title, $headtext, $bodytext, $topics);
-	$idx = "Articles";
+	if( saveArticle($title, $headtext, $bodytext, $topics))
+		$idx = "Articles";
+	else
+		$idx = "Submit";
 	}
 
 if( isset($action) && $action == "Yes" && bab_isUserApprover($topics))
@@ -775,7 +797,7 @@ switch($idx)
 		$babBody->title = bab_translate("Submit an article")." [ ". bab_getCategoryTitle($topics) ." ]";
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 			{
-			submitArticle($topics);
+			submitArticle($title, $headtext, $bodytext, $topics);
 			$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
 			$babBody->addItemMenu("subfile", bab_translate("File"), $GLOBALS['babUrlScript']."?tg=articles&idx=subfile&topics=".$topics);
 			}
