@@ -1151,10 +1151,17 @@ function bab_replace_var(&$txt,$var,$new)
 	$txt = preg_replace("/".preg_quote($var,"/")."/", $new, $txt);
 	}
 	
-function bab_replace_make_link($url,$text,$popup = false,$url_popup = false)
+function bab_replace_make_link($url,$text,$popup = 0,$url_popup = false)
 	{
-	$url = $popup && $url_popup != false ? $url_popup : $url;
-	return $popup ? '<a href="javascript:Start(\''.$url.'\',\'ovidentia_content\',\'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes\')">'.$text.'</a>' : '<a href="'.$url.'">'.$text.'</a>';
+	$url = ($popup == 1 || $popup == true) && $url_popup != false ? $url_popup : $url;
+	if ($popup == 1 || $popup == true)
+		{
+		return '<a href="javascript:bab_popup(\''.$url.'\')">'.$text.'</a>';
+		}
+	elseif ($popup == 2)
+		return '<a target="_blank" href="'.$url.'">'.$text.'</a>';
+	else
+		return '<a href="'.$url.'">'.$text.'</a>';
 	}
 	
 function bab_replace( $txt, $remove = '')
@@ -1345,7 +1352,7 @@ function bab_replace_ref( &$txt, $remove = '')
 									{
 									$title_object = empty($title_object) ? $arr['name'] : $title_object;
 									$inl = empty($GLOBALS['files_as_attachment']) ? '&inl=1' : '';
-									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']),$title_object);
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']),$title_object,2);
 									}
 								}
 							bab_replace_var($txt,$var,$title_object);
@@ -1372,7 +1379,8 @@ function bab_replace_ref( &$txt, $remove = '')
 						case 'LINKPOPUP':
 							$url_object = $param[0];
 							$name_object = isset($param[1]) ? $param[1] : $url_object;
-							$title_object = bab_replace_make_link("javascript:Start('".$GLOBALS['babUrlScript']."?tg=link&idx=popup&url=".urlencode($url_object)."','', '');",$name_object);
+							$popup = isset($param[2]) ? $param[2] : 2;
+							$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=link&idx=popup&url=".urlencode($url_object), $name_object, $popup);
 							bab_replace_var($txt,$var,$title_object);
 							break;
 
