@@ -376,22 +376,27 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 	$db = $GLOBALS['babDB'];
 	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
+	
     if( $res && $db->db_num_rows($res) > 0 )
         {
+		
         $arr = $db->db_fetch_array($res);
         $req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
         $res2 = $db->db_query($req);
         if( $res2 && $db->db_num_rows($res2) > 0 )
             {
+			
             $arr2 = $db->db_fetch_array($res2);
             $cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-            $mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+            $mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
             if(!$mbox)
                 {
+				echo imap_last_error();
                 $babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
                 }
             else
                 {
+				
 				$idreply = imap_msgno($mbox, $idreply);
                 $headinfo = imap_header($mbox, $idreply);
                 $arr = $headinfo->from;
@@ -461,6 +466,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 }
             }
         }
+
 	if (!isset($toval)) $toval = '';
 	if (!isset($ccval)) $ccval = '';
 	if (!isset($subjectval)) $subjectval = '';
