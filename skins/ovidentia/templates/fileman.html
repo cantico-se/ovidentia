@@ -85,48 +85,48 @@ href="{ refreshurl }">{ refresh }</a></td>
 <table  width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr>
 <td class="BabSiteAdminTitleFontBackground" colspan="2" align="center">&nbsp;{ nametxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="right">&nbsp;{ sizetxt }&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ sizetxt }&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" align="center">{ modifiedtxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground">&nbsp;{ postedtxt }&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="center">&nbsp;{ postedtxt }&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="center" width="1%">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="center" width="1%">&nbsp;</td>
 <!--#if bmanager -->
-<td class="BabSiteAdminTitleFontBackground" width="1%">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="center" width="1%">&nbsp;{ hitstxt }</td>
 <!--#endif bmanager -->
 </tr>
 <!--#in getnextdir --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
 <!--#if name "== . ." -->{ upfolderimg }<!--#else name -->{ usrfolderimg }<!--#endif name -->
 </td>          
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
 href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" colspan="6" valign="top">&nbsp;</td>
 <!--#if bmanager -->
-<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
 <!--#endif bmanager -->
 </tr>
 <!--#endin getnextdir -->
 <!--#in getnextgrpdir --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
 { grpfolderimg } 
 </td>          
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
 href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" colspan="6" valign="top">&nbsp;</td>
 <!--#if bmanager -->
-<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
 <!--#endif bmanager -->
 </tr>
 <!--#endin getnextgrpdir -->
 <!--#in getnextmgrpdir --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
 { manfolderimg } 
 </td>          
-<td class="BabSiteAdminFontBackground" valign="middle">&nbsp;<a class="BabSiteAdminListLink" 
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
 href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" colspan="6" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" colspan="6" valign="top">&nbsp;</td>
 <!--#if bmanager -->
-<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
 <!--#endif bmanager -->
 </tr>
 <!--#endin getnextmgrpdir -->
@@ -157,7 +157,7 @@ src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ deltxt }"></a>
 <!--#endif bmanager -->
 </td>
 <!--#if bmanager -->
-<td class="BabSiteAdminFontBackground" valign="middle" align="right">{ hits }</td>
+<td class="BabSiteAdminFontBackground" valign="top" align="center" valign="middle">{ hits }</td>
 <!--#endif bmanager -->
 </tr><!--#endin getnextfile -->
 <!--#in getnextxfile --> <tr> 
@@ -184,7 +184,7 @@ alt="{ paste }"></a>
 <!--#endif bmanager -->
 </td>
 <!--#if bmanager -->
-<td class="BabSiteAdminFontBackground">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
 <!--#endif bmanager -->
 </tr><!--#endin getnextxfile -->
 </table>

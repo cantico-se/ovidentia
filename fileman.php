@@ -313,6 +313,7 @@ function listFiles($id, $gr, $path, $bmanager)
 		var $urldiskspace;
 		var $diskspace;
 		var $hits;
+		var $hitstxt;
 		var $arrext = array();
 
 		var $arrdir = array();
@@ -338,6 +339,7 @@ function listFiles($id, $gr, $path, $bmanager)
 			$this->modifiedtxt = babTranslate("Modified");
 			$this->postedtxt = babTranslate("Posted by");
 			$this->diskspace = babTranslate("Show disk space usage");
+			$this->hitstxt = babTranslate("Downloads");
 
 			if( !empty($BAB_SESS_USERID))
 				$this->rooturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$BAB_SESS_USERID."&gr=N&path=";
@@ -1475,7 +1477,7 @@ switch($idx)
 			$body->addItemMenu("trash", babTranslate("Trash"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=trash&id=".$id."&gr=".$gr."&path=".$path);
 		break;
 	case "add":
-		$body->title = babTranslate("Upload file to")." /".$path. " ( ".$GLOBALS['babMaxFileSize']." ".babTranslate("Bytes") . " ".babTranslate("Max")." )";
+		$body->title = babTranslate("Upload file to")." /".$path. " ( ".formatSize($GLOBALS['babMaxFileSize'])." ".babTranslate("Kb") . " ".babTranslate("Max")." )";
 		addFile($id, $gr, $path, $description, $keywords);
 		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path);
 		if( $upload)
