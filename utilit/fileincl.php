@@ -153,46 +153,49 @@ function notifyFileApprovers($id, $users, $msg)
 	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include_once $babInstallPath."utilit/mailincl.php";
 
-	class tempa
+	if(!class_exists("notifyFileApproversCls"))
 		{
-		var $filename;
-		var $message;
-        var $from;
-        var $author;
-        var $path;
-        var $pathname;
-        var $file;
-        var $site;
-        var $date;
-        var $dateval;
-		var $group;
-		var $groupname;
-
-
-		function tempa($id, $msg)
+		class notifyFileApproversCls
 			{
-            global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$id."'"));
-            $this->filename = $arr['name'];
-            $this->message = $msg;
-            $this->from = bab_translate("Author");
-            $this->path = bab_translate("Path");
-            $this->file = bab_translate("File");
-            $this->group = bab_translate("Folder");
-            $this->pathname = $arr['path'] == ""? "/": $arr['path'];
-            $this->groupname = bab_getFolderName($arr['id_owner']);
-            $this->site = bab_translate("Web site");
-            $this->date = bab_translate("Date");
-            $this->dateval = bab_strftime(mktime());
-            if( !empty($arr['author']))
+			var $filename;
+			var $message;
+			var $from;
+			var $author;
+			var $path;
+			var $pathname;
+			var $file;
+			var $site;
+			var $date;
+			var $dateval;
+			var $group;
+			var $groupname;
+
+
+			function notifyFileApproversCls($id, $msg)
 				{
-                $this->author = bab_getUserName($arr['author']);
-                $this->authoremail = bab_getUserEmail($arr['author']);
-				}
-            else
-				{
-                $this->author = bab_translate("Unknown user");
-                $this->authoremail = "";
+				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$id."'"));
+				$this->filename = $arr['name'];
+				$this->message = $msg;
+				$this->from = bab_translate("Author");
+				$this->path = bab_translate("Path");
+				$this->file = bab_translate("File");
+				$this->group = bab_translate("Folder");
+				$this->pathname = $arr['path'] == ""? "/": $arr['path'];
+				$this->groupname = bab_getFolderName($arr['id_owner']);
+				$this->site = bab_translate("Web site");
+				$this->date = bab_translate("Date");
+				$this->dateval = bab_strftime(mktime());
+				if( !empty($arr['author']))
+					{
+					$this->author = bab_getUserName($arr['author']);
+					$this->authoremail = bab_getUserEmail($arr['author']);
+					}
+				else
+					{
+					$this->author = bab_translate("Unknown user");
+					$this->authoremail = "";
+					}
 				}
 			}
 		}
@@ -212,7 +215,7 @@ function notifyFileApprovers($id, $users, $msg)
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("New waiting file"));
 
-	$tempa = new tempa($id, $msg);
+	$tempa = new notifyFileApproversCls($id, $msg);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "filewait"));
     $mail->mailBody($message, "html");
 
@@ -228,33 +231,36 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include_once $babInstallPath."utilit/mailincl.php";
 
-	class tempb
+	if(!class_exists("fileNotifyMembersCls"))
 		{
-		var $filename;
-		var $message;
-        var $author;
-        var $path;
-        var $pathname;
-        var $file;
-        var $site;
-        var $date;
-        var $dateval;
-		var $group;
-		var $groupname;
-
-
-		function tempb($file, $path, $idgrp, $msg)
+		class fileNotifyMembersCls
 			{
-            $this->filename = $file;
-            $this->message = $msg;
-            $this->path = bab_translate("Path");
-            $this->file = bab_translate("File");
-            $this->group = bab_translate("Folder");
-            $this->pathname = $path == ""? "/": $path;
-            $this->groupname = bab_getFolderName($idgrp);
-            $this->site = bab_translate("Web site");
-            $this->date = bab_translate("Date");
-            $this->dateval = bab_strftime(mktime());
+			var $filename;
+			var $message;
+			var $author;
+			var $path;
+			var $pathname;
+			var $file;
+			var $site;
+			var $date;
+			var $dateval;
+			var $group;
+			var $groupname;
+
+
+			function fileNotifyMembersCls($file, $path, $idgrp, $msg)
+				{
+				$this->filename = $file;
+				$this->message = $msg;
+				$this->path = bab_translate("Path");
+				$this->file = bab_translate("File");
+				$this->group = bab_translate("Folder");
+				$this->pathname = $path == ""? "/": $path;
+				$this->groupname = bab_getFolderName($idgrp);
+				$this->site = bab_translate("Web site");
+				$this->date = bab_translate("Date");
+				$this->dateval = bab_strftime(mktime());
+				}
 			}
 		}
 
@@ -269,7 +275,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 	else
 		$mail->mailSubject(bab_translate("File has been updated"));
 
-	$tempa = new tempb($file, $path, $idgrp, $msg);
+	$tempa = new fileNotifyMembersCls($file, $path, $idgrp, $msg);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "fileuploaded"));
 
 	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
