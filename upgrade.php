@@ -2942,7 +2942,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_update ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_update ENUM('0','1','2') DEFAULT '0' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2958,7 +2958,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_manupdate ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD allow_manupdate ENUM('0','1','2') DEFAULT '0' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -3013,7 +3013,7 @@ while( $arr = $db->db_fetch_array($res))
 		}
 	}
 
-$db->db_query("update ".BAB_TOPICS_TBL." set allow_manupdate='Y'");
+$db->db_query("update ".BAB_TOPICS_TBL." set allow_manupdate='1'");
 $db->db_query("ALTER TABLE ".BAB_TOPICS_TBL." DROP id_approver");
 
 $req = "ALTER TABLE ".BAB_ARTICLES_TBL." ADD date_archiving DATETIME NOT NULL";
