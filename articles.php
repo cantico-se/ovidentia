@@ -337,6 +337,11 @@ function readMore($topics, $article)
 		var $more;
 		var $topics;
 		var $author;
+		var $resart;
+		var $countart;
+		var $titleart;
+		var $titleurl;
+		var $topictxt;
 
 		function temp($topics, $article)
 			{
@@ -348,6 +353,10 @@ function readMore($topics, $article)
 			$this->topics = $topics;
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
+			$req = "select id,title from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and confirmed='Y' and archive='N' order by date desc";
+			$this->resart = $this->db->db_query($req);
+			$this->countart = $this->db->db_num_rows($this->resart);
+			$this->topictxt = bab_translate("In the same topic");
 			}
 
 		function getnext()
@@ -364,6 +373,22 @@ function readMore($topics, $article)
 				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextart()
+			{
+			static $i = 0;
+			if( $i < $this->countart)
+				{
+				$arr = $this->db->db_fetch_array($this->resart);
+				$this->titleart = $arr['title']; 
+				$this->titleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id'];
+				$this->titleurl2 = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id'];
 				$i++;
 				return true;
 				}
