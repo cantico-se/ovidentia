@@ -87,5 +87,8 @@ function bab_popup(url,divisor)
 		bab_popup_obj = window.open(url,'bab_popup','status=yes,menubar=no,personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
 		}
 	else
+		{
 		bab_popup_obj.focus();
+		bab_popup_obj.location.href = url;
+		}
 	}
