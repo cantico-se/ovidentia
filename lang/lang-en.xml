@@ -1506,4 +1506,27 @@
 <string id="date_from">From</string>
 <string id="date_to">To</string>
 <string id="PublicCalendar">Public</string>
+<string id="Minimum interval time">Minimum interval time</string>
+<string id="Dates">Dates</string>
+<string id="Duration">Duration</string>
+<string id="One hour">One hour</string>
+<string id="Two hours">Two hours</string>
+<string id="Three hours">Three hours</string>
+<string id="Four hours">Four hours</string>
+<string id="Five hours">Five hours</string>
+<string id="Six hours">Six hours</string>
+<string id="Seven hours">Seven hours</string>
+<string id="Eight hours">Eight hours</string>
+<string id="One day">One day</string>
+<string id="Two days">Two days</string>
+<string id="Three days">Three days</string>
+<string id="Four days">Four days</string>
+<string id="Five days">Four days</string>
+<string id="Six days">Five days</string>
+<string id="Seven days">Seven days</string>
+<string id="Eight days">Eight days</string>
+<string id="Days">Days</string>
+<string id="Hours">Hours</string>
+<string id="Minutes">Minutes</string>
+<string id="Search free events">Search free events</string>
 </en>

@@ -1517,4 +1517,27 @@
 <string id="Record">Enregistrer</string>
 <string id="Successful recording">Enregistrement réussi</string>
 <string id="PublicCalendar">Collectifs</string>
+<string id="Minimum interval time">Durée minimum</string>
+<string id="Dates">Dates</string>
+<string id="Duration">Durée</string>
+<string id="One hour">1 heure</string>
+<string id="Two hours">2 heures</string>
+<string id="Three hours">3 heures</string>
+<string id="Four hours">4 heures</string>
+<string id="Five hours">5 heures</string>
+<string id="Six hours">6 heures</string>
+<string id="Seven hours">7 heures</string>
+<string id="Eight hours">8 heures</string>
+<string id="One day">1 jour</string>
+<string id="Two days">2 jours</string>
+<string id="Three days">3 jours</string>
+<string id="Four days">4 jours</string>
+<string id="Five days">5 jours</string>
+<string id="Six days">6 jours</string>
+<string id="Seven days">7 jours</string>
+<string id="Eight days">8 jours</string>
+<string id="Days">Jour(s)</string>
+<string id="Hours">Heure(s)</string>
+<string id="Minutes">Minute(s)</string>
+<string id="Search free events">Rechercher une plage libre</string>
 </fr>

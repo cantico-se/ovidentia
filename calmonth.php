@@ -61,6 +61,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 
 		$this->cindex = 0;
+		$this->evtidx = 0;
 
 		}
 
@@ -163,6 +164,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 		static $i = 0;
 		if( $i < $this->countevent)
 			{
+			$this->evtidx++;
 			$arr = $this->evtarr[$i];
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
@@ -276,6 +278,20 @@ function cal_month_free($calids, $date)
 	$temp->printout("calmonth.html", "calfreemonth");
 }
 
+function searchAvailability($calid, $date, $date0, $date1, $gap)
+{
+	if( empty($date0) || empty($date1))
+	{
+		$rr = explode(',', $date);
+		$time = 
+
+		$date0 = date("Y,n,j", mktime(0,0,0, $rr[1], 1, $rr[0]));
+		$date1 = date("Y,n,j", mktime(0,0,0, (int)($rr[1])+1, 0, $rr[0]));
+	}
+	cal_searchAvailability("calmonth", $calid, $date, $date0, $date1, $gap);
+}
+
+
 /* main */
 
 $calid = isset($_GET['calid']) ? $_GET['calid'] : $babBody->icalendars->user_calendarids;
@@ -287,7 +303,7 @@ if(!isset($idx))
 
 if( empty($date))
 	{
-	$date = Date("Y").",".Date("n").",".Date("j");
+	$date = Date("Y,n,j");
 	}
 
 if( !isset($calid) )
@@ -297,6 +313,24 @@ if( !isset($calid) )
 
 switch($idx)
 	{
+	case "unload":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$popupmessage = bab_translate("Done");
+		popupUnload($popupmessage, $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
+		exit;
+		break;
+	case "rfree":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$babBodyPopup = new babBodyPopup();
+		$babBodyPopup->title = bab_translate("Search free events");
+		if( !isset($gap)) { $gap = 0;}
+		if( !isset($date0)) { $date0 = "";}
+		if( !isset($date1)) { $date1 = "";}
+		searchAvailability($calid, $date, $date0, $date1, $gap);
+		printBabBodyPopup();
+		exit;
+		break;
+
 	case "free":
 		$calid = bab_isCalendarAccessValid($calid);
 		if( !$calid )

@@ -372,6 +372,19 @@ function cal_week_free($calids, $date)
 	$temp->printout("calweek.html", "calfreeweek");
 }
 
+function searchAvailability($calid, $date, $date0, $date1, $gap)
+{
+	if( empty($date0) || empty($date1))
+	{
+		$rr = explode(',', $date);
+		$time = 
+
+		$date0 = date("Y,n,j", mktime(0,0,0, $rr[1], 1, $rr[0]));
+		$date1 = date("Y,n,j", mktime(0,0,0, (int)($rr[1])+1, 0, $rr[0]));
+	}
+	cal_searchAvailability("calweek", $calid, $date, $date0, $date1, $gap);
+}
+
 /* main */
 if(!isset($idx))
 	{
@@ -389,6 +402,24 @@ if( !isset($calid) )
 
 switch($idx)
 	{
+	case "unload":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$popupmessage = bab_translate("Done");
+		popupUnload($popupmessage, $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
+		exit;
+		break;
+	case "rfree":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$babBodyPopup = new babBodyPopup();
+		$babBodyPopup->title = bab_translate("Search free events");
+		if( !isset($gap)) { $gap = 0;}
+		if( !isset($date0)) { $date0 = "";}
+		if( !isset($date1)) { $date1 = "";}
+		searchAvailability($calid, $date, $date0, $date1, $gap);
+		printBabBodyPopup();
+		exit;
+		break;
+
 	case "free":
 		$calid = bab_isCalendarAccessValid($calid);
 		if( !$calid )

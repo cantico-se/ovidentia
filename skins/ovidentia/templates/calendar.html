@@ -366,3 +366,95 @@ movecalendar(0);
 </tr>
 </table>
 <!--#end categorieslist -->
+
+
+<!--#begin searchavailability -->
+<SCRIPT language="JavaScript">
+<!--
+function dateBegin(day, month, year)
+{
+	document.calrform.vdate0.value = day+'-'+month+'-'+year;
+	document.calrform.date0.value = year+','+month+','+day;
+}
+
+function dateEnd(day, month, year)
+{
+	document.calrform.vdate1.value = day+'-'+month+'-'+year;
+	document.calrform.date1.value = year+','+month+','+day;
+}
+//-->
+</SCRIPT>
+<form name="calrform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ tg }" />
+<input type="hidden" name="idx" value="rfree" />
+<input type="hidden" name="calid" value="{ calid }" />
+<input type="hidden" name="date" value="{ date }" />
+<table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr> 
+		<td align="right">
+			<a class="BabEventFaqLink" href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>:
+		</td>
+		<td nowrap>
+		<input type="text" name="vdate0" size="10" maxlength="10" value="{ date0val }" disabled />
+		<input type="hidden" name="date0" size="10" maxlength="10" value="{ date0 }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">
+			<a class="BabEventFaqLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>:
+		</td>
+		<td nowrap>
+		<input type="text" name="vdate1" size="10" maxlength="10" value="{ date1val }" disabled />
+		<input type="hidden" name="date1" size="10" maxlength="10" value="{ date1 }" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ gaptxt }:</td>
+		<td> 
+			<select name="gap">
+			<option value="" selected ></option>
+			<!--#in getnextgap -->
+			<option value="{ gapval }">{ gapname }</option>
+			<!--#endin getnextgap -->
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center"><input type="submit" name="Submit" value="{ searchtxt }"></td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabBodyTitleBackground"> 
+<td><b>{ datestxt }</b></td>
+<td align="right"><b>{ intervaltxt }</b></td>
+</tr>
+<!--#in getnextfreeevent -->
+<!--#if free -->
+<!--#if altbg --><tr valign="middle" class="BabFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
+<td>
+<a class="BabSiteAdminListLink" href="{ refurl })">{ startdate }&nbsp;{ starttime }&nbsp;/&nbsp;{ enddate }&nbsp;{ endtime }</a>
+</td>
+<td align="right">{ interval }</td>
+</tr>        
+<!--#endif free -->
+<!--#endin getnextfreeevent -->
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<!--#end searchavailability -->

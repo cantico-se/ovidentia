@@ -79,7 +79,7 @@ document.onmousemove = bab_tooltipPosition;
 				<h4 title="{ fullname }">{ fullnameten }</h4>
 			<!--#endif countevent -->
 				<!--#in getnextevent -->
-				<div id="calevent{ idcal }{ idevent }" class="bab_tooltip" style="background-color:#{ bgcolor }">
+				<div id="calevent{ evtidx }" class="bab_tooltip" style="background-color:#{ bgcolor }">
 					<h3>{ title }</h3>
 					<h5>
 						<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
@@ -94,7 +94,7 @@ document.onmousemove = bab_tooltipPosition;
 					<div class="description">{ description }</div>
 				</div>
 				
-				<div class="event" style="background-color:#{ bgcolor }" onClick="bab_popup('{ vieweventurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onMouseOut="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
+				<div class="event" style="background-color:#{ bgcolor }" onClick="bab_popup('{ vieweventurl }',5)"  onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onMouseOut="bab_showOnMouse('calevent{ evtidx }',0)">
 					<!--#if allow_modify -->
 					<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 					<!--#endif allow_modify -->
@@ -231,5 +231,6 @@ document.onmousemove = bab_tooltipPosition;
 	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
 	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
 	<!--#endif print -->
+	<a class="calendars" href="javascript:bab_popup('{ searcheventurl }')">{ t_search }</a>
 </div>
 <!--#end calfreemonth -->
