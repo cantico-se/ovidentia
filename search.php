@@ -92,7 +92,7 @@ function startSearch($pat, $item, $what, $pos)
 
 		function temp($pat, $item, $what, $pos)
 			{
-			global $BAB_SESS_USERID, $babLimit;
+			global $BAB_SESS_USERID, $babLimit, $babBody;
 
 			$this->db = $GLOBALS['babDB'];
 			$this->search = bab_translate("Search");
@@ -130,18 +130,13 @@ function startSearch($pat, $item, $what, $pos)
 				$req = "alter table comresults add unique (id)";
 				$this->db->db_query($req);
 
-				$req = "select id from ".BAB_TOPICS_TBL."";
-				$res = $this->db->db_query($req);
-				while( $row = $this->db->db_fetch_array($res))
+				for( $i = 0; $i < count($babBody->topview); $i++ )
 					{
-					if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
-						{
-						$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where (title ".$this->like." or head ".$this->like." or body ".$this->like.") and confirmed='Y' and id_topic='".$row['id']."'";
-						$this->db->db_query($req);
+					$req = "insert into artresults select id, id_topic, title from ".BAB_ARTICLES_TBL." where (title ".$this->like." or head ".$this->like." or body ".$this->like.") and confirmed='Y' and id_topic='".$babBody->topview[$i]."'";
+					$this->db->db_query($req);
 
-						$req = "insert into comresults select id, id_article, id_topic, subject from ".BAB_COMMENTS_TBL." where (subject ".$this->like." or message ".$this->like.") and confirmed='Y' and id_topic='".$row['id']."'";
-						$this->db->db_query($req);
-						}
+					$req = "insert into comresults select id, id_article, id_topic, subject from ".BAB_COMMENTS_TBL." where (subject ".$this->like." or message ".$this->like.") and confirmed='Y' and id_topic='".$babBody->topview[$i]."'";
+					$this->db->db_query($req);
 					}
 
 				$req = "select count(*) from artresults";
@@ -268,20 +263,18 @@ function startSearch($pat, $item, $what, $pos)
 				$this->db->db_query($req);
 				$req = "alter table filresults add unique (id)";
 				$this->db->db_query($req);
-				$aclfm = bab_fileManagerAccessLevel();
+				bab_fileManagerAccessLevel();
 				$private = false;
-				for( $i = 0; $i < count($aclfm['id']); $i++)
+				for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 					{
-					if( $aclfm['pu'][$i] == 1)
+					if( $babBody->aclfm['down'][$i] == 1)
 						{
-						$req = "insert into filresults select * from ".BAB_FILES_TBL." where (name ".$this->like." or description ".$this->like." or keywords ".$this->like.") and id_owner='".$aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
+						$req = "insert into filresults select * from ".BAB_FILES_TBL." where (name ".$this->like." or description ".$this->like." or keywords ".$this->like.") and id_owner='".$babBody->aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
 						$this->db->db_query($req);						
 						}
-					if( $aclfm['pr'][$i] == 1)
-						$private = true;
 					}
 
-				if( $private)
+				if( $babBody->ustorage)
 					{
 					$req = "insert into filresults select * from ".BAB_FILES_TBL." where (name ".$this->like." or description ".$this->like." or keywords ".$this->like.") and id_owner='".$BAB_SESS_USERID."' and bgroup='N' and state='' and confirmed='Y'";
 					$this->db->db_query($req);						

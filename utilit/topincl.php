@@ -10,7 +10,7 @@ include $babInstallPath."utilit/imgincl.php";
 function bab_getCategoryTitle($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_TOPICS_TBL." where id='$id'";
+	$query = "select category from ".BAB_TOPICS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -26,7 +26,7 @@ function bab_getCategoryTitle($id)
 function bab_getTopicCategoryTitle($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
+	$query = "select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -42,7 +42,7 @@ function bab_getTopicCategoryTitle($id)
 function bab_getArticleTitle($article)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+	$query = "select title from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -58,7 +58,7 @@ function bab_getArticleTitle($article)
 function bab_getArticleDate($article)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+	$query = "select date from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -74,12 +74,12 @@ function bab_getArticleDate($article)
 function bab_getArticleAuthor($article)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+	$query = "select id_author from ".BAB_ARTICLES_TBL." where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from ".BAB_USERS_TBL." where id='".$arr['id_author']."'";
+		$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_author']."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -98,7 +98,7 @@ function bab_getArticleAuthor($article)
 function bab_getCommentTitle($com)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_COMMENTS_TBL." where id='$com'";
+	$query = "select subject from ".BAB_COMMENTS_TBL." where id='$com'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -115,7 +115,7 @@ function bab_confirmDeleteTopic($id)
 	{
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id'";
+	$req = "select id from ".BAB_ARTICLES_TBL." where id_topic='$id'";
 	$res = $db->db_query($req);
 	while( $arr = $db->db_fetch_array($res))
 		{
@@ -160,7 +160,7 @@ function bab_confirmDeleteArticle($article)
 function bab_deleteComments($com)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_COMMENTS_TBL." where id_parent='".$com."'";
+	$req = "select id from ".BAB_COMMENTS_TBL." where id_parent='".$com."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res))
 		{

@@ -272,7 +272,7 @@ function confirmDeleteComment($topics, $article, $com)
 	}
 
 /* main */
-$approver = bab_isUserTopicManager($topics);
+$approver = $BAB_SESS_USERID != ""? bab_isUserTopicManager($topics): false;
 $uaapp = bab_isUserArticleApprover($topics);
 $ucapp = bab_isUserCommentApprover($topics);
 if( $approver || $uaapp || $ucapp )

@@ -258,7 +258,7 @@ function bab_callAddonsFunction($func)
 				$GLOBALS['babAddonFolder'] = $row['title'];
 				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
 				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
+				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 				require_once( $addonpath."/init.php" );
 				$call = $row['title']."_".$func;
@@ -287,7 +287,7 @@ function bab_getAddonsMenus($row, $what)
 		$GLOBALS['babAddonFolder'] = $row['title'];
 		$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
 		$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
+		$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
 		$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 		require_once( $addonpath."/init.php" );
 		$func = $row['title']."_".$what;
@@ -541,7 +541,7 @@ function babUserSection($close)
 	$this->aidetxt = bab_translate("Since your last connection:");
 
 	$this->blogged = false;
-	$pgrpid = bab_getPrimaryGroupId($BAB_SESS_USERID);
+	$pgrpid = $BAB_SESS_USERID == "" ? "": bab_getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
 	$req = "select id from ".BAB_FAQCAT_TBL."";
 	$res = $babDB->db_query($req);
@@ -594,7 +594,7 @@ function babUserSection($close)
 		}
 	if( $vac )
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacation";
-	if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId($pgrpid, 2) != 0) &&  $idcal != 0 )
+	if( (bab_getCalendarId(1, 2) != 0  || ($pgrpid != "" && bab_getCalendarId($pgrpid, 2) != 0)) &&  $idcal != 0 )
 		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&calid=".$idcal;
 	if( $bemail )
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";
@@ -717,7 +717,7 @@ function babTopcatSection($close)
 	$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
+		if( in_array($row['id'], $babBody->topview) )
 			{
 			if( $close )
 				{
@@ -781,7 +781,7 @@ function babTopicsSection($cat, $close)
 	$res = $babDB->db_query($req);
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) || bab_isUserTopicManager($row['id']))
+		if(in_array($row['id'], $babBody->topview) || ($GLOBALS['BAB_SESS_USERID'] != "" && bab_isUserTopicManager($row['id'])))
 			{
 			if( $close )
 				{
@@ -967,6 +967,7 @@ var $lastlog; /* date of user last log */
 var $newarticles;
 var $newcomments;
 var $newposts;
+var $topview = array();
 
 function babBody()
 {
@@ -1006,18 +1007,6 @@ function isSectionClose($idsec, $type)
 			{
 			$close = 1;
 			}
-		else
-			{
-			$close = 0;
-			}
-		}
-	else if(!empty($BAB_SESS_USERID))
-		{
-		$close = 0;
-		}
-	else
-		{
-		$close = 0;
 		}
 	return $close;
 }
@@ -1030,7 +1019,7 @@ function loadSections()
 	$res = $babDB->db_query($req);
 	while( $arr =  $babDB->db_fetch_array($res))
 		{
-		$close = $this->isSectionClose($arr['id_section'], $arr['type']);
+		$close = $BAB_SESS_USERID == "" ? 0: $this->isSectionClose($arr['id_section'], $arr['type']);
 		$add = false;
 		switch( $arr['type'] )
 			{
@@ -1076,7 +1065,7 @@ function loadSections()
 					}
 				break;
 			case "3": // BAB_TOPICS_CATEGORIES_TBL sections
-				$r = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_section']."'"));
+				$r = $babDB->db_fetch_array($babDB->db_query("select id, enabled from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_section']."'"));
 				if( $r['enabled'] == "Y")
 					{
 					$sec = new babTopicsSection($r['id'], $close);
@@ -1093,7 +1082,7 @@ function loadSections()
 						$GLOBALS['babAddonFolder'] = $r['title'];
 						$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
 						$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$r['id']."/";
-						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$r['title']."/";
+						$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$r['title']."/";
 						$GLOBALS['babAddonHtmlPath'] = "addons/".$r['title']."/";
 						require_once( $GLOBALS['babAddonsPath'].$r['title']."/init.php" );
 						$func = $r['title']."_onSectionCreate";
@@ -1266,7 +1255,7 @@ function babMonthA($month = "", $year = "")
 
 function printout()
 	{
-	global $babMonths, $BAB_SESS_USERID;
+	global $babDB, $babMonths, $BAB_SESS_USERID;
 	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
 	$this->curyear = $this->currentYear;
 	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
@@ -1275,9 +1264,32 @@ function printout()
 	$this->w = 0;
 	$todaymonth = date("n");
 	$todayyear = date("Y");
-	$this->idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-	$idgrp = bab_getPrimaryGroupId($BAB_SESS_USERID);
-	$this->idgrpcal = bab_getCalendarId($idgrp, 2);
+	if( !empty($BAB_SESS_USERID))
+		{
+		$this->idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
+		$this->idcals = "(id_cal='".$this->idcal."' ";
+		$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group");
+		$req2 = "select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_RESOURCESCAL_TBL." where ".BAB_CALENDAR_TBL.".owner=".BAB_RESOURCESCAL_TBL.".id and (".BAB_RESOURCESCAL_TBL.".id_group='1'";
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			$res2 = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$arr['id']."' and type='2' and actif='Y'");
+			while( $arr2 = $babDB->db_fetch_array($res2))
+				{
+				$this->idcals .= " or id_cal='".$arr2['id']."' ";
+				$req2 .= " or ".BAB_RESOURCESCAL_TBL.".id_group='".$arr2['id']."'"; 
+				}
+			}
+		$req2 .= ")"; 
+		$res = $babDB->db_query($req2);
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			$this->idcals .= "or id_cal='".$arr['id']."' ";
+			}
+		$this->idcals .=")";
+		}
+	else
+		$this->idcal = "";
+
 	return bab_printTemplate($this,"montha.html", "");
 	}
 
@@ -1336,28 +1348,26 @@ function printout()
 				if( $total > $this->days)
 					return false;
 				$this->day = $total;
-				$mktime = mktime(0,0,0,$this->currentMonth, $total,$this->currentYear);
-				$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-				$daymax = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-				$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$this->idcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-				$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax')";
-				$res = $babDB->db_query($req);
-				if( $res && $babDB->db_num_rows($res) > 0)
+				if( $this->idcal != "" )
 					{
-					$this->event = 1;
-					$this->dayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idcal;
-					$this->day = "<b>".$total."</b>";
-					}
-				else
-					{
-					$req = "select * from ".BAB_CAL_EVENTS_TBL." where id_cal='".$this->idgrpcal."' and ('$daymin' between start_date and end_date or '$daymax' between start_date and end_date";
-					$req .= " or start_date between '$daymin' and '$daymax' or end_date between '$daymin' and '$daymax')";
+					$mktime = mktime(0,0,0,$this->currentMonth, $total,$this->currentYear);
+					$daymin = sprintf("%04d-%02d-%02d", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
+					$req = "select distinct(".BAB_CAL_EVENTS_TBL.".id_cal) as idcal from ".BAB_CAL_EVENTS_TBL." where ".$this->idcals;
+					$req .= " and '".$daymin."' between start_date and end_date";
 					$res = $babDB->db_query($req);
-					if( $res && $babDB->db_num_rows($res) > 0)
+					if( $res && $babDB->db_num_rows($res))
 						{
-						$this->event = 1;
-						$this->dayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$this->idgrpcal;
-						$this->day = "<b>".$total."</b>";
+						while($row = $babDB->db_fetch_array($res))
+							{
+							$idcals .= $row['idcal'] .",";
+							}
+						$idcals = substr($idcals, 0, -1);
+						if( !empty($idcals))
+							{
+							$this->event = 1;
+							$this->dayurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=viewd&day=".$total."&month=".$this->currentMonth. "&year=".$this->currentYear. "&calid=".$idcals;
+							$this->day = "<b>".$total."</b>";
+							}
 						}
 					}
 				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
@@ -1385,6 +1395,16 @@ function bab_updateUserSettings()
 {
 	global $babDB, $babBody,$BAB_SESS_USERID;
 
+	$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL."");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
+			{
+			$babBody->topview[] = $row['id'];
+			}
+		}
+
+
 	if( !empty($BAB_SESS_USERID))
 		{
 
@@ -1407,24 +1427,26 @@ function bab_updateUserSettings()
 
 			$babBody->lastlog = $arr['lastlog'];
 
-			$res = $babDB->db_query("select id, id_topic from ".BAB_ARTICLES_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
-			while( $row = $babDB->db_fetch_array($res))
+			if( count($babBody->topview) > 0 )
 				{
-				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id_topic']) )
+				$res = $babDB->db_query("select id_topic from ".BAB_ARTICLES_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
+				while( $row = $babDB->db_fetch_array($res))
 					{
-					$babBody->newarticles++;
+					if( in_array($row['id_topic'], $babBody->topview) )
+						{
+						$babBody->newarticles++;
+						}
+					}
+
+				$res = $babDB->db_query("select id_topic from ".BAB_COMMENTS_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
+				while( $row = $babDB->db_fetch_array($res))
+					{
+					if( in_array($row['id_topic'], $babBody->topview) )
+						{
+						$babBody->newcomments++;
+						}
 					}
 				}
-
-			$res = $babDB->db_query("select id, id_topic from ".BAB_COMMENTS_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
-			while( $row = $babDB->db_fetch_array($res))
-				{
-				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id_topic']) )
-					{
-					$babBody->newcomments++;
-					}
-				}
-
 			$res = $babDB->db_query("select distinct ".BAB_THREADS_TBL.".forum from ".BAB_THREADS_TBL." join ".BAB_POSTS_TBL." where ".BAB_THREADS_TBL.".id = ".BAB_POSTS_TBL.".id_thread and ".BAB_POSTS_TBL.".confirmed='Y' and ".BAB_POSTS_TBL.".date >= '".$babBody->lastlog."'");
 			while( $row = $babDB->db_fetch_array($res))
 				{

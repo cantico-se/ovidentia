@@ -7,117 +7,6 @@
 include_once "base.php";
 include $babInstallPath."utilit/topincl.php";
 
-function oldListArticles()
-	{
-	global $babBody;
-
-	class temp
-		{
-	
-		var $content;
-		var $arr = array();
-		var $arrid = array();
-		var $db;
-		var $count;
-		var $counttop;
-		var $res;
-		var $more;
-		var $newc;
-		var $topics;
-		var $com;
-		var $author;
-		var $commentsurl;
-		var $commentsname;
-		var $moreurl;
-		var $morename;
-
-		function temp()
-			{
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_TOPICS_TBL."";
-			$res = $this->db->db_query($req);
-			while( $row = $this->db->db_fetch_array($res))
-				{
-				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
-					{
-					$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$row['id']."' and confirmed='Y' order by date desc";
-					$res2 = $this->db->db_query($req);
-
-					if( $res2 && $this->db->db_num_rows($res2) > 0)
-						{
-						array_push($this->arrid, $row['id']);
-						}
-					}
-				}
-			$this->counttop = count($this->arrid);
-			//echo $this->counttop;
-
-			$this->com = false;
-			$this->morename = bab_translate("Read More");
-			}
-
-		function getnext()
-			{
-			global $new; 
-			static $i = 0;
-			if( $i < $this->counttop)
-				{
-				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arrid[$i]."' and confirmed='Y' order by date desc";
-				$this->res = $this->db->db_query($req);
-
-				if( $this->res && $this->db->db_num_rows($this->res) > 0)
-					{
-					$this->arr = $this->db->db_fetch_array($this->res);
-					$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
-					$this->articledate = bab_getArticleDate($this->arr['id']);
-					$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
-					$this->content = $this->arr['head'];
-
-					if( $this->com)
-						{
-						$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='Y'";
-						$res = $this->db->db_query($req);
-						$ar = $this->db->db_fetch_array($res);
-						$total = $ar['total'];
-						$req = "select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$this->arr['id']."' and confirmed='N'";
-						$res = $this->db->db_query($req);
-						$ar = $this->db->db_fetch_array($res);
-						$totalw = $ar['total'];
-						$this->commentsurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->arrid[$i]."&article=".$this->arr['id'];
-						if( isset($new) && $new > 0)
-							$this->commentsurl .= "&new=".$new;
-						$this->commentsurl .= "&newc=".$this->newc;
-						if( $totalw > 0 )
-							$this->commentsname = bab_translate("Comments")."&nbsp;(".$total."-".$totalw.")";
-						else
-							$this->commentsname = bab_translate("Comments")."&nbsp;(".$total.")";
-						}
-					else
-						{
-						$this->commentsurl = "";
-						$this->commentsname = "";
-						}
-
-					$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->arrid[$i]."&article=".$this->arr['id'];
-					if( isset($new) && $new > 0)
-						$this->moreurl .= "&new=".$new;
-
-					$this->moreurl .= "&newc=".$this->newc;
-					$this->morename = bab_translate("Read more")."...";
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-		}
-	
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "introlist"));
-	return $temp->count;
-	}
-
 function ListArticles($idgroup)
 	{
 	global $babBody;
@@ -164,14 +53,17 @@ function ListArticles($idgroup)
 			if( $i < $this->countres)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select id, id_topic ,title, head , LENGTH(body) as blen  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
+				$req = "select id, id_topic ,id_author, date, title, head , LENGTH(body) as blen  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
 				$this->blen = $arr['blen'];
 				$this->title = $arr['title'];
 				$this->content = bab_replace($arr['head']);
-				$this->articleauthor = bab_getArticleAuthor($arr['id']);
-				$this->articledate = bab_getArticleDate($arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id'];
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=entry&idx=print&topics=".$arr['id_topic']."&article=".$arr['id'];
@@ -217,8 +109,11 @@ function readMore($article)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($arr['body']);
 				$this->title = $arr['title'];
-				$this->articleauthor = bab_getArticleAuthor($arr['id']);
-				$this->articledate = bab_getArticleDate($arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$i++;
 				return true;
@@ -256,7 +151,7 @@ function articlePrint($topics, $article)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
-				$this->title = bab_getArticleTitle($this->arr['id']);
+				$this->title = $this->arr['title'];
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
 			}

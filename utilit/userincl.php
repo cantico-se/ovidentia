@@ -142,58 +142,38 @@ function bab_isUserAdministrator()
 		return 0;
 }
 
-
 function bab_isAccessValid($table, $idobject)
 {
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
 	$add = false;
-	if( !isset($idobject))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must choose a valid item !!");
-		return $add;
-		}
 	$db = $GLOBALS['babDB'];
-	$req = "select id from ".$table." where id_object='$idobject' and id_group='0'"; // everybody
-	$res = $db->db_query($req);
+	$res = $db->db_query("select id_group from ".$table." where id_object='".$idobject."'");
 	if( $res && $db->db_num_rows($res) > 0)
 		{
-		$add = true;
-		}
-	else
-		{
-		$req = "select id from ".$table." where id_object='$idobject' and id_group='1'"; // users
-		$res = $db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0 && $BAB_SESS_LOGGED)
+		$row = $db->db_fetch_array($res);
+		switch($row['id_group'])
 			{
-			$add = true;
-			}
-		else
-			{
-			$req = "select id from ".$table." where id_object='$idobject' and id_group='2'"; //guests
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0 )
-				{
-				if(!$BAB_SESS_LOGGED)
+			case "0": // everybody
+				$add = true;
+				break;
+			case "1": // users
+				if( $BAB_SESS_LOGGED )
 					$add = true;
-				}
-			else if( $BAB_SESS_USERID != "")
-				{
-				$req = "select id_group from ".$table." where id_object='$idobject'"; //groups
-				$res = $db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0 )
+				break;
+			case "2": // guests
+				if( !$BAB_SESS_LOGGED )
+					$add = true;
+				break;
+			default:  //groups
+				if( $BAB_SESS_USERID != "" )
 					{
-					while( $row = $db->db_fetch_array($res))
+					$res2 = $db->db_query("select ".BAB_USERS_GROUPS_TBL.".id from ".BAB_USERS_GROUPS_TBL." join ".$table." where ".$table.".id_object=".$idobject." and ".$table.".id_group=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."'");
+					if( $res2 && $db->db_num_rows($res2) > 0 )
 						{
-						$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object=$BAB_SESS_USERID and id_group='".$row['id_group']."'"; //groups
-						$res2 = $db->db_query($req);
-						if( $res2 && $db->db_num_rows($res2) > 0 )
-							{
-							$add = true;
-							break;
-							}
+						$add = true;
 						}
 					}
-				}
+				break;
 			}
 		}
 	return $add;
@@ -271,18 +251,24 @@ function bab_userIsloggedin()
 
 function bab_getUserName($id)
 	{
+	static $arrnames = array();
+
+	if( isset($arrnames[$id]) )
+		return $arrnames[$id];
+
 	$db = $GLOBALS['babDB'];
 	$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return bab_composeUserName($arr['firstname'], $arr['lastname']);
+		$arrnames[$id] = bab_composeUserName($arr['firstname'], $arr['lastname']);
 		}
 	else
 		{
-		return "";
+		$arrnames[$id] = "";
 		}
+	return $arrnames[$id];
 	}
 
 function bab_getUserEmail($id)
@@ -357,6 +343,9 @@ function bab_isUserVacationApprover($groupid = 0)
 function bab_isUserUseVacation($iduser)
 	{
 	$db = $GLOBALS['babDB'];
+	if( empty($iduser) || $iduser == 0 )
+		return false;
+
 	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='$iduser' and isprimary='Y'";
 	$res = $db->db_query($query);
 
@@ -405,6 +394,8 @@ function bab_getGroupName($id)
 function bab_getPrimaryGroupId($userid)
 	{
 	$db = $GLOBALS['babDB'];
+	if( empty($userid) || $userid == 0 )
+		return "";
 	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='$userid' and isprimary='Y'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -554,6 +545,7 @@ function bab_getUserGroups($id = "")
 
 function bab_replace( $txt )
 {
+	global $babBody;
 	$db = $GLOBALS['babDB'];
 	$artarray = array("ARTICLEPOPUP", "ARTICLE");
 	for( $i = 0; $i < count($artarray); $i++)
@@ -617,7 +609,7 @@ function bab_replace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
+				if(in_array($arr['id_topic'], $babBody->topview))
 					{
 					if( $i == 0 )
 						$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$arr['title']."</a>", $txt);

@@ -25,7 +25,6 @@ function listArticles($topics, $approver)
 		var $more;
 		var $topics;
 		var $com;
-		var $author;
 		var $commentsurl;
 		var $commentsname;
 		var $moreurl;
@@ -43,7 +42,7 @@ function listArticles($topics, $approver)
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select id, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
+			$req = "select id, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -63,8 +62,11 @@ function listArticles($topics, $approver)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
-				$this->articledate = bab_getArticleDate($this->arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
@@ -141,7 +143,6 @@ function listOldArticles($topics, $pos, $approver)
 		var $newc;
 		var $topics;
 		var $com;
-		var $author;
 		var $commentsurl;
 		var $commentsname;
 		var $moreurl;
@@ -199,7 +200,7 @@ function listOldArticles($topics, $pos, $approver)
 				$this->barch = false;
 
 
-			$req = "select id, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
+			$req = "select id, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
 			if( $total > MAX_ARTICLES)
 				{
 				$req .= " limit ".$pos.",".MAX_ARTICLES;
@@ -221,8 +222,11 @@ function listOldArticles($topics, $pos, $approver)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
-				$this->articledate = bab_getArticleDate($this->arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
@@ -316,7 +320,6 @@ function readMore($topics, $article)
 		var $res;
 		var $more;
 		var $topics;
-		var $author;
 
 		function temp($topics, $article)
 			{
@@ -337,8 +340,11 @@ function readMore($topics, $article)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['body']);
-				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
-				$this->articledate = bab_getArticleDate($this->arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
+					$this->articleauthor = $author;
+				else
+					$this->articleauthor = bab_translate("Anonymous");
+				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$i++;
@@ -590,7 +596,7 @@ function articlePrint($topics, $article)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
 				$this->content = bab_replace($this->arr['body']);
-				$this->title = bab_getArticleTitle($this->arr['id']);
+				$this->title = $this->arr['title'];
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
 			}
@@ -756,7 +762,7 @@ if( isset($addart) && $addart == "add")
 		$idx = "Submit";
 	}
 
-if( isset($action) && $action == "Yes" && bab_isUserTopicManager($topics))
+if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != "" && bab_isUserTopicManager($topics))
 	{
 	bab_confirmDeleteArticle($article);
 	}
@@ -767,7 +773,7 @@ if( isset($modify))
 	$idx = "Articles";
 	}
 
-$approver = bab_isUserTopicManager($topics);
+$approver = $BAB_SESS_USERID != ""? bab_isUserTopicManager($topics): false;
 $uaapp = bab_isUserArticleApprover($topics);
 $ucapp = bab_isUserCommentApprover($topics);
 if( $approver || $uaapp || $ucapp )
@@ -819,7 +825,7 @@ switch($idx)
 
 	case "More":
 		$babBody->title = bab_getCategoryTitle($topics);
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $access)
+		if( in_array($topics, $babBody->topview) || $access)
 			{
 			$barch = readMore($topics, $article);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $access)
@@ -861,14 +867,14 @@ switch($idx)
 		break;
 
 	case "Print":
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics) || $access)
+		if( in_array($topics, $babBody->topview) || $access)
 			articlePrint($topics, $article);
 		exit();
 		break;
 
 	case "larch":
 		$babBody->title = bab_translate("List of old articles");
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $access)
+		if( in_array($topics, $babBody->topview)|| $access)
 			{
 			$nbarch = listOldArticles($topics, $pos, $approver);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)
@@ -886,7 +892,7 @@ switch($idx)
 	default:
 	case "Articles":
 		$babBody->title = bab_translate("List of articles");
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics)|| $access)
+		if( in_array($topics, $babBody->topview)|| $access)
 			{
 			$arr = listArticles($topics, $approver);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $access)

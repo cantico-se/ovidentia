@@ -121,16 +121,7 @@ function newArticles($days)
 			$this->db = $GLOBALS['babDB'];
 
 			$this->nbdays = $days;
-			$req = "select * from ".BAB_TOPICS_TBL."";
-			$res = $this->db->db_query($req);
-			while( $row = $this->db->db_fetch_array($res))
-				{
-				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
-					{
-					array_push($this->arrid, $row['id']);
-					}
-				}
-			$this->count = count($this->arrid);
+			$this->count = count($babBody->topview);
 			if( $days > 0 )
 				{
 				$this->newarticles = bab_translate("Last articles ( Since seven days before your last visit )");
@@ -147,7 +138,7 @@ function newArticles($days)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
+				$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$babBody->topview[$k]."' and confirmed='Y'and date >= ";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else
@@ -175,8 +166,11 @@ function newArticles($days)
 				$arr = $this->db->db_fetch_array($this->resarticles);
 				$this->title = $arr['title'];
 				$this->titleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id'];
-				$this->author = bab_getArticleAuthor($arr['id']);
-				$this->date = bab_getArticleDate($arr['id']);
+				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
+					$this->author = $author;
+				else
+					$this->author = bab_translate("Anonymous");
+				$this->date = bab_strftime(bab_mktime($arr['date']));
 				$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$arr['id']."' and confirmed='Y' and date >= ";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
@@ -223,16 +217,7 @@ function newComments($days)
 			$this->db = $GLOBALS['babDB'];
 
 			$this->nbdays = $days;
-			$req = "select * from ".BAB_TOPICS_TBL."";
-			$res = $this->db->db_query($req);
-			while( $row = $this->db->db_fetch_array($res))
-				{
-				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
-					{
-					array_push($this->arrid, $row['id']);
-					}
-				}
-			$this->count = count($this->arrid);
+			$this->count = count($babBody->topview);
 			if( $days > 0 )
 				{
 				$this->newcomments = bab_translate("Last comments ( Since seven days before your last visit )");
@@ -249,7 +234,7 @@ function newComments($days)
 			static $k=0;
 			if( $k < $this->count)
 				{
-				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arrid[$k]."' and confirmed='Y'and date >= ";
+				$req = "select * from ".BAB_COMMENTS_TBL." where id_topic='".$babBody->topview[$k]."' and confirmed='Y'and date >= ";
 				if( $this->nbdays > 0)
 					$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 				else

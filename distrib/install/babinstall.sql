@@ -20,7 +20,9 @@ CREATE TABLE bab_articles (
    body longtext NOT NULL,
    archive enum('N','Y') NOT NULL default 'N',
    idfai int(11) unsigned NOT NULL default '0',
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_topic (id_topic),
+   KEY date (date)
 );
 
 
@@ -41,7 +43,10 @@ CREATE TABLE bab_comments (
    name varchar(60) NOT NULL,
    email tinytext NOT NULL,
    idfai int(11) unsigned NOT NULL default '0',
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_article (id_article),
+   KEY id_topic (id_topic),
+   KEY date (date)
 );
 
 
@@ -68,7 +73,9 @@ CREATE TABLE bab_faqcat_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 
@@ -114,7 +121,9 @@ CREATE TABLE bab_forumspost_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 
@@ -127,7 +136,9 @@ CREATE TABLE bab_forumsreply_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 
@@ -140,7 +151,9 @@ CREATE TABLE bab_forumsview_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 
@@ -159,7 +172,8 @@ CREATE TABLE bab_groups (
    ustorage enum('N','Y') DEFAULT 'N' NOT NULL,
    notes enum('Y','N') NOT NULL default 'Y',
    contacts enum('Y','N') NOT NULL default 'Y',
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY manager (manager)
 );
 
 INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'Y', 'Y');
@@ -177,7 +191,8 @@ CREATE TABLE bab_notes (
    id_user int(11) unsigned DEFAULT '0' NOT NULL,
    date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    content text NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_user (id_user)
 );
 
 
@@ -196,7 +211,10 @@ CREATE TABLE bab_posts (
    subject varchar(100) NOT NULL,
    message text NOT NULL,
    confirmed enum('N','Y') DEFAULT 'N' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_thread (id_thread),
+   KEY id_parent (id_parent),
+   KEY date (date)
 );
 
 
@@ -248,7 +266,10 @@ CREATE TABLE bab_sections_order (
    position enum('0','1') DEFAULT '0' NOT NULL,
    type smallint(2) unsigned NOT NULL,
    ordering smallint(6) unsigned NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_section (id_section),
+   KEY type (type),
+   KEY ordering (ordering)
 );
 
 INSERT INTO bab_sections_order VALUES ('1', '1', '0', '1', '1');
@@ -269,7 +290,10 @@ CREATE TABLE bab_sections_states (
    closed enum('N','Y') DEFAULT 'N' NOT NULL,
    type smallint(2) unsigned NOT NULL,
    id_user int(11) unsigned NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_section (id_section),
+   KEY type (type),
+   KEY id_user (id_user)
 );
 
 
@@ -282,7 +306,9 @@ CREATE TABLE bab_sections_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 
@@ -301,7 +327,9 @@ CREATE TABLE bab_threads (
    active enum('N','Y') DEFAULT 'Y' NOT NULL,
    notify enum('N','Y') DEFAULT 'N' NOT NULL,
    starter int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY forum (forum),
+   KEY date (date)
 );
 
 
@@ -321,7 +349,10 @@ CREATE TABLE bab_topics (
    idsaart int(11) unsigned NOT NULL default '0',
    idsacom int(11) unsigned NOT NULL default '0',
    notify enum('N','Y') NOT NULL default 'N',
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_approver (id_approver),
+   KEY id_cat (id_cat),
+   KEY ordering (ordering)
 );
 
 # --------------------------------------------------------
@@ -348,7 +379,9 @@ CREATE TABLE bab_topicscom_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 # --------------------------------------------------------
@@ -360,7 +393,9 @@ CREATE TABLE bab_topicssub_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 
@@ -373,7 +408,9 @@ CREATE TABLE bab_topicsview_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 
@@ -401,7 +438,11 @@ CREATE TABLE bab_users (
    style text,
    lastlog datetime DEFAULT '0000-00-00 00:00:00',
    datelog datetime DEFAULT '0000-00-00 00:00:00',
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY nickname (nickname),
+   KEY firstname (firstname),
+   KEY lastname (lastname),
+   KEY hashname (hashname)
 );
 
 INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '', '');
@@ -416,7 +457,9 @@ CREATE TABLE bab_users_groups (
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
    isprimary enum('N','Y') DEFAULT 'N' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 INSERT INTO bab_users_groups VALUES ( '1', '1', '3', 'N');
@@ -433,7 +476,8 @@ CREATE TABLE bab_users_log (
    sessid tinytext NOT NULL,
    remote_addr varchar(255) NOT NULL default '',
    forwarded_for varchar(255) NOT NULL default '',
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_user (id_user)
 );
 
 # --------------------------------------------------------
@@ -460,7 +504,9 @@ CREATE TABLE bab_vacationsview_groups (
 	id int(11) unsigned NOT NULL auto_increment,
 	id_object int(11) unsigned DEFAULT '0' NOT NULL,
 	id_group int(11) unsigned DEFAULT '0' NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_object (id_object),
+    KEY id_group (id_group)
 ); 
 
 # --------------------------------------------------------
@@ -495,7 +541,11 @@ CREATE TABLE bab_vacations (
 	comment TINYTEXT not null,
 	comref TEXT not null,
 	date datetime DEFAULT '0000-00-00 00:00:00',
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY userid (userid),
+    KEY datebegin (datebegin),
+    KEY dateend (dateend),
+    KEY type (type)
 ); 
 
 # --------------------------------------------------------
@@ -510,7 +560,9 @@ CREATE TABLE bab_vacationsman_groups (
 	ordering SMALLINT (4) UNSIGNED not null,
 	status TINYINT (2) not null,
 	supplier INT (11) UNSIGNED not null,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_object (id_object),
+    KEY id_group (id_group)
 ); 
 
 
@@ -526,7 +578,8 @@ CREATE TABLE bab_categoriescal (
 	description VARCHAR (255) not null,
 	bgcolor VARCHAR (6) not null,
 	id_group INT (11) UNSIGNED not null,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_group (id_group)
 );
 
 
@@ -540,7 +593,8 @@ CREATE TABLE bab_resourcescal (
 	name VARCHAR (60) not null,
 	description VARCHAR (255) not null,
 	id_group INT (11) UNSIGNED not null,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_group (id_group)
 );
 
 # --------------------------------------------------------
@@ -559,7 +613,10 @@ CREATE TABLE bab_cal_events (
 	end_time TIME not null,
 	id_cat INT (11) UNSIGNED not null,
 	id_creator INT (11) UNSIGNED not null,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_cal (id_cal),
+    KEY start_date (start_date),
+    KEY end_date (end_date)
 );
 
 
@@ -574,7 +631,9 @@ CREATE TABLE bab_calendar (
 	owner int(11) unsigned DEFAULT '0' NOT NULL,
 	actif enum('Y','N') DEFAULT 'Y' NOT NULL,
 	type TINYINT (2) not null,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY owner (owner),
+    KEY type (type)
 );
 
 INSERT INTO bab_calendar VALUES ( '1', '1', 'Y', '1');
@@ -593,7 +652,9 @@ CREATE TABLE bab_calaccess_users (
 	id_cal INT (11) UNSIGNED not null,
 	id_user INT (11) UNSIGNED not null,
     bwrite smallint(2) unsigned NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_cal (id_cal),
+    KEY id_user (id_user)
 );
 
 # --------------------------------------------------------
@@ -609,7 +670,8 @@ CREATE TABLE bab_caloptions (
 	ampm ENUM ('Y','N') not null, 
 	usebgcolor ENUM ('Y','N') not null, 
     elapstime tinyint(2) unsigned NOT NULL DEFAULT '30' ,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_user (id_user)
 );
 
 
@@ -629,7 +691,8 @@ CREATE TABLE bab_mail_domains (
 	access VARCHAR (10) not null,
 	bgroup enum('N','Y') DEFAULT 'N' NOT NULL,
 	owner INT (11) UNSIGNED not null,	
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY owner (owner)
 );
 
 
@@ -649,7 +712,8 @@ CREATE TABLE bab_mail_accounts (
 	maxrows TINYINT (2) not null,
 	prefered enum('N','Y') DEFAULT 'N' NOT NULL,
 	format VARCHAR (5) DEFAULT 'plain' NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY owner (owner)
 );
 
 # --------------------------------------------------------
@@ -663,7 +727,8 @@ CREATE TABLE bab_mail_signatures (
 	owner INT (11) UNSIGNED not null,
 	html enum('Y','N') DEFAULT 'N' NOT NULL,
 	text TEXT not null,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY owner (owner)
 ); 
 
 # --------------------------------------------------------
@@ -689,7 +754,9 @@ CREATE TABLE bab_contacts (
    homeaddress text NOT NULL,
    PRIMARY KEY (id),
    KEY hashname (hashname),
-   KEY id (id)
+   KEY owner (owner),
+   KEY firstname (firstname),
+   KEY lastname (lastname)
 );
 
 # --------------------------------------------------------
@@ -712,7 +779,8 @@ CREATE TABLE bab_sites (
    smtpport char(20) NOT NULL DEFAULT '25',
    imgsize int(11) unsigned NOT NULL default '25',
    idgroup int(11) unsigned NOT NULL default '0',
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY name (name)
 );
 
 # --------------------------------------------------------
@@ -727,7 +795,10 @@ CREATE TABLE bab_homepages (
 	id_group INT (11) UNSIGNED not null,
 	status ENUM ('N', 'Y') not null,
 	ordering INT (11) UNSIGNED not null,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    KEY id_site (id_site),
+    KEY id_group (id_group),
+    KEY ordering (ordering)
 );
 
 # --------------------------------------------------------
@@ -752,7 +823,9 @@ CREATE TABLE bab_files (
   modifiedby int(11) unsigned NOT NULL default '0',
   confirmed enum('N','Y') NOT NULL default 'N',
   hits int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY id_owner (id_owner),
+  KEY name (name)
 );
 
 
@@ -822,7 +895,9 @@ CREATE TABLE bab_addons_groups (
    id int(11) unsigned NOT NULL auto_increment,
    id_object int(11) unsigned DEFAULT '0' NOT NULL,
    id_group int(11) unsigned DEFAULT '0' NOT NULL,
-   PRIMARY KEY (id)
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
 );
 
 CREATE TABLE bab_ini (
@@ -869,7 +944,8 @@ CREATE TABLE bab_fa_instances (
   id int(11) unsigned NOT NULL auto_increment,
   idsch int(11) unsigned NOT NULL default '0',
   extra tinytext NOT NULL,
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY idsch (idsch)
 );
 
 #
@@ -897,7 +973,8 @@ CREATE TABLE bab_fm_folders (
   idsa int(11) unsigned NOT NULL default '0',
   filenotify enum('N','Y') NOT NULL default 'N',
   active enum('Y','N') NOT NULL default 'Y',
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY folder (folder)
 );
 
 #
@@ -908,7 +985,9 @@ CREATE TABLE bab_fmdownload_groups (
   id int(11) unsigned NOT NULL auto_increment,
   id_object int(11) unsigned NOT NULL default '0',
   id_group int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
 );
 
 #
@@ -919,7 +998,9 @@ CREATE TABLE bab_fmupdate_groups (
   id int(11) unsigned NOT NULL auto_increment,
   id_object int(11) unsigned NOT NULL default '0',
   id_group int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
 );
 
 #
@@ -930,5 +1011,7 @@ CREATE TABLE bab_fmupload_groups (
   id int(11) unsigned NOT NULL auto_increment,
   id_object int(11) unsigned NOT NULL default '0',
   id_group int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
 );

@@ -98,26 +98,30 @@ function bab_deleteUploadUserFiles($gr, $id)
 
 function bab_isAccessFileValid($gr, $id)
 	{
-	global $babBody;
-
-	bab_fileManagerAccessLevel();
+	global $babBody, $babDB;
 	$access = false;
 	if( $gr == "Y")
 		{
-		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
+		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id ='".$id."' and active='Y'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			if( $babBody->aclfm['id'][$i] == $id && $babBody->aclfm['down'][$i])
-				{
+			if( bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $id))
 				$access = true;
-				break;
-				}
 			}
 		}
 	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
 		{
-		if( $babBody->ustorage)
+		$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".ustorage ='Y'");
+
+		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$access = true;
+			}
+		else
+			{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select ustorage from ".BAB_GROUPS_TBL." where id='1'"));
+			if( $arr['ustorage'] == "Y")
+				$access = true;
 			}
 		}
 	return $access;
