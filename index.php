@@ -72,9 +72,13 @@ $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
 
-bab_isUserLogged();
-bab_updateSiteSettings();
-bab_updateUserSettings();
+if( isset($tg) && $tg != "version" )
+	{
+	bab_isUserLogged();
+	bab_updateSiteSettings();
+	bab_updateUserSettings();
+	}
+
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
