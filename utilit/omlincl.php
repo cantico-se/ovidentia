@@ -1544,6 +1544,7 @@ class bab_Files extends bab_handler
 			$this->ctx->curctx->push('FileKeywords', $arr['keywords']);
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
+			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
 			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
