@@ -42,12 +42,12 @@ function getDomainName($id)
 function getAccountAccount($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where id='$id'";
+	$req = "select login from ".BAB_MAIL_ACCOUNTS_TBL." where id='$id'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return $arr['account'];
+		return $arr['login'];
 		}
 	else
 		{
@@ -75,9 +75,10 @@ function accountsList()
 		function temp()
 			{
 			global $BAB_SESS_USERID;
+			$this->account_name = bab_translate("Account name");
 			$this->name = bab_translate("Name");
 			$this->email = bab_translate("Email");
-			$this->accname = bab_translate("Account");
+			$this->login = bab_translate("Login name");
 			$this->domname = bab_translate("Domain");
 			$this->db = $GLOBALS['babDB'];
 			$this->count = 0;
@@ -152,8 +153,9 @@ function accountCreate()
 			{
 			global $BAB_SESS_USERID, $BAB_SESS_EMAIL, $BAB_SESS_USER;
 			$this->fullname = bab_translate("User Name");
-			$this->account = bab_translate("Account");
+			$this->account_name = bab_translate("Account name");
 			$this->email = bab_translate("Email");
+			$this->login = bab_translate("Login name");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
 			$this->domain = bab_translate("Domain");
@@ -278,7 +280,8 @@ function accountModify($item)
 			{
 			global $BAB_SESS_USERID, $BAB_SESS_EMAIL, $BAB_SESS_USER;
 			$this->fullname = bab_translate("User Name");
-			$this->account = bab_translate("Account name");
+			$this->account_name = bab_translate("Account name");
+			$this->login = bab_translate("Login name");
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
@@ -623,10 +626,10 @@ function signatureModify($sigid, $signature, $name, $html)
 	$babBody->babecho(	bab_printTemplate($temp,"mailopt.html", "signaturemodify"));
 	}
 
-function addAccount($fullname, $email, $account, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat)
+function addAccount($account_name,$fullname, $email, $login, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat)
 	{
 	global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
-	if( empty($account) || empty($password1) || empty($password2))
+	if( empty($account_name) || empty($login) || empty($password1) || empty($password2))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must complete all required fields !!");
 		return;
@@ -646,7 +649,7 @@ function addAccount($fullname, $email, $account, $password1, $password2, $domain
 	*/
 
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where account='$account' and domain='$domain' and owner='".$BAB_SESS_USERID."'";	
+	$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where account_name='$account_name' and domain='$domain' and owner='".$BAB_SESS_USERID."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -665,16 +668,16 @@ function addAccount($fullname, $email, $account, $password1, $password2, $domain
 		$fullname = addslashes($fullname);
 		}
 
-	$req = "insert into ".BAB_MAIL_ACCOUNTS_TBL." (name, email, password, account, domain, owner, maxrows, prefered, format) values ";	
-	$req .= "('".$fullname."', '".$email."', ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\"), '".$account."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefered."', '".$prefformat."')";	
+	$req = "insert into ".BAB_MAIL_ACCOUNTS_TBL." (account_name, name, email, password, login, domain, owner, maxrows, prefered, format) values ";	
+	$req .= "('".$account_name."','".$fullname."', '".$email."', ENCODE(\"".$password1."\",\"".$BAB_HASH_VAR."\"), '".$login."', '".$domain."', '".$BAB_SESS_USERID."', '".$maxrows."', '".$prefered."', '".$prefformat."')";	
 	$res = $db->db_query($req);
 
 }
 
-function modifyAccount($fullname, $email, $account, $password1, $password2, $domain, $item, $prefacc, $maxrows, $prefformat)
+function modifyAccount($account_name, $fullname, $email, $login, $password1, $password2, $domain, $item, $prefacc, $maxrows, $prefformat)
 	{
 	global $babBody, $BAB_SESS_USERID;
-	if( empty($account))
+	if( empty($account_name) || empty($login))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide account field !!");
 		return;
@@ -702,9 +705,9 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 		}
 
 	if( empty($password1) )
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', account='$account', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item' and owner='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set account_name='$account_name', name='$fullname', email='$email', login='$login', domain='$domain', prefered='$prefacc', maxrows='$maxrows', format='$prefformat' where id='$item' and owner='".$BAB_SESS_USERID."'";
 	else
-		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set name='$fullname', email='$email', password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),  account='$account', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item' and owner='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_MAIL_ACCOUNTS_TBL." set account_name='$account_name', name='$fullname', email='$email', password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),  login='$login', domain='$domain', prefered='$prefacc', format='$prefformat', maxrows='$maxrows' where id='$item' and owner='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 
 }
@@ -777,10 +780,10 @@ if( !isset($signature ))
 	$signature = "";
 
 if( isset($addacc) && $addacc == "add" && $BAB_SESS_USERID != '')
-	addAccount($fullname, $email, $account, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat);
+	addAccount($account_name, $fullname, $email, $login, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat);
 
 if( isset($modacc) && $modacc == "modify" && $BAB_SESS_USERID != '')
-	modifyAccount($fullname, $email, $account, $password1, $password2, $domain, $item, $prefacc, $maxrows, $prefformat);
+	modifyAccount($account_name, $fullname, $email, $login, $password1, $password2, $domain, $item, $prefacc, $maxrows, $prefformat);
 
 if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != '')
 	{

@@ -10,6 +10,12 @@
 <td class="BabLoginCadreBackground"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ account_name }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<input type="text" name="account_name" size="30" maxlength="100" value="">
+</td>
+</tr>
+<tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ fullname }:</td>
 <td class="BabLoginMenuBackground" width="70%" valign="middle">
 <input type="text" name="fullname" size="30" maxlength="100" value="{ username }">
@@ -22,9 +28,9 @@
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ account }:</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ login }:</td>
 <td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="account" size="30" maxlength="100">
+<input type="text" name="login" size="30" maxlength="100">
 </td>
 </tr>
 <tr> 
@@ -107,7 +113,13 @@
 <td class="BabLoginCadreBackground"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ fullname }</td>
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ account_name }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<input type="text" name="account_name" size="30" maxlength="100" value="{ arr[account_name] }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ fullname }:</td>
 <td class="BabLoginMenuBackground" width="70%" valign="middle">
 <input type="text" name="fullname" size="30" maxlength="100" value="{ arr[name] }">
 </td>
@@ -119,9 +131,9 @@
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ account }:</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ login }:</td>
 <td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="account" size="30" maxlength="100" value="{ arr[account] }">
+<input type="text" name="login" size="30" maxlength="100" value="{ arr[login] }">
 </td>
 </tr>
 <tr> 
@@ -201,9 +213,10 @@
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" width="1" align="center" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle"><b>{ name }</b> </td>
+<td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle"><b>{ account_name }</b></td>
+<td class="BabSiteAdminTitleFontBackground" width="20%" valign="middle"><b>{ name }</b></td>
 <td class="BabSiteAdminTitleFontBackground" width="30%" valign="middle"><b>{ email }</b></td>
-<td class="BabSiteAdminTitleFontBackground" width="30%" valign="middle"><b>{ accname }</b></td>
+<td class="BabSiteAdminTitleFontBackground" width="30%" valign="middle"><b>{ login }</b></td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle"><b>{ domname }</b></td>
 </tr>
 <!--#in getnext -->
@@ -215,10 +228,10 @@
 &nbsp; 
 <!--#endif prefered -->
 </td>
-<td class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" 
-href="{ url }">{ arr[name] }</a> </td>
+<td class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ url }">{ arr[account_name] }</a></td>
+<td class="BabSiteAdminFontBackground">{ arr[name] } </td>
 <td class="BabSiteAdminFontBackground">{ arr[email] }</td>
-<td class="BabSiteAdminFontBackground">{ arr[account] }</td>
+<td class="BabSiteAdminFontBackground">{ arr[login] }</td>
 <td class="BabSiteAdminFontBackground">{ domnameval }</td>
 </tr>
 <!--#endin getnext -->

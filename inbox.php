@@ -139,7 +139,7 @@ function listMails($accid, $criteria, $reverse, $start)
 				{
 				$arr = $this->db->db_fetch_array($res);
 				$this->maxrows = $arr['maxrows'];
-				$this->mailboxname = $arr['account'];
+				$this->mailboxname = $arr['account_name'];
 				if( empty($accid))
 					{
 					$this->accid = $arr['id'];
@@ -154,7 +154,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					$arr2 = $this->db->db_fetch_array($res2);
 					$this->access = $arr2['access'];
 					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-					$this->mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if(!$this->mbox)
 						{
 						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
@@ -277,7 +277,7 @@ function listMails($accid, $criteria, $reverse, $start)
 			if( $k < $this->countacc)
 				{
 				$arr = $this->db->db_fetch_array($this->resacc);
-				$this->accountname = $arr['name']." &lt;".$arr['email']."&gt;";
+				$this->accountname = $arr['account_name'];
 				$this->accountid = $arr['id'];
 				if( $this->accountid == $this->accid)
 					$this->selected = "selected";
@@ -372,7 +372,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					{
 					$arr2 = $db->db_fetch_array($res2);
 					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-					$this->mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if(!$this->mbox)
 						{
 						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
@@ -665,7 +665,7 @@ function showPart($accid, $msg, $cid)
 			{
 			$arr2 = $db->db_fetch_array($res2);
 			$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
 				$data = get_cid_part ($mbox, $msg, "<" . $cid . ">");
@@ -696,7 +696,7 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 			{
 			$arr2 = $db->db_fetch_array($res2);
 			$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
             	$structure = imap_fetchstructure($mbox, $msg, FT_UID);
@@ -761,7 +761,7 @@ function deleteMails($item, $accid, $criteria, $reverse)
 			{
 			$arr2 = $db->db_fetch_array($res2);
 			$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 			if($mbox)
 				{
 				for($i=0; $i < count($item); $i++)
