@@ -248,12 +248,17 @@ function orderCategories($cat, $adminid, $catname)
 	class temp
 		{		
 
+		var $sorta;
+		var $sortd;
+
 		function temp($cat, $adminid, $catname)
 			{
 			global $babBody, $BAB_SESS_USERID;
 			$this->catname = "---- ".$catname." ----";
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
+			$this->sorta = bab_translate("Sort ascending");
+			$this->sortd = bab_translate("Sort descending");
 			$this->create = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
 			if( $adminid > 0)
@@ -303,8 +308,14 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid,
 		return false;
 		}
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$category = addslashes($category);
+		$description = addslashes($description);
+		}
+
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_TOPICS_TBL." where category='$category' and id_cat='".$cat."'";	
+	$query = "select * from ".BAB_TOPICS_TBL." where category='".$category."' and id_cat='".$cat."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -313,11 +324,6 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid,
 		}
 
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$category = addslashes($category);
-		$description = addslashes($description);
-		}
 	$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_TOPICS_TBL." where id_cat='".$cat."'"));
 
 	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering, notify) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "', '" . $bnotify. "')";
