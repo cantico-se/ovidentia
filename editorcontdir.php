@@ -35,9 +35,9 @@ function dirlist()
 
 		function temp()
 			{
-			$this->conttitle = bab_translate("Contact");
+			$this->conttitle = bab_translate("Contacts");
 			$this->conturl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=contact";
-			$this->dirtitle = bab_translate("Directory");
+			$this->dirtitle = bab_translate("Directories");
 			$this->dirurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory";
 			$this->contactif = false;
 
@@ -102,9 +102,9 @@ function directory($id, $pos, $xf, $badd)
 
 		function temp($id, $pos, $xf, $badd)
 			{
-			$this->conttitle = bab_translate("Contact");
+			$this->conttitle = bab_translate("Contacts");
 			$this->conturl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=contact";
-			$this->dirtitle = bab_translate("Directory");
+			$this->dirtitle = bab_translate("Directories");
 			$this->dirurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory";
 
 			$this->allname = bab_translate("All");
@@ -289,9 +289,9 @@ function editorcont()
 		var $count;
 		function temp()
 			{
-			$this->conttitle = bab_translate("Contact");
+			$this->conttitle = bab_translate("Contacts");
 			$this->conturl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=contact";
-			$this->dirtitle = bab_translate("Directory");
+			$this->dirtitle = bab_translate("Directories");
 			$this->dirurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory";
 			$this->contactif = true;
 
