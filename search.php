@@ -588,8 +588,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$crit_com .= " and C.date <= '".$this->fields['before']."'";
 					}
 
-				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".implode($babBody->topview,",").")" : "";
-				$incom = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and C.id_topic in (".implode($babBody->topview,",").")" : "";
+				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".implode($babBody->topview,",").")" : "and id_topic =0";
+				$incom = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and C.id_topic in (".implode($babBody->topview,",").")" : "and C.id_topic =0";
 
 				if (!empty($inart))
 					{
