@@ -150,8 +150,13 @@ alt="{ uncheckall }" width="10" height="10" border="0"></a> </td>
               <img src="{ babSkinPath }images/Puces/PuceDefaultGroup.gif"  alt="{ primary }" border="0"> 
               <!--#endif primary -->
               &nbsp;</td>
-            <td class="BabSiteAdminFontBackground" valign="middle"><a 
-class="BabAdminMembersList" href="{ url }">{ urlname }</a> </td>
+            <td class="BabSiteAdminFontBackground" valign="middle">
+			<!--#if bmodname -->
+			<a class="BabAdminMembersList" href="{ url }">{ urlname }</a>
+			<!--#else bmodname -->
+			{ urlname }
+			<!--#endif bmodname -->
+			</td>
           </tr>
           <!--#endin getnext -->
           <tr> 

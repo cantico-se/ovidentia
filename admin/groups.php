@@ -365,7 +365,7 @@ function addGroup($name, $description, $managerid, $bemail, $grpdg)
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 
-		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'Y', '2')";
+		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
 		bab_callAddonsFunction('onGroupCreate', $id);
 		$db->db_query($req);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$id);

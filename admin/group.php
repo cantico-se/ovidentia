@@ -163,9 +163,12 @@ function groupMembers($id)
 		var $db;
 		var $count;
 		var $res;
+		var $bmodname;
 
 		function temp($id)
 			{
+			global $babBody;
+
 			$this->grpid = $id;
 			$this->fullname = bab_translate("Full Name");
 			$this->deletealt = bab_translate("Delete group's members");
@@ -177,6 +180,10 @@ function groupMembers($id)
 			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group= '$id'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			if( $babBody->currentAdmGroup == 0)
+				$this->bmodname = true;
+			else
+				$this->bmodname = false;
 			}
 
 		function getnext()
@@ -605,7 +612,8 @@ switch($idx)
 		groupMembers($item);
 		$babBody->title = bab_translate("Group's members");
 		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
+		if( $babBody->currentAdmGroup != $item )
+			$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item);
 		break;
