@@ -727,6 +727,7 @@ function viewFile($id, $w)
 
 			if( $access )
 				{
+				include $GLOBALS['babInstallPath']."utilit/fileincl.php";
 				$this->title = $this->arr['name'];
 				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
 				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
@@ -737,7 +738,7 @@ function viewFile($id, $w)
 					$fstat = stat($GLOBALS['babUploadPath']."/G".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				else
 					$fstat = stat($GLOBALS['babUploadPath']."/U".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
-				$this->size = $fstat[7]. " " . babTranslate("Bytes");
+				$this->size = formatSize($fstat[7])." ".babTranslate("Kb");
 				}
 			else
 				{
