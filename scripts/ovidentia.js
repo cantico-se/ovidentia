@@ -16,3 +16,9 @@ if( typeof document.forms[fmname] != "object" ) return;
 document.forms[fmname].idx.value = cmd;
 document.forms[fmname].submit();
 }
+
+function Start(page, title, param)
+{
+var r;
+r = this.open(page, title, param);
+}
