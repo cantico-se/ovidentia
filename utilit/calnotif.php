@@ -76,7 +76,7 @@ function sendReminders()
 			$mail->clearTo();
 			$mail->mailTo(bab_getUserEmail($arr['id_user']), bab_getUserName($arr['id_user']));
 
-			$tempc = new clsCalEventReminder($arr['title'], $arr['description'], bab_longDate(bab_mktime($arr['start_date'])), bab_longDate(bab_mktime($arr['end_date'])));
+			$tempc = new clsCalEventReminder($arr['title'], bab_replace($arr['description']), bab_longDate(bab_mktime($arr['start_date'])), bab_longDate(bab_mktime($arr['end_date'])));
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "eventreminder"));
 			$mail->mailSubject(bab_translate("Event reminder"));
 			$mail->mailBody($message, "html");
@@ -122,7 +122,7 @@ function updatePopupNotifier()
 				$arr = $babDB->db_fetch_array($this->resevent);
 				$this->eventurl = '';
 				$this->eventtitle = $arr['title'];
-				$this->eventdesc = $arr['description'];
+				$this->eventdesc = bab_replace($arr['description']);
 				$time = bab_mktime($arr['start_date']);
 				$this->startdate = bab_shortDate($time, false);
 				$this->starttime = bab_time($time);
