@@ -658,11 +658,24 @@ window.focus();
 		</td>
 		<td class="BabSiteAdminFontBackground">
 		<!--#if modify -->
+		<!--#if multivalues -->
+<select name="fields[{ fieldv }]">
+<!--#if required "!= Y" -->
+<option value=""></option>
+<!--#endif required -->
+	<!--#in getnextfxv -->
+<option value="{ fxvvalue }" { selected }>{ fxvvalue }</option>
+	<!--#endin getnextfxv -->
+</select>
+		<!--#else multivalues -->
+
 		<!--#if fieldt "== N" -->
 		<input type="text" name="fields[{ fieldv }]" size="40" value="{ fvalue }">
 		<!--#else fieldt -->
 		<textarea cols="30" rows="4" name="fields[{ fieldv }]">{ fvalue }</textarea>
 		<!--#endif fieldt -->
+
+		<!--#endif multivalues -->
 		<!--#else modify -->
 		{ fvalue }
 		<!--#endif modify -->

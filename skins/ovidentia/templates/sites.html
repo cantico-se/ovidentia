@@ -621,6 +621,111 @@ function validateNum(field)
 </form>
 <br />
 
+
+<br /><br />
+
+<script language="javascript">
+<!--
+function selChange(obj, edit)
+{
+if( obj.value == '' )
+	return;
+document.forms.formsite_bloc3[edit].value = obj.value;
+}
+-->
+</script>
+
+<form name="formsite_bloc3" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="item" value="{ id }" />
+<input type="hidden" name="modify" value="bloc3" />
+
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+<tr> 
+<td align="center" nowrap valign="middle" colspan="2">{ regsettings_title }</td>
+</tr>
+<tr> 
+<td width="30%" align="right" nowrap valign="middle">{ date_lformat_title }:</td>
+<td width="70%" valign="middle"> 
+<table>
+<tr>
+<td>
+<input type="text" name="datelformat" size="30" maxlength="255" value="{ date_lformat_val }">
+</td>
+</tr>
+<tr>
+<td>
+<select name="selldate" onchange="selChange(this, 'datelformat')">
+<option value=""></option>
+<!--#in getnextlongdate -->
+<option value="{ dateval }">{ datetxt }</option>
+<!--#endin getnextlongdate -->
+</select>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr> 
+<td width="30%" align="right" nowrap valign="middle">{ date_sformat_title }:</td>
+<td width="70%" valign="middle"> 
+<table>
+<tr>
+<td>
+<input type="text" name="datesformat" size="30" maxlength="255" value="{ date_sformat_val }">
+</td>
+</tr>
+<tr>
+<td>
+<select name="selsdate" onchange="selChange(this, 'datesformat')">
+<option value=""></option>
+<!--#in getnextshortdate -->
+<option value="{ dateval }">{ datetxt }</option>
+<!--#endin getnextshortdate -->
+</select>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr> 
+<td width="30%" align="right" nowrap valign="middle">{ time_format_title }:</td>
+<td width="70%" valign="middle"> 
+<table>
+<tr>
+<td>
+<input type="text" name="timeformat" size="30" maxlength="255" value="{ time_format_val }">
+</td>
+</tr>
+<tr>
+<td>
+<select name="seltime" onchange="selChange(this, 'timeformat')">
+<option value=""></option>
+<!--#in getnexttime -->
+<option value="{ timeval }">{ timetxt }</option>
+<!--#endin getnexttime -->
+</select>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr> 
+<td nowrap>&nbsp;</td>
+<td valign="middle"> 
+<input type="submit" name="Submit" value="{ create }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
 <!--#end sitemodify -->
 
 <!--#begin versions -->
@@ -849,7 +954,7 @@ function hideShowCnx()
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
-<input type="hidden" name="modify" value="bloc3" />
+<input type="hidden" name="modify" value="auth" />
 <table class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -906,24 +1011,6 @@ function hideShowCnx()
 		<input type="text" name="searchdn" size="50" value="{ ldapsearchdnsite }" />
 		</td>
 	</tr>
-	<!--#if 0 -->
-	<tr> 
-		<td align="right">{ attributetxt }</td>
-		<td>
-		<input type="text" name="ldapattr" size="50" value="{ ldapattributesite }" />
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ authpasstypetxt }</td>
-		<td>
-		<select name="passtype">
-		<!--#in getnextpasstype -->
-		<option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
-		<!--#endin getnextpasstype -->
-		</select>
-		</td>
-	</tr>
-	<!--#endif 0 -->
 	<!--#in getnextfield -->
 	<tr> 
 		<td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span style="color:red">*</span><!--#endif required -->&nbsp;&nbsp;</td>

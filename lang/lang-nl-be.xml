@@ -1384,4 +1384,19 @@
 <string id="Read">Read</string>
 <string id="Disclaimer/Privacy statement">Disclaimer/Privacy statement</string>
 <string id="Articles management">Articles management</string>
+<string id="Long date format">Long date format</string>
+<string id="Short date format">Short date format</string>
+<string id="Time format">Time format</string>
+<string id="Date and Time formats">Date and Time formats</string>
+<string id="Add new field">Add new field</string>
+<string id="Add a value">Add a value</string>
+<string id="Use a listbox">Use a listbox</string>
+<string id="Delete this field">Delete this field</string>
+<string id="ERROR: This field already exists">ERROR: This field already exists</string>
+<string id="List of values">List of values</string>
+<string id="Home pages managers">Home pages managers</string>
+<string id="Who can manage home pages for this site?">Who can manage home pages for this site?</string>
+<string id="Online">Online</string>
+<string id="DF-">DF-</string>
+<string id="Edit draft">Edit draft</string>
 </nl-be>

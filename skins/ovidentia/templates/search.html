@@ -37,23 +37,30 @@ function setselects(obj)
 			select[{ fieldcounter }] = "{ name }";
 			<!--#endif selected -->
 		<!--#endin selectname -->
-	<!--#endin getnextfieldtosearch -->
 	<!--#in getnextdir -->
 	fields[{ topicid }]=new Array();
 		<!--#in getnextfield -->
 		//
 		fields[{ topicid }][{ fieldindex }] = "{ fieldnamefromdir }";
+		full["{ name }"] = "{ description }";
+		<!--#if selected -->
+		select[{ fieldcounter }] = "{ name }";
+		<!--#endif selected -->
 		<!--#endin getnextfield -->
 	<!--#endin getnextdir -->
+	<!--#endin getnextfieldtosearch -->
 
 	<!--#in getnextfieldtosearch -->
-	var j,k = 0;
+	var j,k,h = 0;
 
 	for (j=sf.dirselect_{ fieldcounter }.options.length-1;j>=0;j--)
 		sf.dirselect_{ fieldcounter }.options[j]=null;
 
-	for (k=0;k<fields[id].length;k++)
-		sf.dirselect_{ fieldcounter }.options[k] = new Option( full[fields[id][k]],fields[id][k]);
+	for (k=0;k<fields[-1].length;k++)
+		sf.dirselect_{ fieldcounter }.options[k] = new Option( full[fields[-1][k]],fields[-1][k]);
+
+	for (h=0;h<fields[id].length;h++, k++)
+		sf.dirselect_{ fieldcounter }.options[k] = new Option( full[fields[id][h]],fields[id][h]);
 
 	for (j=sf.dirselect_{ fieldcounter }.options.length-1;j>=0;j--)
 		{

@@ -227,6 +227,7 @@
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ field }</td>
 <td class="BabSiteAdminTitleFontBackground" width="50%" align="left" nowrap valign="middle">{ defaultvalue }</td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ disabledtxt }</td>
 <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ rw }</td>
 <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ required }</td>
 <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
@@ -235,6 +236,11 @@
 <tr> 
 <td class="BabSiteAdminFontBackground">{ fieldn }</td>
 <td class="BabSiteAdminFontBackground"><input type="text" name="fields[{ fieldv }]" size="40" value=""></td>
+<!--#if disabled -->
+<td class="BabSiteAdminFontBackground"><input type="checkbox" disabled></td>
+<!--#else disabled -->
+<td class="BabSiteAdminFontBackground"><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
+<!--#endif disabled -->
 <td class="BabSiteAdminFontBackground"><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
 <!--#if disabled -->
 <td class="BabSiteAdminFontBackground"><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
@@ -245,7 +251,7 @@
 </tr>
 <!--#endin getnextfield -->
 <tr>
-<td valign="middle" colspan="4">
+<td valign="middle" colspan="5">
 <center><input type="submit" name="Submit" value="{ add }"></center>
 </td>
 </tr>
@@ -302,23 +308,74 @@
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ field }</td>
 <td class="BabSiteAdminTitleFontBackground" width="50%" align="left" nowrap valign="middle">{ defaultvalue }</td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ disabledtxt }</td>
 <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ rw }</td>
 <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ required }</td>
 <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
 </tr>
 <!--#in getnextfield -->
-<tr> 
-<td class="BabSiteAdminFontBackground">{ fieldn }</td>
-<td class="BabSiteAdminFontBackground"><input type="text" name="fields[{ fieldv }]" size="40" value="{ defvalue }"></td>
-<td class="BabSiteAdminFontBackground"><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td>
+<!--#if addvalurl -->
+<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
+<!--#else addvalurl -->
+{ fieldn }
+<!--#endif addvalurl -->
+</td>
+<td>{ defvalue }</td>
 <!--#if disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+<td><input type="checkbox" disabled></td>
 <!--#else disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+<td><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
 <!--#endif disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
+<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+<!--#if disabled -->
+<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+<!--#else disabled -->
+<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+<!--#endif disabled -->
+<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
 </tr>
 <!--#endin getnextfield -->
+<!--#in getnextfieldx -->
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td>
+<!--#if addvalurl -->
+<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
+<!--#else addvalurl -->
+{ fieldn }
+<!--#endif addvalurl -->
+</td>
+<td>{ defvalue }</td>
+<!--#if disabled -->
+<td><input type="checkbox" disabled></td>
+<!--#else disabled -->
+<td><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
+<!--#endif disabled -->
+<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+<!--#if disabled -->
+<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+<!--#else disabled -->
+<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+<!--#endif disabled -->
+<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
+</tr>
+<!--#endin getnextfieldx -->
+<!--#if altbg -->
+<tr class="BabSiteAdminFontBackground">
+<!--#else altbg -->
+<tr class="BabForumBackground1">
+<!--#endif altbg -->
+<td colspan="6" align="right"><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addfurl }',2);"><b>{ addftxt }<b /></a></td>
+</tr>
 </table>
 </td>
 </tr>
@@ -331,7 +388,7 @@
 <!--#endif bdel -->
 </form>
 <!--#end dbmodify -->
-<!--#begin dbdisplay -->
+<!--#begin dbscripts -->
 <script language="JavaScript">
 <!--
 function move(bDir, el)
@@ -415,6 +472,8 @@ function selectAll(list)
 }
 //-->
 </script>
+<!--#end dbscripts -->
+<!--#begin dbdisplay -->
 <form method="post" name="dispdbf" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="dispdb">
@@ -471,3 +530,146 @@ function selectAll(list)
 </form>
 <br>
 <!--#end dbdisplay -->
+
+<!--#begin dbfieldvalues -->
+<form name="addfval" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admdir">
+<input type="hidden" name="idx" value="addval">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="fxid" value="{ idfield }">
+<input type="hidden" name="modify" value="dbfval">
+<!--#if bdelete -->
+<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
+<tr><td align="center" ><input type="text" name="fieldname" size="45" value="{ fieldval }"></td></tr></table>
+<br />
+<!--#endif bdelete -->
+<table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<!--#in getnextdbfieldvalue -->
+<tr> 
+<td align="right" nowrap valign="middle">{ fvalnum }:</td>
+<td valign="middle">
+<input type="text" name="fields_values[]" size="45" value="{ fval }">
+<input type="hidden" name="fields_ids[]" size="45" value="{ fvid }">
+</td>
+</tr>
+<!--#endin getnextdbfieldvalue -->
+<tr> 
+<td align="right" nowrap valign="middle">{ fvalnum }:</td>
+<td valign="middle">
+<input type="text" name="fields_values[]" size="45" value="">
+<input type="hidden" name="fields_ids[]" size="45" value="0">
+</td>
+</tr>
+<!--#if bshowmultivalue -->
+<tr> 
+<td align="right" nowrap valign="middle">{ multivaluestxt }:</td>
+<td valign="middle">
+<select name="mvyn">
+<option value="N" { noselected }>{ notxt }</option>
+<option value="Y" { yesselected }>{ yestxt }</option>
+</select>
+</td>
+</tr>
+<!--#endif bshowmultivalue -->
+<!--#if count -->
+<tr> 
+<td align="right" nowrap valign="middle">{ fvdeftxt }:</td>
+<td valign="middle">
+<select name="fvdef">
+  <option value="0"></option>
+<!--#in getnextdbfieldvalue -->
+  <option value="{ fvid }" { fvdefselected }>{ fval }</option>
+<!--#endin getnextdbfieldvalue -->
+</select>
+</td>
+</tr>
+<!--#endif count -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<center><input type="submit" name="adfsav" value="{ savetxt }">&nbsp;&nbsp;<input type="submit" name="adfadd" value="{ addtxt }">
+<!--#if bdelete -->
+&nbsp;&nbsp;<input type="submit" name="adfdel" value="{ deltxt }">
+<!--#endif bdelete -->
+</form>
+<!--#end dbfieldvalues -->
+
+<!--#begin dbaddfield -->
+<form name="addfield" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admdir">
+<input type="hidden" name="idx" value="addval">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="modify" value="addfield">
+<table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td align="right" nowrap valign="middle">{ fieldnametxt }:</td>
+<td valign="middle">
+<input type="text" name="fieldn" size="45" value="{ fieldn }">
+</td>
+</tr>
+<tr> 
+<td align="right" nowrap valign="middle">{ fieldvaltxt }:</td>
+<td valign="middle">
+<input type="text" name="fieldv" size="45" value="{ fieldv }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<center><input type="submit" name="adfsav" value="{ savetxt }">
+</form>
+<!--#end dbaddfield -->
+
+<!--#begin dblistorder -->
+<form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admdir">
+<input type="hidden" name="idx" value="dispdb">
+<input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="update" value="dblistord">
+
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td valign="middle" align="center"> 
+<select name="listfields[]" size="20" multiple>
+  <option value="0">{ listftxt }</option>
+  <!--#in getnextf --> 
+  <option value="{ fid }">{ fieldval }</option>
+  <!--#endin getnextf --> 
+</select>
+</td>
+<td valign="middle" align="center"><a 
+href="Javascript:move(true, document.ordform.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
+width="22" height="18" border=0 alt="{ moveup }"></a> <br>
+<br>
+<a href="Javascript:move(false, document.ordform.elements[4])"> 
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+</td>
+</tr>
+<tr> 
+<td align="center"> 
+<input type="submit" name="Submit" value="{ update }" 
+onClick="Javascript:selectAll(document.ordform.elements[4]); document.ordform.submit()">
+<br>
+<br>
+</td>
+<td>&nbsp; </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end dblistorder -->

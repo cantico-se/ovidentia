@@ -1402,5 +1402,20 @@
 <string id="Session expire in">La session expire dans</string>
 <string id="Session expired">La session a expirée</string>
 <string id="Unconfirmed">Non confirmé</string>
+<string id="Long date format">Format long de la date</string>
+<string id="Short date format">Format court de la date</string>
+<string id="Time format">Format du temps</string>
+<string id="Date and Time formats">Formats de la date et du temps</string>
 <string id="Nominative">Nominatif</string>
+<string id="Add new field">Ajouter un nouveau champ</string>
+<string id="Add a value">Ajouter une valeur</string>
+<string id="Use a listbox">Utiliser une liste de choix</string>
+<string id="Delete this field">Supprimer ce champ</string>
+<string id="ERROR: This field already exists">ERREUR: Ce champ existe déjà</string>
+<string id="List of values">Liste des différentes valeurs</string>
+<string id="Home pages managers">Gestionnaires des pages d'accueil</string>
+<string id="Who can manage home pages for this site?">Qui peut gérer les pages d'accueil?</string>
+<string id="Online">Publiés</string>
+<string id="DF-">DF-</string>
+<string id="Edit draft">Editer le brouillon</string>
 </fr>

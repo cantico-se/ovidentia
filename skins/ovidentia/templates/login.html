@@ -212,18 +212,33 @@
 <!--#in getnextfield -->
 <tr> 
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">
-<!--#if brequired --><font color="red">*</font><!--#endif brequired -->
+<!--#if required "== Y" --><font color="red">*</font><!--#endif required -->
 { fieldname } :
 </td>
 <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
 <!--#if bfieldphoto -->
 <input type="file" name="photof" size="30" maxlength="255" value="">
 <!--#else bfieldphoto -->
-<!--#if bmultilignes -->
+
+<!--#if multivalues -->
+<select name="fields[{ fieldv }]">
+<!--#if required "!= Y" -->
+<option value=""></option>
+<!--#endif required -->
+<!--#in getnextfxv -->
+<option value="{ fxvvalue }" { selected }>{ fxvvalue }</option>
+<!--#endin getnextfxv -->
+</select>
+<!--#else multivalues -->
+
+<!--#if fieldt "== N" -->
+<input type="text" name="fields[{ fieldv }]" size="40" value="{ fieldval }">
+<!--#else fieldt -->
 <textarea cols="30" rows="4" name="fields[{ fieldv }]">{ fieldval }</textarea>
-<!--#else bmultilignes -->
-<input type="text" name="fields[{ fieldv }]" size="30" value="{ fieldval }">
-<!--#endif bmultilignes -->
+<!--#endif fieldt -->
+
+<!--#endif multivalues -->
+
 <!--#endif bfieldphoto -->
 </td>
 </tr>
