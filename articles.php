@@ -47,9 +47,15 @@ function listSubmittedArticles($topics)
 		function temp($topics)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select id, id_topic, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			if( $GLOBALS['BAB_SESS_USERID'] != '' )
+				{
+				$req = "select id, id_topic, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
+				$this->res = $this->db->db_query($req);
+				$this->count = $this->db->db_num_rows($this->res);
+				}
+			else
+				$this->count = 0;
+
 			$this->topics = $topics;
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
@@ -1205,7 +1211,7 @@ switch($idx)
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics)|| $approver)
 				{
 				$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$topics);
-				if( $arr[2] > 0 )
+				if( $arr[2] > 0 && $GLOBALS['BAB_SESS_USERID'] != '')
 					$babBody->addItemMenu("Submited", bab_translate("Submitted"), $GLOBALS['babUrlScript']."?tg=articles&idx=Submited&topics=".$topics);
 				}
 			if( isset($new) && $new > 0 && $uaapp)
