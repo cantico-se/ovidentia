@@ -21,15 +21,13 @@ function validateNum(field)
 <td> 
         <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
           <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
-              name }</td>
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ name }</td>
             <td class="BabLoginMenuBackground" width="70%"> 
               <input type="text" name="name" size="30" maxlength="30" value="{ nameval }" />
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
-              description }</td>
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ description }</td>
             <td> 
               <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }" />
 </td>
@@ -963,30 +961,30 @@ function hideShowCnx()
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="80%" align="left" nowrap valign="middle" colspan="2">{ disclaimertxt }</td>
-</tr>
-<tr class="BabSummaryContentBackground">
-<td align="right"><input type="checkbox" name="cdp" value="Y" { dpchecked }></td>
-<td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: Start('{ urleditdp }', 'OviSitesDP', 'width=600,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ editdptxt }</a>&nbsp;)</td>
-</tr>
-<tr class="BabSummaryContentBackground">
-<td align="right"><input type="checkbox" name="cen" value="Y" { enchecked }></td>
-<td>{ emailnotification }</td>
-</tr>
-<tr class="BabSummaryContentBackground">
-<td align="right">
-<select name="group">
-<option value="0">{ none }</option>
-<!--#in getnextgrp -->
-<option value="{ grpid }" { grpsel }>{ grpname }</option>
-<!--#endin getnextgrp -->
-</select>
-</td>
-<td>{ groupregistration }</td>
-</tr>
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td class="BabSiteAdminTitleFontBackground" width="80%" align="left" nowrap valign="middle" colspan="2">{ disclaimertxt }</td>
+	</tr>
+	<tr class="BabSummaryContentBackground">
+		<td align="right"><input type="checkbox" name="cdp" value="Y" { dpchecked }></td>
+		<td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: bab_popup('{ urleditdp }',6);">{ editdptxt }</a>&nbsp;)</td>
+	</tr>
+	<tr class="BabSummaryContentBackground">
+		<td align="right"><input type="checkbox" name="cen" value="Y" { enchecked } /></td>
+		<td>{ emailnotification }</td>
+	</tr>
+	<tr class="BabSummaryContentBackground">
+		<td align="right">
+			<select name="group">
+				<option value="0">{ none }</option>
+				<!--#in getnextgrp -->
+				<option value="{ grpid }" { grpsel }>{ grpname }</option>
+				<!--#endin getnextgrp -->
+			</select>
+		</td>
+		<td>{ groupregistration }</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -994,43 +992,43 @@ function hideShowCnx()
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="80%" align="left" nowrap valign="middle">{ field }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ required }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
-</tr>
-<!--#in getnextfield -->
-<!--#if altbg -->
-<tr class="BabSummaryContentBackground">
-<!--#else altbg -->
-<tr class="BabTopicsAuthorBackground">
-<!--#endif altbg -->
-<!--#if disabled -->
-<td><input type="checkbox" { rwchecked } disabled>
-<input type="hidden" name="rw[]" value="{ fieldid }" />&nbsp;{ fieldn }</td>
-<td><input type="checkbox" { reqchecked } disabled>
-<!--#if reqchecked -->
-<input type="hidden" name="req[]" value="{ fieldid }" /></td>
-<!--#endif reqchecked -->
-<td><input type="checkbox" { mlchecked } disabled>
-<!--#if mlchecked -->
-<input type="hidden" name="ml[]" value="{ fieldid }" />
-<!--#endif mlchecked -->
-</td>
-<!--#else disabled -->
-<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }" />&nbsp;{ fieldn }</td>
-<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }" /></td>
-<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }" /></td>
-<!--#endif disabled -->
-</tr>
-<!--#endin getnextfield -->
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td width="80%" align="left" nowrap>{ field }</td>
+		<td width="10%" align="left" nowrap>{ required }</td>
+		<td width="10%" align="left" nowrap>{ multilignes }</td>
+	</tr>
+	<!--#in getnextfield -->
+	<!--#if altbg -->
+	<tr class="BabSummaryContentBackground">
+	<!--#else altbg -->
+	<tr class="BabTopicsAuthorBackground">
+	<!--#endif altbg -->
+	<!--#if disabled -->
+		<td><input type="checkbox" { rwchecked } disabled />
+			<input type="hidden" name="rw[]" value="{ fieldid }" />&nbsp;{ fieldn }</td>
+		<td><input type="checkbox" { reqchecked } disabled />
+			<!--#if reqchecked -->
+			<input type="hidden" name="req[]" value="{ fieldid }" /></td>
+			<!--#endif reqchecked -->
+		<td><input type="checkbox" { mlchecked } disabled />
+			<!--#if mlchecked -->
+			<input type="hidden" name="ml[]" value="{ fieldid }" />
+			<!--#endif mlchecked -->
+		</td>
+		<!--#else disabled -->
+		<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }" />&nbsp;{ fieldn }</td>
+		<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }" /></td>
+		<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }" /></td>
+	<!--#endif disabled -->
+	</tr>
+	<!--#endin getnextfield -->
+	</table>
 </td>
 </tr>
 </table>
 <br />
-<center><input type="submit" name="admod" value="{ add }" />
+<div align="center"><input type="submit" name="admod" value="{ add }" /></div>
 </form>
 <!--#end siteregistration -->
 
