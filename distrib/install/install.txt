@@ -8,7 +8,7 @@ You can browse documentation development here :
 
 If you have any comment or remarks please send an email to community@ovidentia.org
 
-OVIDENTIA 5.0
+OVIDENTIA 4.0
 ==============
 
 Base Requirements
@@ -30,35 +30,45 @@ Installing the Package
 ----------------------
 Uncompress the package into the directory you want to use on your web
 server, if you're unsure where that is, ask you system administrator.
-1) Create a database called, for example, ovidentia:
 
-    mysqladmin create ovidentia  
+Configuration can be done by script or manually:
+I - By script:
 
-2) Now fill the databases with the tables in babinstall.sql file located in "install" folder:
-    
-    mysql ovidentia < babinstall.sql
+    Point your browser to http://yourdomain/install.php 
+    That's all.
 
-3) Modify the config.php file with your site parameters
-	
-	$babDBHost = "localhost"; /* MySql database server */
-	$babDBLogin = "root"; /* MySql database login */
-	$babDBPasswd = ""; /* MySql database password */
-	$babDBName ="ovidentia"; /* MySql database name */
-	$babUrl = "http://yourdomain.com/"; /* url to access to your site */
-	$babUploadPath = "/uploads-directory"; /* where to upload files */
+II - Manually
 
-    Be sure to chmod 777 "/uploads-directory" where users upload their files, if
-    upload functionnality is enabled ( ATTENTION!!: this can have some
-    security issues. Please consult your system Administrator )
+    1) Create a database called, for example, ovidentia:
 
-   Also be sure to chmod 666 all languages files located in "lang" folder.
+        mysqladmin create ovidentia  
 
-4) After that, point your browser to:
-    http://yourdomain.com/ and choose the menu "Login"
-    
-   Login with the following data at the prompt:
-	User    : admin@admin.bab
-	Password: 012345678
+    2) Now fill the databases with the tables in babinstall.sql file located in "install" folder:
+        
+        mysql ovidentia < babinstall.sql
+
+    3) Modify the config.php file with your site parameters
+        
+        $babDBHost = "localhost"; /* MySql database server */
+        $babDBLogin = "root"; /* MySql database login */
+        $babDBPasswd = ""; /* MySql database password */
+        $babDBName ="ovidentia"; /* MySql database name */
+        $babUrl = "http://yourdomain.com/"; /* url to access to your site */
+        $babUploadPath = "/uploads-directory"; /* where to upload files */
+
+        Be sure to chmod 777 "/uploads-directory" where users upload their files, if
+        upload functionnality is enabled ( ATTENTION!!: this can have some
+        security issues. Please consult your system Administrator )
+
+       Also be sure to chmod 666 all languages files located in "lang" folder.
+
+    4) After that, point your browser to:
+        http://yourdomain.com/ and choose the menu "Login"
+        
+       Login with the following data at the prompt:
+        User    : admin@admin.bab
+        Password: 012345678
+
    
    You are logged as administrator
    Before all, change administrator password by clicking 'Options' menu in 'User's Box'
