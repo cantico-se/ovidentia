@@ -701,6 +701,8 @@ CREATE TABLE bab_sites (
    KEY name (name)
 );
 
+INSERT INTO bab_sites (name, description, lang, adminemail, skin, style) values ('Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'ovidentia', 'ovidentia.css');
+
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_homepages'

@@ -1526,44 +1526,33 @@ function bab_updateSiteSettings()
 
 	$req="select skin, style, adminemail, lang from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
-
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	$arr = $babDB->db_fetch_array($res);
+	if( $arr['skin'] != "")
 		{
-		$arr = $babDB->db_fetch_array($res);
-		if( $arr['skin'] != "")
-			{
-			$GLOBALS['babSkin'] = $arr['skin'];
-			}
-		if( $arr['style'] != "")
-			{
-			$GLOBALS['babStyle'] = $arr['style'];
-			}
-		if( $arr['lang'] != "")
-			{
-			$GLOBALS['babLanguage'] = $arr['lang'];
-			}
-        if( $arr['adminemail'] != "")
-			{
-			$GLOBALS['babAdminEmail'] = $arr['adminemail'];
-			}
+		$GLOBALS['babSkin'] = $arr['skin'];
 		}
 	else
+		$GLOBALS['babSkin'] = "ovidentia";
+
+	if( $arr['style'] != "")
 		{
-		if( empty($GLOBALS['babSiteName']))
-			$GLOBALS['babSiteName'] = "ovidentia";
-
-		if( empty($GLOBALS['babSkin']))
-			$GLOBALS['babSkin'] = "ovidentia";
-
-		if( empty($GLOBALS['babStyle']))
-			$GLOBALS['babStyle'] = "ovidentia.css";
-		
-		if( empty($GLOBALS['babLanguage']))
-			$GLOBALS['babLanguage'] = "en";
-
-		$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang, skin, style ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "', '" . $GLOBALS['babSkin']. "', '" . $GLOBALS['babStyle']. "')";
-		$res = $babDB->db_query($req);
+		$GLOBALS['babStyle'] = $arr['style'];
 		}
+	else
+		$GLOBALS['babStyle'] = "ovidentia.css";
+
+	if( $arr['lang'] != "")
+		{
+		$GLOBALS['babLanguage'] = $arr['lang'];
+		}
+	else
+		$GLOBALS['babLanguage'] = "en";
+	if( $arr['adminemail'] != "")
+		{
+		$GLOBALS['babAdminEmail'] = $arr['adminemail'];
+		}
+	else
+		$GLOBALS['babAdminEmail'] = "admin@your-domain.com";
 }
 
 $babDB = new babDatabase();

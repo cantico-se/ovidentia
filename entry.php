@@ -28,17 +28,8 @@ function ListArticles($idgroup)
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 			$res = $this->db->db_query($req);
-			if( !$res || $this->db->db_num_rows($res) < 1)
-				{
-				$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
-				$res = $this->db->db_query($req);
-				$idsite = $this->db->db_insert_id();
-				}
-			else
-				{
-				$arr = $this->db->db_fetch_array($res);
-				$idsite = $arr['id'];
-				}
+			$arr = $this->db->db_fetch_array($res);
+			$idsite = $arr['id'];
 			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->countres = $this->db->db_num_rows($this->res);

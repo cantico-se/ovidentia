@@ -563,11 +563,16 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$description = addslashes($description);
-		$name = addslashes($name);
+		$namev = addslashes($name);
+		}
+	else
+		{
+		$namev = $name;
+		$name = stripslashes($name);
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_SITES_TBL." where name='".$name."' and id!='".$id."'";
+	$query = "select * from ".BAB_SITES_TBL." where name='".$namev."' and id!='".$id."'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -576,10 +581,29 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 		}
 	else
 		{
+		list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
+		$req = "update ".BAB_SITES_TBL." set ";
+
+		if( $oldname != $name)
+			{
+			$filename = "config.php";
+			$file = @fopen($filename, "r");
+			$txt = fread($file, filesize($filename));
+			fclose($file);
+			$reg = "babSiteName[[:space:]]*=[[:space:]]*\"([^\"]*)\"";
+			$res = ereg($reg, $txt, $match);
+			$reg = "babSiteName[[:space:]]*=[[:space:]]*\"".$match[1]."\"";
+			$out = ereg_replace($reg, "babSiteName = \"".$name."\"", $txt);
+			$file = fopen($filename, "w");
+			fputs($file, $out);
+			fclose($file);
+			$req .= "name='".$namev."', ";
+			}
+
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\") where id='".$id."'";
-		$db->db_query($query);
+		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\") where id='".$id."'";
+		$db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}

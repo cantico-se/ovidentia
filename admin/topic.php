@@ -481,19 +481,9 @@ function addToHomePages($item, $homepage, $art)
 
 	$db = $GLOBALS['babDB'];
 
-	$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-	$res = $db->db_query($req);
-	if( !$res || $db->db_num_rows($res) < 1)
-	{
-		$req = "insert into ".BAB_SITES_TBL." ( name, adminemail, lang ) values ('" .addslashes($GLOBALS['babSiteName']). "', '" . $GLOBALS['babAdminEmail']. "', '" . $GLOBALS['babLanguage']. "')";
-		$res = $db->db_query($req);
-		$idsite = $db->db_insert_id();
-	}
-	else
-	{
-		$arr = $db->db_fetch_array($res);
-		$idsite = $arr['id'];
-	}
+	$res = $db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
+	$arr = $db->db_fetch_array($res);
+	$idsite = $arr['id'];
 
 	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$item."' order by date desc";
 	$res = $db->db_query($req);
