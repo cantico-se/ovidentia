@@ -166,6 +166,12 @@ class babLDAP
 	{
 		return ldap_compare($this->idlink, $dn, $attr, $value);
 	}
+
+	function modify($dn, $entry)
+	{
+		return ldap_modify($this->idlink, $dn, $entry);
+	}
+
 }
 
 ?>
