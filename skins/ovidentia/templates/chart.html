@@ -11,17 +11,22 @@
 </script>
 <script type="text/javascript">
 <!--
-function unlock(url)
+function unlock()
 {
-if (opener != null)
-	opener.location.href=url;
+try {
+	if (window.opener != null)
+		window.opener.location.href='{ unlockurl }';
+	}
+catch (e) 
+	{
+	}
 }
 //-->
 </script>
 </HEAD>
-<frameset cols="240,*" rows="*"  border="1" frameborder="1" framespacing="0">
+<frameset cols="240,*" rows="*"  border="1" frameborder="1" framespacing="0"  onUnload="unlock('{ unlockurl }')">
 
-<frameset rows="*, *" framespacing="0" frameborder="1" border="1" onUnload="unlock('{ unlockurl }')">
+<frameset rows="*, *" framespacing="0" frameborder="1" border="1">
 	<frame src="{ flturl }" name="flt" frameborder="1" />
 	<frame src="" name="flb" frameborder="1" />
 </frameset>
