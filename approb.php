@@ -26,6 +26,7 @@ include_once $babInstallPath."utilit/mailincl.php";
 include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/topincl.php";
 include_once $babInstallPath."utilit/artincl.php";
+include_once $babInstallPath."utilit/vacincl.php";
 
 function notifyVacationAuthor($id, $subject)
 	{
@@ -397,12 +398,6 @@ function listWaitingPosts()
 	$temp = new listWaitingPostsCls();
 	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingposts"));
 }
-
-function bab_printDate($date)
-	{
-		$arr = explode('-', $date );
-		return $arr[2].'-'.$arr[1].'-'.$arr[0];
-	}
 
 function listWaitingVacations()
 {
@@ -916,7 +911,9 @@ function confirmVacationRequest($veid, $remarks, $action)
 		default:
 			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
 			if( count($nfusers) > 0 )
+				{
 				notifyVacationApprovers($veid, $nfusers);
+				}
 			break;
 		}
 }
