@@ -1036,6 +1036,10 @@ function loadSections()
 						require_once( $GLOBALS['babAddonsPath'].$r['folder']."/".$r['initfile'] );
 						if( !empty($r['sload']) && function_exists($r['sload']))
 							{
+							$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
+							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$r['id']."/";
+							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$r['folder']."/";
+							$GLOBALS['babAddonHtmlPath'] = "addons/".$r['folder']."/";
 							if( $r['sload']($stitle, $scontent))
 								{
 								$add = true;
