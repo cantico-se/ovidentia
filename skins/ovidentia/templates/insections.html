@@ -103,3 +103,35 @@
 	  </tbody>
 	</table>
 <!--#end montha -->
+
+<!--#begin myaddonsection -->
+<!--#in getnextelement -->
+	<!--#if type "== list" -->
+	<ul>
+	<!--#in getnextitem -->
+		<li><!--#if attrib --><a { attrib }>{ str }</a><!--#else attrib -->{ str }<!--#endif attrib --></li>
+	<!--#endin getnextitem -->
+	</ul>
+	<!--#endif type -->
+
+	<!--#if type "== strong" -->
+	<h5>
+	<!--#in getnextitem -->
+		 <strong><!--#if attrib --><a { attrib }>{ str }</a><!--#else attrib -->{ str }<!--#endif attrib --></strong> 
+	<!--#endin getnextitem -->
+	</h5>
+	<!--#endif type -->
+
+	<!--#if type "== text" -->
+	<!--#in getnextitem -->
+	<h5>{ str }</h5>
+	<!--#endin getnextitem -->
+	<!--#endif type -->
+
+	<!--#if type "== script" -->
+	<!--#in getnextitem -->
+	{ str }
+	<!--#endin getnextitem -->
+	<!--#endif type -->
+<!--#endin getnextelement -->
+<!--#end myaddonsection -->
