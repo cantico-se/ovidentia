@@ -80,8 +80,8 @@ class categoriesHierarchy
 			$i++;
 			return true;
 			}
-		else
-			return false;
+		else{ $i = 0;
+			return false;}
 		}
 }
 
@@ -113,22 +113,6 @@ function bab_getCategoryTitle($id)
 		{
 		$arr = $db->db_fetch_array($res);
 		return $arr['category'];
-		}
-	else
-		{
-		return "";
-		}
-	}
-
-function bab_getCategoryDescription($id)
-	{
-	$db = $GLOBALS['babDB'];
-	$query = "select description from ".BAB_TOPICS_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return $arr['description'];
 		}
 	else
 		{
