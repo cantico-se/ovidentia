@@ -35,7 +35,7 @@ articles.html					        changed action="index.php" to action="{ babPhpSelf }"
                                         Added <a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>
 calendar.html					        changed action="index.php" to action="{ babPhpSelf }"
 calopt.html					            changed action="index.php" to action="{ babPhpSelf }"
-calview.html
+calview.html                            Added template fileslist
 comments.html					        changed action="index.php" to action="{ babPhpSelf }"
                         commentcreate   Removed Javascript <script language="javascript">...</script>
                                         Added <center><a class="BabSiteAdminListLink" href="javascript: var t=document.open('{ urlsee }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center>                                        
