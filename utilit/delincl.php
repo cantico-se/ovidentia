@@ -249,19 +249,34 @@ function bab_deleteUploadUserFiles($gr, $id)
 function bab_deleteFolder($fid)
 {
 	global $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	// delete files owned by this group
-	$res = $babDB->db_query("select id from ".BAB_FILES_TBL." where id_owner='".$fid."' and bgroup='Y'");
+	$res = $babDB->db_query("select id, idfai from ".BAB_FILES_TBL." where id_owner='".$fid."' and bgroup='Y'");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
+		$res2 = $babDB->db_query("select idfai from ".BAB_FM_FILESVER_TBL." where id_file='".$arr['id']."'");
+		while( $row = $babDB->db_fetch_array($res2))
+		{
+		if( $row['idfai'] != 0 )
+			{
+			deleteFlowInstance($row['idfai']);
+			}
+		}
 	$babDB->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$arr['id']."'");
 	$babDB->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$arr['id']."'");
+	if( $arr['idfai'] != 0 )
+		{
+		deleteFlowInstance($arr['idfai']);
+		}
 	}
 	
 	bab_deleteUploadUserFiles("Y", $fid);
 
 	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'");
 	while( $arr = $babDB->db_fetch_array($res))
+		{
 		$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."'");
+		}
 
 	$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'");
 
