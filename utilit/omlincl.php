@@ -374,7 +374,7 @@ class bab_ArticleCategories extends bab_handler
 		if( $parentid === false || $parentid === '' )
 			$parentid[] = 0;
 		else
-			$parentid = array_intersect($babBody->topcatview, explode(',', $parentid));
+			$parentid = array_intersect(array_keys($babBody->topcatview), explode(',', $parentid));
 
 		if( count($parentid) > 0 )
 		{
@@ -382,7 +382,7 @@ class bab_ArticleCategories extends bab_handler
 
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if( in_array($row['id'], $babBody->topcatview) )
+			if( isset($babBody->topcatview[$row['id']]) )
 				{
 				if( count($this->IdEntries) == 0 || !in_array($row['id'], $this->IdEntries))
 					{
@@ -500,9 +500,9 @@ class bab_ArticleCategory extends bab_handler
 		$catid = $ctx->get_value('categoryid');
 
 		if( $catid === false || $catid === '' )
-			$catid = $babBody->topcatview;
+			$catid = array_keys($babBody->topcatview);
 		else
-			$catid = array_intersect($babBody->topcatview, explode(',', $catid));
+			$catid = array_intersect(array_keys($babBody->topcatview), explode(',', $catid));
 		
 		if( count($catid) > 0 )
 		{
@@ -594,9 +594,9 @@ class bab_ArticleTopics extends bab_handler
 		$catid = $ctx->get_value('categoryid');
 
 		if( $catid === false || $catid === '' )
-			$catid = $babBody->topcatview;
+			$catid = array_keys($babBody->topcatview);
 		else
-			$catid = array_intersect($babBody->topcatview, explode(',', $catid));
+			$catid = array_intersect(array_keys($babBody->topcatview), explode(',', $catid));
 
 		if( count($catid) > 0 )
 		{
