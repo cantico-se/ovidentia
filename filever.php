@@ -758,7 +758,7 @@ function confirmFile($idf, $bconfirm )
 			copy($pathx.$arrfile['name'], $pathx.BAB_FVERSION_FOLDER."/".$arrfile['ver_major'].",".$arrfile['ver_minor'].",".$arrfile['name']);
 			copy($pathx.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$arrfile['name'], $pathx.$arrfile['name']);
 			unlink($pathx.BAB_FVERSION_FOLDER."/".$arr['ver_major'].",".$arr['ver_minor'].",".$arrfile['name']);
-			$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', ver_major='".$arr['ver_major']."', ver_minor='".$arr['ver_minor']."', ver_comment='".addslashes($arr['comment'])."' where id='".$idf."'");
+			$babDB->db_query("update ".BAB_FILES_TBL." set edit='0', modified='".$arr['date']."', modifiedby='".$arr['author']."', ver_major='".$arr['ver_major']."', ver_minor='".$arr['ver_minor']."', ver_comment='".addslashes($arr['comment'])."' where id='".$idf."'");
 
 			$babDB->db_query("insert into ".BAB_FM_FILESLOG_TBL." ( id_file, date, author, action, comment, version) values ('".$idf."', now(), '".$arr['author']."', '".BAB_FACTION_COMMIT."', '".addslashes($arr['comment'])."', '".$arr['ver_major'].".".$arr['ver_minor']."')");
 			$babDB->db_query("update ".BAB_FM_FILESVER_TBL." set idfai='0', confirmed='Y', ver_major='".$arrfile['ver_major']."', ver_minor='".$arrfile['ver_minor']."', comment='".addslashes($arrfile['ver_comment'])."' where id='".$arrfile['edit']."'");
