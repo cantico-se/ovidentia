@@ -765,7 +765,7 @@ switch($idx)
 			period($GLOBALS['BAB_SESS_USERID']);
 			}
 		if ($entities_access > 0)
-			$babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		break;
 
 	case "vunew":
@@ -795,9 +795,9 @@ switch($idx)
 			$idx = "lvt";
 			}
 		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
-			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
+			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm");
 		if ($entities_access > 0)
-			$babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		break;
 
 	case "lvreq":
@@ -815,10 +815,10 @@ switch($idx)
 			$idx = "lvt";
 			}
 		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
-			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
+			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm");
 
 		if ($entities_access > 0)
-			$babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

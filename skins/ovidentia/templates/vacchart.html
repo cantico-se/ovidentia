@@ -9,6 +9,7 @@
 			<td>{ t_description }</td>
 			<td>{ t_members }</td>
 			<td>{ t_calendar }</td>
+			<td>{ t_requests }</td>
 		</tr>
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
@@ -20,7 +21,12 @@
 				
 			</td>
 			<td>
-				<a href="{ babUrlScript }?tg=vacchart&idx=entity_cal&ide={ arr[id] }&popup=1&emptylines=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
+				<a href="{ babUrlScript }?tg=vacchart&idx=entity_cal&ide={ arr[id] }&popup=1&emptylines=0" onclick="bab_popup(this.href,4,1);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
+			</td>
+			<td>
+				
+				<a href="{ babUrlScript }?tg=vacchart&idx=entity_requests&ide={ arr[id] }">{ t_requests }</a>
+				
 			</td>
 		</tr>
 		<!--#endin getnext -->
@@ -52,7 +58,7 @@ for (i = 0; i < f.elements.length; i++)
 if (users != '')
 	{
 	//}
-	bab_popup('{ babUrlScript }?tg=vacuser&idx=cal&idu='+users+'&popup=1');
+	bab_popup('{ babUrlScript }?tg=vacuser&idx=cal&idu='+users+'&popup=1',4,1);
 	}
 }
 -->
@@ -61,48 +67,48 @@ if (users != '')
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ t_name }</td>
+			<td>{ t_collection }</td>
+			<td>{ t_schema }</td>
 			<td>{ t_asks }</td>
 			<td>{ t_rights }</td>
-			<td>{ t_calendar }</td>
 			<td>
 				<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a>
 			</td>
 		</tr>
 		<!--#if superior_id -->
 		<tr class="BabSiteAdminFontBackground"> 
-			<td><strong>{ superior_name }</strong></td>
+			<td><strong><a href="{ babUrlScript }?tg=vacchart&idx=modp&ide={ ide }&iduser={ superior_id }">{ superior_name }</a></strong></td>
+			<td>{ s_collection }</td>
+			<td>{ s_schema }</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=asks&id_user={ superior_id }&ide={ ide }">{ t_asks }</a>
 			</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=rights&id_user={ superior_id }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ t_rights }" border="0" /></a>
 			</td>
-			<td>
-				<a href="{ babUrlScript }?tg=vacuser&idx=cal&idu={ superior_id }&popup=1&emptylines=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
-			</td>
 			<td><input type="checkbox" name="userids[]" value="{ superior_id }" /></td>
 		</tr>
 		<!--#endif superior_id -->
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
-			<td>{ name }</td>
+			<td><a href="{ babUrlScript }?tg=vacchart&idx=modp&ide={ ide }&iduser={ id_user }">{ name }</a></td>
+			<td>{ collection }</td>
+			<td>{ schema }</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=asks&id_user={ id_user }&ide={ ide }">{ t_asks }</a>
 			</td>
 			<td>
 				<a href="{ babUrlScript }?tg=vacchart&idx=rights&id_user={ id_user }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ t_rights }" border="0" /></a>
 			</td>
-			<td>
-				<a href="{ babUrlScript }?tg=vacuser&idx=cal&idu={ id_user }&popup=1&emptylines=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
-			</td>
+
 			<td><input type="checkbox" name="userids[]" value="{ id_user }" /></td>
 		</tr>
 		<!--#endin getnext -->
 		<tr class="BabSiteAdminTitleFontBackground">
-			<td colspan="5" align="right"><a href="javascript:view_calendar_checkbox()">{ t_view_calendar }</a></td>
+			<td colspan="6" align="right"><a href="javascript:view_calendar_checkbox()">{ t_view_calendar }</a></td>
 		</tr>
 	</table>
 </td>

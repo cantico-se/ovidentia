@@ -71,6 +71,7 @@ global $babBody;
 			$this->t_description = bab_translate('Description');
 			$this->t_members = bab_translate('Members');
 			$this->t_calendar = bab_translate('Calendar');
+			$this->t_requests = bab_translate('Requests');
 			}
 
 		function getnext()
@@ -114,6 +115,8 @@ function entity_members($ide)
 			$this->t_rights = bab_translate('Rights');
 			$this->t_asks = bab_translate('Requests');
 			$this->t_view_calendar = bab_translate('View calendars');
+			$this->t_collection = bab_translate('Collection');
+			$this->t_schema = bab_translate('Approbation schema');
 			
 			$this->users = array();
 
@@ -125,12 +128,44 @@ function entity_members($ide)
 					}
 				}
 			natcasesort($this->users);
+
+			if (count($this->users) > 0)
+				{
+				$tmp = array_keys($this->users);
+				$tmp[] = $this->superior_id;
+				}
+			elseif (!empty($this->superior_id))
+				{
+				$tmp = array($this->superior_id);
+				}
+			else
+				$tmp = array();
+
+
+			if (count($tmp) > 0)
+				{
+				$this->more = array();
+
+				$db = & $GLOBALS['babDB'];
+				$req = "SELECT p.id_user,c.name coll,f.name sa FROM ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c ON c.id=p.id_coll LEFT JOIN ".BAB_FLOW_APPROVERS_TBL." f ON f.id=p.id_sa WHERE p.id_user IN(".implode(',',$tmp).")";
+				$res = $db->db_query($req);
+				while ($arr = $db->db_fetch_array($res))
+					{
+					$this->more[$arr['id_user']] = array( $arr['coll'], $arr['sa'] );
+					}
+				}
+
+			if ($superior !== 0 )
+				{
+				list($this->s_collection, $this->s_schema ) = $this->more[$this->superior_id] ;
+				}
 			}
 
 		function getnext()
 			{
 			if (list($this->id_user,$this->name) = each($this->users))
 				{
+				list($this->collection, $this->schema ) = $this->more[$this->id_user] ;
 				return true;
 				}
 			else
@@ -161,6 +196,26 @@ function entity_cal($ide )
 	viewVacationCalendar(array_keys($tmp));
 
 }
+
+function entity_requests($ide )
+{
+	$users = bab_OCGetCollaborators($ide);
+	$superior = bab_OCGetSuperior($ide);
+
+	$tmp = array();
+	foreach ($users as $user)
+		{
+		$tmp[$user['id_user']] = $user['id_user'];
+		}
+
+	if (!isset($tmp[$superior['id_user']]) && !empty($superior['id_user']))
+		$tmp[$superior['id_user']] = $superior['id_user'];
+	
+	listVacationRequests(array_keys($tmp));
+
+}
+
+/*
 
 function user_rights($id_user)
 {	
@@ -236,7 +291,7 @@ function user_rights($id_user)
 	$temp->printhtml();
 }
 
-
+*/
 
 
 
@@ -244,10 +299,53 @@ function user_rights($id_user)
 
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';
 
-$babBody->addItemMenu("entities", bab_translate("Entities"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+
+if( isset($_POST['add']) )
+	{
+	switch($_POST['add'])
+		{
+		case 'modrbu':
+			if ( bab_IsUserUnderSuperior($_POST['iduser']) )
+				{
+				updateVacationRightByUser($_POST['iduser'], $_POST['quantities'], $_POST['idrights']);
+				}
+			break;
+
+		case 'changeuser':
+			if (!empty($_POST['idp']))
+				{
+				if(updateVacationPersonnel($_POST['idp'], $_POST['idsa']))
+					{
+					$idx ='changeucol';
+					}
+				else
+					{
+					$idx ='modp';
+					}
+				}
+			else
+				{
+				if(!saveVacationPersonnel($_POST['userid'], $_POST['idcol'], $_POST['idsa']))
+					{
+					$idx ='addp';
+					}
+				}
+			break;
+
+		case 'changeucol':
+			if (!updateUserColl())
+				$idx = $add;
+			break;
+		}
+	}
+
+$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 
 switch($idx)
 	{
+	case 'lper':
+		$idx = 'entity_members';
 	case 'entity_members':
 		$babBody->title = bab_translate("Entity members");
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members");
@@ -259,16 +357,21 @@ switch($idx)
 		break;
 
 	case 'rights':
-		$babBody->title = bab_getUserName($_GET['id_user']);
+		
 		if (bab_IsUserUnderSuperior($_GET['id_user']))
 			{
-			user_rights($_GET['id_user']);
+			listRightsByUser($_GET['id_user']);
+			exit;
 			}
 		else
 			{
 			$babBody->title = bab_translate("Access denied");
 			}
 		break;
+
+	case "rlbuul":
+		rlistbyuserUnload(bab_translate("Your request has been updated"));
+		exit;
 
 	case 'asks':
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
@@ -277,6 +380,41 @@ switch($idx)
 			$babBody->title = bab_translate("Vacation requests list");
 			$babBody->addItemMenu("asks", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=asks");
 			listVacationRequests($_GET['id_user']);
+			}
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
+		break;
+
+	case 'entity_requests':
+		$babBody->addItemMenu("entity_requests", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_requests");
+		$babBody->title = bab_translate("Vacation requests list");
+		entity_requests($_GET['ide']);
+		break;
+
+	case "modp":
+		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
+		
+		if (bab_IsUserUnderSuperior($_REQUEST['iduser']))
+			{
+			$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
+			$babBody->title = bab_translate("Modify user");
+			addVacationPersonnel($_REQUEST['iduser']);
+			}
+		else
+			{
+			$babBody->title = bab_translate("Access denied");
+			}
+		break;
+
+	case 'changeucol':
+		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_REQUEST['ide']);
+		if (bab_IsUserUnderSuperior($_POST['idp']))
+			{
+			$babBody->addItemMenu("changeucol", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=changeucol&ide=".$_REQUEST['ide']);
+			$babBody->title = bab_translate("Change user collection");
+			changeucol( $_POST['idp'], $_POST['idcol'] );
 			}
 		else
 			{

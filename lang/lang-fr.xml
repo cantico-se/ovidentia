@@ -1687,4 +1687,10 @@
 <string id="The following appointment has been canceled">L'événement suivant a été refusé</string>
 <string id="Appointment modifed by ">Evénement modifié par </string>
 <string id="The following appointment has been modified">L'événement suivant a été modifié</string>
+<string id="Selected period">Période sélectionée</string>
+<string id="Vacations management">Gestion des congés</string>
+<string id="Delegate management">Gestion déléguée</string>
+<string id="Modification are disabled, the user have">La modification est désactivée car l'utilisateur a</string>
+<string id="whaiting request(s)">demande(s) en attente</string>
+<string id="Negative balance are not alowed on right">Les soldes négatifs ne sont pas autorisés sur le droit</string>
 </fr>

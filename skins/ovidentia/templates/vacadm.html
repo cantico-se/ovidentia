@@ -243,12 +243,15 @@ if (users != '')
 
 		<tr class="BabSiteAdminTitleFontBackground">         
 			<td width="1%">
-				<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a></td>
+				<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a>
+			</td>
 			<td><a href="{ fullnameurl }">{ fullname }</a></td>
 			<td>{ collection }</td>
 			<td>{ appschema }</td>
 			<td>{ altlrbu }</td>
-			<td>{ altcal }</td>
+			<td align="center">
+				<a href="javascript:onCheckAll('calendar', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('calendar', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0" /></a>
+			</td>
 		</tr>
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
@@ -259,14 +262,17 @@ if (users != '')
 			<td>{ collname }</td>
 			<td>{ saname }</td>
 			<td><a href="{ lrbuurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
-			<td><a href="{ calurl }&popup=1" onclick="bab_popup(this.href,5,1);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
+			<td align="center"><input type="checkbox" name="calendar[]" value="{ userid }" /></td>
 		</tr> 
 		<!--#endin getnext -->
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td align="center">
 				<a href="javascript:submitForm('delu','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a>
 			</td>
-			<td colspan="5">
+			<td colspan="4">
+				&nbsp;
+			</td>
+			<td align="center">
 				<a href="javascript:view_calendar_checkbox()">{ t_view_calendar }</a>
 			</td>
 		</tr>
@@ -340,20 +346,31 @@ else
 </script>
 
 <form name="user" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="vacadm" />
+<input type="hidden" name="tg" value="{ tg }" />
 <input type="hidden" name="idx" value="lper" />
 <input type="hidden" name="add" value="changeuser" />
 <input type="hidden" name="idp" value="{ idp }" />
+<!--#if ide -->
+<input type="hidden" name="ide" value="{ ide }" />
+<!--#endif ide -->
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+		<!--#if whaiting -->
+		<tr> 
+			<td> 
+				{ whaiting }
+			</td>
+		</tr>
+		<!--#else whaiting -->
 		<!--#if idp -->
 		<tr> 
 			<td  align="right">{ usertext }:</td>
 			<td> 
 				{ userval }
+
 			</td>
 		</tr>
 		<!--#else idp -->
@@ -392,6 +409,7 @@ else
 		<br>
 		</td>
 		</tr>
+		<!--#endif whaiting -->
 	</table>
 </td>
 </tr>
@@ -523,37 +541,60 @@ function computeRights(obj,max)
 </script>
 
 <form name="changeucol" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="vacadm" />
+<input type="hidden" name="tg" value="{ tg }" />
 <input type="hidden" name="idx" value="lper" />
 <input type="hidden" name="add" value="changeucol" />
 <input type="hidden" name="idp" value="{ id_user }" />
 <input type="hidden" name="idcol" value="{ id_coll }" />
+<!--#if ide -->
+<input type="hidden" name="ide" value="{ ide }" />
+<!--#endif ide -->
 <table width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-		<tr> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5">
+		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>&nbsp;</td>
 			<td colspan="2"> 
-				<h5>{ t_oldcol }</h5>
+				<h5>{ t_oldcol } : { oldcol }</h5>
 			</td>
 			<td colspan="2"> 
-				<h5>{ t_newcol }</h5>
+				<h5>{ t_newcol } : { newcol }</h5>
+			</td>
+		</tr>
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>&nbsp;</td>
+			<td> 
+				{ t_right }
+			</td>
+			<td> 
+				{ t_balance }
+			</td>
+			<td> 
+				{ t_right }
+			</td>
+			<td> 
+				{ t_balance }
 			</td>
 		</tr>
 		<!--#in getnext -->
-		<tr>
+		<tr class="BabLoginMenuBackground" >
 			<td>{ right[description] }</td>
-			<td>{ right[quantity] }</td>
+			<td>{ right[quantity_old] }</td>
 			<td>{ right[quantitydays] }</td>
 
-			<td>{ right[quantity] }</td>
-			<td><input type="text" name="right_{ id }" value="{ newrightvalue }" size="4" maxlength="5" onKeyUp="computeRights()" /></td>
+			<td>{ right[quantity_new] }</td>
+			<td>
+				<!--#if right[quantity_new] -->
+				<input type="text" name="right_{ id }" value="{ newrightvalue }" size="4" maxlength="5" onKeyUp="computeRights()" />
+				<!--#endif right[quantity_new] -->
+			</td>
 
 		</tr>
 		<!--#endin getnext -->
-		<tr> 
+		<tr class="BabLoginMenuBackground"> 
 			<td colspan="5" align="center"> 
+				<br />
 				<input type="submit" name="submit" value="{ t_record }" />
 			</td>
 		</tr>
@@ -565,20 +606,8 @@ function computeRights(obj,max)
 <!--#end changeucol -->
 
 <!--#begin rlistbyuser -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
 <script type="text/javascript">
 <!--
-window.focus();
-
 function validateNum(field) {
 var valid = ".0123456789"
 var ok = "yes";
@@ -615,55 +644,48 @@ function validateDayField(field) {
 }
 //-->
 </script>
-</HEAD>
-<BODY class="BabBackground">
-<br>
+
 <form name="rmodify" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="vacadm">
+<input type="hidden" name="tg" value="{ tg }">
 <input type="hidden" name="idx" value="rlbuul">
 <input type="hidden" name="add" value="modrbu">
 <input type="hidden" name="iduser" value="{ iduser }">
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" >{ titletxt }</td>
-<td class="BabErrorMessage" align="left" >{ fullname }</td>
-</tr></table></center>
+
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ desctxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ consumedtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ datetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ datebtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ dateetxt }</td>
-</tr> 
-<!--#in getnextright -->
-<!--#if bview -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ description }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">
-<input type="text" name="quantities[]" size="5" maxlength="5" value="{ quantity }" onBlur="validateDayField(this)"></td>
-<input type="hidden" name="idrights[]" value="{ idright }">
-<td class="BabSiteAdminFontBackground" valign="middle">{ consumed }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ date }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ dateb }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ datee }</td>
-<!--#endif bview -->
-<!--#endin getnextright -->
-</table>
-</td>
+	<td class="BabLoginCadreBackground"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ desctxt }</td>
+			<td>{ quantitytxt }</td>
+			<td>{ consumedtxt }</td>
+			<td>{ datetxt }</td>
+			<td>{ datebtxt }</td>
+			<td>{ dateetxt }</td>
+		</tr> 
+		<!--#in getnextright -->
+		<!--#if bview -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td>{ description }</td>
+			<td>
+			<input type="text" name="quantities[]" size="5" maxlength="5" value="{ quantity }" onBlur="validateDayField(this)"></td>
+			<input type="hidden" name="idrights[]" value="{ idright }">
+			<td>{ consumed }</td>
+			<td>{ date }</td>
+			<td>{ dateb }</td>
+			<td>{ datee }</td>
+		</tr>
+		<!--#endif bview -->
+		<!--#endin getnextright -->
+	</table>
+	</td>
 </tr>
 </table>
 <br>
-<center><input type="submit" name="submit" value="{ updatetxt }"></center>
+<div align="center"><input type="submit" name="submit" value="{ updatetxt }"></div>
 </form>
-<br>
-</BODY>
-</HTML>
+
 <!--#end rlistbyuser -->
 
 <!--#begin rlistbyuserunload -->
@@ -705,3 +727,22 @@ close }</a> </td>
 </BODY>
 </HTML>
 <!--#end rlistbyuserunload -->
+
+
+<!--#begin menu -->
+<table  width="40%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+		<!--#in getnext -->
+		<tr onmouseover="this.className='BabMenuActiveBackground'" onmouseout="this.className=''"> 
+			<td align="center"> 
+				<a href="{ url }">{ text }</a>
+			</td>
+		</tr>
+		<!--#endin getnext -->
+	</table>
+</td>
+</tr>
+</table>
+<!--#end menu -->

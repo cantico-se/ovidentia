@@ -221,8 +221,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 			if ( $arr['right_inperiod'] == 1 && 
 				!empty($arr['period_start']) && 
 				!empty($arr['period_end']) && 
-				$period_start >= $begin && 
-				$period_end <= $end )
+				($period_start >= $begin && $period_end <= $end) )
 					{
 					$access = true;
 					}
@@ -318,6 +317,7 @@ function viewVacationCalendar($users, $period = false )
 			$this->period = $period;
 			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
 			$this->vacapprovedtxt = bab_translate("Approved vacation request");
+			$this->t_selected = bab_translate("Selected period");
 			$this->print = bab_translate("Print");
 			$this->close = bab_translate("Close");
 
@@ -668,10 +668,13 @@ function listVacationRequests($id_user)
 			$this->bottomname = "";
 			$this->nextname = "";
 			$this->prevname = "";
+			if (is_array($id_user))
+				$id_user = implode(',',$id_user);
 			$this->personal = $id_user == $GLOBALS['BAB_SESS_USERID'];
 			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
 			$this->db = $GLOBALS['babDB'];
-			$req = "".BAB_VAC_ENTRIES_TBL." where id_user='".$id_user."'";
+
+			$req = "".BAB_VAC_ENTRIES_TBL." where id_user IN(".$id_user.")";
 
 			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
@@ -770,6 +773,279 @@ function listVacationRequests($id_user)
 }
 
 
+function listRightsByUser($id)
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $nametxt;
+		var $urlname;
+		var $url;
+		var $descriptiontxt;
+		var $description;
+		var $consumedtxt;
+		var $consumed;
+		var $fullname;
+		var $titletxt;
+				
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+
+		var $iduser;
+		var $idcoll;
+		var $bview;
+
+		var $updatetxt;
+		var $invalidentry;
+		var $invalidentry1;
+		var $invalidentry2;
+
+		function temp($id)
+			{
+			$this->iduser = $id;
+			$this->updatetxt = bab_translate("Update");
+			$this->desctxt = bab_translate("Description");
+			$this->consumedtxt = bab_translate("Consumed");
+			$this->datebtxt = bab_translate("Begin date");
+			$this->dateetxt = bab_translate("End date");
+			$this->quantitytxt = bab_translate("Quantity");
+			$this->datetxt = bab_translate("Entry date");
+			$this->invalidentry = bab_translate("Invalid entry!  Only numbers are accepted or . !");
+			$this->invalidentry = str_replace("'", "\'", $this->invalidentry);
+			$this->invalidentry = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidentry);
+			$this->invalidentry1 = bab_translate("Invalid entry");
+			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
+			$GLOBALS['babBody']->title = bab_translate("Vacation rights of:").' '.bab_getUserName($id);
+
+			$this->tg = $_REQUEST['tg'];
+
+			$this->db = & $GLOBALS['babDB'];
+			$this->res = $this->db->db_query("select * from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$id."' order by id desc");
+			$this->count = $this->db->db_num_rows($this->res);
+			list($this->idcoll) = $this->db->db_fetch_row($this->db->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id."'"));
+			}
+
+		function getnextright()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$arr['id_right']."'"));
+				$res = $this->db->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$this->idcoll."' and id_type='".$row['id_type']."'");
+				$this->bview = false;
+				if( $res && $this->db->db_num_rows($res) > 0 )
+					{
+					$this->idright = $row['id'];
+					$this->description = $row['description'];
+					if( $arr['quantity'] != '' )
+						$this->quantity = $arr['quantity'];
+					else
+						$this->quantity = $row['quantity'];
+					$this->date = bab_shortDate(bab_mktime($row['date_entry']." 00:00:00"), false);
+					$this->dateb = bab_shortDate(bab_mktime($row['date_begin']." 00:00:00"), false);
+					$this->datee = bab_shortDate(bab_mktime($row['date_end']." 00:00:00"), false);
+					$arr = $this->db->db_fetch_array($this->db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." join ".BAB_VAC_ENTRIES_TBL." where ".BAB_VAC_ENTRIES_TBL.".id_user='".$this->iduser."' and ".BAB_VAC_ENTRIES_TBL.".status='Y' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_type='".$row['id']."' and ".BAB_VAC_ENTRIES_ELEM_TBL.".id_entry=".BAB_VAC_ENTRIES_TBL.".id"));
+					$this->consumed = isset($arr['total'])? $arr['total'] : 0;
+					$this->bview = true;
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		}
+
+	$temp = new temp($id);
+
+	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+	$GLOBALS['babBodyPopup'] = & new babBodyPopup();
+	$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
+	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "vacadm.html", "rlistbyuser"));
+	printBabBodyPopup();
+
+	}
+
+function updateVacationRightByUser($userid, $quantities, $idrights)
+{
+	global $babDB;
+	for($i = 0; $i < count($idrights); $i++)
+		{
+		list($quantity) = $babDB->db_fetch_array($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$idrights[$i]."'"));
+		if( $quantity != $quantities[$i] )
+			$quant = $quantities[$i];
+		else
+			$quant = '';
+
+		$babDB->db_query("update ".BAB_VAC_USERS_RIGHTS_TBL." set quantity='".$quant."' where id_user='".$userid."' and id_right='".$idrights[$i]."'");
+		}
+}
+
+
+function rlistbyuserUnload($msg)
+	{
+	class temp
+		{
+		var $message;
+		var $close;
+
+		function temp($msg)
+			{
+			$this->message = $msg;
+			$this->close = bab_translate("Close");
+			}
+		}
+
+	$temp = new temp($msg);
+	echo bab_printTemplate($temp,"vacadm.html", "rlistbyuserunload");
+	}
+
+
+function addVacationPersonnel($idp = false)
+	{
+	global $babBody;
+	class temp
+		{
+		var $usertext;
+		var $grouptext;
+		var $userval;
+		var $userid;
+		var $groupval;
+		var $groupid;
+		var $collection;
+		var $idcollection;
+		var $collname;
+		var $appschema;
+		var $idsapp;
+		var $saname;
+		var $selected;
+		var $add;
+		var $bdel;
+		var $delete;
+		var $groupsbrowurl;
+		var $usersbrowurl;
+		var $db;
+		var $orand;
+		var $reset;
+
+		function temp($idp)
+			{
+			$this->usertext = bab_translate("User");
+			$this->collection = bab_translate("Collection");
+			$this->appschema = bab_translate("Approbation schema");
+			$this->delete = bab_translate("Delete");
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=browu&cb=";
+			$this->tg = $_REQUEST['tg'];
+			$this->ide = isset($_REQUEST['ide']) ? $_REQUEST['ide'] : false;
+
+			$this->db = & $GLOBALS['babDB'];
+
+			$this->idp = $idp;
+
+			list($n) = $this->db->db_fetch_array($this->db->db_query("SELECT COUNT(*) FROM ".BAB_VAC_ENTRIES_TBL." WHERE id_user='".$this->idp."' AND status=''"));
+
+			if ($n > 0)
+				$this->whaiting = bab_translate('Modification are disabled, the user have').' '.$n.' '.bab_translate('whaiting request(s)').'.';
+
+			if (isset($_POST['action']) && $_POST['action'] == 'changeuser')
+				{
+				$this->userid = $_POST['userid'];
+				$this->idsa = $_POST['idsa'];
+				$this->idcol = $_POST['idcol'];
+				$this->idp = $_POST['idp'];
+				}
+
+			if( !empty($this->idp))
+				{
+				$this->add = bab_translate("Modify");
+				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$this->idp."'"));
+				$this->userid = $arr['id_user'];
+				$this->userval = bab_getUserName($this->userid);
+				$this->idcol = $arr['id_coll'];
+				$this->idsa = $arr['id_sa'];
+				}
+			else
+				{
+				$this->add = bab_translate("Add");
+				$this->idcol = '';
+				$this->idsa = '';
+				$this->userval = '';
+				$this->userid = '';
+				}
+
+			$this->groupval = "";
+			$this->groupid = "";
+
+			$this->sares = $this->db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+			if( !$this->sares )
+				$this->countsa = 0;
+			else
+				$this->countsa = $this->db->db_num_rows($this->sares);
+
+			$this->colres = $this->db->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." order by name asc");
+			$this->countcol = $this->db->db_num_rows($this->colres);
+			}
+		
+		function getnextsa()
+			{
+			static $j= 0;
+			if( $j < $this->countsa )
+				{
+				$arr = $this->db->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->idsapp = $arr['id'];
+				$this->idsapp = $arr['id'];
+				if( $this->idsa == $this->idsapp )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$j++;
+				return true;
+				}
+			else
+				{
+				$j = 0;
+				if ($this->countsa > 0)
+					$this->db->db_data_seek($this->sares,0);
+				return false;
+				}
+			}
+
+		function getnextcol()
+			{
+			static $j= 0;
+			if( $j < $this->countcol )
+				{
+				$arr = $this->db->db_fetch_array($this->colres);
+				$this->collname = $arr['name'];
+				$this->idcollection = $arr['id'];
+				if( $this->idcol == $this->idcollection )
+					$this->selected = "selected";
+				else
+					$this->selected = "";
+				$j++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function printhtml()
+			{
+			$GLOBALS['babBody']->babecho(	bab_printTemplate($this,"vacadm.html", "personnelcreate"));
+			}
+		}
+
+	$temp = new temp($idp);
+	$temp->printhtml();
+	}
+
 function bab_IsUserUnderSuperior($id_user)
 {
 	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
@@ -798,5 +1074,296 @@ function bab_IsUserUnderSuperior($id_user)
 		}
 	return false;
 }
+
+function updateVacationUser($userid, $idsa)
+{
+	global $babDB;
+
+	$res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user='".$userid."' and status=''");
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		if( $row['idfai'] != 0 )
+			deleteFlowInstance($row['idfai']);
+		$idfai = makeFlowInstance($idsa, "vac-".$row['id']);
+		$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set idfai='".$idfai."' where id='".$row['id']."'");
+		$nfusers = getWaitingApproversFlowInstance($idfai, true);
+		notifyVacationApprovers($row['id'], $nfusers);
+		}
+}
+
+function updateUserColl()
+{
+	$db = & $GLOBALS['babDB'];
+
+	if (empty($_POST['idp']))
+		{
+		return false;
+		}
+
+	$users_rights = array();
+	$worked_ids = array();
+
+	$res = $db->db_query("SELECT id,id_right FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id_user='".$_POST['idp']."'");
+	while($arr = $db->db_fetch_array($res))
+		{
+		$users_rights[$arr['id_right']] = $arr['id'];
+		}
+
+	$old_rights = bab_getRightsOnPeriod(false, false, $_POST['idp']);
+	$used = array();
+	foreach($old_rights as $r)
+		{
+		$used[$r['id']] = $r['used'];
+		}
+
+	$prefix = 'right_';
+	$post_rights = array();
+
+	/* control */
+
+	foreach($_POST as $field => $value)
+		{
+		if (substr($field,0,strlen($prefix)) == $prefix)
+			{
+			list(,$id_right) = explode('_',$field);
+			if (isset($used[$id_right]))
+				{
+				$value += $used[$id_right];
+				}
+
+			$post_rights[$id_right] = $value;
+
+			if ($value < 0)
+				{
+				list($name,$cbalance) = $db->db_fetch_array($db->db_query("SELECT description,cbalance FROM ".BAB_VAC_RIGHTS_TBL." WHERE id='".$id_right."'"));
+				
+				if ($cbalance == 'N')
+					{
+					$GLOBALS['babBody']->msgerror = bab_translate("Negative balance are not alowed on right").' '.$name;
+					return false;
+
+					}
+				}
+			}
+		}
+
+	/* RECORD */
+
+	foreach($post_rights as $id_right => $value)
+		{
+		if (isset($users_rights[$id_right]))
+			{
+			$db->db_query("UPDATE ".BAB_VAC_USERS_RIGHTS_TBL." SET quantity='".$value."' WHERE id='".$users_rights[$id_right]."'");
+			$worked_ids[] = $users_rights[$id_right];
+			}
+		else
+			{
+			$db->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." (id_user,id_right,quantity) VALUES ('".$_POST['idp']."','".$id_right."','".$value."')");
+			$worked_ids[] = $db->db_insert_id();
+			}
+		}
+
+	$db->db_query("DELETE FROM ".BAB_VAC_USERS_RIGHTS_TBL." WHERE id NOT IN(".implode(',',$worked_ids).") AND id_user= '".$_POST['idp']."'");
+
+	$db->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_coll='".$_POST['idcol']."' WHERE id_user='".$_POST['idp']."'");
+
+	return true;
+}
+
+
+function changeucol($id_user,$newcol)
+	{
+	global $babBody;
+
+	class tempa
+		{
+		
+		function tempa($id_user,$newcol)
+			{
+			$this->t_oldcol = bab_translate("Old collection");
+			$this->t_newcol = bab_translate("New collection");
+			$this->t_record = bab_translate("Record");
+			$this->t_quantity = bab_translate("Quantity");
+			$this->t_nbdays = bab_translate("Day(s)");
+			$this->t_right = bab_translate("Rights");
+			$this->t_balance = bab_translate("Balance");
+
+			$this->db = & $GLOBALS['babDB'];
+			$this->tg = $_REQUEST['tg'];
+
+			$old_rights = bab_getRightsOnPeriod(false, false, $id_user);
+
+			$this->id_user = $id_user;
+			$this->id_coll = $newcol;
+
+			$req = "SELECT c.name old, c2.name new FROM ".BAB_VAC_PERSONNEL_TBL." p, ".BAB_VAC_COLLECTIONS_TBL." c LEFT JOIN ".BAB_VAC_COLLECTIONS_TBL." c2 ON c2.id='".$newcol."' WHERE p.id_user='".$id_user."' AND c.id = p.id_coll";
+
+			$arr = $this->db->db_fetch_array($this->db->db_query($req));
+
+			$this->oldcol = $arr['old'];
+			$this->newcol = $arr['new'];
+
+			$req = "SELECT r.* FROM ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_COLL_TYPES_TBL." t WHERE t.id_type = r.id_type AND t.id_coll='".$newcol."' ORDER BY r.description";
+			$res = $this->db->db_query($req);
+			
+			$new_rights = array();
+			while ($arr = $this->db->db_fetch_array($res))
+				{
+				$new_rights[] = array(
+							'id' =>			$arr['id'],
+							'date_begin' => $arr['date_begin'],
+							'date_end' =>   $arr['date_end'],
+							'quantity' =>   $arr['quantity'],
+							'description' =>$arr['description']
+							);
+				}
+			
+			$this->totaldays = 0;
+
+			$this->rights = array();
+
+			foreach ($old_rights as $v)
+				{
+				$this->rights[$v['id']] = array( 
+							'description' => $v['description'], 
+							'quantity_old' => $v['quantity'],
+							'quantitydays' => $v['quantitydays']
+							);
+				}
+
+			foreach ($new_rights as $v)
+				{
+				if (!isset($this->rights[$v['id']]))
+					{
+					$this->rights[$v['id']] = array( 
+							'description' => $v['description'], 
+							'quantity_new' => $v['quantity'],
+							'quantitydays' => ''
+							);
+					}
+				else
+					{
+					$this->rights[$v['id']]['description'] = $v['description'];
+					$this->rights[$v['id']]['quantity_new'] = $v['quantity'];
+					}
+				}
+			}
+
+		function getnext()
+			{
+			if (list($this->id,$this->right) = each($this->rights))
+				{
+				$default = isset($this->right['quantity_new']) && $this->right['quantitydays'] > $this->right['quantity_new'] ? $this->right['quantity_new'] : $this->right['quantitydays'];
+				$this->newrightvalue = isset($_POST['right_'.$this->id]) ? $_POST['right_'.$this->id] : $default;
+				if (!isset($this->right['quantity_new']))
+					$this->right['quantity_new'] = '';
+				if (!isset($this->right['quantity_old']))
+					$this->right['quantity_old'] = '';
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+		}
+
+
+	$tempa = new tempa($id_user,$newcol);
+	$babBody->babecho(	bab_printTemplate($tempa,"vacadm.html", "changeucol"));
+
+	}
+
+function updateVacationPersonnel($iduser, $idsa)
+	{
+	global $babBody, $babDB;
+
+	if( empty($idsa) )
+		{
+		$babBody->msgerror = bab_translate("You must specify an aprobation schema") ." !";
+		return false;
+		}
+
+	if( !empty($iduser))
+		{
+		$res = $babDB->db_query("select id, id_sa,id_user from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$iduser."'");
+
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$arr = $babDB->db_fetch_array($res);
+
+			$babDB->db_query("UPDATE ".BAB_VAC_PERSONNEL_TBL." SET id_sa='".$idsa."' where id='".$arr['id']."'");
+
+			if( $arr['id_sa'] != $idsa )
+				{
+				updateVacationUser($arr['id_user'], $idsa);
+				}
+
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("This user does'nt exist in personnel list") ." !";
+			return false;
+			}
+		}
+
+	
+	return true;
+	}
+
+function saveVacationPersonnel($userid,  $idcol, $idsa)
+	{
+	global $babBody, $babDB;
+	if( empty($userid) )
+		{
+		$babBody->msgerror = bab_translate("You must specify a user") ." !";
+		return false;
+		}
+
+	if( empty($idcol) )
+		{
+		$babBody->msgerror = bab_translate("You must specify a vacation collection") ." !";
+		return false;
+		}
+
+	if( empty($idsa) )
+		{
+		$babBody->msgerror = bab_translate("You must specify approbation schema") ." !";
+		return false;
+		}
+
+	if( !empty($userid))
+		{
+		$res = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'");
+		if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$babBody->msgerror = bab_translate("This user already exist in personnel list") ." !";
+			return false;
+			}
+		$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$userid."','".$idcol."','".$idsa."')");
+		}
+
+	if( !empty($groupid))
+		{
+		if( $groupid == 1 )
+			$res = $babDB->db_query("select id as id_user from ".BAB_USERS_TBL." where is_confirmed='1'");
+		else
+			$res = $babDB->db_query("select id_object as id_user from ".BAB_USERS_GROUPS_TBL." where id_group='".$groupid."'");
+
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			$res2 = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$arr['id_user']."'");
+			if( $res2 && $babDB->db_num_rows($res2) > 0 )
+				{
+				continue;
+				}
+			else
+				$babDB->db_query("insert into ".BAB_VAC_PERSONNEL_TBL." ( id_user, id_coll, id_sa) values ('".$arr['id_user']."','".$idcol."','".$idsa."')");
+			}
+		}
+	
+	return true;
+	}
+
 
 ?>
