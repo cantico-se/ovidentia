@@ -25,6 +25,15 @@ define("BAB_TAG_CONTAINER", "OC");
 define("BAB_TAG_VARIABLE", "OV");
 define("BAB_TAG_FUNCTION", "OF");
 
+
+define("BAB_OPE_EQUAL"				, 1);
+define("BAB_OPE_NOTEQUAL"			, 2);
+define("BAB_OPE_LESSTHAN"			, 3);
+define("BAB_OPE_LESSTHANOREQUAL"	, 4);
+define("BAB_OPE_GREATERTHAN"		, 5);
+define("BAB_OPE_GREATERTHANOREQUAL"	, 6);
+
+
 function bab_formatDate($format, $time)
 {
 	global $babDays, $babMonths;
@@ -115,11 +124,13 @@ class bab_handler
 
 	function printout($txt)
 	{
+		$this->ctx->push_handler($this);
 		$res = '';
 		while($this->getnext())
 		{
 			$res .= $this->ctx->handle_text($txt);
 		}
+		$this->ctx->pop_handler();
 		return $res;
 	}
 
@@ -130,9 +141,108 @@ class bab_handler
 
 }
 
+class bab_Operator extends bab_handler
+{
+	var $count;
+
+	function bab_Operator( &$ctx, $operator)
+	{
+		$this->count = 0;
+		$this->bab_handler($ctx);
+		$expr1 = $ctx->get_value('expr1');
+		$expr2 = $ctx->get_value('expr2');
+		if( $expr1 !== false && $expr2 !== false)
+		{
+			switch($operator)
+				{
+				case BAB_OPE_EQUAL:
+					if( $expr1 == $expr2) $this->count = 1;	break;
+				case BAB_OPE_NOTEQUAL:
+					if( $expr1 != $expr2) $this->count = 1;	break;
+				case BAB_OPE_LESSTHAN:
+					if( $expr1 < $expr2) $this->count = 1;	break;
+				case BAB_OPE_LESSTHANOREQUAL:
+					if( $expr1 <= $expr2) $this->count = 1;	break;
+				case BAB_OPE_GREATERTHAN:
+					if( $expr1 > $expr2) $this->count = 1;	break;
+				case BAB_OPE_GREATERTHANOREQUAL:
+					if( $expr1 >= $expr2) $this->count = 1;	break;
+				default:
+					break;
+				}
+		}
+	}
+
+	function getnext()
+	{
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$i++;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_IfEqual extends bab_Operator
+{
+	function bab_IfEqual( &$ctx)
+	{
+		$this->bab_Operator(&$ctx, BAB_OPE_EQUAL);
+	}
+}
+
+class bab_IfNotEqual extends bab_Operator
+{
+	function bab_IfNotEqual( &$ctx)
+	{
+		$this->bab_Operator(&$ctx, BAB_OPE_NOTEQUAL);
+	}
+}
+
+class bab_IfLessThan extends bab_Operator
+{
+	function bab_IfLessThan( &$ctx)
+	{
+		$this->bab_Operator(&$ctx, BAB_OPE_LESSTHAN);
+	}
+}
+
+class bab_IfLessThanOrEqual extends bab_Operator
+{
+	function bab_IfLessThanOrEqual( &$ctx)
+	{
+		$this->bab_Operator(&$ctx, BAB_OPE_LESSTHANOREQUAL);
+	}
+}
+
+class bab_IfGreaterThan extends bab_Operator
+{
+	function bab_IfGreaterThan( &$ctx)
+	{
+		$this->bab_Operator(&$ctx, BAB_OPE_GREATERTHAN);
+	}
+}
+
+class bab_IfGreaterThanOrEqual extends bab_Operator
+{
+	function bab_IfGreaterThanOrEqual( &$ctx)
+	{
+		$this->bab_Operator(&$ctx, BAB_OPE_GREATERTHANOREQUAL);
+	}
+}
+
 class bab_ArticlesHomePages extends bab_handler
 {
 	var $arrid = array();
+	var $index;
+	var $count;
 
 	function bab_ArticlesHomePages( &$ctx)
 	{
@@ -142,6 +252,17 @@ class bab_ArticlesHomePages extends bab_handler
 		$arr = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
 		$idgroup = $ctx->get_value('type');
 		$order = $ctx->get_value('order');
+		if( $order === false || $order === '' )
+			$order = "asc";
+
+		switch(strtoupper($order))
+		{
+			case "DESC": $order = "ordering DESC"; break;
+			case "RAND": $order = "rand()"; break;
+			case "ASC":
+			default: $order = "ordering ASC"; break;
+		}
+
 		switch(strtolower($idgroup))
 			{
 			case "public":
@@ -155,7 +276,14 @@ class bab_ArticlesHomePages extends bab_handler
 					$idgroup = 2; // non registered users
 				break;
 			}
-		$this->res = $babDB->db_query("select id_article from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$arr['id']."' and ordering!='0' order by ordering ".($order == ""? "asc": $order));
+	
+		$filter = $ctx->get_value('filter');
+
+		if (($filter == "")||(strtoupper($filter) == "NO")) 
+			$this->res = $babDB->db_query("select id_article from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$arr['id']."' and ordering!='0' order by ".$order);
+		else 
+			$this->res = $babDB->db_query("select H.id_article from ".BAB_HOMEPAGES_TBL." H LEFT JOIN ".BAB_ARTICLES_TBL." A ON (H.id_article=A.id) where id_group='".$idgroup."' and id_site='".$arr['id']."' and ordering!='0'  and id_topic in (".implode(',',$babBody->topview).") order by ".$order);
+
 		$this->count = $babDB->db_num_rows($this->res);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -180,6 +308,7 @@ class bab_ArticlesHomePages extends bab_handler
 			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$arr['id_topic']."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -193,7 +322,9 @@ class bab_ArticlesHomePages extends bab_handler
 
 class bab_ArticleCategories extends bab_handler
 {
-	var $arrid = array();
+	var $IdEntries = array();
+	var $index;
+	var $count;
 
 	function bab_ArticleCategories( &$ctx)
 	{
@@ -213,12 +344,12 @@ class bab_ArticleCategories extends bab_handler
 			{
 			if( in_array($row['id'], $babBody->topcatview) )
 				{
-				if( !in_array($row['id'], $this->arrid))
-					array_push($this->arrid, $row['id']);
+				if( !in_array($row['id'], $this->IdEntries))
+					array_push($this->IdEntries, $row['id']);
 				}
 			}
 		}
-		$this->count = count($this->arrid);
+		$this->count = count($this->IdEntries);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -228,13 +359,15 @@ class bab_ArticleCategories extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->arrid[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
+			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -245,9 +378,53 @@ class bab_ArticleCategories extends bab_handler
 	}
 }
 
+class bab_ArticleCategoryPrevious extends bab_ArticleCategory
+{
+	var $handler;
+
+	function bab_ArticleCategoryPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_ArticleCategory($ctx);
+	}
+
+}
+
+class bab_ArticleCategoryNext extends bab_ArticleCategory
+{
+	var $handler;
+
+	function bab_ArticleCategoryNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_ArticleCategory($ctx);
+	}
+
+}
+
 class bab_ArticleCategory extends bab_handler
 {
 	var $arrid = array();
+	var $index;
+	var $count;
+	var $res;
 
 	function bab_ArticleCategory( &$ctx)
 	{
@@ -280,8 +457,10 @@ class bab_ArticleCategory extends bab_handler
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
+			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -295,8 +474,10 @@ class bab_ArticleCategory extends bab_handler
 
 class bab_ArticleTopics extends bab_handler
 {
-	var $arrid = array();
+	var $IdEntries = array();
 	var $ctx;
+	var $index;
+	var $count;
 
 	function bab_ArticleTopics( &$ctx)
 	{
@@ -318,11 +499,11 @@ class bab_ArticleTopics extends bab_handler
 			{
 			if(in_array($row['id_topcat'], $babBody->topview))
 				{
-				array_push($this->arrid, $row['id_topcat']);
+				array_push($this->IdEntries, $row['id_topcat']);
 				}
 			}
 		}
-		$this->count = count($this->arrid);
+		$this->count = count($this->IdEntries);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -332,7 +513,7 @@ class bab_ArticleTopics extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('TopicTotal', $this->count);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
@@ -343,6 +524,7 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -353,12 +535,53 @@ class bab_ArticleTopics extends bab_handler
 	}
 }
 
+class bab_ArticleTopicPrevious extends bab_ArticleTopic
+{
+	var $handler;
+
+	function bab_ArticleTopicPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleTopics');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_ArticleTopic($ctx);
+	}
+
+}
+
+class bab_ArticleTopicNext extends bab_ArticleTopic
+{
+	var $handler;
+
+	function bab_ArticleTopicNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_ArticleTopic($ctx);
+	}
+
+}
 
 class bab_ArticleTopic extends bab_handler
 {
-	var $arrid = array();
+	var $IdEntries = array();
 	var $topicid;
 	var $count;
+	var $index;
 
 	function bab_ArticleTopic( &$ctx)
 	{
@@ -367,11 +590,11 @@ class bab_ArticleTopic extends bab_handler
 		$this->topicid = $ctx->get_value('topicid');
 
 		if( $this->topicid === false || $this->topicid === '' )
-			$this->arrid = $babBody->topview;
+			$this->IdEntries = $babBody->topview;
 		else
-			$this->arrid = array_values(array_intersect($babBody->topview, explode(',', $this->topicid)));
+			$this->IdEntries = array_values(array_intersect($babBody->topview, explode(',', $this->topicid)));
 
-		$this->count = count($this->arrid);
+		$this->count = count($this->IdEntries);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -381,7 +604,7 @@ class bab_ArticleTopic extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
@@ -391,6 +614,7 @@ class bab_ArticleTopic extends bab_handler
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -404,7 +628,9 @@ class bab_ArticleTopic extends bab_handler
 
 class bab_Articles extends bab_handler
 {
-	var $ctx;
+	var $index;
+	var $count;
+	var $res;
 
 	function bab_Articles( &$ctx)
 	{
@@ -453,6 +679,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -465,8 +692,8 @@ class bab_Articles extends bab_handler
 
 class bab_Article extends bab_handler
 {
-	var $arrid = array();
-	var $ctx;
+	var $IdEntries = array();
+	var $index;
 	var $count;
 
 	function bab_Article( &$ctx)
@@ -484,9 +711,9 @@ class bab_Article extends bab_handler
 				$res = $babDB->db_query("select id_topic from ".BAB_ARTICLES_TBL." where id='".$rr[$i]."' and confirmed='Y'");
 				$arr = $babDB->db_fetch_array($res);
 				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
-					$this->arrid[] = $rr[$i];
+					$this->IdEntries[] = $rr[$i];
 			}
-		$this->count = count($this->arrid);
+		$this->count = count($this->IdEntries);
 		}
 		
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -498,7 +725,7 @@ class bab_Article extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->arrid[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
@@ -509,6 +736,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -522,9 +750,9 @@ class bab_Article extends bab_handler
 
 class bab_Forums extends bab_handler
 {
-	var $ctx;
+	var $index;
 	var $count;
-	var $arrid = array();
+	var $IdEntries = array();
 
 	function bab_Forums( &$ctx)
 	{
@@ -543,10 +771,10 @@ class bab_Forums extends bab_handler
 			{
 			if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 				{
-				array_push($this->arrid, $row['id']);
+				array_push($this->IdEntries, $row['id']);
 				}
 			}
-		$this->count = count($this->arrid);
+		$this->count = count($this->IdEntries);
 		$this->ctx->curctx->push('CCount', $this->count);
 
 	}
@@ -558,13 +786,14 @@ class bab_Forums extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$this->arrid[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('ForumName', $arr['name']);
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -575,9 +804,53 @@ class bab_Forums extends bab_handler
 	}
 }
 
+class bab_ForumPrevious extends bab_Forum
+{
+	var $handler;
+
+	function bab_ForumPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Forums');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('forumid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_Forum($ctx);
+	}
+
+}
+
+class bab_ForumNext extends bab_Forum
+{
+	var $handler;
+
+	function bab_ForumNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('forumid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_Forum($ctx);
+	}
+
+}
+
+
 class bab_Forum extends bab_handler
 {
-	var $arrid = array();
+	var $index;
+	var $count;
+	var $res;
 
 	function bab_Forum( &$ctx)
 	{
@@ -604,6 +877,7 @@ class bab_Forum extends bab_handler
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
 			$i++;
+			$this->index = $i;
 			return true;
 		}
 		else
@@ -615,15 +889,438 @@ class bab_Forum extends bab_handler
 }
 
 
+class bab_Folders extends bab_handler
+{
+	var $index;
+	var $count;
+	var $IdEntries = array();
+
+	function bab_Folders( &$ctx)
+	{
+		global $babDB;
+		$this->bab_handler($ctx);
+		$folderid = $ctx->get_value('folderid');
+		if( $folderid === false || $folderid === '' )
+			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' order by folder asc");
+		else
+			{
+			$folderid = explode(',', $folderid);
+			$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".implode(',', $folderid).") order by folder asc");
+			}
+
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $row['id']))
+				{
+				array_push($this->IdEntries, $row['id']);
+				}
+			}
+		$this->count = count($this->IdEntries);
+		$this->ctx->curctx->push('CCount', $this->count);
+
+	}
+
+	function getnext()
+	{
+		global $babDB;
+
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$this->IdEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FolderName', $arr['folder']);
+			$this->ctx->curctx->push('FolderId', $arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+class bab_FolderPrevious extends bab_Folder
+{
+	var $handler;
+
+	function bab_FolderPrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Folders');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('folderid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_Folder($ctx);
+	}
+
+}
+
+class bab_FolderNext extends bab_Folder
+{
+	var $handler;
+
+	function bab_FolderNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_ArticleCategories');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('folderid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_Folder($ctx);
+	}
+
+}
+
+
+class bab_Folder extends bab_handler
+{
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_Folder( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$folderid = $ctx->get_value('folderid');
+		$this->count = 0;
+		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		{
+		$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$folderid."'");
+		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
+			$this->count = 1;
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FolderName', $arr['folder']);
+			$this->ctx->curctx->push('FolderId', $arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+class bab_SubFolders extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_SubFolders( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$folderid = $ctx->get_value('folderid');
+		$this->count = 0;
+		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		{
+		$res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id='".$folderid."'");
+		if( $res && $babDB->db_num_rows($res) == 1 )
+			{
+			$arr = $babDB->db_fetch_array($res);
+			$path = $ctx->get_value('path');
+			if( $path === false || $path === '' )
+				$path = '';
+
+			if( substr($GLOBALS['babUploadPath'], -1) == "/" )
+				$fullpath = $GLOBALS['babUploadPath'];
+			else
+				$fullpath = $GLOBALS['babUploadPath']."/";
+
+			if( $path != "" )
+				$fullpath = $fullpath."G".$folderid."/".$path."/";
+			else
+				$fullpath = $fullpath."G".$folderid."/";
+			if( is_dir($fullpath))
+				{
+					$h = opendir($fullpath);
+					while (($f = readdir($h)) != false)
+						{
+						if ($f != "." and $f != ".." and $f != "OVF") 
+							{
+							if (is_dir($fullpath."/".$f))
+								{
+								$this->IdEntries[] = $f;
+								}
+							}
+						}
+					closedir($h);
+					$this->count = count($this->IdEntries);
+				}
+			}
+
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('SubFolderName', $this->IdEntries[$i]);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+class bab_Files extends bab_handler
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_Files( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->count = 0;
+		$folderid = $ctx->get_value('folderid');
+		$path = $ctx->get_value('path');
+		if( $path === false || $path === '' )
+			$path = '';
+		if($folderid !== false && $folderid !== '' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
+		{
+			$rows = $ctx->get_value('rows');
+			$offset = $ctx->get_value('offset');
+			if( $rows === false || $rows === '')
+				$rows = "-1";
+
+			if( $offset === false || $offset === '')
+				$offset = "0";
+			$req = "select id from ".BAB_FILES_TBL." where id_owner='".$folderid."' and bgroup='Y' and state='' and path='".addslashes($path)."' and confirmed='Y' order by name asc";
+			$req .= " limit ".$offset.", ".$rows;
+
+			$this->res = $babDB->db_query($req);
+			while($arr = $babDB->db_fetch_array($this->res))
+			{
+				$this->IdEntries[] = $arr['id'];
+			}
+
+			$this->count =  count($this->IdEntries);
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->IdEntries[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FileName', $arr['name']);
+			$this->ctx->curctx->push('FileDescription', $arr['description']);
+			$this->ctx->curctx->push('FileKeywords', $arr['keyword']);
+			$this->ctx->curctx->push('FileId', $arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_File extends bab_handler
+{
+	var $arr;
+	var $index;
+	var $count;
+
+	function bab_File(&$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->count = 0;
+		$fileid = $ctx->get_value('fileid');
+		if($fileid !== false && $fileid !== '')
+		{
+			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$fileid."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$this->arr = $babDB->db_fetch_array($res);
+			if( $this->arr['bgroup'] == 'Y' && $this->arr['state'] == '' && $this->arr['confirmed'] == 'Y' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $this->arr['id_owner']))
+				$this->count = 1;
+			}
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FileName', $this->arr['name']);
+			$this->ctx->curctx->push('FileDescription', $this->arr['description']);
+			$this->ctx->curctx->push('FileKeywords', $this->arr['keyword']);
+			$this->ctx->curctx->push('FileId', $this->arr['id']);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_FileFields extends bab_handler
+{
+	var $fileid;
+	var $index;
+	var $count;
+	var $res;
+
+	function bab_FileFields(&$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$this->count = 0;
+		$this->fileid = $ctx->get_value('fileid');
+		if($this->fileid !== false && $this->fileid !== '')
+		{
+			$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->fileid."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+			$arr = $babDB->db_fetch_array($res);
+			if( $arr['bgroup'] == 'Y' && $arr['state'] == '' && $arr['confirmed'] == 'Y' && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arr['id_owner']))
+				{
+				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$arr['id_owner']."'");
+				if( $this->res )
+					{
+					$this->count = $babDB->db_num_rows($this->res);
+					}
+				}
+			}
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babDB;
+		static $i=0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $i);
+			$this->ctx->curctx->push('FileFieldName', bab_translate($arr['name']));
+			$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."' and id_file='".$this->fileid."'");
+			if( $res && $babDB->db_num_rows($res) > 0)
+				{
+				list($fieldval) = htmlentities($babDB->db_fetch_array($res));
+				}
+			$this->ctx->curctx->push('FileFieldValue', $fieldval);
+			$i++;
+			$this->index = $i;
+			return true;
+		}
+		else
+		{
+			$i=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_FilePrevious extends bab_File
+{
+	var $handler;
+
+	function bab_FilePrevious( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Files');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index > 1)
+				{
+				$ctx->curctx->push('IndexEntry', $this->handler->index -2);
+				$ctx->curctx->push('fileid', $this->handler->IdEntries[$this->handler->index-2]);
+				}
+			}
+		$this->bab_File($ctx);
+	}
+
+}
+
+class bab_FileNext extends bab_File
+{
+	var $handler;
+
+	function bab_FileNext( &$ctx)
+	{
+		$this->handler = $ctx->get_handler('bab_Files');
+		if( $this->handler !== false && $this->handler !== '' )
+			{
+			if( $this->handler->index < $this->handler->count)
+				{
+				$this->count = 1;
+				$ctx->curctx->push('IndexEntry', $this->handler->index);
+				$ctx->curctx->push('fileid', $this->handler->IdEntries[$this->handler->index]);
+				}
+			}
+		$this->bab_File($ctx);
+	}
+
+}
+
 class bab_RecentArticles extends bab_handler
 {
-	var $ctx;
-	var $db;
 	var $arrid = array();
+	var $index;
 	var $count;
 	var $resarticles;
-	var $countarticles;
-	var $lastlog;
 	var $nbdays;
 	var $last;
 	var $topicid;
@@ -651,23 +1348,23 @@ class bab_RecentArticles extends bab_handler
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
 			$this->resarticles = $babDB->db_query($req);
-			$this->countarticles = $babDB->db_num_rows($this->resarticles);
+			$this->count = $babDB->db_num_rows($this->resarticles);
 			}
 		else
 			{
-			$this->countarticles = 0;
+			$this->count = 0;
 			}
-		$this->ctx->curctx->push('CCount', $this->countarticles);
+		$this->ctx->curctx->push('CCount', $this->count);
 		}
 
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $k=0;
-		if( $k < $this->countarticles)
+		static $i=0;
+		if( $i < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->resarticles);
-			$this->ctx->curctx->push('CIndex', $k);
+			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
@@ -676,12 +1373,13 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
-			$k++;
+			$i++;
+			$this->index = $i;
 			return true;
 			}
 		else
 			{
-			$k = 0;
+			$i = 0;
 			return false;
 			}
 		}
@@ -689,8 +1387,7 @@ class bab_RecentArticles extends bab_handler
 
 class bab_RecentComments extends bab_handler
 {
-	var $ctx;
-	var $db;
+	var $index;
 	var $count;
 	var $rescomments;
 	var $countcomments;
@@ -728,18 +1425,18 @@ class bab_RecentComments extends bab_handler
 		if( $this->last !== false)
 			$req .= " limit 0, ".$this->last;
 		$this->rescomments = $babDB->db_query($req);
-		$this->countcomments = $babDB->db_num_rows($this->rescomments);
-		$this->ctx->curctx->push('CCount', $this->countcomments);
+		$this->count = $babDB->db_num_rows($this->rescomments);
+		$this->ctx->curctx->push('CCount', $this->count);
 		}
 
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $k=0;
-		if( $k < $this->countcomments)
+		static $i=0;
+		if( $i < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->rescomments);
-			$this->ctx->curctx->push('CIndex', $k);
+			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('CommentTitle', $arr['subject']);
 			$this->ctx->curctx->push('CommentText', $arr['message']);
 			$this->ctx->curctx->push('CommentId', $arr['id']);
@@ -747,12 +1444,13 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
-			$k++;
+			$i++;
+			$this->index = $i;
 			return true;
 			}
 		else
 			{
-			$k = 0;
+			$i = 0;
 			return false;
 			}
 		}
@@ -760,13 +1458,10 @@ class bab_RecentComments extends bab_handler
 
 class bab_RecentPosts extends bab_handler
 {
-	var $ctx;
-	var $db;
 	var $arrid = array();
 	var $arrfid = array();
-	var $count;
 	var $resposts;
-	var $countposts;
+	var $count;
 	var $lastlog;
 	var $nbdays;
 	var $last;
@@ -811,31 +1506,32 @@ class bab_RecentPosts extends bab_handler
 				array_push($this->arrfid, $forum);
 				}
 			}
-		$this->countposts = count($this->arrid);
-		$this->ctx->curctx->push('CCount', $this->countposts);
+		$this->count = count($this->arrid);
+		$this->ctx->curctx->push('CCount', $this->count);
 		}
 
 	function getnext()
 		{
 		global $babBody, $babDB;
-		static $k=0;
-		if( $k < $this->countposts)
+		static $i=0;
+		if( $i < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$k]."'"));
-			$this->ctx->curctx->push('CIndex', $k);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$i]."'"));
+			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->ctx->curctx->push('PostText', $arr['message']);
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$k]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$k++;
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$i]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$i++;
+			$this->index = $i;
 			return true;
 			}
 		else
 			{
-			$k = 0;
+			$i = 0;
 			return false;
 			}
 		}
@@ -844,6 +1540,7 @@ class bab_RecentPosts extends bab_handler
 class bab_RecentFiles extends bab_handler
 	{
 
+	var $index;
 	var $count;
 	var $res;
 	var $lastlog;
@@ -922,6 +1619,7 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 			$i++;
+			$this->index = $i;
 			return true;
 			}
 		else
@@ -977,7 +1675,7 @@ var $handlers = array();
 var $curctx;
 var $gctx; /* global context */
 
-function babOvTemplate()
+function babOvTemplate($args = array())
 	{
 	global $babBody;
 	$this->gctx = new bab_context('bab_main');
@@ -992,6 +1690,10 @@ function babOvTemplate()
 	$this->gctx->push("babNewCommentsCount", $babBody->newcomments);
 	$this->gctx->push("babNewPostsCount", $babBody->newposts);
 	$this->gctx->push("babNewFilesCount", $babBody->newfiles);
+	foreach($args as $variable => $contents)
+		{
+		$this->gctx->push($variable, $contents);
+		}
 	$this->push_ctx($this->gctx);
 	}
 
@@ -1025,48 +1727,52 @@ function get_value($var)
 	return false;
 	}
 
-function handle_tag( $txt )
+function push_handler(&$handler)
 	{
-	$out = '';
+	$this->handlers[] = &$handler;
+	}
 
-	if(preg_match_all("/(.*?)<".BAB_TAG_CONTAINER."([^\s]*)\s*([^>]*?)>(.*?)<\/".BAB_TAG_CONTAINER."\\2>(.*)/s", $txt, $m))
+function pop_handler()
+	{
+	if( count($this->handlers) > 0 )
 		{
-		for( $i = 0; $i< count($m[3]); $i++)
-			{
-			$out .= $this->handle_text($m[1][$i]);
+		$tmp = array_pop($this->handlers);
+		}
+	}
 
-			$txt2 = $this->handle_text($m[3][$i]);
-			if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $txt2, $mm))
-				{
-				for( $j = 0; $j< count($mm[1]); $j++)
-					{
-					$this->curctx->push($mm[1][$j], $mm[3][$j]);
-					}
-				}
-	
-			$handler = $m[2][$i];
-			$ctx = new bab_context($handler);
-			$this->push_ctx($ctx);
-			$handler = "bab_".$handler;
-			if( class_exists($handler))
-				{
-				$cls = new $handler($this);
-				$out .= $this->handle_tag($cls->printout($m[4][$i]));
-				$this->pop_ctx();
-				$out .= $this->handle_tag($this->handle_text($m[5][$i]));
-				}
+function get_handler($name)
+	{
+	for( $i = count($this->handlers)-1; $i >= 0; $i--)
+		{
+		if( get_class($this->handlers[$i]) == strtolower($name) )
+			{
+			return $this->handlers[$i];
 			}
 		}
-	else
-		{
-		$out .= $this->handle_text($txt);
-		}
+	return false;
+	}
 
-	return $out;
+function handle_tag( $handler, $txt )
+	{
+	$out = '';
+	$handler = "bab_".$handler;
+	if( class_exists($handler))
+		{
+		$ctx = new bab_context($handler);
+		$this->push_ctx($ctx);
+		$cls = new $handler($this);
+		$out = $cls->printout($txt);
+		$this->pop_ctx();
+		return $out;
+		}
+	else
+		return $txt;
 	}
 
 function format_output($val, $matches)
 	{
+	$saveas = false;
+
 	for( $j = 0; $j< count($matches[1]); $j++)
 		{
 		switch(strtolower(trim($matches[1][$j])))
@@ -1144,19 +1850,36 @@ function format_output($val, $matches)
 			case 'author':
 				$val = bab_formatAuthor($matches[3][$j], $val);
 				break;
+			case 'saveas':
+				$varname = $matches[3][$j];
+				$saveas = true;
+				break;
 			}
 		}
+
+	if( $saveas )
+		$this->gctx->push($varname, $val);
 	return $val;
 	}
 
-function handle_text($txt)
+function vars_replace($txt)
 	{
-	if(preg_match_all("/<".BAB_TAG_VARIABLE."([^\s>]*)\s*([^>]*?)>/", $txt, $m))
+	if(preg_match_all("/<".BAB_TAG_FUNCTION."([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>/", $txt, $m))
+		{
+		for( $i = 0; $i< count($m[1]); $i++)
+			{
+			$handler = "bab_".$m[1][$i];
+			$val = $this->$handler($this->vars_replace(trim($m[2][$i])));
+			$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", $val, $txt);
+			}
+		}
+
+	if(preg_match_all("/<".BAB_TAG_VARIABLE."([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>/", $txt, $m))
 		{
 		for( $i = 0; $i< count($m[1]); $i++)
 			{
 			$val = $this->get_value($m[1][$i]);
-			$args = trim($m[2][$i]);
+			$args = $this->vars_replace(trim($m[2][$i]));
 			if( $val !== false )
 				{
 				if( $args != "" )
@@ -1171,17 +1894,36 @@ function handle_text($txt)
 			}
 		}
 	
-	if(preg_match_all("/<".BAB_TAG_FUNCTION."([^\s>]*)\s*([^>]*?)>/", $txt, $m))
-		{
-		for( $i = 0; $i< count($m[1]); $i++)
-			{
-			$handler = "bab_".$m[1][$i];
-			$val = $this->$handler(trim($m[2][$i]));
-			$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", $val, $txt);
-			}
-		}
-
 	return $txt;
+	}
+
+function handle_text($txt)
+	{
+	if(preg_match_all("/(.*?)<".BAB_TAG_CONTAINER."([^\s]*)\s*(\w+\s*=\s*[\"].*?\")*\s*>(.*?)<\/".BAB_TAG_CONTAINER."\\2>(.*)/s", $txt, $m))
+		{
+		$out = '';
+		for( $i = 0; $i< count($m[3]); $i++)
+			{
+			$out .= $this->handle_text($m[1][$i]);
+			$txt2 = $this->vars_replace($m[3][$i]);
+			if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $txt2, $mm))
+				{
+				for( $j = 0; $j< count($mm[1]); $j++)
+					{
+					$this->curctx->push($mm[1][$j], $mm[3][$j]);
+					}
+				}
+
+			$out .= $this->handle_tag($m[2][$i], $m[4][$i]);
+			$out .= $this->handle_text($m[5][$i]);
+			}
+		return $out;
+		}
+	else
+		{
+		$out = $this->vars_replace($txt);
+		return $out;
+		}
 	}
 
 function match_args(&$args, &$mm)
@@ -1218,6 +1960,7 @@ function bab_PutVar($args)
 	{
 	$name = "";
 	$value = "";
+	$global = true;
 
 	if($this->match_args($args, $mm))
 		{
@@ -1226,14 +1969,85 @@ function bab_PutVar($args)
 			switch(strtolower(trim($mm[1][$j])))
 				{
 				case 'name':
-					$name = $mm[3][$j];;					
+					$name = $mm[3][$j];
 					break;
 				case 'value':
-					$value = $mm[3][$j];;					
+					$value = $mm[3][$j];
+					$global = false;
 					break;
 				}
 			}					
+		if( $global )
+			$value = $GLOBALS[$name];
 		$this->gctx->push($name, $value);
+		}
+	}
+
+
+/* Arithmetic operators */
+function bab_AOAddition($args)
+	{
+	return $this->bab_ArithmeticOperator($args, '+');
+	}
+
+/* Arithmetic operators */
+function bab_AOSubtraction($args)
+	{
+	return $this->bab_ArithmeticOperator($args, '-');
+	}
+/* Arithmetic operators */
+function bab_AOMultiplication($args)
+	{
+	return $this->bab_ArithmeticOperator($args, '*');
+	}
+/* Arithmetic operators */
+function bab_AODivision($args)
+	{
+	return $this->bab_ArithmeticOperator($args, '/');
+	}
+/* Arithmetic operators */
+function bab_AOModulus($args)
+	{
+	return $this->bab_ArithmeticOperator($args, '%');
+	}
+
+/* Arithmetic operators */
+function bab_ArithmeticOperator($args, $ope)
+	{
+	$expr1 = "";
+	$expr2 = "";
+	$saveas = true;
+
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'expr1':
+					$expr1 = $mm[3][$j];
+					break;
+				case 'expr2':
+					$expr2 = $mm[3][$j];
+					break;
+				case 'saveas':
+					$saveas = true;
+					$varname = $mm[3][$j];
+					break;
+				}
+			}
+		switch($ope)
+			{
+			case '+': $val = $expr1 + $expr2; break;
+			case '-': $val = $expr1 - $expr2; break;
+			case '*': $val = $expr1 * $expr2; break;
+			case '/': $val = $expr1 / $expr2; break;
+			case '%': $val = $expr1 % $expr2; break;
+			}
+
+		if( $saveas )
+			$this->gctx->push($varname, $val);
+		return $val;
 		}
 	}
 
@@ -1259,7 +2073,7 @@ function bab_UrlContent($args)
 
 function printout($txt)
 	{
-	return $this->handle_tag($txt);
+	return $this->handle_text($txt);
 	}
 
 }

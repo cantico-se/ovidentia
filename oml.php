@@ -24,7 +24,7 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/omlincl.php";
 
-if( strstr($file, ".."))
+if( strstr($file, "..") || strtolower(substr($file, 0, 4)) == 'http' )
 	return;
 $filepath = $babOvmlPath.$file;
 if( !is_readable($filepath))
