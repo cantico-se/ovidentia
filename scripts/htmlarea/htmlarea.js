@@ -101,7 +101,7 @@ HTMLArea.Config = function (babLanguage) {
 			 [ "popupeditor","bablink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
-			 ["cleanhtml"]
+			 ["cleanhtml","babarticle"]
 		];
 
 	this.fontname = {
@@ -171,7 +171,8 @@ HTMLArea.Config = function (babLanguage) {
 		paste:			["paste",				 "Paste",			   "ed_paste.gif",							false],
 		undo:			["undo",				 "undo",			   "ed_undo.gif",							false],
 		redo:			["redo",				 "Redo",			   "ed_redo.gif",							false],
-		babfile:		["babfile",				 "Insert Ovidentia File","ed_bab_file.gif",						false]	
+		babfile:		["babfile",				 "Insert Ovidentia File","ed_bab_file.gif",						false],
+		babarticle:		["babarticle",			"Ovidentia Article link","ed_bab_articleid.gif",				false]	
 	};
 
 	// initialize tooltips from the I18N module
@@ -838,6 +839,7 @@ HTMLArea.prototype.insertHTML = function(html) {
 	}
 };
 
+
 /**
  *  Call this function to surround the existing HTML code in the selection with
  *  your tags.
@@ -1210,7 +1212,8 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 		break;
 		case "babfile":
 		this._babDialog(this.baburl+this.babPhpSelf+"?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1", null, null,'toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
-
+		case "babarticle":
+		this._babDialog(this.baburl+this.babPhpSelf+"?tg=editorarticle&idx=brow&cb=EditorOnInsertArticle", null, null,'toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes');
 		break;
 		case "cleanhtml":
 		this._babcleanhtml();
@@ -1482,13 +1485,7 @@ HTMLArea.is_ie5_5  = ((HTMLArea.agt.indexOf("msie 5.5") !=-1));
 HTMLArea._object = null;
 
 HTMLArea.checkSupportedBrowser = function() {
-	/*
-	var gigi = "Navigator:\n\n";
-	for (var i in navigator) {
-		gigi += i + " = " + navigator[i] + "\n";
-	}
-	alert(gigi);
-	*/	
+
 	if (HTMLArea.is_ie) {
 		var temp = HTMLArea.agt.split("msie");
 		var version = parseFloat(temp[1]);
@@ -1759,7 +1756,7 @@ HTMLArea.prototype._popupDialog = function(url, action, init) {
 HTMLArea.prototype._babDialog = function(url, action, init,param) {
 	if (document.all)
 	{
-		window.open(url, "imageloader","toolbar=no,menubar=no,personalbar=no,width=480,height=480,status=yes,scrollbars=yes,resizable=yes");
+		window.open(url, "imageloader",param);
 	}
 	else
 	{
@@ -1827,7 +1824,16 @@ function EditorOnCreateImage(param)
 
 function EditorOnInsertFile(id, idf, txt)
 {
+/*var html = editor.getSelectedHTML();
+if (html)
+	{txt = html;
+	}*/
 editor.insertHTML('$FILE('+idf+','+txt+')');
+}
+
+function EditorOnInsertArticle(id, txt, target)
+{
+editor.insertHTML('$ARTICLEID('+id+','+txt+','+target+')');
 }
 
 
@@ -1882,7 +1888,7 @@ function initEditor(what,ta)
 			 [ "popupeditor","bablink", "linebreak" ],
 			 [ "copy", "cut", "paste","undo","redo", "separator" ],
 			 [ "bold", "italic", "underline", "separator","strikethrough", "subscript", "superscript", "separator" ],
-			 ["cleanhtml","babimage","babfile"]
+			 ["cleanhtml","babimage","babfile","babarticle"]
 		];
 		}
 
