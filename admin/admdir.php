@@ -812,7 +812,7 @@ if( isset($modify))
 				break;
 
 			case "db":
-				if (!isset($ml)) $ml = '';
+				if (!isset($ml)) { $ml = array(); }
 				if( !modifyAdDb($id, $adname, $description, $fields, $rw, $req, $ml, $allowuu))
 				{
 				$idx = "mdb";
