@@ -2383,7 +2383,7 @@ function bab_updateUserSettings()
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
-		if( !empty($arr['cpw']) && isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arr['id_user'])
+		if( extension_loaded('mcrypt') && !empty($arr['cpw']) && isset($GLOBALS['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arr['id_user'])
 			{
 			$GLOBALS['babUserPassword'] = bab_decrypt($arr['cpw'], md5($arr['id'].session_id().$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
 			}
