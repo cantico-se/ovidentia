@@ -18,16 +18,34 @@ function changestyle(ent,oldstyle,newstyle)
 obj.className = newstyle;
 }
 
+function left_refresh()
+{
+var left_refresh = top.flb.document.forms.left_refresh;
+if (typeof left_refresh == 'undefined')
+	return true;
+
+var left_refresh_disabled = left_refresh.left_refresh_disabled;
+if ((typeof left_refresh_disabled != 'undefined') && left_refresh_disabled.value==1)
+	{
+	left_refresh_disabled.value=0;
+	return false;
+	}
+else
+	return true;
+}
+
 function updateFlbFrame(more)
 {
 var dummy;
-top.flb.document.location.href='{ updateurlb }' + more;
+if (left_refresh())
+	top.flb.document.location.href='{ updateurlb }' + more;
 }
 
 function updateFltFrame(more)
 {
 var dummy;
-top.flt.document.location.href='{ updateurlt }' + more;
+if (left_refresh())
+	top.flt.document.location.href='{ updateurlt }' + more;
 }
 
 function flbhref(url)

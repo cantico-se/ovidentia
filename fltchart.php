@@ -186,6 +186,7 @@ function viewOrgChartRoleMore($ocid, $oeid, $iduser, $update)
 			$this->iduser = $iduser;
 			$this->primaryrole = bab_translate("Principal role");
 			$this->altbg = false;
+
 			if( $update)
 				{
 				$this->update = true;

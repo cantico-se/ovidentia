@@ -1054,18 +1054,18 @@ function updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles)
 	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(orut.id) as total from ".BAB_OC_ROLES_USERS_TBL." orut left join ".BAB_OC_ROLES_TBL." ort on ort.id=orut.id_role left join ".BAB_OC_ENTITIES_TBL." oct on oct.id=ort.id_entity where orut.id_user='".$iduser."' and ort.id_entity='".$oeid."'"));
 	if($total)
 	{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&rf=1");
 	}
 	else
 	{
 	list($iduser) = $babDB->db_fetch_row($babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_USERS_TBL." orut left join ".BAB_OC_ROLES_TBL." ort on ort.id=orut.id_role left join ".BAB_OC_ENTITIES_TBL." oct on oct.id=ort.id_entity where ort.id_entity='".$oeid."' limit 0,1"));
 	if( $iduser)
 		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&rf=1");
 		}
 	else
 		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=&rf=1");
 		}
 	}
 }
