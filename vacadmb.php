@@ -982,9 +982,9 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 	$ntotal = 0;
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		if( isset($GLOBALS['nbdays'.$arr['id_type']]))
+		if( isset($GLOBALS['nbdays'.$arr['id']]))
 		{
-			$nbd = $GLOBALS['nbdays'.$arr['id_type']];
+			$nbd = $GLOBALS['nbdays'.$arr['id']];
 			if( !is_numeric($nbd) || $nbd < 0 )
 				{
 				$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
