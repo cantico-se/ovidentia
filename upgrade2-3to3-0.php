@@ -28,19 +28,6 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "CREATE TABLE mailview_groups (";
-$req .= "id int(11) unsigned NOT NULL auto_increment,";
-$req .= "id_object int(11) unsigned DEFAULT '0' NOT NULL,";
-$req .= "id_group int(11) unsigned DEFAULT '0' NOT NULL,";
-$req .= "UNIQUE id (id)";
-$req .= ")";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Creation of <b>mailview_groups</b> table failed !<br>";
-	return $ret;
-	}
-
 $req = "CREATE TABLE mail_domains (";
 $req .= "id INT (11) UNSIGNED not null AUTO_INCREMENT,";
 $req .= "name VARCHAR (254) not null,";

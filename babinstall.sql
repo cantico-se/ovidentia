@@ -521,18 +521,6 @@ CREATE TABLE caloptions (
 	PRIMARY KEY (id)
 );
 
-# --------------------------------------------------------
-#
-# Structure de la table 'mailview_groups'
-#
-
-CREATE TABLE mailview_groups (
-	id int(11) unsigned NOT NULL auto_increment,
-	id_object int(11) unsigned DEFAULT '0' NOT NULL,
-	id_group int(11) unsigned DEFAULT '0' NOT NULL,
-	UNIQUE id (id)
-); 
-
 
 # --------------------------------------------------------
 #

@@ -74,13 +74,6 @@ CREATE TABLE caloptions (
 
 ALTER TABLE groups ADD mail ENUM ('N','Y') not null AFTER vacation;
 
-CREATE TABLE mailview_groups (
-	id int(11) unsigned NOT NULL auto_increment,
-	id_object int(11) unsigned DEFAULT '0' NOT NULL,
-	id_group int(11) unsigned DEFAULT '0' NOT NULL,
-	UNIQUE id (id)
-); 
-
 CREATE TABLE mail_domains (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	name VARCHAR (254) not null,
