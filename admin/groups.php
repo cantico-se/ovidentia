@@ -341,7 +341,8 @@ function addGroup($name, $description, $managerid, $bemail, $grpdg)
 	{
 	global $babBody;
 	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-	if( !bab_addGroup($name, $description, $managerid, $grpdg))
+	$id = bab_addGroup($name, $description, $managerid, $grpdg);
+	if( !$id)
 		{
 		return false;
 		}

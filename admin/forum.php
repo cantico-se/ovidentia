@@ -37,11 +37,8 @@ function modifyForum($id)
 		{
 		var $name;
 		var $description;
-		var $moderator;
-		var $moderatorname;
 		var $nbmsgdisplay;
 		var $active;
-		var $moderatorval;
 		var $update;
 		var $delete;
 
@@ -54,7 +51,6 @@ function modifyForum($id)
 		function temp($id)
 			{
 			$this->name = bab_translate("Name");
-			$this->moderator = bab_translate("Moderator");
 			$this->description = bab_translate("Description");
 			$this->update = bab_translate("Update Forum");
 			$this->nbmsgdisplay = bab_translate("Messages Per Page");
@@ -64,26 +60,11 @@ function modifyForum($id)
 			$this->no = bab_translate("No");
 			$this->notification = bab_translate("Notify moderator");
 			$this->delete = bab_translate("Delete");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FORUMS_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-
-			$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['moderator']."'";
-			$this->res = $this->db->db_query($req);
-			if( $this->res && $this->db->db_num_rows($this->res) > 0)
-				{
-				$this->arr2 = $this->db->db_fetch_array($this->res);
-				$this->managerval = bab_composeUserName($this->arr2['firstname'], $this->arr2['lastname']);
-				$this->managerid = $this->arr2['id'];
-				}
-			else
-				{
-				$this->managerval = "";
-				$this->managerid = "";
-				}
 			}
 		}
 
@@ -123,7 +104,7 @@ function deleteForum($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateForum($id, $name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active)
+function updateForum($id, $name, $description, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody;
 	if( empty($name))
@@ -132,15 +113,7 @@ function updateForum($id, $name, $description, $managerid, $moderation, $notific
 		return;
 		}
 
-	if( $moderation == "Y" && empty($managerid))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a moderator")." !";
-		return;
-		}
-
 	$db = $GLOBALS['babDB'];
-	if( empty($managerid))
-		$managerid = 0;
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -148,10 +121,9 @@ function updateForum($id, $name, $description, $managerid, $moderation, $notific
 		$description = addslashes($description);
 		}
 
-	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', moderator='$managerid', display='$nbmsgdisplay', active='$active' where id = '$id'";
+	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', display='$nbmsgdisplay', active='$active' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
-
 	}
 
 function confirmDeleteForum($id)
@@ -176,8 +148,10 @@ if(!isset($idx))
 if( isset($update) && $update == "updateforum")
 	{
 	if( isset($submit))
-		updateForum($item, $fname, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active);
-	else if( isset($bdelete))
+		{
+		updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active);
+		}
+	elseif( isset($bdelete))
 		{
 		$idx = "Delete";
 		}
@@ -185,20 +159,8 @@ if( isset($update) && $update == "updateforum")
 
 if( isset($aclview))
 	{
-	if(!isset($groups)) { $groups = array();}
-	aclUpdate($table, $item, $groups, $what);
-	if( $table == BAB_FORUMSVIEW_GROUPS_TBL )
-		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		}
-	elseif( $table == BAB_FORUMSREPLY_GROUPS_TBL )
-		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-		}
-	else
-		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
-		}
+	maclGroups();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=list");
 	}
 
 if( isset($action) && $action == "Yes")
@@ -210,35 +172,18 @@ if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
-
-	case "Groups":
+	case "rights":
 		$babBody->title = bab_getForumName($item) . ": ".bab_translate("List of groups");
-		aclGroups("forum", "Modify", BAB_FORUMSVIEW_GROUPS_TBL, $item, "aclview");
+		$macl = new macl("forum", "Modify", $item, "aclview");
+        $macl->addtable( BAB_FORUMSVIEW_GROUPS_TBL,bab_translate("Who can read posts?"));
+		$macl->addtable( BAB_FORUMSPOST_GROUPS_TBL,bab_translate("Who can post?"));
+        $macl->addtable( BAB_FORUMSREPLY_GROUPS_TBL,bab_translate("Who can reply?"));
+		$macl->addtable( BAB_FORUMSMAN_GROUPS_TBL,bab_translate("Who can manage this forum?"));
+		$macl->filter(0,0,1,1,1);
+        $macl->babecho();
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		break;
-
-	case "Reply":
-		$babBody->title = bab_getForumName($item) . ": ".bab_translate("List of groups");
-		aclGroups("forum", "Modify", BAB_FORUMSREPLY_GROUPS_TBL, $item, "aclview");
-		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
-		break;
-
-	case "Post":
-		$babBody->title = bab_getForumName($item) . ": ".bab_translate("List of groups");
-		aclGroups("forum", "Modify", BAB_FORUMSPOST_GROUPS_TBL, $item, "aclview");
-		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$item);
 		break;
 
 	case "Delete":
@@ -246,9 +191,7 @@ switch($idx)
 		deleteForum($item);
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$item);
 		break;
 
 	default:
@@ -257,9 +200,7 @@ switch($idx)
 		modifyForum($item);
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
-		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Post", bab_translate("Post"), $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
-		$babBody->addItemMenu("Reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

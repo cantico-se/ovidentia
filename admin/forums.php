@@ -24,17 +24,15 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/forumincl.php";
 
-function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
+function addForum($nameval, $descriptionval, $nbmsgdisplayval)
 	{
 	global $babBody;
 	class temp
 		{
 		var $name;
 		var $description;
-		var $moderator;
 		var $nameval;
 		var $descriptionval;
-		var $moderatorval;
 		var $nbmsgdisplay;
 		var $nbmsgdisplayval;
 		var $moderation;
@@ -44,27 +42,24 @@ function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 		var $add;
 		var $notification;
 
-		function temp($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
+		function temp($nameval, $descriptionval, $nbmsgdisplayval)
 			{
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->moderator = bab_translate("Moderator");
 			$this->nbmsgdisplay = bab_translate("Threads Per Page");
 			$this->moderation = bab_translate("Moderation");
 			$this->notification = bab_translate("Notify moderator");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
 			$this->active = bab_translate("Active");
 			$this->nameval = $nameval == ""? "": $nameval;
 			$this->descriptionval = $descriptionval == ""? "": $descriptionval;
-			$this->moderatorval = $moderatorval == ""? "": $moderatorval;
 			$this->nbmsgdisplayval = $nbmsgdisplayval == ""? "": $nbmsgdisplayval;
 			}
 		}
 
-	$temp = new temp($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval);
+	$temp = new temp($nameval, $descriptionval, $nbmsgdisplayval);
 	$babBody->babecho(	bab_printTemplate($temp,"forums.html", "forumcreate"));
 	}
 
@@ -74,34 +69,26 @@ function listForums()
 	class temp
 		{
 		var $name;
-		var $moderator;
-		var $moderatorname;
 		var $urlname;
 		var $url;
 		var $description;
+		var $descval;
 				
 		var $arr = array();
 		var $db;
 		var $count;
 		var $res;
-		var $groups;
-		var $reply;
-		var $posts;
-		var $groupsurl;
-		var $replyurl;
-		var $postsurl;
+		var $rightsurl;
 		var $access;
+		var $rights;
 
 		function temp()
 			{
 			global $babBody;
 			$this->name = bab_translate("Name");
-			$this->moderator = bab_translate("Moderator Email");
 			$this->description = bab_translate("Description");
 			$this->access = bab_translate("Access");
-			$this->groups = bab_translate("View");
-			$this->reply = bab_translate("Reply");
-			$this->posts = bab_translate("Post");
+			$this->rights = bab_translate("Rights");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FORUMS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by ordering asc";
 			$this->res = $this->db->db_query($req);
@@ -114,17 +101,17 @@ function listForums()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->moderatorname = bab_getUserName($this->arr['moderator']);
 				$this->url = $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$this->arr['id'];
-				$this->groupsurl = $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$this->arr['id'];
-				$this->postsurl = $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$this->arr['id'];
-				$this->replyurl = $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$this->arr['id'];
+				$this->rightsurl = $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
+				$this->descval = $this->arr['description'];
 				$i++;
 				return true;
 				}
 			else
+				{
 				return false;
+				}
 
 			}
 		}
@@ -207,7 +194,7 @@ function orderForum()
 	return $temp->count;
 	}
 
-function saveForum($name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active)
+function saveForum($name, $description, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody;
 	if( empty($name))
@@ -216,12 +203,6 @@ function saveForum($name, $description, $managerid, $moderation, $notification, 
 		return false;
 		}
 
-	if( $moderation == "Y" && empty($managerid))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a moderator")." !";
-		return false;
-		}
-	
 	if( !bab_isMagicQuotesGpcOn())
 		{
 		$name = addslashes($name);
@@ -249,11 +230,11 @@ function saveForum($name, $description, $managerid, $moderation, $notification, 
 	else
 		$max = 0;
 
-	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderator, moderation, notification, active, ordering, id_dgowner)";
-	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $managerid. "', '" . $moderation. "', '" .$notification. "', '" . $active. "', '" . $max. "', '" . $babBody->currentAdmGroup. "')";
+	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner)";
+	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '".$moderation. "', '" .$notification. "', '" . $active. "', '" . $max. "', '" . $babBody->currentAdmGroup. "')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$id);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$id);
 	exit;
 	}
 
@@ -322,7 +303,7 @@ if(!isset($idx))
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
-	if( !saveForum($fname, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active))
+	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
 
@@ -339,9 +320,8 @@ switch($idx)
 		$babBody->addItemMenu("addforum", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=forums&idx=addforum");
 		if (!isset($name)) $name  ='';
 		if (!isset($description)) $description  ='';
-		if (!isset($moderator)) $moderator  ='';
 		if (!isset($nbmsgdisplay)) $nbmsgdisplay  ='';
-		addForum($name, $description, $moderator, $nbmsgdisplay);
+		addForum($name, $description, $nbmsgdisplay);
 		break;
 
 	case "ord":

@@ -43,13 +43,6 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ moderator }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="manager" size="45" maxlength="255" value="" disabled>
-<input type="hidden" name="managerid" value="">
-</td>
-</tr>
-<tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ active }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <select name="active">
@@ -143,13 +136,6 @@ else
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ moderator }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="manager" size="45" maxlength="255" value="{ managerval }" disabled>
-<input type="hidden" name="managerid" value="{ managerid }">
-</td>
-</tr>
-<tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ active }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <select name="active">
@@ -231,25 +217,16 @@ selected
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"	nowrap>{ 
-name }</td>
-<td class="BabSiteAdminTitleFontBackground" width="20%" 
-valign="middle" align="center">{ moderator }</td>
-<td class="BabSiteAdminTitleFontBackground" width="50%" 
-valign="middle">{ description }</td>
-<td class="BabSiteAdminTitleFontBackground" width="20%" 
-valign="middle" align="center" colspan="3">{ access }</td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"	nowrap>{ name }</td>
+<td class="BabSiteAdminTitleFontBackground" width="50%" valign="middle">{ description }</td>
+<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle" align="left">{ access }</td>
 </tr>
 <!--#in getnext -->
 <tr> 
 <td class="BabSiteAdminFontBackground" width="10%" valign="middle" 
 nowrap><a class="BabSiteAdminListLink" href="{ url }" nowrap>{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" width="20%" valign="middle" align="center">&nbsp;{ 
-moderatorname }</td>
-<td class="BabSiteAdminFontBackground" width="55%" valign="middle">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" width="5%" valign="middle"><a class="BabSiteAdminListLink" href="{ groupsurl }" nowrap>{ groups }</a></td>
-<td class="BabSiteAdminFontBackground" width="5%" valign="middle"><a class="BabSiteAdminListLink" href="{ postsurl }" nowrap>{ posts }</a></td>
-<td class="BabSiteAdminFontBackground" width="5%" valign="middle"><a class="BabSiteAdminListLink" href="{ replyurl }" nowrap>{ reply }</a></td>
+<td class="BabSiteAdminFontBackground" width="40%" valign="middle">{ descval }</td>
+<td class="BabSiteAdminFontBackground" width="10%" valign="middle"><a class="BabSiteAdminListLink" href="{ rightsurl }" nowrap>{ rights }</a></td>
 </tr>
 <!--#endin getnext -->
 </table>
@@ -258,6 +235,7 @@ moderatorname }</td>
 </table>
 <br>
 <!--#end forumslist -->
+
 <!--#begin forumsorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="forums">
