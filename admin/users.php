@@ -43,7 +43,7 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
+				$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and lastname like '".$this->pos."%' order by lastname, firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=".$this->pos."&cb=".$this->cb;
 				}
@@ -51,7 +51,7 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->pos."%' order by firstname, lastname asc";
+				$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and firstname like '".$this->pos."%' order by firstname, lastname asc";
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
 				}
