@@ -40,11 +40,10 @@ href="{ dateurl }">{ datename }</a></td>
 <img src="{ babSkinPath }images/Puces/PuceImportant.gif"> 
 <!--#endif priority -->
 </td>
-<td valign="middle"><a class="BabContentLinkColor" href="javascript: Start('{ msgfromurl }', 'OviMailF', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ msgfromurlname 
-}</a></td>
+<td valign="middle"><a class="BabContentLinkColor" href="javascript: Start('{ msgfromurl }', 'OviMailF', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><!--#if bunseen --><b><!--#endif bunseen -->{ msgfromurlname }<!--#if bunseen --></b><!--#endif bunseen --></a></td>
 <td width="10">&nbsp;</td>
-<td valign="middle"><a class="BabContentLinkColor" href="javascript: Start('{ msgsubjecturl }', 'OviMailD', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
-msgsubjecturlname }</a></td>
+<td valign="middle"><a class="BabContentLinkColor" href="javascript: Start('{ msgsubjecturl }', 'OviMailD', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><!--#if bunseen --><b><!--#endif bunseen -->{ 
+msgsubjecturlname }<!--#if bunseen --></b><!--#endif bunseen --></a></td>
 <td width="10">&nbsp;</td>
 <td class="BabCalendarBodyFont" valign="middle">{ msgdate }</td>
 <!--#endin getnext -->
@@ -164,7 +163,7 @@ fromname }</td>
 }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="top"> 
 <!--#in getnextattachment -->
-<a class="BabSiteAdminListLink" href="{ attachmenturl }">{ attachmentval }</a> 
+<a class="BabSiteAdminListLink" href="{ attachmenturl }">{ attachmentval }</a>&nbsp;&nbsp;
 <!--#endin getnextattachment -->
 &nbsp; </td>
 </tr>
