@@ -703,18 +703,39 @@ class bab_Articles extends bab_handler
 			$forder = $ctx->get_value('topicorder');
 			switch(strtoupper($forder))
 			{
-				case 'YES': $forder = "ordering"; break;
-				case 'NO': $forder = "date"; break;
-				default: $forder = "date"; break;
+				case 'YES': $forder = true; break;
+				case 'NO': /* no break */
+				default: $forder = false; break;
 
 			}
 
 			switch(strtoupper($order))
 			{
-				case "ASC": $order = "at.".$forder." ASC"; break;
-				case "RAND": $order = "rand()"; break;
+				case "ASC":
+					if( $forder )
+					{
+						$order = "at.ordering asc, at.date_modification desc"; 
+					}
+					else
+					{
+						$order = "at.date asc";
+					}
+					break;
+				case "RAND": 
+					$order = "rand()"; 
+					break;
 				case "DESC":
-				default: $order = "at.".$forder." DESC"; break;
+				default:
+					if( $forder )
+					{
+						$order = "at.ordering desc, at.date_modification asc"; 
+					}
+					else
+					{
+						$order = "at.date desc";
+					}
+					break;
+
 			}
 
 			$req .= " order by ".$order;
