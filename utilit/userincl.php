@@ -638,7 +638,7 @@ function bab_fileManagerAccessLevel()
 			$babBody->ustorage = true;
 		}
 	
-	$res = $babDB->db_query("select id, manager, idsa from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
+	$res = $babDB->db_query("select id, manager, idsa, folder from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
 	while($row = $babDB->db_fetch_array($res))
 		{
 		$uplo = bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $row['id']);
@@ -648,6 +648,7 @@ function bab_fileManagerAccessLevel()
 		if( $down || $uplo || $upda || $row['manager'] == $BAB_SESS_USERID)
 			{
 			$babBody->aclfm['id'][] = $row['id'];
+			$babBody->aclfm['folder'][] = $row['folder'];
 			$babBody->aclfm['down'][] = $down;
 			$babBody->aclfm['uplo'][] = $uplo;
 			$babBody->aclfm['upda'][] = $upda;

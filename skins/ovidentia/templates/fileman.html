@@ -96,7 +96,20 @@
                   hitstxt }</td>
                 <!--#endif bmanager -->
               </tr>
-              <!--#in getnextdir -->
+              <!--#in getnextgrpdir -->
+              <tr> 
+                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
+                  <!--#if ma -->
+				  { manfolderimg }
+				   <!--#else ma -->
+				  { grpfolderimg }
+				   <!--#endif ma -->
+				  </td>
+                <td align="left" valign="middle" class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" href="{ url }">{ name }</a></td>
+                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+              </tr>
+              <!--#endin getnextgrpdir -->
+			  <!--#in getnextdir -->
               <tr> 
                 <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
                   <!--#if name "== . ." -->
@@ -110,24 +123,6 @@ href="{ url }">{ name }</a></td>
                 <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
                           </tr>
               <!--#endin getnextdir -->
-              <!--#in getnextgrpdir -->
-              <tr> 
-                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
-                  { grpfolderimg } </td>
-                <td align="left" valign="middle" class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" 
-href="{ url }">{ name }</a></td>
-                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-              </tr>
-              <!--#endin getnextgrpdir -->
-              <!--#in getnextmgrpdir -->
-              <tr> 
-                <td class="BabSiteAdminFontBackground" width="1%" valign="middle" align="center"> 
-                  { manfolderimg } </td>
-                <td align="left" valign="middle" class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabSiteFileLink" 
-href="{ url }">{ name }</a></td>
-                <td class="BabSiteAdminFontBackground" colspan="6" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-               </tr>
-              <!--#endin getnextmgrpdir -->
               <!--#in getnextfile -->
               <tr valign="middle"> 
                 <td width="1%" align="center" class="BabSiteAdminFontBackground"> 
@@ -659,22 +654,17 @@ href="{ url }">{ name }</a></td>
 <!--#endin getnextdir -->
 <!--#in getnextgrpdir --> <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-{ grpfolderimg } 
+<!--#if ma -->
+{ manfolderimg }
+<!--#else ma -->
+{ grpfolderimg }
+<!--#endif ma -->
 </td>          
 <td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
 href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
 </tr>
 <!--#endin getnextgrpdir -->
-<!--#in getnextmgrpdir --> <tr> 
-<td class="BabSiteAdminFontBackground" width="1%" valign="top" align="center"> 
-{ manfolderimg } 
-</td>          
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;<a class="BabSiteAdminListLink" 
-href="{ url }">{ name }</a></td>
-<td class="BabSiteAdminFontBackground" valign="top">&nbsp;</td>
-</tr>
-<!--#endin getnextmgrpdir -->
 <!--#in getnextfile --> <tr valign="middle"> 
 <td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }

@@ -101,10 +101,9 @@ class listFiles
 		$this->countwf = 0;
 		for( $i = 0; $i < count($babBody->aclfm['id']); $i++)
 			{
-			if( $babBody->aclfm['ma'][$i] == 1 )
-				$this->arrmgrp[] = $babBody->aclfm['id'][$i];
-			else
-				$this->arrgrp[] = $babBody->aclfm['id'][$i];
+			$this->arrgrp['id'][] = $babBody->aclfm['id'][$i];
+			$this->arrgrp['ma'][] = $babBody->aclfm['ma'][$i];
+			$this->arrgrp['folder'][] = $babBody->aclfm['folder'][$i];
 			if( $babBody->aclfm['id'][$i] == $id )
 				{
 				$this->bdownload = $babBody->aclfm['down'][$i];
@@ -123,13 +122,11 @@ class listFiles
 
 		if( $gr == "Y" || ($gr == "N" && !empty($path)))
 			{
-			$this->countmgrp = 0;
 			$this->countgrp = 0;
 			}
 		else 
 			{
-			$this->countmgrp = count($this->arrmgrp);
-			$this->countgrp = count($this->arrgrp);
+			$this->countgrp = count($this->arrgrp['id']);
 			}
 
 		if( !empty($path))
@@ -454,22 +451,9 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 			static $m = 0;
 			if( $m < $this->countgrp)
 				{
-				$this->name = bab_getFolderName($this->arrgrp[$m]);
-				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$this->arrgrp[$m]."&gr=Y&path=&editor=".$this->editor;
-				$m++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnextmgrpdir()
-			{
-			static $m = 0;
-			if( $m < $this->countmgrp)
-				{
-				$this->name = bab_getFolderName($this->arrmgrp[$m]);
-				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$this->arrmgrp[$m]."&gr=Y&path=&editor=".$this->editor;
+				$this->name = $this->arrgrp['folder'][$m];
+				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$this->arrgrp['id'][$m]."&gr=Y&path=&editor=".$this->editor;
+				$this->ma = $this->arrgrp['ma'][$m];
 				$m++;
 				return true;
 				}
@@ -656,8 +640,9 @@ function listFiles($id, $gr, $path, $bmanager)
 			static $m = 0;
 			if( $m < $this->countgrp)
 				{
-				$this->name = bab_getFolderName($this->arrgrp[$m]);
-				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arrgrp[$m]."&gr=Y&path=";
+				$this->name = $this->arrgrp['folder'][$m];
+				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arrgrp['id'][$m]."&gr=Y&path=";
+				$this->ma = $this->arrgrp['ma'][$m];
 				$m++;
 				return true;
 				}
@@ -665,19 +650,6 @@ function listFiles($id, $gr, $path, $bmanager)
 				return false;
 			}
 
-		function getnextmgrpdir()
-			{
-			static $m = 0;
-			if( $m < $this->countmgrp)
-				{
-				$this->name = bab_getFolderName($this->arrmgrp[$m]);
-				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$this->arrmgrp[$m]."&gr=Y&path=";
-				$m++;
-				return true;
-				}
-			else
-				return false;
-			}
 
 		function updateFileInfo($arr)
 			{
