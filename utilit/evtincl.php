@@ -266,7 +266,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 			$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
 			$mail->mailAltBody($message);
 
-			$res = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where  id_object='".$idclas[$i]."'");
+			$res = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where  id_object='".$idcals[$i]."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				while( $row = $babDB->db_fetch_array($res))
@@ -373,8 +373,6 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			}
 		$tempc = new clsNotifyResourceEvent($title, $description, $startdate, $enddate);
 		
-		$db = &$GLOBALS['babDB'];
-
 		$arrusers = array();
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
@@ -632,7 +630,7 @@ function notifyEventUpdate($evtid, $bdelete)
 		$res2 = false;
 		if( $all )
 			{
-			$res2 = $db->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+			$res2 = $babDB->db_query("select id, email, firstname, lastname from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
 			
 			}
 		else
