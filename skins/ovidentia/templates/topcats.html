@@ -57,31 +57,31 @@
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ name } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ description } </td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ topics } </td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ disabled }</td>
+<tr valign="middle"> 
+<td class="BabSiteAdminTitleFontBackground">{ name } </td>
+<td class="BabSiteAdminTitleFontBackground">{ description } </td>
+<td align="center" class="BabSiteAdminTitleFontBackground">{ topics } </td>
+<td width="1%" align="center" class="BabSiteAdminTitleFontBackground">{ disabled }</td>
 </tr>
 
 <!--#in getnext --> 
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="top"><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
-<td class="BabSiteAdminFontBackground" valign="top">{ arr[description] }</td>
-<td class="BabSiteAdminFontBackground" valign="top"><a class="BabSiteAdminListLink" href="{ topcounturl }">{ topcount }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"> 
+<tr valign="middle"> 
+<td class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
+<td class="BabSiteAdminFontBackground">{ arr[description] }</td>
+<td align="center" class="BabSiteAdminFontBackground"><a class="BabSiteAdminListLink" href="{ topcounturl }">{ topcount }</a></td>
+<td class="BabSiteAdminFontBackground" width="0%" align="center"> 
 <input type="checkbox" name="topcats[]" { catchecked } value="{ arr[id] }">
 </td>
 </tr>
 <!--#endin getnext -->
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" nowrap 
-valign="middle">&nbsp;</td>
+valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td class="BabSiteAdminTitleFontBackground" 
-valign="middle">&nbsp;</td>
+valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td class="BabSiteAdminTitleFontBackground" 
-valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('topcats', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('topcats', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td width="1%" align="center" valign="middle" class="BabSiteAdminTitleFontBackground"><a href="javascript:onCheckAll('topcats', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('topcats', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </tr>
 </table>
 
@@ -92,6 +92,7 @@ valign="middle">&nbsp;</td>
 <br>
 </form>
 <!--#end topcatslist -->
+
 
 <br><br><br><br>
 <!--#begin topcatmodify -->
