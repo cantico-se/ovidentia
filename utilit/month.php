@@ -26,11 +26,13 @@ var $nextyear;
 var $prevmonth;
 var $prevyear;
 
+var $babCss;
 var $today;
 
 function babMonthX($month = "", $year = "", $callback = "")
 	{
 
+	$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 	if(empty($month))
 		$this->currentMonth = Date("n");
 	else
@@ -171,6 +173,7 @@ function printout()
 			if( $this->w == 1 &&  $d < $this->daynumber)
 				{
 				$this->day = "&nbsp;";
+				$this->dayurl = "\"#\"";
 				}
 			else
 				{
@@ -181,7 +184,7 @@ function printout()
 				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
 					{
 					$this->bgcolor = "bgcolor=\"white\"";
-					$this->dayurl = "\"#\" onclick=_\"self.opener.".$this->callback."('".$total."','".$this->currentMonth."','".$this->currentYear."');window.close();\"";
+					$this->dayurl = "\"#\" onclick=\"self.opener.".$this->callback."('".$total."','".$this->currentMonth."','".$this->currentYear."');window.close();\"";
 					$this->day = $total;
 					}
 				else
@@ -205,4 +208,9 @@ function printout()
 			}
 		}
 }
+
+$m = new babMonthX($month, $year, $callback);
+$m->setMaxYear($ymax);
+$m->setMinYear($ymin);
+$m->printout();
 ?>
