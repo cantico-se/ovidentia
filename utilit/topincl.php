@@ -332,10 +332,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what =
 
 	$tempc = new tempcc($topicname, $title, $author, $msg);
 	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticle");
-    $mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
-    $mail->mailAltBody($message);
+	$messagetxt = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_TOPICSVIEW_GROUPS_TBL." where  id_object='".$topics."'");
@@ -365,6 +362,9 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what =
 					$count++;
 					if( $count == 25 )
 						{
+						/* update body before each send ( otherwise phpmailer append it to precedent ) */
+						$mail->mailBody($message, "html");
+						$mail->mailAltBody($messagetxt);
 						$mail->send();
 						$mail->clearBcc();
 						$count = 0;
@@ -372,7 +372,12 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what =
 					}
 
 				if( $count > 0 )
+					{
+					/* update body before each send ( otherwise phpmailer append it to precedent ) */
+					$mail->mailBody($message, "html");
+					$mail->mailAltBody($messagetxt);
 					$mail->send();
+					}
 				}	
 			}
 		}	

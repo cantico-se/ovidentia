@@ -891,10 +891,8 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 
 	$tempa = new tempb($file, $path, $idgrp, $bnew);
 	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploaded");
-    $mail->mailBody($message, "html");
 
-	$message = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
-    $mail->mailAltBody($message);
+	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
 
 	$db = $GLOBALS['babDB'];
 	if( $idgrp == 1)
@@ -911,6 +909,9 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 			$count++;
 			if( $count == 25 )
 				{
+				/* update body before each send ( otherwise phpmailer append it to precedent ) */
+			    $mail->mailBody($message, "html");
+			    $mail->mailAltBody($messagetxt);
 				$mail->send();
 				$mail->clearBcc();
 				$count = 0;
@@ -918,7 +919,12 @@ function notifyMembers($file, $path, $idgrp, $bnew)
 			}
 
 		if( $count > 0 )
+			{
+			/* update body before each send ( otherwise phpmailer append it to precedent ) */
+			$mail->mailBody($message, "html");
+			$mail->mailAltBody($messagetxt);
 			$mail->send();
+			}
 		}
 	}
 
