@@ -376,18 +376,26 @@ class bab_Articles extends bab_handler
 
 	function bab_Articles( &$ctx)
 	{
-		global $babDB;
+		global $babDB, $babBody;
 		$this->bab_handler($ctx);
+		$topicid = $ctx->get_value('topicid');
+		if( $topicid === false || $topicid === '' )
+			$topicid = $babBody->topview;
+		else
+			$topicid = array_intersect($babBody->topview, explode(',', $topicid));
 
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $ctx->get_value('topicid')))
+		if( count($topicid) > 0)
 		{
-			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y' and id_topic='".$ctx->get_value('topicid')."' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y' and id_topic IN (".implode(',', $topicid).") order by date desc";
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
-			if( $rows !== "" && $offset !== "" )
-				{
-				$req .= " limit ".$offset.", ".$rows;
-				}
+			if( $rows === false || $rows === '')
+				$rows = "-1";
+
+			if( $offset === false || $offset === '')
+				$offset = "0";
+			$req .= " limit ".$offset.", ".$rows;
+
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 		}
@@ -582,17 +590,18 @@ class bab_RecentArticles extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->topicid = $ctx->get_value('topicid');
+		if( $this->topicid === false || $this->topicid === '' )
+			$this->topicid = $babBody->topview;
+		else
+			$this->topicid = array_intersect($babBody->topview, explode(',', $this->topicid));
 
-		if( count($babBody->topview) > 0 && ( $this->topicid === false || in_array($this->topicid, $babBody->topview)))
+		if( count($this->topicid) > 0 )
 			{
 			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y'";
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
-			if( $this->topicid !== false )
-				$req .= " and id_topic='".$this->topicid."'";
-			else
-				$req .= " and id_topic IN (".implode(',', $babBody->topview).")";
+			$req .= " and id_topic IN (".implode(',', $this->topicid).")";
 			$req .= " order by date desc";
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
