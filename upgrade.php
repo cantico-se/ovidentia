@@ -2982,8 +2982,6 @@ if( !$res)
 	return $ret;
 	}
 
-//$db->db_query("update ".BAB_TOPICS_TBL." set display_tmpl=''");
-
 $res = $db->db_query("select id, category, id_approver from ".BAB_TOPICS_TBL."");
 $arrusersgroups = array();
 while( $arr = $db->db_fetch_array($res))
@@ -2994,16 +2992,24 @@ while( $arr = $db->db_fetch_array($res))
 			{
 			$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_approver']."'");
 			$rr = $db->db_fetch_array($res2);
-			$grpname = "OVT_".$rr['firstname']."_".$rr['lastname'];
-			$description = bab_translate("Topics manager");
-			$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '0', 'N', 'N', 'N','0')");
-			$id = $db->db_insert_id();
-			$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_approver']."','".$id."')");
-			$arrusersgroups[$arr['id_approver']] = $id;
-			$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
-			$db->db_query($req);
+			if( $res2 && $db->db_num_rows($res2) > 0 )
+				{
+				$grpname = "OVT_".$rr['firstname']."_".$rr['lastname'];
+				$description = bab_translate("Topics manager");
+				$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '0', 'N', 'N', 'N','0')");
+				$id = $db->db_insert_id();
+				$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_approver']."','".$id."')");
+				$arrusersgroups[$arr['id_approver']] = $id;
+				$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
+				$db->db_query($req);
+				}
 			}
-		$db->db_query("insert into ".BAB_TOPICSMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['id_approver']]."')");
+		if( isset($arrusersgroups[$arr['id_approver']]) )
+			{
+			$db->db_query("insert into ".BAB_TOPICSMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['id_approver']]."')");
+			$db->db_query("insert into ".BAB_TOPICSMOD_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['id_approver']]."')");
+			$db->db_query("insert into ".BAB_TOPICSSUB_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['id_approver']]."')");
+			}
 		}
 	}
 
@@ -3095,21 +3101,26 @@ while( $arr = $db->db_fetch_array($res))
 	{
 	if( $arr['moderator'] != 0 )
 		{
-		if( !isset($arrusersgroups[$arr['moderator']]) )
+		if( !isset($arrusersgroups[$arr['moderator']])) 
 			{
 			$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['moderator']."'");
 			$rr = $db->db_fetch_array($res2);
-
-			$grpname = "OVF_".$rr['firstname']."_".$rr['lastname'];
-			$description = bab_translate("Forums manager");
-			$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '0', 'N', 'N', 'N','0')");
-			$id = $db->db_insert_id();
-			$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_approver']."','".$id."')");
-			$arrusersgroups[$arr['moderator']] = $id;
-			$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
-			$db->db_query($req);
+			if( $res2 && $db->db_num_rows($res2) > 0 )
+				{
+				$grpname = "OVF_".$rr['firstname']."_".$rr['lastname'];
+				$description = bab_translate("Forums manager");
+				$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '0', 'N', 'N', 'N','0')");
+				$id = $db->db_insert_id();
+				$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_approver']."','".$id."')");
+				$arrusersgroups[$arr['moderator']] = $id;
+				$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
+				$db->db_query($req);
+				}
 			}
-		$db->db_query("insert into ".BAB_FORUMSMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['moderator']]."')");
+		if( isset($arrusersgroups[$arr['moderator']])) 
+			{
+			$db->db_query("insert into ".BAB_FORUMSMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['moderator']]."')");
+			}
 		}
 	}
 
