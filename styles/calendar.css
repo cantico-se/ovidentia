@@ -294,3 +294,15 @@ a img {
 .bab_calendar .used, .bab_calendar .freeevent {
 	font-size:9px;
 	}
+
+/* EVENTLIST */
+
+#eventlist {
+	
+	}
+
+#eventlist li {
+	margin:.2em
+	padding:.2em;
+	border:#000 1px solid;
+	}
