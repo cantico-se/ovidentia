@@ -283,12 +283,10 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 				}
 			notifyAdminRegistration($fullname, $email, $warning);
 			}
-		else
+
+		if( isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
 			{
-			if( isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
-				{
-				bab_addUserToGroup($id, $babBody->babsite['idgroup']);
-				}
+			bab_addUserToGroup($id, $babBody->babsite['idgroup']);
 			}
 		bab_callAddonsFunction('onUserCreate', $id);
 		return $id;
