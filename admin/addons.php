@@ -261,8 +261,9 @@ if( isset($update))
 if( isset($acladd))
 	{
 	aclUpdate($table, $item, $groups, $what);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 	}
+
 
 switch($idx)
 	{
@@ -275,11 +276,12 @@ switch($idx)
 	
 	case "upgrade":
 		upgrade($item);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 		exit;
 
 	case "list":
 	default:
+		if (isset($errormsg)) $babBody->msgerror = urldecode($errormsg);
 		addonsList($upgradeall);
 		$babBody->title = bab_translate("Add-ons list");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
