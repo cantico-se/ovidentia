@@ -167,12 +167,17 @@ function siteModify($id)
 			$this->user_diskspace_title = bab_translate("File manager max user directory size");
 			$this->total_diskspace_title = bab_translate("File manager max total size");
 			$this->user_workdays_title = bab_translate("User can modifiy his working days");
+
+			// bloc 4
 			$this->t_workdays = bab_translate("Working days");
 			$this->t_nonworking = bab_translate("Non-working days");
 			$this->t_add = bab_translate("Add");
 			$this->t_ok = bab_translate("Ok");
 			$this->t_delete = bab_translate("Delete");
 			$this->t_load_date = bab_translate("Load date");
+			$this->t_date = bab_translate("Date");
+			$this->t_text = bab_translate("Name");
+			$this->t_type_date = bab_translate("Date type");
 			$this->t_type = bab_getNonWorkingDayTypes(true);
 
 			$this->id = $id;
@@ -517,10 +522,20 @@ function siteModify($id)
 			{
 			if ($arr = $this->db->db_fetch_array($this->resnw))
 				{
-				$this->value = $arr['nw_type'];
+				$this->value = $arr['nw_text'].'#';
+				$this->value .= $arr['nw_type'];
 				$this->value .= !empty($arr['nw_day']) ? ','.$arr['nw_day'] : '';
 				$this->nw_day = $arr['nw_day'];
-				$this->type = $this->t_type[$arr['nw_type']];
+				if (!empty($arr['nw_text']))
+					$this->text = $arr['nw_text'];
+				else
+					{
+					$this->text = $this->t_type[$arr['nw_type']];
+					if (!empty($this->nw_day))
+						{
+						$this->text .= ' : '.$this->nw_day;
+						}
+					}
 				return true;
 				}
 			else
@@ -1107,12 +1122,13 @@ function siteUpdate_bloc4($item)
 	if (isset($_POST['nonworking']) && count($_POST['nonworking']))
 		{
 		$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_CONFIG_TBL."  where id_site='".$item."'");
-		foreach($_POST['nonworking'] as $nonworking)
+		foreach($_POST['nonworking'] as $value)
 			{
+			list($text,$nonworking) = explode('#',$value);
 			$arr = explode(',',$nonworking);
 			$type = $arr[0];
 			$nw = isset($arr[1]) ? $arr[1] : '';
-			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day) VALUES ('".$item."', '".$type."', '".$nw."')");
+			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day, nw_text) VALUES ('".$item."', '".$type."', '".$nw."', '".$text."')");
 			}
 
 		}

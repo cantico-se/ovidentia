@@ -36,7 +36,20 @@ global $babBody;
 
 		function temp()
 			{
-			$this->entities = bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+			$entities = bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+
+			$this->entities = array();
+			while (list(,$arr) = each($entities['superior']))
+				{
+				$arr2 = bab_OCGetChildsEntities($arr['id']);
+				for ($i = 0 ; $i < count($arr2) ; $i++)
+					{
+					if (!isset($this->entities[$arr2[$i]['id']]))
+					$this->entities[$arr2[$i]['id']] = $arr2[$i];
+					}
+				if (!isset($this->entities[$arr['id']]))
+				$this->entities[$arr['id']] = $arr;
+				}
 
 			$this->t_name = bab_translate('Name');
 			$this->t_description = bab_translate('Description');
@@ -46,10 +59,8 @@ global $babBody;
 
 		function getnext()
 			{
-			if (list(,$this->arr) = each($this->entities['superior']))
+			if (list(,$this->arr) = each($this->entities))
 				{
-				$collab = & bab_OCGetCollaborators($this->arr['id']);
-				$this->count = count($collab);
 				return true;
 				}
 			else
@@ -73,15 +84,30 @@ function entity_members($ide)
 		{
 		function temp($ide)
 			{
-			$this->users = bab_OCGetCollaborators($ide);
+			$users = bab_OCGetCollaborators($ide);
+			$superior = bab_OCGetSuperior($ide);
+			$this->superior_id = 0;
+			if ($superior !== 0 )
+				{
+				$this->superior_id = $superior['id_user'];
+				$this->superior_name = bab_composeUserName($superior['firstname'], $superior['lastname']);
+				}
 			$this->t_name = bab_translate('Name');
+
+			while (list(,$arr) = each($users))
+				{
+				if ($arr['id_user'] != $this->superior_id)
+					{
+					$this->users[$arr['id_user']] = bab_composeUserName($arr['firstname'], $arr['lastname']);
+					}
+				}
+			natcasesort($this->users);
 			}
 
 		function getnext()
 			{
-			if (list(,$this->id_user) = each($this->users))
+			if (list($this->id_user,$this->name) = each($this->users))
 				{
-				$this->name = bab_getUserName($this->id_user);
 				return true;
 				}
 			else
@@ -98,8 +124,19 @@ function entity_members($ide)
 function entity_cal($ide )
 {
 	$users = bab_OCGetCollaborators($ide);
-	if (count($users) > 0)
-		viewVacationCalendar($users);
+	$superior = bab_OCGetSuperior($ide);
+
+	$tmp = array();
+	foreach ($users as $user)
+		{
+		$tmp[$user['id_user']] = $user['id_user'];
+		}
+
+	if (!isset($tmp[$superior['id_user']]))
+		$tmp[$superior['id_user']] = $superior['id_user'];
+	
+	if (count($tmp) > 0)
+		viewVacationCalendar(array_keys($tmp));
 	else
 		die('error, no collaborators');
 }

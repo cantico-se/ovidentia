@@ -56,12 +56,12 @@ function bab_getNonWorkingDays($year)
 		$t_type = bab_getNonWorkingDayTypes();
 		$DAY = 86400;
 
-		$res = $db->db_query("SELECT nw_day,nw_type FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id_site."'");
+		$res = $db->db_query("SELECT nw_day,nw_type,nw_text FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id_site."'");
 
 		if ($db->db_num_rows($res) == 0)
 			return array();
 
-		while( list($day,$type) = $db->db_fetch_array($res) )
+		while( list($day,$type,$text) = $db->db_fetch_array($res) )
 			{
 			$r_date = false;
 
@@ -72,32 +72,37 @@ function bab_getNonWorkingDays($year)
 					if ($y == $year)
 						{
 						$r_date = sprintf("%04s-%02s-%02s", $y, $m, $d);
+						$nw_type = empty($text) ? 'Non-working day' : $text;
 						}
 					break;
 
 				case 102:
 					list($d,$m) = explode('-',$day);
 					$r_date = sprintf("%04s-%02s-%02s", $year, $m, $d);
+					$nw_type = empty($text) ? 'Non-working day' : $text;
 					break;
 
 				case 1:
 					$r_date = date("Y-m-d", easter_date($year) + $DAY*1);
+					$nw_type = 'Easter';
 					break;
 
 				case 2:
 					$r_date = date("Y-m-d", easter_date($year) + $DAY*39);
+					$nw_type = 'Ascencion';
 					break;
 
 				case 3:
 					$r_date = date("Y-m-d", easter_date($year) + $DAY*50);
+					$nw_type = 'Pentecost';
 					break;
 				}
 
 			if ($r_date)
 				{
-				$return[$r_date] = bab_translate($t_type[$type]);
+				$return[$r_date] = bab_translate($nw_type);
 
-				$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_DAYS_TBL." (id_site,nw_day,nw_type) VALUES ('".$id_site."', '".$r_date."', '".$t_type[$type]."')");
+				$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_DAYS_TBL." (id_site,nw_day,nw_type) VALUES ('".$id_site."', '".$r_date."', '".$nw_type."')");
 				}
 			}
 		}

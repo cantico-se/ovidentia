@@ -1637,4 +1637,5 @@
 <string id="Invalid date">Date invalide</string>
 <string id="Firstname is required">Le prénom est obligatoire</string>
 <string id="Lastname is required">Le nom est obligatoire</string>
+<string id="Date type">Type de date</string>
 </fr>

@@ -784,15 +784,17 @@ function nonworking_add_day()
 	var l = getDateList();
 	var srclen = l.options.length;
 
-	
+	var text = f.nonworking_day_text.value;
 	
 	switch (type)
 		{
 		case 101:
-			var opt = new Option('{ t_type[101] } : '+date, type+','+date);
+			var name = text == '' ? '{ t_type[101] } : '+date : text;
+			var opt = new Option(name, text+'#'+type+','+date);
 			break;
 		case 102:
-			var opt = new Option('{ t_type[102] } : '+d[0]+'-'+d[1], type+','+d[0]+'-'+d[1]);
+			var name = text == '' ? '{ t_type[102] } : '+d[0]+'-'+d[1] : text;
+			var opt = new Option(name, text+'#'+type+','+d[0]+'-'+d[1]);
 			break;
 
 		<!--#in getnextnonworking_type -->
@@ -828,6 +830,20 @@ document.onkeypress = function(ev) {
 		removesel(); 
 	};
 
+function changetype(obj)
+	{
+	var f = document.forms['formsite_bloc4'];
+	if (obj.value > 100)
+		{
+		f.nonworking_day_text.disabled = false;
+		}
+	else
+		{
+		f.nonworking_day_text.disabled = true;
+		f.nonworking_day_text.value = '';
+		}
+	}
+
 -->
 </script>
 
@@ -858,7 +874,7 @@ document.onkeypress = function(ev) {
 				<h5>{ t_nonworking }</h5>
 				<select name="nonworking[]" multiple="multiple" size="4" style="width:100%">
 				<!--#in getnextnonworking -->
-					<option value="{ value }">{ type }<!--#if nw_day --> : { nw_day }<!--#endif nw_day --></option>
+					<option value="{ value }">{ text }</option>
 				<!--#endin getnextnonworking -->
 				</select>
 				<div align="right">
@@ -867,17 +883,25 @@ document.onkeypress = function(ev) {
 				<fieldset>
 					<legend>{ t_add }</legend>
 
-					<input type="text" name="nonworking_day_to_add" disabled="disabled" size="14" />
-						&nbsp;<a href="{ babUrlScript }?tg=month&callback=nonworking_day_cb" onclick="Start(this.href, 'calendar', 'width=250,height=250,status=no,resizable=no,top=200,left=200'); return false;" title="{ t_load_date }">{ t_load_date }</a><br />
-				
-					<select name="nonworking_day_type">
+					<p>
+						<label for="nonworking_day_to_add">{ t_date }:</label>
+						<span style="white-space:nowrap">
+							<input type="text" name="nonworking_day_to_add" id="nonworking_day_to_add" disabled="disabled" size="14" />&nbsp;<a href="{ babUrlScript }?tg=month&callback=nonworking_day_cb" onclick="Start(this.href, 'calendar', 'width=250,height=250,status=no,resizable=no,top=200,left=200'); return false;" title="{ t_load_date }"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_load_date }" border="0" align="middle"></a>
+						</span>
+					</p>
+					<p>
+						<label for="nonworking_day_text">{ t_text }:</label>
+						<input type="text" name="nonworking_day_text" id="nonworking_day_text" size="25" /></p>
+					<p>
+					<label for="nonworking_day_type">{ t_type_date }:</label>
+					<select name="nonworking_day_type" id="nonworking_day_type" onchange="changetype(this)">
 						<option value="101" /> { t_type[101] }</option>
 						<option value="102" /> { t_type[102] }</option>
 						<!--#in getnextnonworking_type -->
 						<option value="{ type }" /> { txt }</option>
 						<!--#endin getnextnonworking_type -->
 					</select>
-
+					</p>
 					<input type="button" value="{ t_ok }" onclick="nonworking_add_day()" /><br />
 				
 				</fieldset>
@@ -894,7 +918,11 @@ document.onkeypress = function(ev) {
 </tr>
 </table>
 </form>
-<br>
+<script type="text/javascript">
+<!--
+changetype(document.forms['formsite_bloc4'].nonworking_day_type);
+-->
+</script>
 <!--#end sitemodify -->
 
 <!--#begin versions -->

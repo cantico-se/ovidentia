@@ -4360,4 +4360,19 @@ if( !$res)
 return $ret;
 }
 
+
+
+function upgrade544to545()
+{
+	$ret = "";
+	$db = & $GLOBALS['babDB'];
+	$res = $db->db_query("ALTER TABLE `".BAB_SITES_NONWORKING_CONFIG_TBL."` ADD `nw_text` VARCHAR( 128 ) NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_SITES_NONWORKING_CONFIG_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+
+	return $ret;
+}
 ?>

@@ -2422,6 +2422,7 @@ CREATE TABLE `bab_sites_nonworking_config` (
   `id_site` int(10) unsigned NOT NULL default '0',
   `nw_type` smallint(5) unsigned NOT NULL default '0',
   `nw_day` varchar(64) NOT NULL default '',
+  `nw_text` varchar(128) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `id_site` (`id_site`,`nw_type`)
 );

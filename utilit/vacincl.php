@@ -316,8 +316,8 @@ function viewVacationCalendar($users, $period = false )
 			$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
 
 			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
-			$this->nonWorkingDays = bab_getNonWorkingDays($year);
-			$this->nonWorkingDays = array_merge($this->nonWorkingDays, bab_getNonWorkingDays($year+1));
+
+			$this->nonWorkingDays = array_merge(bab_getNonWorkingDays($year), bab_getNonWorkingDays($year+1));
 
 			$this->restypes = $this->db->db_query("SELECT t.* FROM ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." ct, ".BAB_VAC_PERSONNEL_TBL." p WHERE p.id_user IN(".implode(',', $this->idusers).") AND p.id_coll=ct.id_coll AND ct.id_type=t.id GROUP BY t.id");
 
@@ -429,6 +429,7 @@ function viewVacationCalendar($users, $period = false )
 					$this->date = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $d);
 					$this->weekend = !in_array($dayweek, $this->workdays);
 					$this->nonworking = isset($this->nonWorkingDays[$this->date]);
+					$this->t_nonworking = $this->nonworking ? $this->nonWorkingDays[$this->date] : '';
 					$this->bvac = false;
 					$this->bwait = false;
 
