@@ -1365,11 +1365,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						
 						$navbar_i = navbar($GLOBALS['babLimit'],$nbrows,'as-'.$addon_id,$navpos);
 						if ($nbrows > 0)
+							{
 							$this->addonsdata[] = array($addon_id, $addon_title, $navbar_i, $first_addon_searchresults);
+							$this->nbresult += $nbrows;
+							}
 						}
 					}
 
-			$this->nbresult += $nbrows;
+			
 
 			if( !$this->counttot && count($this->addonsdata) > 0 )
 					$this->counttot = true;
