@@ -184,11 +184,16 @@ function viewVersion()
 		var $baseversiontxt;
 		var $srcversion;
 		var $baseversion;
+		var $phpversiontxt;
+		var $phpversion;
 
 		function temp()
 			{
-			$this->srcversiontxt = babTranslate("Php version");
-			$this->srcversion = phpversion();//$GLOBALS['CurrentVersion'];
+			include $GLOBALS['babInstallPath']."version.inc";
+			$this->srcversiontxt = babTranslate("Ovidentia version");
+			$this->srcversion = $CurrentVersion.".".$CurrentRelease;
+			$this->phpversiontxt = babTranslate("Php version");
+			$this->phpversion = phpversion();//$GLOBALS['CurrentVersion'];
 			$this->baseversiontxt = babTranslate("Database server version");
 			$db = new db_mysql();
 			$arr = $db->db_fetch_array($db->db_query("show variables like 'version'"));
