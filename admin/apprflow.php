@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."utilit/afincl.php";
-define("BAB_DEBUG_FA", 1);
+//define("BAB_DEBUG_FA", 1);
 
 function getApprovalSchemaName($id)
 {
