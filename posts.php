@@ -5,6 +5,7 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include $babInstallPath."utilit/forumincl.php";
+include $babInstallPath."utilit/topincl.php";
 
 function listPosts($forum, $thread, $post)
 	{
@@ -79,7 +80,7 @@ function listPosts($forum, $thread, $post)
 				$this->postdate = bab_strftime(bab_mktime($arr['date']));
 				$this->postauthor = $arr['author'];
 				$this->postsubject = $arr['subject'];
-				$this->postmessage = $arr['message'];
+				$this->postmessage = locateArticle($arr['message']);
 				$dateupdate = bab_mktime($this->arr['dateupdate']);
 				$this->confirmurl = "";
 				$this->confirmname = "";
