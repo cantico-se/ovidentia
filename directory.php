@@ -410,7 +410,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			static $i = 0;
 			if( $i < $this->countcol)
 				{
-				$this->coltxt = bab_translate($this->arrf[$i]);
+				$this->coltxt = stripslashes(bab_translate($this->arrf[$i]));
 				$i++;
 				return true;
 				}
