@@ -1229,7 +1229,7 @@ else
 	if( isset($action) && $action == "Yes")
 		{
 		confirmDeleteEvent($calid, $evtid, $bupdrec);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$day."&month=".$month."&year=".$year);
 		}
 
 	if( isset($update) && $update == "desc")
@@ -1263,6 +1263,7 @@ else
 		if( !isset($days)){$days = array();}
 		if( !isset($daytype)) {$daytype = '';}
 		if( !isset($repeat)) {$repeat = '';}
+		if( !isset($category)) {$category = '';}
 		if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $evtdesc, $category, $usrcals, $grpcals, $rescals))
 			{
 			$day = $daybegin;
@@ -1293,6 +1294,7 @@ switch($idx)
 
 	case "delete":
 		$babBody->title = bab_translate("Delete calendar event");
+		if(!isset($bupdrec)) { $bupdrec = '';}
 		deleteEvent($calid, $evtid, $curday, $curmonth, $curyear, $view, $bupdrec);
 		if( bab_isUserGroupManager())
 			{
