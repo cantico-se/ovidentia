@@ -2104,12 +2104,12 @@ function bab_updateUserSettings()
 			if($arr['langfilter'] != '')
 				$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
 			
-			if( $arr['skin'] != "" && is_dir("skins/".$arr['skin']))
+			if(!empty($arr['skin']) && is_dir("skins/".$arr['skin']))
 				{
 				$GLOBALS['babSkin'] = $arr['skin'];
 				}
 
-			if( $arr['style'] != ""  && is_file("skins/".$GLOBALS['babSkin']."/styles/".$arr['style']))
+			if(!empty($arr['style']) && is_file("skins/".$GLOBALS['babSkin']."/styles/".$arr['style']))
 				{
 				$GLOBALS['babStyle'] = $arr['style'];
 				}
