@@ -372,7 +372,7 @@ function listFiles($id, $gr, $path, $bmanager)
 					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$p;
 					}
 
-				if( $gr == "N" && in_array(1, $aclfm['pr']) || $gr == "Y" )
+				if( ($gr == "N" && in_array(1, $aclfm['pr']) || $gr == "Y") && is_dir($this->fullpath.$path."/"))
 					{
 					$h = opendir($this->fullpath.$path."/");
 					while (($f = readdir($h)) != false)
