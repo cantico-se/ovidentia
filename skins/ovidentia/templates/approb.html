@@ -1,0 +1,441 @@
+<!--#begin waitingarticles --> 
+<!--#if wartcount -->
+<br>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr> 
+<td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ waitingarticlestxt }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table  border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr >
+	<td class="BabTitleSmallFontBg">{ artdatetxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ artnametxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ authortxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg" align="right">{ validationtxt }&nbsp;</td>
+</tr>
+<!--#in getnextarticle -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td width="120">{ artdate }</td>
+<td align="left" colspan="3"><span style="font-Size:9">{ artpath }</span>
+</td>
+</tr>
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>&nbsp;</td>
+<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ artviewurl }', 'OviArtView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arttitle }</a>
+&nbsp;<!--#if battachment -->
+<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
+<!--#endif battachment -->
+&nbsp;<!--#if bnotes -->
+<img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" alt="{ notestxt }" border="0">
+<!--#endif bnotes -->
+</td>
+<td>{ author }</td>
+<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviArtConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+</tr>
+<!--#endin getnextarticle -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endif wartcount -->
+<!--#end waitingarticles --> 
+
+<!--#begin waitingcomments --> 
+<!--#if wcomcount -->
+<br>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr> 
+<td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ waitingcommentstxt }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table  border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr >
+	<td class="BabTitleSmallFontBg">{ comdatetxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ comnametxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ authortxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg" align="right">{ validationtxt }&nbsp;</td>
+</tr>
+<!--#in getnextcomment -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td width="120">{ comdate }</td>
+<td align="left" colspan="3"><span style="font-Size:9">{ compath }</span>
+</td>
+</tr>
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>&nbsp;</td>
+<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ comviewurl }', 'OviComView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ comtitle }</a>
+</td>
+<td>{ author }</td>
+<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviArtConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+</tr>
+<!--#endin getnextcomment -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endif wcomcount -->
+<!--#end waitingcomments --> 
+
+<!--#begin confirmarticle -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="approb">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="conf" value="art">
+<input type="hidden" name="idart" value="{ idart }">
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ arttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ arttitle }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ pathtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ pathname }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ authortxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ author }</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ confirmtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
+<select name="bconfirm">
+<option value="Y">{ yes }</option>
+<option value="N">{ no }</option>
+</select>
+</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment"></textarea>
+</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left"><input type="submit" name="block" value="{ updatetxt }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+</BODY>
+</HTML>
+<!--#end confirmarticle -->
+
+<!--#begin confirmcomment -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="approb">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="conf" value="com">
+<input type="hidden" name="idcom" value="{ idcom }">
+<br>
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" nowrap valign="middle"><b>{ action }:</b></td>
+<td class="BabSiteAdminFontBackground" valign="middle"> 
+<select name="action">
+  <option value="1" selected>{ confirm }</option>
+  <option value="0" >{ refuse }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap>&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="middle"> 
+<input type="checkbox" name="send" value="1">
+&nbsp;{ what } </td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" nowrap valign="top"><b>{ message }:</b></td>
+<td class="BabSiteAdminFontBackground" valign="middle"> 
+<textarea cols="50" rows="10" name="message"></textarea>
+</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap>&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top"> 
+<input type="submit" name="submit" value="{ modify }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</form>
+<br>
+</BODY>
+</HTML>
+<!--#end confirmcomment -->
+
+<!--#begin previewarticle -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabTopicsAdminArticleViewFontBackground">
+{ content }
+</BODY>
+</HTML>
+<!--#end previewarticle -->
+
+<!--#begin waitingfiles --> 
+<!--#if wfilescount -->
+<br>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr> 
+<td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ waitingfilestxt }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table  border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr >
+	<td class="BabTitleSmallFontBg">{ filedatetxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ filenametxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ authortxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg" align="right">{ validationtxt }&nbsp;</td>
+</tr>
+<!--#in getnextfile -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td width="120">{ filedate }</td>
+<td align="left" colspan="3"><span style="font-Size:9">{ filepath }</span>
+</td>
+</tr>
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>&nbsp;</td>
+<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ fileviewurl }', 'OviFileView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ filetitle }</a>
+&nbsp;
+</td>
+<td>{ author }</td>
+<td align="right"><a href="javascript: Start('{ fileviewurl }', 'OviFileView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+</tr>
+<!--#endin getnextfile -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endif wfilescount -->
+<!--#end waitingfiles --> 
+
+<!--#begin waitingposts --> 
+<!--#if wpostscount -->
+<br>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr> 
+<td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ waitingpoststxt }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table  border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr >
+	<td class="BabTitleSmallFontBg">{ postdatetxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ postnametxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ authortxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg" align="right">{ validationtxt }&nbsp;</td>
+</tr>
+<!--#in getnextpost -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td width="120">{ postdate }</td>
+<td align="left" colspan="3"><span style="font-Size:9">{ postpath }</span>
+</td>
+</tr>
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td>&nbsp;</td>
+<td align="left"><a class="BabSummaryLinkColor" href="javascript: Start('{ postviewurl }', 'OviPostView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ posttitle }</a>
+&nbsp;
+</td>
+<td>{ author }</td>
+<td align="right"><a href="javascript: Start('{ confirmurl }', 'OviPostConf', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+</tr>
+<!--#endin getnextpost -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endif wpostscount -->
+<!--#end waitingposts --> 
+
+<!--#begin confirmpost -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr>
+<td class="BabMailBackground"> 
+<table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabFaqTitleFontBg" align="center" >{ title }</td>
+</tr>
+</table>
+<br>
+<table class="" border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabForumTopicsNavTitle" width="100%" colspan="2">{ postsubject }</td>
+</tr>
+<tr> 
+<td class="BabForumBackground" colspan="2"><br>{ postmessage }<br>
+</td>
+</tr>
+<tr> 
+<td class="BabForumTopicsNavDate" nowrap width="60%">{ postdate }</td>
+<td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right">{ postauthor }</td>
+</tr>
+</table>
+<br>
+</td>
+</tr>
+</table>
+<br>
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="approb">
+<input type="hidden" name="idx" value="sunload">
+<input type="hidden" name="conf" value="post">
+<input type="hidden" name="thread" value="{ thread }">
+<input type="hidden" name="idpost" value="{ idpost }">
+<br>
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" nowrap valign="middle"><b>{ action }:</b></td>
+<td class="BabSiteAdminFontBackground" valign="middle"> 
+<select name="action">
+  <option value="1" selected>{ confirm }</option>
+  <option value="0" >{ refuse }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap>&nbsp;</td>
+<td class="BabSiteAdminFontBackground" valign="top"> 
+<input type="submit" name="submit" value="{ modify }">
+<br>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+</body>
+</html>
+<!--#end confirmpost -->
