@@ -510,10 +510,12 @@ var $waitingc;
 var $waitinga;
 var $waitingcimg;
 var $waitingaimg;
+var $bfooter;
 
 function topicsSection($cat)
 	{
 	global $body;
+	$this->bfooter = 0;
 	$this->babSectionTemplate("topicssection.html", "template");
 	$this->foot = babTranslate("Topics with asterisk have waiting articles or comments ");
 	$this->waitingc = babTranslate("Waiting comments");
@@ -555,6 +557,7 @@ function topicsGetNext()
 			$this->arr = $this->db->db_fetch_array($res);
 			if( $BAB_SESS_USERID == $this->arr['id_approver'])
 				{
+				$this->bfooter = 1;
 				$req = "select * from articles where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newartcount = $this->db->db_num_rows($res);
