@@ -1196,6 +1196,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			$bmodified = true;
 			}
 
+		$fname = trim($fname);
 		$frename = false;
 		$osfname = $fname;
 		if( bab_isMagicQuotesGpcOn())
