@@ -1507,6 +1507,7 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('CommentAuthor', $arr['name']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$i++;
@@ -1904,6 +1905,7 @@ class bab_WaitingComments extends bab_handler
 			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('CommentAuthor', $arr['name']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=ReadC&com=".$arr['id']."&topics=".$arr['id_topic']."&article=".$arr['id_article']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=waiting&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$i++;
