@@ -583,19 +583,43 @@ function setPeriod(obj)
 			begindate = obj.id;
 			}
 
+	var f = document.forms['vacform'];
+	f.begin_tmp.value = begindate+','+f.halfdaybegin.value;
+	f.end_tmp.value = obj.id+','+f.halfdayend.value;
+
 	var arr1 = begindate.split('-');
 	var arr2 = obj.id.split('-');
-	var nbd = 0;
 
 	dateBegin(arr1[2], arr1[1], arr1[0]);
 	dateEnd(arr2[2], arr2[1], arr2[0]);
 
+	setPeriod2();
+
+	if (!setbegin)
+		begindate = obj.id;
+	}
+
+
+function setPeriod2()
+	{
+	var f = document.forms['vacform'];
+	var field1 = f.begin_tmp.value.split(',');
+	var field2 = f.end_tmp.value.split(',');
+	var begindate = field1[0];
+	var enddate = field2[0];
+
+	var v1 = field1[1];
+	var v2 = field2[1];
+
+	var nbd = 0;
+	
 	var tdlist = document.getElementById('vac_calendar_body').getElementsByTagName('td');
 
 	for (var i = 0 ; i < tdlist.length ; i++)
 		{
 		var td = tdlist[i];
-		if (td.id >= begindate && td.id <= obj.id && (td.className == 'free' || td.className == 'selected'))
+
+		if (td.id >= begindate && td.id <= enddate && (td.className == 'free' || td.className == 'selected' || td.className == 'period'))
 			{
 			td.className = 'period';
 			nbd++;
@@ -604,17 +628,61 @@ function setPeriod(obj)
 			{
 			td.className = 'free';
 			}
+		}	
+
+	if (v1 == 2 && v2 == 3 && nbd == 1)
+		{
+		nbd = nbd;
+		}
+	else if ((v1 == v2 == 2 && nbd == 1) || (v1 == v2 == 3 && nbd == 1))
+		{
+		nbd -= 0.5;
+		}
+	else if ((v1 >= 2 && v2 == 1) || (v2 >= 2 && v1 == 1))
+		{
+		nbd -= 0.5;
+		}
+	else if ((v1 == 2 && v2 == 2) || (v1 == 3 && v2 == 3))
+		{
+		nbd -= 0.5;
+		}
+	else if (v1 >= 2 && v2 >= 2)
+		{
+		nbd -= 1;
 		}
 
-	document.forms['vacform'].period_nbdays.value = nbd;
+	f.period_nbdays.value = nbd;
 	window.status = '{ t_period_nbdays } : '+nbd;
+	
+	if (document.getElementById(enddate))
+		document.getElementById(enddate).className = 'selected';
 
-	obj.className = 'selected';
-	if (!setbegin)
-		begindate = obj.id;
+
 
 	}
 
+
+function update_plan()
+{
+	var f = document.forms['vacform'];
+
+	var yearbegin = parseInt(f.yearbegin.value)-1+{ yearbegin };
+	var yearend = parseInt(f.yearend.value)-1+{ yearend };
+
+	var daybegin = f.daybegin.selectedIndex+1;
+	var dayend = f.dayend.selectedIndex+1;
+
+	daybegin = daybegin < 10 ? '0'+daybegin : daybegin;
+	dayend = dayend < 10 ? '0'+dayend : dayend;
+
+	var monthbegin = f.monthbegin.value < 10 ? '0'+f.monthbegin.value : f.monthbegin.value;
+	var monthend = f.monthend.value < 10 ? '0'+f.monthend.value : f.monthend.value;
+
+	f.begin_tmp.value = yearbegin+'-'+monthbegin+'-'+daybegin+','+f.halfdaybegin.value;
+	f.end_tmp.value = yearend+'-'+monthend+'-'+dayend+','+f.halfdayend.value;
+
+	setPeriod2();
+}
 
 
 function updateDates(elemDay, elemMonth, elemYear)
@@ -699,6 +767,8 @@ return true;
 <input type="hidden" name="action" value="period">
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="year" value="{ year }">
+<input type="hidden" name="begin_tmp" value="0">
+<input type="hidden" name="end_tmp" value="0">
 <input type="hidden" name="period_nbdays" value="0">
 <input type="hidden" name="id_user" value="{ id_user }">
 
@@ -711,28 +781,28 @@ return true;
 		{ datebegintxt } : 
 	</td>
 	<td> 
-		<select name="daybegin">
+		<select name="daybegin" onchange="update_plan();">
 		  <!--#in getnextday -->
 		  <option value="{ dayid }">{ dayid }</option>
 		  <!--#endin getnextday -->
 		</select>
 	</td>
 	<td> 
-		<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+		<select name="monthbegin" onChange="update_plan();updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 		  <!--#in getnextmonth -->
 		  <option value="{ monthid }">{ monthname }</option>
 		  <!--#endin getnextmonth -->
 		</select>
 	</td>
 	<td> 
-		<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+		<select name="yearbegin" onChange="update_plan();updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
 		  <!--#in getnextyear -->
 		  <option value="{ yearid }">{ yearidval }</option>
 		  <!--#endin getnextyear -->
 		</select>
 	</td>
 	<td> 
-		<select name="halfdaybegin">
+		<select name="halfdaybegin" onchange="update_plan();">
 		  <!--#in getnexthalf -->
 		  <option value="{ halfid }" { selected }>{ halfname }</option>
 		  <!--#endin getnexthalf -->
@@ -744,28 +814,28 @@ return true;
 		{ dateendtxt } : 
 	</td>
 	<td> 
-		<select name="dayend">
+		<select name="dayend" onchange="update_plan();">
 		  <!--#in getnextday -->
 		  <option value="{ dayid }">{ dayid }</option>
 		  <!--#endin getnextday -->
 		</select>
 	</td>
 	<td> 
-		<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+		<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);update_plan();">
 		  <!--#in getnextmonth -->
 		  <option value="{ monthid }">{ monthname }</option>
 		  <!--#endin getnextmonth -->
 		</select>
 	</td>
 	<td> 
-		<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+		<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);update_plan();">
 		  <!--#in getnextyear -->
 		  <option value="{ yearid }">{ yearidval }</option>
 		  <!--#endin getnextyear -->
 		</select>
 	</td>
 	<td> 
-		<select name="halfdayend">
+		<select name="halfdayend"  onchange="update_plan();">
 		  <!--#in getnexthalf -->
 		  <option value="{ halfid }" { selected }>{ halfname }</option>
 		  <!--#endin getnexthalf -->
