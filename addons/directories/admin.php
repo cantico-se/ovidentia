@@ -57,6 +57,7 @@ function listAds()
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babAddonUrl']."admin&idx=mldap&id=".$arr['id'];
 				$this->urlname = $arr['name'];
+				$this->gviewurl = $GLOBALS['babAddonUrl']."admin&idx=gview&id=".$arr['id'];
 				$i++;
 				return true;
 				}

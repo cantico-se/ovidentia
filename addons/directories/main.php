@@ -3,6 +3,14 @@ include $babAddonPhpPath."adincl.php";
 include $babAddonPhpPath."ldap.php";
 include $babInstallPath."utilit/tempfile.php";
 
+function trimQuotes($str)
+{
+	if( $str[strlen($str) - 1] == "\"" && $str[0] == "\"")
+		return substr(substr($str, 1), 0, strlen($str)-2);
+	else
+		return $str;
+}
+
 function listUserAds()
 {
 	global $babBody;
@@ -124,7 +132,7 @@ function browseLdapDirectory($id, $pos)
 					{
 					$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
 					$this->ldap->connect();
-					$this->entries = $this->ldap->search("(|(cn=".$pos."*))", array("cn", "telephonenumber"));
+					$this->entries = $this->ldap->search("(|(cn=".$pos."*))", array("cn", "telephonenumber", "mail", "homephone"));
 					if( is_array($this->entries))
 						{
 						$this->count = $this->entries['count'];
@@ -134,6 +142,24 @@ function browseLdapDirectory($id, $pos)
 					{
 					}
 				}
+
+			/* find prefered mail account */
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and prefered='Y'";
+			$res = $this->db->db_query($req);
+			if( !$res || $this->db->db_num_rows($res) == 0 )
+				{
+				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."'";
+				$res = $this->db->db_query($req);
+				}
+
+			if( $this->db->db_num_rows($res) > 0 )
+				{
+				$arr = $this->db->db_fetch_array($res);
+				$this->accid = $arr['id'];
+				}
+			else
+				$this->accid = 0;			
 			}
 
 		function getnext()
@@ -141,9 +167,17 @@ function browseLdapDirectory($id, $pos)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->cn = "";
+				$this->url = "";
+				$this->btel = "";
+				$this->htel = "";
+				$this->email = "";
 				$this->cn = quoted_printable_decode($this->entries[$i]['cn'][0]);
 				$this->url = $GLOBALS['babAddonUrl']."main&idx=dldap&id=".$this->id."&cn=".$this->cn."&pos=".$this->pos;
 				$this->btel = quoted_printable_decode($this->entries[$i]['telephonenumber'][0]);
+				$this->htel = quoted_printable_decode($this->entries[$i]['homephone'][0]);
+				$this->email = $this->entries[$i]['mail'][0];
+				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->email;
 				$i++;
 				return true;
 				}
@@ -286,58 +320,60 @@ function summaryLdapContact($id, $cn)
 
 	class temp
 		{
+		var $babCss;
+		var $babMeta;
 
 		function temp($id, $cn)
 			{
-			$this->name = ad_translate("Name");
-			$this->email = ad_translate("Email");
-			$this->homephone = ad_translate("Home phone");
-			$this->pager = ad_translate("Pager");
-			$this->mobile = ad_translate("Mobile");
-			$this->url = ad_translate("Personnal Web Page");
-			$this->businessphone = ad_translate("Business Phone");
-			$this->businessfax = ad_translate("Business Fax");
-			$this->jobtitle = ad_translate("Job Title");
-			$this->department = ad_translate("Department");
-			$this->office = ad_translate("Office");
-			$this->compagnyname = ad_translate("Compagny Name");
-			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".ADDON_DIRECTORIES_TBL." where id='".$id."'");
-			if( $res && $db->db_num_rows($res) > 0)
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->babMeta = bab_printTemplate($this,"config.html", "babMeta");
+
+			$this->db = $GLOBALS['babDB'];
+			$this->res = $this->db->db_query("select * from ".ADDON_FIELDS_TBL." where name !='jpegphoto' and x_name!=''");
+			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				$this->count = $this->db->db_num_rows($this->res);
+			else
+				$this->count = 0;
+
+			$res = $this->db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".ADDON_DIRECTORIES_TBL." where id='".$id."'");
+			if( $res && $this->db->db_num_rows($res) > 0)
 				{
-				$arr = $db->db_fetch_array($res);
+				$arr = $this->db->db_fetch_array($res);
 				if( $arr['ldap'] == "Y")
 					{
 					$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
 					$this->ldap->connect();
 					$this->entries = $this->ldap->search("(|(cn=".$cn."))");
-					if( is_array($this->entries))
-						{
-						$this->count = $this->entries['count'];
-						$this->nameval = quoted_printable_decode($this->entries[0]['cn'][0]);
-						$this->emailval = quoted_printable_decode($this->entries[0]['mail'][0]);
-						$this->homephoneval = quoted_printable_decode($this->entries[0]['homephone'][0]);
-						$this->pagerval = quoted_printable_decode($this->entries[0]['pager'][0]);
-						$this->mobileval = quoted_printable_decode($this->entries[0]['mobile'][0]);
-						$this->urlval = quoted_printable_decode($this->entries[0]['labeledURI'][0]);
-						$this->businessphoneval = quoted_printable_decode($this->entries[0]['telephonenumber'][0]);
-						$this->businessfaxval = quoted_printable_decode($this->entries[0]['facsimileTelephoneNumber'][0]);
-						$this->jobtitleval = quoted_printable_decode($this->entries[0]['title'][0]);
-						$this->departmentval = quoted_printable_decode($this->entries[0]['departmentnumber'][0]);
-						$this->officeval = quoted_printable_decode($this->entries[0]['postofficebox'][0]);
-						$this->compagnynameval = quoted_printable_decode($this->entries[0]['businessCategory'][0]);
-						}
 					$this->ldap->close();
+					$this->name = $this->entries[0]['cn'][0];
+					$this->urlimg = $GLOBALS['babAddonUrl']."main&idx=getimgl&id=".$id."&cn=".$cn;
 					}
 				else
 					{
+					$this->name = "";
+					$this->urlimg = "";
 					}
 				}
+			}
+
+		function getnextfield()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->fieldn = ad_translate($arr['description']);
+				$this->fieldv = quoted_printable_decode($this->entries[0][$arr['x_name']][0]);
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 
 	$temp = new temp($id, $cn);
-	$babBody->babecho( bab_printTemplate($temp, $GLOBALS['babAddonHtmlPath']."main.html", "summarycontact"));
+	echo bab_printTemplate($temp, $GLOBALS['babAddonHtmlPath']."main.html", "summarycontact");
 }
 
 
@@ -602,12 +638,20 @@ function importDbFile($id)
 		var $import;
 		var $name;
 		var $id;
+		var $separator;
+		var $other;
+		var $comma;
+		var $tab;
 
 		function temp($id)
 			{
 			$this->id = $id;
 			$this->import = ad_translate("Import");
 			$this->name = ad_translate("File");
+			$this->separator = ad_translate("Separator");
+			$this->other = ad_translate("Other");
+			$this->comma = ad_translate("Comma");
+			$this->tab = ad_translate("Tab");
 			}
 		}
 
@@ -615,7 +659,7 @@ function importDbFile($id)
 	$babBody->babecho(	bab_printTemplate($temp,$GLOBALS['babAddonHtmlPath']."main.html", "dbfile"));
 	}
 
-function mapDbFile($id, $file, $tmpfile)
+function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 	{
 	global $babBody;
 	class temp
@@ -625,7 +669,7 @@ function mapDbFile($id, $file, $tmpfile)
 		var $db;
 		var $id;
 
-		function temp($id, $pfile)
+		function temp($id, $pfile, $wsepar, $separ)
 			{
 			$this->process = ad_translate("Import");
 			$this->handling = ad_translate("Handling duplicates");
@@ -646,7 +690,21 @@ function mapDbFile($id, $file, $tmpfile)
 				$line = trim(fgets($fd, 4096));
 				fclose($fd);
 				}
-			$this->arr = explode( ",", $line);
+			switch($wsepar)
+				{
+				case "1":
+					$separ = ",";
+					break;
+				case "2":
+					$separ = "\t";
+					break;
+				default:
+					if( empty($separ))
+						$separ = ",";
+					break;
+				}
+			$this->arr = explode( $separ, $line);
+			$this->separ = $separ;
 			}
 
 		function getnextfield()
@@ -673,7 +731,7 @@ function mapDbFile($id, $file, $tmpfile)
 			if( $i < count($this->arr))
 				{
 				$this->ffieldid = $i;
-				$this->ffieldname = substr(substr($this->arr[$i], 1), 0, strlen($this->arr[$i])-2);
+				$this->ffieldname = trimQuotes($this->arr[$i]);
 				if( strtolower($this->ofieldname) == strtolower($this->ffieldname) )
 					$this->fselected = "selected";
 				else
@@ -702,7 +760,7 @@ function mapDbFile($id, $file, $tmpfile)
 		$babBody->msgerror = ad_translate("Cannot create temporary file");
 		return;
 		}
-	$temp = new temp($id, $nf);
+	$temp = new temp($id, $nf, $wsepar, $separ);
 	$babBody->babecho(	bab_printTemplate($temp,$GLOBALS['babAddonHtmlPath']."main.html", "dbmapfile"));
 	}
 
@@ -757,7 +815,7 @@ function contactDbUnload($msg)
 	echo bab_printTemplate($temp,$GLOBALS['babAddonHtmlPath']."main.html", "dbcontactunload");
 	}
 
-function processImportDbFile( $pfile, $id )
+function processImportDbFile( $pfile, $id, $separ )
 	{
 	$fd = fopen($pfile, "r");
 	if( $fd )
@@ -771,12 +829,12 @@ function processImportDbFile( $pfile, $id )
 			$line = trim(fgets($fd, 4096));
 			if( !empty($line))
 				{
-				$arr = explode( ",", $line);
+				$arr = explode( $separ, $line);
 				switch($GLOBALS['duphand'])
 					{
 					case 1: // Replace duplicates with items imported
 					case 2: // Do not import duplicates
-						$res2 = $db->db_query("select id from ".ADDON_DBENTRIES_TBL." where email='".substr(substr($arr[$GLOBALS['email']], 1), 0, strlen($arr[$GLOBALS['email']])-2)."' and id_directory='".$id."'");
+						$res2 = $db->db_query("select id from ".ADDON_DBENTRIES_TBL." where email='".trimQuotes($arr[$GLOBALS['email']])."' and id_directory='".$id."'");
 						if( $res2 && $db->db_num_rows($res2 ) > 0 )
 							{
 							if( $GLOBALS['duphand'] == 2 )
@@ -788,7 +846,7 @@ function processImportDbFile( $pfile, $id )
 									{
 									if( !empty($GLOBALS[$row['name']]))
 										{
-										$req .= $row['name']."='".addslashes(substr(substr($arr[$GLOBALS[$row['name']]], 1), 0, strlen($arr[$GLOBALS[$row['name']]])-2) )."',";
+										$req .= $row['name']."='".addslashes(trimQuotes($arr[$GLOBALS[$row['name']]]))."',";
 										}
 									}
 								if( !empty($req))
@@ -812,7 +870,7 @@ function processImportDbFile( $pfile, $id )
 							if( !empty($GLOBALS[$row['name']]))
 								{
 								$req .= $row['name'].",";
-								array_push( $arrv, substr(substr($arr[$GLOBALS[$row['name']]], 1), 0, strlen($arr[$GLOBALS[$row['name']]])-2) );
+								array_push( $arrv, trimQuotes($arr[$GLOBALS[$row['name']]]));
 								}
 							}
 						$db->db_data_seek($res,0);
@@ -848,6 +906,46 @@ function getDbContactImage($id, $idu)
 			return;
 			}
 		}
+	$fp=fopen($GLOBALS['babSkinPath']."/images/nophoto.jpg","rb");
+	if( $fp )
+		{
+		header("Content-type: image/jpeg");
+		echo fread($fp,filesize($GLOBALS['babSkinPath']."/images/nophoto.jpg"));
+		fclose($fp);
+		}
+	}
+
+function getLdapContactImage($id, $cn)
+	{
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select * , DECODE(password, \"".$GLOBALS['BAB_HASH_VAR']."\") as adpass from ".ADDON_DIRECTORIES_TBL." where id='".$id."'");
+
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		if( $arr['ldap'] == "Y")
+			{
+			$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
+			$this->ldap->connect();
+			$this->entries = $this->ldap->search("(|(cn=".$pos."*))", array("cn", "telephonenumber", "mail"));
+			if( is_array($this->entries))
+				{
+				$this->count = $this->entries['count'];
+				}
+
+			$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
+			$this->ldap->connect();
+			$this->entries = $this->ldap->search("(|(cn=".$cn."))", array("jpegphoto"));
+			$this->ldap->close();
+			if( is_array($this->entries) && !empty($this->entries[0]['jpegphoto'][0]) )
+				{
+				header("Content-type: image/jpeg");
+				echo $this->entries[0]['jpegphoto'][0];
+				return;
+				}
+			}
+		}
+
 	$fp=fopen($GLOBALS['babSkinPath']."/images/nophoto.jpg","rb");
 	if( $fp )
 		{
@@ -987,7 +1085,7 @@ if( !isset($pos ))
 
 if( isset($pfile) && !empty($pfile))
 	{
-		processImportDbFile($pfile, $id);
+	processImportDbFile($pfile, $id, $separ);
 	}
 
 if( isset($action) && $action == "Yes")
@@ -1036,6 +1134,10 @@ switch($idx)
 		break;
 	case "getimg":
 		getDbContactImage($id, $idu);
+		exit;
+		break;
+	case "getimgl":
+		getLdapContactImage($id, $cn);
 		exit;
 		break;
 
@@ -1087,7 +1189,7 @@ switch($idx)
 		$babBody->addItemMenu("sdb", "Browse", $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$pos);
 		if($badd)
 			{
-			mapDbFile($id, $HTTP_POST_FILES['uploadf']['name'], $HTTP_POST_FILES['uploadf']['tmp_name']);
+			mapDbFile($id, $HTTP_POST_FILES['uploadf']['name'], $HTTP_POST_FILES['uploadf']['tmp_name'], $wsepar, $separ);
 			$babBody->addItemMenu("dbimp", "Import", $GLOBALS['babAddonUrl']."main&idx=dbimp&id=".$id);
 			}
 		break;
@@ -1095,9 +1197,7 @@ switch($idx)
 	case "dldap":
 		$babBody->title = "Summary of information about".": ".$cn;
 		summaryLdapContact($id, $cn);
-		$babBody->addItemMenu("list", "Directories", $GLOBALS['babAddonUrl']."main&idx=list");
-		$babBody->addItemMenu("sldap", "Browse", $GLOBALS['babAddonUrl']."main&idx=sldap&id=".$id."&pos=".$pos);
-		$babBody->addItemMenu("dldap", "Summary", $GLOBALS['babAddonUrl']."main&idx=dldap&cn=".$id."&cn=".$cn);
+		exit;
 		break;
 
 	case "sldap":

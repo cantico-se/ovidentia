@@ -14,7 +14,7 @@ CREATE TABLE `ad_directories` (
 function directories_getAdminSectionMenus(&$url, &$text)
 {
 	static $i=0;
-	if( $i || ( $GLOBALS['BAB_SESS_NICKNAME'] != "nouaya" && $GLOBALS['BAB_SESS_NICKNAME'] != "jlb") )
+	if( $i )
 	{
 		return false;
 	}
@@ -31,7 +31,7 @@ function directories_getAdminSectionMenus(&$url, &$text)
 function directories_getUserSectionMenus(&$url, &$text)
 {
 	static $i=0;
-	if( $i || ( $GLOBALS['BAB_SESS_NICKNAME'] != "nouaya" && $GLOBALS['BAB_SESS_NICKNAME'] != "jlb"))
+	if( $i )
 	{
 		return false;
 	}
@@ -63,9 +63,6 @@ function ad_onGroupDelete( $id )
 
 function directories_onSectionCreate( &$title, &$content)
 {
-	$title = "Ma section";
-	$content = "<center><b>Nico! Ca marche!</b><br>";
-	$content .= "Reste la doc à faire :-(</center>";
-	return true;
+	return false;
 }
 ?>

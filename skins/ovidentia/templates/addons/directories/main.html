@@ -61,14 +61,6 @@
 <!--#end useradlist -->
 
 <!--#begin adbrowse -->
-<script language="javascript">
-function Start(page)
-{
-	var dummy;
-	OpenWin = this.open(page, "", "width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
-}
-
-</script>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -249,9 +241,20 @@ function Start(page)
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ name }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
 <input type="file" name="uploadf" size="40" maxlength="255" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ separator }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="wsepar">
+<option value="0">{ other }</option>
+<option value="1" selected >{ comma }</option>
+<option value="2">{ tab }</option>
+</select>&nbsp;&nbsp;
+<input type="text" name="separ" size="1" maxlength="1" value="">
 </td>
 </tr>
 <tr>
@@ -273,6 +276,7 @@ function Start(page)
 <input type="hidden" name="tg" value="{ babAddonTarget }/main">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
+<input type="hidden" name="separ" value="{ separ }">
 <input type="hidden" name="pfile" value="{ pfile }">
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
