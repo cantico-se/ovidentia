@@ -1850,7 +1850,7 @@ function addDocumentArticleDraft($idart, $docf_name, $doc_f, $description, &$mes
 				$description = addslashes($description);
 				}
 
-			$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('" .$idart. "', '".$filename."','".$description."')");
+			$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description) values ('" .$idart. "', '".mysql_escape_string($filename)."','".$description."')");
 			return true;
 
 			}
