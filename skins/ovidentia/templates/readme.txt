@@ -8,9 +8,9 @@
 ** Pour toutes questions/remarques ou problemes : info@cantico.fr  **********
 *****************************************************************************
 *                                                                           *
-*Nom du fichier.html                                                        *
-*	                                	Nom du Tag						    *
-*	               		Description du template                             *
+*"Nom du fichier de template".html                                          *
+*Version d'Ovidentia 	Nom du Template		            				    *
+*       Description du template                                             *
 *                                                                           *
 *****************************************************************************
 
