@@ -273,7 +273,6 @@ function cal_month_free($calids, $date)
 	global $babBody;
 
 	$temp = new cal_monthCls("free", $calids, $date);
-	$temp->updateFreeAccess();
 	$temp->printout("calmonth.html", "calfreemonth");
 }
 

@@ -1,8 +1,9 @@
 /************************************************************************/
 Mai 2004: Version 5.3.0
 /************************************************************************/
+- Installation using a script
 - Possibility to dump Ovidentia database
-- Possibility to load add-on by using graphic interface
+- Possibility to update core distribution
 - New structure of calendars:
 	* Events planning
 	* Notification

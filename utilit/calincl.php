@@ -495,7 +495,7 @@ class bab_icalendars
 			$this->initializeUserCalendars();
 		}
 
-		if( count($this->usrcal) > 0 )
+		if( count($this->usercal) > 0 )
 		{
 			return true;
 		}

@@ -425,7 +425,7 @@ class cal_wmdbaseCls
 		$this->allow_modify = false;
 		$this->allow_view = false;
 		$this->allow_viewtitle = true;
-		$this->allow_freeevent_create = false;
+		$this->updateCreateAccess();
 
 
 		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
@@ -510,7 +510,6 @@ class cal_wmdbaseCls
 			case BAB_CAL_USER_TYPE:
 				if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE )
 					{
-					$this->allow_create = true;
 					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
 						{
 						$this->allow_modify = true;
@@ -529,7 +528,6 @@ class cal_wmdbaseCls
 			case BAB_CAL_RES_TYPE:
 				if( $calinfo['manager'] )
 					{
-					$this->allow_create = true;
 					$this->allow_modify = true;
 					}
 				break;
@@ -563,7 +561,7 @@ class cal_wmdbaseCls
 	
 	}
 
-	function updateFreeAccess()
+	function updateCreateAccess()
 		{
 		global $babBody;
 		foreach ($this->idcals as $cal)
@@ -574,7 +572,7 @@ class cal_wmdbaseCls
 				case BAB_CAL_USER_TYPE:
 					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE)
 						{
-						$this->allow_freeevent_create = true;
+						$this->allow_create = true;
 						return;
 						}
 					break;
@@ -582,7 +580,7 @@ class cal_wmdbaseCls
 				case BAB_CAL_RES_TYPE:
 					if ($calinfo['manager'])
 						{
-						$this->allow_freeevent_create = true;
+						$this->allow_create = true;
 						return;
 						}
 				}
