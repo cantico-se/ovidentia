@@ -486,9 +486,8 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 		}
 	else
 		{
-		$query = "delete from ".BAB_ARTICLES_TBL." where id = '$article'";
+		bab_confirmDeleteArticle($article);
 		$subject = bab_translate("Your article has been refused");
-		$res = $db->db_query($query);
 		}
 
 	if( $send == "1")

@@ -354,14 +354,7 @@ function bab_confirmDeleteArticles($items)
 	$db = $GLOBALS['babDB'];
 	for($i = 0; $i < $cnt; $i++)
 		{
-		$req = "delete from ".BAB_COMMENTS_TBL." where id_article='".$arr[$i]."'";
-		$res = $db->db_query($req);
-
-		$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$arr[$i]."'";
-		$res = $db->db_query($req);
-
-		$req = "delete from ".BAB_ARTICLES_TBL." where id='".$arr[$i]."'";	
-		$res = $db->db_query($req);
+		bab_confirmDeleteArticle($arr[$i]);
 		}
 }
 
