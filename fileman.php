@@ -1244,7 +1244,7 @@ function removeDirectory($id, $gr, $path)
 		}
 	}
 
-function getFile( $file, $id, $gr, $path)
+function getFile( $file, $id, $gr, $path, $inl)
 	{
 	global $babBody, $BAB_SESS_USERID, $aclfm;
 	$access = false;
@@ -1306,7 +1306,10 @@ function getFile( $file, $id, $gr, $path)
 
 	$fullpath .= $file;
 	$fsize = filesize($fullpath);
-	header("Content-Disposition: attachment; filename=\"$file\""."\n");
+	if( $inl == "1" )
+		header("Content-Disposition: inline; filename=\"$file\""."\n");
+	else
+		header("Content-Disposition: attachment; filename=\"$file\""."\n");
 	header("Content-Type: $mime"."\n");
 	header("Content-Length: ". $fsize."\n");
 	header("Content-transfert-encoding: binary"."\n");
@@ -1721,7 +1724,7 @@ switch($idx)
 		break;
 
 	case "get":
-		getFile($file, $id, $gr, $path);
+		getFile($file, $id, $gr, $path, $inl);
 		exit;
 		break;
 
