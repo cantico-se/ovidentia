@@ -1,7 +1,6 @@
 
 <!-- comments -->
 <!--#begin commentcreate -->
-<center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlsee }', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></center>
 <form name="comcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="comments">
 <input type="hidden" name="idx" value="List">
@@ -13,29 +12,29 @@
 <tr>
 <td>
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
-<tr> 
-<td width="30%" align="right" nowrap valign="middle">{ name }:</td>
-<td width="70%" nowrap valign="middle"> 
-<!--#if anonyme "== 0" -->
-<b>{ username }</b> 
-<!--#endif anonyme -->
-<!--#if anonyme "== 1" -->
-<input type="text" name="cname" size="45" maxlength="60">
-<!--#endif anonyme -->
-</td>
-</tr>
-<tr> 
-<td align="right" nowrap>{ subject }:</td>
-<td valign="middle" nowrap> 
+          <tr> 
+            <td width="30%" align="right" nowrap valign="middle">{ name }:</td>
+            <td width="99%" nowrap valign="middle"> 
+              <!--#if anonyme "== 0" -->
+              <b>{ username }</b> 
+              <!--#endif anonyme -->
+              <!--#if anonyme "== 1" -->
+              <input type="text" name="cname" size="45" maxlength="60">
+              <!--#endif anonyme -->
+            </td>
+          </tr>
+          <tr> 
+            <td width="1%" align="right" nowrap>{ subject }:</td>
+            <td width="99%" valign="middle" nowrap> 
 <input type="text" name="subject" size="45" maxlength="60" value="{ subjectval }">
 </td>
-</tr>
-<!-- toolbar -->
-<!--#if msie "== 1" -->
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-<tr align="center"> 
-<td colspan="2" nowrap>&nbsp; 
+          </tr>
+          <!-- toolbar -->
+          <!--#if msie "== 1" -->
+          <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
+          <script src="{ babScriptPath }editor.js"></script>
+          <tr align="center"> 
+            <td colspan="2" nowrap>&nbsp; 
 <textarea cols="1" rows="1" style="VISIBILITY: hidden" name="message">{ messageval }</textarea>
 <SCRIPT language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
@@ -43,42 +42,45 @@
 	editor.ToolBar();
 </SCRIPT>
 </td>
-</tr>
-<!--#endif msie -->
-<tr> 
-<td align="right" nowrap>{ message }:</td>
-<td valign="middle"> 
-<!--#if msie "== 1" -->
-<SCRIPT language="JavaScript">
+          </tr>
+          <!--#endif msie -->
+          <tr> 
+            <td width="1%" align="right" nowrap><a class="BabSiteAdminListLink" href="javascript: Start('{ urlsee }', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ see }</a></td>
+            <td width="99%" rowspan="2" valign="middle"> 
+              <!--#if msie "== 1" -->
+              <SCRIPT language="JavaScript">
 	editor.InFrame(0, "message", "comcreate", "90%", "160");</SCRIPT>
-<!--#else msie -->
-<textarea cols="40" rows="10" name="message">{ messageval }</textarea>
+              <!--#else msie -->
+              <textarea cols="40" rows="10" name="message">{ messageval }</textarea>
 </td>
-<!--#endif msie -->
-</tr>
-<!--#if msie "== 1" -->
-<tr> 
-<td align="right">&nbsp;</td>
-<td valign="middle"> 
+            <!--#endif msie -->
+          </tr>
+          <tr>
+            <td width="1%" align="right" valign="top" nowrap>{ message }:</td>
+          </tr>
+          <!--#if msie "== 1" -->
+          <tr> 
+            <td width="1%" align="right" nowrap>&nbsp;</td>
+            <td width="99%" valign="middle"> 
 <input onClick=SetVals() type="submit" name="submit" value="{ add }">
 </td>
-</tr>
-<SCRIPT language="JavaScript">
+          </tr>
+          <SCRIPT language="JavaScript">
 	editor.FinalInstantiate(0);
 	editor.CloseInitSection();
 </SCRIPT>
-<!--#else msie -->
-<tr> 
-<td>&nbsp;</td>
-<td valign="middle"> 
+          <!--#else msie -->
+          <tr> 
+            <td width="1%" nowrap>&nbsp;</td>
+            <td width="99%" valign="middle"> 
 <input type="submit" name="submit" value="{ add }">
 </td>
-</tr>
-<!--#endif msie -->
-<tr align="center"> 
-<td colspan="2">&nbsp;{ notcom } </td>
-</tr>
-</table>
+          </tr>
+          <!--#endif msie -->
+          <tr align="center"> 
+            <td colspan="2">&nbsp;{ notcom } </td>
+          </tr>
+        </table>
 </td>
 </tr>
 </table>
