@@ -55,7 +55,7 @@
 <string id="Your contact has been deleted">Votre contact a été supprimé</string>
 <string id="Access denied">Accès interdit</string>
 <string id="Delete directory">Supprimer l'annuaire</string>
-<string id="Modify directory">Mpdifier l'annuaire</string>
+<string id="Modify directory">Modifier l'annuaire</string>
 <string id="Add new ldap directory">Ajouter un annuaire ldap</string>
 <string id="Add new database directory">Ajouter un annuaire base de données</string>
 <string id="New">Nouveau</string>
@@ -155,4 +155,8 @@
 <string id="Summary of information about">Résumé d'informations de</string>
 <string id="Ldap Directory">Annuaire Ldap</string>
 <string id="Delete Database Directory">Supprimer l'annuaire</string>
+<string id="Display">Affichage</string>
+<string id="Fields to display">Champs à afficher</string>
+<string id="Move Up">Vers le haut</string>
+<string id="Move Down">Vers le bas</string>
 </fr>
