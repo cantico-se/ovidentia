@@ -1,0 +1,23 @@
+IMPORTANT: Always backup your database before any upgrade!!!
+
+To Upgrade from previous Ovidentia versions:
+
+Copy the files located in ovidenti3-1b folder in your
+old ovidentia distribution.
+
+Make sure to chmod 666 config.php to let ovidentia update
+version after upgrade. Otherwise you must make this by hand:
+( ATTENTION!!: this can have some security issues. 
+Please consult your system Administrator )
+
+$babVersion="3.2"
+
+point your browser to:
+
+http://yourdomain/index.php.tg=version&idx=upgrade
+
+Now, you can use the new version.
+Don't forget to put the correct version in config.php if
+Ovidentia can't.
+
+	

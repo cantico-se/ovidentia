@@ -1,0 +1,17 @@
+
+/************************************************************************/
+January 2002: Version 3.2b
+/************************************************************************/
+
+- Added an hierarchy in topics ( see documentation )
+- Added a section by topic
+- Enable/Disable section
+- Added number of hits for downladed files
+- Remove files owned by a group or a user when we delete a group or a user
+- When we want to delete a faq category, we have a warning caused by /r in text translation.
+- Fixed a bug in calendar when an event contains apostrophes
+- Fixed : user cannot change firstname and lastname even those doesnt exists
+- Change topics behavior when user is also administrator: List only manager's topics
+- Fixed : claen sections_states table when a section is deleted
+- Fixed some minors bugs
+
