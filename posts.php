@@ -388,6 +388,7 @@ function listPostsFlat($forum, $thread, $open)
 				$this->postauthor = $arr['author'];
 				$this->postsubject = $arr['subject'];
 				$this->postmessage = bab_replace($arr['message']);
+				$this->more = "";
 
 				$dateupdate = bab_mktime($arr['dateupdate']);
 				if(  $arr['confirmed'] == "Y" && $dateupdate > 0)
