@@ -1491,6 +1491,7 @@ CREATE TABLE bab_dg_groups (
   directories enum('N','Y') NOT NULL default 'N',
   approbations enum('N','Y') NOT NULL default 'N',
   filemanager enum('N','Y') NOT NULL default 'N',
+  orgchart enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id)
 );
 
