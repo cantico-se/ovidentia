@@ -124,7 +124,8 @@ function babTranslate($str)
 		if( !file_exists($filename))
 			{
 			$file = @fopen($filename, "w");
-			fclose($file);
+			if( $file )
+				fclose($file);
 			}
 		$file = @fopen($filename, "r");
 		$langcontent = fread($file, filesize($filename));
@@ -135,14 +136,17 @@ function babTranslate($str)
 		return $m[2];
 	else
 		{
-		$reg = "/<".$GLOBALS['babLanguage'].">(.*)<\/".$GLOBALS['babLanguage'].">/s";
-		preg_match($reg, $langcontent, $m);
-		$langcontent = "<".$GLOBALS['babLanguage'].">".$m[1];
-		$langcontent .= "<string id=\"".$str."\">".$str."</string>\r\n";
-		$langcontent .= "</".$GLOBALS['babLanguage'].">";
 		$file = fopen($filename, "w");
-		fputs($file, $langcontent);
-		fclose($file);
+		if( $file )
+			{
+			$reg = "/<".$GLOBALS['babLanguage'].">(.*)<\/".$GLOBALS['babLanguage'].">/s";
+			preg_match($reg, $langcontent, $m);
+			$langcontent = "<".$GLOBALS['babLanguage'].">".$m[1];
+			$langcontent .= "<string id=\"".$str."\">".$str."</string>\r\n";
+			$langcontent .= "</".$GLOBALS['babLanguage'].">";
+			fputs($file, $langcontent);
+			fclose($file);
+			}
 		}
 	return $str;
 }
