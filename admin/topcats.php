@@ -62,7 +62,7 @@ function topcatsList()
 			$this->uncheckall = babTranslate("Uncheck all");
 			$this->checkall = babTranslate("Check all");
 			$this->update = babTranslate("Disable");
-			$this->topics = babTranslate("Topics");
+			$this->topics = babTranslate("Number of topics");
 			$this->db = new db_mysql();
 			$req = "select * from topics_categories";
 			$this->res = $this->db->db_query($req);
@@ -173,7 +173,7 @@ switch($idx)
 	case "List":
 	default:
 		topcatsList();
-		$body->title = babTranslate("Groups list");
+		$body->title = babTranslate("topics categories list");
 		$body->addItemMenu("List", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=List");
 		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=Create");
 		break;

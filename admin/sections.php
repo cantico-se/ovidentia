@@ -60,7 +60,7 @@ function sectionsList()
 			$this->checkall = babTranslate("Check all");
 			$this->update = babTranslate("Update");
 			$this->access = babTranslate("Access");
-			$this->groups = babTranslate("Groups");
+			$this->groups = babTranslate("View");
 			$this->db = new db_mysql();
 			$req = "select * from sections";
 			$this->res = $this->db->db_query($req);
