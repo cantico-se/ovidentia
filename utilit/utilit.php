@@ -733,6 +733,7 @@ function babUserSection($close)
 		$this->array_urls[bab_translate("File manager")] = $GLOBALS['babUrlScript']."?tg=fileman";
 		}
 
+	$bdiradd = false;
 	$res = $babDB->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL."");
 	while( $row = $babDB->db_fetch_array($res))
 		{
@@ -744,10 +745,27 @@ function babUserSection($close)
 			$bdiraccess = 'Y';
 		if($bdiraccess == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 			{
-			$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
+			$bdiradd = true;
 			break;
 			}
 		}
+
+	if( $bdiradd === false )
+		{
+		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL."");
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if(bab_isAccessValid(BAB_LDAPDIRVIEW_GROUPS_TBL, $row['id']))
+				{
+				$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
+				break;
+				}
+			}
+		}
+
+	if( $bdiradd )
+		$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
+
 	$res = $babDB->db_query("select id, title,version from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
