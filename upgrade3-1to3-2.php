@@ -11,6 +11,14 @@
 	- Added number of hits for downladed files
 	- Remove files owned by a group or a user when we delete a group or a user
 	- When we want to delete a faq category, we have a warning caused by /r in text translation.
+	- Added access to groups from sections/topics/Faq/Forum list
+	- After section creation, it's implicitly visible by Administrator groups members
+	- Make more room to CT/CC/BCC/SUBJECT fileds in mail function
+	- Access to thread is valid only if there is a confirmed post or user is moderator
+	- Now section icon is in config.html
+	- Added $CONTACT(firstname, lastname)
+	- Changed event modification: now description is static text
+	- Moved section bullet/icon to config.html
 ************************************************************************/
 function upgrade()
 {
