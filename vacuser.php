@@ -28,71 +28,6 @@ include_once $babInstallPath."utilit/vacincl.php";
 
 define("VAC_MAX_REQUESTS_LIST", 20);
 
-function notifyVacationAuthor($id, $subject)
-	{
-	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
-
-	if(!class_exists("tempa"))
-		{
-		class tempa
-			{
-			var $message;
-			var $from;
-			var $site;
-			var $until;
-			var $begindate;
-			var $enddate;
-			var $bview;
-			var $by;
-			var $reason;
-			var $reasontxt;
-
-
-			function tempa($row, $subject)
-				{
-				global $babDayType;
-				$this->message = $subject;
-				$this->fromuser = bab_translate("User");
-				$this->from = bab_translate("from");
-				$this->until = bab_translate("until");
-				$this->begindate = bab_strftime(bab_mktime($row['date_begin']), false). " ". $babDayType[$row['day_begin']];
-				$this->enddate = bab_strftime(bab_mktime($row['date_end']), false). " ". $babDayType[$row['day_end']];
-				$this->reasontxt = bab_translate("Additional information");
-				$this->reason = nl2br($row['comment2']);
-				if( $row['status'] == 'N')
-					{
-					$this->by = bab_translate("By");
-					$this->username = bab_getUserName($row['id_approver']);
-					$this->bview = true;
-					}
-				else
-					{
-					$this->bview = false;
-					}
-				}
-			}
-		}
-	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-
-	$mail = bab_mail();
-	if( $mail == false )
-		return;
-
-	$mail->mailTo(bab_getUserEmail($row['id_user']), bab_getUserName($row['id_user']));
-
-	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-	$mail->mailSubject($subject);
-
-	$tempa = new tempa($row, $subject);
-	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "infovacation"));
-	$mail->mailBody($message, "html");
-
-	$message = bab_printTemplate($tempa,"mailinfo.html", "infovacationtxt");
-	$mail->mailAltBody($message);
-
-	$mail->send();
-	}
-
 function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $nbdays, $remarks)
 	{
 	global $babBody;
@@ -157,10 +92,12 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			$this->invalidentry = str_replace('"', "'+String.fromCharCode(34)+'",$this->invalidentry);
 			$this->invalidentry1 = bab_translate("Invalid entry");
 			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
+			$this->invalidentry3 = bab_translate("The number of days exceed the total allowed");
 			$this->totaltxt = bab_translate("Total");
 			$this->balancetxt = bab_translate("Balance");
 			$this->calendar = bab_translate("Planning");
 			$this->totalval = 0;
+			$this->maxallowed = 0;
 			$this->db = $GLOBALS['babDB'];
 			if( $daybegin ==  "" )
 				$this->daybegin = date("j");
@@ -257,9 +194,15 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 				list($quser) = $this->db->db_fetch_array($this->db->db_query("select quantity from ".BAB_VAC_USERS_RIGHTS_TBL." where id_right='".$arr['id']."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
 
 				if( $quser != '')
+					{
 					$this->quantitydays = $quser - $qdp;
+					}
 				else
+					{
 					$this->quantitydays = $arr['quantity'] - $qdp;
+					}
+
+				$this->maxallowed += $this->quantitydays;
 
 				if( isset($GLOBALS[$this->nbdaysname]))
 					{
@@ -507,9 +450,9 @@ function viewWaitingVacReqDetail($id)
 			$this->remarktxt = bab_translate("Description");
 			$this->db = $GLOBALS['babDB'];
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']), false);
+			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
 			$this->halfnamebegin = $babDayType[$row['day_begin']];
-			$this->dateend = bab_strftime(bab_mktime($row['date_end']), false);
+			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
 			$this->halfnameend = $babDayType[$row['day_end']];
 			$this->fullname = bab_getUserName($row['id_user']);
 			$this->remark = nl2br($row['comment']);
@@ -769,53 +712,6 @@ function addNewVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $
 	return true;
 }
 
-function confirmVacationRequest($veid, $remarks, $action)
-{
-	global $babBody, $babDB;
-
-	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end, day_begin, day_end from ".BAB_VAC_ENTRIES_TBL." where id='".$veid."'");
-	$arr = $babDB->db_fetch_array($res);
-
-	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $action);
-
-	switch($res)
-		{
-		case 0:
-			deleteFlowInstance($arr['idfai']);
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$remarks = addslashes($remarks);
-				}
-			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='N', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
-			$subject = bab_translate("Your vacation request has been refused");
-			notifyVacationAuthor($veid, $subject);
-			break;
-		case 1:
-			deleteFlowInstance($arr['idfai']);
-			if( !bab_isMagicQuotesGpcOn())
-				{
-				$remarks = addslashes($remarks);
-				}
-			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='Y', idfai='0', id_approver='".$GLOBALS['BAB_SESS_USERID']."', comment2='".$remarks."' where id = '".$veid."'");
-			$idcal = bab_getCalendarId($arr['id_user'], 1);
-			if( $idcal != 0 )
-				{
-				$tbegin = $arr['day_begin'] == 3? '12:00:00': '00:00:00';
-				$tend = $arr['day_end'] == 2? '12:00:00': '23:59:59';
-				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, start_date, start_time, end_date, end_time, id_creator, hash) values ";
-				$req .= "('".$idcal."', '".bab_translate("Vacation")."', '".$arr['date_begin']."', '".$tbegin."', '".$arr['date_end']."', '".$tend."', '0', 'V_".$veid."')";
-				$babDB->db_query($req);
-				}
-			$subject = bab_translate("Your vacation request has been accepted");
-			notifyVacationAuthor($veid, $subject);
-			break;
-		default:
-			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-			if( count($nfusers) > 0 )
-				notifyVacationApprovers($veid, $nfusers);
-			break;
-		}
-}
 
 function listVacationRequests($pos)
 {
@@ -965,119 +861,6 @@ function listVacationRequests($pos)
 	return $temp->count;
 }
 
-function viewVacationRequestDetail($id)
-	{
-	global $babBody;
-
-	class temp
-		{
-		var $datebegintxt;
-		var $datebegin;
-		var $halfnamebegin;
-		var $dateendtxt;
-		var $dateend;
-		var $halfnameend;
-		var $nbdaystxt;
-		var $typename;
-		var $nbdays;
-		var $totaltxt;
-		var $totalval;
-		var $confirm;
-		var $refuse;
-		var $fullname;
-		var $commenttxt;
-		var $comment;
-		var $remarktxt;
-		var $remark;
-				
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $veid;
-		var $wusers = array();
-
-		var $statustxt;
-		var $status;
-
-
-		function temp($id)
-			{
-			global $babDayType;
-			$this->datebegintxt = bab_translate("Begin date");
-			$this->dateendtxt = bab_translate("End date");
-			$this->nbdaystxt = bab_translate("Quantities");
-			$this->totaltxt = bab_translate("Total");
-			$this->statustxt = bab_translate("Status");
-			$this->commenttxt = bab_translate("Description");
-			$this->remarktxt = bab_translate("Comment");
-			$this->db = $GLOBALS['babDB'];
-			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
-			$this->halfnamebegin = $babDayType[$row['day_begin']];
-			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
-			$this->halfnameend = $babDayType[$row['day_end']];
-			$this->fullname = bab_getUserName($row['id_user']);
-			$this->statarr = array(bab_translate("Waiting to be valiadte by"), bab_translate("Accepted"), bab_translate("Refused"));
-			$this->comment = nl2br($row['comment']);
-			$this->remark = nl2br($row['comment2']);
-			switch($row['status'])
-				{
-				case 'Y':
-					$this->status = $this->statarr[1];
-					break;
-				case 'N':
-					$this->status = $this->statarr[2];
-					break;
-				default:
-					$this->status = $this->statarr[0];
-					$this->wusers = getWaitingApproversFlowInstance($row['idfai'] , false);
-					break;
-				}
-
-			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id."'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
-			$this->totalval = 0;
-			$this->veid = $id;
-			}
-
-		function getnexttype()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$arr['id_type']."'"));
-				$this->nbdays = $arr['quantity'];
-				$this->totalval += $this->nbdays;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		function getnextuser()
-			{
-			static $i = 0;
-			if( $i < count($this->wusers))
-				{
-				$this->fullname = bab_getUserName($this->wusers[$i]);
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new temp($id);
-	echo bab_printTemplate($temp, "vacuser.html", "ventrydetail");
-	return $temp->count;
-	}
 
 /* main */
 $acclevel = bab_vacationsAccess();
@@ -1098,15 +881,11 @@ if( isset($add))
 	if(!addNewVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $remarks, $total))
 		$idx = "vunew";
 	else
-		$idx = "lvreq";
+		{
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
+		exit;
+		}
 
-	}
-	else if( $acclevel['approver'] == true && $add == "vven" )
-	{
-		if( isset($confirm))
-			confirmVacationRequest($veid, $remarks, true);
-		else if( isset($refuse))
-			confirmVacationRequest($veid, $remarks, false);
 	}
 }
 
@@ -1137,30 +916,6 @@ switch($idx)
 		exit;
 		break;
 
-	case "morve":
-		viewVacationRequestDetail($id);
-		exit;
-		break;
-
-	case "lval":
-		$babBody->title = bab_translate("Request vacations waiting to be validate");
-		if( $acclevel['user'] == true )
-			{
-			if( $countt > 0 )
-				$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
-			$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
-			}
-		if( $acclevel['approver'] == true )
-			{
-			listWaitingVacation();
-			$babBody->addItemMenu("lval", bab_translate("Validation"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lval");
-			}
-		else
-			$babBody->title = bab_translate("There is no waiting vacation request");
-		if( $acclevel['manager'] == true)
-			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
-		break;
-	
 	case "vunew":
 		$babBody->title = bab_translate("Request vacation");
 		if( $acclevel['user'] == true )
@@ -1174,6 +929,7 @@ switch($idx)
 			if( !isset($halfdaybegin)) $halfdaybegin = "";
 			if( !isset($halfdayend)) $halfdayend = "";
 			if( !isset($remarks)) $remarks = "";
+			if( !isset($nbdays)) $nbdays = "";
 			requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $nbdays, $remarks);
 			if( $countt > 0 )
 				$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
@@ -1183,8 +939,6 @@ switch($idx)
 			{
 			$idx = "lvt";
 			}
-		if( $acclevel['approver'] == true)
-			$babBody->addItemMenu("lval", bab_translate("Validation"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lval");
 		if( $acclevel['manager'] == true)
 			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		break;
@@ -1204,8 +958,6 @@ switch($idx)
 			{
 			$idx = "lvt";
 			}
-		if( isset($acclevel['approver']) && $acclevel['approver'] == true)
-			$babBody->addItemMenu("lval", bab_translate("Validation"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lval");
 		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
 			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		break;

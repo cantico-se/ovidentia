@@ -22,7 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-$babDayType = array(1=>bab_translate("Whole day"), bab_translate("Morning"), bab_translate("Afternoon"));
 
 function bab_printDate($date)
 	{
@@ -60,8 +59,8 @@ function notifyVacationApprovers($id, $users)
 				$this->quantitytxt = bab_translate("Quantity");
 				$this->commenttxt = bab_translate("Comment");
 				$this->username = bab_getUserName($row['id_user']);
-				$this->begindate = bab_strftime(bab_mktime($row['date_begin']), false). " ". $babDayType[$row['day_begin']];
-				$this->enddate = bab_strftime(bab_mktime($row['date_end']), false). " ". $babDayType[$row['day_end']];
+				$this->begindate = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false). " ". $babDayType[$row['day_begin']];
+				$this->enddate = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false). " ". $babDayType[$row['day_end']];
 				list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$row['id']."'"));
 				$this->comment = htmlentities($row['comment']);
 				}

@@ -683,9 +683,24 @@ function modifyArticle($topics, $article)
 			global $babBodyPopup, $babBody, $babDB, $arrtop, $rfurl;
 
 			$access = false;
-			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics)))
+			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) )
 				{
 				$access = true;
+				}
+			else
+				{
+				if( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics))
+					{
+					$access = true;
+					}
+				else
+					{
+					list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+					if( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'] )
+						{
+						$access = true;
+						}
+					}
 				}
 
 			if(!isset($rfurl))

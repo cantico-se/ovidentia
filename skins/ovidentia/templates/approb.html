@@ -361,6 +361,136 @@ window.focus();
 <!--#endif wpostscount -->
 <!--#end waitingposts --> 
 
+
+<!--#begin waitingvacations --> 
+<!--#if wvacationscount -->
+<br>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr> 
+<td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ waitingvacationstxt }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr>
+<td class="BabLoginCadreBackground"> 
+<table  border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr >
+	<td class="BabTitleSmallFontBg">{ nametxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ totaltxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ datebtxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg">{ dateetxt }&nbsp;</td>
+	<td class="BabTitleSmallFontBg" align="right">{ validationtxt }&nbsp;</td>
+</tr>
+<!--#in getnextvacation -->
+<!--#if altbg -->
+<tr class="BabSummaryContentBackground">
+<!--#else altbg -->
+<tr class="BabTopicsAuthorBackground">
+<!--#endif altbg -->
+<td width="120">{ urlname }</td>
+<td align="left">{ total }</td>
+<td>{ dateb }</td>
+<td>{ datee }</td>
+<td align="right"><a href="javascript: Start('{ url }', 'OviVacationView', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');""><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
+</td>
+</tr>
+<!--#endin getnextvacation -->
+</table>
+</td>
+</tr>
+</table>
+<!--#endif wvacationscount -->
+<!--#end waitingvacations --> 
+
+<!--#begin confirmvacation -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginMenuBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right">&nbsp;</td>
+<td class="BabSiteAdminFontBackground" align="left"><strong>{ fullname }</strong></td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">{ datebegin }&nbsp;&nbsp;{ halfnamebegin }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">{ dateend }&nbsp;&nbsp;{ halfnameend }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt 
+}:</b></td>
+<td class="BabSiteAdminFontBackground" align="left"> 
+<!--#in getnexttype -->
+{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
+<!--#endin getnexttype -->
+</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ totaltxt 
+}:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">{ totalval }</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt 
+}:</b></td>
+<td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+<form method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
+<input type="hidden" name="tg" value="approb">
+<input type="hidden" name="idx" value="unload">
+<input type="hidden" name="conf" value="vac">
+<input type="hidden" name="veid" value="{ veid }">
+<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">{ commenttxt }: </td>
+</tr> 
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">
+<textarea cols="40" rows="10" name="remarks"></textarea>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="center" valign="middle">
+<div align="center"><input type="submit" name="confirm" value="{ confirm }">&nbsp;&nbsp;<input type="submit" name="refuse" value="{ refuse }"></div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+</BODY>
+</HTML>
+<!--#end confirmvacation -->
+
 <!--#begin confirmpost -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>

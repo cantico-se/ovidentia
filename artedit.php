@@ -562,13 +562,13 @@ function showChoiceArticleModify($topicid)
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
-				if( (count($babBody->topmod) && in_array($topicid, $babBody->topmod)) || ($arr['allow_manupdate'] && count($babBody->topman) && in_array($topicid, $babBody->topman)) )
+				if( (count($babBody->topmod) && in_array($topicid, $babBody->topmod)) || ($arr['allow_manupdate'] != '0' && count($babBody->topman) && in_array($topicid, $babBody->topman)) )
 					{
-					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and adt.id is null";
+					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and adt.id is null order by at.ordering asc";
 					}
 				elseif( $arr['allow_update'] && count($babBody->topsub) && in_array($topicid, $babBody->topsub))
 					{
-					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.id is null";
+					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.id is null order by at.ordering asc";
 					}
 				else
 					{
