@@ -227,12 +227,7 @@ function processIn(&$class, $str)
 	if( !$res )
 		die("<BR>in ".$m[2].".... endif ??? : no matching </BR>");
 
-	if( ord($m2[1]))
-		$rep = substr($m2[1], 1, strlen($m2[1])-1);
-
-	if( $rep[strlen($rep)-1] == chr(10))
-		$rep = substr($rep, 0, strlen($rep)-1);
-
+	$rep = trim($m2[1]);
 	while( $class->$m[2]() )
 		{
 		$tmpstr = $rep;
