@@ -1236,7 +1236,7 @@ switch($idx)
 		if( !isset($idtype)) $idtype ="";
 		if( !isset($idcreditor)) $idcreditor ="";
 		if( !isset($active)) $active ="Y";
-		if( !isset($pos)) $pos =0;
+		if( !isset($pos) || $pos == '' ) $pos =0;
 		listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
