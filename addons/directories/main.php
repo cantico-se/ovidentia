@@ -241,7 +241,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".$this->ord."&xf=".$this->xf;
+			$this->allurl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$id."&pos=".($this->ord == "-"? "":$this->ord)."&xf=".$this->xf;
 			$this->addurl = $GLOBALS['babAddonUrl']."main&idx=adbc&id=".$id;
 			$this->count = 0;
 			$this->db = $GLOBALS['babDB'];
@@ -357,7 +357,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->selectname."&xf=".$this->xf;
+				$this->selecturl = $GLOBALS['babAddonUrl']."main&idx=sdb&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
 				else
