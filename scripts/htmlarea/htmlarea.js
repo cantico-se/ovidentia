@@ -78,6 +78,7 @@ HTMLArea.Config = function (babLanguage) {
 	this.sizeIncludesToolbar = false;
 
 	this.bodyStyle = "background-color: #fff; font-family: Verdana, Arial, sans-serif ; font-size:11px";
+	this.invisibletable = "border:dashed 1pt;border-color:#CCCCCC";
 	this.editorURL = HTMLArea.babInstallPath+"scripts/htmlarea/";
 
 	// URL-s
@@ -1275,28 +1276,43 @@ HTMLArea.prototype.babstyle = function(value)
 	var range = this._createRange(sel);
 	var editor = this;	// for nested functions
 
-		/*
-		var selected = range.parentElement();
-		var els = selected.all;
-		alert(els.length);
-		var found = true;
-		  while (found)
-		  {
-			found = false;
-			for (i=0; i<els.length; i++)
-			{
-			  // remove font and span tags
-			  if (els[i].tagName != null && (typeof(els[i].tagName) != "undefined") &&(els[i].tagName == "FONT" || els[i].tagName == "SPAN" || els[i].tagName == "DIV" || els[i].tagName == "IMG" || els[i].tagName == "F" || els[i].tagName == "IMAGEDATA"  || els[i].tagName == "FORMULAS" || els[i].tagName == "ACRONYM"))
-			  {
-				els[i].removeNode(false);
-				found = true;
-			  }
+	if (HTMLArea.is_ie) 
+	{
+		var span=null;
+		try {with (range) {
+			span = range.parentElement();
+		}}
+		catch (e) {
+			//alert(e);
+		}
+		
+		if (span.tagName.toLowerCase() != "span") {
+			span = span.previousSibling;
 			}
-		  }
-		 
-*/
+		try {with (span.attributes) {
+			var attrib = span.attributes.getNamedItem('class');
+			var currentvalue = attrib.value.toLowerCase();
+		}}
+		catch (e) {
+			//alert(e);
+		}
+		if( currentvalue )
+			{
+			if (value == 'Normal')
+				{
+				span.removeNode(false);
+				}
+			else
+				span.className = value;
+			}
+		else
+			this.surroundHTML('<span class="'+value+'">','</span>');
+	}
+	else
+		{
 		range.execCommand('RemoveFormat'); 
 		this.surroundHTML('<span class="'+value+'">','</span>');
+		}
 
 
 };
