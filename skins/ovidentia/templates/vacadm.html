@@ -63,24 +63,27 @@ valign="middle">{ name }:</td>
 </form>
 <!--#end vtypecreate -->
 
+
+
+
+
 <!--#begin vtypelist -->
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
 <td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ descriptiontxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ quantitytxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="center" valign="middle">{ quantitytxt }</td>
+          <td class="BabSiteAdminTitleFontBackground" align="center" valign="middle">{ altaddvr }</td>
 </tr>
 <!--#in getnext -->
 <tr> 
 <td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
 <td class="BabSiteAdminFontBackground" valign="middle">{ description }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle"><a href="{ addurl }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ altaddvr }" border="0" align="middle"></a></td>
-</tr>
+<td align="center" valign="middle" class="BabSiteAdminFontBackground">{ quantity }</td>
+<td class="BabSiteAdminFontBackground" align="center" valign="middle"><a href="{ addurl }"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altaddvr }" border="0" align="middle"></a></td>
 <!--#endin getnext -->
 </table>
 </td>
@@ -89,14 +92,15 @@ valign="middle">{ name }:</td>
 <br>
 <!--#end vtypelist -->
 
+
 <!--#begin vcollist -->
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle">{ descriptiontxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ descriptiontxt }</td>
 </tr>
 <!--#in getnext -->
 <tr> 
@@ -167,7 +171,7 @@ valign="middle">{ name }:</td>
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
 <tr> 
 <td class="BabMailBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td colspan="5" nowrap class="BabLetterlists">
 <!--#if allselected "== 1" -->
@@ -191,8 +195,8 @@ valign="middle">{ name }:</td>
 <td class="BabSiteAdminSmall" valign="middle" nowrap><a class="BabNameEmailLink" href="{ fullnameurl }">{ fullname }</a></td>
 <td class="BabSiteAdminSmall" valign="middle" nowrap>{ collection }</td>
 <td class="BabSiteAdminSmall" valign="middle" nowrap>{ appschema }</td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap>&nbsp;</td>
-<td class="BabSiteAdminSmall" valign="middle" nowrap>&nbsp;</td>
+            <td align="center" valign="middle" nowrap class="BabSiteAdminSmall">{ altlrbu }</td>
+            <td align="center" valign="middle" nowrap class="BabSiteAdminSmall">{ altcal }</td>
 </tr>
 <!--#in getnext -->
 <tr> 
@@ -202,42 +206,46 @@ valign="middle">{ name }:</td>
 <td valign="middle" width="20%" nowrap><a class="BabNameEmailLink" href="{ url }">{ urlname }</a></td>
 <td valign="middle" nowrap>{ collname }</td>
 <td valign="middle" nowrap>{ saname }</td>
-<td valign="middle" nowrap><a href="javascript: Start('{ lrbuurl }', 'VacationWindow', 'width=700,height=380,status=no,resizable=yes,top=200,left=200');"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
-<td valign="middle" nowrap><a href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=710,height=400,status=no,resizable=yes,top=200,left=200');"><img src="{ babSkinPath }images/Puces/PuceNewEvent.png" alt="{ altcal }" border="0" align="middle"></a></td>
+<td align="center" valign="middle" nowrap><a href="javascript: Start('{ lrbuurl }', 'VacationWindow', 'width=700,height=380,status=no,resizable=yes,top=200,left=200');"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
+<td align="center" valign="middle" nowrap><a href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=880,height=480,status=no,resizable=yes,top=10,left=10');"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
 </tr> 
 <!--#endin getnext -->
 <tr> 
-<td class="BabSiteAdminSmall" width="1%" align="center"><a href="javascript:submitForm('delu','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
+<td width="1%" height="37" align="center" class="BabSiteAdminSmall"><a href="javascript:submitForm('delu','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
 <td colspan="5" class="BabSiteAdminSmall"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 </tr></table>
 </td>
 </tr>
 </table>
 <br>
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
-<tr>
-<td>
+  <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+    <tr>
+      <td>
 <table border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center"><a class="BabAlphabetLink" href="javascript:submitForm('lper','listform')">{ filteron }</a>:&nbsp;&nbsp;
-<select name="idcol">
-<option value=""></option>
-<!--#in getnextcol -->
-<option value="{ idcollection }" { selected }>{ collname }</option>
-<!--#endin getnextcol -->
-</select>
-&nbsp;&nbsp;<select name="idsa">
-<option value=""></option>
-<!--#in getnextsa -->
-<option value="{ idsapp }" { selected }>{ saname }</option>
-<!--#endin getnextsa -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+          <tr align="left">
+            <td valign="middle" class="BabBodyTitleBackground">&nbsp;</td>
+            <td valign="middle" class="BabBodyTitleBackground">{ collection }
+            </td>
+            <td valign="middle" class="BabBodyTitleBackground">{ appschema }</td>
+          </tr>
+          <tr align="left">
+            <td valign="middle" class="BabBodyTitleBackground"><input type="submit" name="submit" value="{ filteron }"></td>
+            <td valign="middle" class="BabBodyTitleBackground"><select name="idcol">
+                <option value=""></option>
+                <!--#in getnextcol -->
+                <option value="{ idcollection }" { selected }>{ collname }</option>
+                <!--#endin getnextcol -->
+              </select></td>
+            <td valign="middle" class="BabBodyTitleBackground"><select name="idsa">
+                <option value=""></option>
+                <!--#in getnextsa -->
+                <option value="{ idsapp }" { selected }>{ saname }</option>
+                <!--#endin getnextsa -->
+              </select></td>
+          </tr>
+        </table></td>
+    </tr>
+  </table>
 </form>
 <!--#end vpersonnellist -->
 
@@ -361,6 +369,10 @@ document.forms['gcreate'].group.value ='';
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
+//-->
+</script>
+<script type="text/javascript">
+<!--
 window.focus();
 //-->
 </script>
@@ -414,6 +426,10 @@ window.focus();
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
+//-->
+</script>
+<script type="text/javascript">
+<!--
 window.focus();
 //-->
 </script>
@@ -432,21 +448,21 @@ window.focus();
 <td class="BabCalendarMenuActiveBackground" width="10%" align="center">&nbsp;&nbsp;</td>
 <td class="BabCalendarMenuBackground" width="10%" align="center">&nbsp;&nbsp;</td>
 <td class="BabCalendarMenuBackground" width="10%" align="center">&nbsp;&nbsp;</td>
-<td class="BabCalendarMenuBackground" width="20%" align="center">&nbsp;&nbsp;</td>
+<td width="20%" align="center" class="BabCalendarMenuBackground">&nbsp;&nbsp;</td>
 <td class="BabCalendarMenuBackground" width="25%" align="right"> <a class="BabCalendarNavLinkColor" href="{ nextmonth }">&gt;</a>&nbsp;&nbsp;&nbsp;<a class="BabCalendarNavLinkColor" href="{ nextyear }">&gt;&gt;</a>&nbsp; </td>
 </tr>
 </table>
 
-<table width="20%" cellpadding="2" cellspacing="0" align="center">
+<table cellpadding="2" cellspacing="0" align="center">
 <tr>
 <td class="BabCalendarMenuActiveBackground" align="center" valign="middle">{ yearname }</td>
 </tr>
-</table>&nbsp;
+</table>
 <br>
 
-<table class="BabCalendarBodyBackground" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
-<tr bgcolor="#a0a0a0">
-<th width="14%" class="BabCalendarDays">&nbsp;</th>
+<table width="1%" border="1" align="center" cellpadding="2" cellspacing="0" bordercolor="#000000" class="BabCalendarBodyBackground">
+<tr>
+<th class="BabCalendarDays"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="9" height="8" border="0"></th>
 <!--#in getdayname -->
 <th class="BabCalendarDays">{ dayname }</th>
 <!--#endin getdayname -->	
@@ -454,26 +470,21 @@ window.focus();
 
 <!--#in getmonth -->
 <tr>
-<td valign="top" class="BabMonthCalendarCurentDayBackground" width="0" height="0">
-{ monthname }
-</td> 
+<td valign="middle" class="BabMonthCalendarCurentDayBackground" width="0" height="0">{ monthname }</td> 
 <!--#in getday -->
 <!--#if bvac -->
-<td valign="top" bgcolor=green width="0" height="0">&nbsp;
-<!--#else bvac -->
-<!--#if bwait -->
-<td valign="top" bgcolor=red width="0" height="0">&nbsp;
-<!--#else bwait -->
-<!--#if noday -->
-<td valign="top" width="0" height="0">
-&nbsp;
+    <td height="0" align="center" valign="middle" bgcolor=#008800><img src="{ babSkinPath }images/Puces/VacOK.gif" border="0" alt="{ vacapprovedtxt }" align="absmiddle">
+      <!--#else bvac -->
+      <!--#if bwait -->
+    <td height="0" align="center" valign="middle" bgcolor=#C40000><img src="{ babSkinPath }images/Puces/VacWait.gif" border="0" alt="{ vacwaitingtxt }" align="absmiddle">
+      <!--#else bwait -->
+      <!--#if noday -->
+<td height="0" align="center" valign="middle" bgcolor="#000000"><img src="{ babSkinPath }images/Puces/VacND.gif" alt="N.A."  border="0">
 <!--#else noday -->
 <!--#if weekend -->
-<td valign="top" class="BabCalendarBodyBadMonthBackground" width="0" height="0">
-&nbsp;
+<td height="0" align="center" valign="middle" bgcolor="#C0C0C0"><img src="{ babSkinPath }images/Puces/VacWE.gif" alt="WE" border="0">
 <!--#else weekend -->
-<td valign="top" class="BabMonthCalendarCurentDayBackground" width="0" height="0">
-&nbsp;
+<td height="0" align="center" valign="middle" class="BabMonthCalendarCurentDayBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="20" height="1" border="0">
 <!--#endif weekend -->
 <!--#endif noday -->
 <!--#endif bwait -->
@@ -484,7 +495,16 @@ window.focus();
 </tr></table>
 <br>
 <table>
-<tr><td bgcolor=green>&nbsp;&nbsp;</td><td>{ vacapprovedtxt }</td><td bgcolor=red>&nbsp;&nbsp;</td><td>{ vacwaitingtxt }</td></tr>
+  <tr align="center" valign="middle">
+    <td><img src="{ babSkinPath }images/Puces/VacOK.gif" border="0" alt="{ vacapprovedtxt }" align="absmiddle"></td>
+    <td>{ vacapprovedtxt }</td>
+    <td><img src="{ babSkinPath }images/Puces/VacWait.gif" border="0" alt="{ vacwaitingtxt }" align="absmiddle"></td>
+    <td>{ vacwaitingtxt }</td>
+  </tr>
+  <tr align="left" valign="middle">
+    <td colspan="4"><a class="BabTopicsFooterLink" href="javascript:window.print()"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
+      print }</a></td>
+  </tr>
 </table>
 </BODY>
 </HTML>

@@ -43,26 +43,26 @@ document.forms['vacfreqs'].dateb.value ='';
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ begindatetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ enddatetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ statustxt }</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle"><a href="{ editurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0"></a></td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ begindate }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ enddate }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ status }</td>
-</tr>
-<!--#endin getnext -->
-</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+          <tr> 
+            <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
+            <td align="center" valign="middle" nowrap class="BabSiteAdminTitleFontBackground">{ alttxt }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ begindatetxt }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ enddatetxt }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
+            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ statustxt }</td>
+          </tr>
+          <!--#in getnext -->
+          <tr> 
+            <td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
+            <td align="center" valign="middle" nowrap class="BabSiteAdminFontBackground"><a href="{ editurl }"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ alttxt }" border="0"></a></td>
+            <td class="BabSiteAdminFontBackground" valign="middle">{ begindate }</td>
+            <td class="BabSiteAdminFontBackground" valign="middle">{ enddate }</td>
+            <td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
+            <td class="BabSiteAdminFontBackground" valign="middle">{ status }</td>
+          </tr>
+          <!--#endin getnext -->
+        </table>
 </td>
 </tr>
 <tr>
@@ -89,37 +89,42 @@ document.forms['vacfreqs'].dateb.value ='';
 <tr>
 <td>
 <table border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
-<tr>
-<td class="BabBodyTitleBackground" align="center"><input type="submit" name="submit" value="{ filteron }"></td>
-<td class="BabBodyTitleBackground" align="center">{ statustxt }</td>
-<td class="BabBodyTitleBackground" align="center"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ usertxt }</a></td>
-<td class="BabBodyTitleBackground" align="center">{ datetxt }</td>
-<td class="BabBodyTitleBackground" align="center">&nbsp;</td>
-</tr>
-<tr>
-<td class="BabBodyTitleBackground" align="center"><input type="button" name="submit" value="{ resettxt }" onclick="babReset()"></td>
-<td class="BabBodyTitleBackground" align="center">&nbsp;&nbsp;
-<select name="idstatus">
-<option value=""></option>
-<!--#in getnextstatus -->
-<option value="{ statusid }" { selected }>{ statusname }</option>
-<!--#endin getnextstatus -->
-</select>
-&nbsp;&nbsp;
-</td>
-<td class="BabBodyTitleBackground" align="center">
-<input type="text" name="user" size="35" maxlength="255" value="{ userval }" disabled>
+          <tr valign="middle">
+            <td align="center" class="BabBodyTitleBackground">&nbsp;</td>
+            <td align="center" class="BabBodyTitleBackground">{ statustxt }</td>
+            <td align="center" class="BabBodyTitleBackground"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ usertxt }</a></td>
+            <td align="center" class="BabBodyTitleBackground">{ datetxt }</td>
+            <td align="center" class="BabBodyTitleBackground">&nbsp;</td>
+          </tr>
+          <tr valign="middle">
+            <td align="center" class="BabBodyTitleBackground"><input type="submit" name="submit" value="{ filteron }"></td>
+            <td align="center" class="BabBodyTitleBackground"><select name="idstatus">
+                <option value=""></option>
+                <!--#in getnextstatus -->
+                <option value="{ statusid }" { selected }>{ statusname }</option>
+                <!--#endin getnextstatus -->
+              </select></td>
+            <td align="center" class="BabBodyTitleBackground"><input type="text" name="user" size="35" maxlength="255" value="{ userval }" disabled>
 <input type="hidden" name="userid" value="{ userid }">
 </td>
-<td class="BabBodyTitleBackground" nowrap align="center"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a>
+            <td align="center" nowrap class="BabBodyTitleBackground"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a>
 <input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }">
 &nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a>
-<input type="text" name="datee" size="10" maxlength="10" value="{ datee }">
+<input type="text" name="datee" size="10" maxlength="10" value="{ datee }"></td>
+            <td align="center" class="BabBodyTitleBackground">&nbsp;</td>
+          </tr>
+          <tr valign="middle">
+            <td align="center" class="BabBodyTitleBackground"><input type="button" name="submit" value="{ resettxt }" onClick="babReset()"></td>
+            <td align="center" class="BabBodyTitleBackground">&nbsp;
 </td>
-<td class="BabBodyTitleBackground" align="center">
-&nbsp;</td>
-</tr>
-</table>
+            <td align="center" class="BabBodyTitleBackground">&nbsp;
+</td>
+            <td align="center" nowrap class="BabBodyTitleBackground">&nbsp;
+</td>
+            <td align="center" class="BabBodyTitleBackground">&nbsp;
+</td>
+          </tr>
+        </table>
 </td>
 </tr>
 </table>
@@ -372,6 +377,10 @@ return true;
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
+//-->
+</script>
+<script type="text/javascript">
+<!--
 window.focus();
 //-->
 </script>
@@ -439,6 +448,10 @@ window.focus();
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
 window.focus();
+//-->
+</script>
+<script type="text/javascript">
+<!--
 //-->
 </script>
 </HEAD>

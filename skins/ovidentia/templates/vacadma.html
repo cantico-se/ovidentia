@@ -16,32 +16,32 @@ function dateEnd(day, month, year)
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ desctxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ statustxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ typetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ creditortxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ datetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">&nbsp;</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a href="{ vrurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0"></a></td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a></td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr>
+          <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ desctxt }</td>
+          <td  align="center" valign="middle" nowrap class="BabSiteAdminTitleFontBackground">{ alttxt }</td>
+          <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ statustxt }</td>
+          <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ typetxt }</td>
+          <td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle">{ quantitytxt }</td>
+          <td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ creditortxt }</td>
+          <td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ datetxt }</td>
+          <td class="BabSiteAdminTitleFontBackground" align="center" valign="middle">{ altlistp }</td>
+        </tr>
+        <!--#in getnext -->
+        <tr>
+          <td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a></td>
+          <td  align="center" valign="middle" nowrap class="BabSiteAdminFontBackground"><a href="{ vrurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ alttxt }"></a></td>
+          <td class="BabSiteAdminFontBackground" nowrap valign="middle">
 { statusval }
 </td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ typename }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ creditor }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ date }</td>
-<td class="BabSiteAdminFontBackground" align="right" valign="middle"><a href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ altlistp }" border="0" align="middle"></a></td>
-</tr>
-<!--#endin getnext -->
-</table>
+          <td class="BabSiteAdminFontBackground" nowrap valign="middle">{ typename }</td>
+          <td  align="center" valign="middle" class="BabSiteAdminFontBackground">{ quantity }</td>
+          <td class="BabSiteAdminFontBackground" valign="middle">{ creditor }</td>
+          <td class="BabSiteAdminFontBackground" valign="middle">{ date }</td>
+          <td class="BabSiteAdminFontBackground" align="center" valign="middle"><a href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ altlistp }" border="0" align="middle"></a></td>
+        </tr>
+        <!--#endin getnext -->
+      </table>
 </td>
 </tr>
 <tr>
@@ -76,16 +76,15 @@ function dateEnd(day, month, year)
 <td class="BabBodyTitleBackground" align="center">&nbsp;</td>
 </tr>
 <tr>
-<td class="BabBodyTitleBackground" align="center">&nbsp;</td>
-<td class="BabBodyTitleBackground" align="center"><input type="submit" name="submit" value="{ filteron }">&nbsp;&nbsp;
+<td class="BabBodyTitleBackground" align="center"><input type="submit" name="submit" value="{ filteron }"></td>
+            <td class="BabBodyTitleBackground" align="center">
 <select name="idtype">
 <option value=""></option>
 <!--#in getnexttype -->
 <option value="{ typeid }" { selected }>{ typename }</option>
 <!--#endin getnexttype -->
 </select>
-&nbsp;&nbsp;
-</td>
+            </td>
 <td class="BabBodyTitleBackground" align="center">
 <select name="active">
 <option value=""></option>
@@ -106,8 +105,8 @@ function dateEnd(day, month, year)
 &nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a>
 <input type="text" name="datee" size="10" maxlength="10" value="{ datee }">
 </td>
-<td class="BabBodyTitleBackground" align="center">
-&nbsp;</td>
+<td class="BabBodyTitleBackground" align="center">&nbsp;
+</td>
 </tr>
 </table>
 </td>
@@ -115,6 +114,8 @@ function dateEnd(day, month, year)
 </table>
 </form>
 <!--#end vrightslist -->
+
+
 
 <!--#begin prightsadd -->
 <form name="gcreate" method="post" action="{ babPhpSelf }">
@@ -371,6 +372,10 @@ field.select();
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
+//-->
+</script>
+<script type="text/javascript">
+<!--
 window.focus();
 //-->
 </script>
@@ -500,6 +505,10 @@ window.focus();
 { babMeta }
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
+<!--
+//-->
+</script>
+<script type="text/javascript">
 <!--
 window.focus();
 //-->
