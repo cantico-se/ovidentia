@@ -57,15 +57,26 @@ function browseUsers($pos, $cb)
 			$this->db = $GLOBALS['babDB'];
 			$this->cb = $cb;
 
+			switch ($babBody->nameorder[0]) {
+				case "L":
+					$this->namesearch = "lastname";
+					$this->namesearch2 = "firstname";
+				break;
+				case "F":
+				default:
+					$this->namesearch = "firstname";
+					$this->namesearch2 = "lastname";
+				break; }
+
 			if( $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and lastname like '".$this->pos."%' order by lastname, firstname asc";
+					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				else
-					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.lastname like '".$this->pos."%' order by u.lastname, u.firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
+					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->pos."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
+				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=".$this->pos."&cb=".$this->cb;
 				}
 			else
@@ -73,11 +84,11 @@ function browseUsers($pos, $cb)
 				$this->pos = $pos;
 				$this->ord = "";
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and firstname like '".$this->pos."%' order by firstname, lastname asc";
+					$req = "select * from ".BAB_USERS_TBL." where disabled != '1' and ".$this->namesearch." like '".$this->pos."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 				else
-					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.firstname like '".$this->pos."%' order by u.firstname, u.lastname asc";
+					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->pos."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
 
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
+				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
 				}
 			$this->res = $this->db->db_query($req);
@@ -129,16 +140,16 @@ function browseUsers($pos, $cb)
 					if( $this->ord == "-" )
 						{
 						if( $babBody->currentAdmGroup == 0)
-							$req = "select id from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
+							$req = "select id from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->selectname."%'";
 						else
-							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.lastname like '".$this->selectname."%'";
+							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch2." like '".$this->selectname."%'";
 						}
 					else
 						{
 						if( $babBody->currentAdmGroup == 0)
-							$req = "select id from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
+							$req = "select id from ".BAB_USERS_TBL." where ".$this->namesearch." like '".$this->selectname."%'";
 						else
-							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.firstname like '".$this->selectname."%'";
+							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$this->namesearch." like '".$this->selectname."%'";
 						}
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
