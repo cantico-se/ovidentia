@@ -99,6 +99,8 @@ function processIf(&$class, $str)
 	else
 		$var = $m[2];
 
+	$var = trim($var);
+
 	$reg = "/(.*?)\[([^\]]*)/";
 	
 	if( preg_match($reg, $var, $m2) > 0)
