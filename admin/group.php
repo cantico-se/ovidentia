@@ -560,8 +560,15 @@ if( isset($add))
 	if( isset($submit))
 		{
 		if(!modifyGroup($name, $description, $managerid, $bemail, $grpid, $grpdg))
+			{
 			$idx = "Modify";
 			$item = $grpid;
+		}
+		else
+			{
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+			exit;
+			}
 		}
 	else if( isset($deleteg) )
 		{
@@ -581,7 +588,8 @@ if( isset($action) && $action == "Yes")
 	if($idx == "Deletem")
 		{
 		confirmDeleteMembers($item, $names);
-		$idx = "Members";
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
+		exit;
 		}
 	}
 else if( isset($action2) )

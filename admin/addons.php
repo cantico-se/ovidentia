@@ -210,6 +210,8 @@ function disableAddons($addons)
 		$req = "update ".BAB_ADDONS_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
 		}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+	exit;
 	}
 
 function upgrade($id)
@@ -272,6 +274,8 @@ switch($idx)
 	
 	case "upgrade":
 		upgrade($item);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		exit;
 
 	case "list":
 	default:

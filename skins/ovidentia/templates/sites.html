@@ -19,23 +19,23 @@ function validateNum(field)
   <table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-        <table class="BabSiteAdminTitleFontBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               name }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
+            <td class="BabLoginMenuBackground" width="70%"> 
               <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               description }</td>
             <td> 
               <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               lang }</td>
             <td> 
               <select name="lang">
@@ -46,9 +46,9 @@ function validateNum(field)
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               langfiltertxt }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+            <td class="BabLoginMenuBackground" width="70%" align="left"> 
 			<select name="langfilter">
 			<!--#in getnextlangfilter -->
 			<option value="{ langfilterval }" { langfilterselected }>{ langfilterval }</option>
@@ -57,9 +57,9 @@ function validateNum(field)
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
               skin }</td>
-            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+            <td class="BabLoginMenuBackground" align="left"> 
               <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
     <!--#in getnextskin -->
     <option value="{ skinval }" { skinselected }>{ skinval }</option>
@@ -70,9 +70,9 @@ function validateNum(field)
             </td>
           </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
               registration }</td>
-            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+            <td class="BabLoginMenuBackground" align="left"> 
               <select name="register">
                   <option value="Y" selected>{ yes }</option>
                   <option value="N">{ no }</option>
@@ -80,10 +80,10 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
               confirmation }<br>
               { helpconfirmation } </td>
-            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+            <td class="BabLoginMenuBackground" align="left"> 
               <select name="confirm">
                   <option value="Y" selected>{ yes }</option>
                   <option value="N">{ no }</option>
@@ -91,9 +91,9 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
               group }</td>
-            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+            <td class="BabLoginMenuBackground" align="left"> 
               <select name="group">
                   <option value="0" selected>{ none }</option>
                   <!--#in getnextgrp -->
@@ -103,23 +103,23 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               siteemail }</td>
             <td> 
               <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               adminnametxt }</td>
             <td> 
               <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
               mailfunction }</td>
-            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+            <td class="BabLoginMenuBackground" align="left"> 
               <select name="mailfunc">
                   <option value="mail" selected>{ mail }</option>
                   <option value="">{ disabled }</option>
@@ -129,39 +129,39 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               server }</td>
             <td> 
               <input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               serverport }</td>
             <td> 
               <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)">
 </td>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ smtpuser }</td>
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ smtpuser }</td>
             <td> 
               <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ smtppass }</td>
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ smtppass }</td>
             <td> 
               <input type="password" name="smtppass" size="30" maxlength="20" value="">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ smtppass2 }</td>
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ smtppass2 }</td>
             <td> 
               <input type="password" name="smtppass2" size="30" maxlength="20" value="">
 </td>
 </tr>
-</tr>
+
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               imagessize }</td>
             <td> 
               <input type="text" name="imgsize" size="5" maxlength="10" value="50" onKeyUp="validateNum(this)">
@@ -176,7 +176,7 @@ function validateNum(field)
 </tr>
 
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ name_order_title }</td>
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ name_order_title }</td>
             <td width="70%"> 
 				<select name="name_order">
 				<!--#if dbvalue[name_order] "== F L" -->
@@ -190,7 +190,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_nickname_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ change_nickname_title }</td>
             <td width="70%"> 
 				<select name="change_nickname">
 				<!--#if dbvalue[change_nickname] "== Y" -->
@@ -204,7 +204,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_password_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ change_password_title }</td>
             <td width="70%"> 
 				<select name="change_password">
 				<!--#if dbvalue[change_password] "== Y" -->
@@ -218,7 +218,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ remember_login_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ remember_login_title }</td>
             <td width="70%"> 
 				<select name="remember_login">
 				<!--#if dbvalue[remember_login] "== Y" -->
@@ -232,7 +232,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ email_password_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ email_password_title }</td>
             <td width="70%"> 
 				<select name="email_password">
 				<!--#if dbvalue[email_password] "== Y" -->
@@ -246,39 +246,39 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
             <td width="70%"> 
 				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }">
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
             <td width="70%"> 
 				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ dbvalue[uploadpath] }">
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>
@@ -356,23 +356,23 @@ function validateNum(field)
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabSiteAdminTitleFontBackground">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               name }</td>
             <td width="70%"> 
               <input type="text" name="name" size="30" maxlength="30" value="{ nameval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               description }</td>
             <td> 
               <input type="text" name="description" size="45" maxlength="100" value="{ descriptionval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               lang }</td>
             <td> 
               <select name="lang">
@@ -383,9 +383,9 @@ function validateNum(field)
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               langfiltertxt }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+            <td class="BabLoginMenuBackground" width="70%" align="left"> 
 			<select name="langfilter">
 			<!--#in getnextlangfilter -->
 			<option value="{ langfilterval }" { langfilterselected }>{ langfilterval }</option>
@@ -394,9 +394,9 @@ function validateNum(field)
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               skin }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+            <td class="BabLoginMenuBackground" width="70%" align="left"> 
               <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
                   <!--#in getnextskin -->
                   <option value="{ skinval }" { skinselected }>{ skinval }</option>
@@ -407,9 +407,9 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               registration }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+            <td class="BabLoginMenuBackground" width="70%" align="left"> 
               <select name="register">
                   <option value="Y" { yregister }>{ yes }</option>
                   <option value="N" { nregister }>{ no }</option>
@@ -417,10 +417,10 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ 
               confirmation }<br>
               { helpconfirmation }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%" align="left"> 
+            <td class="BabLoginMenuBackground" width="70%" align="left"> 
               <select name="confirm">
                   <option value="Y" { yconfirm }>{ yes }</option>
                   <option value="N" { nconfirm }>{ no }</option>
@@ -428,9 +428,9 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
               group }</td>
-            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+            <td class="BabLoginMenuBackground" align="left"> 
               <select name="group">
                   <option value="0">{ none }</option>
                   <!--#in getnextgrp -->
@@ -440,23 +440,23 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               siteemail }</td>
             <td> 
               <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               adminnametxt }</td>
             <td> 
               <input type="text" name="adminname" size="30" maxlength="254" value="{ adminnameval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground"  align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
               mailfunction }</td>
-            <td class="BabSiteAdminTitleFontBackground" align="left"> 
+            <td class="BabLoginMenuBackground" align="left"> 
               <select name="mailfunc">
                   <option value="mail" { mailselected }>{ mail }</option>
                   <option value="" { disabledselected }>{ disabled }</option>
@@ -466,42 +466,42 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               server }</td>
             <td> 
               <input type="text" name="server" size="30" maxlength="254" value="{ serverval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               serverport }</td>
             <td> 
               <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               smtpuser }</td>
             <td> 
               <input type="text" name="smtpuser" size="30" maxlength="255" value="{ smtpuserval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               smtppass }</td>
             <td> 
               <input type="password" name="smtppass" size="30" maxlength="20" value="{ smtppassval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               smtppass2 }</td>
             <td> 
               <input type="password" name="smtppass2" size="30" maxlength="20" value="{ smtppassval }">
 </td>
 </tr>
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
+            <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               imagessize }</td>
             <td> 
               <input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }" onKeyUp="validateNum(this)">
@@ -531,9 +531,9 @@ function validateNum(field)
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabSiteAdminTitleFontBackground">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
           <tr valign="middle"> 
-            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ name_order_title }</td>
+            <td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ name_order_title }</td>
             <td width="70%"> 
 				<select name="name_order">
 				<!--#if dbvalue[name_order] "== F L" -->
@@ -547,7 +547,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_nickname_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ change_nickname_title }</td>
             <td width="70%"> 
 				<select name="change_nickname">
 				<!--#if dbvalue[change_nickname] "== Y" -->
@@ -561,7 +561,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ change_password_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ change_password_title }</td>
             <td width="70%"> 
 				<select name="change_password">
 				<!--#if dbvalue[change_password] "== Y" -->
@@ -575,7 +575,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ remember_login_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ remember_login_title }</td>
             <td width="70%"> 
 				<select name="remember_login">
 				<!--#if dbvalue[remember_login] "== Y" -->
@@ -589,7 +589,7 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ email_password_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ email_password_title }</td>
             <td width="70%"> 
 				<select name="email_password">
 				<!--#if dbvalue[email_password] "== Y" -->
@@ -603,39 +603,39 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
             <td width="70%"> 
 				<input type="text" name="babslogan" size="30" maxlength="255" value="{ babSlogan }">
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
             <td width="70%"> 
 				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ babUploadPath }">
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ folder_diskspace_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ dbvalue[folder_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ user_diskspace_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ dbvalue[user_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>
-			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
-            <td class="BabSiteAdminTitleFontBackground" width="70%"> 
-				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> Mo
+			<td class="BabLoginMenuBackground" width="30%" align="left" nowrap>{ total_diskspace_title }</td>
+            <td class="BabLoginMenuBackground" width="70%"> 
+				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ dbvalue[total_diskspace] }" onKeyUp="validateNum(this)"> { t_mb }
 			</td>
 		</tr>
 		<tr>

@@ -58,11 +58,8 @@ function bab_toAmPm($str)
 
 function bab_isUserTopicManager($topics)
 	{
-	global $BAB_SESS_USERID;
-	$db = $GLOBALS['babDB'];
-	$query = "select id from ".BAB_TOPICS_TBL." where id='".$topics."' and id_approver='".$BAB_SESS_USERID."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
+	global $babBody, $BAB_SESS_USERID;
+	if( count($babBody->babmanagertopics) > 0 && in_array($topics, $babBody->babmanagertopics))
 		{
 		return true;
 		}
@@ -82,7 +79,7 @@ function bab_isUserArticleApprover($topics)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return isUserApproverFlow($arr['idsaart'], $BAB_SESS_USERID);
+		return bab_isCurrentUserApproverFlow($arr['idsaart']);
 		}
 	else
 		{
@@ -100,7 +97,7 @@ function bab_isUserCommentApprover($topics)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return isUserApproverFlow($arr['idsacom'], $BAB_SESS_USERID);
+		return bab_isCurrentUserApproverFlow($arr['idsacom']);
 		}
 	else
 		{
@@ -110,23 +107,24 @@ function bab_isUserCommentApprover($topics)
 
 function bab_isUserGroupManager($grpid="")
 	{
-	global $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID;
 	if( empty($BAB_SESS_USERID))
 		return false;
 
-	if( empty($grpid))
-		$query = "select id from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID'";
-	else
-		$query = "select id from ".BAB_GROUPS_TBL." where manager='$BAB_SESS_USERID' and id='$grpid'";
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		return true;
-		}
-	else
-		{
-		return false;
+	reset($babBody->ovgroups);
+	while( $arr=each($babBody->ovgroups) ) 
+		{ 
+		if( $arr[1]['manager'] == $GLOBALS['BAB_SESS_USERID'])
+			{
+			if( empty($grpid))
+				{
+				return true;
+				}
+			else if( $arr[1]['id'] == $grpid )
+				{
+				return true;
+				}
+			}
 		}
 	}
 
@@ -164,42 +162,133 @@ function bab_isUserAdministrator()
 	return $babBody->isSuperAdmin;
 }
 
+
+function bab_getWaitingArticles($topics)
+	{
+	global $babBody, $babDB, $BAB_SESS_USERID;
+	if( !isset($babBody->waitingarticles))
+		{
+		$babBody->waitingarticles = array();
+		$res = $babDB->db_query("SELECT at.id , at.id_topic FROM ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_FAR_INSTANCES_TBL." fi on at.idfai = fi.idschi WHERE fi.iduser =  '".$BAB_SESS_USERID."' AND fi.result =  '' AND fi.notified ='Y'");
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			$babBody->waitingarticles[$arr['id_topic']] = $arr['id'];
+			}
+		}
+	if( isset($babBody->waitingarticles[$topics]))
+		{
+		return $babBody->waitingarticles[$topics];
+		}
+	else
+		{
+		return array();
+		}
+	}
+
+function bab_getWaitingComments($topics)
+	{
+	global $babBody, $babDB, $BAB_SESS_USERID;
+	if( !isset($babBody->waitingcomments))
+		{
+		$babBody->waitingcomments = array();
+		$res = $babDB->db_query("SELECT ct.id , ct.id_topic FROM ".BAB_COMMENTS_TBL." ct LEFT JOIN ".BAB_FAR_INSTANCES_TBL." fi on ct.idfai = fi.idschi WHERE fi.iduser =  '".$BAB_SESS_USERID."' AND fi.result =  '' AND fi.notified ='Y'");
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			$babBody->waitingcomments[$arr['id_topic']] = $arr['id'];
+			}
+		}
+	if( isset($babBody->waitingcomments[$topics]))
+		{
+		return $babBody->waitingcomments[$topics];
+		}
+	else
+		{
+		return array();
+		}
+	}
+
+function bab_isCurrentUserApproverFlow($idsa)
+	{
+	global $babBody, $BAB_SESS_USERID;
+	if( isset($babBody->saarray[$idsa]))
+		{
+		if(  $babBody->saarray[$idsa] ==  true )
+			{
+			return true;
+			}
+		else
+			{
+			return false;
+			}
+		}
+	else
+		{
+		$babBody->saarray[$idsa] = isUserApproverFlow($idsa, $BAB_SESS_USERID);
+		return $babBody->saarray[$idsa];
+		}
+	}
+
 function bab_isAccessValid($table, $idobject)
 {
 	global $babBody, $BAB_SESS_USERID, $BAB_SESS_LOGGED;
-	$add = false;
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id_group from ".$table." where id_object='".$idobject."'");
-	if( $res && $db->db_num_rows($res) > 0)
+	$ok = false;
+	if( !isset($babBody->ovgroups[1][$table]))
 		{
-		$row = $db->db_fetch_array($res);
-		switch($row['id_group'])
+		$babBody->ovgroups[1][$table] = array();
+		$db = $GLOBALS['babDB'];
+		$res = $db->db_query("select * from ".$table."");
+		while( $row = $db->db_fetch_array($res))
 			{
-			case "0": // everybody
-				$add = true;
-				break;
-			case "1": // users
-				if( $BAB_SESS_LOGGED )
-					$add = true;
-				break;
-			case "2": // guests
-				if( !$BAB_SESS_LOGGED )
-					$add = true;
-				break;
-			default:  //groups
-				if( $BAB_SESS_USERID != "" )
-					{
-					$res2 = $db->db_query("select ".BAB_USERS_GROUPS_TBL.".id from ".BAB_USERS_GROUPS_TBL." join ".$table." where ".$table.".id_object=".$idobject." and ".$table.".id_group=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."'");
-					if( $res2 && $db->db_num_rows($res2) > 0 )
-						{
-						$add = true;
-						}
-					}
-				break;
+			switch($row['id_group'])
+				{
+				case "0": // everybody
+					$babBody->ovgroups[1][$table][] = $row['id_object'];
+					$babBody->ovgroups[2][$table][] = $row['id_object'];
+					break;
+				case "1": // users
+					$babBody->ovgroups[1][$table][] = $row['id_object'];
+					break;
+				case "2": // guests
+					$babBody->ovgroups[2][$table][] = $row['id_object'];
+					break;
+				default:  //groups
+					$babBody->ovgroups[$row['id_group']][$table][] = $row['id_object'];
+					break;
+				}
+
 			}
 		}
-	return $add;
+
+	if( !$BAB_SESS_LOGGED )
+		{
+		if( isset($babBody->ovgroups[2][$table]) && in_array($idobject,$babBody->ovgroups[2][$table]))
+			{
+			$ok = true;
+			}
+		}
+	else
+	{
+		if( isset($babBody->ovgroups[1][$table]) && in_array($idobject,$babBody->ovgroups[1][$table]))
+			{
+			$ok = true;
+			}
+		else
+		{
+			for( $i = 0; $i < count($babBody->usergroups); $i++)
+			{
+				if( isset($babBody->ovgroups[$babBody->usergroups[$i]][$table]) && in_array($idobject, $babBody->ovgroups[$babBody->usergroups[$i]][$table]))
+				{
+					$ok = true;
+					break;
+				}
+
+			}
+		}
+	}
+	return $ok;
 }
+
+
 
 /* for all users */
 function bab_isUserLogged($iduser = "")
@@ -372,6 +461,7 @@ function bab_getUserDirFields($id = "")
 
 function bab_getGroupName($id)
 	{
+	global $babBody;
 	switch( $id )
 		{
 		case 1:
@@ -379,18 +469,7 @@ function bab_getGroupName($id)
 		case 2:
 			return bab_translate("Unregistered users");
 		default:
-			$db = $GLOBALS['babDB'];
-			$query = "select name from ".BAB_GROUPS_TBL." where id='$id'";
-			$res = $db->db_query($query);
-			if( $res && $db->db_num_rows($res) > 0)
-				{
-				$arr = $db->db_fetch_array($res);
-				return $arr['name'];
-				}
-			else
-				{
-				return "";
-				}
+			return $babBody->ovgroups[$id]['name'];
 		}
 	}
 
@@ -415,54 +494,61 @@ function bab_getPrimaryGroupId($userid)
 /* 0 no access, 1 user, 2 user/manager, 3 manager*/ 
 function bab_mailAccessLevel()
 	{
-	$db = $GLOBALS['babDB'];
+	global $babBody;
 
-	$bemail = 0;
-	$req = "select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
-		$bemail = 1;
-
-	$req = "select id from ".BAB_GROUPS_TBL." where manager='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0 )
+	$user = 0;
+	$manager = 0;
+	reset($babBody->ovgroups);
+	while( $arr=each($babBody->ovgroups) ) 
+	{ 
+		if( $arr[1]['mail'] == 'Y')
 		{
-		if( $bemail )
-			$bemail++;
-		else
-			$bemail = 3;
+			if( $arr[1]['member'] == 'Y' || $arr[1]['id'] == 1)
+				$user = 1;
+
+			if( $arr[1]['manager'] == $GLOBALS['BAB_SESS_USERID'])
+				$manager = 1;
 		}
-	return $bemail;
+	}
+
+	if( $user && $manager )
+		return 2;
+	if( $user )
+		return 1;
+	if( $manager )
+		return 3;
 	}
 
 function bab_notesAccess()
 	{
-	$db = $GLOBALS['babDB'];
-
-	$arr = $db->db_fetch_array($db->db_query("select notes from ".BAB_GROUPS_TBL." where id='1'"));
-	if( $arr['notes'] == "Y" )
+	global $babBody;
+	if( $babBody->ovgroups[1]['mail'] == 'Y' )
 		return true;
 
-	$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and notes='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group");
-	if( $res && $db->db_num_rows($res) > 0 )
-		return true;
-
+	for( $i = 0; $i < count($babBody->usergroups); $i++)
+		{
+		if( $babBody->ovgroups[$babBody->usergroups[$i]]['mail'] == 'Y')
+			{
+			return true;
+			}
+		}
 	return false;
 	}
 
 
 function bab_contactsAccess()
 	{
-	$db = $GLOBALS['babDB'];
-
-	$arr = $db->db_fetch_array($db->db_query("select contacts from ".BAB_GROUPS_TBL." where id='1'"));
-	if( $arr['contacts'] == "Y" )
+	global $babBody;
+	if( $babBody->ovgroups[1]['contacts'] == 'Y' )
 		return true;
 
-	$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." join ".BAB_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and contacts='Y' and ".BAB_GROUPS_TBL.".id = ".BAB_USERS_GROUPS_TBL.".id_group");
-	if( $res && $db->db_num_rows($res) > 0 )
-		return true;
-
+	for( $i = 0; $i < count($babBody->usergroups); $i++)
+		{
+		if( $babBody->ovgroups[$babBody->usergroups[$i]]['contacts'] == 'Y')
+			{
+			return true;
+			}
+		}
 	return false;
 	}
 
@@ -539,16 +625,15 @@ function bab_getCalendarId($iduser, $type)
 	$db = $GLOBALS['babDB'];
 	if( $type == 1)
 	{
-		$res = $db->db_query("select id from ".BAB_GROUPS_TBL." where id='1' and pcalendar='Y'");
+	$res = $db->db_query("select id from ".BAB_GROUPS_TBL." where id='1' and pcalendar='Y'");
+
+	if( !$res || $db->db_num_rows($res) == 0 )
+		{
+		$res = $db->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$iduser."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".pcalendar ='Y'");
 
 		if( !$res || $db->db_num_rows($res) == 0 )
-			{
-			$res = $db->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$iduser."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".pcalendar ='Y'");
-	
-			if( !$res || $db->db_num_rows($res) == 0 )
-				return 0;
-			}
-
+			return 0;
+		}
 	}
 
 	$query = "select id from ".BAB_CALENDAR_TBL." where owner='$iduser' and actif='Y' and type='".$type."'";
@@ -566,6 +651,7 @@ function bab_getCalendarId($iduser, $type)
 
 function bab_calendarAccess()
 	{
+	global $babBody;
 	$db = $GLOBALS['babDB'];
 
 	if( $GLOBALS['BAB_SESS_USERID'] != "" )
@@ -578,12 +664,14 @@ function bab_calendarAccess()
 		if( $idcal != 0 )
 			return $idcal;
 
-		$res = $db->db_query("select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_CALENDAR_TBL.".owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_CALENDAR_TBL.".type='2' and ".BAB_CALENDAR_TBL.".actif='Y' limit 0, 1");
-
-		if( $res && $db->db_num_rows($res) > 0 )
+		if( count($babBody->usergroups) > 0 )
 			{
-			$arr = $db->db_fetch_array($res);
-			return $arr['id'];
+			$res = $db->db_query("select id from ".BAB_CALENDAR_TBL." where owner IN (".implode(',', $babBody->usergroups).") and type='2' and actif='Y' limit 0, 1");
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				$arr = $db->db_fetch_array($res);
+				return $arr['id'];
+				}
 			}
 
 		$res = $db->db_query("select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_RESOURCESCAL_TBL." where ".BAB_RESOURCESCAL_TBL.".id_group='1' and ".BAB_CALENDAR_TBL.".owner=".BAB_RESOURCESCAL_TBL.".id and ".BAB_CALENDAR_TBL.".type='3' and ".BAB_CALENDAR_TBL.".actif='Y' limit 0, 1");
@@ -594,13 +682,15 @@ function bab_calendarAccess()
 			return $arr['id'];
 			}
 
-		$res = $db->db_query("select ".BAB_RESOURCESCAL_TBL.".id from ".BAB_RESOURCESCAL_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_RESOURCESCAL_TBL.".id_group=".BAB_USERS_GROUPS_TBL.".id_group");
-
-		while( $arr = $db->db_fetch_array($res) )
+		if( count($babBody->usergroups) > 0 )
 			{
-			$idcal = bab_getCalendarId($arr['id'], 3);
-			if( $idcal != 0 )
-				return $idcal;
+			$res = $db->db_query("select id from ".BAB_RESOURCESCAL_TBL." where id_group IN (".implode(',', $babBody->usergroups).")");
+			while( $arr = $db->db_fetch_array($res) )
+				{
+				$idcal = bab_getCalendarId($arr['id'], 3);
+				if( $idcal != 0 )
+					return $idcal;
+				}
 			}
 
 		$res = $db->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
@@ -616,6 +706,7 @@ function bab_calendarAccess()
 	return 0;
 	}
 
+
 function bab_fileManagerAccessLevel()
 	{
 	global $babDB, $babBody, $BAB_SESS_USERID;
@@ -625,17 +716,20 @@ function bab_fileManagerAccessLevel()
 	$babBody->aclfm = array();
 	$babBody->ustorage = false;
 
-	$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".ustorage ='Y'");
-
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	if( $babBody->ovgroups[1]['ustorage'] == 'Y')
 		{
 		$babBody->ustorage = true;
 		}
 	else
 		{
-		$arr = $babDB->db_fetch_array($babDB->db_query("select ustorage from ".BAB_GROUPS_TBL." where id='1'"));
-		if( $arr['ustorage'] == "Y")
-			$babBody->ustorage = true;
+		for( $i = 0; $i < count($babBody->usergroups); $i++)
+			{
+			if( $babBody->ovgroups[1]['ustorage'] == 'Y')
+				{
+				$babBody->ustorage = true;
+				break;
+				}
+			}
 		}
 	
 	$res = $babDB->db_query("select id, manager, idsa, folder from ".BAB_FM_FOLDERS_TBL." where active='Y' ORDER BY folder");
@@ -679,9 +773,17 @@ function bab_getUserId( $name )
 
 function bab_getUserGroups($id = "")
 	{
+	global $babBody;
 	$arr = array();
 	if( empty($id))
-		$id = $GLOBALS['BAB_SESS_USERID'];
+		{
+		for( $i = 0; $i < count($babBody->usergroups); $i++ )
+			{
+			$arr['id'][] = $babBody->usergroups[$i];
+			$arr['name'][] = $babBody->ovgroups[$babBody->usergroups[$i]]['name'];
+			}
+		return $arr;
+		}
 	if( !empty($id))
 		{
 		$db = $GLOBALS['babDB'];
@@ -700,15 +802,15 @@ function bab_getUserGroups($id = "")
 
 function bab_getGroups()
 	{
+	global $babBody;
 	$arr = array();
-	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from ".BAB_GROUPS_TBL." where id!='1' and id != '2'");
-	if( $res && $db->db_num_rows($res) > 0 )
-		{
-		while( $r = $db->db_fetch_array($res))
+	reset($babBody->ovgroups);
+	while( $row=each($babBody->ovgroups) ) 
+		{ 
+		if( $row[1]['id'] == 1 && $row[1]['id'] == 2)
 			{
-			$arr['id'][] = $r['id'];
-			$arr['name'][] = $r['name'];
+			$arr['id'][] = $row[1]['id'];
+			$arr['name'][] = $row[1]['name'];
 			}
 		}
 	return $arr;

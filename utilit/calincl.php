@@ -194,8 +194,16 @@ function getAvailableGroupsCalendars($bwrite = false)
 
 		if( $bwrite )
 		{
-			if( $arr2['owner'] == 1 && $babBody->isSuperAdmin || bab_isUserGroupManager($arr2['owner']))
-				$add = true;
+			if( $arr2['owner'] == 1 )
+				{
+				if( $babBody->isSuperAdmin )
+					$add = true;
+				}
+			else
+				{
+				if( count($babBody->usergroups) > 0 && in_array($arr2['owner'], $babBody->usergroups))
+					$add = true;
+				}
 		}
 		else
 			$add = true;

@@ -344,7 +344,8 @@ if( $idx == "chg")
 if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 ))
 {
 	updateGroup($grp, $users, $userst);
-	$idx = "List";
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+	exit;
 }
 
 if( $idx == "Create" && !$babBody->isSuperAdmin )

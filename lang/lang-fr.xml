@@ -1151,8 +1151,8 @@
 <string id="Articles's authors can restrict access to articles">Les auteurs peuvent restreindre l'accès aux articles</string>
 <string id="WARNING! Some articles uses access restriction. Changing access topic can make them inaccessible">ATTENTION! certains articles utilisent la restriction. Les changer de thèmes pourrais les rendre inaccessibles</string>
 <string id="User name composition">Composition du nom d'utilisateur</string>
-<string id="User can modifiy his nickname">L'utilisateur peut modifier sont identifiant</string>
-<string id="User can modifiy his password">L'utilisateur peut modifier sont mot de passe</string>
+<string id="User can modifiy his nickname">L'utilisateur peut modifier son identifiant</string>
+<string id="User can modifiy his password">L'utilisateur peut modifier son mot de passe</string>
 <string id="Automatic connection">Connexion automatique</string>
 <string id="Site slogan">Slogan du site</string>
 <string id="Upload path">Répertoire d'upload</string>

@@ -128,17 +128,20 @@ function bab_isAccessFileValid($gr, $id)
 		}
 	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
 		{
-		$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".ustorage ='Y'");
-
-		if( $res && $babDB->db_num_rows($res) > 0 )
+		if( $babBody->ovgroups[1]['ustorage'] == 'Y')
 			{
 			$access = true;
 			}
 		else
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select ustorage from ".BAB_GROUPS_TBL." where id='1'"));
-			if( $arr['ustorage'] == "Y")
-				$access = true;
+			for( $i = 0; $i < count($babBody->usergroups); $i++)
+				{
+				if( $babBody->ovgroups[1]['ustorage'] == 'Y')
+					{
+					$access = true;
+					break;
+					}
+				}
 			}
 		}
 	return $access;
@@ -146,7 +149,7 @@ function bab_isAccessFileValid($gr, $id)
 
 function notifyFileApprovers($id, $users, $msg)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include_once $babInstallPath."utilit/mailincl.php";
 
 	class tempa
@@ -196,8 +199,15 @@ function notifyFileApprovers($id, $users, $msg)
 	if( $mail == false )
 		return;
 	
-	for( $i=0; $i < count($users); $i++)
-		$mail->mailBcc(bab_getUserEmail($users[$i]), bab_getUserName($users[$i]));
+	if( count($users) > 0 )
+		{
+		$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id IN (".implode(',', $users).")";
+		$result=$babDB->db_query($sql);
+		while( $arr = $babDB->db_fetch_array($result))
+			{
+			$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+			}
+		}
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("New waiting file"));
 

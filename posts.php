@@ -239,17 +239,13 @@ function listPosts($forum, $thread, $post)
 					$this->confirmed = "";
 
 				$this->brecent = false;
-				if($GLOBALS['BAB_SESS_LOGGED'])
+				if( mktime() - bab_mktime($arr['date']) <= DELTA_TIME )
+					$this->brecent = true;
+				else if($GLOBALS['BAB_SESS_LOGGED'])
 					{
 					if( $arr['date'] >= $babBody->lastlog )
 						$this->brecent = true;
 					}
-				else
-					{
-					if( mktime() - bab_mktime($arr['date']) <= DELTA_TIME )
-						$this->brecent = true;
-					}
-
 				
 				if( $this->alternate == 0)
 					$this->alternate = 1;
@@ -406,14 +402,11 @@ function listPostsFlat($forum, $thread, $open)
 				$this->more = "";
 
 				$this->brecent = false;
-				if($GLOBALS['BAB_SESS_LOGGED'])
+				if( mktime() - bab_mktime($arr['date']) <= DELTA_TIME )
+					$this->brecent = true;
+				else if($GLOBALS['BAB_SESS_LOGGED'])
 					{
 					if( $arr['date'] >= $babBody->lastlog )
-						$this->brecent = true;
-					}
-				else
-					{
-					if( mktime() - bab_mktime($arr['date']) <= DELTA_TIME )
 						$this->brecent = true;
 					}
 

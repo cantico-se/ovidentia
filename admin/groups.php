@@ -425,7 +425,8 @@ function saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pds
 		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id='".$calperids[$i]."'"); 
 	}
 
-
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=options");
+	exit;
 }
 
 /* main */

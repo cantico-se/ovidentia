@@ -1160,7 +1160,7 @@ function updateDescription($calid, $evtid, $content, $bupdrec)
 
 function isUpdateEvent($calid, $evtid)
 {
-global $babDB;
+global $babBody, $babDB;
 $bmodif = 0;
 
 list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id ='".$evtid."'"));
@@ -1192,10 +1192,14 @@ switch($caltype)
 			}
 		break;
 	case 2:
-		if( bab_isUserGroupManager($owner))
+		if( count($babBody->usergroups) > 0 && in_array($owner, $babBody->usergroups))
+		{
 			$bmodif = 1;
+		}
 		else
+		{
 			$bmodif = 0;
+		}
 		break;
 	case 3:
 		$bmodif = 1;

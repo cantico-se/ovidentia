@@ -32,25 +32,22 @@ class categoriesHierarchy
 	var $parenturl;
 	var $burl;
 	var $topics;
+	var $topictitle;
 
 	function categoriesHierarchy($topics)
 		{
-		global $babDB;
+		global $babBody, $babDB;
 
 		$this->topics = $topics;
 
 		$this->arrparents[] = $topics;
-		list($cat) = $babDB->db_fetch_row($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+		list($cat, $this->topictitle) = $babDB->db_fetch_row($babDB->db_query("select id_cat, category from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 		$this->arrparents[] = $cat;
-		$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
-		while($arr = $babDB->db_fetch_array($res))
+		while( $babBody->parentstopcat[$cat]['parent'] != 0 )
 			{
-			if( $arr['id_parent'] == 0 )
-				break;
-			$this->arrparents[] = $arr['id_parent'];
-			$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
+			$this->arrparents[] = $babBody->parentstopcat[$cat]['parent'];
+			$cat = $babBody->parentstopcat[$cat]['parent'];
 			}
-
 		$this->arrparents[] = 0;
 
 		$this->parentscount = count($this->arrparents);
@@ -59,12 +56,14 @@ class categoriesHierarchy
 
 	function getnextparent()
 		{
+		global $babBody;
+
 		static $i = 0;
 		if( $i < $this->parentscount)
 			{
 			if( $i == $this->parentscount - 1 )
 				{
-				$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
+				$this->parentname = $this->topictitle;
 				$this->parenturl = "";
 				$this->burl = false;
 				}
@@ -72,9 +71,13 @@ class categoriesHierarchy
 				{
 				$this->burl = true;
 				if( $this->arrparents[$i] == 0 )
+					{
 					$this->parentname = bab_translate("Top");
+					}
 				else
-					$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
+					{
+					$this->parentname = $babBody->parentstopcat[$this->arrparents[$i]]['title'];
+					}
 				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
 				}
 			$i++;
@@ -318,17 +321,11 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 		return;
 
 	$db = $GLOBALS['babDB'];
-	$sql = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='3'";
+	$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." ut LEFT JOIN ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where id_group='3'";
 	$result=$db->db_query($sql);
-	if( $result && $db->db_num_rows($result) > 0 )
+	while( $arr = $db->db_fetch_array($result))
 		{
-		while( $arr = $db->db_fetch_array($result))
-			{
-			$sql = "select email, firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_object']."'";
-			$res=$db->db_query($sql);
-			$r = $db->db_fetch_array($res);
-			$mail->mailBcc($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
-			}
+		$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'] , $arr['lastname']));
 		}
 
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
@@ -347,7 +344,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 
 function notifyArticleApprovers($id, $users)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
 	if(!class_exists("tempa"))
 		{
@@ -400,8 +397,15 @@ function notifyArticleApprovers($id, $users)
 	if( $mail == false )
 		return;
 
-	for( $i=0; $i < count($users); $i++)
-		$mail->mailBcc(bab_getUserEmail($users[$i]));
+	if( count($users) > 0 )
+		{
+		$sql = "select email from ".BAB_USERS_TBL." where id IN (".implode(',', $users).")";
+		$result=$babDB->db_query($sql);
+		while( $arr = $babDB->db_fetch_array($result))
+			{
+			$mail->mailBcc($arr['email']);
+			}
+		}
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("New waiting article"));
 
@@ -417,7 +421,7 @@ function notifyArticleApprovers($id, $users)
 
 function notifyCommentApprovers($idcom, $nfusers)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
 	if(!class_exists("tempa"))
 		{
@@ -473,8 +477,15 @@ function notifyCommentApprovers($idcom, $nfusers)
 		if( $mail == false )
 			return;
 
-		for( $i=0; $i < count($nfusers); $i++)
-			$mail->mailBcc(bab_getUserEmail($nfusers[$i]));
+		if( count($nfusers) > 0 )
+			{
+			$sql = "select email from ".BAB_USERS_TBL." where id IN (".implode(',', $nfusers).")";
+			$result=$babDB->db_query($sql);
+			while( $arr = $babDB->db_fetch_array($result))
+				{
+				$mail->mailBcc($arr['email']);
+				}
+			}
 		$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 		$mail->mailSubject(bab_translate("New waiting comment"));
 

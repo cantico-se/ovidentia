@@ -1348,15 +1348,14 @@ if( $approver || $uaapp || $ucapp )
 	$access = true;
 else
 	$access = false;
+$new = 0;
 if( $uaapp )
 	{
-	$db = $GLOBALS['babDB'];
-	$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$topics."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-	$res = $db->db_query($req);
-	$new = $db->db_num_rows($res);
+		if( isset($babBody->waitingarticles[$arr['id_topic']]))
+		{
+			$new = $babBody->waitingarticles[$topics];
+		}
 	}
-else
-	$new = 0;
 
 $babLevelTwo = bab_getCategoryTitle($topics);
 $arr = $babDB->db_fetch_array($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));

@@ -132,6 +132,7 @@ function siteModify($id)
 			$this->smtppass = bab_translate("SMTP password");
 			$this->smtppass2 = bab_translate("Re-type SMTP password");
 			$this->adminnametxt = bab_translate("Name to use for notification emails");
+			$this->t_mb = bab_translate("Mb");
 
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";

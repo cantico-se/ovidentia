@@ -1214,8 +1214,9 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			if( $i < $this->countdir)
 				{
 				$arr = $this->db->db_fetch_array($this->resdir);
+				foreach ($arr as $key => $value)
+					$arr[$key] = stripslashes($value);
 				$this->dir= $arr ;
-				//$this->name = bab_composeUserName($arr['sn'], $arr['givenname']);
 				$this->dirurl = $GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$arr['id']."&w=".$this->what;
 				$i++;
 				return true;

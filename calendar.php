@@ -54,8 +54,10 @@ for($i = 0; $i < count($mcals); $i++)
 		case 2:
 			if( $arr['owner'] == 1 && $babBody->isSuperAdmin)
 				return true;
-			else if( bab_isUserGroupManager($arr['owner']))
-				return 1;
+			if( count($babBody->usergroups) > 0 && in_array($arr['owner'], $babBody->usergroups))
+				return true;
+			else
+				return false;
 			break;
 		case 3:
 			return 1;

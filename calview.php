@@ -199,7 +199,7 @@ function newEmails()
 					$arr2 = $this->db->db_fetch_array($res2);
 					$this->domain = $arr2['name'];
 					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-					$mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+					$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
 					if($mbox)
 						{
 						$this->domainurl = $GLOBALS['babUrlScript']."?tg=inbox&&accid=".$arr['id'];

@@ -67,6 +67,8 @@ function listTopicCategory($cat)
 			$this->db = $GLOBALS['babDB'];
 			$this->idcat = $cat;
 
+			$arrtopcat = array();
+			$arrtop = array();
 			$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$cat."' order by ordering asc";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
@@ -74,10 +76,12 @@ function listTopicCategory($cat)
 				if($row['type'] == '2' && in_array($row['id_topcat'], $babBody->topview))
 					{
 					array_push($this->arrid, array($row['id_topcat'], 2));
+					array_push($arrtop, $row['id_topcat']);
 					}
 				else if( $row['type'] == '1' && in_array($row['id_topcat'], $babBody->topcatview ))
 					{
 					array_push($this->arrid, array($row['id_topcat'], 1));
+					array_push($arrtopcat, $row['id_topcat']);
 					}
 				}
 			$this->count = count($this->arrid);
@@ -85,56 +89,89 @@ function listTopicCategory($cat)
 			if( $cat != 0 )
 				{
 				$this->arrparents[] = $cat;
-				$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
-				while($arr = $this->db->db_fetch_array($res))
+				while( $babBody->parentstopcat[$cat]['parent'] != 0 )
 					{
-					if( $arr['id_parent'] == 0 )
-						break;
-					$this->arrparents[] = $arr['id_parent'];
-					$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
+					$this->arrparents[] = $babBody->parentstopcat[$cat]['parent'];
+					$cat = $babBody->parentstopcat[$cat]['parent'];
 					}
-
 				}
 			$this->arrparents[] = 0;
 
 			$this->parentscount = count($this->arrparents);
 			$this->arrparents = array_reverse($this->arrparents);
+
+			if( count($arrtop) > 0 )
+				{
+				$res = $this->db->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', $arrtop).")");
+				while( $arr = $this->db->db_fetch_array($res))
+					{
+					for($i=0; $i < $this->count; $i++)
+						{
+						if( $this->arrid[$i][1] == 2 && $this->arrid[$i][0]== $arr['id'])
+							{
+							$this->arrid[$i]['title'] = $arr['category'];
+							$this->arrid[$i]['description'] = $arr['description'];
+							$this->arrid[$i]['confirmed'] = 0;
+							}
+						}
+					}
+
+				$res = $this->db->db_query("select count(id) total, id_topic from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $arrtop).") and confirmed='Y' GROUP by id_topic");
+				while( $arr = $this->db->db_fetch_array($res))
+					{
+					for($i=0; $i < $this->count; $i++)
+						{
+						if( $this->arrid[$i][1] == 2 && $this->arrid[$i][0]== $arr['id_topic'])
+							{
+							$this->arrid[$i]['confirmed'] = $arr['total'];
+							}
+						}
+					}
+				}	
+
+			if( count($arrtopcat) > 0 )
+				{
+				$res = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".implode(',', $arrtopcat).")");
+				while( $arr = $this->db->db_fetch_array($res))
+					{
+					for($i=0; $i < $this->count; $i++)
+						{
+						if( $this->arrid[$i][1] == 1 && $this->arrid[$i][0]== $arr['id'])
+							{
+							$this->arrid[$i]['title'] = $arr['title'];
+							$this->arrid[$i]['description'] = $arr['description'];
+							}
+						}
+					}
+				}
+
+
 			}
 
 		function getnext()
 			{
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->submiturl = "";
+				$this->childurl = "";
+				$this->childname = $this->arrid[$i]['title'];
+				$this->childdescription = $this->arrid[$i]['description'];
 				if( $this->arrid[$i][1] == 1 )
 					{
-					$this->childname = bab_getTopicCategoryTitle($this->arrid[$i][0]);
-					$this->childdescription = bab_getTopicCategoryDescription($this->arrid[$i][0]);
 					$this->childurl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrid[$i][0];
 					$this->istopcat = true;
 					}
 				else
 					{
-					$this->childurl = "";
 					$this->istopcat = false;
-					$this->arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i][0]."'"));
-					$this->childname = $this->arr['category'];
-					$this->childdescription = $this->arr['description'];
-					$res = $this->db->db_query("select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='Y'");
-					$arr2 = $this->db->db_fetch_array($res);
-					$this->articlescount = $arr2['total'];
-					if( $this->articlescount == 0 )
+					if( $this->arrid[$i]['confirmed'] == 0 )
 						$this->submiturl = $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arr['id'];
-
-					$res = $this->db->db_query("select * from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'");
-					$this->waitingarticlescount = $this->db->db_num_rows($res);
-
-					$res = $this->db->db_query("select * from ".BAB_COMMENTS_TBL." where id_topic='".$this->arr['id']."' and confirmed='N'");
-					$this->waitingcommentscount = $this->db->db_num_rows($res);
+					$this->waitingarticlescount = 0;
+					$this->waitingcommentscount = 0;
 					$this->articlesurl = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id']."&new=".$this->waitingarticlescount."&newc=".$this->waitingcommentscount;
 					$this->childurl = $this->articlesurl;
-
 					}
 
 				$i++;
@@ -146,13 +183,14 @@ function listTopicCategory($cat)
 
 		function getnextparent()
 			{
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->parentscount)
 				{
 				if( $this->arrparents[$i] == 0 )
 					$this->parentname = bab_translate("Top");
 				else
-					$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
+					$this->parentname = $babBody->parentstopcat[$this->arrparents[$i]]['title'];
 				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
 				if( $i == $this->parentscount - 1 )
 					$this->burl = false;
