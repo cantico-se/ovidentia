@@ -323,7 +323,7 @@ switch($idx)
 			addComment($topics, $article, "");
 			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 			$body->addItemMenu("addComment", babTranslate("Add Comment"), $GLOBALS['babUrl']."index.php?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
-			$body->addItemMenu("Articles", babTranslate("Topic"), $GLOBALS['babUrl']."index.php?tg=articles&topics=".$topics."&newc=".$newc);
+			$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=articles&topics=".$topics."&newc=".$newc);
 			}
 		break;
 
@@ -338,7 +338,7 @@ switch($idx)
 				{
 				$body->addItemMenu("delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=comments&idx=delete&topics=".$topics."&article=".$article."&com=".$com."&newc=".$newc);
 				}
-			$body->addItemMenu("Articles", babTranslate("Topic"), $GLOBALS['babUrl']."index.php?tg=articles&topics=".$topics."&newc=".$newc);
+			$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS['babUrl']."index.php?tg=articles&topics=".$topics."&newc=".$newc);
 			}
 		break;
 
