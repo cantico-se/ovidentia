@@ -750,7 +750,7 @@ function listVacationRightPersonnel($pos, $idvr)
 					else
 						$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 	
-					if( $arr['quantity'] != '' )
+					if( isset($arr['quantity']) && $arr['quantity'] != '' )
 						$this->quantity = $arr['quantity'];
 					else
 					{
@@ -1122,6 +1122,8 @@ switch($idx)
 		break;
 
 	case "delvru":
+		if (!isset($userids))
+			$userids = array();
 		modifyVacationRightPersonnel($idvr, $userids, $nuserids);
 		/* no break; */
 	case "lvrp":
