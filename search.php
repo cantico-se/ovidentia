@@ -159,7 +159,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->artpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->artnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->artnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -174,7 +174,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->compage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->comnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->comnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -219,7 +219,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->forpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->fornext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->fornext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -259,7 +259,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->faqpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->faqnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->faqnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -314,7 +314,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->filpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->filnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->filnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -336,7 +336,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->notpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->notnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->notnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -383,7 +383,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->conpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->connext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->connext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat=".$pat."&what=".$this->what;
 					}
 				else
 					{
