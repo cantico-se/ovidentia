@@ -135,10 +135,14 @@ valign="middle">{ userstxt }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
+<td class="BabLoginMenuBackground" align="right" nowrap>{ useraccess }</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="checkbox" name="baccess" value="y">
-&nbsp;&nbsp;{ useraccess } </td>
+<select name="baccess">
+<option value="0" selected>{ vaccname0 }</option>
+<option value="1">{ vaccname1 }</option>
+<option value="2">{ vaccname2 }</option>
+</select>
+</td>
 </tr>
 <tr valign="middle"> 
 <td class="BabLoginMenuBackground" align="center">&nbsp; </td>
