@@ -1247,7 +1247,7 @@ function loadSections()
 						$sec = new babTopcatSection($close);
 						if( $sec->count > 0 )
 							{
-							if( $r['enabled'] == "Y" && $bshow)
+							if( $r['enabled'] == "Y" && ( $r['optional'] == 'N' || $bshow ))
 								$add = true;
 							}
 						break;
@@ -1255,7 +1255,7 @@ function loadSections()
 						$sec = new babForumsSection($close);
 						if( $sec->count > 0 )
 							{
-							if( $r['enabled'] == "Y"  && $bshow)
+							if( $r['enabled'] == "Y"  && ( $r['optional'] == 'N' || $bshow ))
 								$add = true;
 							}
 						break;
