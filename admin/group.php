@@ -181,15 +181,29 @@ function groupMembers($id)
 			$this->idgroup = $id;
 			$this->group = bab_getGroupName($id);
 			$this->db = $GLOBALS['babDB'];
-			//list($this->identity) = $this->db->db_fetch_row($this->db->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$id."'"));
 			$this->identity = 0;
-			$req = "select * from ".BAB_USERS_GROUPS_TBL." where id_group= '$id'";
+
+			$req = "select ut.*, ugt.isprimary from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where ugt.id_group= '".$id."'";
+			if( $babBody->nameorder[0] == 'F' )
+				{
+				$orderby = " order by ut.firstname asc";
+				}
+			else
+				{
+				$orderby = " order by ut.lastname asc";
+				}
+			$req .= $orderby;
+			
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( $babBody->currentAdmGroup == 0)
+				{
 				$this->bmodname = true;
+				}
 			else
+				{
 				$this->bmodname = false;
+				}
 
 			}
 
@@ -201,13 +215,13 @@ function groupMembers($id)
 				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				if( $this->arr['isprimary'] == "Y")
+					{
 					$this->primary = "Y";
+					}
 				else
+					{
 					$this->primary = "";
-				$db = $GLOBALS['babDB'];
-				$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_object']."'";
-				$result = $db->db_query($req);
-				$this->arr = $db->db_fetch_array($result);
+					}
 				$this->url = $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$this->arr['id'];
 				$this->urlname = bab_composeUserName($this->arr['firstname'], $this->arr['lastname']);
 				$i++;
