@@ -4151,4 +4151,17 @@ $db = $GLOBALS['babDB'];
 return $ret;
 }
 
+function upgrade541to542()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$res = $db->db_query("ALTER TABLE `".BAB_FORUMS_TBL."` CHANGE `description` `description` TEXT NOT NULL");
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FORUMS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+return $ret;
+}
 ?>
