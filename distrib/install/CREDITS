@@ -6,11 +6,15 @@ Copyright (c) 2003 by CANTICO http://www.cantico.fr
  
 * Contributor
 Koblix (Belgium) http://www.koblix.com
+OpenWide http://www.openwide.fr/
  
 * PHP EMAIL CLASS
 Class phpmailer http://phpmailer.sourceforge.net/
  
 * HTMLAREA
 WYSIWYG editor http://www.interactivetools.com/products/htmlarea/
+
+* ZIPLIB
+extract and handle ZIP archives http://www.maxg.info/projets/projet.ziplib.en.maxg
 
 Thanks to all contributors that are not listed .
