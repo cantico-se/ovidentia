@@ -1397,4 +1397,5 @@
 <string id="File size must not exceed">La taille du fichier ne doit pas excéder</string>
 <string id="The number of days exceed the total allowed">Le nombre de jours excèdent le total permis</string>
 <string id="Do you really want to submit">Voulez-vous vraiment soumettre</string>
+<string id="Login only">identifiant seulement</string>
 </fr>
