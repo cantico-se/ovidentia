@@ -5,8 +5,26 @@
 { babMeta }
 { babCss }
 <style>
+#toolbar {
+	border:1px solid #000000;
+	padding:5px;
+	margin:5px;
+	display: block;
+	width:80px;
+	text-align:center;
+	}
+
+#toolbar a {
+	font : 12pt Arial,Verdana, sans-serif ;
+	font-weight:bold;
+	margin:3px;
+	text-decoration:none;
+	}
+
 @media print {
-.printhide { display:none }
+	.printhide, #toolbar { 
+		display:none;
+		}
 }
 </style>
 <script type="text/javascript">
@@ -20,17 +38,38 @@ function hide_div(id)
 	if (div.style.display == 'none') div.style.display = '';
 	else div.style.display = 'none';
 	}
+
+function textsize(param)
+	{
+	var body = document.getElementsByTagName('body');
+	var cssfs = body[0].style['fontSize'];
+	var fs = parseFloat(cssfs);
+	var newfs = fs+param;
+	if (isNaN(fs))
+		body[0].style['fontSize'] = '0.9em';
+	else
+		body[0].style['fontSize'] = newfs+'em';
+	}
 //-->
 </script>
 </HEAD>
 <BODY style="background:#FFFFFF;">
 <div style="width:100%;border-bottom:#000000 1px solid;padding:0.5em;">{ url } - { babUrl }<!--#if content --> - <span class="printhide"><a href="javascript:hide_div('print_head')">{ print_head }</a> - <a href="javascript:hide_div('print_content')">{ print_body }</a></span><!--#endif content --></div>
 <div>
-<div style="width:100%;font-size:175%;font-weight:bold;text-align:center;padding:1em;">{ title }</div>
-<br />
-<div id="print_head" style="padding:1em;">{ head }</div>
-<div id="print_content" style="padding:1em;">{ content }</div>
-<br />
+	<h3 align="center">{ title }</h3>
+	<div id="print_head" style="padding:1em;">{ head }</div>
+	<div id="print_content" style="padding:1em;">{ content }</div>
+
+	<span class="babLoginMenuBackground" id="toolbar">
+		<a href="javascript:window.print()"><img src="{ babInstallPath }skins/ovidentia/images/Puces/print.gif" border="0" /></a>
+		<a href="javascript:textsize(0.06)">A+</a>
+		<a href="javascript:textsize(-0.06)">A-</a>
+	</span>
 </div>
+<script type="text/javascript">
+<!--
+textsize(0);
+//-->
+</script>
 </BODY>
 </HTML>
