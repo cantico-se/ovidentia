@@ -252,7 +252,10 @@ function enableOptionalSections($sections)
 if( isset($update))
 	{
 	if( $update == "enable")
+		{
+		if( !isset($sections)) { $sections = array(); }
 		enableOptionalSections($sections);
+		}
 	}
 
 if( !isset($idx))
@@ -264,7 +267,9 @@ switch($idx)
 	default:
 		$babBody->title = bab_translate("Optional sections list");
 		if( sectionsList() == 0 )
+			{
 			$babBody->title = bab_translate("There is no section");
+			}
 
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 		$babBody->addItemMenu("list", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sectopt&idx=list");
