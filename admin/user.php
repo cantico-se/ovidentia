@@ -38,9 +38,11 @@ function modifyUser($id, $pos, $grp)
 		var $count;
 		var $res;
 		var $id;
+		var $showprimary;
 
 		function temp($id, $pos, $grp)
 			{
+			$this->shwoprimary = false;
 			$this->changepassword = bab_translate("Can user change password ?");
 			$this->isconfirmed = bab_translate("Account confirmed ?");
 			$this->isdisabled = bab_translate("Account disabled ?");
