@@ -2,24 +2,28 @@
 <!--#begin homepage0 -->
 
 <!--#in getnext -->
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td colspan="2" class="BabTopicsTitleBackground">{ title }</td>
-</tr>
-<tr>
-<td colspan="2" class="BabTopicsBackground">{ content }</td>
-</tr>
-<tr>
-<td class="BabTopicsAuthorBackground" nowrap>{ author }</td>
-<td class="BabTopicsAuthorBackground" nowrap align="right">
-<a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>&nbsp;&nbsp;&nbsp;
-<!--#if blen "> 0" -->
-<a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a>
-<!--#endif blen -->&nbsp;
-</td>
-</tr>
+<table border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
+  <tr> 
+    <td colspan="2" class="BabTopicsTitleBackground">{ title }</td>
+  </tr>
+  <tr valign="top"> 
+    <td colspan="2" class="BabTopicsBackground">{ content }</td>
+  </tr>
+  <tr valign="middle" align="right"> 
+    <td colspan="2" class="BabTopicsButtonBackground"> <a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
+      printable }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+  </tr>
+  <tr> 
+    <td class="BabTopicsAuthorBackground" nowrap valign="middle">{ author }</td>
+    <td class="BabTopicsAuthorBackground" nowrap align="right" valign="middle"> 
+
+      <!--#if blen "> 0" --><a class="BabTopicsFooterMoreLink" href="{ moreurl }"> 
+      { morename }</a> 
+      <!--#endif blen -->
+      </td>
+  </tr>
 </table>
-<br>
+<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="4" border="0">
 <!--#endin getnext -->
 
 <!--#end homepage0 -->
@@ -29,13 +33,13 @@
 <!--#begin readmore -->
 <br>
 <!--#in getnext -->
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<table border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabTopicsTitleBackground" valign="middle">{ title }</td>
 </tr>
 <tr><td class="BabTopicsBackground" >{ content }</td></tr>
 <tr><td colspan="2" class="" align="right" nowrap></td></tr>
 </table>
-<br>
+<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="4" border="0">
 <!--#endin getnext -->
 <!--#end readmore -->
