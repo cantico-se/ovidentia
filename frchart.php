@@ -134,18 +134,26 @@ function displayChart($ocid, $oeid, $update, $template='')
 						$this->currentoe = $this->oeid;
 						}
 					$this->first = 1;
+					if (count($this->arr) == 1)
+						{
+						$this->leaf = 1;
+						}
+					else
+						{
+						$this->leaf = 0;
+						}
 					}
 				else
 					{
 					$this->first = 0;
-					}
-				if( $this->babTree->getLastChild($this->babTree->getParentId($row['id_node'])) == $row['id_node'] )
-					{
-					$this->leaf = 1;
-					}
-				else
-					{
-					$this->leaf = 0;
+					if( $this->babTree->getLastChild($this->babTree->getParentId($row['id_node'])) == $row['id_node'] )
+						{
+						$this->leaf = 1;
+						}
+					else
+						{
+						$this->leaf = 0;
+						}
 					}
 
 				if( $this->currentoe == $this->oeid )
