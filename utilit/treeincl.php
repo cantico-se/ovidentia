@@ -476,7 +476,7 @@ class bab_dbtree
 					return true;
 
 				$previnfo = $this->getNodeInfo($previousId);
-				if( !$previnfo || $previousinfo['id_parent'] == 0)
+				if( !$previnfo || $previnfo['id_parent'] == 0)
 					return false;
 
 				$parentId = $previnfo['id_parent'];
