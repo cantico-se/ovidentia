@@ -395,7 +395,8 @@ function bab_replace( $txt )
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$tab = preg_split("/(\"[\s],)|(,[\s]\")|(\"[\s],[\s]\")+/", $m[1][$k]);
+			unset($idtopic);
+			$tab = preg_split("/(\"[\s]*,)|(,[\s]*\")|(\"[\s]*,[\s]*\")+/", $m[1][$k]);
 			if( sizeof($tab) > 1)
 				{
 				$topic = trim($tab[0]);
