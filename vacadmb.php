@@ -1002,7 +1002,6 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 
 	if( $ntotal <= 0 || $ntotal != $total)
 		{
-		echo $ntotal ."==".$total;
 		$babBody->msgerror = bab_translate("Incorrect total number of days") ." !";
 		return false;
 		}

@@ -244,7 +244,6 @@ function listMails($accid, $criteria, $reverse, $start)
 					$reg = "/([^\/]*)\/(.*)/s";
 					if( preg_match($reg, $m[1], $m))
 						{
-                        //echo "m1 = ". $m[1]."m2 = ". $m[2]."<br>";
 						if( !empty($m[2]) && strtolower($m[1]) != "text" && strtolower($m[2]) != "alternative")
 							{
 							$this->attachment = 1;

@@ -1043,7 +1043,6 @@ function processImportDbFile( $pfile, $id, $separ )
 					if( $idgroup > 0 )
 						{
 						$query = "select * from ".BAB_USERS_TBL." where nickname='".$arr[$GLOBALS['nickname']]."'";
-						echo $query."<br>";
 						$res2 = $db->db_query($query);
 						if( $db->db_num_rows($res2) > 0 && $GLOBALS['duphand'] == 2 )
 							{
