@@ -935,7 +935,7 @@ function renameDirectory($dirname, $id, $gr, $path)
 
 	if( $pos = strrpos($path, "/"))
 		{
-		$oldname = substr($path, -($strlen($path) - $pos - 1));
+		$oldname = substr($path, -(strlen($path) - $pos - 1));
 		$uppath = substr($path, 0, $pos)."/";
 		}
 	else
