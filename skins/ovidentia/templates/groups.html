@@ -51,6 +51,19 @@ else
 <input type="hidden" name="managerid" value="{ managerid }">
 </td>
 </tr>
+<!--#if bdggroup -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ grpdgtxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="grpdg">
+<option value="0"></option>
+<!--#in getnext -->
+<option value="{ grpdgid }" { selected }>{ grpdgname }</option>
+<!--#endin getnext -->
+</select>
+</td>
+</tr>
+<!--#endif bdggroup -->
 <tr> 
 <td class="BabLoginMenuBackground">&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
@@ -164,44 +177,83 @@ class="BabAdminMembersList" href="{ url }">{ urlname }</a> </td>
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ fullname } </td>
+<!--#if bdgmail -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ mail } </td>
+<!--#endif bdgmail -->
+<!--#if bdgcalendar -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ calendar } </td>
+<!--#endif bdgcalendar -->
+<!--#if bdgnotes -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notes } </td>
+<!--#endif bdgnotes -->
+<!--#if bdgcontacts -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ contacts } </td>
+<!--#endif bdgcontacts -->
+<!--#if bdgdirectories -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ directory } </td>
+<!--#endif bdgdirectories -->
+<!--#if bdgpds -->
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ persdiskspace } </td>
+<!--#endif bdgpds -->
 </tr>
 <!--#in getnext -->
 <tr> 
 <td class="BabSiteAdminFontBackground"valign="middle"> 
 { urlname } 
 </td>
+<!--#if bdgmail -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="mailgrpids[]" { mailcheck } value="{ grpid }">
 </td>
+<!--#endif bdgmail -->
+<!--#if bdgcalendar -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="calgrpids[]" { calcheck } value="{ grpid }">
 </td>
+<!--#endif bdgcalendar -->
+<!--#if bdgnotes -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="notgrpids[]" { notescheck } value="{ grpid }">
 </td>
+<!--#endif bdgnotes -->
+<!--#if bdgcontacts -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="congrpids[]" { concheck } value="{ grpid }">
 </td>
+<!--#endif bdgcontacts -->
+<!--#if bdgdirectories -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="dirgrpids[]" { dircheck } value="{ grpid }">
 </td>
+<!--#endif bdgdirectories -->
+<!--#if bdgpds -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="pdsgrpids[]" { pdscheck } value="{ grpid }">
 </td>
+<!--#endif bdgpds -->
 </tr>        
 <!--#endin getnext -->
 <tr> 
 <td valign="middle">&nbsp;</td>
+<!--#if bdgmail -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('mailgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('mailgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<!--#endif bdgmail -->
+<!--#if bdgcalendar -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('calgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('calgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<!--#endif bdgcalendar -->
+<!--#if bdgnotes -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('notgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td width="1%" align="center"><a href="javascript:onCheckAll('congrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('congrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td><td width="1%" align="center"><a href="javascript:onCheckAll('dirgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('dirgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td><td width="1%" align="center"><a href="javascript:onCheckAll('pdsgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('pdsgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td></tr>
+<!--#endif bdgnotes -->
+<!--#if bdgcontacts -->
+<td width="1%" align="center"><a href="javascript:onCheckAll('congrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('congrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<!--#endif bdgcontacts -->
+<!--#if bdgdirectories -->
+<td width="1%" align="center"><a href="javascript:onCheckAll('dirgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('dirgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<!--#endif bdgdirectories -->
+<!--#if bdgpds -->
+<td width="1%" align="center"><a href="javascript:onCheckAll('pdsgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('pdsgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<!--#endif bdgpds -->
+</tr>
 </table>
 </td>
 </tr>

@@ -381,12 +381,12 @@ class bab_Articles extends bab_handler
 
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $ctx->get_value('topicid')))
 		{
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$ctx->get_value('topicid')."' order by date desc";
+			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y' and id_topic='".$ctx->get_value('topicid')."' order by date desc";
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
 			if( $rows !== "" && $offset !== "" )
 				{
-				$req .= " limit ".$rows.", ".$offset;
+				$req .= " limit ".$offset.", ".$rows;
 				}
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -996,8 +996,16 @@ function format_output($val, $matches)
 					$val = strip_tags($val);
 				break;
 			case 'htmlentities':
-				if( $matches[3][$j] == '1')
-					$val = htmlentities($val);
+				switch($matches[3][$j])
+					{
+					case '1':
+						$val = htmlentities($val); break;
+					case '2':
+						$trans = get_html_translation_table(HTML_ENTITIES);
+						$trans = array_flip($trans);
+						$val = strtr($val, $trans);
+						break;
+					}
 				break;
 			case 'stripslashes':
 				if( $matches[3][$j] == '1')

@@ -22,7 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/grpincl.php";
 
 
 function groupCreate()
@@ -42,9 +41,18 @@ function groupCreate()
 		var $noselected;
 		var $yesselected;
 		var $tgval;
+		var $grpdgtxt;
+		var $grpdgid;
+		var $grpdgname;
+		var $count;
+		var $res;
+		var $selected;
+		var $bdggroup;
+
 
 		function temp()
 			{
+			global $babBody, $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->managertext = bab_translate("Manager");
@@ -53,6 +61,7 @@ function groupCreate()
 			$this->yes = bab_translate("Yes");
 			$this->add = bab_translate("Add Group");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
+			$this->grpdgtxt = bab_translate("Delegation group");
 			$this->noselected = "selected";
 			$this->yesselected = "";
 			$this->grpid = "";
@@ -62,7 +71,33 @@ function groupCreate()
 			$this->managerid = "";
 			$this->bdel = false;
 			$this->tgval = "groups";
+			$this->selected = "";
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+				{
+				$this->res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
+				$this->count = $babDB->db_num_rows($this->res);
+				$this->bdggroup = true;
+				}
+			else
+				$this->bdggroup = false;
 			}
+
+		function getnext()
+			{
+			global $babDB;
+			static $i = 0;	
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->grpdgname = $arr['name'];
+				$this->grpdgid = $arr['id'];
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
+
 		}
 
 	$temp = new temp();
@@ -88,12 +123,13 @@ function groupList()
 
 		function temp()
 			{
+			global $babBody;
 			$this->name = bab_translate("Name");
 			$this->mail = bab_translate("Mail");
 			$this->description = bab_translate("Description");
 			$this->manager = bab_translate("Manager");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -150,8 +186,16 @@ function groupsOptions()
 		var $burl;
 		var $persdiskspace;
 
+		var $bdgmail;
+		var $bdgcalendar;
+		var $bdgnotes;
+		var $bdgcontacts;
+		var $bdgdirectories;
+		var $bdgpds;
+
 		function temp()
 			{
+			global $babBody;
 			$this->fullname = bab_translate("Groups");
 			$this->mail = bab_translate("Mail");
 			$this->calendar = bab_translate("Calendar");
@@ -162,7 +206,42 @@ function groupsOptions()
 			$this->modify = bab_translate("Update");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
-			$req = "select * from ".BAB_GROUPS_TBL." where id!='2' order by id asc";
+
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+				{
+				$this->bdgmail = true;
+				$this->bdgcalendar = true;
+				$this->bdgnotes = true;
+				$this->bdgcontacts = true;
+				$this->bdgdirectories = true;
+				$this->bdgpds = true;
+				}
+			else
+				{
+				if( $babBody->currentDGGroup['mails'] == 'Y' )
+					$this->bdgmail = true;
+				else
+					$this->bdgmail = false;
+
+				if( $babBody->currentDGGroup['calendars'] == 'Y' )
+					$this->bdgcalendar = true;
+				else
+					$this->bdgcalendar = false;
+
+				$this->bdgnotes = true;
+				$this->bdgcontacts = true;
+
+				if( $babBody->currentDGGroup['directories'] == 'Y' )
+					$this->bdgdirectories = true;
+				else
+					$this->bdgdirectories = false;
+
+				if( $babBody->currentDGGroup['filemanager'] == 'Y' )
+					$this->bdgpds = true;
+				else
+					$this->bdgpds = false;
+				}
+			$req = "select * from ".BAB_GROUPS_TBL." where id!='2' and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
 			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -225,7 +304,7 @@ function groupsOptions()
 	$babBody->babecho(	bab_printTemplate($temp, "groups.html", "groupsoptions"));
 	}
 
-function addGroup($name, $description, $managerid, $bemail)
+function addGroup($name, $description, $managerid, $bemail, $grpdg)
 	{
 	global $babBody;
 	if( empty($name))
@@ -241,6 +320,7 @@ function addGroup($name, $description, $managerid, $bemail)
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("This group already exists");
+		return false;
 		}
 	else
 		{
@@ -251,22 +331,29 @@ function addGroup($name, $description, $managerid, $bemail)
 			}
 		if( empty($managerid))
 			$managerid = 0;
-		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "')";
+		if( empty($grpdg))
+			$grpdg = 0;
+		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, id_dgowner) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "', '".$grpdg. "', '".$babBody->currentAdmGroup."')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 
 		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'Y', '2')";
 		bab_callAddonsFunction('onGroupCreate', $id);
 		$db->db_query($req);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$id);
+		return true;
 		}
 	}
 
 function saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids)
 {
 
+	global $babBody;
+
 	$db = $GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N'"); 
+	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N' where  id_dgowner='".$babBody->currentAdmGroup."'"); 
+
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{
 		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id='".$mailgrpids[$i]."'"); 
@@ -299,7 +386,7 @@ function saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pds
 		$res = $db->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$dirgrpids[$i]."'");
 		if( !$res || $db->db_num_rows($res) == 0 )
 		{
-			$db->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group) values ('".bab_getGroupName($dirgrpids[$i])."','','".$dirgrpids[$i]."')");
+			$db->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".bab_getGroupName($dirgrpids[$i])."','','".$dirgrpids[$i]."', '".$babBody->currentAdmGroup."')");
 		}
 
 
@@ -310,39 +397,61 @@ function saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pds
 if( !isset($idx))
 	$idx = "List";
 
-if( isset($add))
-	addGroup($name, $description, $managerid, $bemail);
+if( isset($add) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
+	addGroup($name, $description, $managerid, $bemail, $grpdg);
 
-if( isset($update) && $update == "options")
+if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
 	saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids);
 
 switch($idx)
 	{
 	case "brow":
+		include_once $babInstallPath."utilit/grpincl.php";
 		browseGroups($cb);
 		exit;
 		break;
 	case "options":
-		groupsOptions();
-		$babBody->title = bab_translate("Options");
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
+		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		{
+			groupsOptions();
+			$babBody->title = bab_translate("Options");
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+		}
 		break;
 	case "Create":
-		groupCreate();
-		$babBody->title = bab_translate("Create a group");
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
+		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		{
+			groupCreate();
+			$babBody->title = bab_translate("Create a group");
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+		}
 		break;
 	case "List":
 	default:
-		groupList();
-		$babBody->title = bab_translate("Groups list");
-		$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
+		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		{
+			groupList();
+			$babBody->title = bab_translate("Groups list");
+			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
+			$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=groups&idx=Create");
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+		}
 		break;
 	}
 

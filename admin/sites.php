@@ -479,7 +479,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 
 
 /* main */
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
+if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

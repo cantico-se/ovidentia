@@ -195,28 +195,18 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template)
 
 function confirmDeleteTopcat($id)
 	{
-	$db = $GLOBALS['babDB'];
-
-	// delete from BAB_SECTIONS_ORDER_TBL
-	$req = "delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='$id' and type='3'";
-	$res = $db->db_query($req);	
-
-	// delete from BAB_SECTIONS_STATES_TBL
-	$req = "delete from ".BAB_SECTIONS_STATES_TBL." where id_section='$id' and type='3'";
-	$res = $db->db_query($req);	
-
-	// delete all topics/articles/comments
-	$res = $db->db_query("select * from ".BAB_TOPICS_TBL." where id_cat='".$id."'");
-	while( $arr = $db->db_fetch_array($res))
-		bab_confirmDeleteTopic($arr['id']);
-
-	// delete topic category
-	$req = "delete from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteTopicCategory($id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( !isset($idx))
 	$idx = "Modify";
 

@@ -59,9 +59,11 @@ function listUsers($pos, $grp)
 		var $usert;
 
 		var $nickname;
+		var $bmodname;
 
 		function temp($pos, $grp)
 			{
+			global $babBody;
 			$this->email = bab_translate("Email");
 			$this->allname = bab_translate("All");
 			$this->update = bab_translate("Update");
@@ -74,7 +76,10 @@ function listUsers($pos, $grp)
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
-				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
+				if( $babBody->currentAdmGroup == 0)
+					$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
+				else
+					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.lastname like '".$this->pos."%' order by u.lastname, u.firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
@@ -82,7 +87,10 @@ function listUsers($pos, $grp)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->pos."%' order by firstname, lastname asc";
+				if( $babBody->currentAdmGroup == 0)
+					$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->pos."%' order by firstname, lastname asc";
+				else
+					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.firstname like '".$this->pos."%' order by u.firstname, u.lastname asc";
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
@@ -95,6 +103,10 @@ function listUsers($pos, $grp)
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp;
 			$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp;
+			if( $babBody->currentAdmGroup == 0)
+				$this->bmodname = true;
+			else
+				$this->bmodname = false;
 
 			}
 
@@ -143,7 +155,7 @@ function listUsers($pos, $grp)
 
 		function getnextselect()
 			{
-			global $BAB_SESS_USERID;
+			global $babBody, $BAB_SESS_USERID;
 			static $k = 0;
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
@@ -156,9 +168,19 @@ function listUsers($pos, $grp)
 				else 
 					{
 					if( $this->ord == "-" )
-						$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
+						{
+						if( $babBody->currentAdmGroup == 0)
+							$req = "select id from ".BAB_USERS_TBL." where lastname like '".$this->selectname."%'";
+						else
+							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.lastname like '".$this->selectname."%'";
+						}
 					else
-						$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
+						{
+						if( $babBody->currentAdmGroup == 0)
+							$req = "select id from ".BAB_USERS_TBL." where firstname like '".$this->selectname."%'";
+						else
+							$req = "select u.id from ".BAB_USERS_TBL." u,  ".BAB_USERS_GROUPS_TBL." ug where ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.firstname like '".$this->selectname."%'";
+						}
 					$res = $this->db->db_query($req);
 					if( $this->db->db_num_rows($res) > 0 )
 						$this->selected = 0;
@@ -213,7 +235,7 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 			$this->nickname = bab_translate("Nickname");
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
-			$this->repassword = bab_translate("Retype Paasword");
+			$this->repassword = bab_translate("Retype Password");
 			$this->notifyuser = bab_translate("Notify user");
 			$this->sendpassword = bab_translate("Send password with email");
 			$this->yes = bab_translate("Yes");
@@ -263,7 +285,7 @@ if( !isset($grp) || empty($grp))
 if( !isset($idx))
 	$idx = "List";
 
-if( isset($adduser))
+if( isset($adduser) && $babBody->isSuperAdmin )
 {
 	if( !registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, true))
 		$idx = "Create";
@@ -292,16 +314,30 @@ if( $idx == "chg")
 	$idx = "List";
 }
 
-if( isset($Updateg))
+if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 ))
 {
 	updateGroup($grp, $users, $userst);
 	$idx = "List";
 }
 
+if( $idx == "Create" && !$babBody->isSuperAdmin )
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
+
 switch($idx)
 	{	
 	case "brow":
-		browseUsers($pos, $cb);
+		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+			{
+			browseUsers($pos, $cb);
+			}
+		else
+			{
+			echo bab_translate("Access denied");
+			}
 		exit;
 		break;
 	case "Create":
@@ -311,10 +347,18 @@ switch($idx)
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
 		break;
 	case "List":
-		$babBody->title = bab_translate("Users list");
-		$cnt = listUsers($pos, $grp);
-		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+			{
+			$babBody->title = bab_translate("Users list");
+			$cnt = listUsers($pos, $grp);
+			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
+			if( $babBody->isSuperAdmin)
+				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("Access denied");
+			}
 		break;
 	default:
 		break;

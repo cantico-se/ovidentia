@@ -109,6 +109,7 @@ function topcatsList()
 
 		function temp()
 			{
+			global $babBody;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->disabled = bab_translate("Disabled");
@@ -117,7 +118,7 @@ function topcatsList()
 			$this->update = bab_translate("Disable");
 			$this->topics = bab_translate("Number of topics");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -147,6 +148,7 @@ function topcatsList()
 
 	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp, "topcats.html", "topcatslist"));
+	return $temp->count;
 	}
 
 
@@ -175,7 +177,7 @@ function addTopCat($name, $description, $benabled, $template)
 		}
 	else
 		{
-		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "', '" . $template. "')";
+		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "', '" . $template. "', '" . $babBody->currentAdmGroup. "')";
 		$db->db_query($req);
 
 		$id = $db->db_insert_id();
@@ -205,6 +207,12 @@ function disableTopcats($topcats)
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( !isset($idx))
 	$idx = "List";
 
@@ -227,10 +235,17 @@ switch($idx)
 		break;
 	case "List":
 	default:
-		topcatsList();
+		if( topcatsList() >  0)
+		{
 		$babBody->title = bab_translate("topics categories list");
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create");
+		}
+		else
+		{
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=Create");
+			exit;
+		}
 		break;
 	}
 

@@ -39,6 +39,8 @@ define("BAB_DBDIRUPDATE_GROUPS_TBL", "bab_dbdirupdate_groups");
 define("BAB_DBDIR_FIELDS_TBL", "bab_dbdir_fields");
 define("BAB_DBDIR_FIELDSEXTRA_TBL", "bab_dbdir_fieldsextra");
 define("BAB_DBDIR_ENTRIES_TBL", "bab_dbdir_entries");
+define("BAB_DG_GROUPS_TBL", "bab_dg_groups");
+define("BAB_DG_USERS_GROUPS_TBL", "bab_dg_users_groups");
 define("BAB_FAQCAT_TBL", "bab_faqcat");
 define("BAB_FAQCAT_GROUPS_TBL", "bab_faqcat_groups");
 define("BAB_FAQQR_TBL", "bab_faqqr");

@@ -53,6 +53,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 
 		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif)
 			{
+			global $babBody;
 			$this->topcat = bab_translate("Topic category");
 			$this->title = bab_translate("Topic");
 			$this->desctitle = bab_translate("Description");
@@ -123,10 +124,10 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$this->idcat = $cat;
 			$this->db = $GLOBALS['babDB'];
 
-			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL."";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->sares = $this->db->db_query($req);
 			if( !$this->sares )
 				$this->sacount = 0;
@@ -206,7 +207,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
-function listCategories($cat, $adminid)
+function listCategories($cat)
 	{
 	global $babBody;
 	class temp
@@ -232,7 +233,7 @@ function listCategories($cat, $adminid)
 		var $urlcomments;
 		var $urlsubmit;
 
-		function temp($cat, $adminid)
+		function temp($cat)
 			{
 			global $babBody, $BAB_SESS_USERID;
 			$this->groups = bab_translate("View");
@@ -240,14 +241,9 @@ function listCategories($cat, $adminid)
 			$this->submit = bab_translate("Submit");
 			$this->articles = bab_translate("Article") ."(s)";
 			$this->db = $GLOBALS['babDB'];
-			if( $adminid > 0)
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
-			else
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' and id_approver='".$BAB_SESS_USERID."' order by ordering asc";
-
+			$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->adminid = $adminid;
 			$this->idcat = $cat;
 			}
 
@@ -265,7 +261,7 @@ function listCategories($cat, $adminid)
 				$this->urlgroups = $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->urlcomments = $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->urlsubmit = $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$this->arr['id']."&cat=".$this->idcat;
-				$this->arr['description'] = $this->arr['description'];//nl2br($this->arr['description']);
+				$this->arr['description'] = $this->arr['description'];;
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->namecategory = $this->arr['category'];
 				$req = "select * from ".BAB_USERS_TBL." where id='".$this->arr['id_approver']."'";
@@ -289,7 +285,7 @@ function listCategories($cat, $adminid)
 	return $temp->count;
 	}
 
-function orderCategories($cat, $adminid, $catname)
+function orderCategories($cat, $catname)
 	{
 	global $babBody;
 	class temp
@@ -298,7 +294,7 @@ function orderCategories($cat, $adminid, $catname)
 		var $sorta;
 		var $sortd;
 
-		function temp($cat, $adminid, $catname)
+		function temp($cat, $catname)
 			{
 			global $babBody, $BAB_SESS_USERID;
 			$this->catname = "---- ".$catname." ----";
@@ -308,14 +304,10 @@ function orderCategories($cat, $adminid, $catname)
 			$this->sortd = bab_translate("Sort descending");
 			$this->create = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
-			if( $adminid > 0)
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
-			else
-				$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' and id_approver='".$BAB_SESS_USERID."' order by ordering asc";
+			$req = "select * from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->adminid = $adminid;
 			$this->idcat = $cat;
 			}
 
@@ -334,7 +326,7 @@ function orderCategories($cat, $adminid, $catname)
 				return false;
 			}
 		}
-	$temp = new temp($cat, $adminid, $catname);
+	$temp = new temp($cat, $catname);
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categoryorder"));
 	return $temp->count;
@@ -389,19 +381,18 @@ function saveOrderTopics($cat, $listtopics)
 		}
 	}
 /* main */
-$adminid = bab_isUserAdministrator();
-if( $adminid < 1 )
-	{
-	$babBody->title = bab_translate("Access denied");
-	exit;
-	}
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
 
 if(!isset($idx))
 	{
 	$idx = "list";
 	}
 
-if( isset($add) && $adminid > 0)
+if( isset($add) )
 	{
 	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif, $lang))
 		$idx = "addtopic";
@@ -411,7 +402,7 @@ if( isset($add) && $adminid > 0)
 		}
 	}
 
-if( isset($update) && $update == "order" && $adminid > 0)
+if( isset($update) && $update == "order" )
 	{
 	saveOrderTopics($cat, $listtopics);
 	}
@@ -420,20 +411,17 @@ switch($idx)
 	{
 	case "addtopic":
 		$babBody->title = bab_translate("Create new topic");
-		if( $adminid > 0)
-		{
 		addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
-		}
 		break;
 
 	case "ord":
 		$catname = bab_getTopicCategoryTitle($cat);
 		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
-		if( orderCategories($cat, $adminid, $catname) > 0 )
+		if( orderCategories($cat, $catname) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 			$babBody->addItemMenu("ord", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
@@ -441,8 +429,7 @@ switch($idx)
 		else
 			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
 
-		if( $adminid > 0)
-			$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
+		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		break;
 
 	default:
@@ -450,16 +437,19 @@ switch($idx)
 		$catname = bab_getTopicCategoryTitle($cat);
 		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
-		if( listCategories($cat, $adminid) > 0 )
+		if( listCategories($cat) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 			$babBody->addItemMenu("ord", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
 			}
 		else
-			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
+			{
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
+			exit;
+			//$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
+			}
 
-		if( $adminid > 0)
-			$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
+		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

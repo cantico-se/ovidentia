@@ -116,7 +116,7 @@ function domainsList($userid, $grpid, $bgrp)
 
 		function temp($grpid, $userid, $bgrp)
 			{
-			global $BAB_SESS_USERID;
+			global $babBody, $BAB_SESS_USERID;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->group = bab_translate("Access");
@@ -130,7 +130,10 @@ function domainsList($userid, $grpid, $bgrp)
 			$this->countusr = 0;
 			if( $bgrp == "y" && $userid == 0)
 				{
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
+				if( $babBody->currentAdmGroup == 0 )
+					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1' and id_dgowner='".$babBody->currentAdmGroup."'";
+				else
+					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
 				$this->resadm = $this->db->db_query($req);
 				$this->countadm = $this->db->db_num_rows($this->resadm);
 				}
@@ -162,19 +165,22 @@ function domainsList($userid, $grpid, $bgrp)
 			
 		function getnextadm()
 			{
-			global $BAB_SESS_USERID;
+			global $babBody, $BAB_SESS_USERID;
 			static $i = 0;
 			if( $i < $this->countadm)
 				{
 				$this->arr = $this->db->db_fetch_array($this->resadm);
 				if( $this->arr['owner'] == 1 && $this->arr['bgroup'] == "Y")
-					$this->groupname = bab_translate("Registered users");
-				else
-					$this->groupname = "";
+					{
+					if( $this->arr['id_dgowner'] == 0 )
+						$this->groupname = bab_translate("Registered users");
+					else
+						$this->groupname = bab_getGroupName($this->arr['id_dgowner']);
+					}
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)
 					{
-					if( $this->idgrp[$k] == $this->arr['owner'])
+					if( $this->idgrp[$k] == $this->arr['owner'] && $this->arr['id_dgowner'] == $babBody->currentAdmGroup)
 						{
 						$this->burl = 1;
 						$this->url = $GLOBALS['babUrlScript']."?tg=maildom&idx=modify&item=".$this->arr['id']."&userid=".$this->userid."&bgrp=y";
@@ -272,13 +278,7 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 		$babBody->msgerror = bab_translate("You must provide an incoming mail server"). " !!";
 		return;
 		}
-/*
-	if( empty($outmailserver))
-		{
-		$babBody->msgerror = bab_translate("You must provide an outgoing mail server"). " !!";
-		return;
-		}
-*/
+
 	if( empty($inportserver) || !is_numeric($inportserver))
 		$inportserver = 110;
 
@@ -311,9 +311,15 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 		}
 	$db = $GLOBALS['babDB'];
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$description = addslashes($description);
+		$name = addslashes($name);
+		}
+
 	for( $i = 0; $i < $count; $i++)
 		{		
-		$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where name='$name' and owner='".$groups[$i]."' and bgroup='".$bgroup."'";	
+		$query = "select * from ".BAB_MAIL_DOMAINS_TBL." where name='".$name."' and owner='".$groups[$i]."' and bgroup='".$bgroup."'";	
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -321,8 +327,11 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 			}
 		else
 			{
-			$query = "insert into ".BAB_MAIL_DOMAINS_TBL." (name, description, access, inserver, inport, outserver, outport, bgroup, owner) VALUES ";
-			$query .= "('" .$name. "', '" . $description. "', '" . $accessmethod. "', '" . $inmailserver. "', '" . $inportserver. "', '" . $outmailserver. "', '" . $outportserver. "', '". $bgroup. "', '" . $groups[$i]. "')";
+			$iddgowner = 0;
+			if( $groups[$i] == 1 )
+				$iddgowner = $babBody->currentAdmGroup;
+			$query = "insert into ".BAB_MAIL_DOMAINS_TBL." (name, description, access, inserver, inport, outserver, outport, bgroup, owner, id_dgowner) VALUES ";
+			$query .= "('" .$name. "', '" . $description. "', '" . $accessmethod. "', '" . $inmailserver. "', '" . $inportserver. "', '" . $outmailserver. "', '" . $outportserver. "', '". $bgroup. "', '" . $groups[$i]. "', '" . $iddgowner. "')";
 			$db->db_query($query);
 			}
 		}
@@ -341,8 +350,9 @@ if( $bgrp == "y")
 {
 	if( $userid == 0 )
 		{
-		if( !bab_isUserAdministrator())
+		if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['mails'] != 'Y' )
 			{
+			$babBody->msgerror = bab_translate("Access denied");
 			return;
 			}
 		array_push($grpid, 1);
@@ -358,10 +368,16 @@ if( $bgrp == "y")
 				array_push($grpid, $arr['id']);
 			}
 		}
+
+	if( count($grpid) == 0 )
+		{
+		$babBody->msgerror = bab_translate("Access denied");
+		return;
+		}
 }
 
 if( isset($adddom) && $adddom == "add")
-	addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver);
+	addDomain($bgrp, $userid, $groups, $dname, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver);
 
 switch($idx)
 	{
@@ -378,7 +394,8 @@ switch($idx)
 		{
 			$babBody->title = bab_translate("Create a private mail domain");
 		}
-		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		if( $bgrp != "y")
+			$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("list", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$babBody->addItemMenu("create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;
@@ -397,7 +414,8 @@ switch($idx)
 		{
 			$babBody->title = bab_translate("Available domains list");
 		}
-		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		if( $bgrp != "y")
+			$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("list", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$babBody->addItemMenu("create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;

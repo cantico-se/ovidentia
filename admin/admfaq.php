@@ -181,23 +181,18 @@ function updateCategory($id, $category, $description, $managerid, $lang)
 
 function confirmDeleteFaq($id)
 	{
-	$db = $GLOBALS['babDB'];
-
-	// delete questions/responses for this faq
-	$req = "delete from ".BAB_FAQQR_TBL." where idcat='$id'";
-	$res = $db->db_query($req);	
-
-	// delete faq from groups
-	$req = "delete from ".BAB_FAQCAT_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);	
-
-	// delete faq
-	$req = "delete from ".BAB_FAQCAT_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteFaq($id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['faqs'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if(!isset($idx))
 	{
 	$idx = "Modify";

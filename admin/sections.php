@@ -71,6 +71,7 @@ function sectionsList()
 
 		function temp()
 			{
+			global $babBody;
 			$this->title = bab_translate("Title");
 			$this->description = bab_translate("Description");
 			$this->disabled = bab_translate("Disabled");
@@ -80,15 +81,20 @@ function sectionsList()
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_SECTIONS_TBL."";
+			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
 			/* don't get Administrator section */
-			$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id > '1'");
-			$this->counta = $this->db->db_num_rows($this->resa);
+			if( $babBody->currentAdmGroup == 0 )
+				{
+				$this->resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id > '1'");
+				$this->counta = $this->db->db_num_rows($this->resa);
+				}
+			else
+				$this->counta = 0;
 
-			$this->rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL."");
+			$this->rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 			$this->countcat = $this->db->db_num_rows($this->rescat);
 			}
 
@@ -157,6 +163,11 @@ function sectionsList()
 		}
 
 	$temp = new temp();
+	if( $temp->count == 0 && $temp->counta == 0 && $temp->countcat == 0)
+		{
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+		exit;
+		}
 	$babBody->babecho(	bab_printTemplate($temp, "sections.html", "sectionslist"));
 	return $temp->count + $temp->countcat + $temp->counta;
 	}
@@ -182,6 +193,7 @@ function sectionsOrder()
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->db = $GLOBALS['babDB'];
+
 			$req = "select * from ".BAB_SECTIONS_ORDER_TBL." where position='0' order by ordering asc";
 			$this->resleft = $this->db->db_query($req);
 			$this->countleft = $this->db->db_num_rows($this->resleft);
@@ -407,13 +419,18 @@ function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $la
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . bab_stripDomainName($content). "', '" . $php. "', '" . $js."', '". $template."', '" .$lang. "')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang, id_dgowner) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . bab_stripDomainName($content). "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
-		$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
+		if( $babBody->currentAdmGroup == 0 )
+			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
+		else
+			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '".$babBody->currentAdmGroup."')");
 		$res = $db->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='".$pos."'");
 		$arr = $db->db_fetch_array($res);
-		$db->db_query("insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')");		
+		$db->db_query("insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '" . $pos. "', '2', '" . ($arr[0]+1). "')");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$id);
+		exit;
 		}
 	}
 
@@ -486,6 +503,12 @@ function disableSections($sections)
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( isset($create))
 	{
 	sectionSave($title, $position, $description, $content, $script, $js, $template, $lang);
@@ -552,13 +575,10 @@ switch($idx)
 	case "List":
 	default:
 		$babBody->title = bab_translate("Sections list");
-		if( sectionsList() > 0 )
-			{
-			$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-			}
-		else
+		if( sectionsList() == 0 )
 			$babBody->title = bab_translate("There is no section");
 
+		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 		if( $msie )
 			{

@@ -63,7 +63,9 @@ CREATE TABLE bab_faqcat (
    category varchar(60) NOT NULL,
    description text NOT NULL,
    lang varchar(10) NOT NULL default '',
-   PRIMARY KEY (id)
+   id_dgowner int(11) unsigned NOT NULL default '0',
+   PRIMARY KEY  (id),
+   KEY id_dgowner (id_dgowner)
 );
 
 
@@ -111,7 +113,9 @@ CREATE TABLE bab_forums (
    display int(11) unsigned DEFAULT '0' NOT NULL,
    active enum('Y','N') DEFAULT 'Y' NOT NULL,
    ordering smallint(6) unsigned NOT NULL default '0',
-   PRIMARY KEY (id)
+   id_dgowner int(11) unsigned NOT NULL default '0',
+   PRIMARY KEY  (id),
+   KEY id_dgowner (id_dgowner)
 );
 
 
@@ -175,13 +179,17 @@ CREATE TABLE bab_groups (
    notes enum('Y','N') NOT NULL default 'Y',
    contacts enum('Y','N') NOT NULL default 'Y',
    directory enum('N','Y') NOT NULL default 'N',
+   id_dggroup int(11) unsigned NOT NULL default '0',
+   id_dgowner int(11) unsigned NOT NULL default '0',
    PRIMARY KEY (id),
-   KEY manager (manager)
+   KEY manager (manager),
+   KEY id_dggroup (id_dggroup),
+   KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0', 'N', 'Y', 'Y', 'Y');
-INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0', 'N', 'N', 'N', 'N');
-INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0', 'N', 'Y', 'Y', 'N');
+INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', '0', 'N', 'Y', 'Y', 'Y', '0', '0');
+INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', '0', 'N', 'N', 'N', 'N', '0', '0');
+INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', '0', 'N', 'Y', 'Y', 'N', '0', '0');
 
 
 # --------------------------------------------------------
@@ -237,7 +245,9 @@ CREATE TABLE bab_sections (
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
    template varchar(255),
    lang varchar(10) NOT NULL default '',
-   PRIMARY KEY (id)
+   id_dgowner int(11) unsigned NOT NULL default '0',
+   PRIMARY KEY (id),
+   KEY id_dgowner (id_dgowner)
 );
 
 # --------------------------------------------------------
@@ -372,10 +382,12 @@ CREATE TABLE bab_topics_categories (
    description varchar(200),
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
    template varchar(255),
-   PRIMARY KEY (id)
+   id_dgowner int(11) unsigned NOT NULL default '0',
+   PRIMARY KEY (id),
+   KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '');
+INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '', '0');
 
 # --------------------------------------------------------
 #
@@ -484,6 +496,7 @@ CREATE TABLE bab_users_log (
    sessid tinytext NOT NULL,
    remote_addr varchar(255) NOT NULL default '',
    forwarded_for varchar(255) NOT NULL default '',
+   id_dgowner int(11) unsigned NOT NULL default '0',
    PRIMARY KEY (id),
    KEY id_user (id_user)
 );
@@ -842,7 +855,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '4');
 INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '2');
+INSERT INTO bab_ini VALUES ('ver_build', '3');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -868,7 +881,9 @@ CREATE TABLE bab_flow_approvers (
   formula tinytext NOT NULL,
   forder enum('N','Y') NOT NULL default 'N',
   refcount int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id)
+  id_dgowner int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_dgowner (id_dgowner)
 );
 
 #
@@ -962,10 +977,12 @@ CREATE TABLE bab_db_directories (
   name varchar(255) NOT NULL default '',
   description varchar(255) NOT NULL default '',
   id_group int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id)
+  id_dgowner int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_db_directories (name, description, id_group) values ('Ovidentia', 'Ovidentia directory', '1');
+INSERT INTO bab_db_directories (name, description, id_group, id_dgowner) values ('Ovidentia', 'Ovidentia directory', '1', '0');
 
 #
 # Structure de la table `bab_dbdir_entries`
@@ -1151,7 +1168,9 @@ CREATE TABLE bab_ldap_directories (
   basedn text NOT NULL,
   userdn text NOT NULL,
   password tinyblob NOT NULL,
-  PRIMARY KEY  (id)
+  id_dgowner int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_dgowner (id_dgowner)
 );
 
 #
@@ -1363,4 +1382,38 @@ CREATE TABLE bab_fm_fileslog (
   version varchar(10) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_file (id_file)
+);
+
+#
+# Structure de la table `bab_dg_groups`
+#
+
+CREATE TABLE bab_dg_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  name char(255) NOT NULL default '',
+  description char(255) NOT NULL default '',
+  groups enum('N','Y') NOT NULL default 'N',
+  sections enum('N','Y') NOT NULL default 'N',
+  articles enum('N','Y') NOT NULL default 'N',
+  faqs enum('N','Y') NOT NULL default 'N',
+  forums enum('N','Y') NOT NULL default 'N',
+  calendars enum('N','Y') NOT NULL default 'N',
+  mails enum('N','Y') NOT NULL default 'N',
+  directories enum('N','Y') NOT NULL default 'N',
+  approbations enum('N','Y') NOT NULL default 'N',
+  filemanager enum('N','Y') NOT NULL default 'N',
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_dg_users_groups`
+#
+
+CREATE TABLE bab_dg_users_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
 );

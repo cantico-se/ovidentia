@@ -236,10 +236,11 @@ function listSchemas()
 
 		function temp()
 			{
+			global $babBody;
 			$this->schnametxt = bab_translate("Name");
 			$this->schdesctxt = bab_translate("Description");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL."";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			if( defined("BAB_DEBUG_FA"))
@@ -380,7 +381,7 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch)
 			}
 		else
 			{
-			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder) VALUES ('" .$schname. "', '" . $schdesc. "', '" .  $ret. "', '" .  $order. "')";
+			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder, id_dgowner) VALUES ('" .$schname. "', '" . $schdesc. "', '" .  $ret. "', '" .  $order. "', '" .  $babBody->currentAdmGroup. "')";
 			$db->db_query($req);
 			}
 		}
@@ -407,15 +408,18 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch)
 
 function confirmDeleteSchema($id)
 	{
-	$db = $GLOBALS['babDB'];
-
-	// delete schema
-	$req = "delete from ".BAB_FLOW_APPROVERS_TBL." where id='".$id."'";
-	$res = $db->db_query($req);
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteApprobationSchema($id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['approbations'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( !isset($idx))
 	$idx = "list";
 
@@ -473,14 +477,14 @@ switch($idx)
 		break;
 
 	case "mod":
-		$babBody->title = bab_translate("Schemas list");
+		$babBody->title = bab_translate("Modify approbation schema");
 		modifySchema($idsch);
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("mod", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=mod");
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=new");
 		break;
 	case "new":
-		$babBody->title = bab_translate("Schemas list");
+		$babBody->title = bab_translate("Create a new approbation schema");
 		schemaCreate($formula, $idsch, $schname, $schdesc, $order, flase);
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=new");
@@ -488,7 +492,7 @@ switch($idx)
 	case "test":
 		if( defined("BAB_DEBUG_FA"))
 		{
-			$babBody->title = bab_translate("Schemas list");
+			$babBody->title = bab_translate("Test an approbation schema");
 			testSchema($idsch, $idschi, $res);
 			$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 			$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=new");
@@ -497,7 +501,7 @@ switch($idx)
 		}
 		/* no break */
 	case "list":
-		$babBody->title = bab_translate("Schemas list");
+		$babBody->title = bab_translate("Approbation schemas list");
 		listSchemas();
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=new");

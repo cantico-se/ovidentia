@@ -54,8 +54,11 @@ function aclGroups($target, $index, $table, $id, $return)
 		var $target;
 		var $index;
 
+		var $ballsite;
+
 		function temp($target, $index, $table, $id, $return)
 			{
+			global $babBody;
 			$this->table = $table;
 			$this->target = $target;
 			$this->index = $index;
@@ -73,6 +76,11 @@ function aclGroups($target, $index, $table, $id, $return)
 			$this->what['users'] = "";
 			$this->what['guests'] = "";
 			$this->what['disabled'] = "";
+
+			if( $babBody->currentAdmGroup == 0 )
+				$this->ballsite = true;
+			else
+				$this->ballsite = false;
 			
 			$req = "select * from ".$table." where id_object='$id'";
 			$this->res1 = $this->db->db_query($req);
@@ -98,9 +106,13 @@ function aclGroups($target, $index, $table, $id, $return)
 							break;
 						}
 					}
+				else if( $babBody->currentAdmGroup != 0 && $arr['id_group'] == $babBody->currentAdmGroup )
+					{
+					$this->what['everybody'] = "selected";
+					}
 				}
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
@@ -142,6 +154,8 @@ function aclGroups($target, $index, $table, $id, $return)
 
 function aclUpdate($table, $id, $groups, $what)
 	{
+	global $babBody;
+
 	$db = $GLOBALS['babDB'];
 	$req = "delete from ".$table." where id_object = '$id'";
 	$res = $db->db_query($req);
@@ -162,6 +176,8 @@ function aclUpdate($table, $id, $groups, $what)
 		}
 	else if( $what != -1)
 		{
+		if( $what == '0' && $babBody->currentAdmGroup != 0 )
+			$what = $babBody->currentAdmGroup;
 		$req = "insert into ".$table." (id_object, id_group) values ('". $id. "', '" . $what. "')";
 		$res = $db->db_query($req);
 		}

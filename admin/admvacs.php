@@ -106,6 +106,12 @@ function delVacationManagers($managers)
 }
 
 /* main */
+if( !$babBody->isSuperAdmin )
+	{
+	$babBody->title = bab_translate("Access denied");
+	exit;
+	}
+
 if(!isset($idx))
 	{
 	$idx = "list";

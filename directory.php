@@ -139,6 +139,31 @@ function browseLdapDirectory($id, $pos)
 	class temp
 		{
 		var $count;
+		var $allname;
+		var $cntxt;
+		var $bteltxt;
+		var $hteltxt;
+		var $emailtxt;
+		var $addname;
+		var $id;
+		var $pos;
+		var $allselected;
+		var $allurl;
+		var $count;
+		var $ldap;
+		var $entries;
+		var $db;
+		var $accid;
+		var $cn;
+		var $url;
+		var $btel;
+		var $htel;
+		var $email;
+		var $urlmail;
+		var $selectname;
+		var $selecturl;
+		var $selected;
+		var $badd;
 
 		function temp($id, $pos)
 			{
@@ -148,6 +173,7 @@ function browseLdapDirectory($id, $pos)
 			$this->hteltxt = bab_translate("Home Phone");
 			$this->emailtxt = bab_translate("Email");
 			$this->addname = bab_translate("Add");
+			$this->badd = false;
 			$this->id = $id;
 			$this->pos = $pos;
 			if( empty($pos))

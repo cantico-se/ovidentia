@@ -47,7 +47,7 @@ function addFolder()
 
 		function temp()
 			{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->moderator = bab_translate("Manager");
@@ -60,7 +60,7 @@ function addFolder()
 			$this->add = bab_translate("Add");
 			$this->active = bab_translate("Active");
 			$this->none = bab_translate("None");
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL."");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -122,7 +122,7 @@ function listFolders()
 
 		function temp()
 			{
-			global $babDB;
+			global $babBody, $babDB;
 			$this->fullname = bab_translate("Folders");
 			$this->manager = bab_translate("Manager");
 			$this->notify = bab_translate("Notify");
@@ -133,7 +133,7 @@ function listFolders()
 			$this->modify = bab_translate("Update");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
-			$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." order by folder asc");
+			$this->res = $babDB->db_query("select * from ".BAB_FM_FOLDERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by folder asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -210,7 +210,7 @@ function saveFolder($fname, $managerid, $active, $said, $notification, $version)
 			$managerid = 0;
 		if( empty($said))
 			$said = 0;
-		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, manager, idsa, filenotify, active, version) VALUES ('" .$fname. "', '" . $managerid. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "')");
+		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, manager, idsa, filenotify, active, version, id_dgowner) VALUES ('" .$fname. "', '" . $managerid. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "', '" . $babBody->currentAdmGroup. "')");
 		}
 
 }
@@ -242,6 +242,12 @@ function updateFolders($notifies, $actives, $versions)
 
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( !isset($idx))
 	$idx = "list";
 

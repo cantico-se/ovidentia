@@ -112,39 +112,6 @@ function bab_formatSizeFile($size, $roundoff = true)
 		
 }
 
-function bab_deleteUploadDir($path)
-	{
-	if (file_exists($path))
-		{
-		if (is_dir($path))
-			{
-			$handle = opendir($path);
-		    while($filename = readdir($handle))
-				{
-		        if ($filename != "." && $filename != "..")
-					{
-			        bab_deleteUploadDir($path."/".$filename);
-					}
-				}
-			closedir($handle);
-			@rmdir($path);
-			} 
-		else
-			{
-			@unlink($path);
-			}
-		}
-	}
-
-
-function bab_deleteUploadUserFiles($gr, $id)
-	{
-	global $babDB;
-	$pathx = bab_getUploadFullPath($gr, $id);
-	$babDB->db_query("delete from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'");
-	@bab_deleteUploadDir($pathx);
-	}
-
 function bab_isAccessFileValid($gr, $id)
 	{
 	global $babBody, $babDB;

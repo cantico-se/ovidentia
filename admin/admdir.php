@@ -55,6 +55,7 @@ function listAds()
 
 		function temp()
 			{
+			global $babBody;
 			$this->directories = bab_translate("Directories");
 			$this->desctxt = bab_translate("Description");
 			$this->databasetitle = bab_translate("Databases Directories list");
@@ -65,9 +66,9 @@ function listAds()
 			$this->urladdldap = $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap";
 			$this->urladddb = $GLOBALS['babUrlScript']."?tg=admdir&idx=db";
 			$this->db = $GLOBALS['babDB'];
-			$this->resldap = $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL."");
+			$this->resldap = $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 			$this->countldap = $this->db->db_num_rows($this->resldap);
-			$this->resdb = $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL."");
+			$this->resdb = $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 			$this->countdb = $this->db->db_num_rows($this->resdb);
 			}
 
@@ -509,7 +510,7 @@ function addLdapDirectory($name, $description, $host, $basedn, $userdn, $passwor
 		}
 	else
 		{
-		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, host, basedn, userdn, password) VALUES ('" .$name. "', '" . $description. "', '" . $host. "', '" . $basedn. "', '" . $userdn. "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"))";
+		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, host, basedn, userdn, password, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" . $host. "', '" . $basedn. "', '" . $userdn. "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), '".$babBody->currentAdmGroup."')";
 		$db->db_query($req);
 		}
 	return true;
@@ -540,7 +541,7 @@ function addDbDirectory($name, $description, $fields, $rw, $rq, $ml)
 		}
 	else
 		{
-		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description) VALUES ('" .$name. "', '" . $description. "')";
+		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_dgowner) VALUES ('" .$name. "', '" . $description. "', '" .$babBody->currentAdmGroup. "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
@@ -681,21 +682,15 @@ function modifyAdDb($id, $name, $description, $fields, $rw, $rq, $ml)
 
 function confirmDeleteDirectory($id, $type)
 	{
-	$db = $GLOBALS['babDB'];
-
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	
 	if( $type == "d")
 		{
-		$arr = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
-		if( $arr['id_group'] != 0)
-			return;
-		$db->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$id."'");
-		$db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".$id."'");
-		$db->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'");
+		bab_deleteDbDirectory($id);
 		}
 	else if( $type == "l")
 		{
-		$db->db_query("delete from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$id."'");
+		bab_deleteLdapDirectory($id);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
 	}
@@ -711,10 +706,9 @@ function dbUpdateDiplay($id, $listfd)
 		}
 }
 /* main */
-$adminid = bab_isUserAdministrator();
-if( $adminid <= 0 )
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['directories'] != 'Y')
 {
-	$babBody->msgerror = "Access denied";
+	$babBody->msgerror = bab_translate("Access denied");
 	return;
 }
 

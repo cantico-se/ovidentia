@@ -156,24 +156,18 @@ function updateForum($id, $name, $description, $managerid, $moderation, $notific
 
 function confirmDeleteForum($id)
 	{
-	
-	$db = $GLOBALS['babDB'];
-	//@@: delete all posts
-
-	$req = "delete from ".BAB_FORUMSVIEW_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
-	
-	$req = "delete from ".BAB_FORUMSPOST_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
-
-	$req = "delete from ".BAB_FORUMSREPLY_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);
-
-	$req = "delete from ".BAB_FORUMS_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteForum($id);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums");
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['forums'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if(!isset($idx))
 	{
 	$idx = "Modify";
@@ -192,12 +186,20 @@ if( isset($update) && $update == "updateforum")
 if( isset($aclview))
 	{
 	aclUpdate($table, $item, $groups, $what);
+	if( $table == BAB_FORUMSVIEW_GROUPS_TBL )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$item);
+	else if( $table == BAB_FORUMSREPLY_GROUPS_TBL )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$item);
+	else if( $table == BAB_FORUMSREPLY_GROUPS_TBL )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+	exit;
 	}
 
 if( isset($action) && $action == "Yes")
 	{
 	confirmDeleteForum($category);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+	exit;
 	}
 
 switch($idx)

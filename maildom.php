@@ -160,6 +160,12 @@ function modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmeth
 		}
 	else
 		{
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$description = addslashes($description);
+			$name = addslashes($name);
+			}
+
 		$query = "update ".BAB_MAIL_DOMAINS_TBL." set name='$name', description='$description', access='$accessmethod', inserver='$inmailserver', inport='$inportserver', outserver='$outmailserver', outport='$outportserver' where id='$id'";
 		$db->db_query($query);
 		}
@@ -184,8 +190,9 @@ if(!isset($userid))
 	return;
 if(  $userid == 0 )
 	{
-	if( !bab_isUserAdministrator())
+	if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['mails'] != 'Y' )
 		{
+		$babBody->msgerror = bab_translate("Access denied");
 		return;
 		}
 	}
@@ -204,7 +211,7 @@ else
 	}
 
 if( isset($modify) && $modify == "moddom")
-	modifyDomain($bgrp, $userid, $oldname, $name, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver, $item);
+	modifyDomain($bgrp, $userid, $oldname, $dname, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver, $item);
 
 if( isset($action) && $action == "Yes")
 	{

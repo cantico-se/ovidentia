@@ -243,27 +243,19 @@ function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang)
 
 function confirmDeleteSection($id)
 	{
-	$db = $GLOBALS['babDB'];
-
-	// delete refernce group
-	$req = "delete from ".BAB_SECTIONS_GROUPS_TBL." where id_object='$id'";
-	$res = $db->db_query($req);	
-
-	// delete from ".BAB_SECTIONS_ORDER_TBL
-	$req = "delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='$id' and type='2'";
-	$res = $db->db_query($req);	
-
-	// delete from BAB_SECTIONS_STATES_TBL
-	$req = "delete from ".BAB_SECTIONS_STATES_TBL." where id_section='$id' and type='2'";
-	$res = $db->db_query($req);	
-
-	// delete section
-	$req = "delete from ".BAB_SECTIONS_TBL." where id='$id'";
-	$res = $db->db_query($req);
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	bab_deleteSection($id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
+	exit;
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( isset($modify))
 	{
 	if( isset($submit))
@@ -273,7 +265,11 @@ if( isset($modify))
 	}
 
 if( isset($aclsec))
+	{
 	aclUpdate($table, $item, $groups, $what);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
+	exit;
+	}
 
 if( !isset($idx))
 	$idx = "Modify";

@@ -124,6 +124,8 @@ function listCategories()
 
 		function temp()
 			{
+			global $babBody;
+
 			$this->access = bab_translate("Access");
 			$this->db = $GLOBALS['babDB'];
 			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
@@ -131,18 +133,20 @@ function listCategories()
 			switch($langFilterValue)
 			{
 				case 2:
-					$req = "select * from ".BAB_FAQCAT_TBL." where lang='".$GLOBALS['babLanguage']."' or lang='*' or lang = ''";
+					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and (lang='".$GLOBALS['babLanguage']."' or lang='*' or lang = ''";
 					if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
 						$req.= " or id_manager = '" .$GLOBALS['BAB_SESS_USERID']. "'";
+					$req .= ")";
 					break;
 				case 1:
-					$req = "select * from ".BAB_FAQCAT_TBL." where (lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%') or lang='*' or lang = ''";
+					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and (lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%' or lang='*' or lang = ''";
 					if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
 						$req.= " or id_manager = '" .$GLOBALS['BAB_SESS_USERID']. "'";
+					$req .= ")";
 					break;
 				case 0:
 				default:
-					$req = "select * from ".BAB_FAQCAT_TBL;
+					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			}
 
 			$this->res = $this->db->db_query($req);
@@ -159,7 +163,7 @@ function listCategories()
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->arr['description'] = $this->arr['description'];// nl2br($this->arr['description']);
+				$this->arr['description'] = $this->arr['description'];
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$this->arr['id'];
 				$this->accessurl = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$this->arr['id'];
 				$this->namecategory = $this->arr['category'];
@@ -192,19 +196,25 @@ function saveCategory($category, $description, $managerid, $lang)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FAQCAT_TBL." where category='$category'";	
+	$query = "select * from ".BAB_FAQCAT_TBL." where category='".$category."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This FAQ already exists");
 		return;
 		}
-	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description, lang) values ('" .$managerid. "', '" .$category. "', '" . $description. "', '" .$lang. "')";
+	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description, lang, id_dgowner) values ('" .$managerid. "', '" .$category. "', '" . $description. "', '" .$lang. "', '" .$babBody->currentAdmGroup. "')";
 	$db->db_query($query);
 
 	}  // saveCategory
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['faqs'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if(!isset($idx))
 	{
 	$idx = "Categories";

@@ -147,16 +147,8 @@ function bab_isMemberOfGroup($groupname, $userid="")
 
 function bab_isUserAdministrator()
 {
-	global $BAB_SESS_USERID;
-	$db = $GLOBALS['babDB'];
-	$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and id_group='3'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		return 3;
-		}
-	else
-		return 0;
+	global $babBody;
+	return $babBody->isSuperAdmin;
 }
 
 function bab_isAccessValid($table, $idobject)

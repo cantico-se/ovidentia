@@ -94,6 +94,7 @@ function listForums()
 
 		function temp()
 			{
+			global $babBody;
 			$this->name = bab_translate("Name");
 			$this->moderator = bab_translate("Moderator Email");
 			$this->description = bab_translate("Description");
@@ -102,7 +103,7 @@ function listForums()
 			$this->reply = bab_translate("Reply");
 			$this->posts = bab_translate("Post");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FORUMS_TBL." order by ordering asc";
+			$req = "select * from ".BAB_FORUMS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -198,7 +199,7 @@ function saveForum($name, $description, $managerid, $moderation, $notification, 
 		$managerid = 0;
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FORUMS_TBL." where name='$name'";	
+	$query = "select * from ".BAB_FORUMS_TBL." where name='".$name."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -206,11 +207,21 @@ function saveForum($name, $description, $managerid, $moderation, $notification, 
 		return false;
 		}
 
-	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderator, moderation, notification, active)";
-	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $managerid. "', '" . $moderation. "', '" .$notification. "', '" . $active. "')";
-	$db->db_query($query);
-	return true;
+	$res = $db->db_query("select max(ordering) from ".BAB_FORUMS_TBL."");
+	if( $res )
+		{
+		$arr = $db->db_fetch_array($res);
+		$max = $arr[0] + 1;
+		}
+	else
+		$max = 0;
 
+	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderator, moderation, notification, active, ordering, id_dgowner)";
+	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $managerid. "', '" . $moderation. "', '" .$notification. "', '" . $active. "', '" . $max. "', '" . $babBody->currentAdmGroup. "')";
+	$db->db_query($query);
+	$id = $db->db_insert_id();
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$id);
+	exit;
 	}
 
 function saveOrderForums($listforums)
@@ -224,6 +235,12 @@ function saveOrderForums($listforums)
 		}
 	}
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['forums'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if(!isset($idx))
 	{
 	$idx = "List";

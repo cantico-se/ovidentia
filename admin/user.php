@@ -23,8 +23,6 @@
 ************************************************************************/
 include_once "base.php";
 include $babInstallPath."admin/register.php";
-include $babInstallPath."utilit/grpincl.php";
-include $babInstallPath."utilit/fileincl.php";
 
 
 function modifyUser($id, $pos, $grp)
@@ -378,6 +376,7 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 
 function confirmDeleteUser($id)
 	{
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	$db = $GLOBALS['babDB'];
 
 	// delete notes owned by this user
@@ -493,6 +492,11 @@ function updatePassword($item, $newpwd1, $newpwd2)
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin )
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
 
 if( !isset($idx))
 	$idx = "Modify";
@@ -536,7 +540,6 @@ switch($idx)
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
-		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create");
 		break;
 	case "Groups":
 		$babBody->title = bab_getUserName($item) . bab_translate(" is member of");
@@ -546,13 +549,12 @@ switch($idx)
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
 		break;
 	case "Modify":
-		$babBody->title = /* bab_translate("Modify a user") . ": " . */bab_getUserName($item);
+		$babBody->title = bab_getUserName($item);
 		modifyUser($item, $pos, $grp);
 		changePassword($item, $pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create");
 		break;
 	default:
 		break;

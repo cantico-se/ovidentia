@@ -48,6 +48,7 @@ function calendarGroups()
 
 		function temp()
 			{
+			global $babBody;
 			$this->name = bab_translate("Groups Names");
 			$this->updategroups = bab_translate("Update Groups");
 			$this->none = bab_translate("None");
@@ -56,7 +57,7 @@ function calendarGroups()
 			$this->listgroups = bab_translate("Groups List");
 			$this->db = $GLOBALS['babDB'];
 			
-			$req = "select * from ".BAB_CALENDAR_TBL." where owner!='2' and type='2' order by owner asc";
+			$req = "select distinct c.* from ".BAB_CALENDAR_TBL." c, ".BAB_GROUPS_TBL." g where c.owner!='2' and c.type='2' and ( c.owner='".$babBody->currentAdmGroup."' or (g.id_dgowner='".$babBody->currentAdmGroup."' and c.owner=g.id)) order by c.owner asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -99,23 +100,19 @@ function calendarGroups()
 
 function groupsUpdate($groups, $what)
 	{
+	global $babBody;
+
 	$db = $GLOBALS['babDB'];
 
-	if( $what == "0") // none
+	$res = $db->db_query("select distinct c.id from ".BAB_CALENDAR_TBL." c, ".BAB_GROUPS_TBL." g where c.owner!='2' and c.type='2' and ( c.owner='".$babBody->currentAdmGroup."' or (g.id_dgowner='".$babBody->currentAdmGroup."' and c.owner=g.id))");
+	while( $arr = $db->db_fetch_array($res))
 		{
-		$req = "update ".BAB_CALENDAR_TBL." set actif='N' where type='2'";
-		$res = $db->db_query($req);
+		$db->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where id='".$arr['id']."'");
 		}
-	else if( $what == -1 ) // all
-		{
-		$req = "update ".BAB_CALENDAR_TBL." set actif='Y' where owner!='2' and type='2'";
-		$res = $db->db_query($req);
-		}
-	else
+
+	if( $what == "") // listgroups
 		{
 		$cnt = count($groups);
-		$req = "update ".BAB_CALENDAR_TBL." set actif='N' where type='2'";
-		$res = $db->db_query($req);
 		if( $cnt > 0)
 			{
 			for( $i = 0; $i < $cnt; $i++)
@@ -128,6 +125,12 @@ function groupsUpdate($groups, $what)
 	}
 
 /* main */
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['calendars'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if( !isset($idx))
 	$idx = "groups";
 

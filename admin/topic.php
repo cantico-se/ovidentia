@@ -26,7 +26,7 @@ include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function listArticles($id, $userid)
+function listArticles($id)
 	{
 	global $babBody;
 
@@ -45,7 +45,6 @@ function listArticles($id, $userid)
 		var $count;
 
 		var $siteid;
-		var $userid;
 		var $badmin;
 		var $homepages;
 		var $homepagesurl;
@@ -58,7 +57,7 @@ function listArticles($id, $userid)
 		var $art0help;
 		var $art1help;
 
-		function temp($id, $userid)
+		function temp($id)
 			{
 			$this->titlename = bab_translate("Title");
 			$this->uncheckall = bab_translate("Uncheck all");
@@ -72,7 +71,6 @@ function listArticles($id, $userid)
 			$this->homepages = bab_translate("Customize home pages ( Registered and unregistered users )");
 			$this->badmin = bab_isUserAdministrator();
 
-			$this->userid = $userid;
 			$this->item = $id;
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and confirmed='Y' and archive='N' order by date desc";
@@ -115,11 +113,11 @@ function listArticles($id, $userid)
 		
 		}
 
-	$temp = new temp($id, $userid);
+	$temp = new temp($id);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "articleslist"));
 	}
 
-function deleteArticles($art, $item, $userid)
+function deleteArticles($art, $item)
 	{
 	global $babBody, $idx;
 
@@ -133,7 +131,7 @@ function deleteArticles($art, $item, $userid)
 		var $yes;
 		var $no;
 
-		function tempa($art, $item, $userid)
+		function tempa($art, $item)
 			{
 			global $BAB_SESS_USERID;
 			$this->message = bab_translate("Are you sure you want to delete those articles");
@@ -154,9 +152,9 @@ function deleteArticles($art, $item, $userid)
 					$items .= ",";
 				}
 			$this->warning = bab_translate("WARNING: This operation will delete articles and their comments"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topic&idx=Deletea&item=".$item."&action=Yes&items=".$items."&userid=".$userid;
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topic&idx=Deletea&item=".$item."&action=Yes&items=".$items;
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item."&userid=".$userid;
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item;
 			$this->no = bab_translate("No");
 			}
 		}
@@ -164,11 +162,11 @@ function deleteArticles($art, $item, $userid)
 	if( count($item) <= 0)
 		{
 		$babBody->msgerror = bab_translate("Please select at least one item");
-		listArticles($item, $userid);
+		listArticles($item);
 		$idx = "Articles";
 		return;
 		}
-	$tempa = new tempa($art, $item, $userid);
+	$tempa = new tempa($art, $item);
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
@@ -209,6 +207,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 
 		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif)
 			{
+			global $babBody;
 			$this->topcat = bab_translate("Topic category");
 			$this->title = bab_translate("Topic");
 			$this->desctitle = bab_translate("Description");
@@ -280,11 +279,11 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 
 			$this->bdel = true;
 			
-			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL."";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL."";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->sares = $this->db->db_query($req);
 			if( !$this->sares )
 				$this->sacount = 0;
@@ -562,7 +561,12 @@ function addToHomePages($item, $homepage, $art)
 }
 
 /* main */
-$adminid = bab_isUserAdministrator();
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+{
+	$babBody->msgerror = bab_translate("Access denied");
+	return;
+}
+
 if(!isset($idx))
 	{
 	$idx = "Modify";
@@ -575,7 +579,7 @@ if(!isset($cat))
 	$cat = $r['id_cat'];
 	}
 
-if( isset($add) && $adminid >0)
+if( isset($add) )
 	{
 	if( isset($Submit))
 		{
@@ -586,10 +590,15 @@ if( isset($add) && $adminid >0)
 		$idx = "Delete";
 	}
 
-if( isset($aclview) && $adminid >0)
+if( isset($aclview) )
 	{
 	aclUpdate($table, $item, $groups, $what);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+	if( $table == BAB_TOPICSVIEW_GROUPS_TBL )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
+	else if( $table == BAB_TOPICSSUB_GROUPS_TBL )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
+	else 
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
 
 if( isset($upart) && $upart == "articles")
@@ -607,15 +616,15 @@ if( isset($upart) && $upart == "articles")
 
 if( isset($action) && $action == "Yes")
 	{
-	if( $idx == "Delete" && $adminid > 0 )
+	if( $idx == "Delete" )
 		{
 		bab_confirmDeleteTopic($category);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat."userid=".$userid);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		}
 	else if( $idx == "Deletea")
 		{
 		bab_confirmDeleteArticles($items);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item."&userid=".$userid);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		}
 	}
 
@@ -626,32 +635,21 @@ switch($idx)
 		exit;
 	case "deletea":
 		$babBody->title = bab_translate("Delete articles");
-		deleteArticles($art, $item, $userid);
-		if( $adminid > 0)
-		{
-		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&userid=".$userid);
-		}
+		deleteArticles($art, $item);
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list");
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item."&userid=".$userid);
 		$babBody->addItemMenu("deletea", bab_translate("Delete"), "");
 		break;
 
 	case "Articles":
 		$babBody->title = bab_translate("List of articles").": ".bab_getCategoryTitle($item);
-		listArticles($item, $userid);
-		if( isset($userid) && !empty($userid))
-		{
-			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&userid=".$GLOBALS['BAB_SESS_USERID']);
-		} else if( $adminid > 0 )
-		{
+		listArticles($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-		}
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
 		break;
 
 	case "Groups":
 		$babBody->title = bab_getCategoryTitle($item);
-		if( $adminid > 0)
-		{
 		aclGroups("topic", "Modify", BAB_TOPICSVIEW_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
@@ -659,13 +657,10 @@ switch($idx)
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
-		}
 		break;
 
 	case "Comments":
 		$babBody->title = bab_getCategoryTitle($item);
-		if( $adminid > 0)
-		{
 		aclGroups("topic", "Modify", BAB_TOPICSCOM_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
@@ -673,13 +668,10 @@ switch($idx)
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
-		}
 		break;
 
 	case "Submit":
 		$babBody->title = bab_getCategoryTitle($item);
-		if( $adminid > 0)
-		{
 		aclGroups("topic", "Modify", BAB_TOPICSSUB_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
@@ -687,13 +679,10 @@ switch($idx)
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
-		}
 		break;
 
 	case "Delete":
 		$babBody->title = bab_translate("Delete a topic");
-		if( $adminid > 0)
-		{
 		deleteCategory($item, $cat);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
@@ -702,14 +691,11 @@ switch($idx)
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topic&idx=Delete&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
-		}
 		break;
 
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a topic");
-		if( $adminid > 0)
-		{
 		modifyCategory($item, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
@@ -717,7 +703,6 @@ switch($idx)
 		$babBody->addItemMenu("Comments", bab_translate("Comment"), $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$item);
 		$babBody->addItemMenu("Submit", bab_translate("Submit"), $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$item);
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$item);
-		}
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

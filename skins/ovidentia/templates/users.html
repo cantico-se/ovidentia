@@ -20,7 +20,13 @@
 </tr><!--#in getnext -->
 <tr> 
 <td class="BabSiteAdminFontBackground" width="1%" align="right" valign="middle" nowrap><!--#if status "== *" --><img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt="" align="absmiddle"><!--#endif status --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabNameEmailLink" href="{ url }">{ urlname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">
+<!--#if bmodname -->
+<a class="BabNameEmailLink" href="{ url }">{ urlname }</a>
+<!--#else bmodname -->
+{ urlname }
+<!--#endif bmodname -->
+</td>
 <td class="BabSiteAdminFontBackground" valign="middle">{ arr[nickname] }</td>
 <td class="BabSiteAdminFontBackground" valign="middle"><a class="BabNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a></td>
 <td class="BabSiteAdminFontBackground" align="center" valign="middle"><input type="checkbox" name="users[]" value="{ userid }"{ checked }></td>

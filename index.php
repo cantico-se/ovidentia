@@ -323,8 +323,6 @@ function printBody()
 			}
 	}
 
-	
-
 	$temp = new tpl();
 	echo bab_printTemplate($temp,"page.html", "");
 	}
@@ -340,13 +338,13 @@ switch($tg)
 	case "sections":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Sections");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/sections";
 		break;
 	case "section":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Sections");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/section";
 		break;
 	case "register":
@@ -357,67 +355,67 @@ switch($tg)
 	case "users":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Users");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/users";
 		break;
 	case "user":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Users");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/user";
 		break;
 	case "groups":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Groups");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/groups";
 		break;
 	case "group":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Groups");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/group";
 		break;
 	case "admfaqs":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Faqs");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admfaqs";
 		break;
 	case "admfaq":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Faqs");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admfaq";
 		break;
 	case "topcat":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Topics categories");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/topcat";
 		break;
 	case "topcats":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Topics categories");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/topcats";
 		break;
 	case "apprflow":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Approbations");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/apprflow";
 		break;
 	case "admfms":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("File manager");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admfms";
 		break;
 	case "admfm":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("File manager");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admfm";
 		break;
 	case "topman":
@@ -445,62 +443,80 @@ switch($tg)
 	case "forums":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Forums");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/forums";
 		break;
 	case "forum":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Forums");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/forum";
 		break;
 	case "admvacs":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Vacation");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin )
 			$incl = "admin/admvacs";
 		break;
 	case "admvac":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Vacation");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
 			$incl = "admin/admvac";
 		break;
 	case "admcals":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Calendar");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admcals";
 		break;
 	case "admcal":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Calendar");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admcal";
 		break;
 	case "sites":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Sites");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
 			$incl = "admin/sites";
 		break;
 	case "site":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Sites");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
 			$incl = "admin/site";
 		break;
 	case "addons":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Add-ons");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
 			$incl = "admin/addons";
 		break;
 	case "admdir":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Directories");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
 			$incl = "admin/admdir";
+		break;
+	case "delegat":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Delegation");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
+			$incl = "admin/delegat";
+		break;
+	case "aclug":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = "";
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
+			$incl = "admin/aclug";
+		break;
+	case "delegusr":
+		$babLevelOne = bab_translate("Administration");
+		$babLevelTwo = bab_translate("Delegation");
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->dgAdmGroups > 0)
+			$incl = "delegusr";
 		break;
 	case "options":
 		$babLevelOne = bab_translate("User's section");
