@@ -618,10 +618,10 @@ function confirmDeleteDirectory($id)
 
 	$arr = $db->db_fetch_array($db->db_query("select ldap from ".ADDON_DIRECTORIES_TBL." where id='".$id."'"));
 	
-	if( $arr['ldap'] == "Y")
+	if( $arr['ldap'] == "N")
 		{
-		$db->query("delete * from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."'");
-		$db->query("delete * from ".ADDON_DBENTRIES_TBL." where id_directory='".$id."'");
+		$db->db_query("delete * from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$id."'");
+		$db->db_query("delete * from ".ADDON_DBENTRIES_TBL." where id_directory='".$id."'");
 		}
 
 	// delete directory
