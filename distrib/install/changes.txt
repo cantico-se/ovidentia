@@ -1,11 +1,12 @@
 /************************************************************************/
-Mai 2003: Version 4.0.4
+Juin 2003: Version 4.0.4
 /************************************************************************/
+- Enhanced OvML ( See documentation )
 - New HTML editor ( HTMLArea )
 - Sections can be otptional
-- Now you can attach to one category topic a template to use for topics display
-- Now you can attach to one topic a template to use for articles display
-- Now you can attach to one topic an article's model for editing
+- Now you can attach a template to one topic category for use in topics display
+- Now you can attach a template to one topic for use in articles display
+- Now you can attach an article's model to one topic for editing
 - Topics categories hierarchy
 - Fixed some minors bugs
 
