@@ -4489,4 +4489,20 @@ $db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (23, 'OvML')");
 return $ret;
 }
 
+
+function upgrade551to552()
+{
+$ret = "";
+$db = & $GLOBALS['babDB'];
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD ldap_encryptiontype varchar(255) NOT NULL AFTER ldap_allowadmincnx";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
+}
 ?>

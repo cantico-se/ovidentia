@@ -1222,6 +1222,17 @@ function hideShowCnx()
 		<input type="text" name="searchdn" size="50" value="{ ldapsearchdnsite }" />
 		</td>
 	</tr>
+	<tr> 
+		<td align="right">{ authpasstypetxt }</td>
+		<td>
+<select name="crypttype">
+<option value=""></option>
+<!--#in getnextpasstype -->
+<option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
+<!--#endin getnextpasstype -->
+</select>
+		</td>
+	</tr>
 	<!--#in getnextfield -->
 	<tr id="tdfieldid{ iindex }"> 
 		<td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span style="color:red">*</span><!--#endif required -->&nbsp;&nbsp;</td>

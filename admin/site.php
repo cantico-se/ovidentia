@@ -584,6 +584,7 @@ function siteAuthentification($id)
 				$this->ldaphostname = $arr['ldap_domainname'];
 				$this->ldapsearchdnsite = $arr['ldap_searchdn'];
 				$this->ldapattributesite = $arr['ldap_attribute'];
+				$this->ldapencryptiontype = $arr['ldap_encryptiontype'];
 
 				$this->authentificationtxt = bab_translate("Authentification");
 				$this->arrayauth = array(0 => "OVIDENTIA", 1 => "LDAP", 2 => "ACTIVE DIRECTORY");
@@ -594,6 +595,10 @@ function siteAuthentification($id)
 				$this->searchbasetxt = bab_translate("Search base");
 				$this->attributetxt = bab_translate("Attribute");
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
+
+				$this->arrayauthpasstype = array('plain' => 'plaintext', 'md5' => 'md5', 'crypt' => 'The Unix crypt() hash, based on DES', 'sha' => 'sha-1', 'md5-base64' => 'md5 encoded with base64', 'ssha' => 'Salted SHA-1', 'smd5' => 'Salted MD5');
+				$this->authpasstypetxt = bab_translate("Password encryption type");
+
 				if( $arr['ldap_allowadmincnx']  == 'Y' )
 					{
 					$this->ldpachkcnxchecked = 'checked';
@@ -750,6 +755,27 @@ function siteAuthentification($id)
 				$k = 0;
 				return false;
 				}
+			}
+
+		function getnextpasstype()
+			{
+			static $i = 0;
+			if( $i < count($this->arrayauthpasstype))
+				{
+				list($this->passtypeval, $this->passtypename) = each($this->arrayauthpasstype);
+                if( $this->ldapencryptiontype == $this->passtypeval )
+					{
+                    $this->passtypeselected = "selected";
+					}
+                else
+					{
+                    $this->passtypeselected = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 
@@ -1176,7 +1202,7 @@ function siteUpdate_bloc4($item)
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 	{
-	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname;
+	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname, $crypttype;
 
 	if (!function_exists('ldap_connect'))
 		{
@@ -1204,7 +1230,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	$db = $GLOBALS['babDB'];
 
 	$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
-	$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."'";
+	$req .= ", ldap_host='".$host."', ldap_domainname='".$hostname."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_encryptiontype='".$crypttype."'";
 	$req .= " where id='".$id."'";
 	$db->db_query($req);
 
