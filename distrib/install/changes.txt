@@ -1,36 +1,25 @@
+/************************************************************************/
+Juin 2002: Version 3.3.2
+/************************************************************************/
+- Mail sending use phpmailer class ( http://phpmailer.sourceforge.net )
+- Added Calendar sharing:  Consultation, Creation and update, and Total access
 
 /************************************************************************/
-January 2002: Version 3.2b
+Mai 2002: Version 3.3.1
 /************************************************************************/
-
-- Added an hierarchy in topics ( see documentation )
-- Added a section by topic
-- Enable/Disable section
-- Added number of hits for downladed files
-- Remove files owned by a group or a user when we delete a group or a user
-- When we want to delete a faq category, we have a warning caused by /r in text translation.
-- Fixed a bug in calendar when an event contains apostrophes
-- Fixed : user cannot change firstname and lastname even those doesnt exists
-- Change topics behavior when user is also administrator: List only manager's topics
-- Fixed : clean sections_states table when a section is deleted
+- Fixed Add-ons bug: Functions xxx_OnUserCreate(), xxx_OnUserDelete(), 
+  xxx_OnGroupDelete() and xxx_OnGroupCreate() are not collaed
+- Removed 'Read more' when body article is empty
+- Fixed problems quotes
+- Now Ovidentia version is in the form 'major'.'minor'.'build'
+- We can upgrade from 3.1 to the last version in one step
+- Fixed missing Meta Keywords in Ovidentia page
+- Fixed bug: $ARTICLE does'nt work correctly
+- Addde $ARTICLEPOPUP: view article in popup window
 - Fixed some minors bugs
-- Change: to customize templates ( like config.html ) you must copy it to skins/skin-name/templates
-  under your site directory. Skin-name is the name of the skin witch own the file. 
-
 /************************************************************************/
-February 2002: Version 3.2b2
+Mai 2002: Version 3.3
 /************************************************************************/
-
-- Added access to groups from sections/topics/Faq/Forum list
-- After section creation, it's implicitly visible by Administrator groups members
-- Make more room to CT/CC/BCC/SUBJECT fileds in mail function
-- Access to thread is valid only if there is a confirmed post or user is moderator
-- Now section icon is in config.html
-- Added $CONTACT(firstname, lastname) to reference a contact
-- Changed event modification: now description is static text
-- Moved section bullet/icon to config.html
-- Increased timeout script when we upload files
-- Added delete note to notes list
 - Fixed some minors bugs
 
 /************************************************************************/
@@ -83,20 +72,38 @@ Mai 2002: Version 3.3b
   telling you how many files have been uploaded for the groups of which you are a member. 
 - In the file manager, on the page titled "Update file", an additionallink will
   allow to download the file for which information is displayed on this page
+
 /************************************************************************/
-Mai 2002: Version 3.3
+February 2002: Version 3.2b2
 /************************************************************************/
+
+- Added access to groups from sections/topics/Faq/Forum list
+- After section creation, it's implicitly visible by Administrator groups members
+- Make more room to CT/CC/BCC/SUBJECT fileds in mail function
+- Access to thread is valid only if there is a confirmed post or user is moderator
+- Now section icon is in config.html
+- Added $CONTACT(firstname, lastname) to reference a contact
+- Changed event modification: now description is static text
+- Moved section bullet/icon to config.html
+- Increased timeout script when we upload files
+- Added delete note to notes list
 - Fixed some minors bugs
+
 /************************************************************************/
-Mai 2002: Version 3.3.1
+January 2002: Version 3.2b
 /************************************************************************/
-- Fixed Add-ons bug: Functions xxx_OnUserCreate(), xxx_OnUserDelete(), 
-  xxx_OnGroupDelete() and xxx_OnGroupCreate() are not collaed
-- Removed 'Read more' when body article is empty
-- Fixed problems quotes
-- Now Ovidentia version is in the form 'major'.'minor'.'build'
-- We can upgrade from 3.1 to the last version in one step
-- Fixed missing Meta Keywords in Ovidentia page
-- Fixed bug: $ARTICLE does'nt work correctly
-- Addde $ARTICLEPOPUP: view article in popup window
+
+- Added an hierarchy in topics ( see documentation )
+- Added a section by topic
+- Enable/Disable section
+- Added number of hits for downladed files
+- Remove files owned by a group or a user when we delete a group or a user
+- When we want to delete a faq category, we have a warning caused by /r in text translation.
+- Fixed a bug in calendar when an event contains apostrophes
+- Fixed : user cannot change firstname and lastname even those doesnt exists
+- Change topics behavior when user is also administrator: List only manager's topics
+- Fixed : clean sections_states table when a section is deleted
 - Fixed some minors bugs
+- Change: to customize templates ( like config.html ) you must copy it to skins/skin-name/templates
+  under your site directory. Skin-name is the name of the skin witch own the file. 
+

@@ -225,7 +225,7 @@ function updateGroup( $grp, $users, $userst)
 if( !isset($pos))
 	$pos = "A";
 
-if( !isset($grp))
+if( !isset($grp) || empty($grp))
 	$grp = 3;
 
 if( !isset($idx))
