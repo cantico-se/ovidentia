@@ -1044,8 +1044,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 								{
 								$grp = ($row['id_group'] > 1) ? "UG.id_group='".$row['id_group']."' and ":'';
 								$req = "insert into bab_dbdir_temptable select ".implode(",", $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det";
+
 								if( $row['id_group'] > 1 )
 									{
+									
 									$req .= " left join ".BAB_USERS_GROUPS_TBL." UG on UG.id_object=det.id_user";
 									}
 								$req .= " where det.id_directory='0'";
@@ -1142,18 +1144,18 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							{
 
 							$dirname = mysql_escape_string($row['name']);
-
+							
 							if( $row['id_group'] == 1 )
 								{
 								list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where  id='".$row['id_group']."'"));
 								if( $bdir == 'Y' )
 									{
-									$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det , ".BAB_USERS_GROUPS_TBL." UG where";
+									$req = "insert into dirresults select ".implode(',', $arrfields).", '".$dirname."' name from ".BAB_DBDIR_ENTRIES_TBL." det where";
 									if( !empty($likedir))
 										{
 										$req .= " ".$likedir." and";
 										}
-									$req .= " UG.id_object=det.id_user and det.id_directory='0'";
+									$req .= " det.id_directory='0'";
 									if( !empty($crit_fields) )
 										{
 										$req .= " and ".$crit_fields;
@@ -1220,6 +1222,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->countdir = $this->db->db_num_rows($this->resdir);
 				if( !$this->counttot && $this->countdir > 0 )
 					$this->counttot = true;
+				
 				$this->nbresult += $nbrows;
 				}
 								
@@ -1284,7 +1287,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				}
 				
 			// --------------------------------------------- ADDONS
-
+			
+			$nbrows = 0;
 			$this->addons = new bab_addonsSearch;
 			$this->addonSearchArray = $this->addons->getsearcharray($item);
 			$this->countaddons = count($this->addonSearchArray);
@@ -1309,10 +1313,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 
 			$this->nbresult += $nbrows;
+
 			if( !$this->counttot && count($this->addonsdata) > 0 )
 					$this->counttot = true;
 
-
+			
 			// end
 
 			if( !$this->counttot)
