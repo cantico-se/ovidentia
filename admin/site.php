@@ -351,7 +351,7 @@ if( !isset($idx))
 
 if( isset($action) && $action == "Yes")
 	{
-	confirmDeleteSites($site);
+	confirmDeleteSite($site);
 	}
 
 switch($idx)
