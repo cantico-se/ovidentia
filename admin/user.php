@@ -342,6 +342,15 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 
 	if( $is_confirmed == 1 && $r['is_confirmed'] == 0 )
 		{
+		$arr2 = $db->db_fetch_array($db->db_query("select idgroup from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+		if( $arr2['idgroup'] != 0)
+			{
+			$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$id."' and id_group='".$arr2['idgroup']."'");
+			if( !$res || $db->db_num_rows($res) < 1)
+				{
+				$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$arr2['idgroup']. "', '" . $id. "')");
+				}
+			}
 		notifyUserconfirmation( bab_composeUserName($r['firstname'] , $r['lastname']), $r['email']);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");

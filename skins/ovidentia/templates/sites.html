@@ -61,6 +61,17 @@
             </td>
 </tr>
 <tr> 
+            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ group }</td>
+            <td class="BabLoginMenuBackground" align="left" valign="middle">
+                <select name="group">
+                  <option value="0" selected>{ none }</option>
+                  <!--#in getnextgrp -->
+                  <option value="{ grpid }">{ grpname }</option>
+                  <!--#endin getnextgrp -->
+                </select>
+            </td>
+</tr>
+<tr> 
 <td align="right" nowrap valign="middle">{ siteemail }</td>
 <td valign="middle">
 <input type="text" name="siteemail" size="30" maxlength="254" value="{ siteemailval }">
@@ -200,6 +211,17 @@
                   <option value="Y" { yconfirm }>{ yes }</option>
                   <option value="N" { nconfirm }>{ no }</option>
                 </select>&nbsp;{ helpconfirmation }
+            </td>
+</tr>
+<tr> 
+            <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ group }</td>
+            <td class="BabLoginMenuBackground" align="left" valign="middle">
+                <select name="group">
+                  <option value="0">{ none }</option>
+                  <!--#in getnextgrp -->
+                  <option value="{ grpid }" { grpsel }>{ grpname }</option>
+                  <!--#endin getnextgrp -->
+                </select>
             </td>
 </tr>
 <tr> 

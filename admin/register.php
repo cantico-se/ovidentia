@@ -300,9 +300,19 @@ function confirmUser($hash, $nickname)
 			}
 		else
 			{
+			$arr = $db->db_fetch_array($result);
 			$babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
-			$sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE confirm_hash='$hash'";
-			$result=$db->db_query($sql);
+			$sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE id='".$arr['id']."'";
+			$db->db_query($sql);
+			$arr2 = $db->db_fetch_array($db->db_query("select idgroup from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+			if( $arr2['idgroup'] != 0)
+				{
+				$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['id']."' and id_group='".$arr2['idgroup']."'");
+				if( !$res || $db->db_num_rows($res) < 1)
+					{
+					$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$arr2['idgroup']. "', '" . $arr['id']. "')");
+					}
+				}
 			return true;
 			}
 		}

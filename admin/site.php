@@ -72,6 +72,11 @@ function siteModify($id)
 		var $sendmailselected;
 		var $disabledselected;
 
+		var $group;
+		var $db;
+		var $grpcount;
+		var $grpres;
+
 		function temp($id)
 			{
 			$this->name = bab_translate("Site name");
@@ -91,6 +96,8 @@ function siteModify($id)
 			$this->server = bab_translate("Smtp server");
 			$this->serverport = bab_translate("Server port");
 			$this->imagessize = bab_translate("Max image size ( Kb )");
+			$this->group = bab_translate("Default group for confirmed users");
+			$this->none = bab_translate("None");
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
@@ -115,6 +122,7 @@ function siteModify($id)
 				$this->serverval = $arr['smtpserver'];
 				$this->serverportval = $arr['smtpport'];
 				$this->imgsizeval = $arr['imgsize'];
+				$this->grpidsel = $arr['idgroup'];
 				if( $arr['registration'] == "Y")
 					{
 					$this->nregister = "";
@@ -186,6 +194,9 @@ function siteModify($id)
 				}
             $this->skselectedindex = 0;
             $this->stselectedindex = 0;
+
+			$this->grpres = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id > '3'");
+			$this->grpcount = $this->db->db_num_rows($this->grpres);
 			}
 		
 		function getnextlang()
@@ -282,6 +293,26 @@ function siteModify($id)
 				$j = 0;
 				return false;
 				}
+			}
+
+		function getnextgrp()
+			{
+			static $i = 0;
+			if( $i < $this->grpcount)
+				{
+				$arr = $this->db->db_fetch_array($this->grpres);
+                $this->grpname = $arr['name'];
+                $this->grpid = $arr['id'];
+				if( $this->grpidsel == $this->grpid )
+					$this->grpsel = "selected";
+				else
+					$this->grpsel = "";
+
+				$i++;
+				return true;
+				}
+			else
+				return false;
 			}
 		}
 
@@ -484,7 +515,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize)
+function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group)
 	{
 	global $babBody;
 	if( empty($name))
@@ -520,7 +551,7 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 		{
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."' where id='".$id."'";
+		$query = "update ".BAB_SITES_TBL." set name='".$name."', description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."' where id='".$id."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -569,7 +600,7 @@ if( isset($modify))
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize))
+		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group))
 			$idx = "modify";
 		}
 	else if( !empty($delete))

@@ -94,6 +94,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 		var $nameval;
 		var $descriptionval;
 		var $lang;
+		var $langval;
 		var $siteemail;
 		var $siteemailval;
 		var $create;
@@ -124,6 +125,11 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 		var $serverport;
 		var $serverportval;
 
+		var $group;
+		var $db;
+		var $grpcount;
+		var $grpres;
+
 		function temp($name, $description, $siteemail, $server, $serverport)
 			{
 
@@ -140,12 +146,14 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 			$this->server = bab_translate("Smtp server");
 			$this->serverport = bab_translate("Server port");
 			$this->imagessize = bab_translate("Max image size ( Kb )");
+			$this->none = bab_translate("None");
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
 			$this->confirmation = bab_translate("Send email confirmation")."?";
 			$this->registration = bab_translate("Activate Registration")."?";
 			$this->helpconfirmation = "( ".bab_translate("Only valid if registration is actif")." )";
+			$this->group = bab_translate("Default group for confirmed users");
 
 			$this->nameval = $name == ""? $GLOBALS['babSiteName']: $name;
 			$this->descriptionval = $description == ""? "": $description;
@@ -187,7 +195,12 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 				}
             $this->skselectedindex = 0;
             $this->stselectedindex = 0;
+
+			$this->db = $GLOBALS['babDB'];
+			$this->grpres = $this->db->db_query("select * from ".BAB_GROUPS_TBL." where id > '3'");
+			$this->grpcount = $this->db->db_num_rows($this->grpres);
 			}
+
 		function getnextlang()
 			{
 			static $i = 0;
@@ -269,6 +282,20 @@ function siteCreate($name, $description, $siteemail, $server, $serverport)
 				return false;
 				}
 			}
+		function getnextgrp()
+			{
+			static $i = 0;
+			if( $i < $this->grpcount)
+				{
+				$arr = $this->db->db_fetch_array($this->grpres);
+                $this->grpname = $arr['name'];
+                $this->grpid = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
 		}
 
 	$temp = new temp($name, $description, $siteemail, $server, $serverport);
@@ -311,7 +338,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize)
+function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group)
 	{
 	global $babBody;
 	if( empty($name))
@@ -347,7 +374,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		{
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize."')";
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group."')";
 		$db->db_query($query);
 		}
 	return true;
@@ -357,7 +384,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 /* main */
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize))
+	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group))
 		$idx = "create";
 	}
 
