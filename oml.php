@@ -345,7 +345,7 @@ class bab_ArticleTopic extends bab_handler
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
+			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_cat']."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$i++;
