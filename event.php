@@ -70,7 +70,6 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 			$this->addvac = babTranslate("Add Event");
 			$this->starttime = babTranslate("starttime");
 			$this->endtime = babTranslate("endtime");
-			$this->recurrence = babTranslate("Week recurrence");
 			$this->daystext = babTranslate("Days");
 			$this->or = babTranslate("Or");
 			$this->repeat = babTranslate("Repeat");
