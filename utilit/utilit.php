@@ -4,7 +4,13 @@ include $babInstallPath."utilit/uiutil.php";
 include $babInstallPath."utilit/template.php";
 include $babInstallPath."utilit/userincl.php";
 include $babInstallPath."utilit/calincl.php";
-include $babInstallPath."utilit/date-".$babLanguage.".php";
+
+$babMonths = array(1=>"January", "February", "March", "April",
+                        "May", "June", "July", "August",
+                        "September", "October", "November", "December");
+
+$babDays = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+
 
 function bab_mktime($time)
 	{
@@ -20,9 +26,9 @@ function bab_strftime($time, $hour=true)
 	if( $time < 0)
 		return "";
 	if( !$hour )
-		return $babDays[date("w", $time)]." ".date("j", $time)." ".$babMonths[date("n", $time)]." ".date("Y", $time); 
+		return babTranslate($babDays[date("w", $time)])." ".date("j", $time)." ".babTranslate($babMonths[date("n", $time)])." ".date("Y", $time); 
 	else
-		return $babDays[date("w", $time)]." ".date("j", $time)." ".$babMonths[date("n", $time)]." ".date("Y", $time)." ".date("H", $time).":".date("i", $time); 
+		return babTranslate($babDays[date("w", $time)])." ".date("j", $time)." ".babTranslate($babMonths[date("n", $time)])." ".date("Y", $time)." ".date("H", $time).":".date("i", $time); 
 	}
 
 function babPrintTemplate( $class, $file, $section="")
@@ -67,9 +73,9 @@ function babTranslate($str)
 				}
 			}
 		}
-	
+
 	$out = "<".$GLOBALS[babLanguage].">".$m[1];
-	$out .= "<string id=\"".$str."\">".$str."</string>\n";
+	$out .= "<string id=\"".$str."\">".$str."</string>\r\n";
 	$out .= "</".$GLOBALS[babLanguage].">";
 	$file = fopen($filename, "w");
 	fputs($file, $out);
@@ -200,6 +206,7 @@ function adminSection()
 	$this->array_urls[babTranslate("Forums")] = $GLOBALS[babUrl]."index.php?tg=forums";
 	$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=admvacs";
 	$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=admcals";
+	$this->array_urls[babTranslate("Mail")] = $GLOBALS[babUrl]."index.php?tg=maildoms&userid=0&bgrp=y";
 	$this->title = babTranslate("Administration");
 	$this->head = babTranslate("This section is for Administration");
 	$this->foot = babTranslate("");
@@ -234,6 +241,7 @@ var $titlebgnd;
 function userSection()
 	{
 	global $BAB_SESS_USERID, $sectionTitlesBgnd;
+	$pgrpid = getPrimaryGroupId($BAB_SESS_USERID);
 	$faq = false;
 	$db = new db_mysql();
 	$req = "select * from faqcat";
@@ -251,15 +259,26 @@ function userSection()
 	if( $res && $db->db_num_rows($res) > 0 || useVacation($GLOBALS[BAB_SESS_USERID]))
 		$vac = true;
 
+	$bemail = mailAccessLevel();
+	if( $bemail == 1 || $bemail == 2)
+		$bemail = true;
+	else
+		$bemail = false;
+
 	$this->babSectionTemplate("usersection.html", "template");
-	$this->array_urls[babTranslate("Change Password")] = $GLOBALS[babUrl]."index.php?tg=login&cmd=newpwd";
+	$this->array_urls[babTranslate("Summary")] = $GLOBALS[babUrl]."index.php?tg=calview";
+	$this->array_urls[babTranslate("Options")] = $GLOBALS[babUrl]."index.php?tg=options";
 	$this->array_urls[babTranslate("Notes")] = $GLOBALS[babUrl]."index.php?tg=notes";
 	if( $faq )
 		$this->array_urls[babTranslate("Faq")] = $GLOBALS[babUrl]."index.php?tg=faq";
 	if( $vac )
 		$this->array_urls[babTranslate("Vacation")] = $GLOBALS[babUrl]."index.php?tg=vacation";
-	if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && getCalendarid($BAB_SESS_USERID, 1) != 0 )
-		$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=calview";
+	$idcal = getCalendarid($BAB_SESS_USERID, 1);
+	if( (getCalendarId(1, 2) != 0  || getCalendarId($pgrpid, 2) != 0) &&  $idcal != 0 )
+		$this->array_urls[babTranslate("Calendar")] = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&calid=".$idcal;
+	if( $bemail )
+		$this->array_urls[babTranslate("Mail")] = $GLOBALS[babUrl]."index.php?tg=inbox";
+	$this->array_urls[babTranslate("Contacts")] = $GLOBALS[babUrl]."index.php?tg=contacts";
 	$this->title = babTranslate("User's section");
 	$this->head = babTranslate("You are logged as").":<br><center><b>";
 	if( !empty($GLOBALS[BAB_SESS_USER]))
@@ -566,23 +585,16 @@ function setCurrentItemMenu($title, $enabled=false)
 	$this->menu->setCurrent($title, $enabled);
 }
 
-function displayMessage($msg, $class)
-{
-	$txt = "<center><table border=\"0\" width=\"90%\" cellpadding=\"0\" cellspacing=\"0\">";
-	$txt .= "<tr><td class=\"".$class."\"><center>".$msg."</center></td></tr></table></center><br>";
-	return $txt;
-}
-
 function printout()
 {
-	if(!empty($this->msgerror))
+    if(!empty($this->msgerror))
 		{
-		$this->message = $this->displayMessage($this->msgerror, "BabError");
-		return "";
+		$this->message = babPrintTemplate($this,"warning.html", "texterror");
+		//return "";
 		}
-	if(!empty($this->title))
+	else if(!empty($this->title))
 		{
-		$this->message = $this->displayMessage($this->title, "BabMessage");
+		$this->message = babPrintTemplate($this,"warning.html", "texttitle");
 		}
 	return $this->content;
 }
@@ -642,8 +654,8 @@ function babMonthA($month = "", $year = "")
 
 function printout()
 	{
-	global $babMonths, $babDays,$BAB_SESS_USERID;
-	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
+	global $babMonths, $BAB_SESS_USERID;
+	$this->curmonth = babTranslate($babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))]);
 	$this->curyear = $this->currentYear;
 	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
 	$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
@@ -659,14 +671,14 @@ function printout()
 
 	function getnextday3()
 		{
-		global $babMonths, $babDays;
+		global $babDays;
 		static $i = 0;
 		if( $i < 7)
 			{
 			$a = $i + $this->babCalendarStartDay;
 			if( $a > 6)
 				$a -=  7;
-			$this->day3 = substr($babDays[$a], 0, 1);
+			$this->day3 = substr(babTranslate($babDays[$a]), 0, 1);
 			$i++;
 			return true;
 			}
@@ -755,25 +767,37 @@ function printout()
 			}
 		}
 }
-function updateActivity()
+function updateUserSettings()
 {
 	global $BAB_SESS_USERID;
 	if( isset($BAB_SESS_USERID) && !empty($BAB_SESS_USERID))
 		{
 		$db = new db_mysql();
-		/*
-		$req="select * from users_log where id_user='$BAB_SESS_USERID'";
+
+		$req="select * from users where id='$BAB_SESS_USERID'";
 		$res=$db->db_query($req);
-		if( $res && $db->db_num_rows($res) > 0)
-			{
-			$arr = $db->db_fetch_array($res);
-			if( time() - bab_mktime($arr[dateact]) > $babTimeOut*60)
-				{
-				}
-			}
-		*/
-		$req="update users_log set dateact=now() where id_user='$BAB_SESS_USERID'";
-		$res=$db->db_query($req);
+
+        if( $res && $db->db_num_rows($res) > 0 )
+            {
+            $arr = $db->db_fetch_array($res);
+            if( $arr[lang] != "")
+                {
+                $GLOBALS[babLanguage] = $arr[lang];
+                }
+            /*
+            $req="select * from users_log where id_user='$BAB_SESS_USERID'";
+            $res=$db->db_query($req);
+            if( $res && $db->db_num_rows($res) > 0)
+                {
+                $arr = $db->db_fetch_array($res);
+                if( time() - bab_mktime($arr[dateact]) > $babTimeOut*60)
+                    {
+                    }
+                }
+            */
+            $req="update users_log set dateact=now() where id_user='$BAB_SESS_USERID'";
+            $res=$db->db_query($req);
+            }
 		}
 }
 
