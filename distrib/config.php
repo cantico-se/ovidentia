@@ -23,5 +23,5 @@ $babMaxFileSize = 1000000; /* Max size ( bytes ) file allowed*/
 $babMaxUserSize = 2000000; /* Capacity storage ( bytes ) allowed by user*/
 $babMaxGroupSize = 5000000; /* Capacity storage ( bytes ) allowed by group */
 $babMaxTotalSize = 100000000; /* Capacity storage ( bytes ) allowed for a site */
-$babUploadPath = "/uploads-directory"; /* where to upload files */
+$babUploadPath = "/uploads-directory"; /* where to upload files ( c:\\path-to\\upload-directory for Windows )*/
 ?>
