@@ -76,14 +76,21 @@ function processTemplate(&$class, $str)
 					if( isset($class->{$m2[1]}[$m2[2]]))
 						$tvar = $class->{$m2[1]}[$m2[2]];
 					else
+						{
+						if (!isset($$m2[1][$m2[2]])) $$m2[1][$m2[2]] = '';
+						if (!isset($GLOBALS[$$m2[1][$m2[2]]])) $GLOBALS[$$m2[1][$m2[2]]] = '';
 						$tvar = $GLOBALS[$$m2[1][$m2[2]]];
+						}
 					}
 				else
 					{
 					if( isset($class->$var))
 						$tvar = $class->$var;
 					else
+						{
+						if (!isset($GLOBALS[$var])) $GLOBALS[$var] = '';
 						$tvar = $GLOBALS[$var];
+						}
 					}
 
 				if( $res )
