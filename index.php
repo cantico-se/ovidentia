@@ -220,7 +220,7 @@ function printBody()
 			$this->babLogoRB = bab_printTemplate($this, "config.html", "babLogoRB");
 			$this->babBanner = bab_printTemplate($this, "config.html", "babBanner");
 			$this->script = $babBody->script;
-			$this->babSessTimeout = ini_get('session.cache_expire');
+			$this->babSessTimeout = ini_get('session.gc_maxlifetime');
 			$this->babSessTimeoutMsg = bab_translate("Session expire in");
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript'];
