@@ -196,6 +196,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			$this->change_nickname_title = bab_translate("User can modifiy his nickname");
 			$this->change_password_title = bab_translate("User can modifiy his password");
 			$this->remember_login_title = bab_translate("Automatic connection");
+			$this->email_password_title = bab_translate("E-mail password");
 			$this->babslogan_title = bab_translate("Site slogan");
 			$this->uploadpath_title = bab_translate("Upload path");
 			$this->maxfilesize_title = bab_translate("File manager max file size");
@@ -212,6 +213,11 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 				{
 				if ($GLOBALS['babCookieIdent']) $this->dbvalue['remember_login'] = "Y";
 				else $this->dbvalue['remember_login'] = "N";
+				}
+			if (!isset($this->dbvalue['email_password'])) 
+				{
+				if ($GLOBALS['babEmailPassword']) $this->dbvalue['email_password'] = "Y";
+				else $this->dbvalue['email_password'] = "N";
 				}
 			if (!isset($this->dbvalue['change_password'])) $this->dbvalue['change_password'] = "Y";
 			if (!isset($this->dbvalue['change_nickname'])) $this->dbvalue['change_nickname'] = "Y";
@@ -480,7 +486,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $change_password, $change_nickname, $name_order, $adminname)
+function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname)
 	{
 	global $babBody;
 	if( empty($name))
@@ -550,7 +556,7 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $change_password, $change_nickname, $name_order, $adminname))
+	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname))
 		$idx = "create";
 	}
 

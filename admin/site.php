@@ -150,6 +150,7 @@ function siteModify($id)
 			$this->change_nickname_title = bab_translate("User can modifiy his nickname");
 			$this->change_password_title = bab_translate("User can modifiy his password");
 			$this->remember_login_title = bab_translate("Automatic connection");
+			$this->email_password_title = bab_translate("E-mail password");
 			$this->babslogan_title = bab_translate("Site slogan");
 			$this->uploadpath_title = bab_translate("Upload path");
 			$this->maxfilesize_title = bab_translate("File manager max file size");
@@ -194,7 +195,6 @@ function siteModify($id)
 					$this->yregister = "";
 					$this->nregister = "selected";
 					}
-
 				if( $arr['email_confirm'] == "Y")
 					{
 					$this->nconfirm = "";
@@ -683,7 +683,7 @@ function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $
 	}
 
 
-function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $change_password, $change_nickname, $name_order)
+function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order)
 	{
 	global $babBody;
 	if( !bab_isMagicQuotesGpcOn())
@@ -711,7 +711,7 @@ function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspa
 		list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
 		$req = "update ".BAB_SITES_TBL." set ";
 
-		$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."' where id='".$id."'";
+		$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', email_password='".$email_password."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."' where id='".$id."'";
 		$db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -779,7 +779,7 @@ if( isset($modify) && $modify=="bloc2")
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate_bloc2($item,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $change_password, $change_nickname, $name_order))
+		if(!siteUpdate_bloc2($item,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password,  $change_password, $change_nickname, $name_order))
 			$idx = "modify";
 		}
 	}

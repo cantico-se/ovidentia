@@ -2377,6 +2377,14 @@ if( !$res)
 
 $db->db_query("update ".BAB_SITES_TBL." set adminname='Ovidentia Administrator'");
 
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `email_password` ENUM('Y','N') DEFAULT 'Y' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 ?>

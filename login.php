@@ -418,6 +418,11 @@ else if( isset($sendpassword) && $sendpassword == "send")
 	sendPassword($nickname);
 	}
 
+if ($cmd == "emailpwd" && !$GLOBALS['babEmailPassword'])
+	{
+	$babBody->msgerror = bab_translate("Acces denied");
+	$cmd = "signon";
+	}
 
 
 switch($cmd)
@@ -435,7 +440,8 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $r['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
+		if ($GLOBALS['babEmailPassword'] ) 
+			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		userCreate($firstname, $middlename, $lastname, $nickname, $email);
 		break;
 
@@ -444,7 +450,8 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $r['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
+		if ($GLOBALS['babEmailPassword'] ) 
+			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		emailPassword();
 		break;
 
@@ -454,7 +461,8 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $r['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
+		if ($GLOBALS['babEmailPassword'] ) 
+			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		if (!$referer) $referer = urlencode($HTTP_REFERER);
 			displayLogin($referer);
 		break;

@@ -760,6 +760,7 @@ CREATE TABLE `bab_sites` (
   `change_password` enum('Y','N') NOT NULL default 'Y',
   `change_nickname` enum('Y','N') NOT NULL default 'Y',
   `name_order` enum('F L','L F') NOT NULL default 'F L',
+  `email_password` enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 ) TYPE=MyISAM AUTO_INCREMENT=16 ;

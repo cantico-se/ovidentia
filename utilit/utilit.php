@@ -1914,6 +1914,10 @@ function bab_updateSiteSettings()
 		}
 	else
 		$GLOBALS['babCookieIdent'] = false;
+	if( $arr['email_password'] == "Y")
+		$GLOBALS['babEmailPassword'] = true;
+	else
+		$GLOBALS['babEmailPassword'] = false;
 
 	$GLOBALS['babAdminName'] = $arr['adminname'];
 }
