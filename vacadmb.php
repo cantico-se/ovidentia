@@ -281,20 +281,20 @@ function listVacationRequests($idstatus, $userid, $dateb, $datee, $vpos)
 				{
 				$urltmp = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq&idstatus=".$this->idstatus."&userid=".$this->userid."&dateb=".$this->dateb."&datee=".$this->datee."&vpos=";
 
-				if( $pos > 0)
+				if( $vpos > 0)
 					{
 					$this->topurl = $urltmp."0";
 					$this->topname = "&lt;&lt;";
 					}
 
-				$next = $pos - VAC_MAX_REQUESTS_LIST;
+				$next = $vpos - VAC_MAX_REQUESTS_LIST;
 				if( $next >= 0)
 					{
 					$this->prevurl = $urltmp.$next;
 					$this->prevname = "&lt;";
 					}
 
-				$next = $pos + VAC_MAX_REQUESTS_LIST;
+				$next = $vpos + VAC_MAX_REQUESTS_LIST;
 				if( $next < $total)
 					{
 					$this->nexturl = $urltmp.$next;
@@ -313,7 +313,7 @@ function listVacationRequests($idstatus, $userid, $dateb, $datee, $vpos)
 
 			if( $total > VAC_MAX_REQUESTS_LIST)
 				{
-				$req .= " limit ".$pos.",".VAC_MAX_REQUESTS_LIST;
+				$req .= " limit ".$vpos.",".VAC_MAX_REQUESTS_LIST;
 				}
 
 			$this->res = $this->db->db_query("select * from ".$req);
