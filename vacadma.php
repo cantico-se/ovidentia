@@ -446,114 +446,97 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 }
 
 
-function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance)
+function addModifyVacationRigths($id = false)
 	{
 	global $babBody;
 	class temp
 		{
-		var $usertext;
-		var $colltext;
-		var $userval;
-		var $userid;
-		var $collval;
-		var $collid;
-		var $quantitytxt;
-		var $add;
-		var $bdel;
-		var $delete;
-		var $usersbrowurl;
-		var $db;
-		var $reset;
-		var $orand;
-		var $days;
-		var $desctxt;
-		var $periodtxt;
-		var $begintxt;
-		var $endtxt;
-		var $dateburl;
-		var $dateeurl;
-		var $dateb;
-		var $datee;
-		var $description;
-		var $idtype;
-		var $nbdays;
-		var $typetxt;
-		var $typename;
-		var $allcol;
-		var $opentxt;
 		var $yes;
 		var $no;
-		var $counttype;
-		var $restype;
-
 		var $invalidentry1;
 		var $tpsel;
 		var $colsel;
 
-		function temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance)
+		function temp($id)
 			{
-			$this->typetxt = bab_translate("Type");
-			$this->usertext = bab_translate("User");
-			$this->colltext = bab_translate("Collection");
-			$this->quantitytxt = bab_translate("Quantity");
-			$this->reset = bab_translate("Reset");
-			$this->delete = bab_translate("Delete");
-			$this->orand = bab_translate("Or users having ");
-			$this->allcol = bab_translate("All collections");
-			$this->days = bab_translate("Day(s)");
-			$this->desctxt = bab_translate("Description");
-			$this->periodtxt = bab_translate("Period"). " (".bab_translate("dd-mm-yyyy").")";
-			$this->begintxt = bab_translate("Begin");
-			$this->endtxt = bab_translate("End");
-			$this->opentxt = bab_translate("Opened right");
-			$this->balancetxt = bab_translate("Accept negative balance");
+			$this->t_id_type = bab_translate("Type");
+			$this->t_id_creditor = bab_translate("User");
+			$this->t_collid = bab_translate("Collection");
+			$this->t_quantity = bab_translate("Quantity");
+			$this->t_reset = bab_translate("Reset");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_orand = bab_translate("Or users having ");
+			$this->t_allcol = bab_translate("All collections");
+			$this->t_days = bab_translate("Day(s)");
+			$this->t_description = bab_translate("Description");
+			$this->t_period = bab_translate("Period"). " (".bab_translate("dd-mm-yyyy").")";
+			$this->t_date_begin = $this->t_period_start = bab_translate("Begin");
+			$this->t_date_end = $this->t_period_end = bab_translate("End");
+			$this->t_active = bab_translate("Opened right");
+			$this->t_cbalance = bab_translate("Accept negative balance");
+			$this->t_use_rules = bab_translate("Use rules");
+			$this->t_trigger_nbdays_min = bab_translate("Rule minimum number of days");
+			$this->t_trigger_nbdays_max = bab_translate("Rule maximum number of days");
+			$this->t_trigger_inperiod = bab_translate("Allow rule");
+			$this->t_always = bab_translate("Always");
+			$this->t_inperiod = bab_translate("In period");
+			$this->t_outperiod = bab_translate("Out of period");
+			$this->t_right_inperiod = bab_translate("Apply right");
+			$this->t_record = bab_translate("Record");
+
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted or . !");
+
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt";
+			$this->db = & $GLOBALS['babDB'];
+			$el_to_init = array('idvr', 'id_creditor', 'date_begin', 'date_end', 'quantity', 'id_type', 'description', 'active', 'cbalance','period_start', 'period_end', 'trigger_nbdays_min', 'trigger_nbdays_max', 'trigger_inperiod', 'right_inperiod','use_rules');
 
-			$this->db = $GLOBALS['babDB'];
-			$this->add = bab_translate("Add");
-			$this->userid = $userid;
-			if( $userid != "" )
-				$this->userval = bab_getUserName($userid);
+			$dates_to_init = array('date_begin', 'date_end', 'period_start','period_end');
+			
+			if (isset($_POST) && count($_POST) > 0)
+				{
+				$this->arr = $_POST;
+				}
+			elseif ($id)
+				{
+				$this->arr = $this->db->db_fetch_array($this->db->db_query("SELECT t1.*,t2.id use_rules,t2.period_start, t2.period_end, t2.trigger_nbdays_min, t2.trigger_nbdays_max, t2.trigger_inperiod, t2.right_inperiod, t3.name type FROM ".BAB_VAC_RIGHTS_TBL." t1 LEFT JOIN ".BAB_VAC_RIGHTS_RULES_TBL." t2 ON t2.id_right=t1.id LEFT JOIN ".BAB_VAC_TYPES_TBL." t3 ON t3.id = t1.id_type WHERE t1.id='".$id."'"));
+				$this->collid = "";
+
+				foreach($dates_to_init as $field)
+					{
+					if (!empty($this->arr[$field]))
+						{
+						list($y,$m,$d) = explode('-',$this->arr[$field]);
+						$this->arr[$field] = $d.'-'.$m.'-'.$y;
+						}
+					}
+				$this->arr['idvr'] = $id;
+				}
+			
+			foreach($el_to_init as $field)
+				{
+				if (!isset($this->arr[$field]))
+					$this->arr[$field] = '';
+				}
+			
+			if( $this->arr['id_creditor'] != "" )
+				$this->arr['id_creditorDisplay'] = bab_getUserName($this->arr['id_creditor']);
 			else
-				$this->userval = "";
+				$this->arr['id_creditorDisplay'] = "";
 			$this->bdel = false;
-			$this->collid = $collid;
-			if( $collid  == "" || $collid  == "-1")
+			
+			if( isset($this->arr['collid']) && $this->arr['collid'] == '' )
 				$this->colsel = 0;
-			else if( $collid  == "-1")
+			else if( isset($this->arr['collid']) && $this->arr['collid'] == -1)
 				$this->colsel = 1;
-
-			$this->dateb = $dateb;
-			$this->datee = $datee;
-			$this->description = $description;
-			$this->idtype = $idtype;
-			$this->tpsel = 0;
-			$this->nbdays = $nbdays;
-
-			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3";
-			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3";
-
-			$this->nbdays = $nbdays;
-
-			if( $vclose == "" )
-				$vclose = "N";
-
-			if( $cbalance == "" )
-				$cbalance = "N";
-
-			if( $vclose == "Y" )
-				{
-				$this->nselected = "";
-				$this->yselected = "selected";
-				}
 			else
 				{
-				$this->yselected = "";
-				$this->nselected = "selected";
+				$this->colsel = 0;
 				}
+
+			$this->tpsel = 0;
+			
 
 			$this->restype = $this->db->db_query("select * from ".BAB_VAC_TYPES_TBL." order by name asc");
 			$this->counttype = $this->db->db_num_rows($this->restype);
@@ -568,7 +551,7 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 				$this->collval = str_replace("'", "\'", $arr['name']);
 				$this->collval = str_replace('"', "'+String.fromCharCode(34)+'",$this->collval);
 				$this->idcollection = $arr['id'];
-				if( $this->collid == $this->idcollection)
+				if( isset($this->arr['collid']) && $this->arr['collid'] == $this->idcollection)
 					$this->colsel = $j+1;
 				$j++;
 				return true;
@@ -599,7 +582,8 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 					}
 				$this->colres = $this->db->db_query("select ".BAB_VAC_COLLECTIONS_TBL.".* from ".BAB_VAC_COLLECTIONS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_COLL_TYPES_TBL.".id_type='".$this->typeid."' and ".BAB_VAC_COLLECTIONS_TBL.".id=".BAB_VAC_COLL_TYPES_TBL.".id_coll");
 				$this->countcol = $this->db->db_num_rows($this->colres);
-				if( $this->idtype == $this->typeid )
+
+				if( $this->arr['id_type'] == $this->typeid )
 					{
 					$this->tpsel = $i;
 					$this->selected = "selected";
@@ -621,138 +605,8 @@ function addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $da
 
 		}
 
-	$temp = new temp($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance);
-	$babBody->babecho(	bab_printTemplate($temp,"vacadma.html", "prightsadd"));
-	}
-
-function modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance)
-	{
-	global $babBody;
-	class temp
-		{
-		var $typetxt;
-		var $idcollection;
-		var $typename;
-		var $selected;
-		var $add;
-		var $bdel;
-		var $delete;
-		var $db;
-		var $reset;
-		var $orand;
-		var $days;
-		var $desctxt;
-		var $periodtxt;
-		var $begintxt;
-		var $endtxt;
-		var $dateburl;
-		var $dateeurl;
-		var $dateb;
-		var $datee;
-		var $description;
-		var $idtype;
-		var $nbdays;
-		var $idvr;
-		var $daystxt;
-		var $invalidentry1;
-		var $closetxt;
-		var $yes;
-		var $no;
-
-		function temp($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance)
-			{
-			$this->idvr = $idvr;
-			$this->typetxt = bab_translate("Type");
-			$this->reset = bab_translate("Reset");
-			$this->delete = bab_translate("Delete");
-			$this->days = bab_translate("Day(s)");
-			$this->desctxt = bab_translate("Description");
-			$this->periodtxt = bab_translate("Period"). " (".bab_translate("dd-mm-yyyy").")";
-			$this->begintxt = bab_translate("Begin");
-			$this->endtxt = bab_translate("End");
-			$this->daystxt = bab_translate("Quantity");
-			$this->closetxt = bab_translate("Close right");
-			$this->balancetxt = bab_translate("Accept negative balance");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
-			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted or . !");
-
-			$this->db = $GLOBALS['babDB'];
-			$this->add = bab_translate("Modify");
-			$this->bdel = false;
-
-			list($total) = $this->db->db_fetch_row($this->db->db_query("select count(id) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$idvr."'"));
-			if( $total == 0 )
-				$this->bdel = true;
-
-			$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'"));
-
-			if( $dateb == "" )
-				{
-				$rr = explode('-', $arr['date_begin']);
-				$this->dateb = $rr[2]."-".$rr[1]."-".$rr[0];
-				}
-			else
-				$this->dateb = $dateb;
-
-			if( $datee == "" )
-				{
-				$rr = explode('-', $arr['date_end']);
-				$this->datee = $rr[2]."-".$rr[1]."-".$rr[0];
-				}
-			else
-				$this->datee = $datee;
-			if( $description == "" )
-				$this->description = $arr['description'];
-			else
-				$this->description = $description;
-
-			$this->idtype = $arr['id_type'];
-			if( $nbdays == "" )
-				$this->nbdays = $arr['quantity'];
-			else
-				$this->nbdays = $nbdays;
-
-			if( $vclose == "" )
-				{
-				$vclose = $arr['active'] == "Y"? "N": "Y";
-				}
-
-			if( $cbalance == "" )
-				{
-				$cbalance = $arr['cbalance'] == "Y"? "Y": "N";
-				}
-
-			if( $vclose == "Y" )
-				{
-				$this->nselected = "";
-				$this->yselected = "selected";
-				}
-			else
-				{
-				$this->yselected = "";
-				$this->nselected = "selected";
-				}
-			if( $cbalance == "Y" )
-				{
-				$this->cbnselected = "";
-				$this->cbyselected = "selected";
-				}
-			else
-				{
-				$this->cbyselected = "";
-				$this->cbnselected = "selected";
-				}
-			$this->dateburl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3";
-			$this->dateeurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3";
-
-			$arr = $this->db->db_fetch_array($this->db->db_query("select name from ".BAB_VAC_TYPES_TBL." where id='".$arr['id_type']."'"));
-			$this->typename = $arr['name'];
-			}
-		}
-
-	$temp = new temp($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance);
-	$babBody->babecho(	bab_printTemplate($temp,"vacadma.html", "prightsmod"));
+	$temp = new temp($id);
+	$babBody->babecho(	bab_printTemplate($temp,"vacadma.html", "rightsedit"));
 	}
 
 function listVacationRightPersonnel($pos, $idvr)
@@ -964,7 +818,7 @@ function viewVacationRightPersonnel($idvr)
 	echo bab_printTemplate($temp, "vacadma.html", "viewvacright");
 	}
 
-
+/*
 function saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance)
 	{
 	global $babBody, $babDB;
@@ -1061,55 +915,136 @@ function saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $da
 
 	return true;
 	}
+*/
 
-
-function updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance)
+function updateVacationRight()
 	{
 	global $babBody, $babDB;
 
-	if( $description == "")
+	$post = $_POST;
+
+	if( empty($post['description']))
 		{
 		$babBody->msgerror = bab_translate("You must specify a vacation description") ." !";
 		return false;
 		}
 
-	if( !is_numeric($nbdays))
+	if( !is_numeric($post['quantity']))
 		{
 		$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
 		return false;
 		}
 
-	$adb = explode("-", $dateb);
-	if( $adb[0] == "" || $adb[1] == "" || $adb[2] == "" || !checkdate($adb[1],$adb[0],$adb[2]))
-		{
-		$babBody->msgerror = bab_translate("Invalid begin date") ." !";
-		return false;
-		}
-	
-	$ade = explode("-", $datee);
-	if( $ade[0] == "" || $ade[1] == "" || $ade[2] == "" || !checkdate($ade[1],$ade[0],$ade[2]))
-		{
-		$babBody->msgerror = bab_translate("Invalid end date") ." !";
-		return false;
-		}
-
-	if( $dateb > $datee)
+	if( $post['date_begin'] > $post['date_end'] || $post['period_start'] > $post['period_end'])
 		{
 		$babBody->msgerror = bab_translate("Begin date must be less than end date") ." !";
 		return false;
 		}
 
-	$dateb = sprintf("%04d-%02d-%02d", $adb[2], $adb[1], $adb[0]);
-	$datee = sprintf("%04d-%02d-%02d", $ade[2], $ade[1], $ade[0]);
-
-	if( !bab_isMagicQuotesGpcOn())
+	if( empty($post['idvr']) && empty($post['id_creditor']) && empty($post['collid']) )
 		{
-		$description = addslashes($description);
+		$babBody->msgerror = bab_translate("You must specify a user or collection") ." !";
+		return false;
+		}
+
+	$dates_to_init = array('date_begin' => 1, 'date_end' =>1, 'period_start' => 0,'period_end' => 0);
+
+	foreach ($dates_to_init as $date => $required)
+		{
+		$arr = explode("-", $post[$date]);
+		if ($required && (count($arr) != 3 || !checkdate($arr[1],$arr[0],$arr[2])))
+			{
+			$babBody->msgerror = bab_translate("Invalid date") ." !";
+			return false;
+			}
+		if (count($arr) == 3)
+			$post[$date] = sprintf("%04d-%02d-%02d", $arr[2], $arr[1], $arr[0]);
+		else
+			$post[$date] = '';
 		}
 
 
-	$babDB->db_query("update ".BAB_VAC_RIGHTS_TBL." set description='".$description."', id_creditor='".$GLOBALS['BAB_SESS_USERID']."', quantity='".$nbdays."', date_entry=curdate(), date_begin='".$dateb."', date_end='".$datee."', active='".($vclose == "Y"? "N": "Y")."', cbalance='".$cbalance."' where id='".$idvr."'");
-	return true;
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$post['description'] = mysql_escape_string($post['description']);
+		}
+
+	if (!empty($post['idvr']))
+		{
+
+		$babDB->db_query("UPDATE ".BAB_VAC_RIGHTS_TBL." set description='".$post['description']."', id_creditor='".$GLOBALS['BAB_SESS_USERID']."', quantity='".$post['quantity']."', date_entry=curdate(), date_begin='".$post['date_begin']."', date_end='".$post['date_end']."', active='".$post['active']."', cbalance='".$post['cbalance']."' where id='".$post['idvr']."'");
+
+		$id = $post['idvr'];
+		}
+	else
+		{
+		if( $userid != "" )
+			{
+			list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$userid."'"));
+			if( $total == 0 )
+				{
+				$babBody->msgerror = bab_translate("User does'nt exist") ." !";
+				return false;
+				}
+			}
+		else 
+			{
+			if( $collid != -1 )
+				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$collid."'"));
+			else
+				list($total) = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_VAC_PERSONNEL_TBL));
+
+			if( $total == 0 )
+				{
+				$babBody->msgerror = bab_translate("Users does'nt exist") ." !";
+				return false;
+				}
+			}
+
+
+		$babDB->db_query("insert into ".BAB_VAC_RIGHTS_TBL." (description, id_creditor, id_type, quantity, date_entry, date_begin, date_end, active, cbalance) values ('".$post['description']."', '".$GLOBALS['BAB_SESS_USERID']."', '".$post['id_type']."', '".$post['quantity']."', curdate(), '".$post['date_begin']."', '".$post['date_end']."', '".$post['active']."', '".$post['cbalance']."')");
+
+		$id = $babDB->db_insert_id();
+
+		if( $userid != "" )
+			{
+			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$userid."', '".$id."')");
+			}
+		else if( $collid != "" )
+			{
+			if( $collid != -1)
+				$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_coll='".$collid."'");
+			else
+				$res = $babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL."");
+
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values ('".$arr['id_user']."', '".$id."')");
+				}
+			}
+		}
+
+		// rules record
+
+		if ($post['use_rules'] == 'N')
+			{
+			$babDB->db_query("DELETE FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right='".$id."'");
+			}
+		else
+			{
+			$res = $babDB->db_query("SELECT id FROM ".BAB_VAC_RIGHTS_RULES_TBL." WHERE id_right='".$id."'");
+			if ($babDB->db_num_rows($res) > 0)
+				{
+				list($id_rule) = $babDB->db_fetch_array($res);
+				$babDB->db_query("UPDATE ".BAB_VAC_RIGHTS_RULES_TBL." set period_start='".$post['period_start']."', period_end='".$post['period_end']."', trigger_nbdays_min='".$post['trigger_nbdays_min']."',  trigger_nbdays_max='".$post['trigger_nbdays_max']."', trigger_inperiod='".$post['trigger_inperiod']."', right_inperiod='".$post['right_inperiod']."' where id='".$id_rule."'");
+				}
+			else
+				{
+				$babDB->db_query("INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL." ( id_right, period_start, period_end, trigger_nbdays_min, trigger_nbdays_max, trigger_inperiod, right_inperiod ) VALUES ( '".$id."', '".$post['period_start']."', '".$post['period_end']."','".$post['trigger_nbdays_min']."','".$post['trigger_nbdays_max']."', '".$post['trigger_inperiod']."', '".$post['right_inperiod']."' )");
+				}
+			}
+
+		return true;
 	}
 
 function modifyVacationRightPersonnel($idvr, $userids, $nuserids)
@@ -1156,41 +1091,24 @@ if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
 if( !isset($idx))
 	$idx = "lrig";
 
-if( isset($add) )
+if( isset($_POST['action']) )
 	{
-	if( $add == "addvr" )
+	switch ($_POST['action'])
 		{
-		if(!saveVacationRight($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance))
-			$idx ='addvr';
-		else
-			{
-			unset($description);
-			unset($idtype);
-			unset($datee);
-			unset($dateb);
-			unset($nbdays);
-			}
-		}
-	else if( $add == "modvr" )
-		{
-		if( isset($submit ))
-			{
-			if(!updateVacationRight($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance))
-				$idx ='modvr';
-			else
+		case 'rightsedit':
+			if( isset($_POST['submit'] ))
 				{
-				unset($description);
-				unset($idtype);
-				unset($datee);
-				unset($dateb);
-				unset($nbdays);
+				if(!updateVacationRight())
+					$idx ='modvr';
+
 				}
-			}
-		else if( isset($deleteg))
-			{
-			deleteVacationRight($idvr);
-			}
+			else if( isset($_POST['deleteg']))
+				{
+				deleteVacationRight($_POST['idvr']);
+				}
+			break;
 		}
+
 	}
 
 switch($idx)
@@ -1222,14 +1140,10 @@ switch($idx)
 		break;
 
 	case "modvr":
+		
+		addModifyVacationRigths($_REQUEST['idvr']);
+
 		$babBody->title = bab_translate("Modify vacation right");
-		if( !isset($description)) $description ="";
-		if( !isset($datee)) $datee ="";
-		if( !isset($dateb)) $dateb ="";
-		if( !isset($nbdays)) $nbdays ="";
-		if( !isset($vclose)) $vclose ="";
-		if( !isset($cbalance)) $cbalance ="";
-		modifyVacationRigths($idvr, $description, $nbdays, $dateb, $datee, $vclose, $cbalance);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
@@ -1239,17 +1153,10 @@ switch($idx)
 		break;
 
 	case "addvr":
+		
+		addModifyVacationRigths();
+
 		$babBody->title = bab_translate("Allocate vacation rights");
-		if( !isset($description)) $description ="";
-		if( !isset($userid)) $userid ="";
-		if( !isset($collid)) $collid ="";
-		if( !isset($datee)) $datee ="";
-		if( !isset($dateb)) $dateb ="";
-		if( !isset($nbdays)) $nbdays ="";
-		if( !isset($vclose)) $vclose ="";
-		if( !isset($cbalance)) $cbalance ="";
-		if( !isset($idtype)) $idtype ="";
-		addVacationRigths($description, $userid, $collid, $idtype, $nbdays, $dateb, $datee, $vclose, $cbalance);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
@@ -1261,12 +1168,16 @@ switch($idx)
 	case "lrig":
 	default:
 		$babBody->title = bab_translate("Vacations rights");
+
 		if( !isset($datee)) $datee ="";
 		if( !isset($dateb)) $dateb ="";
 		if( !isset($idtype)) $idtype ="";
 		if( !isset($idcreditor)) $idcreditor ="";
 		if( !isset($active)) $active ="Y";
 		if( !isset($pos) || $pos == '' ) $pos =0;
+		if( !isset($idcol)) $idcol ="";
+		if( !isset($idsa)) $idsa ="";
+
 		listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos);
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");

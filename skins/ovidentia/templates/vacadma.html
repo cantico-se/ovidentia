@@ -1,6 +1,5 @@
-<link href="../styles/standard.css" rel="stylesheet" type="text/css">
 <!--#begin vrightslist -->
-<SCRIPT language="JavaScript">
+<script language="JavaScript">
 <!--
 function dateBegin(day, month, year)
 {
@@ -12,50 +11,51 @@ function dateEnd(day, month, year)
 	document.vacfrights.elements['datee'].value = day+'-'+month+'-'+year;
 }
 //-->
-</SCRIPT>
+</script>
 
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ desctxt }</td>
-<td align="center" valign="middle" nowrap class="BabSiteAdminTitleFontBackground">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ statustxt }</td>
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ typetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" nowrap valign="middle">{ quantitytxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ creditortxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ datetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" valign="middle">&nbsp;</td>
-</tr>
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr class="BabSiteAdminTitleFontBackground">
+			<td>{ desctxt }</td>
+			<td align="center">&nbsp;</td>
+			<td>{ statustxt }</td>
+			<td>{ typetxt }</td>
+			<td align="center">{ quantitytxt }</td>
+			<td>{ creditortxt }</td>
+			<td>{ datetxt }</td>
+			<td  align="center">&nbsp;</td>
+		</tr>
         <!--#in getnext -->
-        <tr>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a></td>
-<td width="1%" align="center" valign="middle" nowrap class="BabSiteAdminFontBackground"><a 
-href="{ vrurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" 
-alt="{ alttxt }"></a>&nbsp;</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ statusval }</td>
-<td class="BabSiteAdminFontBackground" nowrap valign="middle">{ typename }</td>
-<td align="center" valign="middle" class="BabSiteAdminFontBackground">{ quantity }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ creditor }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ date }</td>
-<td width="1%" align="center" valign="middle" class="BabSiteAdminFontBackground"><a 
-href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ altlistp }" border="0" align="middle"></a></td>
+        <tr class="BabSiteAdminFontBackground">
+			<td>
+				<a class="BabSiteAdminListLink" href="javascript: Start('{ vrviewurl }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ description }</a>
+			</td>
+			<td width="1%">
+				<a href="{ vrurl }"><img src="{ babSkinPath }images/Puces/edit.gif" border="0" alt="{ alttxt }" /></a>
+			</td>
+			<td>{ statusval }</td>
+			<td>{ typename }</td>
+			<td align="center">{ quantity }</td>
+			<td>{ creditor }</td>
+			<td>{ date }</td>
+			<td width="1%"><a href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ altlistp }" border="0" align="middle" /></a></td>
         </tr>
         <!--#endin getnext -->
-<tr>
-<td colspan="8" class="BabSiteAdminTitleFontBackground"> 
-<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
-<tr> 
-<td width="1%" nowrap>&nbsp;</td>
-<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
-<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
-<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
-<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
-</tr>
-</table>
-</td>
-</tr>
+		<tr>
+			<td colspan="8" class="BabSiteAdminTitleFontBackground"> 
+				<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
+				<tr> 
+					<td width="1%" nowrap>&nbsp;</td>
+					<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
+					<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
+					<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
+					<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
 </table>
 </td>
 </tr>
@@ -67,53 +67,52 @@ href="javascript: Start('{ urllistp }', 'OviListPr', 'width=650,height=500,statu
 <input type="hidden" name="tg" value="vacadma">
 <input type="hidden" name="idx" value="lrig">
 <input type="hidden" name="pos" value="{ pos }">
-<table border="0" width="99%" cellpadding="1" cellspacing="0" align="center">
+<table border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <tr>
 <td class="BabLoginCadreBackground"> 
-<table border="0" width="100%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabBodyTitleBackground" align="center">&nbsp;</td>
-<td class="BabBodyTitleBackground" align="center">{ typetxt }</td>
-<td class="BabBodyTitleBackground" align="center">{ statustxt }</td>
-<td class="BabBodyTitleBackground" align="center">{ creditortxt }</td>
-<td class="BabBodyTitleBackground" align="center">{ date2txt }</td>
-</tr>
-<tr> 
-<td class="BabBodyTitleBackground" align="center">
-<input type="submit" name="submit" value="{ filteron }">
-</td>
-<td class="BabBodyTitleBackground" align="center"> 
-<select name="idtype">
-<option value=""></option>
-<!--#in getnexttype -->
-<option value="{ typeid }" { selected }>{ typename }</option>
-<!--#endin getnexttype -->
-</select>
-</td>
-<td class="BabBodyTitleBackground" align="center"> 
-<select name="active">
-<option value=""></option>
-<option value="Y" { yselected }>{ activeyes }</option>
-<option value="N" { nselected }>{ activeno }</option>
-</select>
-</td>
-<td class="BabBodyTitleBackground" align="center"> 
-<select name="idcreditor">
-<option value=""></option>
-<!--#in getnextcreditor -->
-<option value="{ creditorid }" { selected }>{ creditorname }</option>
-<!--#endin getnextcreditor -->
-</select>
-</td>
-<td class="BabBodyTitleBackground" nowrap align="center"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ 
-begintxt }</a> 
-<input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }">
-&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ 
-endtxt }</a> 
-<input type="text" name="datee" size="10" maxlength="10" value="{ datee }">
-</td>
-</tr>
-</table>
+	<table border="0" width="100%" cellpadding="2" cellspacing="0" class="BabLoginMenuBackground">
+	<tr  align="center"> 
+		<td>&nbsp;</td>
+		<td>{ typetxt }</td>
+		<td>{ statustxt }</td>
+		<td>{ creditortxt }</td>
+		<td>{ date2txt }</td>
+	</tr>
+	<tr align="center"> 
+		<td>
+			<input type="submit" name="submit" value="{ filteron }" />
+		</td>
+		<td> 
+			<select name="idtype">
+			<option value=""></option>
+			<!--#in getnexttype -->
+			<option value="{ typeid }" { selected }>{ typename }</option>
+			<!--#endin getnexttype -->
+			</select>
+		</td>
+		<td> 
+			<select name="active">
+			<option value=""></option>
+			<option value="Y" { yselected }>{ activeyes }</option>
+			<option value="N" { nselected }>{ activeno }</option>
+			</select>
+		</td>
+		<td> 
+			<select name="idcreditor">
+			<option value=""></option>
+			<!--#in getnextcreditor -->
+			<option value="{ creditorid }" { selected }>{ creditorname }</option>
+			<!--#endin getnextcreditor -->
+			</select>
+		</td>
+		<td>
+			<a href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a> 
+			<input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }" />
+			&nbsp;<a href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a> 
+			<input type="text" name="datee" size="10" maxlength="10" value="{ datee }" />
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -122,102 +121,225 @@ endtxt }</a>
 
 
 
-<!--#begin prightsadd -->
-<form name="gcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="vacadma">
-<input type="hidden" name="idx" value="lrig">
-<input type="hidden" name="add" value="addvr">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ typetxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<select name="idtype" onChange="mmvac(document.forms.gcreate.idtype.selectedIndex)">
-<!--#in getnexttype -->
-<option value="{ typeid }" { selected }>{ typename }</option>
-<!--#endin getnexttype -->
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ desctxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="45" maxlength="255" value="{ description }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ periodtxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<a class="BabSiteAdminListLink" href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a>
-<input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }">
-&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a>
-<input type="text" name="datee" size="10" maxlength="10" value="{ datee }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ usertext }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="user" size="45" maxlength="255" value="{ userval }" disabled>
-<input type="hidden" name="userid" value="{ userid }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">{ orand }</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ colltext }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="collid" onchange='onCollection()'>
-<option value=""></option>
-<option value="-1">{ allcol }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ quantitytxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="nbdays" size="5" maxlength="5" value="{ nbdays }" onBlur="validateNum(this)">&nbsp;&nbsp;{ days }
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ opentxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="vclose">
-<option value="Y" { yselected }>{ yes }</option>
-<option value="N" { nselected }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ balancetxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="cbalance">
-<option value="Y">{ yes }</option>
-<option value="N">{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ add }">&nbsp;&nbsp;<input type="button" name="breset" value="{ reset }" onclick="babReset()">
-<!--#if bdel -->
-&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ delete }">
-<!--#endif bdel -->
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</form>
-<br>
+<!--#begin rightsedit -->
 <script type="text/javascript">
 <!--
+function use_rules_change(obj)
+{
+
+var tbody = document.getElementById('vac_use_rules');
+	switch (obj.value)
+	{
+		case 'Y':
+			tbody.style.display = '';
+		break;
+
+		case 'N':
+			tbody.style.display = 'none';
+		break;
+	}
+}
+
+function calwin(callback)
+{
+//}
+	Start('{ babUrlScript }?tg=month&ymin=0&ymax=3&callback='+callback , 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');
+}
+-->
+</script>
+
+<form name="rightsedit" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="vacadma">
+	<input type="hidden" name="idx" value="lrig">
+	<input type="hidden" name="action" value="rightsedit">
+	<input type="hidden" name="idvr" value="{ arr[idvr] }">
+	<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+			
+			<tr> 
+				<td align="right">{ t_description }:</td>
+				<td> 
+					<input type="text" name="description" size="45" maxlength="255" value="{ arr[description] }" />
+				</td>
+			</tr>
+			
+			<tr> 
+				<td align="right">{ t_period }:</td>
+				<td> 
+					<a href="javascript:calwin('date_begin')">{ t_date_begin }</a>
+					<input type="text" name="date_begin" size="10" maxlength="10" value="{ arr[date_begin] }" />
+
+					&nbsp;<a href="javascript:calwin('date_end')">{ t_date_end }</a>
+					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />
+				</td>
+			</tr>
+			<!--#if arr[idvr] -->
+			<tr> 
+				<td align="right">{ t_id_type }:</td>
+				<td>
+					{ arr[type] }
+					<input type="hidden" name="type" value="{ arr[type] }" />
+				</td>
+			</tr>
+			<!--#else arr[idvr] -->
+			<tr> 
+				<td align="right">{ t_id_type }:</td>
+				<td>
+					<select name="id_type" onChange="mmvac(document.forms.gcreate.idtype.selectedIndex)">
+					<!--#in getnexttype -->
+					<option value="{ typeid }" { selected }>{ typename }</option>
+					<!--#endin getnexttype -->
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td align="right"><a href="javascript: openPopup('{ usersbrowurl }');">{ t_id_creditor }</a>:</td>
+				<td> 
+					<input type="text" name="id_creditorDisplay" size="45" maxlength="255" value="{ arr[id_creditorDisplay] }" disabled="disabled" />
+					<input type="hidden" name="id_creditor" value="{ arr[id_creditor] }" />
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">&nbsp;</td>
+				<td>{ t_orand }</td>
+			</tr>
+			<tr> 
+				<td align="right">{ t_collid }:</td>
+				<td> 
+					<select name="collid" onchange="onCollection()">
+						<option value=""></option>
+						<option value="-1">{ t_allcol }</option>
+					</select>
+				</td>
+			</tr>
+			<!--#endif arr[idvr] -->
+			<tr> 
+				<td align="right">{ t_quantity }:</td>
+				<td> 
+					<input type="text" name="quantity" size="5" maxlength="5" value="{ arr[quantity] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">{ t_active }:</td>
+				<td> 
+					<select name="active">
+					<!--#if arr[active] "== Y" -->
+					<option value="Y" selected>{ yes }</option>
+					<option value="N">{ no }</option>
+					<!--#else arr[active] -->
+					<option value="Y">{ yes }</option>
+					<option value="N" selected>{ no }</option>
+					<!--#endif arr[active] -->
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">{ t_cbalance }:</td>
+				<td > 
+					<select name="cbalance">
+					<!--#if arr[cbalance] "== Y" -->
+					<option value="Y" selected>{ yes }</option>
+					<option value="N">{ no }</option>
+					<!--#else arr[cbalance] -->
+					<option value="Y">{ yes }</option>
+					<option value="N" selected>{ no }</option>
+					<!--#endif arr[cbalance] -->
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td align="right">{ t_use_rules }:</td>
+				<td > 
+					<select name="use_rules" onchange="use_rules_change(this)">
+					<!--#if arr[use_rules] -->
+					<option value="N">{ no }</option>
+					<option value="Y" selected>{ yes }</option>
+					<!--#else arr[use_rules] -->
+					<option value="N" selected>{ no }</option>
+					<option value="Y">{ yes }</option>
+					<!--#endif arr[use_rules] -->
+					</select>
+				</td>
+			</tr>
+			<tbody id="vac_use_rules">
+				<tr> 
+					<td align="right">{ t_period }:</td>
+					<td> 
+						<a href="javascript:calwin('period_start')">{ t_period_start }</a>
+						<input type="text" name="period_start" size="10" maxlength="10" value="{ arr[period_start] }" />
+
+						&nbsp;<a href="javascript:calwin('period_end')">{ t_period_end }</a>
+						<input type="text" name="period_end" size="10" maxlength="10" value="{ arr[period_end] }" />
+					</td>
+				</tr>
+
+				<tr> 
+					<td align="right">{ t_trigger_nbdays_min }:</td>
+					<td> 
+						<input type="text" name="trigger_nbdays_min" size="10" maxlength="10" value="{ arr[trigger_nbdays_min] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
+					</td>
+				</tr>
+				<tr> 
+					<td align="right">{ t_trigger_nbdays_max }:</td>
+					<td> 
+						<input type="text" name="trigger_nbdays_max" size="10" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
+					</td>
+				</tr>
+				<tr> 
+					<td align="right">{ t_trigger_inperiod }:</td>
+					<td > 
+						<select name="trigger_inperiod">
+							<option value="0">{ t_always }</option>
+							<option value="1">{ t_inperiod }</option>
+							<option value="2">{ t_outperiod }</option>
+						</select>
+					</td>
+				</tr>
+				<tr> 
+					<td align="right">{ t_right_inperiod }:</td>
+					<td > 
+						<select name="right_inperiod">
+							<option value="0">{ t_always }</option>
+							<option value="1">{ t_inperiod }</option>
+							<option value="2">{ t_outperiod }</option>
+						</select>
+
+						<script type="text/javascript">
+						<!--
+						document.forms['rightsedit'].trigger_inperiod.value = '{ arr[trigger_inperiod] }';
+						document.forms['rightsedit'].right_inperiod.value = '{ arr[right_inperiod] }';
+						-->
+						</script>
+					</td>
+				</tr>
+			</tbody>
+			<tr> 
+				<td>&nbsp;</td>
+				<td> 
+					<input type="submit" name="submit" value="{ t_record }" />&nbsp;&nbsp;
+					<input type="button" name="breset" value="{ t_reset }" onclick="babReset()" />
+					<!--#if arr[idvr] -->
+					&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ t_delete }" />
+					<!--#endif arr[idvr] -->
+					<br>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+</form>
+<br />
+
+<script type="text/javascript">
+<!--
+
+use_rules_change(document.forms['rightsedit'].use_rules);
+
+<!--#if arr[idvr] -->
+<!--#else arr[idvr] -->
 var tpsel = { tpsel };
 var colsel = { colsel };
 var tabvacn = new Array({ counttype });
@@ -235,188 +357,103 @@ tabvaci[{ iindex }][tabvaci[{ iindex }].length] = "{ idcollection }";
 
 function mmvac(index)
 {
-	document.forms.gcreate.cbalance.selectedIndex = tabvacb[index];
+	var f = document.forms['rightsedit'];
+	f.cbalance.selectedIndex = tabvacb[index];
 
-	for (i = document.forms.gcreate.collid.length; i >= 2; i--) {
-		document.forms.gcreate.collid.options[i] = null; 
+	for (i = f.collid.length; i >= 2; i--) {
+		f.collid.options[i] = null; 
 	}
 	for (var i = 0; i < tabvacn[index].length; i++)
 	{
-	document.forms.gcreate.collid.options[i+2] = new Option(tabvacn[index][i],tabvaci[index][i]);
+	f.collid.options[i+2] = new Option(tabvacn[index][i],tabvaci[index][i]);
 	}
 	if( index == tpsel )
 	{
-		document.forms.gcreate.collid.options[colsel].selected = true;
+		f.collid.options[colsel].selected = true;
 	}
 
 }
 mmvac(tpsel);
+<!--#endif arr[idvr] -->
 
-
-function dateBegin(day, month, year)
+function date_begin(day, month, year)
 {
-	document.gcreate.elements['dateb'].value = day+'-'+month+'-'+year;
+	document.forms['rightsedit'].elements['date_begin'].value = day+'-'+month+'-'+year;
 }
 
-function dateEnd(day, month, year)
+function date_end(day, month, year)
 {
-	document.gcreate.elements['datee'].value = day+'-'+month+'-'+year;
+	document.forms['rightsedit'].elements['date_end'].value = day+'-'+month+'-'+year;
+}
+
+function period_start(day, month, year)
+{
+	document.forms['rightsedit'].elements['period_start'].value = day+'-'+month+'-'+year;
+}
+
+function period_end(day, month, year)
+{
+	document.forms['rightsedit'].elements['period_end'].value = day+'-'+month+'-'+year;
 }
 
 function validateNum(field) {
-var valid = ".0123456789"
-var ok = "yes";
-var temp;
-for (var i=0; i<field.value.length; i++) {
-temp = "" + field.value.substring(i, i+1);
-if (valid.indexOf(temp) == "-1") ok = "no";
-}
-if (ok == "no") {
-alert('{ invalidentry1 }');
-field.focus();
-field.select();
-   }
+	var valid = ".0123456789"
+	var ok = "yes";
+	var temp;
+	for (var i=0; i<field.value.length; i++) {
+	temp = "" + field.value.substring(i, i+1);
+	if (valid.indexOf(temp) == "-1") ok = "no";
+	}
+	if (ok == "no") {
+	alert('{ invalidentry1 }');
+	field.focus();
+	field.select();
+	   }
 }
 
 function onUser(id, fn)
 {
-document.forms.gcreate.collid.options[0].selected = true;
-document.forms.gcreate.user.value=fn;
-document.forms.gcreate.userid.value=id;
-this.focus();
-op.close();
+	var f = document.forms['rightsedit'];
+	f.collid.options[0].selected = true;
+	f.id_creditorDisplay.value=fn;
+	f.id_creditor.value=id;
+	this.focus();
+	op.close();
 }
 
 var op = null;
 function openPopup(url)
 {
-var nurl = url+'&idtype='+document.forms.gcreate.idtype.options[document.forms.gcreate.idtype.selectedIndex].value+'&cb=onUser'
-if( op == null || op.closed )
-	op = this.open(nurl, 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
-else
-	{
-	op.location = nurl;
-	op.focus();
-	}
+	var f = document.forms['rightsedit'];
+	var nurl = url+'&idtype='+f.id_type.options[f.id_type.selectedIndex].value+'&cb=onUser'
+	if( op == null || op.closed )
+		op = this.open(nurl, 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+	else
+		{
+		op.location = nurl;
+		op.focus();
+		}
 }
 
 function onCollection()
 {
-document.forms['gcreate'].userid.value ='';
-document.forms['gcreate'].user.value ='';
-this.focus();
+	var f = document.forms['rightsedit'];
+	f.id_creditor.value ='';
+	f.id_creditorDisplay.value ='';
+	this.focus();
 }
 
 function babReset()
 {
-document.forms.gcreate.collid.options[0].selected = true;
-document.forms['gcreate'].userid.value ='';
-document.forms['gcreate'].user.value ='';
+	var f = document.forms['rightsedit'];
+	f.collid.options[0].selected = true;
+	f.id_creditor.value ='';
+	f.id_creditorDisplay.value ='';
 }
 //-->
 </script>
-<!--#end prightsadd -->
+<!--#end rightsedit -->
 
-<!--#begin prightsmod -->
-<form name="gcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="vacadma">
-<input type="hidden" name="idx" value="lrig">
-<input type="hidden" name="add" value="modvr">
-<input type="hidden" name="idvr" value="{ idvr }">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ typetxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle">{ typename }
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ desctxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="description" size="45" maxlength="255" value="{ description }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ periodtxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<a class="BabSiteAdminListLink" href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a>
-<input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }">
-&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a>
-<input type="text" name="datee" size="10" maxlength="10" value="{ datee }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ daystxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="nbdays" size="5" maxlength="5" value="{ nbdays }" onBlur="validateNum(this)">&nbsp;&nbsp;{ days }
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ closetxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="vclose">
-<option value="Y" { yselected }>{ yes }</option>
-<option value="N" { nselected }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ balancetxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="cbalance">
-<option value="Y" { cbyselected }>{ yes }</option>
-<option value="N" { cbnselected }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ add }">&nbsp;&nbsp;
-<!--#if bdel -->
-&nbsp;&nbsp;<input type="submit" name="deleteg" value="{ delete }">
-<!--#endif bdel -->
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</form>
-<br>
-<script type="text/javascript">
-<!--
-function dateBegin(day, month, year)
-{
-	document.gcreate.elements['dateb'].value = day+'-'+month+'-'+year;
-}
-
-function dateEnd(day, month, year)
-{
-	document.gcreate.elements['datee'].value = day+'-'+month+'-'+year;
-}
-
-function validateNum(field) {
-var valid = ".0123456789"
-var ok = "yes";
-var temp;
-for (var i=0; i<field.value.length; i++) {
-temp = "" + field.value.substring(i, i+1);
-if (valid.indexOf(temp) == "-1") ok = "no";
-}
-if (ok == "no") {
-var d1;
-alert('{ invalidentry1 }');
-field.focus();
-field.select();
-   }
-}
-//-->
-</script>
-<!--#end prightsmod -->
 
 <!--#begin vrpersonnellist -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

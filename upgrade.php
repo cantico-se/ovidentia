@@ -4306,6 +4306,27 @@ if( !$res)
 	return $ret;
 	}
 
+
+$res = $db->db_query("CREATE TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` (
+					`id` int(10) unsigned NOT NULL auto_increment,
+					  `id_right` int(10) unsigned NOT NULL default '0',
+					  `period_start` date NOT NULL default '0000-00-00',
+					  `period_end` date NOT NULL default '0000-00-00',
+					  `trigger_nbdays_min` float NOT NULL default '0',
+					  `trigger_nbdays_max` float NOT NULL default '0',
+					  `trigger_inperiod` tinyint(4) NOT NULL default '0',
+					  `right_inperiod` tinyint(4) NOT NULL default '0',
+					  PRIMARY KEY  (`id`),
+					  KEY `id_right` (`id_right`,`period_start`,`period_end`)
+					) ");
+
+
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_VAC_RIGHTS_RULES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 
