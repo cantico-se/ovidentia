@@ -501,7 +501,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 			$artauthor = bab_translate("Anonymous");
 
 		if( $bnotify == "Y" )
-			notifyArticleGroupMembers($topicname, $topics, $title, $artauthor, 'add');
+			notifyArticleGroupMembers(bab_getCategoryTitle($topics), $topics, $arrart['title'], $artauthor, 'add');
 			break;
 		default:
 			$subject = bab_translate("About your article");
