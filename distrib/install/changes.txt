@@ -1,6 +1,7 @@
 /************************************************************************/
-Novembre 2002: Version 3.4.2b
+Novembre 2002: Version 3.4.2
 /************************************************************************/
+- Moderator can now close threads of non moderated forums
 - Vacation emails notification are enhanced
 - User can now list articles that are submitted by himself
 - Groups members can be notified when article has been submited or updated
