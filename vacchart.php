@@ -113,6 +113,7 @@ function entity_members($ide)
 			$this->t_calendar = bab_translate('Calendar');
 			$this->t_rights = bab_translate('Rights');
 			$this->t_asks = bab_translate('Requests');
+			$this->t_view_calendar = bab_translate('View calendars');
 			
 			$this->users = array();
 

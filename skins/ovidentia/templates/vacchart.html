@@ -33,7 +33,31 @@
 
 
 <!--#begin entity_members -->
-
+<script type="text/javascript">
+<!--
+function view_calendar_checkbox()
+{
+var f = document.forms['listform'];
+var users = '';
+for (i = 0; i < f.elements.length; i++)
+	{
+		var objCtrl = f.elements[i];;
+		if (objCtrl.checked)
+			{
+			if (users != '')
+				users += ',';
+			users += objCtrl.value;
+			}
+	}
+if (users != '')
+	{
+	//}
+	bab_popup('{ babUrlScript }?tg=vacuser&idx=cal&idu='+users+'&popup=1');
+	}
+}
+-->
+</script>
+<form name="listform">
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -43,6 +67,9 @@
 			<td>{ t_asks }</td>
 			<td>{ t_rights }</td>
 			<td>{ t_calendar }</td>
+			<td>
+				<a href="javascript:onCheckAll('userids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('userids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" border="0"></a>
+			</td>
 		</tr>
 		<!--#if superior_id -->
 		<tr class="BabSiteAdminFontBackground"> 
@@ -56,6 +83,7 @@
 			<td>
 				<a href="{ babUrlScript }?tg=vacuser&idx=cal&idu={ superior_id }&popup=1&emptylines=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
 			</td>
+			<td><input type="checkbox" name="userids[]" value="{ superior_id }" /></td>
 		</tr>
 		<!--#endif superior_id -->
 		<!--#in getnext -->
@@ -70,13 +98,17 @@
 			<td>
 				<a href="{ babUrlScript }?tg=vacuser&idx=cal&idu={ id_user }&popup=1&emptylines=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ t_calendar }" border="0" /></a>
 			</td>
+			<td><input type="checkbox" name="userids[]" value="{ id_user }" /></td>
 		</tr>
 		<!--#endin getnext -->
+		<tr class="BabSiteAdminTitleFontBackground">
+			<td colspan="5" align="right"><a href="javascript:view_calendar_checkbox()">{ t_view_calendar }</a></td>
+		</tr>
 	</table>
 </td>
 </tr>
 </table>
-
+</form>
 <!--#end entity_members -->
 
 <!--#begin user_rights -->
