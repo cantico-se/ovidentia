@@ -201,6 +201,18 @@
 
 
 <!--#begin sitemodify -->
+<script language="javascript">
+function validateNum(field) 
+	{
+	var valid = "0123456789"
+	var temp;
+	for (var i=0; i<field.value.length; i++) {
+		temp = "" + field.value.substring(i, i+1);
+		if (valid.indexOf(temp) == "-1") 
+			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+		}
+	}
+</script>
 <form name="formsite" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="site">
 <input type="hidden" name="idx" value="modify">
@@ -322,7 +334,7 @@
             <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
               serverport }</td>
             <td> 
-              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }">
+              <input type="text" name="serverport" size="5" maxlength="10" value="{ serverportval }" onKeyUp="validateNum(this)">
 </td>
 </tr>
           <tr valign="middle"> 
@@ -350,7 +362,7 @@
             <td class="BabSiteAdminTitleFontBackground" align="left" nowrap>{ 
               imagessize }</td>
             <td> 
-              <input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }">
+              <input type="text" name="imgsize" size="5" maxlength="10" value="{ imgsizeval }" onKeyUp="validateNum(this)">
 </td>
 </tr>
           <tr valign="middle"> 
@@ -364,8 +376,125 @@
 </td>
 </tr>
 </table>
+
+<br><br>
+
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabSiteAdminTitleFontBackground">
+          <tr valign="middle"> 
+            <td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ namecomposeorder_title }</td>
+            <td width="70%"> 
+				<select name="namecomposeorder">
+				<!--#if dbvalue[namecomposeorder] "== FL" -->
+				<option value="FL" selected>{ firstlast }</option>
+				<option value="LF">{ lastfirst }</option>
+				<!--#else dbvalue[namecomposeorder] -->
+				<option value="FL">{ firstlast }</option>
+				<option value="LF" selected>{ lastfirst }</option>
+				<!--#endif dbvalue[namecomposeorder] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ changenickenable_title }</td>
+            <td width="70%"> 
+				<select name="changenickenable">
+				<!--#if dbvalue[changenickenable] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[changenickenable] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[changenickenable] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ changepassenable_title }</td>
+            <td width="70%"> 
+				<select name="changepassenable">
+				<!--#if dbvalue[changepassenable] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[changepassenable] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[changepassenable] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ cookieident_title }</td>
+            <td width="70%"> 
+				<select name="cookieident">
+				<!--#if dbvalue[cookieident] "== Y" -->
+				<option value="Y" selected>{ yes }</option>
+				<option value="N">{ no }</option>
+				<!--#else dbvalue[cookieident] -->
+				<option value="Y">{ yes }</option>
+				<option value="N" selected>{ no }</option>
+				<!--#endif dbvalue[cookieident] -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ babslogan_title }</td>
+            <td width="70%"> 
+				<input type="text" name="babslogan" size="30" maxlength="255" value="{ dbvalue[babslogan] }">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ uploadpath_title }</td>
+            <td width="70%"> 
+				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ dbvalue[uploadpath] }">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxfilesize_title }</td>
+            <td width="70%"> 
+				<input type="text" name="maxfilesize" size="20" maxlength="255" value="{ dbvalue[maxfilesize] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxgroupsize_title }</td>
+            <td width="70%"> 
+				<input type="text" name="maxgroupsize" size="20" maxlength="255" value="{ dbvalue[maxgroupsize] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxusersize_title }</td>
+            <td width="70%"> 
+				<input type="text" name="maxusersize" size="20" maxlength="255" value="{ dbvalue[maxusersize] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminTitleFontBackground" width="30%" align="left" nowrap>{ maxtotalsize_title }</td>
+            <td width="70%"> 
+				<input type="text" name="maxtotalsize" size="20" maxlength="255" value="{ dbvalue[maxtotalsize] }" onKeyUp="validateNum(this)">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			&nbsp;
+			</td>
+			<td><br>
+			<input type="submit" name="Submit" value="{ create }">
+			</td>
+		</tr>
+		</table>
+</td>
+</tr>
+</table>
+
+
+
 </form>
 <br>
+
+
+
 <!--#end sitemodify -->
 
 

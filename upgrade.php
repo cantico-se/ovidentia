@@ -2262,7 +2262,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxtotalsize` INT( 11 ) UNSIGNED NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxtotalsize` INT( 11 ) UNSIGNED DEFAULT '200000000' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2270,7 +2270,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxusersize` INT( 11 ) UNSIGNED NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxusersize` INT( 11 ) UNSIGNED DEFAULT '30000000' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2278,7 +2278,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxgroupsize` INT( 11 ) UNSIGNED NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxgroupsize` INT( 11 ) UNSIGNED DEFAULT '50000000' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2286,7 +2286,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxfilesize` INT( 11 ) UNSIGNED NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxfilesize` INT( 11 ) UNSIGNED DEFAULT '30000000' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
