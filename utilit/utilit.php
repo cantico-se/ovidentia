@@ -2288,36 +2288,48 @@ function bab_updateSiteSettings()
 	else {
 		$GLOBALS['babLangFilter']->setFilter(0); }
 	// options bloc2
-	if( $arr['total_diskspace'] != 0)
+	if( !empty($arr['total_diskspace']))
 		{
 		$GLOBALS['babMaxTotalSize'] = $arr['total_diskspace']*1048576;
 		}
-	elseif ($GLOBALS['babMaxTotalSize'] == 0) {
-		$GLOBALS['babMaxTotalSize'] = "200000000";}
-	if( $arr['user_diskspace'] != 0)
+	else
+		{
+		$GLOBALS['babMaxTotalSize'] = "200000000";
+		}
+	if( !empty($arr['user_diskspace']))
 		{
 		$GLOBALS['babMaxUserSize'] = $arr['user_diskspace']*1048576;
 		}
-	elseif ($GLOBALS['babMaxUserSize'] == 0) {
-		$GLOBALS['babMaxUserSize'] = "30000000";}
-	if( $arr['folder_diskspace'] != 0)
+	else
+		{
+		$GLOBALS['babMaxUserSize'] = "30000000";
+		}
+	if( !empty($arr['folder_diskspace']))
 		{
 		$GLOBALS['babMaxGroupSize'] = $arr['folder_diskspace']*1048576;
 		}
-	elseif ($GLOBALS['babMaxGroupSize'] == 0) {
-		$GLOBALS['babMaxGroupSize'] = "50000000"; }
-	if( $arr['maxfilesize'] != 0)
+	else
+		{
+		$GLOBALS['babMaxGroupSize'] = "50000000"; 
+		}
+	if( !empty($arr['maxfilesize']))
 		{
 		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize']*1048576;
 		}
-	elseif ($GLOBALS['babMaxFileSize'] == 0) {
-		$GLOBALS['babMaxFileSize'] = "30000000"; }
-	if( $arr['uploadpath'] != "")
+	else
+		{
+		$GLOBALS['babMaxFileSize'] = "30000000"; 
+		}
+	if( !empty($arr['uploadpath']))
 		{
 		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
 		}
+	else
+		{
+		$GLOBALS['babUploadPath'] = '';
+		}
 
-	if( !is_dir($GLOBALS['babUploadPath']."/addons/"))
+	if(!empty($GLOBALS['babUploadPath']) && !is_dir($GLOBALS['babUploadPath']."/addons/"))
 		{
 		bab_mkdir($GLOBALS['babUploadPath']."/addons/", $GLOBALS['babMkdirMode']);
 		}

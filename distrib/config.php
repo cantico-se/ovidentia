@@ -30,10 +30,5 @@ $babSlogan = "Ovidentia: enterprise portal"; /* your slogan */
 $babSiteName = "Ovidentia"; /* your site name */
 $babUrl = "http://yourdomain/"; /* url to access to your site */
 $babVersion = "5.0"; /* current version */
-$babMaxFileSize = 1000000; /* Max size ( bytes ) file allowed*/
-$babMaxUserSize = 2000000; /* Capacity storage ( bytes ) allowed by user*/
-$babMaxGroupSize = 5000000; /* Capacity storage ( bytes ) allowed by group */
-$babMaxTotalSize = 100000000; /* Capacity storage ( bytes ) allowed for a site */
-$babUploadPath = "/uploads-directory"; /* where to upload files ( c:\\path-to\\upload-directory for Windows )*/
 $babFileNameTranslation = array("&" => "_","\"" => "_","'" => "_","'" => "_",";"=>"_","~"=>"-"); /* translation characters for files names.*/
 ?>
