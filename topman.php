@@ -34,7 +34,6 @@ function listCategories()
 			$this->comments = bab_translate("Comment") ."(s)";
 			$this->waiting = bab_translate("Waiting");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'";
 			$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_TBL.".id_approver='".$BAB_SESS_USERID."'";
 
 			$this->res = $this->db->db_query($req);
@@ -49,7 +48,7 @@ function listCategories()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->arr['description'] = $this->arr['description'];
 				$this->namecategory = $this->arr['category'];
-				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."'";
+				$req = "select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$this->arr['id']."' and confirmed='Y'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];

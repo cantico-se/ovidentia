@@ -10,9 +10,10 @@
 <td class="BabTopicsAdminListTitle" nowrap>{ namecategory }</td>
 <td class="BabTopicsAdminListTitle" align="right"> 
 <!--#if nbarticles "== 0" -->
-{ nbarticles }&nbsp;{ articles }&nbsp;|&nbsp;{ waiting }:&nbsp;{ newa }&nbsp;{ articles }&nbsp;{ newc }&nbsp;{ comments }
+{ nbarticles }&nbsp;{ articles }&nbsp;|&nbsp;{ waiting }:
 <!--#else nbarticles -->
 <a class="BabTopicsAdminNumberLink" href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>&nbsp;|&nbsp;{ waiting }:
+<!--#endif nbarticles -->
 <!--#if newa "> 0" -->
 &nbsp;<a class="BabTopicsAdminNumberLink" href="{ urlnewa }">{ newa }&nbsp;{ articles }</a>
 <!--#else newa -->
@@ -23,7 +24,6 @@
 <!--#else newc -->
 &nbsp;{ newc }&nbsp;{ comments }
 <!--#endif newc -->
-<!--#endif nbarticles -->
 </td>
 </tr>
 <tr colspan="2">

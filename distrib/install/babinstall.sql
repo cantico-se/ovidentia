@@ -18,6 +18,7 @@ CREATE TABLE bab_articles (
    title tinytext NOT NULL,
    head text NOT NULL,
    body longtext NOT NULL,
+   archive enum('N','Y') NOT NULL default 'N',
    PRIMARY KEY (id)
 );
 
