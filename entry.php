@@ -231,7 +231,7 @@ function readMore($article)
 	$babBody->babecho(	bab_printTemplate($temp,"entry.html", "readmore"));
 	}
 
-function articlePrint($topics, $article, $idg)
+function articlePrint($topics, $article)
 	{
 	global $babBody;
 
@@ -264,7 +264,25 @@ function articlePrint($topics, $article, $idg)
 	$temp = new temp($topics, $article);
 	echo bab_printTemplate($temp,"articleprint.html");
 	}
-	
+
+function isAccessValid($article, $idg)
+{
+	$access = false;
+	$db = $GLOBALS['babDB'];
+	$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$res = $db->db_query($req);
+	if( $res &&  $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		$res = $db->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idg."' and id_site='".$arr['id']."' and id_article='".$article."' and ordering!='0'");
+		if( $res && $db->db_num_rows($res) > 0 )
+			{
+			$access = true;
+			}
+		}
+	return $access;
+}
+
 /* main */
 if(!isset($idx))
 	{
@@ -279,37 +297,33 @@ if(!isset($idg))
 if( $BAB_SESS_LOGGED)
 	$idg = 1; // registered users
 
-$access = false;
-$db = $GLOBALS['babDB'];
-$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-$res = $db->db_query($req);
-if( $res &&  $db->db_num_rows($res) > 0)
-	{
-	$arr = $db->db_fetch_array($res);
-	$res = $db->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idg."' and id_site='".$arr['id']."' and id_article='".$article."' and ordering!='0'");
-	if( $res && $db->db_num_rows($res) > 0 )
-		{
-		$access = true;
-		}
-	}
-
-if( !$access )
-{
-	$babBody->msgerror = bab_translate("Access denied");
-	return;
-}
-
 switch($idx)
 	{
 	case "print":
-		articlePrint($topics, $article, $idg);
-		exit();
+		if( !isAccessValid($article, $idg) )
+			{
+				$babBody->msgerror = bab_translate("Access denied");
+				return;
+			}
+		else
+			{
+			articlePrint($topics, $article);
+			exit();
+			}
 		break;
 
 	case "more":
-		readMore($article);
-		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=entry");
-		$babBody->addItemMenu("more", bab_translate("Article"), $GLOBALS['babUrlScript']."?tg=entry&idx=more");
+		if( !isAccessValid($article, $idg) )
+			{
+				$babBody->msgerror = bab_translate("Access denied");
+				return;
+			}
+		else
+			{
+			readMore($article);
+			$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=entry");
+			$babBody->addItemMenu("more", bab_translate("Article"), $GLOBALS['babUrlScript']."?tg=entry&idx=more");
+			}
 		break;
 
 	default:
