@@ -790,7 +790,8 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$body->msgerror = babTranslate("A file with the same name already exists");
 		return false;
 		}
-	
+
+	set_time_limit(0);
 	if( !move_uploaded_file($tmp, $pathx.$filename))
 		{
 		$body->msgerror = babTranslate("The file could not be uploaded");
