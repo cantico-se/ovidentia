@@ -232,3 +232,4 @@ file			        section		        change
 --------------------------------------------------------------------------------
 comments.html           commentcreate       Replace 'var t=document.open' by 'Start'
 warning.html            warningyesno        Addde ? after { message }
+entry.html              homepage0           Added <!--#if blen "> 0" --> ... <!--#endif blen -->
