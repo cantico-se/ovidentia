@@ -540,7 +540,13 @@ function listWaitingAddons()
 		function getnextitem()
 			{
 			$this->altbg = !$this->altbg;
-			return list( , list($this->text, $this->description, $this->url, $this->popup )) = each($this->arr);
+			return list( , $arr) = each($this->arr);
+
+			$this->text = $arr['text'];
+			$this->description = $arr['description'];
+			$this->url = $arr['url'];
+			$this->popup = $arr['popup'];
+			$this->idschi = $arr['idschi'];
 			}
 		}
 	

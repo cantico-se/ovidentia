@@ -329,9 +329,9 @@ window.focus();
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td class="BabLoginMenuBackground" width="50%" align="center" nowrap valign="middle" colspan="2"><font color="red">*</font>&nbsp;{ helpfields }</td>
+<td width="50%" align="center" nowrap valign="middle" colspan="2"><font color="red">*</font>&nbsp;{ helpfields }</td>
 </tr><!--#if buserinfo -->
 <tr> 
 <td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ password }&nbsp;<font color="red">*</font></td>
@@ -369,22 +369,25 @@ window.focus();
 </tr>
 <!--#endin getnextfield -->
 <tr> 
-<td class="BabLoginMenuBackground" width="50%" align="right" nowrap valign="middle">{ handling }</td>
-<td class="BabLoginMenuBackground" width="50%" align="left" nowrap valign="middle">
-<!--#if buserinfo -->
-<!--#else buserinfo -->
-<input type="radio" name="duphand" value="0">{ duphand0 }<br>
-<!--#endif buserinfo -->
-<input type="radio" name="duphand" value="1" checked>{ duphand1 }<br>
-<input type="radio" name="duphand" value="2">{ duphand2 }<br>
-</td>
+	<td width="50%" align="right">{ handling }</td>
+	<td width="50%" align="left">
+	<!--#if buserinfo -->
+	<!--#else buserinfo -->
+	<input type="radio" name="duphand" value="0">{ duphand0 }<br>
+	<!--#endif buserinfo -->
+	<input type="radio" name="duphand" value="1" checked>{ duphand1 }<br>
+	<input type="radio" name="duphand" value="2">{ duphand2 }<br>
+	</td>
 </tr>
 <tr>
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="Submit" value="{ process }">
-<br>
-</td>
+	<td colspan="2" align="center"><p>({ t_dupinfo })</p><br /></td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td> 
+		<input type="submit" name="Submit" value="{ process }" />
+		<br />
+	</td>
 </tr>
 </table>
 </td>

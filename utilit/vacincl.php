@@ -147,7 +147,6 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 	$res = $db->db_query("SELECT 
 				rules.*, 
 				r.*, 
-				rules.id idright, 
 				ur.quantity ur_quantity 
 				FROM 
 					".BAB_VAC_TYPES_TBL." t, 
@@ -270,7 +269,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 		
 		if ( $access )
 			$return[] = array(
-						'id' =>			$arr['idright'],
+						'id' =>			$arr['id'],
 						'date_begin' => $arr['date_begin'],
 						'date_end' =>   $arr['date_end'],
 						'quantity' =>   $arr['quantity'],
@@ -572,9 +571,12 @@ function viewVacationCalendar($users, $period = false )
 				}
 			}
 
-		function printhtml()
+		function printhtml($template = true)
 			{
-			$html = & bab_printTemplate($this,"vacuser.html", "calendarbyuser");
+			if ($template)
+				$html = & bab_printTemplate($this,"vacuser.html", "calendarbyuser");
+			else
+				$html = '';
 
 			if (isset($_REQUEST['popup']) && $_REQUEST['popup'] == 1)
 				{
@@ -591,6 +593,12 @@ function viewVacationCalendar($users, $period = false )
 				$GLOBALS['babBody']->babecho($html);
 				}
 			}
+		}
+
+	if (count($users) == 0)
+		{
+		$GLOBALS['babBody']->msgerror = bab_translate("ERROR: No members");
+		temp::printhtml(false);
 		}
 
 	$temp = & new temp($users, $period);

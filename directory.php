@@ -1032,6 +1032,7 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 			$this->duphand0 = bab_translate("Allow duplicates to be created");
 			$this->duphand1 = bab_translate("Replace duplicates with items imported");
 			$this->duphand2 = bab_translate("Do not import duplicates");
+			$this->t_dupinfo = bab_translate("Fields with the same e-mail address are duplicates");
 			list($this->idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			if( $this->idgroup >= 1 )
 				{
@@ -1339,42 +1340,43 @@ function processImportDbFile( $pfile, $id, $separ )
 							{
 							if( $GLOBALS['duphand'] == 2 )
 								break;
-							while( $arr2 = $db->db_fetch_array($res2))
+							else
 								{
-								$req = "";
-								for( $k =0; $k < count($arrnamef); $k++ )
-									{
-									if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
-										{
-										$req .= $arrnamef[$k]."='".addslashes($arr[$GLOBALS[$arrnamef[$k]]])."',";
-										}
-									}
-								if( !empty($req))
-									{
-									$req = substr($req, 0, strlen($req) -1);
-									$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-									$req .= " where id='".$arr2['id']."'";
-									$db->db_query($req);
-									}
-
-								if( count($arridfx) > 0 )
-									{
-									for( $k=0; $k < count($arridfx); $k++ )
-										{
-										$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]."' and  id_entry='".$arr2['id']."'");
-										if( $rs && $db->db_num_rows($rs) > 0 )
-											{
-											$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$arridfx[$k]."' and id_entry='".$arr2['id']."'");
-											}
-										else
-											{
-											$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$arridfx[$k]."', '".$arr2['id']."')");
-											}
-										}
-									}
-
+								$arr2 = $db->db_fetch_array($res2);
 								}
 							
+
+							$req = "";
+							for( $k =0; $k < count($arrnamef); $k++ )
+								{
+								if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
+									{
+									$req .= $arrnamef[$k]."='".addslashes($arr[$GLOBALS[$arrnamef[$k]]])."',";
+									}
+								}
+							if( !empty($req))
+								{
+								$req = substr($req, 0, strlen($req) -1);
+								$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
+								$req .= " where id='".$arr2['id']."'";
+								$db->db_query($req);
+								}
+
+							if( count($arridfx) > 0 )
+								{
+								for( $k=0; $k < count($arridfx); $k++ )
+									{
+									$rs = $db->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$arridfx[$k]."' and  id_entry='".$arr2['id']."'");
+									if( $rs && $db->db_num_rows($rs) > 0 )
+										{
+										$db->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$arridfx[$k]."' and id_entry='".$arr2['id']."'");
+										}
+									else
+										{
+										$db->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$arridfx[$k]."', '".$arr2['id']."')");
+										}
+									}
+								}
 							break;
 							}
 						}

@@ -1673,5 +1673,7 @@
 <string id="The event isn't on displayed hours for all calendars">L'évènement ne sera pas visible sur les vues jour et semaine</string>
 <string id="Show / hide finished events">Afficher / cacher les évènements terminés</string>
 <string id="Avariable days">Jours disponibles</string>
-<string id="Waiting days">Jours en attente d'approbation</string
+<string id="Waiting days">Jours en attente d'approbation</string>
+<string id="ERROR: No members">ERREUR: Pas de membres</string>
+<string id="Fields with the same e-mail address are duplicates">Les lignes avec la même adresse e-mail qu'une entrée de l'annuaire sont des doublons</string>
 </fr>

@@ -712,6 +712,7 @@ switch ($_POST['action'])
 		if (bab_isRequestEditable($_POST['id']))
 		{
 			delete_request($_POST['id']);
+			$idx = 'lvreq';
 		}
 		break;
 	}
