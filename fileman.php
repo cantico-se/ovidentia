@@ -2090,6 +2090,7 @@ bab_fileManagerAccessLevel();
 if( count($babBody->aclfm['id']) == 0 && !$babBody->ustorage )
 {
 	$babBody->msgerror = bab_translate("Access denied");
+	if ($idx == "brow") die(bab_translate("Access denied"));
 	return;
 }
 
