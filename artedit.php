@@ -478,8 +478,30 @@ function showChoiceTopicModify()
 		function temp()
 			{
 			global $babBodyPopup, $babBody, $babDB, $topicid, $rfurl;
-			$this->res = $babDB->db_query("select id, description, category from ".BAB_TOPICS_TBL." where (id IN (".implode(',', $babBody->topsub).") and allow_update != '0' ) or (id IN (".implode(',', $babBody->topman).") and allow_manupdate != '0' ) or (id IN (".implode(',', $babBody->topmod).")) order by id_cat");		
-			$this->count = $babDB->db_num_rows($this->res);
+			if( count($babBody->topsub) > 0  || count($babBody->topman) > 0 || count($babBody->topmod) > 0 )
+				{
+				if( count($babBody->topsub) > 0 )
+					{
+					$tmp[] = "(id IN (".implode(',', $babBody->topsub).") and allow_update != '0' )";
+					}
+				if( count($babBody->topman) > 0 )
+					{
+					$tmp[] = "(id IN (".implode(',', $babBody->topman).") and allow_manupdate != '0' )";
+					}
+				if( count($babBody->topmod) > 0 )
+					{
+					$tmp[] = "(id IN (".implode(',', $babBody->topmod)."))";
+					}
+				$req = "select id, description, category from ".BAB_TOPICS_TBL." where ";
+				$req .= implode(' or ', $tmp)." order by id_cat";
+				$this->res = $babDB->db_query($req);		
+				$this->count = $babDB->db_num_rows($this->res);
+				}
+			else
+				{
+				$this->count = 0;
+				}
+
 
 			if( $this->count > 0 )
 				{
