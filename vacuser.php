@@ -331,162 +331,7 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 	$babBody->babecho(	bab_printTemplate($temp,"vacuser.html", "newvacation"));
 	}
 
-function listWaitingVacation()
-{
-	global $babBody;
 
-	class temp
-		{
-		var $nametxt;
-		var $urlname;
-		var $url;
-		var $datebtxt;
-		var $dateb;
-		var $dateetxt;
-		var $datee;
-				
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-
-		var $total;
-		var $totaltxt;
-		var $checkall;
-		var $uncheckall;
-
-
-		var $entryid;
-
-		function temp()
-			{
-			$this->uncheckall = bab_translate("Uncheck all");
-			$this->checkall = bab_translate("Check all");
-			$this->nametxt = bab_translate("Fullname");
-			$this->datebtxt = bab_translate("Begin date");
-			$this->dateetxt = bab_translate("End date");
-			$this->totaltxt = bab_translate("Quantity");
-			$this->confirm = bab_translate("Confirm");
-			$this->refuse = bab_translate("Refuse");
-			$this->db = $GLOBALS['babDB'];
-			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-			if( count($arrschi) > 0 )
-				{
-				$this->res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".implode(',', $arrschi).") order by date desc");
-				$this->count = $this->db->db_num_rows($this->res);
-				}
-			else
-				{
-				$this->count = 0;
-				}
-			}
-
-		function getnext()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrlScript']."?tg=vacuser&idx=morvw&id=".$arr['id'];
-				list($this->total) = $this->db->db_fetch_row($this->db->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$arr['id']."'"));
-				$this->urlname = bab_getUserName($arr['id_user']);
-				$this->dateb = bab_printDate($arr['date_begin']);
-				$this->datee = bab_printDate($arr['date_end']);
-				$this->entryid = $arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "vacuser.html", "vwaitinglist"));
-	return $temp->count;
-}
-
-function viewWaitingVacReqDetail($id)
-	{
-	global $babBody;
-
-	class temp
-		{
-		var $datebegintxt;
-		var $datebegin;
-		var $halfnamebegin;
-		var $dateendtxt;
-		var $dateend;
-		var $halfnameend;
-		var $nbdaystxt;
-		var $typename;
-		var $nbdays;
-		var $totaltxt;
-		var $totalval;
-		var $confirm;
-		var $refuse;
-		var $fullname;
-		var $commenttxt;
-		var $remarktxt;
-		var $remark;
-				
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $veid;
-
-		function temp($id)
-			{
-			global $babDayType;
-			$this->datebegintxt = bab_translate("Begin date");
-			$this->dateendtxt = bab_translate("End date");
-			$this->nbdaystxt = bab_translate("Quantities");
-			$this->totaltxt = bab_translate("Total");
-			$this->commenttxt = bab_translate("Additional information");
-			$this->confirm = bab_translate("Confirm");
-			$this->refuse = bab_translate("Refuse");
-			$this->remarktxt = bab_translate("Description");
-			$this->db = $GLOBALS['babDB'];
-			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
-			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
-			$this->halfnamebegin = $babDayType[$row['day_begin']];
-			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
-			$this->halfnameend = $babDayType[$row['day_end']];
-			$this->fullname = bab_getUserName($row['id_user']);
-			$this->remark = nl2br($row['comment']);
-
-			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id."'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
-			$this->totalval = 0;
-			$this->veid = $id;
-			}
-
-		function getnexttype()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$arr['id_type']."'"));
-				$this->nbdays = $arr['quantity'];
-				$this->totalval += $this->nbdays;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new temp($id);
-	echo bab_printTemplate($temp, "vacuser.html", "vwdetail");
-	return $temp->count;
-
-	}
 
 function viewCalendarByUser($id, $month, $year)
 	{
@@ -808,12 +653,11 @@ function listVacationRequests($pos)
 					}
 				}
 
-			$req .= " order by date, id desc";
+			$req .= " order by date desc";
 			if( $total > VAC_MAX_REQUESTS_LIST)
 				{
 				$req .= " limit ".$pos.",".VAC_MAX_REQUESTS_LIST;
 				}
-			
 			$this->res = $this->db->db_query("select * from ".$req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
@@ -861,6 +705,119 @@ function listVacationRequests($pos)
 	return $temp->count;
 }
 
+function viewVacationRequestDetail($id)
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $datebegintxt;
+		var $datebegin;
+		var $halfnamebegin;
+		var $dateendtxt;
+		var $dateend;
+		var $halfnameend;
+		var $nbdaystxt;
+		var $typename;
+		var $nbdays;
+		var $totaltxt;
+		var $totalval;
+		var $confirm;
+		var $refuse;
+		var $fullname;
+		var $commenttxt;
+		var $comment;
+		var $remarktxt;
+		var $remark;
+				
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $veid;
+		var $wusers = array();
+
+		var $statustxt;
+		var $status;
+
+
+		function temp($id)
+			{
+			global $babDayType;
+			$this->datebegintxt = bab_translate("Begin date");
+			$this->dateendtxt = bab_translate("End date");
+			$this->nbdaystxt = bab_translate("Quantities");
+			$this->totaltxt = bab_translate("Total");
+			$this->statustxt = bab_translate("Status");
+			$this->commenttxt = bab_translate("Description");
+			$this->remarktxt = bab_translate("Comment");
+			$this->db = $GLOBALS['babDB'];
+			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
+			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']." 00:00:00"), false);
+			$this->halfnamebegin = $babDayType[$row['day_begin']];
+			$this->dateend = bab_strftime(bab_mktime($row['date_end']." 00:00:00"), false);
+			$this->halfnameend = $babDayType[$row['day_end']];
+			$this->fullname = bab_getUserName($row['id_user']);
+			$this->statarr = array(bab_translate("Waiting to be valiadte by"), bab_translate("Accepted"), bab_translate("Refused"));
+			$this->comment = nl2br($row['comment']);
+			$this->remark = nl2br($row['comment2']);
+			switch($row['status'])
+				{
+				case 'Y':
+					$this->status = $this->statarr[1];
+					break;
+				case 'N':
+					$this->status = $this->statarr[2];
+					break;
+				default:
+					$this->status = $this->statarr[0];
+					$this->wusers = getWaitingApproversFlowInstance($row['idfai'] , false);
+					break;
+				}
+
+			$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$id."'";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->totalval = 0;
+			$this->veid = $id;
+			}
+
+		function getnexttype()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				list($this->typename) = $this->db->db_fetch_row($this->db->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$arr['id_type']."'"));
+				$this->nbdays = $arr['quantity'];
+				$this->totalval += $this->nbdays;
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+
+		function getnextuser()
+			{
+			static $i = 0;
+			if( $i < count($this->wusers))
+				{
+				$this->fullname = bab_getUserName($this->wusers[$i]);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
+		}
+
+	$temp = new temp($id);
+	echo bab_printTemplate($temp, "vacuser.html", "ventrydetail");
+	return $temp->count;
+	}
 
 /* main */
 $acclevel = bab_vacationsAccess();
@@ -911,8 +868,8 @@ switch($idx)
 		exit;
 		break;
 
-	case "morvw":
-		viewWaitingVacReqDetail($id);
+	case "morve":
+		viewVacationRequestDetail($id);
 		exit;
 		break;
 
