@@ -19,6 +19,14 @@ mailinfo.html                               Added articlewaittxt section
                                             Added userconfirmationtxt section
 comments.html           commentcreate       Changed name="name" to name="cname"
 calopt.html             access              Changed <input type="checkbox" name="baccess" value="y"> to select option
+search.html             viewfil             Added { modifiedbytxt }, { modifiedby }, { createdtxt }, { created }
+fileman.html                                Added template 'viewfile'
+                                            Added template 'fileunload'
+                        fileslist           Removed Javascript
+                                            Added column for Read Only files ( R )
+                                            Moved { diskspace } before <!--#endif bmanager -->
+admfiles                admfileslist        Added column for 'moderation'                                          
+
 /****************************/
 version 3.3.0 / 3.3.1
 /****************************/

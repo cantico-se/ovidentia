@@ -356,5 +356,13 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_CAL_EVENTS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+$req = "ALTER TABLE ".BAB_GROUPS_TBL." ADD moderate ENUM('Y','N') DEFAULT 'Y' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 }
 ?>

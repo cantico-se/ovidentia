@@ -304,10 +304,11 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 		$r = $db->db_fetch_array($res);
 		}
 	$res = $db->db_query("update ".BAB_USERS_TBL." set changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'");
+
+	$db = $GLOBALS['babDB'];
+	$db->db_query("update ".BAB_USERS_GROUPS_TBL." set isprimary='N'where id_object='$id'");
 	if( !empty($group))
 		{
-		$db = $GLOBALS['babDB'];
-		$db->db_query("update ".BAB_USERS_GROUPS_TBL." set isprimary='N'where id_object='$id'");
 		$db->db_query("update ".BAB_USERS_GROUPS_TBL." set isprimary='Y'where id_object='$id' and id_group='$group'");
 		}
 
