@@ -252,7 +252,7 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 			$this->sendpassword = bab_translate("Send password with email");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
-			$this->adduser = bab_translate("Register");
+			$this->adduser = bab_translate("Confirm");
 			}
 		}
 
