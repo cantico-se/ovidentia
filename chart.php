@@ -40,7 +40,7 @@ function OrgChartPage($ocid, $oeid, $iduser)
 	die(bab_printTemplate($temp,"chart.html", "chartpage"));
 	}
 
-if (isset($idx))
+if (!isset($idx))
 	$idx = '';
 
 /* main */
