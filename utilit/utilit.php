@@ -141,6 +141,7 @@ var $hidden;
 var $position;
 var $close;
 var $boxurl;
+var $bbox;
 
 function babSection($title = "Section", $content="<br>This is a sample of content<br>")
 {
@@ -151,6 +152,7 @@ function babSection($title = "Section", $content="<br>This is a sample of conten
 	$this->position = 0;
 	$this->close = 0;
 	$this->boxurl = "";
+	$this->bbox = 0;
 }
 
 function getTitle() { return $this->title;}
@@ -704,6 +706,7 @@ function loadSections()
 			$sec->setPosition($arr[position]);
 			$req = "select * from sections_states where id_section='".$arr[id_section]."' and id_user='".$BAB_SESS_USERID."'";
 			$res2 = $db->db_query($req);
+			$sec->bbox = 1;
 			if( $res2 && $db->db_num_rows($res2) > 0)
 				{
 				$arr2 = $db->db_fetch_array($res2);
@@ -718,10 +721,15 @@ function loadSections()
 					$sec->close = 0;
 					}
 				}
-			else
+			else if(!empty($BAB_SESS_USERID))
 				{
 				$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=sections&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
 				$sec->close = 0;
+				}
+			else
+				{
+				$sec->close = 0;
+				$sec->bbox = 0;
 				}
 			$body->addSection($sec);
 			}

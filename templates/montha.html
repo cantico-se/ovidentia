@@ -10,11 +10,13 @@
                 <td width="20" align="center" valign="middle"><img src="images/Puces/PuceAgenda.gif" width="15" height="15"></td>
                 <td class="BabTitleSectionFont" width="130" align="center" valign="middle">{ 
                   curmonth } { curyear } </td>
+        <!--#if bbox "== 1" --> 
          <!--#if close "== 0" --> 
                 <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="images/Puces/PuceSectionClose.gif" border="0"></a></td>
         <!--#else close --> 
                 <td width="20" align="center" valign="middle"><a href="{ boxurl }"><img src="images/Puces/PuceSectionOpen.gif" border="0"></a></td>
         <!--#endif close --> 
+        <!--#endif bbox --> 
              </tr>
             </table>
           </td>
