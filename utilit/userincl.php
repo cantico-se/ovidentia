@@ -358,6 +358,17 @@ function bab_getUserSetting($id, $what)
 		}
 	}
 
+function bab_getUserDirFields($id = "")
+	{
+	if ($id == "") $id = $GLOBALS['BAB_SESS_USERID'];
+	$db = $GLOBALS['babDB'];
+	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$id."'";
+	$res = $db->db_query($query);
+	if( $res && $db->db_num_rows($res) > 0)
+		return $db->db_fetch_array($res);
+	else
+		return "";
+	}
 
 function bab_getGroupName($id)
 	{
