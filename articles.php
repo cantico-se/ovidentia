@@ -706,7 +706,6 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	$headtext = imagesReplace($headtext, $article."_art_", $ar);
 	$bodytext = imagesReplace($bodytext, $article."_art_", $ar);
 
-	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
 	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."' where id='".$article."'";
 	$res = $db->db_query($req);
