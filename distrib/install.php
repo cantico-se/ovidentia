@@ -25,7 +25,7 @@
 define('BABINSTALL','install/babinstall.sql');
 define('FILETOTEST','utilit/dbutil.php');
 define('CONFIG','config.php');
-//define('RENAMEFILE','install.old');
+define('RENAMEFILE','install.old');
 define('LANG','en');
 
 class translate
@@ -66,7 +66,7 @@ class bab_dumpToDb
 		$this->db = mysql_connect($_POST['babDBHost'], $_POST['babDBLogin'], $_POST['babDBPasswd']);
 		if( $this->db )
 			{
-			$this->succes[] = $this->trans->str('Connexion test to mysql server successful');
+			$this->succes[] = $this->trans->str('Connexion to mysql server successful');
 			$res = mysql_select_db($_POST['babDBName'], $this->db);
 			if( $res == true && !empty($_POST['clearDb']) )
 				{
@@ -131,7 +131,7 @@ class bab_dumpToDb
 		$reg = "/((INSERT|CREATE).*?)\;/s";
 		if (preg_match_all($reg, $this->fileContent, $m))
 			{
-			$this->succes[] = count($m[1]).' '.$this->trans->str('query founded into dump file');
+			$this->succes[] = count($m[1]).' '.$this->trans->str('query found into dump file');
 			for ($k = 0; $k < count($m[1]); $k++ )
 				{
 				$query = $m[1][$k];
@@ -246,7 +246,7 @@ function testVars()
 	
 	if (!is_file($_POST['babInstallPath'].FILETOTEST))
 		{
-		$error = $trans->str('No acces to core, Relative path to ovidentia core is wrong');
+		$error = $trans->str('No valid access. Relative path to ovidentia core is wrong');
 		return false;
 		}
 		
@@ -256,7 +256,7 @@ function testVars()
 		return false;
 		}
 		
-	$succes[] = $trans->str('Configuration test succesful');
+	$succes[] = $trans->str('Configuration test successful');
 	return true;
 	}
 
@@ -419,7 +419,7 @@ a:hover {
 		{
 		
 		?>
-		<p><? echo $trans->str('Congratulation, ovidentia is now configured, now you can log in with the default acount') ?></p>
+		<p><? echo $trans->str('Congratulation, ovidentia is now configured. You can log in with the default account') ?></p>
 		<ul>
 			<li><? echo $trans->str('Login') ?> : <strong>admin@admin.bab</strong></li>
 			<li><? echo $trans->str('Password') ?> : <strong>012345678</strong></li>
