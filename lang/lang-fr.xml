@@ -1286,4 +1286,6 @@
 <string id="LDAP connection failed. Please contact your administrator">La connection LDAP a échoué. Contacter l'administrateur</string>
 <string id="LDAP authentification failed. Please verify your nickname and your password">L'authentification LDAP a échoué. Vérifier votre identifiant et votre mot de passe</string>
 <string id="LDAP bind failed. Please contact your administrator">Bind LDPA a échoué. Contacter l'administrateur</string>
+<string id="With/without introduction">Avec/sans introduction</string>
+<string id="With/without body">Avec/sans corps</string>
 </fr>
