@@ -216,6 +216,9 @@ function printBody()
 				}
 			else
 				{
+				// Variables redeclarations for IIS (bug or default config)
+				$GLOBALS['BAB_SESS_FIRSTNAME'] = "";
+				$GLOBALS['BAB_SESS_LASTNAME'] = "";
 				$this->login = bab_translate("Login");
 				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&cmd=signon";
 				}
