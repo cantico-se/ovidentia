@@ -13,7 +13,7 @@ function getVersion()
 	$file = @fopen($filename, "r");
 	$txt = fread($file, filesize($filename));
 	fclose($file);
-	$reg = "/babVersion\s*=\s*\"([^ ]*)\"/s";
+	$reg = "/babVersion\s*=\s*\"([^\"]*)\"/s";
 	$res = preg_match($reg, $txt, $match);
 
 	return $match[1];
@@ -26,7 +26,7 @@ function putVersion($version)
 	$file = @fopen($filename, "r");
 	$txt = fread($file, filesize($filename));
 	fclose($file);
-	$reg = "/babVersion\s*=\s*\"([^ ]*)\"/s";
+	$reg = "/babVersion\s*=\s*\"([^\"]*)\"/s";
 	$res = preg_match($reg, $txt, $match);
 
 	$reg = "/babVersion\s*=\s*\"".$match[1]."\"/s";
