@@ -426,7 +426,7 @@ function upload()
 
 function import()
 	{
-	if( !empty($_FILES['uploadf']['name']) && ( $_FILES['uploadf']['type'] == "application/zip" || $_FILES['uploadf']['type'] == "application/x-compressed"))
+	if( !empty($_FILES['uploadf']['name']))
 		{
 		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize'])
 			{
