@@ -922,6 +922,8 @@ function bab_replace( $txt, $remove = '' )
 				}
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$".$artarray[$i]."\(.*\)/","",$txt);
 	}
 
 	$reg = "/\\\$ARTICLEID\((.*?),(.*?),(.*?)\)/";
@@ -966,6 +968,8 @@ function bab_replace( $txt, $remove = '' )
 				}
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$ARTICLEID\(.*\)/","",$txt);
 
 	$reg = "/\\\$CONTACT\((.*?),(.*?)\)/";
 	if(!in_array('CONTACT',$exclude) && preg_match_all($reg, $txt, $m))
@@ -983,6 +987,8 @@ function bab_replace( $txt, $remove = '' )
 				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[1][$k]." ".$m[2][$k], $txt);
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$CONTACT\(.*\)/","",$txt);
 
 	$reg = "/\\\$CONTACTID\((.*?),(.*?)\)/";
 	if(!in_array('CONTACTID',$exclude) && preg_match_all($reg, $txt, $m))
@@ -1003,6 +1009,8 @@ function bab_replace( $txt, $remove = '' )
 				$txt = preg_replace("/\\\$CONTACTID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$CONTACTID\(.*\)/","",$txt);
 
 	$reg = "/\\\$DIRECTORYID\((.*?),(.*?)\)/";
 	if(!in_array('DIRECTORYID',$exclude) &&  preg_match_all($reg, $txt, $m))
@@ -1028,6 +1036,8 @@ function bab_replace( $txt, $remove = '' )
 				$txt = preg_replace("/\\\$DIRECTORYID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$DIRECTORYID\(.*\)/","",$txt);
 
 	$reg = "/\\\$FAQ\((.*?),(.*?)\)/";
 	if(!in_array('FAQ',$exclude) && preg_match_all($reg, $txt, $m))
@@ -1056,6 +1066,8 @@ function bab_replace( $txt, $remove = '' )
 				$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/")."\)/", $m[2][$k], $txt);
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$FAQ\(.*\)/","",$txt);
 	
 	$reg = "/\\\$FAQID\((.*?),(.*?),(.*?)\)/";
 	if(!in_array('FAQID',$exclude) && preg_match_all($reg, $txt, $m))
@@ -1089,6 +1101,8 @@ function bab_replace( $txt, $remove = '' )
 				$txt = preg_replace("/\\\$FAQID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", $message, $txt);
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$FAQID\(.*\)/","",$txt);
 
 	$reg = "/\\\$FILE\((.*?),(.*?)\)/";
 	if(!in_array('FILE',$exclude) && preg_match_all($reg, $txt, $m))
@@ -1117,6 +1131,8 @@ function bab_replace( $txt, $remove = '' )
 				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", $urltxt, $txt);
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$FILE\(.*\)/","",$txt);
 
 	$reg = "/\\\$VAR\((.*?)\)/";
 	if(!in_array('VAR',$exclude) && preg_match_all($reg, $txt, $m))
@@ -1136,6 +1152,8 @@ function bab_replace( $txt, $remove = '' )
 				}
 			}
 		}
+	else
+		$txt = preg_replace("/\\\$VAR\(.*\)/","",$txt);
 
 	$reg = "/\\\$OVML\((.*?)\)/";
 	if(!in_array('OVML',$exclude) && preg_match_all($reg, $txt, $m))
@@ -1149,6 +1167,8 @@ function bab_replace( $txt, $remove = '' )
 			}
 		
 		}
+	else
+		$txt = preg_replace("/\\\$OVML\(.*\)/","",$txt);
 
 	return $txt;
 }
