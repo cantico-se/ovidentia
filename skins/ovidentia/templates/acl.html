@@ -14,7 +14,19 @@
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
-<select name="what">
+<script type="text/javascript">
+<!--
+function lock()
+	{
+	var obj = document.getElementById('what');
+	var groups = document.getElementById('groups');
+	if (obj.value != "") 
+		{groups.disabled = true;}
+	else {groups.disabled = false;}
+	}
+-->
+</script>
+<select name="what" id="what" onchange = "lock();">
 <option value="">{ listgroups }</option>
 <option value="-1" { what[disabled] }>{ disabled }</option>
 <option value="0" { what[everybody] }>{ everybody }</option>
@@ -30,7 +42,7 @@
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="center" nowrap valign="middle"> 
-<select multiple name="groups[]" size="10">
+<select multiple name="groups[]" id="groups" size="10">
 <!--#in getnextgroup -->
 <option value="{ arrgroups[id] }" { arrgroups[select] }>{ arrgroups[name] }</option>
 <!--#endin getnextgroup -->
@@ -47,4 +59,9 @@
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+<!--
+lock();
+-->
+</script>
 <!--#end aclgroups -->
