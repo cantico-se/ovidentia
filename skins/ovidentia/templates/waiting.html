@@ -68,6 +68,12 @@
 </td>
 </tr>
 <!-- Toolbar -->
+<!--#if msie "!= 1" -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a></center>
+</td>
+</tr>
+<!--#endif msie -->
 <!--#if msie "== 1" -->
 <tr> 
 <td align="center" valign="middle"> 
@@ -77,7 +83,8 @@
 <textarea cols="1" rows="1" style="VISIBILITY:hidden" name="bodytext">{ bodyval }</textarea>
 <script language="JavaScript"> 
 var idGenerator = new IDGenerator(0);
-			var editor = new Editor(idGenerator, '{ babEditorImages }');
+var editor = new Editor(idGenerator, '{ babEditorImages }');
+editor.ListImagesUrl('{ urlimages }')
 editor.ToolBar();
 </script>
 </td></tr>

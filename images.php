@@ -5,21 +5,15 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 include $babInstallPath."utilit/tempfile.php";
-
-define("BAB_FILE_TIMEOUT", 600);
-define("BAB_IMAGE_MAXSIZE", 30000);
-define("BAB_IMAGES_UPLOADDIR", "images/");
-define("BAB_IMAGES_UPLOADDIR_TMP", "images/tmp/");
-define("BAB_IMAGES_UPLOADDIR_COMMON", "images/common/");
-define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");
+include $babInstallPath."utilit/imgincl.php";
 
 function getResizedImage($img, $w, $h, $com)
 	{
 	$type = "";
 	if($com)
-		$imgf = BAB_IMAGES_UPLOADDIR_COMMON.$img;
+		$imgf = BAB_IUD_COMMON.$img;
 	else
-		$imgf = BAB_IMAGES_UPLOADDIR_TMP.$img;
+		$imgf = BAB_IUD_TMP.$img;
 	if( file_exists($imgf))
 		{
 		$imgsize = @getimagesize($imgf);
@@ -102,31 +96,36 @@ function getResizedImage($img, $w, $h, $com)
 		}
 	}
 
-function listImages()
+function listImages($editor)
 	{
 	class temp
 		{
 
-		function temp()
+		function temp($editor)
 			{
 			$this->maximagessize = BAB_IMAGE_MAXSIZE;
+			$this->maxsizetxt = bab_translate("Image size must not exceed")." ".BAB_IMAGE_MAXSIZE;
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->shared = bab_translate("Shared");
 			$this->refresh = bab_translate("Refresh");
+			$this->delete = bab_translate("Delete");
+			$this->invalidimg = bab_translate("Invalid image extension");
+			$this->aligntxt = bab_translate("Alignment");
 			$this->badmin = bab_isUserAdministrator();
 			$this->comnum = 0;
-			$tf = new babTempFiles(BAB_IMAGES_UPLOADDIR_TMP, BAB_FILE_TIMEOUT);
-			$h = opendir(BAB_IMAGES_UPLOADDIR_COMMON);
+			$this->editor = $editor;
+			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
+			$h = opendir(BAB_IUD_COMMON);
 			while (($f = readdir($h)) != false)
 				{
 				if ($f != "." and $f != "..") 
 					{
-					if (is_file(BAB_IMAGES_UPLOADDIR_COMMON.$f))
+					if (is_file(BAB_IUD_COMMON.$f))
 						{
-						$this->arrcfile[] = BAB_IMAGES_UPLOADDIR_COMMON.$f;
+						$this->arrcfile[] = BAB_IUD_COMMON.$f;
 						}
 					}
 				}
@@ -135,12 +134,12 @@ function listImages()
 			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
-				if( !is_dir(BAB_IMAGES_UPLOADDIR_TMP))
-					mkdir(BAB_IMAGES_UPLOADDIR_TMP, 0700);
+				if( !is_dir(BAB_IUD_TMP))
+					mkdir(BAB_IUD_TMP, 0700);
 				while( $arr = $db->db_fetch_array($res))
 					{
-					if( is_file(BAB_IMAGES_UPLOADDIR_TMP.$arr['name']))
-						$this->arrufile[] = BAB_IMAGES_UPLOADDIR_TMP.$arr['name'];
+					if( is_file(BAB_IUD_TMP.$arr['name']))
+						$this->arrufile[] = BAB_IUD_TMP.$arr['name'];
 					else
 						$db->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$arr['id']."'");
 					}
@@ -149,7 +148,7 @@ function listImages()
 			$this->uifiles = 0;
 			$this->cifiles = 0;
 			$this->gd = extension_loaded('gd');
-			$this->refurl = $GLOBALS['babUrlScript']."?tg=images";
+			$this->refurl = $GLOBALS['babUrlScript']."?tg=images&editor=".$this->editor;
 			}
 
 		function geturls($filename, $com)
@@ -162,11 +161,11 @@ function listImages()
 				if( $this->gd && ($imgsize[2] == 1 || $imgsize[2] == 2 || $imgsize[2] == 3))
 					{
 					$this->srcurl = $GLOBALS['babUrlScript']."?tg=images&idx=get&f=".$this->name."&w=50&h=50&com=".$com;
-					$this->imgurl = $filename;
+					$this->imgurl = $GLOBALS['babUrl'].$filename;
 					}
 				else
 					{
-					$this->srcurl = $filename;
+					$this->srcurl = $GLOBALS['babUrl'].$filename;
 					$ratio = $imgsize[0] / $imgsize[1];
 					if( $ratio >= 1 )
 						{
@@ -188,7 +187,7 @@ function listImages()
 			else
 				{
 				$this->srcurl = $filename;
-				$this->imgurl = $filename;
+				$this->imgurl = $GLOBALS['babUrl'].$filename;
 				$this->imgwidth = $imgsize[0];
 				$this->imgheight = $imgsize[1];
 				}
@@ -209,6 +208,8 @@ function listImages()
 			if( $i < 5 && $this->cifiles < count($this->arrcfile))
 				{
 				$this->geturls($this->arrcfile[$this->cifiles], 1);
+				$this->imgname = basename($this->arrcfile[$this->cifiles]);
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=images&idx=del&com=1&f=".$this->imgname."&editor=".$this->editor;
 				$this->cifiles++;
 				$i++;
 				return true;
@@ -236,6 +237,8 @@ function listImages()
 			if( $i < 5 && $this->uifiles < count($this->arrufile))
 				{
 				$this->geturls($this->arrufile[$this->uifiles], 0);
+				$this->imgname = basename($this->arrufile[$this->uifiles]);
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=images&idx=del&com=0&f=".$this->imgname."&editor=".$this->editor;
 				$this->uifiles++;
 				$i++;
 				return true;
@@ -247,7 +250,7 @@ function listImages()
 				}
 			}
 		}
-	$temp = new temp();
+	$temp = new temp($editor);
 	echo bab_printTemplate($temp,"images.html", "imageslist");
 	}
 
@@ -257,20 +260,20 @@ function saveImage($file, $size, $tmpfile, $share)
 	$nf = "";
 	if( !strstr($file, "..") && is_uploaded_file($tmpfile))
 		{
-		if( !is_dir(BAB_IMAGES_UPLOADDIR_TMP))
-			mkdir(BAB_IMAGES_UPLOADDIR_TMP, 0700);
-		$tf = new babTempFiles(BAB_IMAGES_UPLOADDIR_TMP, BAB_FILE_TIMEOUT);
+		if( !is_dir(BAB_IUD_TMP))
+			mkdir(BAB_IUD_TMP, 0700);
+		$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 		if( !empty($share) && $share == "Y" && bab_isUserAdministrator())
 			{
-			if( !is_dir(BAB_IMAGES_UPLOADDIR_COMMON))
-				mkdir(BAB_IMAGES_UPLOADDIR_COMMON, 0700);
-			if( is_file(BAB_IMAGES_UPLOADDIR_COMMON.$file))
+			if( !is_dir(BBAB_IUD_COMMON))
+				mkdir(BAB_IUD_COMMON, 0700);
+			if( is_file(BAB_IUD_COMMON.$file))
 				{
 				$GLOBALS['msgerror'] = bab_translate("A file with the same name already exists");
 				return $nf;
 				}
-			if( move_uploaded_file($tmpfile, BAB_IMAGES_UPLOADDIR_COMMON.$file))
-				$nf = BAB_IMAGES_UPLOADDIR_COMMON.$file;
+			if( move_uploaded_file($tmpfile, BAB_IUD_COMMON.$file))
+				$nf = BAB_IUD_COMMON.$file;
 			}
 		else if( !empty($GLOBALS['BAB_SESS_USERID']))
 			{
@@ -290,11 +293,31 @@ function saveImage($file, $size, $tmpfile, $share)
 	return $nf;
 	}
 
+function delImage($com, $f)
+	{
+	switch($com)
+		{
+		case 1:
+			if (bab_isUserAdministrator() && is_file(BAB_IUD_COMMON.$f))
+				@unlink(BAB_IUD_COMMON.$f);
+			break;
+		case 0:
+			$db = $GLOBALS['babDB'];
+			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."' and name='".$f."'");
+			if( $res && $db->db_num_rows($res) == 1 )
+				{
+				$db->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."' and name='".$f."'");
+				@unlink(BAB_IUD_TMP.$f);
+				}
+			break;
+		}
+	}
+
 /* main */
 if( !isset($idx))
 	$idx = "list";
 
-if( isset($Submit))
+if( isset($addf) && $addf == "add")
 	{
 	saveImage($uploadf_name, $uploadf_size,$uploadf, $share);
 	}
@@ -304,9 +327,12 @@ switch($idx)
 	case "get":
 		getResizedImage($f, $w, $h, $com);
 		break;
+	case "del":
+		delImage($com, $f);
+		/* no break */
 	case "list":
 	default:
-		listImages();
+		listImages($editor);
 		break;
 	}
 ?>

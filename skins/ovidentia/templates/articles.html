@@ -1,7 +1,4 @@
-
 <!--#begin articlecreatebyfile -->
-
-
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="articles">
 <input type="hidden" name="idx" value="Articles">
@@ -84,7 +81,7 @@
 <td class="BabTopicsAuthorBackground" nowrap width="80%">{ author }</td>
 <td class="BabTopicsAuthorBackground" align="right" nowrap width="20%">
 <!--#if approver -->
-<a href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modify }"></a>&nbsp;&nbsp;&nbsp;<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" border="0" alt="{ delete }"></a>&nbsp;&nbsp;&nbsp;
+<a href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modify }"></a>&nbsp;&nbsp;&nbsp;<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif"  border="0" alt="{ delete }"></a>&nbsp;&nbsp;&nbsp;
 <!--#endif approver -->
 <a href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }"></a>&nbsp;&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ commentsurl }">{ commentsname }</a>&nbsp;&nbsp;&nbsp;
 <!--#if blen "> 0" -->
@@ -134,6 +131,12 @@
 <td align="center" valign="middle"> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <!-- Toolbar articlesmodify-->
+<!--#if msie "!= 1" -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a></center>
+</td>
+</tr>
+<!--#endif msie -->
 <!--#if msie "== 1" -->
 <tr> 
 <td class="BabLoginMenuBackground" align="center" valign="middle"> 
@@ -144,6 +147,7 @@
 <script language="JavaScript"> 
 			var idGenerator = new IDGenerator(0);
 			var editor = new Editor(idGenerator, '{ babEditorImages }');
+			editor.ListImagesUrl('{ urlimages }')
 			editor.ToolBar();
 			</script>
 </td>
@@ -225,6 +229,12 @@
 <td align="center" valign="middle"> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <!-- toolbar articlescreate -->
+<!--#if msie "!= 1" -->
+<tr> 
+<td class="BabLoginMenuBackground" valign="middle" align="center"><center><a class="BabSiteAdminListLink" href="javascript: Start('{ urlimages }', '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ images }</a></center>
+</td>
+</tr>
+<!--#endif msie -->
 <!--#if msie "== 1" -->
 <tr> 
 <td class="BabLoginMenuBackground" align="center" valign="middle"> 
@@ -235,6 +245,7 @@
 <script language="JavaScript"> 
 			var idGenerator = new IDGenerator(0);
 			var editor = new Editor(idGenerator, '{ babEditorImages }');
+			editor.ListImagesUrl('{ urlimages }')
 			editor.ToolBar();
 			</script>
 </td>

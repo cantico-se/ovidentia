@@ -1,11 +1,15 @@
 <?php
 
 define("BAB_FILE_TIMEOUT", 600);
-define("BAB_IMAGE_MAXSIZE", 30000);
-define("BAB_IMAGES_UPLOADDIR", "images/");
-define("BAB_IMAGES_UPLOADDIR_TMP", "images/tmp/");
-define("BAB_IMAGES_UPLOADDIR_COMMON", "images/common/");
-define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");
+define("BAB_IMAGE_MAXSIZE", 1000000);
+define("BAB_IUF", "images");
+define("BAB_IUF_TMP", "tmp");
+define("BAB_IUF_COMMON", "common");
+define("BAB_IUF_ARTICLES", "articles");
+define("BAB_IUD", BAB_IUF."/");
+define("BAB_IUD_TMP", BAB_IUF."/".BAB_IUF_TMP."/");
+define("BAB_IUD_COMMON", BAB_IUF."/".BAB_IUF_COMMON."/");
+define("BAB_IUD_ARTICLES", BAB_IUF."/".BAB_IUF_ARTICLES."/");
 
 function imagesReplace($txt, $prefix, &$tab)
 	{
@@ -17,10 +21,12 @@ function imagesReplace($txt, $prefix, &$tab)
 		if( $arr[sizeof($arr) -2] == "tmp" )
 			{
 			clearstatcache();
-			if( is_file(BAB_IMAGES_UPLOADDIR_TMP.$arr[sizeof($arr) -1]) )
+			if( is_file(BAB_IUD_TMP.$arr[sizeof($arr) -1]) )
 				{
 				$newfile = $prefix.$arr[sizeof($arr) -1];
-				if( rename(BAB_IMAGES_UPLOADDIR_TMP.$arr[sizeof($arr) -1], BAB_IMAGES_UPLOADDIR.$newfile))
+				if( !is_dir(BAB_IUD_ARTICLES))
+					mkdir(BAB_IUD_ARTICLES, 0700);
+				if( rename(BAB_IUD_TMP.$arr[sizeof($arr) -1], BAB_IUD_ARTICLES.$newfile))
 					{
 					$tab[$arr[sizeof($arr) -1]] = $newfile;
 					}
@@ -35,7 +41,7 @@ function imagesReplace($txt, $prefix, &$tab)
 				array_pop($arr);
 				array_pop($arr);
 				$repl = implode('/', $arr);
-				$repl .= "/".$newfile;
+				$repl .= "/".BAB_IUF_ARTICLES."/".$newfile;
 				$txt = preg_replace("/".preg_quote($link, "/")."/", $repl, $txt);
 				}
 			}
@@ -51,8 +57,8 @@ function deleteImagesArticle($txt, $article)
 		$arr = explode('/', $link);
 		$file = $arr[sizeof($arr) -1];
 		$arr = explode( '_', $file );
-		if( $arr[0] = $article && $arr[1] = "art" && is_file(BAB_IMAGES_UPLOADDIR.$file))
-			@unlink(BAB_IMAGES_UPLOADDIR.$file);
+		if( $arr[0] = $article && $arr[1] = "art" && is_file(BAB_IUD_ARTICLES.$file))
+			@unlink(BAB_IUD_ARTICLES.$file);
 		}
 	}
 

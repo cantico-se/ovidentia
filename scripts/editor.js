@@ -30,6 +30,7 @@
 	var BUTTON_DIV_PREFIX = "buttonDiv";
 	var BUTTON_PAD1_PREFIX = "buttonPad1";
 	var BUTTON_PAD2_PREFIX = "buttonPad2";
+	var LIST_IMAGES_URL = "";
 	var buttonMap = new Object();
 
 	function Button
@@ -322,6 +323,7 @@
 		this.ColorPanel = EditorColorPanelInstantiate;
 		this.FinalInstantiate = EditorFinalInstantiate;
 		this.CloseInitSection = EditorCloseInitSection;
+		this.ListImagesUrl = EditorListImagesUrl;
 	}
 
 	function EditorToolBarInstantiate()
@@ -602,6 +604,20 @@
 								html += "createHyperlinkButton.Instantiate();";
 								html += UtilEndScript();
 							html += "</td>";
+							if( LIST_IMAGES_URL != "" )
+							{
+							html += "<td>";
+								html += UtilBeginScript();
+								html += "var createImagesButton = new Button(";
+								html += "editorIDGenerator,";
+								html += "\""+STR_INSERT_IMAGE+"\",";
+								html += "\"EditorOnListImages(" + this.id + ")\",";
+								html += "\""+BUTTON_IMAGE_PATH+"/img.gif\"";
+								html += ");";
+								html += "createImagesButton.Instantiate();";
+								html += UtilEndScript();
+							html += "</td>";
+							}
 						html += "</tr>";
 					html += "</table>";
 				html += "</td>";
@@ -881,6 +897,11 @@
 		this.instantiated = true;
 	}
 
+	function EditorListImagesUrl(url)
+	{
+	LIST_IMAGES_URL = url;
+	}
+
 	function  EditorGetText()
 	{
 		return eval(EDITOR_COMPOSITION_PREFIX + this.id).document.body.innerText;
@@ -1008,19 +1029,49 @@
 			return;
 		}
 		var editor = editorMap[id];
-		var anchor = EditorGetElement("A", eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange().parentElement());
+		if( eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.type == "Text" )
+			var anchor = EditorGetElement("A", eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange().parentElement());
+		else
+			var anchor = null;
 		var link = prompt(STR_ENTER_LINK+": http://www.ovidentia.org) :", anchor ? anchor.href : "http://");
 		if (link && link != "http://") {
-			if (eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.type == "None") {
-				var range = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
-				//eval(EDITOR_COMPOSITION_PREFIX + id).document.focus();
-				range.pasteHTML('<A HREF="' + link + '"></A>');
-				range.select();
+			
+			var range = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
+			if( eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.type != "None" )
+			{
+				range.execCommand("CreateLink", "", link);
+				if(eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.type == "Text")
+					range.parentElement().target = "_blank";
+				
 			}
-			else {
-				EditorFormat(id, "CreateLink", link);
+			else
+			{
+			range.pasteHTML('<A HREF="' + link + '" target=_blank></A>');
+			range.select();
 			}
 		}
+	}
+
+	function EditorOnListImages(id)
+	{
+		eval(EDITOR_COMPOSITION_PREFIX + id).focus();
+		window.open(LIST_IMAGES_URL+"&editor="+id, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+	}
+
+	function EditorOnCreateImage(id, text, palign)
+	{
+		if (!EditorValidateMode(id)) {
+			return;
+		}
+		var range = eval(EDITOR_COMPOSITION_PREFIX + id).document.selection.createRange();
+		var url = '<img src="' + text + '" border=0  hspace=5 vspace=5';
+		if( palign != '')
+			url = url + ' align=' + palign;
+		url = url + '>';
+
+		range.pasteHTML(url);
+		range.select();
+		//EditorFormat(id, "InsertImage", text);
 	}
 
 	//--------------------------//

@@ -467,8 +467,10 @@ function modifyArticle($topics, $article)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->headval = htmlentities($this->arr['head']);
 				$this->bodyval = htmlentities($this->arr['body']);
-				$this->titleval = $this->arr['title'];
+				$this->titleval = htmlentities($this->arr['title']);
 				}
+			$this->images = bab_translate("Images");
+			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -515,6 +517,8 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Add Article");
 			$this->notearticle = bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
+			$this->images = bab_translate("Images");
+			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -695,17 +699,21 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 
 	$db = $GLOBALS['babDB'];
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$headtext = addslashes($headtext);
-		$bodytext = addslashes($bodytext);
-		$title = addslashes($title);
-		}
-
-	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, title, body, head) values ";
-	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date) values ";
+	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', now())";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
+
+	$headtext = stripslashes($headtext);
+	$bodytext = stripslashes($bodytext);
+	$title = stripslashes($title);
+
+	$ar = array();
+	$headtext = imagesReplace($headtext, $id."_art_", $ar);
+	$bodytext = imagesReplace($bodytext, $id."_art_", $ar);
+
+	$req = "update ".BAB_ARTICLES_TBL." set head='".addslashes($headtext)."', body='".addslashes($headtext)."', body='".addslashes($bodytext)."', title='".addslashes($title)."' where id='".$id."'";
+	$res = $db->db_query($req);
 
 	$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
 	$res = $db->db_query($req);
@@ -770,7 +778,7 @@ if( isset($addarticle))
 if( isset($addart) && $addart == "add")
 	{
 	if( saveArticle($title, $headtext, $bodytext, $topics))
-		$idx = "Articles";
+	$idx = "Articles";
 	else
 		$idx = "Submit";
 	}

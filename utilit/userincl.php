@@ -607,6 +607,35 @@ function bab_replace( $txt )
 			}
 		}
 
+
+	$reg = "/\\\$FILE\((.*?),(.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		include $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$req = "select * from ".BAB_FILES_TBL." where id='".trim($m[1][$k])."' and state='' and confirmed='Y'";
+			$res = $db->db_query($req);
+			$access = false;
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				$access = bab_isAccessFileValid($arr['bgroup'], $arr['id_owner']);
+				}
+
+			$urltxt = trim($m[2][$k]);
+			if( empty($urltxt) && $access )
+				$urltxt = $arr['name'];
+
+			if( $access )
+				{
+				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".$arr['path']."&file=".$arr['name']."\">".$urltxt."</a>", $txt);
+				}
+			else
+				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $urltxt, $txt);
+			}
+		}
+
 	return $txt;
 }
 ?>

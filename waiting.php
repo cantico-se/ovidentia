@@ -155,6 +155,8 @@ function modifyArticle($topics, $article)
 				$this->bodyval = htmlentities($this->arr['body']);
 				$this->titleval = htmlentities($this->arr['title']);
 				}
+			$this->images = bab_translate("Images");
+			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else

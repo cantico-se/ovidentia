@@ -4,6 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include $babInstallPath."utilit/imgincl.php";
 
 function bab_getCategoryTitle($id)
 	{
@@ -133,18 +134,21 @@ function bab_confirmDeleteCategory($id)
 	$res = $db->db_query($req);
 	}
 
-function bab_confirmDeleteArticle($topics, $article)
+function bab_confirmDeleteArticle($article)
 	{
 	// delete comments
 	$db = $GLOBALS['babDB'];
-	$req = "delete from ".BAB_COMMENTS_TBL." where id_article='$article'";
+	$req = "delete from ".BAB_COMMENTS_TBL." where id_article='".$article."'";
 	$res = $db->db_query($req);
 
 	$req = "delete from ".BAB_HOMEPAGES_TBL." where id_article='".$article."'";
 	$res = $db->db_query($req);
 
+	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+	deleteImagesArticle($arr['head'], $article);
+	deleteImagesArticle($arr['body'], $article);
 	// delete article
-	$req = "delete from ".BAB_ARTICLES_TBL." where id='$article'";
+	$req = "delete from ".BAB_ARTICLES_TBL." where id='".$article."'";
 	$res = $db->db_query($req);
 	}
 
