@@ -140,12 +140,15 @@ class listFiles
 					}
 				}
 			closedir($h);
-			natcasesort($this->arrdir);
-			$this->arrdir = array_values($this->arrdir);
-			reset ($this->arrdir);
-			foreach ( $this->arrdir as $f )
+			if (is_array($this->arrdir))
 				{
-				$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
+				natcasesort($this->arrdir);
+				$this->arrdir = array_values($this->arrdir);
+				reset ($this->arrdir);
+				foreach ( $this->arrdir as $f )
+					{
+					$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
+					}
 				}
 
 			if( !empty($path))
@@ -1781,6 +1784,7 @@ function viewFile( $idf)
 				$this->idf = $idf;
 
 				$this->description = bab_translate("Description");
+				$this->t_keywords = bab_translate("Keywords");
 				$this->keywords = bab_translate("Keywords (separated by spaces)");
 				$this->notify = bab_translate("Notify members group");
 
