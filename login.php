@@ -45,6 +45,8 @@ function displayLogin($url)
 			$this->onemonth = bab_translate("one month");
 			$this->oneyear = bab_translate("one year");
 			$this->infinite = bab_translate("unlimited");
+
+			if (!isset($GLOBALS['c_nickname'])) $this->c_nickname = '';
 			}
 		}
 
