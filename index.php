@@ -28,10 +28,10 @@ if (!empty($_SESSION)) {
 	extract($HTTP_SESSION_VARS);
 } // end if
 
-if (!empty($_SERVER) && isset($_SERVER['SCRIPT_NAME'])) {
-	$SCRIPT_NAME = $_SERVER['SCRIPT_NAME'];
-} else if (!empty($HTTP_SERVER_VARS) && isset($HTTP_SERVER_VARS['SCRIPT_NAME'])) {
-	$SCRIPT_NAME = $HTTP_SERVER_VARS['SCRIPT_NAME'];
+if (!empty($_SERVER)) {
+	extract($_SERVER);
+} else if (!empty($HTTP_SERVER_VARS)) {
+	extract($HTTP_SERVER_VARS);
 } // end if
 
 if (!empty($_FILES)) {
@@ -46,7 +46,7 @@ if (!empty($_FILES)) {
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
 
-$babPhpSelf = substr($SCRIPT_NAME,-strpos(strrev($SCRIPT_NAME),'/'));
+$babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 
@@ -522,5 +522,6 @@ if( !empty($incl))
 $babBody->loadSections();
 printBody();
 unset($tg);
+echo $BAB_SESS_USERID ."  ". session_id();
 ?>
 
