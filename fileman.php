@@ -59,7 +59,7 @@ function listTrashFiles($id, $gr)
 			$this->postedtxt = bab_translate("Posted by");
 			$this->fullpath = bab_getUploadFullPath($gr, $id);
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='D'";
+			$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='D' order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -387,7 +387,7 @@ function listFiles($id, $gr, $path, $bmanager)
 							}
 						}
 					closedir($h);
-					$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."'";
+					$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' order by name asc";
 					if( !$this->bmanager )
 						$req .= "and confirmed='Y'";
 					$this->res = $this->db->db_query($req);
@@ -396,7 +396,7 @@ function listFiles($id, $gr, $path, $bmanager)
 				$this->bdel = false;
 				if( $this->bmanager )
 					{
-					$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='X'";
+					$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='X' order by name asc";
 					$this->xres = $this->db->db_query($req);
 					$this->xcount = $this->db->db_num_rows($this->xres);
 					if( !empty($path) && count($this->arrdir) <= 1 && $this->count == 0 )
