@@ -80,7 +80,7 @@ function listUsers($pos, $grp)
 					$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
 				else
 					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.lastname like '".$this->pos."%' order by u.lastname, u.firstname asc";
-				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
+				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
 			else
@@ -91,7 +91,7 @@ function listUsers($pos, $grp)
 					$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->pos."%' order by firstname, lastname asc";
 				else
 					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.firstname like '".$this->pos."%' order by u.firstname, u.lastname asc";
-				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
+				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
 			$this->res = $this->db->db_query($req);
