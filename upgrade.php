@@ -3337,6 +3337,7 @@ if( !$res)
 return $ret;
 }
 
+
 function upgrade501to502()
 {
 $ret = "";
@@ -3353,166 +3354,10 @@ if( !$res)
 return $ret;
 }
 
-function upgrade502to510()
+function upgrade502to503()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
-
-$req = "ALTER TABLE ".BAB_USERS_TBL." ADD date_shortformat VARCHAR( 255 ) NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_USERS_TBL." ADD date_longformat VARCHAR( 255 ) NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_USERS_TBL." ADD time_format VARCHAR( 255 ) NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD date_shortformat VARCHAR( 255 ) NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD date_longformat VARCHAR( 255 ) NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD time_format VARCHAR( 255 ) NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "CREATE TABLE ".BAB_DBDIR_FIELDSVALUES_TBL." (";
-$req .= "id int(11) unsigned NOT NULL auto_increment,";
-$req .= "id_fieldextra int(11) unsigned NOT NULL default '0',";
-$req .= "field_value varchar(255) NOT NULL default '',";
-$req .= "PRIMARY KEY  (id),";
-$req .= "KEY id_fieldextra (id_fieldextra)";
-$req .= ");";
-
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Creation of <b>".BAB_DBDIR_FIELDSVALUES_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$arrids = array();
-$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where default_value!=''");
-while( $arr = $db->db_fetch_array($res))
-	{
-	$db->db_query("insert into ".BAB_DBDIR_FIELDSVALUES_TBL." (id_fieldextra, field_value) values ('".$arr['id']."', '".$arr['default_value']."')");
-	$id = $db->db_insert_id();
-	$arrids[$arr['id']] = $id;
-	}
-
-$req = "ALTER TABLE ".BAB_DBDIR_FIELDSEXTRA_TBL." CHANGE default_value default_value INT( 11 ) UNSIGNED NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_DBDIR_FIELDSEXTRA_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_DBDIR_FIELDSEXTRA_TBL." ADD list_ordering INT( 11 ) UNSIGNED NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_DBDIR_FIELDSEXTRA_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_DBDIR_FIELDSEXTRA_TBL." ADD multi_values ENUM( 'N', 'Y' ) DEFAULT 'N' NOT NULL ";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_DBDIR_FIELDSEXTRA_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "ALTER TABLE ".BAB_DBDIR_FIELDSEXTRA_TBL." ADD disabled ENUM( 'N', 'Y' ) DEFAULT 'N' NOT NULL AFTER multilignes";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_DBDIR_FIELDSEXTRA_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-foreach($arrids as $key => $value )
-	{
-	$db->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set default_value='".$value."' where id='".$key."'");
-	}
-
-$req = "CREATE TABLE ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." (";
-$req .= "id int(11) unsigned NOT NULL auto_increment,";
-$req .= "id_directory int(11) unsigned NOT NULL default '0',";
-$req .= "name varchar(255) NOT NULL default '',";
-$req .= "PRIMARY KEY  (id),";
-$req .= "KEY id_directory (id_directory)";
-$req .= ");";
-
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Creation of <b>".BAB_DBDIR_FIELDS_DIRECTORY_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$req = "CREATE TABLE ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (";
-$req .= "id int(11) unsigned NOT NULL auto_increment,";
-$req .= "id_fieldx int(11) unsigned NOT NULL default '0',";
-$req .= "id_entry int(11) unsigned NOT NULL default '0',";
-$req .= "field_value varchar(255) NOT NULL default '',";
-$req .= "PRIMARY KEY  (id),";
-$req .= "KEY id_fieldx (id_fieldx),";
-$req .= "KEY id_entry (id_entry)";
-$req .= ");";
-
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Creation of <b>".BAB_DBDIR_ENTRIES_EXTRA_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-$resf = $db->db_query("select lsft.*, dft.id as idfx from ".BAB_LDAP_SITES_FIELDS_TBL." lsft left join ".BAB_DBDIR_FIELDS_TBL." dft on lsft.name=dft.name");
-
-$req = "ALTER TABLE ".BAB_LDAP_SITES_FIELDS_TBL." CHANGE `name` id_field INT( 11 ) UNSIGNED NOT NULL";
-$res = $db->db_query($req);
-if( !$res)
-	{
-	$ret = "Alteration of <b>".BAB_LDAP_SITES_FIELDS_TBL."</b> table failed !<br>";
-	return $ret;
-	}
-
-while( $arr = $db->db_fetch_array($resf))
-	{
-	$db->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set id_field='".$arr['idfx']."' where id='".$arr['id']."'");
-	}
 
 return $ret;
 }

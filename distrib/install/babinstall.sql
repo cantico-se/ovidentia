@@ -497,9 +497,6 @@ CREATE TABLE bab_users (
    lastlog datetime DEFAULT '0000-00-00 00:00:00',
    datelog datetime DEFAULT '0000-00-00 00:00:00',
    langfilter INTEGER DEFAULT 0,
-   date_longformat varchar(255) NOT NULL default '',
-   date_shortformat varchar(255) NOT NULL default '',
-   time_format varchar(255) NOT NULL default '',
    PRIMARY KEY (id),
    KEY nickname (nickname),
    KEY firstname (firstname),
@@ -507,7 +504,7 @@ CREATE TABLE bab_users (
    KEY hashname (hashname)
 );
 
-INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '', '', '', '', '', '');
+INSERT INTO bab_users VALUES ( '1', 'admin@admin.bab', 'Administrator', '', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', '2001-04-03 00:00:00', '22975d8a5ed1b91445f6c55ac121505b', '1', '', '0da8f2a37b9e7926e08196a6bd1baa29', '1', '0', '', '', '', '', '', '');
 
 # --------------------------------------------------------
 #
@@ -786,9 +783,6 @@ CREATE TABLE `bab_sites` (
   `ldap_attribute` text NOT NULL,
   `ldap_passwordtype` enum('text','md5','unix','sha') NOT NULL default 'text',
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
-  `date_longformat` varchar(255) NOT NULL default '',
-  `date_shortformat` varchar(255) NOT NULL default '',
-  `time_format` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -943,8 +937,8 @@ CREATE TABLE bab_ini (
 );
 
 INSERT INTO bab_ini VALUES ('ver_major', '5');
-INSERT INTO bab_ini VALUES ('ver_minor', '1');
-INSERT INTO bab_ini VALUES ('ver_build', '0');
+INSERT INTO bab_ini VALUES ('ver_minor', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '3');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1173,45 +1167,42 @@ CREATE TABLE bab_dbdir_fieldsextra (
   id int(11) unsigned NOT NULL auto_increment,
   id_directory int(11) unsigned NOT NULL default '0',
   id_field int(11) unsigned NOT NULL default '0',
-  default_value int(11) unsigned NOT NULL default '0',
+  default_value text NOT NULL,
   modifiable enum('N','Y') NOT NULL default 'N',
   required enum('N','Y') NOT NULL default 'N',
   multilignes enum('N','Y') NOT NULL default 'N',
-  disabled enum('N','Y') NOT NULL default 'N',
-  multi_values enum('N','Y') NOT NULL default 'N',
   ordering int(11) unsigned NOT NULL default '0',
-  list_ordering int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_directory (id_directory)
 );
 
 
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 1, 0, 'N', 'N', 'N', 0, 1);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 2, 0, 'Y', 'Y', 'N', 1, 2);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 3, 0, 'Y', 'N', 'N', 0, 3);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 4, 0, 'Y', 'Y', 'N', 2, 4);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 5, 0, 'Y', 'N', 'N', 0, 5);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 6, 0, 'Y', 'Y', 'N', 3, 6);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 7, 0, 'N', 'N', 'N', 0, 7);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 8, 0, 'N', 'N', 'N', 0, 8);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 9, 0, 'N', 'N', 'N', 0, 9);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 10, 0, 'N', 'N', 'N', 0, 10);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 11, 0, 'N', 'N', 'N', 0, 11);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 12, 0, 'N', 'N', 'N', 0, 12);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 13, 0, 'N', 'N', 'N', 0, 13);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 14, 0, 'N', 'N', 'N', 0, 14);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 15, 0, 'N', 'N', 'N', 0, 15);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 16, 0, 'N', 'N', 'N', 0, 16);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 17, 0, 'N', 'N', 'N', 0, 17);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 18, 0, 'N', 'N', 'N', 0, 18);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 19, 0, 'N', 'N', 'N', 0, 19);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 20, 0, 'N', 'N', 'N', 0, 20);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 21, 0, 'N', 'N', 'N', 0, 21);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 22, 0, 'N', 'N', 'N', 0, 22);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 23, 0, 'N', 'N', 'N', 0, 23);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 24, 0, 'N', 'N', 'N', 0, 24);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 25, 0, 'N', 'N', 'N', 0, 25);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 26, 0, 'N', 'N', 'N', 0, 26);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 1, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 2, '', 'Y', 'Y', 'N', 1);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 3, '', 'Y', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 4, '', 'Y', 'Y', 'N', 2);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 5, '', 'Y', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 6, '', 'Y', 'Y', 'N', 3);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 7, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 8, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 9, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 10, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 11, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 12, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 13, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 14, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 15, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 16, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 17, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 18, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 19, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 20, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 21, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 22, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 23, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 24, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 25, '', 'N', 'N', 'N', 0);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 26, '', 'N', 'N', 'N', 0);
 
 
 #
@@ -1678,40 +1669,40 @@ CREATE TABLE bab_faq_trees (
 
 CREATE TABLE bab_ldap_sites_fields (
   id int(11) unsigned NOT NULL auto_increment,
-  id_field int(11) unsigned NOT NULL default '0',
+  name varchar(255) NOT NULL default '',
   x_name varchar(255) NOT NULL default '',
   id_site int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
-  KEY id_field (id_field),
+  KEY name (name),
   KEY id_site (id_site)
 );
 
-INSERT INTO bab_ldap_sites_fields VALUES (1, 1, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (2, 2, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (3, 3, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (4, 4, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (5, 5, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (6, 6, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (7, 7, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (8, 8, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (9, 9, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (10, 10, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (11, 11, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (12, 12, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (13, 13, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (14, 14, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (15, 15, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (16, 16, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (17, 17, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (18, 18, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (19, 19, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (20, 20, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (21, 21, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (22, 22, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (23, 23, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (24, 24, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (25, 25, '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (26, 26, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (1, 'cn', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (2, 'sn', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (3, 'mn', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (4, 'givenname', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (5, 'jpegphoto', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (6, 'email', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (7, 'btel', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (8, 'mobile', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (9, 'htel', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (10, 'bfax', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (11, 'title', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (12, 'departmentnumber', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (13, 'organisationname', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (14, 'bstreetaddress', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (15, 'bcity', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (16, 'bpostalcode', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (17, 'bstate', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (18, 'bcountry', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (19, 'hstreetaddress', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (20, 'hcity', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (21, 'hpostalcode', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (22, 'hstate', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (23, 'hcountry', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (24, 'user1', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (25, 'user2', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (26, 'user3', '', '1');
 
 
 #
@@ -1949,40 +1940,3 @@ CREATE TABLE bab_profiles_groupsset (
 );
 
 
-#
-# Table structure for table `bab_dbdir_fieldsvalues`
-#
-
-CREATE TABLE bab_dbdir_fieldsvalues (
-  id int(11) unsigned NOT NULL auto_increment,
-  id_fieldextra int(11) unsigned NOT NULL default '0',
-  field_value varchar(255) NOT NULL default '',
-  PRIMARY KEY  (id),
-  KEY id_fieldextra (id_fieldextra)
-);
-
-#
-# Table structure for table `bab_dbdir_fields_directory`
-#
-
-CREATE TABLE bab_dbdir_fields_directory (
-  id int(11) unsigned NOT NULL auto_increment,
-  id_directory int(11) unsigned NOT NULL default '0',
-  name varchar(255) NOT NULL default '',
-  PRIMARY KEY  (id),
-  KEY id_directory (id_directory)
-);
-
-#
-# Table structure for table `bab_dbdir_entries_extra`
-#
-
-CREATE TABLE bab_dbdir_entries_extra (
-  id int(11) unsigned NOT NULL auto_increment,
-  id_fieldx int(11) unsigned NOT NULL default '0',
-  id_entry int(11) unsigned NOT NULL default '0',
-  field_value varchar(255) NOT NULL default '',
-  PRIMARY KEY  (id),
-  KEY id_fieldx (id_fieldx),
-  KEY id_entry (id_entry)
-);
