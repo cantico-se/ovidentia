@@ -287,7 +287,7 @@ if( isset($modify))
 
 if( isset($aclsec))
 	{
-	aclUpdate($table, $item, $groups, $what);
+	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	exit;
 	}

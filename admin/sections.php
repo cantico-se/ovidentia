@@ -753,6 +753,8 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
 
 if( isset($create))
 	{
+	if (!isset($script))
+		$script = '';
 	sectionSave($title, $position, $description, $content, $script, $js, $template, $lang, $opt);
 	}
 
