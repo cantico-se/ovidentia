@@ -67,6 +67,7 @@
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="forum" value="{ forum }">
 <input type="hidden" name="thread" value="{ thread }">
+<input type="hidden" name="postid" value="{ postid }">
 <input type="hidden" name="add" value="addreply">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
@@ -79,7 +80,7 @@
 </tr>
 <tr>
 <td width="107" align="right" nowrap>{ subject }:</td>
-<td width="103"><input type="text" name="subject" size="60" maxlength="60" value=""></td>
+<td width="103"><input type="text" name="subject" size="60" maxlength="60" value="{ subjectval }"></td>
 </tr>
 <tr>
 <td width="107" align="right" nowrap>{ message }:</td>
@@ -106,7 +107,6 @@
 <input type="hidden" name="forum" value="{ forum }">
 <input type="hidden" name="thread" value="{ thread }">
 <input type="hidden" name="post" value="{ post }">
-<input type="hidden" name="newpost" value="{ newpost }">
 <input type="hidden" name="update" value="updatereply">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
@@ -135,5 +135,95 @@
 </table>
 </center>
 <!--#end postedit -->
+<!--#begin newpostslist -->
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabPostContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr>
+<td width="30%" class="BabPostTitleBgnd"><b>{ postauthor }</b></td>
+<td width="70%" class="BabPostTitleBgnd">{ postsubject }</td>
+</tr>
+<tr><td colspan="2"><br>{ postmessage }<br>&nbsp;</td>
+</tr>
+<tr>
+<td class="BabPostTitleBgnd" nowrap>{ postdate }</td>
+<!--#if what "== N" -->
+<td class="BabPostTitleBgnd" align="right"><a class=BabMenuLink href="{ confirmurl }">{ confirmname }</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ deleteurl }">{ deletename }</a>&nbsp;&nbsp;&nbsp;<a class=BabMenuLink href="{ moreurl }">{ morename }</a></td>
+<!--#else what -->
+<td class="BabPostTitleBgnd" align="right">{ more }</td>
+<!--#endif what -->
+</tr>
+
+</table>
+</td></tr>
+</table>
+<br>
+
+<table width="95%" class="BabPostContentBgnd" border="0" cellpadding="0" cellspacing="0">
+
+<tr>
+<td class="BabPostTitleBgnd" height="21" nowrap><b>&nbsp;</b></td>
+<td class="BabPostTitleBgnd" height="21" nowrap><b>{ subject }</b></td>
+<td class="BabPostTitleBgnd" height="21" nowrap><b>{ author }</b></td>
+<td class="BabPostTitleBgnd" height="21" nowrap><b>{ date }</b></td>
+</tr>
+
+<!--#in getnext -->
+<tr valign="middle">
+
+<!--#if alternate "== 0" -->
+<td class="BabPostTitleBgnd" nowrap>{ confirmed }</td>
+<td class="BabPostTitleBgnd">
+<table class="BabPostTitleBgnd" cellspacing="0" cellpadding="0" border="0">
+<!--#else alternate -->
+<td nowrap>{ confirmed }</td>
+<td class="BabPostContentBgnd">
+<table class="BabPostContentBgnd" cellspacing="0" cellpadding="0" border="0">
+<!--#endif alternate -->
+<tr>
+<td><IMG SRC="images/s.gif" width="5" height="21" BORDER="0">
+<!--#in gettrans -->
+<!--#if vert "== 1" -->
+<img src="images/v.gif" width="12" height="21" border="0">
+<!--#else vert -->
+<IMG SRC="images/s.gif" width="12" height="21" border="0">
+<!--#endif vert -->
+<!--#endin gettrans -->
+<!--#if first "== 1" -->
+<!--#else first --><!--#if leaf "== 1" -->
+<img src="images/l.gif" width="12" height="21" border="0">
+<!--#else leaf -->
+<img src="images/t.gif" width="12" height="21" border="0">
+<!--#endif leaf -->
+<!--#endif first -->
+<!--#if parent "== 1" -->
+<img src="images/m.gif" width="9" height="21" border="0">
+<!--#else parent -->
+<img src="images/h.gif" width="9" height="21" border="0">
+<!--#endif parent -->
+</td><td>&nbsp;&nbsp;
+
+<!--#if current "== 1" -->
+<b>{ replysubject }</b></td>
+<!--#else current -->
+<a class=BabMenuLink href="{ replysubjecturl }">{ replysubject }</a></td>
+<!--#endif current -->
+</tr>
+</table>
+
+</td>
+<!--#if alternate "== 0" -->
+<td class="BabPostTitleBgnd" nowrap>{ replyauthor }</td>
+<td class="BabPostTitleBgnd" nowrap>{ replydate }</td>
+<!--#else alternate -->
+<td nowrap>{ replyauthor }</td>
+<td nowrap>{ replydate }</td>
+<!--#endif alternate -->
+</tr>
+<!--#endin getnext -->
+</table>
+
+</center>
+<!--#end newpostslist -->
 </BODY>
 </HTML>

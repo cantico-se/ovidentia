@@ -6,7 +6,7 @@
  ***********************************************************************/
 include $babInstallPath."utilit/forumincl.php";
 
-function listPosts($forum, $thread, $pos, $what)
+function listPosts($forum, $thread, $post)
 	{
 	global $body;
 
@@ -19,36 +19,29 @@ function listPosts($forum, $thread, $pos, $what)
 		var $res;
 		var $forum;
 		var $thread;
-		var $what;
-		var $topurl;
-		var $bottomurl;
-		var $nexturl;
-		var $prevurl;
-		var $topname;
-		var $bottomname;
-		var $nextname;
-		var $prevname;
 		var $more;
 		var $moreurl;
 		var $morename;
 		var $confirmurl;
 		var $confirmname;
+		var $postid;
+		var $alternate;
+		var $subject;
+		var $author;
+		var $date;
 
-		function temp($forum, $thread, $pos, $what)
+		function temp($forum, $thread, $post)
 			{
-			global $newpost, $views;
-
-			$this->topurl = "";
-			$this->bottomurl = "";
-			$this->nexturl = "";
-			$this->prevurl = "";
-			$this->topname = "";
-			$this->bottomname = "";
-			$this->nextname = "";
-			$this->prevname = "";
+			global $moderator, $views;
+			$this->subject = babTranslate("Subject");
+			$this->author = babTranslate("Author");
+			$this->date = babTranslate("Date");
+			$this->forum = $forum;
+			$this->thread = $thread;
+			$this->alternate = 0;
 			$this->more = "";
 			$this->db = new db_mysql();
-			if( $what == "Y" && $views == "1")
+			if( $views == "1")
 				{
 				//update views
 				$req = "select * from threads where id='$thread'";
@@ -59,80 +52,39 @@ function listPosts($forum, $thread, $pos, $what)
 				$req = "update threads set views='$views' where id='$thread'";
 				$res = $this->db->db_query($req);
 				}
-
-			$req = "select count(*) as total from posts where id_thread='$thread' and confirmed='$what'";
-			$this->res = $this->db->db_query($req);
-			$row = $this->db->db_fetch_array($this->res);
-			$total = $row["total"];
-
-			$req = "select * from forums where id='$forum'";
-			$this->res = $this->db->db_query($req);
-			$row = $this->db->db_fetch_array($this->res);
-			$maxRows = $row[display];
-
-			$req = "select count(*) as total from posts where id_thread='$thread' and confirmed='N'";
-			$this->res = $this->db->db_query($req);
-			$row = $this->db->db_fetch_array($this->res);
-			$newpost = $row["total"];
-
-			if( $total > $maxRows)
+				
+			$req = "select * from posts where id_thread='".$thread."' and id_parent='0'";
+			$res = $this->db->db_query($req);
+			if( $res && $this->db->db_num_rows($res) > 0)
 				{
-				if( $pos > 0)
-					{
-					$this->topurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=0";
-					$this->topname = "&lt;&lt;";
-					}
-
-				$next = $pos - $maxRows;
-				if( $next >= 0)
-					{
-					$this->prevurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$next;
-					$this->prevname = "&lt;";
-					}
-
-				$next = $pos + $maxRows;
-				if( $next < $total)
-					{
-					$this->nexturl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$next;
-					$this->nextname = "&gt;";
-					if( $next + $maxRows < $total)
-						{
-						$bottom = $total - $maxRows;
-						}
-					else
-						$bottom = $next;
-					$this->bottomurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$bottom;
-					$this->bottomname = "&gt;&gt;";
-					}
+				$arr = $this->db->db_fetch_array($res);
+				$firstpost = $arr[id];
 				}
+			else
+				$firstpost = 0;
 
-			$req = "select * from posts where id_thread='$thread' and confirmed='$what' order by date asc";
-			if( $total > $maxRows)
-				{
-				$req .= " limit ".$pos.",".$maxRows;
-				}
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
-			$this->forum = $forum;
-			$this->thread = $thread;
-			$this->what = $what;
-			}
+			$this->postid = $post;
 
-		function getnext()
-			{
-			global $newpost;
-			static $i = 0;
-			if( $i < $this->count)
+			if( $this->postid > 0)
 				{
-				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->date = bab_strftime(bab_mktime($this->arr[date]));
+				if( $moderator )
+					$req = "select * from posts where id='".$this->postid."'";
+				else
+					$req = "select * from posts where id='".$this->postid."' and confirmed='Y'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->postdate = bab_strftime(bab_mktime($arr[date]));
+				$this->postauthor = $arr[author];
+				$this->postsubject = $arr[subject];
+				$this->postmessage = $arr[message];
 				$dateupdate = bab_mktime($this->arr[dateupdate]);
 				$this->confirmurl = "";
 				$this->confirmname = "";
 				$this->moreurl = "";
 				$this->morename = "";
 				$this->more = "";
-				if(  $this->what == "Y" && $dateupdate > 0)
+				$this->what = $arr[confirmed];
+				if(  $arr[confirmed] == "Y" && $dateupdate > 0)
 					{
 					$req = "select * from forums where id='".$this->forum."'";
 					$res = $this->db->db_query($req);
@@ -147,28 +99,154 @@ function listPosts($forum, $thread, $pos, $what)
 					$this->moreurl = "";
 					$this->morename = "";
 					}
-				else if( $this->what == "N" )
+				else if( $arr[confirmed]  == "N" )
 					{
-					$this->confirmurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=Confirm&forum=".$this->forum."&thread=".$this->thread."&post=".$this->arr[id]."&newpost=".$newpost;
+					$this->confirmurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=Confirm&forum=".$this->forum."&thread=".$this->thread."&post=".$arr[id];
 					$this->confirmname = babTranslate("Confirm");
-					$this->moreurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=Modify&forum=".$this->forum."&thread=".$this->thread."&post=".$this->arr[id]."&newpost=".$newpost;
+					$this->deleteurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteP&forum=".$this->forum."&thread=".$this->thread."&post=".$this->postid;
+					$this->deletename = babTranslate("Delete");
+					$this->moreurl = $GLOBALS[babUrl]."index.php?tg=posts&idx=Modify&forum=".$this->forum."&thread=".$this->thread."&post=".$arr[id];
 					$this->morename = babTranslate("Edit");
 					}
+				}
+
+
+			$this->arrresult = array();
+			$this->getChild($firstpost, 0, -1, 0);
+			$this->count = count($this->arrresult[id]);
+			}
+
+		function getChild($id, $delta, $iparent, $leaf)
+			{
+			global $moderator;
+			static $k=0;
+			$req = "select * from posts where id_thread='".$this->thread."' and id='".$id."'";
+			$res = $this->db->db_query($req);
+			$arr = $this->db->db_fetch_array($res);
+			$idx = $k;
+			$this->arrresult["id"][$k] = $arr[id]; 
+			$this->arrresult["delta"][$k] = $delta;
+			$this->arrresult["parent"][$k] = 1;
+			$this->arrresult["iparent"][$k] = $iparent;
+			$this->arrresult["leaf"][$k] = $leaf;
+
+			$tab = array();
+			if( $iparent >= 0)
+			for( $m = $iparent; $m >= 0; )
+				{
+				$p = $this->arrresult["iparent"][$m];
+				if( $this->arrresult["leaf"][$m] == 1)
+					$tab[$this->arrresult["delta"][$p]] = 0;
+				else
+					$tab[$this->arrresult["delta"][$p]] = 1;
+				$m = $p;
+				}
+			$this->arrresult["schema"][$k] = $tab;
+
+			$k++;
+			if($moderator)
+				$req = "select * from posts where id_thread='".$this->thread."' and id_parent='".$arr[id]."' order by date asc";
+			else
+				$req = "select * from posts where id_thread='".$this->thread."' and id_parent='".$arr[id]."' and confirmed='Y' order by date asc";
+			$res = $this->db->db_query($req);
+			if( !$res || $this->db->db_num_rows($res) < 1)
+				{
+				$this->arrresult[parent][$k-1] = 0;
+				return;
+				}
+			$count = $this->db->db_num_rows($res);
+			for( $i = 0; $i < $count; $i++)
+				{
+				$arr = $this->db->db_fetch_array($res);
+				if( $i == $count -1)
+					$this->getChild($arr[id], $delta + 1, $idx, 1);
+				else
+					$this->getChild($arr[id], $delta + 1, $idx, 0);
+				}
+
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$req = "select * from posts where id='".$this->arrresult[id][$i]."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				if( $this->alternate == 0)
+					$this->alternate = 1;
+				else
+					$this->alternate = 0;
+				$this->replydate = bab_strftime(bab_mktime($arr[date]));;
+				$this->replyauthor = $arr[author];
+				
+				$this->transarr = $this->arrresult[schema][$i];
+				$this->replysubject = $arr[subject];
+				if( $arr[confirmed] == "N")
+					$this->confirmed = "C";
+				else
+					$this->confirmed = "";
+				$this->leaf = $this->arrresult[leaf][$i];
+				$this->delta = $this->arrresult[delta][$i];
+				if( $this->arrresult[parent][$i] == 1)
+					{
+					$this->parent = 1;
+					}
+				else
+					{
+					$this->parent = 0;
+					}
+
+				$this->nbtrans = count($this->transarr) - 1;
+				if($i == 0)
+					{
+					$this->first = 1;
+					}
+				else
+					$this->first = 0;
+
+				if( $this->arrresult[id][$i] == $this->postid )
+					$this->current = 1;
+				else
+					$this->current = 0;
+				$this->replysubjecturl = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$this->forum."&thread=".$this->thread."&post=".$this->arrresult[id][$i];
 				$i++;
 				return true;
 				}
 			else
 				return false;
 			}
+
+		function gettrans()
+			{
+			static $m = 0;
+			if( $m < $this->nbtrans)
+				{
+				if( $this->transarr[$m] == 1)
+					$this->vert = 1;
+				else
+					$this->vert = 0;
+
+				$m++;
+				return true;
+				}
+			else
+				{
+				$m = 0;
+				return false;
+				}
+			}
+
 		}
 	
-	$temp = new temp($forum, $thread, $pos, $what);
-	$body->babecho(	babPrintTemplate($temp,"posts.html", "postslist"));
+	$temp = new temp($forum, $thread, $post);
+	$body->babecho(	babPrintTemplate($temp,"posts.html", "newpostslist"));
 	return $temp->count;
 	}
 
 
-function newReply($forum, $thread)
+function newReply($forum, $thread, $post)
 	{
 	global $body;
 	
@@ -183,8 +261,10 @@ function newReply($forum, $thread)
 		var $username;
 		var $anonyme;
 		var $notifyme;
+		var $postid;
+		
 
-		function temp($forum, $thread)
+		function temp($forum, $thread, $post)
 			{
 			global $BAB_SESS_USER;
 			$this->subject = babTranslate("Subject");
@@ -193,6 +273,16 @@ function newReply($forum, $thread)
 			$this->add = babTranslate("New reply");
 			$this->forum = $forum;
 			$this->thread = $thread;
+			$this->postid = $post;
+
+			$db = new db_mysql();
+			$req = "select * from posts where id='".$post."'";
+			$res = $db->db_query($req);
+			$arr = $db->db_fetch_array($res);
+			if( substr($arr[subject], 0, 3) == "RE:")
+				$this->subjectval = $arr[subject];
+			else
+				$this->subjectval = "RE:".$arr[subject];
 			if( empty($BAB_SESS_USER))
 				$this->anonyme = 1;
 			else
@@ -203,11 +293,11 @@ function newReply($forum, $thread)
 			}
 		}
 
-	$temp = new temp($forum, $thread);
+	$temp = new temp($forum, $thread, $post);
 	$body->babecho(	babPrintTemplate($temp,"posts.html", "postcreate"));
 	}
 
-function editPost($forum, $thread, $post, $newpost)
+function editPost($forum, $thread, $post)
 	{
 	global $body;
 	
@@ -223,7 +313,7 @@ function editPost($forum, $thread, $post, $newpost)
 		var $newpost;
 		var $arr = array();
 
-		function temp($forum, $thread, $post, $newpost)
+		function temp($forum, $thread, $post)
 			{
 			global $BAB_SESS_USER;
 			$this->subject = babTranslate("Subject");
@@ -232,7 +322,6 @@ function editPost($forum, $thread, $post, $newpost)
 			$this->update = babTranslate("Update reply");
 			$this->forum = $forum;
 			$this->thread = $thread;
-			$this->newpost = $newpost;
 			$this->post = $post;
 			$db = new db_mysql();
 			$req = "select * from posts where id='$post'";
@@ -241,11 +330,11 @@ function editPost($forum, $thread, $post, $newpost)
 			}
 		}
 
-	$temp = new temp($forum, $thread, $post, $newpost);
+	$temp = new temp($forum, $thread, $post);
 	$body->babecho(	babPrintTemplate($temp,"posts.html", "postedit"));
 	}
 
-function deleteThread($forum, $thread, $newpost)
+function deleteThread($forum, $thread)
 	{
 	global $body;
 
@@ -261,31 +350,37 @@ function deleteThread($forum, $thread, $newpost)
 		var $topics;
 		var $article;
 
-		function temp($forum, $thread, $newpost)
+		function temp($forum, $thread)
 			{
 			$this->message = babTranslate("Are you sure you want to delete this thread");
 			$this->title = getThreadTitle($thread);
 			$this->warning = babTranslate("WARNING: This operation will delete the thread and all references"). "!";
 			$this->urlyes = $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteT&forum=".$forum."&thread=".$thread."&action=Yes";
 			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&newpost=".$newpost;
+			$this->urlno = $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread;
 			$this->no = babTranslate("No");
 			}
 		}
 
-	$temp = new temp($forum, $thread, $newpost);
+	$temp = new temp($forum, $thread);
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 
 
-function saveReply($forum, $thread, $name, $subject, $message)
+function saveReply($forum, $thread, $post, $name, $subject, $message)
 	{
 	global $BAB_SESS_USER, $BAB_SESS_USERID, $body;
 
 	if( empty($message))
 		{
 		$body->msgerror = babTranslate("ERROR: You must provide a content for your message")." !";
+		return;
+		}
+
+	if( empty($subject))
+		{
+		$body->msgerror = babTranslate("ERROR: You must provide a subject for your message")." !";
 		return;
 		}
 
@@ -309,8 +404,8 @@ function saveReply($forum, $thread, $name, $subject, $message)
 	else
 		$confirmed = "Y";
 
-	$req = "insert into posts (id_thread, date, subject, message, author, confirmed) values ";
-	$req .= "('" .$thread. "', now(), '" . $subject. "', '" . $message. "', '". $name. "', '". $confirmed. "')";
+	$req = "insert into posts (id_thread, date, subject, message, author, confirmed, id_parent) values ";
+	$req .= "('" .$thread. "', now(), '" . $subject. "', '" . $message. "', '". $name. "', '". $confirmed."', '". $post. "')";
 	$res = $db->db_query($req);
 	$idpost = $db->db_insert_id();
 	
@@ -372,25 +467,44 @@ function openThread($thread)
 	}
 
 
-function deletePost($post)
+function deletePost($forum, $post)
 	{
-	global $newpost;
 	$db = new db_mysql();
-	$req = "delete from posts where id = '$post'";
-	$res = $db->db_query($req);
 
-	/* if it's the only post in the thread, delete the thread also */
-	$req = "select * from threads where post = '$post' and lastpost='$post'";
+	$req = "select * from posts where id='$post'";
 	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	$arr = $db->db_fetch_array($res);
+	
+
+	if( $arr[id_parent] == 0)
 		{
-		$arr = $db->db_fetch_array($res);
-		$req = "delete from threads where id = '".$arr[id]."'";
+		/* if it's the only post in the thread, delete the thread also */
+		$req = "delete from posts where id_thread = '".$arr[id_thread]."'";
 		$res = $db->db_query($req);
+		$req = "delete from threads where id = '".$arr[id_thread]."'";
+		$res = $db->db_query($req);
+		Header("Location: index.php?tg=threads&forum=".$forum);
+		}
+	else
+		{
+		$req = "delete from posts where id = '$post'";
+		$res = $db->db_query($req);
+
+		$req = "select * from threads where id='".$arr[id_thread]."'";
+		$res = $db->db_query($req);
+		$arr2 = $db->db_fetch_array($res);
+		if( $arr2[lastpost] == $post ) // it's the lastpost
+			{
+			$req = "select * from posts where id_thread='".$arr[id_thread]."' order by date desc";
+			echo $req;
+			$res = $db->db_query($req);
+			$arr2 = $db->db_fetch_array($res);
+			$req = "update threads set lastpost='".$arr2[id]."' where id='".$arr[id_thread]."'";
+			$res = $db->db_query($req);
+			}
+
 		}
 
-	if( $newpost > 0)
-		$newpost -= 1;
 	}
 
 function confirmDeleteThread($forum, $thread)
@@ -414,12 +528,10 @@ if(!isset($idx))
 if( !isset($pos))
 	$pos = 0;
 
-if( !isset($newpost))
-	$newpost = 0;
-
 if( isset($add) && $add == "addreply")
 	{
-	saveReply($forum, $thread, $name, $subject, $message);
+	saveReply($forum, $thread, $postid, $name, $subject, $message);
+	$post = $postid;
 	}
 
 if( isset($update) && $update == "updatereply")
@@ -441,11 +553,9 @@ if( $idx == "Open" && isUserModerator($forum, $BAB_SESS_USERID))
 
 if( $idx == "DeleteP" && isUserModerator($forum, $BAB_SESS_USERID))
 	{
-	deletePost($post);
-	if( $newpost > 0)
-		$idx = "Waiting";
-	else
-		$idx = "List";
+	deletePost($forum, $post);
+	unset($post);
+	$idx = "List";
 	}
 
 if( isset($action) && $action == "Yes")
@@ -453,78 +563,72 @@ if( isset($action) && $action == "Yes")
 	confirmDeleteThread($forum, $thread);
 	}
 
+if( !isset($post))
+	{
+	$db = new db_mysql();
+	$req = "select * from posts where id_thread='".$thread."' and id_parent='0'";
+	$res = $db->db_query($req);
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		$arr = $db->db_fetch_array($res);
+		$post = $arr[id];
+		}
+	else
+		$post = 0;
+	}
+
+$moderator = isUserModerator($forum, $BAB_SESS_USERID);
+
 switch($idx)
 	{
 	case "reply":
 		if( isAccessValid("forumsreply_groups", $forum))
 			{
 			$body->title = getForumName($forum);
-			newReply($forum, $thread);
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$pos);
+			newReply($forum, $thread, $post);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post);
 			$open = isThreadOpen($thread);
 			if( isAccessValid("forumsreply_groups", $forum) && $open)
 				{
-				$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+				$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&post=".$post);
 				}
-			if( isUserModerator($forum, $BAB_SESS_USERID) && $newpost > 0)
+			if( $moderator )
 				{
-				$body->addItemMenu("Waiting", babTranslate("Waiting Posts"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Waiting&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
 				if($open)
-					$body->addItemMenu("Close", babTranslate("Close thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Close&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+					$body->addItemMenu("Close", babTranslate("Close thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Close&forum=".$forum."&thread=".$thread);
 			else
-				$body->addItemMenu("Open", babTranslate("Open thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Open&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+				$body->addItemMenu("Open", babTranslate("Open thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Open&forum=".$forum."&thread=".$thread);
 				}
-			}		
-		break;
-
-	case "Waiting":
-		if( isUserModerator($forum, $BAB_SESS_USERID) && $newpost > 0)
-			{
-			$body->title = getForumName($forum);
-			listPosts($forum, $thread, $pos, "N");
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$pos);
-			$open = isThreadOpen($thread);
-			if( isAccessValid("forumsreply_groups", $forum) && $open)
-				{
-				$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
-				}
-			$body->addItemMenu("Waiting", babTranslate("Waiting Posts"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Waiting&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
-			if( $open)
-				$body->addItemMenu("Close", babTranslate("Close thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Close&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
-			else
-				$body->addItemMenu("Open", babTranslate("Open thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Open&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
 			}		
 		break;
 
 	case "Modify":
-		if( isUserModerator($forum, $BAB_SESS_USERID))
+		if( $moderator)
 			{
 			$body->title = getForumName($forum);
-			editPost($forum, $thread, $post, $newpost);
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$pos);
+			editPost($forum, $thread, $post);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post);
 			$open = isThreadOpen($thread);
 			if( isAccessValid("forumsreply_groups", $forum) && $open)
 				{
-				$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+				$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&post=".$post);
 				}
-			if( $newpost > 0)
-				$body->addItemMenu("Waiting", babTranslate("Waiting Posts"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Waiting&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
 			if($open)
-				$body->addItemMenu("Close", babTranslate("Close thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Close&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+				$body->addItemMenu("Close", babTranslate("Close thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Close&forum=".$forum."&thread=".$thread);
 			else
-				$body->addItemMenu("Open", babTranslate("Open thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Open&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
-			$body->addItemMenu("DeleteP", babTranslate("Delete"), $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteP&forum=".$forum."&thread=".$thread."&newpost=".$newpost."&post=".$post);
+				$body->addItemMenu("Open", babTranslate("Open thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Open&forum=".$forum."&thread=".$thread);
+			$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Modify&forum=".$forum."&thread=".$thread."&post=".$post);
 			}		
 		break;
 	case "DeleteT":
-		if( isUserModerator($forum, $BAB_SESS_USERID))
+		if( $moderator)
 			{
-			deleteThread($forum, $thread, $newpost);
+			deleteThread($forum, $thread);
 			if( isAccessValid("forumsview_groups", $forum))
 				{
 				$body->title = getForumName($forum);
-				$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$pos);
-				$body->addItemMenu("DeleteT", babTranslate("Delete thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteT&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+				$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post);
+				$body->addItemMenu("DeleteT", babTranslate("Delete thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteT&forum=".$forum."&thread=".$thread);
 				}		
 			}
 		break;
@@ -539,22 +643,20 @@ switch($idx)
 		$open = isThreadOpen($thread);
 		if( isAccessValid("forumsview_groups", $forum))
 			{
-			$count = listPosts($forum, $thread, $pos, "Y");
+			$count = listPosts($forum, $thread, $post);
 			$body->addItemMenu("Threads", babTranslate("Threads"), $GLOBALS[babUrl]."index.php?tg=threads&idx=List&forum=".$forum);
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&pos=".$pos);
+			$body->addItemMenu("List", babTranslate("List"), $GLOBALS[babUrl]."index.php?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post);
 			if( isAccessValid("forumsreply_groups", $forum) && $open)
 				{
-				$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+				$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS[babUrl]."index.php?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&post=".$post);
 				}
-			if( isUserModerator($forum, $BAB_SESS_USERID) )
+			if( $moderator )
 				{
-				if( $newpost > 0 )
-				$body->addItemMenu("Waiting", babTranslate("Waiting Posts"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Waiting&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
 				if( $open)
-					$body->addItemMenu("Close", babTranslate("Close thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Close&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+					$body->addItemMenu("Close", babTranslate("Close thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Close&forum=".$forum."&thread=".$thread);
 				else
-					$body->addItemMenu("Open", babTranslate("Open thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Open&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
-				$body->addItemMenu("DeleteT", babTranslate("Delete thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteT&forum=".$forum."&thread=".$thread."&newpost=".$newpost);
+					$body->addItemMenu("Open", babTranslate("Open thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=Open&forum=".$forum."&thread=".$thread);
+				$body->addItemMenu("DeleteT", babTranslate("Delete thread"), $GLOBALS[babUrl]."index.php?tg=posts&idx=DeleteT&forum=".$forum."&thread=".$thread);
 				}
 			}
 		break;
