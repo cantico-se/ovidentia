@@ -60,6 +60,8 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->uncheckall = bab_translate("Uncheck all mails");
 			$this->checkall = bab_translate("Check all mails");
 			$this->deletealt = bab_translate("Delete");
+			$this->compose = bab_translate("Compose");
+			$this->composeurl = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse;
 
 			if( $reverse )
 				{
@@ -790,12 +792,6 @@ switch($idx)
 		$babBody->title = bab_translate("Email");
 		viewMail($accid, $msg, $criteria, $reverse, $start);
 		exit;
-		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&start=".$start);
-		$babBody->addItemMenu("reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg);
-		$babBody->addItemMenu("replya", bab_translate("Reply to all"), $GLOBALS['babUrlScript']."?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1");
-		$babBody->addItemMenu("forward", bab_translate("Forward"), $GLOBALS['babUrlScript']."?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1");
-		$babBody->addItemMenu("compose", bab_translate("Compose"), $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-		$babBody->addItemMenu("deletem", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=inbox&idx=deletem&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&msg=".$msg);
 		break;
 
 	default:
@@ -808,7 +804,6 @@ switch($idx)
 		$accid = $nbm['accid'];
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		$babBody->addItemMenu("refresh", bab_translate("Refresh"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-		$babBody->addItemMenu("compose", bab_translate("Compose"), "javascript:Start('".$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."')");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
