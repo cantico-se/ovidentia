@@ -1234,20 +1234,18 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$select_idcal = '';
 				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
 					{
-					$crit_date = " and h.start_date >= '".$this->fields['after']."'";
+					$crit_date = " and h.start_date >= '".$this->fields['after']." 00:00:00'";
 					}
 				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
 					{
-					$crit_date .= " and h.end_date <= '".$this->fields['before']."'";
+					$crit_date .= " and h.end_date <= '".$this->fields['before']."' 23:59:59";
 					}
 				if (isset($this->fields['h_calendar']) && trim($this->fields['h_calendar']) != "")
 					{
 					$select_idcal = " and h.id_cal = '".$this->fields['h_calendar']."'";
 					}
 
-				$req = "create temporary table ageresults select h.id id,h.title, h.description,'yyyy-mm-dd' start_date, h.start_time ,'yyyy-mm-dd' end_date,h.end_time, h.id_cal owner,h.id_cal type ,h.id_cal id_cal, C.name categorie, C.description catdesc from ".BAB_CAL_EVENTS_TBL." h, ".BAB_CATEGORIESCAL_TBL." C,".BAB_CALENDAR_TBL." A where 0";
-				$this->db->db_query($req);
-				$req = "alter table ageresults add unique (id)";
+				$req = "create temporary table ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo, ".BAB_CAL_EVENTS_TBL." ce, ".BAB_CAL_CATEGORIES_TBL." cct where 0";
 				$this->db->db_query($req);
 				
 				$list_id_cal = array();
@@ -1257,8 +1255,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				
 				if ($this->like || $this->like2)
 					{
-					$reqsup = "(".finder($this->like,"h.title",$option,$this->like2)." or ".finder($this->like,"h.description",$option,$this->like2).") and";
-					$reqsupc = "AND (".finder($this->like,"C.description",$option,$this->like2)." or ".finder($this->like,"C.name",$option,$this->like2).")";
+					$reqsup = "(".finder($this->like,"ce.title",$option,$this->like2)." or ".finder($this->like,"ce.description",$option,$this->like2).")";
+					$reqsupc = "AND (".finder($this->like,"cct.description",$option,$this->like2)." or ".finder($this->like,"cct.name",$option,$this->like2).")";
 					}
 				else 
 					{
@@ -1268,7 +1266,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (count($list_id_cal) > 0) 
 					{
-					$req = "insert into ageresults select h.id id,h.title title, h.description description,UNIX_TIMESTAMP(h.start_date) start_date, h.start_time start_time ,UNIX_TIMESTAMP(h.end_date) end_date,h.end_time end_time, A.owner owner,A.type type,h.id_cal id_cal, C.name categorie, C.description catdesc from ".BAB_CAL_EVENTS_TBL." h, ".BAB_CALENDAR_TBL." A LEFT JOIN ".BAB_CATEGORIESCAL_TBL." C ON C.id=h.id_cat ".$reqsupc." where ".$reqsup." A.id=h.id_cal".$crit_date." and h.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ".$order;
+					$req = "insert into ageresults select ceo.id_cal owner, ce.id id, ce.title, ce.description, ce.start_date, ce.end_date, ceo.id_cal id_cal, cct.name categorie, cct.description catdesc from ".BAB_CAL_EVENTS_OWNERS_TBL." ceo left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id left join ".BAB_CAL_CATEGORIES_TBL." cct on cct.id=ce.id_cat where ".$reqsup." ".$crit_date." and ceo.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ".$order;
 					$this->db->db_query($req);
 					}
 
@@ -1287,9 +1285,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 				}
 				
-				
-
-
 			// --------------------------------------------- ADDONS
 
 			$this->addons = new bab_addonsSearch;
@@ -1601,29 +1596,30 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextage()
 			{
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->countage)
 				{
 				$arr = $this->db->db_fetch_array($this->resage);
 				$this->agetitle = put_text($arr['title']);
 				$this->agedescription = put_text($arr['description'],400);
-				$this->agestart_date = $this->dateformat($arr['start_date'])." - ".$arr['start_time'];
-				$this->ageend_date = $this->dateformat($arr['end_date'])." - ".$arr['end_time'];
-				switch ($arr['type'])
+				$this->agestart_date = $this->dateformat(bab_mktime($arr['start_date']));
+				$this->ageend_date = $this->dateformat(bab_mktime($arr['end_date']));
+				$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+				$this->agecreator = $iarr['name'];
+				switch ($iarr['type'])
 					{
-					case 1:
-						$this->agecreator = bab_getUserName($arr['owner']);
-						$this->agecreatormail = bab_getUserEmail($arr['owner']);
+					case BAB_CAL_USER_TYPE:
+						$this->agecreatormail = bab_getUserEmail($iarr['idowner']);
 						break;
-					case 2:
-						$this->agecreator = bab_getGroupName($arr['owner']);
-						break;
-					case 3:
+					case BAB_CAL_PUB_TYPE:
+					case BAB_CAL_RES_TYPE:
+						$this->agecreatormail = "";
 						break;
 					}
 				$this->agecat = "".$arr['categorie'];
 				$this->agecatdesc = "".put_text($arr['catdesc'],200);
-				$this->ageurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".date('d',$arr['start_date'])."&month=".date('m',$arr['start_date'])."&year=".date('Y',$arr['start_date'])."&calid=".$arr['id_cal']."&evtid=".$arr['id']."&view=viewm";
+				$this->ageurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 				$i++;
 				return true;
 				}
