@@ -760,7 +760,7 @@ function viewEvent($calid, $evtid)
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->title = $arr['title'];
-			$this->description = $arr['description'];
+			$this->description = babReplace($arr['description']);
 			$this->startdate = bab_strftime(bab_mktime($arr['start_date']), false) . " " . substr($arr['start_time'], 0 ,5);
 			$this->enddate = bab_strftime(bab_mktime($arr['end_date']), false) . " " . substr($arr['end_time'], 0 ,5);
 			}
@@ -1015,7 +1015,7 @@ function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebe
 	$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
 	$endtime = sprintf("%s:00", $timeend);
 
-	$req = "update cal_events set title='$title', description='$description', start_date='$startdate', start_time='$starttime', end_date='$enddate', end_time='$endtime', id_cat='$catid' where id='$evtid'";
+	$req = "update cal_events set title='$title', start_date='$startdate', start_time='$starttime', end_date='$enddate', end_time='$endtime', id_cat='$catid' where id='$evtid'";
 	$db->db_query($req);
 
 }
