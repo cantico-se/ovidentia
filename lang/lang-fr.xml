@@ -327,8 +327,8 @@
 <string id="Are you sure you want to delete this site">Etes-vous certain de vouloir supprimer ce site</string>
 <string id="WARNING: This operation will delete the site and all references">ATTENTION: Cette opération va supprimer ce site et toutes ses références</string>
 <string id="ERROR: This site already exists">ERREUR: Ce site n'existe pas</string>
-<string id="Private">Privé</string>
-<string id="Public">Public</string>
+<string id="Private">Privée</string>
+<string id="Public">Publique</string>
 <string id="Ovidentia version">Version d'Ovidentia</string>
 <string id="Php version">Version du moteur PHP</string>
 <string id="Database server version">Version de la base de données</string>
