@@ -32,6 +32,20 @@ function bab_mkdir($path, $mode)
 	mkdir($path, $mode);
 }
 
+function put_text($txt,$limit=12,$limitmot=15)
+{
+	if (strlen($txt) > $limit)
+		$out = substr(strip_tags($txt),0,$limit)."...";
+	else
+		$out = strip_tags($txt);
+	$arr = explode(" ",$out);
+	foreach($arr as $key => $mot)
+		{
+		$arr[$key] = substr($mot,0,$limitmot);
+		}
+return bab_replace(implode(" ",$arr));
+}
+
 function getResizedImage($img, $w, $h, $com)
 	{
 	$type = "";
@@ -121,12 +135,12 @@ function getResizedImage($img, $w, $h, $com)
 		}
 	}
 
-function listImages($editor)
+function listImages($editor,$path="")
 	{
 	class temp
 		{
 
-		function temp($editor)
+		function temp($editor,$path)
 			{
 			$db = $GLOBALS['babDB'];
 
@@ -148,6 +162,7 @@ function listImages($editor)
 			$this->no = bab_translate("No");
 			$this->shared = bab_translate("Shared");
 			$this->refresh = bab_translate("Refresh");
+			$this->create = bab_translate("Create");
 			$this->delete = bab_translate("Delete");
 			$this->invalidimg = bab_translate("Invalid image extension");
 			$this->aligntxt = bab_translate("Alignment");
@@ -156,7 +171,7 @@ function listImages($editor)
 			$this->vspacing = bab_translate("Vertical spacing");
 			$this->border = bab_translate("Border");
 			$this->invalidentry = bab_translate("You must specify a number");
-
+			
 			$this->none = bab_translate("None");
 			$this->left = bab_translate("Left");
 			$this->right = bab_translate("Right");
@@ -165,7 +180,7 @@ function listImages($editor)
 			$this->top = bab_translate("top");
 			$this->bottom = bab_translate("Bottom");
 			$this->center = bab_translate("Center");
-
+			$this->path = $path;
 			$this->badmin = bab_isUserAdministrator();
 			$this->comnum = 0;
 			$this->editor = $editor;
@@ -203,8 +218,97 @@ function listImages($editor)
 
 			$this->uifiles = 0;
 			$this->cifiles = 0;
-			$this->gdi = extension_loaded('gd');
 			$this->refurl = $GLOBALS['babUrlScript']."?tg=images&editor=".$this->editor;
+			$this->list_img_url = $GLOBALS['babUrlScript']."?tg=images&idx=iframe&editor=".$this->editor."&path=".$this->path;
+			$this->list_img_url_prev = $GLOBALS['babUrlScript']."?tg=images&idx=iframe&editor=".$this->editor."&path=";
+
+			}
+
+		}
+	$temp = new temp($editor,$path);
+	echo bab_printTemplate($temp,"images.html", "imageslisteditor");
+	}
+
+function iframe($editor,$path="")
+	{
+	class temp
+		{
+
+		function temp($editor,$path)
+			{
+			$db = $GLOBALS['babDB'];
+
+			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+			$res=$db->db_query($req);
+
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				$arr = $db->db_fetch_array($res);
+				$this->maximagessize = $arr['imgsize'];
+				}
+			else
+				$this->maximagessize = 25;
+
+			$this->del = bab_translate("Delete");
+			$this->editor = $editor;
+			if( substr($path, -1) == "/" )
+				$path = substr($path, 0, -1);
+			$this->prevpath = substr( $path,0, strrpos($path,"/") );
+			if( $path != "" && substr($path, -1) != "/" )
+				$path .="/";
+			$this->path = $path;
+			
+			$this->badmin = bab_isUserAdministrator();
+			$this->comnum = 0;
+
+			$this->msg_delfile = bab_translate("Do you really whant to delete this file")."?";
+			$this->msg_deltree = bab_translate("Do you really whant to delete this directory")."?";
+
+			if( !is_dir(BAB_IUD_TMP))
+				bab_mkdir(BAB_IUD_TMP, 0700);
+			if( !is_dir(BAB_IUD_COMMON))
+				bab_mkdir(BAB_IUD_COMMON, 0700);
+			if( !is_dir(BAB_IUD_ARTICLES))
+				bab_mkdir(BAB_IUD_ARTICLES, 0700);
+			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
+			$h = opendir(BAB_IUD_COMMON.$path);
+			while (($f = readdir($h)) != false)
+				{
+				if ($f != "." and $f != "..") 
+					{
+					if (is_file(BAB_IUD_COMMON.$path.$f))
+						{
+						$this->arrcfile[] = BAB_IUD_COMMON.$path.$f;
+						}
+					}
+				}
+			closedir($h);
+			$db = $GLOBALS['babDB'];
+			$res = $db->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$GLOBALS['BAB_SESS_USERID']."'");
+			if( $res && $db->db_num_rows($res) > 0 )
+				{
+				while( $arr = $db->db_fetch_array($res))
+					{
+					if( is_file(BAB_IUD_TMP.$arr['name']))
+						$this->arrufile[] = BAB_IUD_TMP.$arr['name'];
+					else
+						$db->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$arr['id']."'");
+					}
+				}
+
+			$this->uifiles = 0;
+			$this->cifiles = 0;
+			$this->gdi = extension_loaded('gd');
+
+			$reper = opendir(BAB_IUD_COMMON.$path);
+			while($dir = readdir($reper) )
+				{
+				if (($dir != ".") && ($dir != "..") && is_dir(BAB_IUD_COMMON.$path.$dir) ) 
+					{
+					$this->subdir[] = $dir ;
+					$this->countsubdir++ ; 
+					}
+				}
 			}
 
 		function geturls($filename, $com)
@@ -252,24 +356,18 @@ function listImages($editor)
 				$this->imgheight = $imgsize[1];
 				}
 			}
-		function getnextcomfiles()
-			{
-			if( $this->cifiles < count($this->arrcfile))
-				{
-				return true;
-				}
-			else
-				return false;
-			}
+
 
 		function getnextcfile()
 			{
 			static $i = 0;
-			if( $i < 5 && $this->cifiles < count($this->arrcfile))
+			if( $this->cifiles < count($this->arrcfile))
 				{
 				$this->geturls($this->arrcfile[$this->cifiles], 1);
 				$this->imgname = basename($this->arrcfile[$this->cifiles]);
-				$this->delurl = $GLOBALS['babUrlScript']."?tg=images&idx=del&com=1&f=".$this->imgname."&editor=".$this->editor;
+				$this->imgname_txt = put_text($this->imgname);
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=images&idx=del&com=1&f=".$this->imgname."&editor=".$this->editor."&path=".$this->path;
+				$this->rename_popup_url = $GLOBALS['babUrlScript']."?tg=images&idx=rename_popup&editor=".$this->editor."&path=".$this->path."&old_name=".$this->imgname;
 				$this->cifiles++;
 				$i++;
 				return true;
@@ -281,24 +379,15 @@ function listImages($editor)
 				}
 			}
 
-		function getnextfiles()
-			{
-			if( $this->uifiles < count($this->arrufile))
-				{
-				return true;
-				}
-			else
-				return false;
-			}
-
 		function getnextufile()
 			{
 			static $i = 0;
-			if( $i < 5 && $this->uifiles < count($this->arrufile))
+			if( $this->uifiles < count($this->arrufile))
 				{
 				$this->geturls($this->arrufile[$this->uifiles], 0);
 				$this->imgname = basename($this->arrufile[$this->uifiles]);
-				$this->delurl = $GLOBALS['babUrlScript']."?tg=images&idx=del&com=0&f=".$this->imgname."&editor=".$this->editor;
+				$this->imgname_txt = put_text($this->imgname);
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=images&idx=del&com=0&f=".$this->imgname."&editor=".$this->editor."&path=".$this->path;
 				$this->uifiles++;
 				$i++;
 				return true;
@@ -309,28 +398,66 @@ function listImages($editor)
 				return false;
 				}
 			}
+		
+		function getnextsubdir()
+			{
+			static $i = 0;
+			if( $i < $this->countsubdir)
+				{
+				$this->subdirname = $this->subdir[$i];
+				$this->subdirname_txt = put_text($this->subdirname);
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=images&idx=deltree&editor=".$this->editor."&path=".$this->path.$this->subdir[$i];
+				$this->subdirurl = $GLOBALS['babUrlScript']."?tg=images&idx=iframe&editor=".$this->editor."&path=".$this->path.$this->subdir[$i];
+				$this->rename_popup_url = $GLOBALS['babUrlScript']."?tg=images&idx=rename_popup&editor=".$this->editor."&path=".$this->path."&old_name=".$this->subdirname;
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
 		}
-	$temp = new temp($editor);
-	echo bab_printTemplate($temp,"images.html", "imageslisteditor");
+	$temp = new temp($editor,$path);
+	echo bab_printTemplate($temp,"images.html", "imageslist");
 	}
 
 
-$msgerror = "";
-function saveImage($file, $size, $tmpfile, $share)
+function rename_popup($old_name,$path)
 	{
+	class temp
+		{
+		function temp($old_name,$path)
+			{
+			$this->path = $path;
+			$this->old_name = $old_name;
+			$this->rename = bab_translate('Rename');
+			}
+		}
+	$temp = new temp($old_name,$path);
+	echo bab_printTemplate($temp,"images.html", "rename_popup");
+	}
+
+
+
+$msgerror = "";
+function saveImage($file, $size, $tmpfile, $share,$path="")
+	{
+	if ($path != "") $path.="/";
 	$nf = "";
 	if( !strstr($file, "..") && is_uploaded_file($tmpfile))
 		{
 		$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 		if( !empty($share) && $share == "Y" && bab_isUserAdministrator())
 			{
-			if( is_file(BAB_IUD_COMMON.$file))
+			if( is_file(BAB_IUD_COMMON.$path.$file))
 				{
 				$GLOBALS['msgerror'] = bab_translate("A file with the same name already exists");
 				return $nf;
 				}
-			if( move_uploaded_file($tmpfile, BAB_IUD_COMMON.$file))
-				$nf = BAB_IUD_COMMON.$file;
+			if( move_uploaded_file($tmpfile, BAB_IUD_COMMON.$path.$file))
+				$nf = BAB_IUD_COMMON.$path.$file;
 			}
 		else if( !empty($GLOBALS['BAB_SESS_USERID']))
 			{
@@ -370,6 +497,20 @@ function delImage($com, $f)
 		}
 	}
 
+function deldir($dir){
+  $current_dir = opendir($dir);
+  while($entryname = readdir($current_dir)){
+     if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
+       deldir("${dir}/${entryname}");
+     }elseif($entryname != "." and $entryname!=".."){
+        unlink("${dir}/${entryname}");
+     }
+  }
+  closedir($current_dir);
+  rmdir(${dir});
+}
+
+
 /* main */
 if( !isset($idx))
 	$idx = "list";
@@ -379,20 +520,64 @@ if( !isset($editor))
 
 if( isset($addf) && $addf == "add")
 	{
-	saveImage($uploadf_name, $uploadf_size,$uploadf, $share);
+	saveImage($uploadf_name, $uploadf_size,$uploadf, $share,$path);
 	}
+
+if ( $directory != "" && bab_isUserAdministrator() )
+	{
+	if ( substr($path, -1) != "/" ) $p = $path."/";
+	else $p = $path;
+	if (!is_dir(BAB_IUD_COMMON.$p.$directory))
+		mkdir(BAB_IUD_COMMON.$p.$directory,0700);
+	else
+		$GLOBALS['msgerror'] = bab_translate("A folder with the same name already exists");
+	}
+
+if ( $old_name != "" && $new_name != "" && $old_name!=$new_name && bab_isUserAdministrator() )
+	{
+	if ( substr($path, -1) != "/" ) $p = $path."/";
+	else $p = $path;
+	if (is_dir(BAB_IUD_COMMON.$p.$old_name))
+		{
+		if (!is_dir(BAB_IUD_COMMON.$p.$new_name))
+			rename(BAB_IUD_COMMON.$p.$old_name,BAB_IUD_COMMON.$p.$new_name);
+		else
+			$GLOBALS['msgerror'] = bab_translate("A folder with the same name already exists");
+		}
+	elseif (is_file(BAB_IUD_COMMON.$p.$old_name))
+		{
+		if (!is_file(BAB_IUD_COMMON.$p.$new_name))
+			rename(BAB_IUD_COMMON.$p.$old_name,BAB_IUD_COMMON.$p.$new_name);
+		else
+			$GLOBALS['msgerror'] = bab_translate("A file with the same name already exists");
+		}
+	}
+
+if (!isset($GLOBALS['msgerror']))
+	$GLOBALS['msgerror'] = "";
 
 switch($idx)
 	{
 	case "get":
 		getResizedImage($f, $w, $h, $com);
 		break;
+	case "rename_popup":
+		rename_popup($old_name,$path);
+		break;
+	case "deltree":
+		if ($path != "" && bab_isUserAdministrator() ) deldir(BAB_IUD_COMMON.$path);
+		$path = substr( $path,0, strpos($path,"/") );
 	case "del":
-		delImage($com, $f);
+		if ($com != 0 ) $p = $path;
+		else $p = "";
+		if (isset($f)) delImage($com, $p.$f);
 		/* no break */
+	case "iframe";
+		iframe($editor,$path);
+		break;
 	case "list":
 	default:
-		listImages($editor);
+		listImages($editor,$path);
 		break;
 	}
 ?>

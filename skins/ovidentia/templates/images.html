@@ -8,6 +8,12 @@
 <script type="text/javascript" src="{ babScriptPath }htmlarea/popups/popup.js"></script>
 <script type="text/javascript">
 <!--
+var prevpath = '';
+
+function onInsertImage(url)
+	{
+	opener.onInsertImage(url);
+	}
 function onOK(id, url) {
 	var alt = document.getElementById('f_alt');
 	var ali = document.getElementById('align');
@@ -67,6 +73,37 @@ else
 	return true;
 	}
 }
+
+function putpath(path)
+{
+var sp = document.getElementById('sp');
+sp.innerHTML = path;
+document.forms.fmadd.path.value = path;
+}
+
+function make_dir()
+{
+if (document.getElementById('files_frame').contentDocument){
+	var frameform = document.getElementById('files_frame').contentDocument.forms['add_directory'];
+  } else {
+    var frameform = document.frames['files_frame'].document.forms['add_directory'];
+  }
+var directory = document.getElementById('directory');
+frameform.directory.value = directory.value;
+frameform.post_message.click();
+directory.value = '';
+}
+
+
+function frameloc(url)
+{
+if (document.getElementById('files_frame').contentDocument){
+    document.getElementById('files_frame').contentDocument.location.href = url;
+  } else {
+    document.frames['files_frame'].location.href = url;
+  }
+}
+
 window.focus();
 //-->
 </script>
@@ -84,6 +121,7 @@ window.focus();
 <input type="hidden" name="tg" value="images">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="editor" value="{ editor }">
+<input type="hidden" name="path" value="">
 <input type="hidden" name="addf" value="add">
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -175,91 +213,256 @@ refresh }</a></td>
 </form>
 </center>
 <br>
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<!--#in getnextfiles -->
+
+<tr> 
+<td align="center">
+	<table border="0" width="90%" cellpadding="1" cellspacing="0" align="center">
+	<tr> 
+	<td class="BabLoginMenuBackground">
+	<a href="javascript:frameloc('{ list_img_url_prev }'+prevpath);"><img src="{ babSkinPath }images/Puces/parent.gif" border="0"></a>
+	</td>
+	<td class="BabLoginMenuBackground" align="left" width="95%">
+	<span id="sp" align="left"> </span>
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginMenuBackground">
+<iframe name="files_frame" id="files_frame" style="width:100%;height:135px" src="{ list_img_url }" scrolling="auto" frameborder="0">
+iframe : your browser is out off date
+</iframe>
+</td>
+</tr>
+<!--#if badmin -->
+<tr> 
+<td align="center" class="BabLoginMenuBackground">
+	<table border="0" width="50%" cellpadding="2" cellspacing="0" align="center">
+	<tr> 
+	<td align="right">
+	<input type="text" id="directory" size="35" maxlength="128">
+	</td>
+	<td align="left"><input type="button" value="{ create }" onclick="make_dir();">
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<!--#endif badmin -->
+</table>
+</BODY>
+</HTML>
+<!--#end imageslisteditor -->
+
+<!--#begin imageslist -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+
+<script type="text/javascript">
+<!--
+function confirm_url(url,msg)
+	{
+	if ( confirm(msg) )
+		top.frames['files_frame'].location = url;
+	}
+function errormanager()
+	{
+	// { msgerror }
+	var msg = '{ msgerror }';
+	if (msg != '' ) alert(msg);
+	}
+
+function rename_popup(url)
+	{
+	window.open(url, 'rename','toolbar=no,menubar=no,personalbar=no,width=300,height=100,scrollbars=no,resizable=no');
+	}
+-->
+</script>
+</HEAD>
+<BODY onload="parent.prevpath = '{ prevpath }';parent.putpath('{ path }');errormanager()">
+<table border="0" cellspacing="0" cellpadding="2" align="left">
 <tr>
 <!--#in getnextufile -->
-<td><table width=100% height=100% cellspacing=1 cellpadding=2 border=0>
-<tr align=center> 
-<td class="BabLoginMenuBackground" valign=top>
-<table width=100% height=100% border=0>
-<tr align=center><td align=left nowrap><font size=1 face=Verdana>{ imgname }</font>
-</td>
-<td align=right width=1%><a class="BabSiteAdminListLink" href="{ delurl }"><font size=1 face=Verdana>X</font></a>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr align=center>
-<td valign=middle>
+<td>
+<table width="100" height="100" cellspacing="3" cellpadding="2" border="0">
+<tr align="center">
+<td valign="middle" class="BabTopicsAuthorBackground">
 <!--#if gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
+<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
+<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
-<img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
+<img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
+<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
+<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
-<img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
+<img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
+</td>
+</tr>
+<tr align="center"> 
+<td valign="top" height="10" style="border:#CCCCCC 1px solid">
+<table width="100%" height="10" cellspacing="0" cellpadding="0" border="0">
+<tr><td nowrap>
+<small>{ imgname_txt }</small>&nbsp;
+</td>
+<td align=right width="1%"><a class="BabSiteAdminListLink" href="javascript:confirm_url('{ delurl }','{ msg_delfile }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
+</td></tr></table>
 </td>
 </tr>
 </table>
 </td>
 <!--#endin getnextufile -->
+<!--#in getnextsubdir -->
+<td>
+<table width="100" height="100" cellspacing="3" cellpadding="2" border="0">
+<tr align="center">
+<td valign="middle">
+	<a class="BabSiteAdminListLink" href="{ subdirurl }"><img src="{ babSkinPath }images/Puces/folder_big.gif" border="0" alt="{ subdirname }"></a>
+</td>
 </tr>
-<!--#endin getnextfiles -->
+<tr align="center"> 
+<td valign="top" height="10" style="border:#CCCCCC 1px solid">
+	<table width="100%" height="10" cellspacing="0" cellpadding="0" border="0">
+	<tr><td align="center" nowrap>
+	<small>
+	<!--#if badmin -->
+	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }')">{ subdirname_txt }</a>
+	<!--#else badmin -->
+	{ subdirname_txt }
+	<!--#endif badmin -->
+	</small>&nbsp;
+	<!--#if badmin -->
+		</td>
+		<td align=right width="1%"><a class="BabSiteAdminListLink" href="javascript:confirm_url('{ delurl }','{ msg_deltree }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
+		</td>
+	<!--#endif badmin -->
+	</tr></table>
+
+</td>
+</tr>
 </table>
-<br>
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<!--#in getnextcomfiles -->
-<tr>
+</td>
+<!--#endin getnextsubdir -->
 <!--#in getnextcfile -->
-<td><table width=100% height=100% cellspacing=1 cellpadding=2 border=0>
-<tr align=center>
-<td class="BabLoginMenuBackground" valign=top>
-<table width=100% height=100% border=0>
-<tr align=center><td align=left nowrap><font size=1 face=Verdana>{ imgname }</font>
-</td>
-<!--#if badmin -->
-<td align=right width=1%><a class="BabSiteAdminListLink" href="{ delurl }"><font size=1 face=Verdana>X</font></a>
-</td>
-<!--#endif badmin -->
-</tr>
-</table>
-</td>
-</tr>
-<tr align=center>
-<td valign=middle>
+<td>
+<table width="100" height="100" cellspacing="3" cellpadding="2" border="0">
+<tr align="center">
+<td valign="middle" class="BabLoginMenuBackground">
 <!--#if gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
+<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
+<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
-<img src="{ srcurl }" border="0" alt="{ imgalt }"></a>
+<img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
 <!--#if editor "== none" -->
-<a class="BabSiteAdminListLink" href="javascript:self.opener.onInsertImage('{ imgurl }')">
+<a class="BabSiteAdminListLink" href="javascript:parent.onInsertImage('{ imgurl }')">
 <!--#else editor -->
-<a class="BabSiteAdminListLink" href="#" onclick="return onOK('{ editor }', '{ imgurl }');">
+<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <!--#endif editor -->
-<img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgalt }"></a>
+<img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
+</td>
+</tr>
+<tr align="center"> 
+<td valign="top" height="10" style="border:#CCCCCC 1px solid">
+<table width="100%" height="10" cellspacing="0" cellpadding="0" border="0">
+<tr><td align="center" nowrap>
+<small>
+	<!--#if badmin -->
+	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }')">{ imgname_txt }</a>
+	<!--#else badmin -->
+	{ imgname_txt }
+	<!--#endif badmin -->
+	</small>&nbsp;
+</td>
+<!--#if badmin -->
+<td align=right width="1%"><a class="BabSiteAdminListLink" href="javascript:confirm_url('{ delurl }','{ msg_delfile }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
+</td>
+<!--#endif badmin -->
+</tr></table>
 </td>
 </tr>
 </table>
 </td>
 <!--#endin getnextcfile -->
 </tr>
-<!--#endin getnextcomfiles -->
+</table>
+	<form name="add_directory" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+	<input type="hidden" name="tg" value="images">
+	<input type="hidden" name="idx" value="iframe">
+	<input type="hidden" name="editor" value="{ editor }">
+	<input type="hidden" name="path" value="{ path }">
+	<input type="hidden" name="directory" value="">
+	<input type='submit' name='post_message' style='visibility:hidden'>
+	</form>
+
+	<form name="rename" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+	<input type="hidden" name="tg" value="images">
+	<input type="hidden" name="idx" value="iframe">
+	<input type="hidden" name="editor" value="{ editor }">
+	<input type="hidden" name="path" value="{ path }">
+	<input type="hidden" name="old_name" value="">
+	<input type="hidden" name="new_name" value="">
+	<input type='submit' name='post_message' style='visibility:hidden'>
+	</form>
+</BODY>
+</HTML>
+<!--#end imageslist -->
+
+<!--#begin rename_popup -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+
+<script type="text/javascript">
+<!--
+function rename_dir()
+{
+var frameform = opener.document.forms['rename'];
+var new_name = document.getElementById('dirname');
+frameform.path.value = '{ path }';
+frameform.old_name.value = '{ old_name }';
+frameform.new_name.value = new_name.value;
+frameform.post_message.click();
+window.close();
+}
+-->
+</script>
+</HEAD>
+<BODY>
+<table border="0" cellspacing="0" cellpadding="5" align="center" width="70%">
+<tr>
+	<td>
+	&nbsp;
+	</td>
+</tr>
+<tr>
+	<td>
+	<input type="text" id="dirname" name="dirname" size="33" maxlength="255" value="{ old_name }">
+	</td>
+</tr>
+<tr>
+	<td align="right">
+	<input type="button" value="{ rename }" onclick="rename_dir();">
+	</td>
+</tr>
 </table>
 </BODY>
 </HTML>
-<!--#end imageslisteditor -->
+<!--#end rename_popup -->
