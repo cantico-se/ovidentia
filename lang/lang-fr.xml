@@ -1303,7 +1303,7 @@
 <string id="Yes without approbation">Oui sans approbation</string>
 <string id="Who can read articles from this topic?">Qui peut lire les articles de ce thème?</string>
 <string id="Who can submit new articles?">Qui peut soumettre de nouveaux articles?</string>
-<string id="Who can post comment?">Qui peut soummettre des commentaires?</string>
+<string id="Who can post comment?">Qui peut soumettre des commentaires?</string>
 <string id="Who can modify articles?">Qui peut modifier les articles?</string>
 <string id="Who can manage this topic?">Qui peut gérer ce thème?</string>
 <string id="Submission">Soumission</string>
@@ -1402,4 +1402,5 @@
 <string id="Session expire in">La session expire dans</string>
 <string id="Session expired">La session a expirée</string>
 <string id="Unconfirmed">Non confirmé</string>
+<string id="Nominative">Nominatif</string>
 </fr>

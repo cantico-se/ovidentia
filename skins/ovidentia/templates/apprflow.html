@@ -80,8 +80,8 @@ function closepop()
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ frow }</td>
 <!--#in getnextcol --> 
 <td class="BabLoginMenuBackground" valign="middle" nowrap>
-<input type="text" name="fn{ findex }" size="18" value="{ fieldval }" onfocus="savef(this)">
-<a href="javascript:emptycell({ findex });"><img border="0" src="{ babSkinPath }images/Puces/del.gif" width="12" height="13"></a>
+<input type="text" name="fn{ findex }" size="15" value="{ fieldval }" onfocus="savef(this)">
+<a href="javascript:emptycell({ findex });"><img border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
 <input type="hidden" name="fh{ findex }" value="{ fieldid }">
 </td>
 <!--#endin getnextcol --> 
@@ -110,26 +110,26 @@ function closepop()
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground">&nbsp;{ schnametxt }</td>
-<td class="BabSiteAdminTitleFontBackground">&nbsp;{ schdesctxt }</td>
-<td class="BabSiteAdminTitleFontBackground">&nbsp;{ schtypetxt }</td>
-<!--#if debugfa -->
-<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
-<!--#endif debugfa -->
-</tr>
-<!--#in getnext -->
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td>&nbsp;<a class="BabSiteAdminListLink" href="{ url }">{ urltxt }</a></td>
-<td>&nbsp;{ schdescval }</td>
-<td>&nbsp;{ schtypeval }</td>
-<!--#if debugfa -->
-<td>&nbsp;<a class="BabSiteAdminListLink" href="{ testurl }">{ testurltxt }</a></td>
-<!--#endif debugfa -->
-</tr>
-<!--#endin getnext -->
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>{ schnametxt }</td>
+		<td>{ schdesctxt }</td>
+		<td>{ schtypetxt }</td>
+		<!--#if debugfa -->
+		<td>&nbsp;</td>
+		<!--#endif debugfa -->
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td><a class="BabSiteAdminListLink" href="{ url }">{ urltxt }</a></td>
+		<td>{ schdescval }&nbsp;</td>
+		<td>{ schtypeval }</td>
+		<!--#if debugfa -->
+		<td><a class="BabSiteAdminListLink" href="{ testurl }">{ testurltxt }</a></td>
+		<!--#endif debugfa -->
+	</tr>
+	<!--#endin getnext -->
+	</table>
 </td>
 </tr>
 </table>

@@ -306,6 +306,7 @@ function listSchemas()
 			$this->schdesctxt = bab_translate("Description");
 			$this->schtypetxt = bab_translate("Type");
 			$this->roles = bab_translate("Roles");
+			$this->nominative = bab_translate("Nominative");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->res = $this->db->db_query($req);
@@ -330,11 +331,11 @@ function listSchemas()
 				$this->urltxt = $arr['name'];
 				if( $arr['satype'] == 1 )
 					{
-					$this->schtypeval = $this->roles ;
+					$this->schtypeval = $this->roles;
 					}
 				else
 					{
-					$this->schtypeval = '';
+					$this->schtypeval = $this->nominative;
 					}
 				$this->url = $GLOBALS['babUrlScript']."?tg=apprflow&idx=mod&idsch=".$arr['id'];
 				if( $this->debugfa )
