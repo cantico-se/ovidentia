@@ -25,7 +25,7 @@
 define('BABINSTALL','install/babinstall.sql');
 define('FILETOTEST','utilit/dbutil.php');
 define('CONFIG','config.php');
-//define('RENAMEFILE','install.old');
+define('RENAMEFILE','install.old');
 define('LANG','en');
 
 class translate
