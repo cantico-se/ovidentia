@@ -665,5 +665,24 @@ while($row = $db->db_fetch_array($res))
 return $ret;
 }
 
+function upgrade340to341()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$res = $db->db_query("SHOW COLUMNS from ."BAB_GROUPS_TBL." like 'filenotify'");
+if( !$res || $db->db_num_rows($res) == 0 )
+	{
+	$req = "ALTER TABLE ."BAB_GROUPS_TBL." ADD filenotify ENUM('N','Y') NOT NULL AFTER moderate";
+	$res = $db->db_query($req);
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_COMMENTS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	}
+
+return $ret;
+}
 
 ?>
