@@ -1800,7 +1800,7 @@ function printout()
 		if(count($this->idcals) > 0)
 			{
 			$currmonthevents = array();
-			$res2 = $babDB->db_query('SELECT id_cal, IF(EXTRACT(MONTH FROM start_date)<'.$this->currentMonth.', 1, DAYOFMONTH(start_date)) AS start_day, IF(EXTRACT(MONTH FROM end_date)>'.$this->currentMonth.', '.$this->days.', DAYOFMONTH(end_date)) AS end_day FROM '.BAB_CAL_EVENTS_TBL.' WHERE id_cal IN ('.implode(',', $this->idcals).') AND ((end_date>\''.$daymin.'\' AND end_date<\''.$daymax.'\') OR (start_date<\''.$daymax.'\' AND start_date>\''.$daymin.'\'))');
+			$res2 = $babDB->db_query('SELECT id_cal, IF(EXTRACT(MONTH FROM start_date)<'.$this->currentMonth.', 1, DAYOFMONTH(start_date)) AS start_day, IF(EXTRACT(MONTH FROM end_date)>'.$this->currentMonth.', '.$this->days.', DAYOFMONTH(end_date)) AS end_day FROM '.BAB_CAL_EVENTS_TBL.' WHERE id_cal IN ('.implode(',', $this->idcals).') AND ((end_date>=\''.$daymin.'\' AND end_date<=\''.$daymax.'\') OR (start_date<=\''.$daymax.'\' AND start_date>=\''.$daymin.'\'))');
 			while($event = $babDB->db_fetch_array($res2))
 				{
 				for($day = $event['start_day'] ; $day<=$event['end_day']; $day++)
