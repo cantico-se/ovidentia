@@ -52,7 +52,7 @@ function listAddress($pos)
 		function temp($pos)
 			{
 			global $BAB_SESS_USERID;
-			$this->fullname = babTranslate("Contact / List");
+			$this->fullname = babTranslate("Contact")." / ".babTranslate("List");
 			$this->email = babTranslate("Email");
 			$this->allname = babTranslate("All");
 			$this->totoname = babTranslate("To") ." ->";

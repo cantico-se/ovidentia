@@ -225,6 +225,7 @@ var $file;
 var $section;
 function babSectionTemplate($file, $section="")
 	{
+	$this->babSection("","");
 	$this->file = $file;
 	$this->section = $section;
 	}
@@ -893,6 +894,7 @@ function babMonthA($month = "", $year = "")
 	{
 	global $BAB_SESS_USERID;
 
+	$this->babSection("","");
 	$this->db = new db_mysql();
 
 	if(empty($month))

@@ -6,8 +6,6 @@
  ***********************************************************************/
 include $babInstallPath."utilit/mailincl.php";
 
-define('CRLF', "\r\n");
-
 function getContactId( $name )
 	{
 	$replace = array( " " => "", "-" => "");
@@ -172,7 +170,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			if( !empty($pfiles[2]))
 				$this->file3 = $pfiles[2];
 			$this->accid = $accid;
-			$this->criteria = SORTARRIVAL;
+			$this->criteria = 'SORTARRIVAL';
 			if( !empty($criteria))
 				$this->criteria = $criteria;
 			$this->reverse = 1;
@@ -483,6 +481,26 @@ if(!isset($idx))
 	$idx = "compose";
 	}
 
+if( !isset( $to ))
+	$to = "";
+
+if( !isset( $cc ))
+	$cc = "";
+
+if( !isset( $bcc ))
+	$bcc = "";
+
+if( !isset( $subject ))
+	$subject = "";
+
+if( !isset( $format ))
+	$format = "";
+
+if( !isset( $message ))
+	$message = "";
+
+if( !isset( $sigid ))
+	$sigid = "";
 
 if( isset($compose) && $compose == "message")
 	{

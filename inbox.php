@@ -65,13 +65,13 @@ function listMails($accid, $criteria, $reverse, $start)
 				$reverse = 0;
 				switch ($criteria)
 					{
-					case SORTFROM:
+					case 'SORTFROM':
 						$this->fromname .= " v";
 						break;
-					case SORTARRIVAL:
+					case 'SORTARRIVAL':
 						$this->datename .= " v";
 						break;
-					case SORTSUBJECT:
+					case 'SORTSUBJECT':
 						$this->subjectname .= " v";
 						break;
 					}
@@ -81,20 +81,20 @@ function listMails($accid, $criteria, $reverse, $start)
 				$reverse = 1;
 				switch ($criteria)
 					{
-					case SORTFROM:
+					case 'SORTFROM':
 						$this->fromname .= " ^";
 						break;
-					case SORTARRIVAL:
+					case 'SORTARRIVAL':
 						$this->datename .= " ^";
 						break;
-					case SORTSUBJECT:
+					case 'SORTSUBJECT':
 						$this->subjectname .= " ^";
 						break;
 					}
 				}
-			$this->fromurl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTFROM."&reverse=".$reverse;
-			$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTSUBJECT."&reverse=".$reverse;
-			$this->dateurl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTARRIVAL."&reverse=".$reverse;
+			$this->fromurl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTFROM'."&reverse=".$reverse;
+			$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTSUBJECT'."&reverse=".$reverse;
+			$this->dateurl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTARRIVAL'."&reverse=".$reverse;
 
 			$this->mailcount = 0;
 			$this->db = new db_mysql();
@@ -125,7 +125,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$arr2 = $this->db->db_fetch_array($res2);
 					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
-					$this->mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
+					$this->mbox = imap_open($cnxstring, $arr['account'], $arr['accpass']);
 					if(!$this->mbox)
 						{
 						$body->msgerror = babTranslate("ERROR"). " : ". imap_last_error();
@@ -262,7 +262,6 @@ function listMails($accid, $criteria, $reverse, $start)
 			}
 
 		}
-	
 	$temp = new temp($accid, $criteria, $reverse, $start);
 	$body->babecho(	babPrintTemplate($temp,"inbox.html", "maillist"));
 	return array('count'=> $temp->count, 'accid' => $temp->accid, 'mailbox' => $temp->mailboxname);
@@ -749,7 +748,10 @@ if(!isset($idx))
 	}
 
 if( !isset($criteria))
-	$criteria=SORTARRIVAL;
+	$criteria='SORTARRIVAL';
+
+if( !isset($accid))
+	$accid="";
 
 if( !isset($reverse))
 	$reverse=1;
