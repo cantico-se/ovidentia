@@ -1,4 +1,4 @@
-<nl>
+<nl-be>
 <string id="Whole day">Volledige dag</string>
 <string id="Morning">Voormiddag</string>
 <string id="Afternoon">Namiddag</string>
@@ -27,6 +27,7 @@
 <string id="Articles">Artikels</string>
 <string id="Comments">Commentaar</string>
 <string id="Replies">Bijdragen</string>
+<string id="Files">Bestanden</string>
 <string id="List of different topics categories">Lijst van de verschillende onderwerp categorieën</string>
 <string id="Topics with asterisk have waiting articles or comments "></string>
 <string id="Waiting comments">Commentaar in afwachting</string>
@@ -61,7 +62,7 @@
 <string id="Home folder">Home folder</string>
 <string id="Refresh">Vernieuwen</string>
 <string id="Show disk space usage">Toon gebruikte schijfruimte</string>
-<string id="Downloads">Downloads</string>
+<string id="Hits">Hits</string>
 <string id="Description">Beschrijving</string>
 <string id="Keywords">Trefwoorden</string>
 <string id="Add">Toevoegen</string>
@@ -102,6 +103,7 @@
 <string id="Upload">Upload</string>
 <string id="Update file">Bestand wijzigen</string>
 <string id="Upload file to">Upload bestand naar</string>
+<string id="Max">Max</string>
 <string id="Email">Email</string>
 <string id="All">Allen</string>
 <string id="Lastname">Naam</string>
@@ -126,6 +128,9 @@
 <string id="Sorry, you cannot delete this user. He is already logged">Sorry maar u kan deze gebruiker niet verwijderen, hij is ingelogd</string>
 <string id="Are you sure you want to delete this user">Bent u zeker dat u deze gebruiker wilt verwijderen</string>
 <string id="WARNING: This operation will delete the user and all references">OPGELET: Deze bewerking zal de gebruiker en alle verwijzingen ernaar verwijderen</string>
+<string id="Thank You For Registering at our site">Hartelijk bedankt voor uw inschrijving op onze site.</string>
+<string id="simply follow this">volg deze link</string>
+<string id="Registration Confirmation">Bevestiging registratie</string>
 <string id="Delete a user">Een gebruiker verwijderen</string>
 <string id=" is member of"> is lid van</string>
 <string id="User">Naam</string>
@@ -189,10 +194,7 @@
 <string id="WARNING: This operation will delete the section and all references">OPGELET: Deze bewerking verwijdert de afdeling en alle verwijzingen ernaar</string>
 <string id=" is visible by groups"> is zichtbaar voor de groepen</string>
 <string id="link">link</string>
-<string id="Thank You For Registering at our site">Hartelijk bedankt voor uw inschrijving op onze site.</string>
 <string id="To confirm your registration">Om uw registratie te bevestigen</string>
-<string id="simply follow this">volg deze link</string>
-<string id="Registration Confirmation">Bevestiging registratie</string>
 <string id="Your site recorded a new registration on behalf of">Nieuwe registratie van</string>
 <string id="You must complete all fields !!">U moet alle velden invullen !!</string>
 <string id="Passwords not match !!">Paswoorden verschillen !!</string>
@@ -204,7 +206,6 @@
 <string id="User not found or password incorrect">Onbekende gebruiker of foutief paswoord</string>
 <string id="Sorry, this account is already used elsewhere">Sorry, deze account is reeds in gebruik</string>
 <string id="Sorry, your account is disabled. Please contact your adminsitrator">Sorry, uw account is niet aktief. Raadpleeg de administrator</string>
-<string id="SUCCESS - You Are Now Logged In">SUCCESS - U bent nu aangelogd als</string>
 <string id="Sorry - You haven't Confirmed Your Account Yet">Sorry, u hebt uw inschrijving nog niet bevestigd</string>
 <string id="User Not Found">Gebruiker onbekend</string>
 <string id="User Account Updated - You can now log to our site">Uw inschrijving werd bevestigd, u hebt toegang tot onze site</string>
@@ -213,10 +214,10 @@
 <string id="Nothing Changed">Niets gewijzigd</string>
 <string id="Password Changed">Het paswoord werd gewijzigd</string>
 <string id="ERROR: Old password incorrect !!">FOUT: Oud paswoord is fout !!</string>
-<string id="Incorrect nickname">Foute nickname</string>
 <string id="On site">Voor de portaal site</string>
 <string id="Your password has been reset to">Uw paswoord werd geinitialiseerd op</string>
 <string id="Password Reset">Paswoord reinitialiseren</string>
+<string id="Incorrect nickname">Foute nickname</string>
 <string id="Your new password has been emailed to you.">Uw nieuw paswoord werd u per e-mail toegestuurd.</string>
 <string id="ERROR - Nickname is required">FOUT: Nickname is vereist</string>
 <string id="Manager">Verantwoordelijke</string>
@@ -230,6 +231,7 @@
 <string id="ERROR: You must choose a valid group !!">FOUT: U moet een geldige groepsnaam kiezen !!</string>
 <string id="Modify Group">De groep wijzigen</string>
 <string id="Full Name">Volledige naam</string>
+<string id="Delete group's members">Verwijder groepsleden</string>
 <string id="Are you sure you want to delete this group">Bent u zeker dat u deze groep wil vernietigen</string>
 <string id="WARNING: This operation will delete the group with all references">OPGELET: Deze bewerking zal de groep en alle verwijzigingen ernaar vewijderen</string>
 <string id="Use Vacation">Vakantie opnemen</string>
@@ -239,7 +241,6 @@
 <string id="ERROR: Th group doesn't exist">FOUT: Deze groep bestaat reeds</string>
 <string id="You must provide at least the first approver">U moet minstens de eerste verantwoordelijke opgeven</string>
 <string id="The first approver doesn't exist">De eerste verantwoordelijke bestaat niet</string>
-<string id="Delete group's members">Verwijder groepsleden</string>
 <string id="Members">Leden</string>
 <string id="Group's members">Lijst van de groepsleden</string>
 <string id="Delete group">Een groep verwijderen</string>
@@ -292,25 +293,30 @@
 <string id="The state doesn't exist">Deze status bestaat niet</string>
 <string id="Delete vacation">Verwijder vakantie</string>
 <string id="Modify status">Status wijzigen</string>
-<string id="delete status">verwijder status</string>
 <string id="Modify vacation">Het type vakantie wijzigen</string>
 <string id="Category">Categorie</string>
 <string id="ERROR: You must provide a manager !!">FOUT: u moet een verantwoordelijke aanduiden !!</string>
 <string id="ERROR: This category already exists">FOUT: Deze categorie bestaat reeds</string>
 <string id="ERROR: The manager doesn't exist !!">FOUT: Deze verantwoordelijke bestaat niet !!</string>
+<string id="Add a new faq">Nieuwe faq toevoegen</string>
 <string id="Faqs">FAQ</string>
 <string id="List of all faqs">Lijst van alle FAQ</string>
 <string id="Update Category">Categorie bijwerken</string>
 <string id="Are you sure you want to delete this faq">Bent u zeker dat u deze FAQ wil verwijderen</string>
 <string id="WARNING: This operation will delete category with all questions and responses">OPGELET: Deze aktie verwijdert de categorie totaal</string>
-<string id="Delete a faq">Een faq verwijderen</string>
-<string id="Modify a faq">Een faq wijzigen</string>
 <string id="Registered Users">Geregistreerde gebruikers</string>
 <string id="Groups List">Lijst der groepen</string>
 <string id="Resources">Resources</string>
 <string id="Everybody">Iedereen</string>
 <string id="Unregistered Users">Niet geregistreerde gebruikers</string>
-<string id="Liste of groups">Lijst der groepen</string>
+<string id="ERROR: You must choose a valid topic category !!">FOUT: U moet een geldige categorie kiezen !!</string>
+<string id="Enabled">Zichtbaar</string>
+<string id="Are you sure you want to delete this topic category">Bent u zeker dat u deze categorie wil verwijderen</string>
+<string id="WARNING: This operation will delete the topic category with all references">OPGELET: Deze aktie verwijdert de categorie totaal</string>
+<string id="To delete topic category, you must delete topics before">Om de categorie te verwijderen moet u eerst de onderwerpen verwijderen</string>
+<string id="ERROR: This topic category doesn't exist">FOUT: onderwerp categorie bestaat niet</string>
+<string id="Delete topic category">Verwijder onderwerp categorie</string>
+<string id="Modify topic category">Wijzig onderwerp categorie</string>
 <string id="Site name">Site naam</string>
 <string id="Lang">Taal</string>
 <string id="Skin">Skin</string>
@@ -322,6 +328,8 @@
 <string id="Are you sure you want to delete this site">Bent u zeker dat u deze site wil verwijderen?</string>
 <string id="WARNING: This operation will delete the site and all references">OPGELET: Deze aktie verwijdert de site en alle gegevens</string>
 <string id="ERROR: This site already exists">FOUT: Deze site bestaat reeds</string>
+<string id="Private">Privé</string>
+<string id="Public">Publiek</string>
 <string id="Ovidentia version">Ovidentia</string>
 <string id="Php version">Php</string>
 <string id="Database server version">Database</string>
@@ -330,16 +338,6 @@
 <string id="Create site">Nieuwe site</string>
 <string id="Sites list">Sites lijst</string>
 <string id="There is no site">Er is geen site</string>
-<string id="Public">Publiek</string>
-<string id="Private">Privé</string>
-<string id="ERROR: You must choose a valid topic category !!">FOUT: U moet een geldige categorie kiezen !!</string>
-<string id="Enabled">Zichtbaar</string>
-<string id="Are you sure you want to delete this topic category">Bent u zeker dat u deze categorie wil verwijderen</string>
-<string id="WARNING: This operation will delete the topic category with all references">OPGELET: Deze aktie verwijdert de categorie totaal</string>
-<string id="To delete topic category, you must delete topics before">Om de categorie te verwijderen moet u eerst de onderwerpen verwijderen</string>
-<string id="ERROR: This topic category doesn't exist">FOUT: onderwerp categorie bestaat niet</string>
-<string id="Delete topic category">Verwijder onderwerp categorie</string>
-<string id="Modify topic category">Wijzig onderwerp categorie</string>
 <string id="Disable">Blokkeer</string>
 <string id="Number of topics">Aantal onderwerpen</string>
 <string id="This topic category already exists">De onderwerp categorie bestaat reeds</string>
@@ -456,6 +454,7 @@
 <string id="Are you sure you want to delete this question">Bent u zeker dat u deze vraag wil verwijderen</string>
 <string id="WARNING: This operation will delete question and its response">OPGELET: Deze aktie verwijdert de vraag en antwoorden</string>
 <string id="ERROR: You must provide question and response !!">FOUT: U moet een vraag en een antwoord geven !!</string>
+<string id="Questions and Answers">Vragen en antwoorden</string>
 <string id="Print Friendly">Afdrukken</string>
 <string id="Questions">Vragen</string>
 <string id="Add Question">Een vraag toevoegen</string>
@@ -563,7 +562,6 @@
 <string id="Calendar Options">Agenda Opties</string>
 <string id="in">in</string>
 <string id="Posts">Bijdragen</string>
-<string id="Files">Bestanden</string>
 <string id="Compagny">Bedrijf</string>
 <string id="Home Tel">Tel thuis</string>
 <string id="Mobile Tel">Tel GSM</string>
@@ -576,6 +574,7 @@
 <string id="View this account">Account bekijken</string>
 <string id="Uncheck all mails">Alle mails aanvinken</string>
 <string id="Check all mails">Alle emails aanvinken</string>
+<string id="Compose">Opmaken</string>
 <string id="ERROR">FOUT</string>
 <string id="Cc">Cc</string>
 <string id="Attachments">Bijlagen</string>
@@ -583,7 +582,6 @@
 <string id="Reply to all">Allen beantwoorden</string>
 <string id="Forward">Doorsturen</string>
 <string id="none">geen</string>
-<string id="Compose">Opmaken</string>
 <string id="Bcc">Bcc</string>
 <string id="Format">Formaat</string>
 <string id="Plain text">Text</string>
@@ -661,9 +659,6 @@
 <string id="Update Language">Taal wijzigen</string>
 <string id="Prefered skin">Voorkeur skin</string>
 <string id="Update Skin">Skin wijzigen</string>
-<string id="Max">Max</string>
-<string id="Add a new faq">Nieuwe faq toevoegen</string>
-<string id="Questions and Answers">Vragen en antwoorden</string>
 <string id="Password incorrect">Fout paswoord</string>
 <string id="Contact">Contact</string>
 <string id="Find">Zoek</string>
@@ -681,5 +676,37 @@
 <string id="WARNING: This operation will delete contacts and their references">OPGELET: Deze aktie verwijdert alle contacten</string>
 <string id="Delete contact">Verwijder contact</string>
 <string id="Contacts list">Lijst contacten</string>
-<string id="Hits">Hits</string>
-</nl>
+<string id="Add-ons">Add-ons</string>
+<string id="Your registration has been confirmed.">Uw registratie is bevestigd.</string>
+<string id="To connect on our site">Om toegang te krijgen tot deze site</string>
+<string id="Moderate comments">Modereer commentaren</string>
+<string id="To let user log on your site, you must confirm his registration">Opdat de gebruiker zou kunnen inloggen, moet u deze registratie bevestigen</string>
+<string id="FAQ">FAQ</string>
+<string id="is visible by">zichtbaar voor</string>
+<string id="Delete FAQ category">Verwijder FAQ categorie</string>
+<string id="Modify FAQ category">Wijzig FAQ categorie</string>
+<string id="Send email confirmation">Stuur bevestigings e-mail</string>
+<string id="Activate Registration">Activeer registratie</string>
+<string id="Only valid if registration is actif">Enkel geldig wanneer de registratie actief is</string>
+<string id="Registered users home page for site">Welkom pagina geregistreerde gebruikers op de site</string>
+<string id="Unregistered users home page for site">Welkom pagina niet-geregistreerde gebruikers op de site</string>
+<string id="Home pages">Welkom pagina's</string>
+<string id="Version">Versie</string>
+<string id="Access to Add-on">Toegang tot Add-on</string>
+<string id="Add-ons list">Add-ons lijst</string>
+<string id="Note: Posts are moderate and consequently your post will not be visible immediately">Opmerking : Bijdragen worden gemodereerd, ze zijn niet onmiddellijk zichtbaar</string>
+<string id="Read article">Lees artikel</string>
+<string id="Note: for this topic, comments are moderate">Opmerking : de commentaren moeten goedgekeurd worden</string>
+<string id="A new comment has been added">Een nieuwe commentaar werd toegevoegd</string>
+<string id="Archives">Archief</string>
+<string id="Archive selected articles">Archiveer de geselecteerde artikelen</string>
+<string id="Click on this image to archive selected articles">Archiveer de geselecteerde artikelen</string>
+<string id="Move selected articles from archive">Haal de geselecteerde artikels uit het archief</string>
+<string id="Click on this image to move out selected articles from archive">Haal de geselecteerde artikels uit het archief</string>
+<string id="List of old articles">Lijst van oude artikels</string>
+<string id="Note: Articles are moderate and consequently your article will not be visible immediately">Opmerking : Artikels worden goedgekeurd, ze zijn niet onmiddellijk zichtbaar</string>
+<string id="Last files ( Since seven days before your last visit )">Laatst opgeladen bestanden ( Vanaf 7 dagen voor je laatste bezoek )</string>
+<string id="New files">Nieuwe bestanden</string>
+<string id="Delete Contacts">Verwijder Contacten</string>
+<string id="Cannot upload file">Bestand kan niet worden opgeladen</string>
+</nl-be>
