@@ -1055,12 +1055,22 @@ function bab_getOrgChartRoleUsers($idroles)
 	return $arr;
 }
 
-function bab_getSuperior($iduser, $iddirectory=0)
+function bab_getSuperior($iduser)
 {
 	global $babDB;
 
+	$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+	{
+		$ocinfo = $babDB->db_fetch_array($res);
+	}
+	else
+	{
+		return array();
+	}
+
 	/* find user primary role */
-	$res = $babDB->db_query("SELECT ocet.id_node, ocet.id as id_entity, ocrut.id_role, ocrt.type  FROM ".BAB_DBDIR_ENTRIES_TBL." det LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity WHERE det.id_user IN ( ".$iduser."  )  AND det.id_directory = '0' and ocrut.isprimary='Y'");
+	$res = $babDB->db_query("SELECT ocet.id_node, ocet.id as id_entity, ocrut.id_role, ocrt.type  FROM ".BAB_DBDIR_ENTRIES_TBL." det LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity WHERE ocrt.id_oc='".$ocinfo['id']."' and det.id_user IN ( ".$iduser."  )  AND det.id_directory = '0' and ocrut.isprimary='Y'");
 	while( $arr = $babDB->db_fetch_array($res) )
 	{
 		if( $arr['type'] != 1 && $arr['type'] != 2) /* not responsable */
@@ -1081,7 +1091,7 @@ function bab_getSuperior($iduser, $iddirectory=0)
 		elseif( $arr['type'] != 2 )
 			{
 			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_TREES_TBL." where id='".$arr['id_node']."'"));
-			$res = $babDB->db_query("SELECT ocrut.* FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT  JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocrt.id_entity = ocet.id LEFT  JOIN ".BAB_OC_TREES_TBL." oct ON oct.id = ocet.id_node and oct.id_user='1' WHERE oct.lf <  '".$rr['lf']."' AND oct.lr >  '".$rr['lr']."' AND ocrut.isprimary='Y' and ocrt.type ='1' ORDER  BY oct.lf desc limit 0,1");
+			$res = $babDB->db_query("SELECT ocrut.* FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT  JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocrt.id_entity = ocet.id LEFT  JOIN ".BAB_OC_TREES_TBL." oct ON oct.id = ocet.id_node and oct.id_user='1' WHERE ocrt.id_oc='".$ocinfo['id']."' and oct.lf <  '".$rr['lf']."' AND oct.lr >  '".$rr['lr']."' AND ocrut.isprimary='Y' and ocrt.type ='1' ORDER  BY oct.lf desc limit 0,1");
 			$arroles = array();
 			while( $row = $babDB->db_fetch_array($res) )
 			{
