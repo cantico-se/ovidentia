@@ -25,13 +25,15 @@ function updateConfig()
 	if( $file )
 	{
 		$txt = fread($file, filesize($filename));
-		$txt .= "\r\n\$babSkin = \"ovidentia\";";
-		$txt .= "\r\n\$babMaxFileSize = 1000000;";
-		$txt .= "\r\n\$babMaxUserSize = 2000000;";
-		$txt .= "\r\n\$babMaxGroupSize = 5000000;";
-		$txt .= "\r\n\$babMaxTotalSize = 100000000;";
-		$txt .= "\r\n\$babUploadPath = \"\";";
-		fputs($file, $txt);
+		$reg = "(.*)\?>";
+		ereg($reg, $txt, $match);
+		$out = "\r\n\$babSkin = \"ovidentia\";";
+		$out .= "\r\n\$babMaxFileSize = 1000000;";
+		$out .= "\r\n\$babMaxUserSize = 2000000;";
+		$out .= "\r\n\$babMaxGroupSize = 5000000;";
+		$out .= "\r\n\$babMaxTotalSize = 100000000;";
+		$out .= "\r\n\$babUploadPath = \"\";";
+		fputs($file, $match[1].$out."\r\n?>");
 		fclose($file);
 	}
 }
@@ -260,7 +262,7 @@ if( !$res)
 	}
 
 
-//updateConfig();
+updateConfig();
 return $ret;
 }
 ?>
