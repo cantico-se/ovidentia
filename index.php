@@ -138,6 +138,10 @@ $babCss = bab_printTemplate($babDummy, "config.html", "babCss");
 $babMeta = bab_printTemplate($babDummy, "config.html", "babMeta");
 $babsectionpuce = bab_printTemplate($babDummy, "config.html", "babSectionPuce");
 $babsectionbullet = bab_printTemplate($babDummy, "config.html", "babSectionBullet");
+if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
+	$babIE = 1;
+else
+	$babIE = 0;
 
 function printBody()
 	{
