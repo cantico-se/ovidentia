@@ -342,4 +342,71 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_GROUPS_TBL." where id='".$id."'");
 	bab_callAddonsFunction('onGroupDelete', $id);
 }
+
+function bab_deleteUser($id)
+	{
+	$db = $GLOBALS['babDB'];
+
+	// delete notes owned by this user
+	$res = $db->db_query("delete from ".BAB_NOTES_TBL." where id_user='$id'");	
+
+	// delete user from groups
+	$res = $db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_object='$id'");	
+					
+	$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where owner='$id' and type='1'");
+	$arr = $db->db_fetch_array($res);
+
+	// delete user's events
+	$res = $db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$arr['id']."'");	
+
+	// delete user's access
+	$res = $db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$id."'");	
+	$res = $db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$arr['id']."'");	
+
+	// delete user's calendar options
+	$res = $db->db_query("delete from ".BAB_CALOPTIONS_TBL." where id_user='".$id."'");	
+
+	// delete user from calendar
+	$res = $db->db_query("delete from ".BAB_CALENDAR_TBL." where owner='$id' and type='1'");	
+
+	// delete user from BAB_USERS_LOG_TBL
+	$res = $db->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='$id'");	
+
+	// delete user from BAB_MAIL_SIGNATURES_TBL
+	$res = $db->db_query("delete from ".BAB_MAIL_SIGNATURES_TBL." where owner='$id'");	
+
+	// delete user from BAB_MAIL_ACCOUNTS_TBL
+	$res = $db->db_query("delete from ".BAB_MAIL_ACCOUNTS_TBL." where owner='$id'");	
+
+	// delete user from BAB_MAIL_DOMAINS_TBL
+	$res = $db->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='$id' and bgroup='N'");	
+
+	// delete user from contacts
+	$res = $db->db_query("delete from ".BAB_CONTACTS_TBL." where owner='$id'");	
+
+	// delete user from BAB_SECTIONS_STATES_TBL
+	$res = $db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_user='$id'");	
+
+	// delete files owned by this user
+	bab_deleteUploadUserFiles("N", $id);
+
+	// delete user from BAB_DBDIR_ENTRIES_TBL
+	$res = $db->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'");	
+
+	// delete user from VACATION
+	$db->db_query("delete from ".BAB_VAC_MANAGERS_TBL." where id_user='".$id."'");
+	$db->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$id."'");
+	$db->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$id."'");
+	$res = 	$db->db_query("select id from ".BAB_VAC_ENTRIES_TBL." where id_user='".$id."'");
+	while( $arr = $db->db_fetch_array($res))
+	{
+		$db->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$arr['id']."'");
+		$db->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$arr['id']."'");
+	}
+
+	// delete user
+	$res = $db->db_query("delete from ".BAB_USERS_TBL." where id='$id'");
+	bab_callAddonsFunction('onUserDelete', $id);
+	}
+
 ?>
