@@ -67,12 +67,16 @@
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ group }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ bgcolor }</b></td></tr>
-<!--#in getnextgroup -->
 <!--#in getnext -->
-<tr><td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td><td nowrap bgcolor="#{ arr[bgcolor] }" align="center">&nbsp;{ arr[bgcolor] }</td>
+<tr><td nowrap>
+<!--#if burl "== 1" -->
+<a class=BabMenuLink href="{ url }">{ urlname }</a>
+<!--#else burl -->
+{ urlname }
+<!--#endif burl -->
+</td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td><td nowrap bgcolor="#{ arr[bgcolor] }" align="center">&nbsp;{ arr[bgcolor] }</td>
 </tr>
 <!--#endin getnext -->
-<!--#endin getnextgroup -->
 </TBODY>
 </table>
 </td></tr>
@@ -128,12 +132,16 @@
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ name }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ description }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ group }</b></td>
-<!--#in getnextgroup -->
 <!--#in getnext -->
-<tr><td nowrap><a class=BabMenuLink href="{ url }">{ urlname }</a></td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td>
+<tr><td nowrap>
+<!--#if burl "== 1" -->
+<a class=BabMenuLink href="{ url }">{ urlname }</a>
+<!--#else burl -->
+{ urlname }
+<!--#endif burl -->
+</td><td nowrap>&nbsp;{ arr[description] }</td><td nowrap>&nbsp;{ groupname }</td>
 </tr>
 <!--#endin getnext -->
-<!--#endin getnextgroup -->
 </TBODY>
 </table>
 </td></tr>

@@ -139,30 +139,28 @@ function categoriesList($grpid, $userid)
 			$this->count = count($grpid);
 			$this->db = new db_mysql();
 			$this->userid = $userid;
+			$req = "select * from categoriescal";
+			$this->res = $this->db->db_query($req);
+			$this->countcal = $this->db->db_num_rows($this->res);
 			}
 			
-		function getnextgroup()
-			{
-			static $j = 0;
-			if( $j < $this->count)
-				{
-				$req = "select * from categoriescal where id_group='".$this->idgrp[$j]."'";
-				$this->res = $this->db->db_query($req);
-				$this->countcal = $this->db->db_num_rows($this->res);
-				$this->groupname = getGroupName($this->idgrp[$j]);
-				$j++;
-				return true;
-				}
-			else
-				return false;
-			}
-
 		function getnext()
 			{
 			static $i = 0;
 			if( $i < $this->countcal)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->groupname = getGroupName($this->arr[id_group]);
+				$this->burl = 0;
+				for( $k = 0; $k < $this->count; $k++)
+					{
+					if( $this->idgrp[$k] == $this->arr[id_group])
+						{
+						$this->burl = 1;
+						break;
+						}
+					}
+
 				$this->url = $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifycat&item=".$this->arr[id]."&userid=".$this->userid;
 				$this->urlname = $this->arr[name];
 				$i++;
@@ -211,31 +209,28 @@ function resourcesList($grpid, $userid)
 			$this->count = count($grpid);
 			$this->db = new db_mysql();
 			$this->userid = $userid;
+			$req = "select * from resourcescal";
+			$this->res = $this->db->db_query($req);
+			$this->countcal = $this->db->db_num_rows($this->res);
 			}
 		
 			
-		function getnextgroup()
-			{
-			static $j = 0;
-			if( $j < $this->count)
-				{
-				$req = "select * from resourcescal where id_group='".$this->idgrp[$j]."'";
-				$this->res = $this->db->db_query($req);
-				$this->countcal = $this->db->db_num_rows($this->res);
-				$this->groupname = getGroupName($this->idgrp[$j]);
-				$j++;
-				return true;
-				}
-			else
-				return false;
-			}
-
 		function getnext()
 			{
 			static $i = 0;
 			if( $i < $this->countcal)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->burl = 0;
+				for( $k = 0; $k < $this->count; $k++)
+					{
+					if( $this->idgrp[$k] == $this->arr[id_group])
+						{
+						$this->burl = 1;
+						break;
+						}
+					}
+				$this->groupname = getGroupName($this->arr[id_group]);
 				$this->url = $GLOBALS[babUrl]."index.php?tg=confcal&idx=modifyres&item=".$this->arr[id]."&userid=".$this->userid;
 				$this->urlname = $this->arr[name];
 				$i++;
