@@ -30,12 +30,11 @@
       <!--#if count -->
       <table  width="100%" border="0" cellpadding="1" cellspacing="0" align="center">
         <!--#in getnext -->
-        <tr>
-          <td colspan="2">{ babsectionbullet }&nbsp;&nbsp;<a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
-        </tr>
-		<tr>
-          <td colspan="2"><table border="0" align="left" cellpadding="0" cellspacing="0"><tr><td>&nbsp;&nbsp;&nbsp;</td><td class="BabCategChildNavigation">{ childdescription }<br><br></td></tr></table></td>
-        </tr>
+        <tr><td nowrap>&nbsp;{ babsectionbullet }&nbsp;</td><td width="100%"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td></tr>
+		<!--#if childdescription -->
+		<tr><td nowrap>&nbsp;</td><td class="BabCategChildNavigation">{ childdescription }</td></tr>
+		<!--#endif childdescription -->
+		<tr><td colspan="2"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></td></tr>
         <!--#endin getnext -->
       </table>
       <!--#endif count -->
