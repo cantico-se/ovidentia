@@ -196,9 +196,8 @@ function babLoadLanguage($lang, $folder, &$arr)
 	{
 	if( empty($folder))
 		{
-		$filename = "lang/lang-".$lang.".xml";
-		if (!file_exists($filename))
-			$filename = $GLOBALS['babInstallPath']."lang/lang-".$lang.".xml";
+		$filename_m = "lang/lang-".$lang.".xml";
+		$filename = $GLOBALS['babInstallPath']."lang/lang-".$lang.".xml";
 		}
 	else
 		{
@@ -206,7 +205,7 @@ function babLoadLanguage($lang, $folder, &$arr)
 		if (!file_exists($filename))
 			$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$lang.".xml";
 		}
-
+	
 	$file = @fopen($filename, "r");
 	if( $file )
 		{
@@ -215,7 +214,28 @@ function babLoadLanguage($lang, $folder, &$arr)
 		preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
 		preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", $m[1], $arr);
 		}
+		
+	if (isset($filename_m) && file_exists($filename_m))
+		{
+		$file = @fopen($filename_m, "r");
+		if( $file )
+			{
+			$tmp = fread($file, filesize($filename_m));
+			fclose($file);
+			preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
+			preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", $m[1], $arr_replace);
+			foreach($arr_replace[1] as $key => $value)
+				{
+				$arr_tmp = array_flip($arr[1]);
+				if ($arr_tmp[$value] != "")
+					{
+					$arr[2][$arr_tmp[$value]] = $arr_replace[2][$key];
+					}
+				}
+			}
+		}
 	}
+
 
 function bab_translate($str, $folder = "", $lang="")
 {
