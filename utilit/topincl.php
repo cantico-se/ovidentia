@@ -5,9 +5,9 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 
-function getCategoryTitle($id)
+function bab_getCategoryTitle($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from topics where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -21,9 +21,9 @@ function getCategoryTitle($id)
 		}
 	}
 
-function getTopicCategoryTitle($id)
+function bab_getTopicCategoryTitle($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from topics_categories where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -37,9 +37,9 @@ function getTopicCategoryTitle($id)
 		}
 	}
 
-function getArticleTitle($article)
+function bab_getArticleTitle($article)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from articles where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -53,9 +53,9 @@ function getArticleTitle($article)
 		}
 	}
 
-function getArticleDate($article)
+function bab_getArticleDate($article)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from articles where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -69,9 +69,9 @@ function getArticleDate($article)
 		}
 	}
 
-function getArticleAuthor($article)
+function bab_getArticleAuthor($article)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from articles where id='$article'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -82,20 +82,20 @@ function getArticleAuthor($article)
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			return composeName($arr['firstname'], $arr['lastname']);
+			return bab_composeUserName($arr['firstname'], $arr['lastname']);
 			}
 		else
-			return babTranslate("Anonymous");
+			return bab_translate("Anonymous");
 		}
 	else
 		{
-		return babTranslate("Anonymous");
+		return bab_translate("Anonymous");
 		}
 	}
 
-function getCommentTitle($com)
+function bab_getCommentTitle($com)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from comments where id='$com'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -109,16 +109,16 @@ function getCommentTitle($com)
 		}
 	}
 
-function confirmDeleteCategory($id)
+function bab_confirmDeleteCategory($id)
 	{
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from articles where id_topic='$id'";
 	$res = $db->db_query($req);
 	while( $arr = $db->db_fetch_array($res))
 		{
 		// delete article and comments
-		confirmDeleteArticle($id, $arr['id']);
+		bab_confirmDeleteArticle($id, $arr['id']);
 		}
 	$req = "delete from topicscom_groups where id_object='$id'";
 	$res = $db->db_query($req);
@@ -133,10 +133,10 @@ function confirmDeleteCategory($id)
 	$res = $db->db_query($req);
 	}
 
-function confirmDeleteArticle($topics, $article)
+function bab_confirmDeleteArticle($topics, $article)
 	{
 	// delete comments
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "delete from comments where id_article='$article'";
 	$res = $db->db_query($req);
 
@@ -148,16 +148,16 @@ function confirmDeleteArticle($topics, $article)
 	$res = $db->db_query($req);
 	}
 
-function deleteComments($com)
+function bab_deleteComments($com)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from comments where id_parent='$com'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res))
 		{
 		while( $arr = $db->db_fetch_array($res))
 			{
-			deleteComments($arr['id']);
+			bab_deleteComments($arr['id']);
 			}
 		}
 	$req = "delete from comments where id='$com'";

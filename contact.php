@@ -42,29 +42,29 @@ function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, 
 			global $msgerror;
 			$this->id = $id;
 			$this->bliste = $bliste;
-			$this->firstname = babTranslate("First Name");
-			$this->lastname = babTranslate("Last Name");
-			$this->email = babTranslate("Email");
-			$this->compagny = babTranslate("Compagny");
-			$this->hometel = babTranslate("Home Tel");
-			$this->mobiletel = babTranslate("Mobile Tel");
-			$this->businesstel = babTranslate("Business Tel");
-			$this->businessfax = babTranslate("Business Fax");
-			$this->jobtitle = babTranslate("Job Title");
-			$this->businessaddress = babTranslate("Business Address");
-			$this->homeaddress = babTranslate("Home Address");
-			$this->cancel = babTranslate("Cancel");
+			$this->firstname = bab_translate("First Name");
+			$this->lastname = bab_translate("Last Name");
+			$this->email = bab_translate("Email");
+			$this->compagny = bab_translate("Compagny");
+			$this->hometel = bab_translate("Home Tel");
+			$this->mobiletel = bab_translate("Mobile Tel");
+			$this->businesstel = bab_translate("Business Tel");
+			$this->businessfax = bab_translate("Business Fax");
+			$this->jobtitle = bab_translate("Job Title");
+			$this->businessaddress = bab_translate("Business Address");
+			$this->homeaddress = bab_translate("Home Address");
+			$this->cancel = bab_translate("Cancel");
 			$this->msgerror = $msgerror;
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			if( empty($id))
 				{
-				$this->addcontact = babTranslate("Add Contact");
+				$this->addcontact = bab_translate("Add Contact");
 				$this->what = "add";
 				$this->id = "";
 				}
 			else
 				{
-				$this->addcontact = babTranslate("Update Contact");
+				$this->addcontact = bab_translate("Update Contact");
 				$this->what = "update";
 				}
 
@@ -83,7 +83,7 @@ function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, 
 		}
 
 	$temp = new temp($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste);
-	echo babPrintTemplate($temp,"contact.html", "contactcreate");
+	echo bab_printTemplate($temp,"contact.html", "contactcreate");
 	}
 
 function contactUnload($pos, $bliste)
@@ -98,22 +98,22 @@ function contactUnload($pos, $bliste)
 
 		function temp($pos, $bliste)
 			{
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
-			$this->message = babTranslate("Your contacts list has been updated");
-			$this->close = babTranslate("Close");
-			$this->url = $GLOBALS['babUrl']."index.php?tg=contacts&idx=list&pos=".$pos;
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->message = bab_translate("Your contacts list has been updated");
+			$this->close = bab_translate("Close");
+			$this->url = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$pos;
 			$this->bliste = $bliste;
 			}
 		}
 
 	$temp = new temp($pos, $bliste);
-	echo babPrintTemplate($temp,"contact.html", "contactunload");
+	echo bab_printTemplate($temp,"contact.html", "contactunload");
 	}
 
 function contactUpdate($id)
 {
 	global $bliste, $BAB_SESS_USERID;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from contacts where id='$id' and owner='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
@@ -128,23 +128,23 @@ function addContact( $firstname, $lastname, $email, $compagny, $hometel, $mobile
 	global $msgerror, $BAB_SESS_USERID;
 	if( empty($firstname))
 		{
-		$msgerror = babTranslate("ERROR: You must provide a first name");
+		$msgerror = bab_translate("ERROR: You must provide a first name");
 		return false;
 		}
-	if( empty($email) || !isEmailValid($email) )
+	if( empty($email) || !bab_isEmailValid($email) )
 		{
-		$msgerror = babTranslate("ERROR: You must provide a valid email address");
+		$msgerror = bab_translate("ERROR: You must provide a valid email address");
 		return false;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
 	$req = "select * from contacts where hashname='".$hash."' and owner='".$BAB_SESS_USERID."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$msgerror = babTranslate("ERROR: This contact already exists");
+		$msgerror = bab_translate("ERROR: This contact already exists");
 		return false;
 		}
 	$req = "insert into contacts (owner, firstname, lastname, hashname, email, compagny, hometel, mobiletel, businesstel, businessfax, jobtitle, businessaddress, homeaddress) VALUES ('". $BAB_SESS_USERID. "','" . $firstname. "','". $lastname. "','". $hash. "','" . $email. "','" . $compagny. "','" . $hometel. "','" . $mobiletel. "','" . $businesstel. "','" . $businessfax. "','" . $jobtitle. "','" . $baddress. "','" . $haddress. "')";
@@ -158,23 +158,23 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 	global $msgerror, $BAB_SESS_USERID;
 	if( empty($firstname))
 		{
-		$msgerror = babTranslate("ERROR: You must provide a first name");
+		$msgerror = bab_translate("ERROR: You must provide a first name");
 		return false;
 		}
-	if( empty($email) || !isEmailValid($email) )
+	if( empty($email) || !bab_isEmailValid($email) )
 		{
-		$msgerror = babTranslate("ERROR: You must provide a valid email address");
+		$msgerror = bab_translate("ERROR: You must provide a valid email address");
 		return false;
 		}
 
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
 	$req = "select * from contacts where hashname='".$hash."' and owner='".$BAB_SESS_USERID."' and id!='".$id."'";	
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$msgerror = babTranslate("ERROR: This contact already exists");
+		$msgerror = bab_translate("ERROR: This contact already exists");
 		return false;
 		}
 
@@ -218,12 +218,12 @@ switch($idx)
 		contactUnload($pos, $bliste);
 		break;
 	case "modify":
-		//$msgerror = babTranslate("Modify contact");
+		//$msgerror = bab_translate("Modify contact");
 		contactUpdate($item);
 		break;
 	case "create":
 	default:
-		//$msgerror = babTranslate("Create contact");
+		//$msgerror = bab_translate("Create contact");
 		contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste);
 		break;
 	}

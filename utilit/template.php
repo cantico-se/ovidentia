@@ -10,7 +10,7 @@ $f = "funcName";
 $class->$f();
 */
 
-class Template
+class babTemplate
 {
 var $startPatternI = "<!--#";
 var $endPatternI = "-->";

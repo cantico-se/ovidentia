@@ -8,7 +8,7 @@
 
 function listGroups()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $fullname;
@@ -26,12 +26,12 @@ function listGroups()
 
 		function temp()
 			{
-			$this->fullname = babTranslate("Groups");
-			$this->public = babTranslate("Public");
-			$this->private = babTranslate("Private");
-			$this->modify = babTranslate("Update");
+			$this->fullname = bab_translate("Groups");
+			$this->public = bab_translate("Public");
+			$this->private = bab_translate("Private");
+			$this->modify = bab_translate("Update");
 			$req = "select * from groups order by id asc";
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -54,9 +54,9 @@ function listGroups()
 					$this->ustorage = "checked";
 				else
 					$this->ustorage = "";
-				$this->url = $GLOBALS['babUrl']."index.php?tg=group&idx=Modify&item=".$this->arr['id'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=group&idx=Modify&item=".$this->arr['id'];
 				if( $this->arr['id'] < 3 )
-					$this->urlname = getGroupName($this->arr['id']);
+					$this->urlname = bab_getGroupName($this->arr['id']);
 				else
 					$this->urlname = $this->arr['name'];
 				$i++;
@@ -69,12 +69,12 @@ function listGroups()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "admfiles.html", "admfileslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "admfiles.html", "admfileslist"));
 	}
 
 function updateGroups($groups, $ugroups )
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select id from groups";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
@@ -105,11 +105,11 @@ switch($idx)
 	{
 	case "Modify":
 	default:
-		$body->title = babTranslate("File manager");
+		$babBody->title = bab_translate("File manager");
 		listGroups();
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

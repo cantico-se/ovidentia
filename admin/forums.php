@@ -8,7 +8,7 @@ include $babInstallPath."utilit/forumincl.php";
 
 function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -27,15 +27,15 @@ function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 
 		function temp($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->moderator = babTranslate("Moderator");
-			$this->nbmsgdisplay = babTranslate("Messages Per Page");
-			$this->moderation = babTranslate("Moderation");
-			$this->yes = babTranslate("Yes");
-			$this->no = babTranslate("No");
-			$this->add = babTranslate("Add");
-			$this->active = babTranslate("Active");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->moderator = bab_translate("Moderator");
+			$this->nbmsgdisplay = bab_translate("Messages Per Page");
+			$this->moderation = bab_translate("Moderation");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->add = bab_translate("Add");
+			$this->active = bab_translate("Active");
 			$this->nameval = $nameval == ""? "": $nameval;
 			$this->descriptionval = $descriptionval == ""? "": $descriptionval;
 			$this->moderatorval = $moderatorval == ""? "": $moderatorval;
@@ -44,12 +44,12 @@ function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 		}
 
 	$temp = new temp($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval);
-	$body->babecho(	babPrintTemplate($temp,"forums.html", "forumcreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"forums.html", "forumcreate"));
 	}
 
 function listForums()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -73,14 +73,14 @@ function listForums()
 
 		function temp()
 			{
-			$this->name = babTranslate("Name");
-			$this->moderator = babTranslate("Moderator Email");
-			$this->description = babTranslate("Description");
-			$this->access = babTranslate("Access");
-			$this->groups = babTranslate("View");
-			$this->reply = babTranslate("Reply");
-			$this->posts = babTranslate("Post");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Name");
+			$this->moderator = bab_translate("Moderator Email");
+			$this->description = bab_translate("Description");
+			$this->access = bab_translate("Access");
+			$this->groups = bab_translate("View");
+			$this->reply = bab_translate("Reply");
+			$this->posts = bab_translate("Post");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from forums order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -92,11 +92,11 @@ function listForums()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->moderatorname = getUserName($this->arr['moderator']);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$this->arr['id'];
-				$this->groupsurl = $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$this->arr['id'];
-				$this->postsurl = $GLOBALS['babUrl']."index.php?tg=forum&idx=Post&item=".$this->arr['id'];
-				$this->replyurl = $GLOBALS['babUrl']."index.php?tg=forum&idx=Reply&item=".$this->arr['id'];
+				$this->moderatorname = bab_getUserName($this->arr['moderator']);
+				$this->url = $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$this->arr['id'];
+				$this->groupsurl = $GLOBALS['babUrlScript']."?tg=forum&idx=Groups&item=".$this->arr['id'];
+				$this->postsurl = $GLOBALS['babUrlScript']."?tg=forum&idx=Post&item=".$this->arr['id'];
+				$this->replyurl = $GLOBALS['babUrlScript']."?tg=forum&idx=Reply&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
@@ -108,41 +108,41 @@ function listForums()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "forums.html", "forumslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "forums.html", "forumslist"));
 	return $temp->count;
 	}
 
 
 function saveForum($name, $description, $moderator, $moderation, $nbmsgdisplay, $active)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a name")." !";
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
 		return false;
 		}
 
 	if( $moderation == "Y" && empty($moderator))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a moderator")." !";
+		$babBody->msgerror = bab_translate("ERROR: You must provide a moderator")." !";
 		return false;
 		}
 	
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from forums where name='$name'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This forum already exists");
+		$babBody->msgerror = bab_translate("ERROR: This forum already exists");
 		return false;
 		}
 
 	if($moderation == "Y")
 		{
-		$moderatorid = getUserId($moderator);
+		$moderatorid = bab_getUserId($moderator);
 		if( $moderatorid < 1)
 			{
-			$body->msgerror = babTranslate("ERROR: The moderator doesn't exist !!");
+			$babBody->msgerror = bab_translate("ERROR: The moderator doesn't exist !!");
 			return false;
 			}
 		}
@@ -170,25 +170,25 @@ if( isset($addforum) && $addforum == "addforum" )
 switch($idx)
 	{
 	case "addforum":
-		$body->title = babTranslate("Add a new forum");
-		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
-		$body->addItemMenu("addforum", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=forums&idx=addforum");
+		$babBody->title = bab_translate("Add a new forum");
+		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+		$babBody->addItemMenu("addforum", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=forums&idx=addforum");
 		addForum($name, $description, $moderator, $nbmsgdisplay);
 		break;
 
 	default:
 	case "List":
-		$body->title = babTranslate("List of all forums");
+		$babBody->title = bab_translate("List of all forums");
 		if( listForums() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
+			$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 			}
 		else
-			$body->title = babTranslate("There is no forum");
+			$babBody->title = bab_translate("There is no forum");
 
-		$body->addItemMenu("addforum", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=forums&idx=addforum");
+		$babBody->addItemMenu("addforum", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=forums&idx=addforum");
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

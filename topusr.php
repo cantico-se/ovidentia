@@ -8,7 +8,7 @@ include $babInstallPath."utilit/topincl.php";
 
 function listCategories($cat)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		
@@ -30,16 +30,16 @@ function listCategories($cat)
 
 		function temp($cat)
 			{
-			global $body, $BAB_SESS_USERID;
-			$this->articles = babTranslate("Article") ."(s)";
-			$this->waiting = babTranslate("Waiting");
-			$this->txtsubmit = babTranslate("Submit");
-			$this->db = new db_mysql();
+			global $babBody, $BAB_SESS_USERID;
+			$this->articles = bab_translate("Article") ."(s)";
+			$this->waiting = bab_translate("Waiting");
+			$this->txtsubmit = bab_translate("Submit");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select topics.* from topics join topics_categories where topics.id_cat=topics_categories.id and  topics.id_cat='".$cat."'";
 			$res = $this->db->db_query($req);
 			while( $row = $this->db->db_fetch_array($res))
 				{
-				if(isAccessValid("topicsview_groups", $row['id']) )
+				if(bab_isAccessValid("topicsview_groups", $row['id']) )
 					{
 					array_push($this->arrid, $row['id']);
 					}
@@ -62,7 +62,7 @@ function listCategories($cat)
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
 				if( $this->nbarticles == 0 )
-					$this->urlsubmit = $GLOBALS['babUrl']."index.php?tg=articles&idx=Submit&topics=".$this->arr['id'];
+					$this->urlsubmit = $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->arr['id'];
 
 				$req = "select * from articles where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
@@ -71,7 +71,7 @@ function listCategories($cat)
 				$req = "select * from comments where id_topic='".$this->arr['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
 				$this->newc = $this->db->db_num_rows($res);
-				$this->urlarticles = $GLOBALS['babUrl']."index.php?tg=articles&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
+				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
 				$i++;
 				return true;
 				}
@@ -80,7 +80,7 @@ function listCategories($cat)
 			}
 		}
 	$temp = new temp($cat);
-	$body->babecho(	babPrintTemplate($temp,"topusr.html", "categorylist"));
+	$babBody->babecho(	bab_printTemplate($temp,"topusr.html", "categorylist"));
 	return $temp->count;
 	}
 
@@ -94,16 +94,16 @@ switch($idx)
 	{
 	default:
 	case "list":
-		$catname = getTopicCategoryTitle($cat);
-		$body->title = babTranslate("List of all topics"). " [ " . $catname . " ]";
+		$catname = bab_getTopicCategoryTitle($cat);
+		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
 		if( listCategories($cat) > 0 )
 			{
-			$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&cat=".$cat);
+			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 			}
 		else
-			$body->title = babTranslate("There is no topic"). " [ " . $catname . " ]";
+			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

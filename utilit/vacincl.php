@@ -4,11 +4,11 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-$babDayType = array(1=>babTranslate("Whole day"), babTranslate("Morning"), babTranslate("Afternoon"));
+$babDayType = array(1=>bab_translate("Whole day"), bab_translate("Morning"), bab_translate("Afternoon"));
 
-function getVacationName($id)
+function bab_getVacationName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from vacations_types where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -22,9 +22,9 @@ function getVacationName($id)
 		}
 	}
 
-function getStatusName($id)
+function bab_getStatusName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from vacations_states where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)

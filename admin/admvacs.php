@@ -8,7 +8,7 @@ include $babInstallPath."utilit/forumincl.php";
 
 function addVacation()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -20,22 +20,22 @@ function addVacation()
 
 		function temp()
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->defaultdays = babTranslate("Default days number");
-			$this->maxdays = babTranslate("Max days number");
-			$this->maxdaysauthorized = babTranslate("Max days authorized");
-			$this->add = babTranslate("Add");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->defaultdays = bab_translate("Default days number");
+			$this->maxdays = bab_translate("Max days number");
+			$this->maxdaysauthorized = bab_translate("Max days authorized");
+			$this->add = bab_translate("Add");
 			}
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"admvacs.html", "vacationcreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"admvacs.html", "vacationcreate"));
 	}
 
 function listVacations()
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -53,11 +53,11 @@ function listVacations()
 
 		function temp()
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->days = babTranslate("Days");
-			$this->max = babTranslate("Max");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->days = bab_translate("Days");
+			$this->max = bab_translate("Max");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from vacations_types order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -69,7 +69,7 @@ function listVacations()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=admvac&idx=modify&item=".$this->arr['id'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=admvac&idx=modify&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
@@ -81,7 +81,7 @@ function listVacations()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "admvacs.html", "vacationslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "admvacs.html", "vacationslist"));
 	return $temp->count;
 
 	}
@@ -89,7 +89,7 @@ function listVacations()
 
 function listStatus()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -104,9 +104,9 @@ function listStatus()
 
 		function temp()
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from vacations_states order by status asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -118,7 +118,7 @@ function listStatus()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=admvac&idx=modifystatus&item=".$this->arr['id'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=admvac&idx=modifystatus&item=".$this->arr['id'];
 				$this->urlname = $this->arr['status'];
 				$i++;
 				return true;
@@ -130,12 +130,12 @@ function listStatus()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "admvacs.html", "statuslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "admvacs.html", "statuslist"));
 	}
 
 function createStatus()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -144,22 +144,22 @@ function createStatus()
 
 		function temp()
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->add = babTranslate("Add status");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->add = bab_translate("Add status");
 			}
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"admvacs.html", "statuscreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"admvacs.html", "statuscreate"));
 	}
 
 function saveVacation($name, $description, $defaultnday, $maxdays, $maxdaysauthorized)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a name")." !";
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
 		return;
 		}
 
@@ -191,13 +191,13 @@ function saveVacation($name, $description, $defaultnday, $maxdays, $maxdaysautho
 		$maxdauth = $maxdval;
 		
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	
 	$req = "select * from vacations_types where name='$name'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
-		$body->msgerror = babTranslate("This vacation already exists") ." !";
+		$babBody->msgerror = bab_translate("This vacation already exists") ." !";
 		return;
 		}
 	
@@ -209,19 +209,19 @@ function saveVacation($name, $description, $defaultnday, $maxdays, $maxdaysautho
 
 function addStatus($name, $description)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("You must provide a name")." !!";
+		$babBody->msgerror = bab_translate("You must provide a name")." !!";
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from vacations_states where status='$name'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("This state already exists");
+		$babBody->msgerror = bab_translate("This state already exists");
 		}
 	else
 		{
@@ -250,47 +250,47 @@ switch($idx)
 	{
 	/*
 	case "addstatus":
-		$body->title = babTranslate("Add a new vacation status");
-		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
-		$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
+		$babBody->title = bab_translate("Add a new vacation status");
+		$babBody->addItemMenu("list", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
+		$babBody->addItemMenu("addvacation", bab_translate("Add Vacation Type"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addvacation");
+		$babBody->addItemMenu("liststatus", bab_translate("Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=liststatus");
+		$babBody->addItemMenu("addstatus", bab_translate("Add Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addstatus");
 		createStatus();
 		break;
 	*/
 	case "addvacation":
-		$body->title = babTranslate("Add a new vacation");
-		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
-		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
+		$babBody->title = bab_translate("Add a new vacation");
+		$babBody->addItemMenu("list", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
+		$babBody->addItemMenu("addvacation", bab_translate("Add Vacation Type"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addvacation");
+		$babBody->addItemMenu("liststatus", bab_translate("Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=liststatus");
+		//$babBody->addItemMenu("addstatus", bab_translate("Add Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addstatus");
 		addVacation();
 		break;
 
 	case "liststatus":
-		$body->title = babTranslate("List of all status");
-		$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
-		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
+		$babBody->title = bab_translate("List of all status");
+		$babBody->addItemMenu("list", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
+		$babBody->addItemMenu("addvacation", bab_translate("Add Vacation Type"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addvacation");
+		$babBody->addItemMenu("liststatus", bab_translate("Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=liststatus");
+		//$babBody->addItemMenu("addstatus", bab_translate("Add Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addstatus");
 		listStatus();
 		break;
 
 	default:
 	case "list":
-		$body->title = babTranslate("List of all vacations");
+		$babBody->title = bab_translate("List of all vacations");
 		if( listVacations() > 0 )
 			{
-			$body->addItemMenu("list", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=list");
+			$babBody->addItemMenu("list", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=list");
 			}
 		else
-			$body->title = babTranslate("There is no vacation definition");
+			$babBody->title = bab_translate("There is no vacation definition");
 
-		$body->addItemMenu("addvacation", babTranslate("Add Vacation Type"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addvacation");
-		$body->addItemMenu("liststatus", babTranslate("Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=liststatus");
-		//$body->addItemMenu("addstatus", babTranslate("Add Status"), $GLOBALS['babUrl']."index.php?tg=admvacs&idx=addstatus");
+		$babBody->addItemMenu("addvacation", bab_translate("Add Vacation Type"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addvacation");
+		$babBody->addItemMenu("liststatus", bab_translate("Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=liststatus");
+		//$babBody->addItemMenu("addstatus", bab_translate("Add Status"), $GLOBALS['babUrlScript']."?tg=admvacs&idx=addstatus");
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -8,7 +8,7 @@ include $babInstallPath."admin/register.php";
 
 function displayLogin()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $nickname;
@@ -16,20 +16,20 @@ function displayLogin()
 
 		function temp()
 			{
-			$this->nickname = babTranslate("Nickname");
-			$this->password = babTranslate("Password");
-			$this->login = babTranslate("Login");
+			$this->nickname = bab_translate("Nickname");
+			$this->password = bab_translate("Password");
+			$this->login = bab_translate("Login");
 			}
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"login.html", "login"));
+	$babBody->babecho(	bab_printTemplate($temp,"login.html", "login"));
 	}
 
 
 function emailPassword()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $nickname;
@@ -37,28 +37,28 @@ function emailPassword()
 
 		function temp()
 			{
-			$this->nickname = babTranslate("Your nickname");
-			$this->send = babTranslate("Send");
+			$this->nickname = bab_translate("Your nickname");
+			$this->send = bab_translate("Send");
 			}
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"login.html", "emailpassword"));
+	$babBody->babecho(	bab_printTemplate($temp,"login.html", "emailpassword"));
 	}
 
 function signOn( $nickname, $password)
 	{
-	global $body, $BAB_SESS_USER, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID;
 	if( empty($nickname) || empty($password))
 		{
-		$body->msgerror = babTranslate("You must complete all fields !!");
+		$babBody->msgerror = bab_translate("You must complete all fields !!");
 		return false;
 		}
 
 	if( !userLogin($nickname, $password))
 		return false;
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req="select * from users_log where id_user='$BAB_SESS_USERID'";
 	$res=$db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -76,9 +76,9 @@ function signOn( $nickname, $password)
 
 function signOff()
 	{
-	global $body, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$LOGGED_IN;
+	global $babBody, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$LOGGED_IN;
 	
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req="select * from users_log where id_user='$BAB_SESS_USERID'";
 	$res=$db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -97,12 +97,12 @@ function signOff()
 	session_unregister("BAB_SESS_EMAIL");
 	session_unregister("BAB_SESS_USERID");
 	session_unregister("BAB_SESS_HASHID");
-	Header("Location: index.php");
+	Header("Location: ". $GLOBALS['babPhpSelf']);
 	}
 
 function userCreate($firstname, $lastname, $nickname, $email)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $firstname;
@@ -123,18 +123,18 @@ function userCreate($firstname, $lastname, $nickname, $email)
 			$this->lastnameval = $lastname != ""? $lastname: "";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->emailval = $email != ""? $email: "";
-			$this->firstname = babTranslate("First Name");
-			$this->lastname = babTranslate("Last Name");
-			$this->nickname = babTranslate("Nickname");
-			$this->email = babTranslate("Email");
-			$this->password = babTranslate("Password");
-			$this->repassword = babTranslate("Retype Paasword");
-			$this->adduser = babTranslate("Register");
+			$this->firstname = bab_translate("First Name");
+			$this->lastname = bab_translate("Last Name");
+			$this->nickname = bab_translate("Nickname");
+			$this->email = bab_translate("Email");
+			$this->password = bab_translate("Password");
+			$this->repassword = bab_translate("Retype Paasword");
+			$this->adduser = bab_translate("Register");
 			}
 		}
 
 	$temp = new temp($firstname, $lastname, $nickname, $email);
-	$body->babecho(	babPrintTemplate($temp,"login.html", "usercreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"login.html", "usercreate"));
 	}
 
 /* main */
@@ -142,7 +142,7 @@ if( isset($login) && $login == "login")
 	{
 	if(!signOn($nickname, $password))
 		return;
-	Header("Location: index.php?tg=entry");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=entry");
 	}
 
 
@@ -164,31 +164,31 @@ switch($cmd)
 		break;
 
 	case "register":
-		$body->title = babTranslate("Please provide a valid email.") . "<br>";
-		$body->title .= babTranslate("We will send you an email for confirmation before you can use our services") . "<br>";
-		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS['babUrl']."index.php?tg=login&cmd=signon");
-		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS['babUrl']."index.php?tg=login&cmd=register");
-		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS['babUrl']."index.php?tg=login&cmd=emailpwd");
+		$babBody->title = bab_translate("Please provide a valid email.") . "<br>";
+		$babBody->title .= bab_translate("We will send you an email for confirmation before you can use our services") . "<br>";
+		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
+		$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
+		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		userCreate($firstname, $lastname, $nickname, $email);
 		break;
 
 	case "emailpwd":
-		$body->title = babTranslate("Email a new password");
-		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS['babUrl']."index.php?tg=login&cmd=signon");
-		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS['babUrl']."index.php?tg=login&cmd=register");
-		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS['babUrl']."index.php?tg=login&cmd=emailpwd");
+		$babBody->title = bab_translate("Email a new password");
+		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
+		$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
+		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		emailPassword();
 		break;
 
 	case "signon":
 	default:
-		$body->title = babTranslate("Login");
-		$body->addItemMenu("signon", babTranslate("Login"), $GLOBALS['babUrl']."index.php?tg=login&cmd=signon");
-		$body->addItemMenu("register", babTranslate("Register"), $GLOBALS['babUrl']."index.php?tg=login&cmd=register");
-		$body->addItemMenu("emailpwd", babTranslate("Lost Password"), $GLOBALS['babUrl']."index.php?tg=login&cmd=emailpwd");
+		$babBody->title = bab_translate("Login");
+		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
+		$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
+		$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 		displayLogin();
 		break;
 	}
-$body->setCurrentItemMenu($cmd);
+$babBody->setCurrentItemMenu($cmd);
 
 ?>

@@ -7,7 +7,7 @@
 
 function topcatCreate()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -19,22 +19,22 @@ function topcatCreate()
 
 		function temp()
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->enabled = babTranslate("Enabled");
-			$this->no = babTranslate("No");
-			$this->yes = babTranslate("Yes");
-			$this->add = babTranslate("Add");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->enabled = bab_translate("Enabled");
+			$this->no = bab_translate("No");
+			$this->yes = bab_translate("Yes");
+			$this->add = bab_translate("Add");
 			}
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"topcats.html", "topcatcreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"topcats.html", "topcatcreate"));
 	}
 
 function topcatsList()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -56,14 +56,14 @@ function topcatsList()
 
 		function temp()
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->disabled = babTranslate("Disabled");
-			$this->uncheckall = babTranslate("Uncheck all");
-			$this->checkall = babTranslate("Check all");
-			$this->update = babTranslate("Disable");
-			$this->topics = babTranslate("Number of topics");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->disabled = bab_translate("Disabled");
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
+			$this->update = bab_translate("Disable");
+			$this->topics = bab_translate("Number of topics");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from topics_categories";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -75,10 +75,10 @@ function topcatsList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=topcat&idx=Modify&item=".$this->arr['id'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$this->arr['id'];
 				$r = $this->db->db_fetch_array($this->db->db_query("select count(*) as total from topics where id_cat='".$this->arr['id']."'"));
 				$this->topcount = $r['total'];
-				$this->topcounturl = $GLOBALS['babUrl']."index.php?tg=topics&idx=list&cat=".$this->arr['id'];
+				$this->topcounturl = $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$this->arr['id'];
 				if( $this->arr['enabled'] == "N")
 					$this->catchecked = "checked";
 				else
@@ -93,25 +93,25 @@ function topcatsList()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "topcats.html", "topcatslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "topcats.html", "topcatslist"));
 	}
 
 
 function addTopCat($name, $description, $benabled)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a name !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	$res = $db->db_query("select * from topics_categories where title='$name'");
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("This topic category already exists");
+		$babBody->msgerror = bab_translate("This topic category already exists");
 		}
 	else
 		{
@@ -134,7 +134,7 @@ function addTopCat($name, $description, $benabled)
 
 function disableTopcats($topcats)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select id from topics_categories";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
@@ -166,19 +166,19 @@ switch($idx)
 	{
 	case "Create":
 		topcatCreate();
-		$body->title = babTranslate("Create a topic category");
-		$body->addItemMenu("List", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=Create");
+		$babBody->title = bab_translate("Create a topic category");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create");
 		break;
 	case "List":
 	default:
 		topcatsList();
-		$body->title = babTranslate("topics categories list");
-		$body->addItemMenu("List", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=Create");
+		$babBody->title = bab_translate("topics categories list");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create");
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

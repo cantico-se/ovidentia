@@ -8,7 +8,7 @@
 
 function accessCalendar($calid)
 {
-	global $body;
+	global $babBody;
 	
 	class temp
 		{
@@ -30,15 +30,15 @@ function accessCalendar($calid)
 
 		function temp($calid)
 			{
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$this->calid = $calid;
-			$this->userstxt = babTranslate("Users");
-			$this->textinfo = babTranslate("Enter user name. ( You can enter multiple users separated by comma )");
-			$this->addusers = babTranslate("Update access");
-			$this->useraccess = babTranslate("User can update my calendar");
-			$this->fullname = babTranslate("Fullname");
-			$this->accessname = babTranslate("Update");
-			$this->delusers = babTranslate("Delete users");
+			$this->userstxt = bab_translate("Users");
+			$this->textinfo = bab_translate("Enter user name. ( You can enter multiple users separated by comma )");
+			$this->addusers = bab_translate("Update access");
+			$this->useraccess = bab_translate("User can update my calendar");
+			$this->fullname = bab_translate("Fullname");
+			$this->accessname = bab_translate("Update");
+			$this->delusers = bab_translate("Delete users");
 			$req = "select * from calaccess_users where id_cal='".$calid."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -53,11 +53,11 @@ function accessCalendar($calid)
 				$req = "select * from users where id='".$arr['id_user']."'";
 				$res = $this->db->db_query($req);
 				$this->arr = $this->db->db_fetch_array($res);
-				$this->fullnameval = composeName($this->arr['firstname'], $this->arr['lastname']);
+				$this->fullnameval = bab_composeUserName($this->arr['firstname'], $this->arr['lastname']);
 				if( $arr['bwrite'] == "Y")
-					$this->yesno = babTranslate("Yes");
+					$this->yesno = bab_translate("Yes");
 				else
-					$this->yesno = babTranslate("No");
+					$this->yesno = bab_translate("No");
 				$k++;
 				return true;
 				}
@@ -70,13 +70,13 @@ function accessCalendar($calid)
 		}
 
 	$temp = new temp($calid);
-	$body->babecho(	babPrintTemplate($temp,"calopt.html", "access"));
+	$babBody->babecho(	bab_printTemplate($temp,"calopt.html", "access"));
 }
 
 function addAccessUsers( $users, $calid, $baccess, $del )
 {
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$arr = explode(",", $users);
 
 	if( $baccess == "y")
@@ -86,7 +86,7 @@ function addAccessUsers( $users, $calid, $baccess, $del )
 
 	for( $i = 0; $i < count($arr); $i++)
 		{
-		$iduser = getUserId($arr[$i]);
+		$iduser = bab_getUserId($arr[$i]);
 		if( $iduser > 0)
 			{
 			$req = "select * from calaccess_users where id_cal='".$calid."' and id_user='".$iduser."'";
@@ -113,7 +113,7 @@ function addAccessUsers( $users, $calid, $baccess, $del )
 
 function calendarOptions($calid)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -132,14 +132,14 @@ function calendarOptions($calid)
 			{
 			global $BAB_SESS_USERID;
 			$this->calid = $calid;
-			$this->startday = babTranslate("First day of week");
-			$this->allday = babTranslate("On create new event, check")." ". babTranslate("All day");
-			$this->viewcateg = babTranslate("View calendar categories");
-			$this->usebgcolor = babTranslate("Use bacground color for events");
-			$this->modify = babTranslate("Modify");
-			$this->yes = babTranslate("Yes");
-			$this->no = babTranslate("No");
-			$db = new db_mysql();
+			$this->startday = bab_translate("First day of week");
+			$this->allday = bab_translate("On create new event, check")." ". bab_translate("All day");
+			$this->viewcateg = bab_translate("View calendar categories");
+			$this->usebgcolor = bab_translate("Use bacground color for events");
+			$this->modify = bab_translate("Modify");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$db = $GLOBALS['babDB'];
 			$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
@@ -171,13 +171,13 @@ function calendarOptions($calid)
 		}
 
 	$temp = new temp($calid);
-	$body->babecho(	babPrintTemplate($temp, "calopt.html", "caloptions"));
+	$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
 	}
 
 function updateCalOptions($startday, $allday, $viewcat, $usebgcolor)
 	{
 	global $BAB_SESS_USERID;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -207,51 +207,47 @@ if( isset($accessuser) && $accessuser == "add")
 	else
 		$del = false;
 	addAccessUsers($users, $idcal, $baccess, $del);
-	//Header("Location: index.php?tg=calendar&idx=".$idx."&calid=".$calendar."&day=".$day."&month=".$month."&year=".$year."&start=".$start);
 }
 
 if( isset($modify) && $modify == "options")
 	{
 	updateCalOptions($startday, $allday, $viewcat, $usebgcolor);
-	//Header("Location: index.php?tg=calendar&idx=".$view."&day=".$day."&month=".$month."&year=".$year."&start=".$start. "&calid=".$calid);
 	}
 
 switch($idx)
 	{
 	case "access":
-		$body->title = babTranslate("Calendar Options");
-		$idcal = getCalendarid($BAB_SESS_USERID, 1);
-		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		$babBody->title = bab_translate("Calendar Options");
+		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
+		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
 			accessCalendar($idcal);
-			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=options");
-			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS['babUrl']."index.php?tg=options&idx=access&idcal=".$idcal);
-			if( isUserGroupManager())
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+			$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$idcal);
+			if( bab_isUserGroupManager())
 				{
-				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+				$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+				$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 				}
-			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS['babUrl']."index.php?tg=event&idx=newevent&calendarid=0");
 		}
 		break;
 	default:
 	case "options":
-		$body->title = babTranslate("Calendar Options");
-		$idcal = getCalendarid($BAB_SESS_USERID, 1);
-		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		$babBody->title = bab_translate("Calendar Options");
+		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
+		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
 			calendarOptions($calid);
-			$body->addItemMenu("options", babTranslate("Options"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=options");
-			$body->addItemMenu("access", babTranslate("Access"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=access&idcal=".$idcal);
-			if( isUserGroupManager())
+			$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
+			$babBody->addItemMenu("access", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal);
+			if( bab_isUserGroupManager())
 				{
-				$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
-				$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
+				$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=$BAB_SESS_USERID");
+				$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=$BAB_SESS_USERID");
 				}
-			//$body->addItemMenu("newevent", babTranslate("Add Event"), $GLOBALS['babUrl']."index.php?tg=event&idx=newevent&calendarid=0");
 		}
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

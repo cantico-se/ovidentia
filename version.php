@@ -59,7 +59,7 @@ function echoLang($path)
 						{
 						$txt = fread($file, filesize($path.$filename));
 						fclose($file);
-						$reg = "/babTranslate[[:space:]]*\([[:space:]]*\"([^\"]*)/s";
+						$reg = "/bab_translate[[:space:]]*\([[:space:]]*\"([^\"]*)/s";
 						preg_match_all($reg, $txt, $m1);
 						for ($i = 0; $i < count($m1[1]); $i++ )
 							{
@@ -89,7 +89,7 @@ switch($idx)
 		if( $oldversion == $CurrentVersion)
 		{
 			$str = "Version ". $CurrentVersion . "<br>";
-			$str .= babTranslate("You site is already up to date");
+			$str .= bab_translate("You site is already up to date");
 		}
 		$oldversion = strtr($oldversion, ".", "-");
 		include $babInstallPath."upgrade".$oldversion."to".strtr($CurrentVersion, ".", "-").".php";
@@ -139,10 +139,10 @@ switch($idx)
 			{
 			fputs($file, "<".$GLOBALS['babLanguage'].">\r\n".$old.$new."</".$GLOBALS['babLanguage'].">");
 			fclose($file);
-			$str = babTranslate("You language file has been updated") ."( ".$filename." )";
+			$str = bab_translate("You language file has been updated") ."( ".$filename." )";
 			}
 		else
-			$str = babTranslate("Cannot open file for writing") ."( ".$filename." )";
+			$str = bab_translate("Cannot open file for writing") ."( ".$filename." )";
 		break;
 
 

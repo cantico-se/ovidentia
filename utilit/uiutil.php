@@ -4,13 +4,13 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-class fontTag
+class babFontTag
 {
 	var $color;
 	var $face;
 	var $size;
 
-	function fontTag( $color = "", $face= "", $size ="")
+	function babFontTag( $color = "", $face= "", $size ="")
 		{
 		$this->color = $color;
 		$this->size = $size;

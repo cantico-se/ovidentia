@@ -7,7 +7,7 @@
 
 function calendarGroups()
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -30,13 +30,13 @@ function calendarGroups()
 
 		function temp()
 			{
-			$this->name = babTranslate("Groups Names");
-			$this->updategroups = babTranslate("Update Groups");
-			$this->none = babTranslate("None");
-			$this->all = babTranslate("All");
-			$this->users = babTranslate("Registered Users");
-			$this->listgroups = babTranslate("Groups List");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Groups Names");
+			$this->updategroups = bab_translate("Update Groups");
+			$this->none = bab_translate("None");
+			$this->all = bab_translate("All");
+			$this->users = bab_translate("Registered Users");
+			$this->listgroups = bab_translate("Groups List");
+			$this->db = $GLOBALS['babDB'];
 			
 			$req = "select * from calendar where owner!='2' and type='2' order by owner asc";
 			$this->res = $this->db->db_query($req);
@@ -52,10 +52,10 @@ function calendarGroups()
 				$this->arrgroups = $this->db->db_fetch_array($this->res);
 				if($this->arrgroups['owner'] == 1)
 					{
-					$this->arrgroups['name'] = /*$this->users*/babTranslate("Registered users");
+					$this->arrgroups['name'] = /*$this->users*/bab_translate("Registered users");
 					}
 				else
-					$this->arrgroups['name'] = getGroupName($this->arrgroups['owner']);
+					$this->arrgroups['name'] = bab_getGroupName($this->arrgroups['owner']);
 
 				if($this->arrgroups['actif'] == "Y")
 					{
@@ -76,12 +76,12 @@ function calendarGroups()
 			}
 		}
 	$temp = new temp($target, $index, $table, $id, $return);
-	$body->babecho(	babPrintTemplate($temp, "admcals.html", "calendargroups"));
+	$babBody->babecho(	bab_printTemplate($temp, "admcals.html", "calendargroups"));
 	}
 
 function groupsUpdate($groups, $what)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	if( $what == "0") // none
 		{
@@ -121,13 +121,13 @@ switch($idx)
 	default:
 	case "groups":
 		calendarGroups();
-		$body->title = babTranslate("Groups List");
-		$body->addItemMenu("groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=admcals&idx=groups");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=0");
-		$body->addItemMenu("resources", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=0");
+		$babBody->title = bab_translate("Groups List");
+		$babBody->addItemMenu("groups", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=admcals&idx=groups");
+		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=0");
+		$babBody->addItemMenu("resources", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=0");
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

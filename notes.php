@@ -2,7 +2,7 @@
 
 function notesCreate()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $notes;
@@ -11,9 +11,9 @@ function notesCreate()
 
 		function temp()
 			{
-			$this->create = babTranslate("Create");
-			$this->notes = babTranslate("Content");
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			$this->create = bab_translate("Create");
+			$this->notes = bab_translate("Content");
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -21,12 +21,12 @@ function notesCreate()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"notes.html", "notescreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"notes.html", "notescreate"));
 	}
 
 function notesList()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $date;
@@ -45,11 +45,11 @@ function notesList()
 		function temp()
 			{
 			global $BAB_SESS_USERID;
-			$this->editname = babTranslate("Edit");
-			$this->delname = babTranslate("Delete");
-			$this->date = babTranslate("Date");
-			$this->content = babTranslate("Content");
-			$this->db = new db_mysql();
+			$this->editname = bab_translate("Edit");
+			$this->delname = bab_translate("Delete");
+			$this->date = bab_translate("Date");
+			$this->content = bab_translate("Content");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from notes where id_user='".$BAB_SESS_USERID."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -61,9 +61,9 @@ function notesList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->editurl = $GLOBALS['babUrl']."index.php?tg=note&idx=Modify&item=".$this->arr['id'];
-				$this->delurl = $GLOBALS['babUrl']."index.php?tg=note&idx=Delete&item=".$this->arr['id'];
-				$this->arr['content'] = babReplace($this->arr['content']);// nl2br($this->arr['content']);
+				$this->editurl = $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$this->arr['id'];
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$this->arr['id'];
+				$this->arr['content'] = bab_replace($this->arr['content']);// nl2br($this->arr['content']);
 				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
 				$i++;
 				return true;
@@ -74,7 +74,7 @@ function notesList()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "notes.html", "noteslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "notes.html", "noteslist"));
 	return $temp->count;
 	}
 
@@ -87,7 +87,7 @@ function saveNotes($content)
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "insert into notes (id_user, date, content) VALUES ('". $BAB_SESS_USERID. "',now(), '" . $content. "')";
 	$db->db_query($query);
 	}
@@ -104,23 +104,23 @@ if( isset($create))
 switch($idx)
 	{
 	case "Create":
-		$body->title = babTranslate("Create a note");
+		$babBody->title = bab_translate("Create a note");
 		notesCreate();
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=notes&idx=List");
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=notes&idx=Create");
+		$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=notes&idx=Create");
 		break;
 
 	default:
 	case "List":
-		$body->title = babTranslate("Notes list");
+		$babBody->title = bab_translate("Notes list");
 		if( notesList() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=notes&idx=List");
+			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 			}
-		$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=notes&idx=Create");
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=notes&idx=Create");
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

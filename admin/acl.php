@@ -6,10 +6,10 @@
  ***********************************************************************/
 function aclGroups($target, $index, $table, $id, $return)
 	{
-	global $body;
+	global $babBody;
 	if( !isset($id))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid item !!");
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid item !!");
 		return;
 		}
 	class temp
@@ -42,14 +42,14 @@ function aclGroups($target, $index, $table, $id, $return)
 			$this->target = $target;
 			$this->index = $index;
 			$this->return = $return;
-			$this->name = babTranslate("Groups Names");
-			$this->updategroups = babTranslate("Update Groups");
-			$this->disabled = babTranslate("Disabled");
-			$this->everybody = babTranslate("Everybody");
-			$this->users = babTranslate("Registered Users");
-			$this->guests = babTranslate("Unregistered Users");
-			$this->listgroups = babTranslate("Groups List");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Groups Names");
+			$this->updategroups = bab_translate("Update Groups");
+			$this->disabled = bab_translate("Disabled");
+			$this->everybody = bab_translate("Everybody");
+			$this->users = bab_translate("Registered Users");
+			$this->guests = bab_translate("Unregistered Users");
+			$this->listgroups = bab_translate("Groups List");
+			$this->db = $GLOBALS['babDB'];
 			$this->id = $id;
 			$this->what['everybody'] = "";
 			$this->what['users'] = "";
@@ -119,12 +119,12 @@ function aclGroups($target, $index, $table, $id, $return)
 			}
 		}
 	$temp = new temp($target, $index, $table, $id, $return);
-	$body->babecho(	babPrintTemplate($temp, "acl.html", "aclgroups"));
+	$babBody->babecho(	bab_printTemplate($temp, "acl.html", "aclgroups"));
 	}
 
 function aclUpdate($table, $id, $groups, $what)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "delete from ".$table." where id_object = '$id'";
 	$res = $db->db_query($req);
 

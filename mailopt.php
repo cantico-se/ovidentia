@@ -7,7 +7,7 @@
 
 function getDomainName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from mail_domains where id='$id'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -23,7 +23,7 @@ function getDomainName($id)
 
 function getAccountAccount($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from mail_accounts where id='$id'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -39,7 +39,7 @@ function getAccountAccount($id)
 
 function accountsList()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -57,11 +57,11 @@ function accountsList()
 		function temp()
 			{
 			global $BAB_SESS_USERID;
-			$this->name = babTranslate("Name");
-			$this->email = babTranslate("Email");
-			$this->accname = babTranslate("Account");
-			$this->domname = babTranslate("Domain");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Name");
+			$this->email = bab_translate("Email");
+			$this->accname = bab_translate("Account");
+			$this->domname = bab_translate("Domain");
+			$this->db = $GLOBALS['babDB'];
 			$this->count = 0;
 			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."'";
 			$this->res = $this->db->db_query($req);
@@ -76,7 +76,7 @@ function accountsList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->domnameval = getDomainName($this->arr['domain']);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc&item=".$this->arr['id'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=mailopt&idx=modacc&item=".$this->arr['id'];
 				if( $this->arr['prefered'] == "Y")
 					$this->prefered = "P";
 				else
@@ -94,12 +94,12 @@ function accountsList()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "mailopt.html", "accountslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "mailopt.html", "accountslist"));
 	}
 
 function accountCreate()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $fullname;
@@ -133,23 +133,23 @@ function accountCreate()
 		function temp()
 			{
 			global $BAB_SESS_USERID, $BAB_SESS_EMAIL, $BAB_SESS_USER;
-			$this->fullname = babTranslate("User Name");
-			$this->account = babTranslate("Account");
-			$this->email = babTranslate("Email");
-			$this->password = babTranslate("Password");
-			$this->repassword = babTranslate("Retype Password");
-			$this->domain = babTranslate("Domain");
-			$this->prefaccount = babTranslate("Prefered account");
-			$this->prefformat = babTranslate("Prefered format");
-			$this->maxrows = babTranslate("Default number of messages to display per screen");
-			$this->yes = babTranslate("Yes");
-			$this->no = babTranslate("No");
-			$this->plain = babTranslate("Plain text");
-			$this->html = babTranslate("Html");
-			$this->addacc = babTranslate("Add Account");
+			$this->fullname = bab_translate("User Name");
+			$this->account = bab_translate("Account");
+			$this->email = bab_translate("Email");
+			$this->password = bab_translate("Password");
+			$this->repassword = bab_translate("Retype Password");
+			$this->domain = bab_translate("Domain");
+			$this->prefaccount = bab_translate("Prefered account");
+			$this->prefformat = bab_translate("Prefered format");
+			$this->maxrows = bab_translate("Default number of messages to display per screen");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->plain = bab_translate("Plain text");
+			$this->html = bab_translate("Html");
+			$this->addacc = bab_translate("Add Account");
 			$this->username = $BAB_SESS_USER;
 			$this->useremail = $BAB_SESS_EMAIL;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$this->countadm = 0;
 			$this->countgrp = 0;
 			$this->countusr = 0;
@@ -214,12 +214,12 @@ function accountCreate()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"mailopt.html", "accountcreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"mailopt.html", "accountcreate"));
 	}
 
 function accountModify($item)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $domselect;
@@ -259,21 +259,21 @@ function accountModify($item)
 		function temp($item)
 			{
 			global $BAB_SESS_USERID, $BAB_SESS_EMAIL, $BAB_SESS_USER;
-			$this->fullname = babTranslate("User Name");
-			$this->account = babTranslate("Account");
-			$this->email = babTranslate("Email");
-			$this->password = babTranslate("Password");
-			$this->repassword = babTranslate("Retype Password");
-			$this->domain = babTranslate("Domain");
-			$this->prefaccount = babTranslate("Prefered account");
-			$this->prefformat = babTranslate("Prefered format");
-			$this->maxrows = babTranslate("Default number of messages to display per screen");
-			$this->yes = babTranslate("Yes");
-			$this->no = babTranslate("No");
-			$this->plain = babTranslate("Plain text");
-			$this->html = babTranslate("Html");
-			$this->modacc = babTranslate("Modify Account");
-			$this->db = new db_mysql();
+			$this->fullname = bab_translate("User Name");
+			$this->account = bab_translate("Account");
+			$this->email = bab_translate("Email");
+			$this->password = bab_translate("Password");
+			$this->repassword = bab_translate("Retype Password");
+			$this->domain = bab_translate("Domain");
+			$this->prefaccount = bab_translate("Prefered account");
+			$this->prefformat = bab_translate("Prefered format");
+			$this->maxrows = bab_translate("Default number of messages to display per screen");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->plain = bab_translate("Plain text");
+			$this->html = bab_translate("Html");
+			$this->modacc = bab_translate("Modify Account");
+			$this->db = $GLOBALS['babDB'];
 			$this->countadm = 0;
 			$this->countgrp = 0;
 			$this->countusr = 0;
@@ -385,12 +385,12 @@ function accountModify($item)
 		}
 
 	$temp = new temp($item);
-	$body->babecho(	babPrintTemplate($temp,"mailopt.html", "accountmodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"mailopt.html", "accountmodify"));
 	}
 
 function accountDelete($item)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -404,23 +404,23 @@ function accountDelete($item)
 
 		function temp($item)
 			{
-			$this->message = babTranslate("Are you sure you want to delete this mail account");
+			$this->message = bab_translate("Are you sure you want to delete this mail account");
 			$this->title = getAccountAccount($item) /* :o) */;
-			$this->warning = babTranslate("WARNING: This operation will delete the account and all references"). "!";
-			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc&item=".$item."&action=Yes";
-			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc&item=".$item;
-			$this->no = babTranslate("No");
+			$this->warning = bab_translate("WARNING: This operation will delete the account and all references"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc&item=".$item."&action=Yes";
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=mailopt&idx=modacc&item=".$item;
+			$this->no = bab_translate("No");
 			}
 		}
 
 	$temp = new temp($item);
-	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 function signaturesList()
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -438,12 +438,12 @@ function signaturesList()
 		function temp()
 			{
             global $BAB_SESS_USERID;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from mail_signatures where owner='".$BAB_SESS_USERID."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->editname = babTranslate("Edit");
-			$this->delname = babTranslate("Delete");
+			$this->editname = bab_translate("Edit");
+			$this->delname = bab_translate("Delete");
 			}
 
 		function getnext()
@@ -457,8 +457,8 @@ function signaturesList()
                     $this->content = $this->arr['text'];
                 else
                     $this->content = nl2br($this->arr['text']);
-				$this->editurl = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modsig&sigid=".$this->arr['id'];
-				$this->delurl = $GLOBALS['babUrl']."index.php?tg=mailopt&idx=delsig&sigid=".$this->arr['id'];
+				$this->editurl = $GLOBALS['babUrlScript']."?tg=mailopt&idx=modsig&sigid=".$this->arr['id'];
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=mailopt&idx=delsig&sigid=".$this->arr['id'];
 				$i++;
 				return true;
 				}
@@ -468,13 +468,13 @@ function signaturesList()
 		}
 	
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"mailopt.html", "signatureslist"));
+	$babBody->babecho(	bab_printTemplate($temp,"mailopt.html", "signatureslist"));
 	return $temp->count;
 	}
 
 function signatureAdd($signature, $name, $html)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -492,16 +492,16 @@ function signatureAdd($signature, $name, $html)
 
 		function temp($signature, $name, $html)
 			{
-			$this->name = babTranslate("Name");
-			$this->signature = babTranslate("Signature");
-			$this->html = babTranslate("Html");
-			$this->yes = babTranslate("Yes");
-			$this->no = babTranslate("No");
-			$this->add = babTranslate("Add");
+			$this->name = bab_translate("Name");
+			$this->signature = bab_translate("Signature");
+			$this->html = bab_translate("Html");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->add = bab_translate("Add");
 			$this->signatureval = $signature != ""? $signature: "";
 			$this->nameval = $name != ""? $name: "";
 			$this->onchange = "";
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				{
 				if( empty($html))
 					$html = "Y";
@@ -529,12 +529,12 @@ function signatureAdd($signature, $name, $html)
 		}
 
 	$temp = new temp($signature, $name, $html);
-	$body->babecho(	babPrintTemplate($temp,"mailopt.html", "signaturecreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"mailopt.html", "signaturecreate"));
 	}
 
 function signatureModify($sigid, $signature, $name, $html)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -553,16 +553,16 @@ function signatureModify($sigid, $signature, $name, $html)
 
 		function temp($sigid, $signature, $name, $html)
 			{
-			$this->name = babTranslate("Name");
-			$this->signature = babTranslate("Signature");
-			$this->html = babTranslate("Html");
-			$this->yes = babTranslate("Yes");
-			$this->no = babTranslate("No");
-			$this->add = babTranslate("Modify");
+			$this->name = bab_translate("Name");
+			$this->signature = bab_translate("Signature");
+			$this->html = bab_translate("Html");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->add = bab_translate("Modify");
 			$this->id = $sigid;
 			if( empty($html))
 				{
-	            $db = new db_mysql();
+	            $db = $GLOBALS['babDB'];
 	            $req = "select * from mail_signatures where id='".$sigid."'";
 				$res = $db->db_query($req);
 				$this->arr = $db->db_fetch_array($res);
@@ -576,7 +576,7 @@ function signatureModify($sigid, $signature, $name, $html)
 				$this->nameval = $name;
 				}
 
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				{
 				$this->bhtml = 1;
 				$this->msie = 1;
@@ -602,37 +602,37 @@ function signatureModify($sigid, $signature, $name, $html)
 		}
 
 	$temp = new temp($sigid,$signature, $name, $html);
-	$body->babecho(	babPrintTemplate($temp,"mailopt.html", "signaturemodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"mailopt.html", "signaturemodify"));
 	}
 
 function addAccount($fullname, $email, $account, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat)
 	{
-	global $body, $BAB_SESS_USERID, $BAB_HASH_VAR;
+	global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
 	if( empty($account) || empty($password1) || empty($password2))
 		{
-		$body->msgerror = babTranslate("ERROR: You must complete all required fields !!");
+		$babBody->msgerror = bab_translate("ERROR: You must complete all required fields !!");
 		return;
 		}
 	if( $password1 != $password2)
 		{
-		$body->msgerror = babTranslate("ERROR: Passwords not match !!");
+		$babBody->msgerror = bab_translate("ERROR: Passwords not match !!");
 		return;
 		}
 	/*
-	if ( !isEmailValid($email))
+	if ( !bab_isEmailValid($email))
 		{
-		$body->msgerror = babTranslate("ERROR: Your email is not valid !!");
+		$babBody->msgerror = bab_translate("ERROR: Your email is not valid !!");
 		return;
 		}
     ALTER TABLE mail_accounts ADD format VARCHAR (6) DEFAULT 'plain' not null 
 	*/
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from mail_accounts where account='$account' and domain='$domain' and owner='".$BAB_SESS_USERID."'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This email account already exists !!");
+		$babBody->msgerror = bab_translate("ERROR: This email account already exists !!");
 		return;
 		}
 
@@ -649,10 +649,10 @@ function addAccount($fullname, $email, $account, $password1, $password2, $domain
 
 function modifyAccount($fullname, $email, $account, $password1, $password2, $domain, $item, $prefacc, $maxrows, $prefformat)
 	{
-	global $body, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID;
 	if( empty($account))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide account field !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide account field !!");
 		return;
 		}
 
@@ -660,19 +660,19 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 		{
 		if( $password1 != $password2)
 			{
-			$body->msgerror = babTranslate("ERROR: Passwords not match !!");
+			$babBody->msgerror = bab_translate("ERROR: Passwords not match !!");
 			return;
 			}
 		}
 	
 	/*
-	if ( !isEmailValid($email))
+	if ( !bab_isEmailValid($email))
 		{
-		$body->msgerror = babTranslate("ERROR: Your email is not valid !!");
+		$babBody->msgerror = bab_translate("ERROR: Your email is not valid !!");
 		return;
 		}
 	*/
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	if( $prefacc == "Y" )
 		{
 		$req = "update mail_accounts set prefered='N' where owner='".$BAB_SESS_USERID."'";	
@@ -688,7 +688,7 @@ function modifyAccount($fullname, $email, $account, $password1, $password2, $dom
 
 function confirmDeleteAccount($item)
 {
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	$req = "delete from mail_accounts where id='$item'";
 	$res = $db->db_query($req);	
@@ -697,13 +697,13 @@ function confirmDeleteAccount($item)
 
 function addSignature($name, $signature, $html)
 {
-	global $body, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID;
 	if( empty($signature))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide signature !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide signature !!");
 		return;
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "insert into mail_signatures (name, text, html, owner) values ";	
 	$req .= "('".$name."', '".$signature."', '".$html."', '".$BAB_SESS_USERID."')";	
 	$res = $db->db_query($req);
@@ -717,13 +717,13 @@ function addSignature($name, $signature, $html)
 
 function modifySignature($name, $signature, $html, $sigid)
 {
-	global $body, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID;
 	if( empty($signature))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide signature !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide signature !!");
 		return;
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	if( !empty($name))
 	    $req = "update mail_signatures set name='".$name."', text='".$signature."', html='".$html."' where id='".$sigid."'";
     else
@@ -733,8 +733,8 @@ function modifySignature($name, $signature, $html, $sigid)
 
 function deleteSignature($sigid)
 {
-	global $body;
-	$db = new db_mysql();
+	global $babBody;
+	$db = $GLOBALS['babDB'];
     $req = "delete from mail_signatures where id='".$sigid."'";
 	$res = $db->db_query($req);
 
@@ -776,104 +776,104 @@ switch($idx)
 	{
 
 	case "delacc":
-		$body->title = babTranslate("Delete account");
-		$bemail = mailAccessLevel();
+		$babBody->title = bab_translate("Delete account");
+		$bemail = bab_mailAccessLevel();
 		accountDelete($item);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
-		$body->addItemMenu("modacc", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc&item=".$item);
-		$body->addItemMenu("delacc", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=delacc&item=".$item);
+		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("addacc", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addacc");
+		$babBody->addItemMenu("modacc", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=modacc&item=".$item);
+		$babBody->addItemMenu("delacc", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=delacc&item=".$item);
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
 	case "addacc":
-		$body->title = babTranslate("Add account");
-		$bemail = mailAccessLevel();
+		$babBody->title = bab_translate("Add account");
+		$bemail = bab_mailAccessLevel();
 		accountCreate();
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
+		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("addacc", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addacc");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 	
 	case "modacc":
-		$body->title = babTranslate("Modify account");
-		$bemail = mailAccessLevel();
+		$babBody->title = bab_translate("Modify account");
+		$bemail = bab_mailAccessLevel();
 		accountModify($item);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
-		$body->addItemMenu("modacc", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modacc");
-		$body->addItemMenu("delacc", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=delacc&item=".$item);
+		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("addacc", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addacc");
+		$babBody->addItemMenu("modacc", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=modacc");
+		$babBody->addItemMenu("delacc", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=delacc&item=".$item);
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
 	case "modsig":
-		$body->title = babTranslate("Modify Signature");
-		$bemail = mailAccessLevel();
+		$babBody->title = bab_translate("Modify Signature");
+		$bemail = bab_mailAccessLevel();
 		signatureModify($sigid,$signature, $signame, $html);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
-		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
-		$body->addItemMenu("modsig", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=modsig");
+		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");
+		$babBody->addItemMenu("addsig", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addsig");
+		$babBody->addItemMenu("modsig", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=modsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
 
     case "addsig":
-		$body->title = babTranslate("Add Signature");
-		$bemail = mailAccessLevel();
+		$babBody->title = bab_translate("Add Signature");
+		$bemail = bab_mailAccessLevel();
 		signatureAdd($signature, $signame, $html);
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
-		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
+		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");
+		$babBody->addItemMenu("addsig", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
     case "delsig":
         deleteSignature($sigid);
         /* no break */
     case "listsig":
-		$body->title = babTranslate("Signatures");
-		$bemail = mailAccessLevel();
+		$babBody->title = bab_translate("Signatures");
+		$bemail = bab_mailAccessLevel();
 		signaturesList();
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
-		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
+		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");
+		$babBody->addItemMenu("addsig", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 
     default:
 	case "listacc":
-		$body->title = babTranslate("Mail options");
-		$bemail = mailAccessLevel();
+		$babBody->title = bab_translate("Mail options");
+		$bemail = bab_mailAccessLevel();
 		accountsList();
-		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
-		$body->addItemMenu("addacc", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addacc");
-		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
+		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+		$babBody->addItemMenu("addacc", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addacc");
+		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");
 		if( $bemail == 1 || $bemail == 2)
-			$body->addItemMenu("listpd", babTranslate("User's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$body->addItemMenu("listdg", babTranslate("Group's Domains"), $GLOBALS['babUrl']."index.php?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
 		break;
 	}
-if( empty($body->msgerror))
-	$body->setCurrentItemMenu($idx);
+if( empty($babBody->msgerror))
+	$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -8,10 +8,10 @@ include $babInstallPath."utilit/topincl.php";
 
 function topcatModify($id)
 	{
-	global $body;
+	global $babBody;
 	if( !isset($id))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid topic category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid topic category !!");
 		return;
 		}
 	class tempa
@@ -30,13 +30,13 @@ function topcatModify($id)
 
 		function tempa($id)
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->enabled = babTranslate("Enabled");
-			$this->no = babTranslate("No");
-			$this->yes = babTranslate("Yes");
-			$this->modify = babTranslate("Modify");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->enabled = bab_translate("Enabled");
+			$this->no = bab_translate("No");
+			$this->yes = bab_translate("Yes");
+			$this->modify = bab_translate("Modify");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from topics_categories where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
@@ -54,13 +54,13 @@ function topcatModify($id)
 		}
 
 	$temp = new tempa($id);
-	$body->babecho(	babPrintTemplate($temp,"topcats.html", "topcatmodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"topcats.html", "topcatmodify"));
 	}
 
 
 function topcatDelete($id)
 	{
-	global $body, $idx;
+	global $babBody, $idx;
 	
 	class temp
 		{
@@ -74,59 +74,59 @@ function topcatDelete($id)
 
 		function temp($id)
 			{
-			$this->message = babTranslate("Are you sure you want to delete this topic category");
-			$this->title = getTopicCategoryTitle($id);
-			$this->warning = babTranslate("WARNING: This operation will delete the topic category with all references"). "!";
-			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=topcat&idx=Delete&group=".$id."&action=Yes";
-			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS['babUrl']."index.php?tg=topcat&idx=Modify&item=".$id;
-			$this->no = babTranslate("No");
+			$this->message = bab_translate("Are you sure you want to delete this topic category");
+			$this->title = bab_getTopicCategoryTitle($id);
+			$this->warning = bab_translate("WARNING: This operation will delete the topic category with all references"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&group=".$id."&action=Yes";
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$id;
+			$this->no = bab_translate("No");
 			}
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$r = $db->db_fetch_array($db->db_query("select count(*) as total from topics where id_cat='".$id."'"));
 	if( $r['total'] > 0 )
 		{
-		$body->msgerror = babTranslate("To delete topic category, you must delete topics before");
+		$babBody->msgerror = bab_translate("To delete topic category, you must delete topics before");
 		$idx = "Modify";
 		topcatModify($id);
 		return;
 		}
 
 	$temp = new temp($id);
-	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 function modifyTopcat($oldname, $name, $description, $benabled, $id)
 	{
-	global $body;
+	global $babBody;
 
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a name !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from topics_categories where title='$oldname'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
-		$body->msgerror = babTranslate("ERROR: This topic category doesn't exist");
+		$babBody->msgerror = bab_translate("ERROR: This topic category doesn't exist");
 		}
 	else
 		{
 		$query = "update topics_categories set title='$name', description='$description', enabled='$benabled' where id='$id'";
 		$db->db_query($query);
 		}
-	Header("Location: index.php?tg=topcats&idx=List");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 	}
 
 
 function confirmDeleteTopcat($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	// delete from sections_order
 	$req = "delete from sections_order where id_section='$id' and type='3'";
@@ -139,12 +139,12 @@ function confirmDeleteTopcat($id)
 	// delete all topics/articles/comments
 	$res = $db->db_query("select * from topics where id_cat='".$id."'");
 	while( $arr = $db->db_fetch_array($res))
-		confirmDeleteCategory($arr['id']);
+		bab_confirmDeleteCategory($arr['id']);
 
 	// delete topic category
 	$req = "delete from topics_categories where id='$id'";
 	$res = $db->db_query($req);
-	Header("Location: index.php?tg=topcats&idx=List");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 	}
 
 /* main */
@@ -166,24 +166,24 @@ switch($idx)
 	{
 	case "Delete":
 		topcatDelete($item);
-		$body->title = babTranslate("Delete topic category");
-		$body->addItemMenu("List", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=List");
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=topcat&idx=Modify&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=topcat&idx=Delete&item=".$item);
-		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&cat=".$item);
-		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&cat=".$item);
+		$babBody->title = bab_translate("Delete topic category");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&item=".$item);
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$item);
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$item);
 		break;
 	case "Modify":
 	default:
 		topcatModify($item);
-		$body->title = babTranslate("Modify topic category");
-		$body->addItemMenu("List", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=List");
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=topcat&idx=Modify&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=topcat&idx=Delete&item=".$item);
-		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&cat=".$item);
+		$babBody->title = bab_translate("Modify topic category");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&item=".$item);
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$item);
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -11,10 +11,10 @@ include $babInstallPath."utilit/fileincl.php";
 
 function modifyUser($id)
 	{
-	global $body;
+	global $babBody;
 	if( !isset($id))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid user !!");
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid user !!");
 		return;
 		}
 	class temp
@@ -40,15 +40,15 @@ function modifyUser($id)
 
 		function temp($id)
 			{
-			$this->changepassword = babTranslate("Can user change password ?");
-			$this->isconfirmed = babTranslate("Account confirmed ?");
-			$this->isdisabled = babTranslate("Account disabled ?");
-			$this->primarygroup = babTranslate("Primary group");
-			$this->none = babTranslate("None");
-			$this->modify = babTranslate("Modify");
-			$this->yes = babTranslate("Yes");
-			$this->no = babTranslate("No");
-			$this->db = new db_mysql();
+			$this->changepassword = bab_translate("Can user change password ?");
+			$this->isconfirmed = bab_translate("Account confirmed ?");
+			$this->isdisabled = bab_translate("Account disabled ?");
+			$this->primarygroup = bab_translate("Primary group");
+			$this->none = bab_translate("None");
+			$this->modify = bab_translate("Modify");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from users where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
@@ -69,7 +69,7 @@ function modifyUser($id)
 					$this->selected = "selected";
 				else
 					$this->selected = "";
-				$this->groupname = getGroupName($this->arrgroups['id_group']);
+				$this->groupname = bab_getGroupName($this->arrgroups['id_group']);
 				$this->groupid = $this->arrgroups['id_group'];
 				$i++;
 				return true;
@@ -79,15 +79,15 @@ function modifyUser($id)
 		}
 
 	$temp = new temp($id);
-	$body->babecho(	babPrintTemplate($temp, "users.html", "usersmodify"));
+	$babBody->babecho(	bab_printTemplate($temp, "users.html", "usersmodify"));
 	}
 
 function listGroups($id)
 	{
-	global $body;
+	global $babBody;
 	if( !isset($id))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid user !!");
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid user !!");
 		return;
 		}
 	class temp
@@ -112,12 +112,12 @@ function listGroups($id)
 
 		function temp($id)
 			{
-			$this->name = babTranslate("Groups Names");
-			$this->group = babTranslate("Group");
-			$this->updategroups = babTranslate("Update Groups");
+			$this->name = bab_translate("Groups Names");
+			$this->group = bab_translate("Group");
+			$this->updategroups = bab_translate("Update Groups");
 			$this->groupst = "";
 			$this->id = $id;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from users_groups where id_object='$id'";
 			$this->res1 = $this->db->db_query($req);
 			$this->count1 = $this->db->db_num_rows($this->res1);
@@ -138,7 +138,7 @@ function listGroups($id)
 				$this->arrgroups = $this->db->db_fetch_array($this->res2);
 				$this->groupid = $this->arrgroups['id'];
 				$this->groupname = $this->arrgroups['name'];
-				$this->groupurl = $GLOBALS['babUrl']."index.php?tg=group&idx=Members&item=".$this->arrgroups['id'];
+				$this->groupurl = $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->arrgroups['id'];
 				$this->checked = "";
 				$this->primary = "";
 				if($this->count1 > 0)
@@ -172,16 +172,16 @@ function listGroups($id)
 			}
 		}
 	$temp = new temp($id);
-	$body->babecho(	babPrintTemplate($temp, "users.html", "usersgroups"));
+	$babBody->babecho(	bab_printTemplate($temp, "users.html", "usersgroups"));
 	}
 
 function deleteUser($id)
 	{
-	global $body, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID;
 
-	if( $id == $BAB_SESS_USERID /* || isUserAlreadyLogged($id) */)
+	if( $id == $BAB_SESS_USERID /* || bab_isUserAlreadyLogged($id) */)
 		{
-		$body->msgerror = babTranslate("Sorry, you cannot delete this user. He is already logged");
+		$babBody->msgerror = bab_translate("Sorry, you cannot delete this user. He is already logged");
 		return;
 		}
 	
@@ -197,24 +197,24 @@ function deleteUser($id)
 
 		function temp($id)
 			{
-			$this->message = babTranslate("Are you sure you want to delete this user");
-			$this->title = getUserName($id);
-			$this->warning = babTranslate("WARNING: This operation will delete the user and all references"). "!";
-			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=user&idx=Delete&user=".$id."&action=Yes";
-			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS['babUrl']."index.php?tg=user&idx=Modify&item=".$id;
-			$this->no = babTranslate("No");
+			$this->message = bab_translate("Are you sure you want to delete this user");
+			$this->title = bab_getUserName($id);
+			$this->warning = bab_translate("WARNING: This operation will delete the user and all references"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=user&idx=Delete&user=".$id."&action=Yes";
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$id;
+			$this->no = bab_translate("No");
 			}
 		}
 
 	$temp = new temp($id);
-	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 
 function updateGroups($id, $groups, $groupst)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	if( !empty($groupst))
 		$tab = explode(",", $groupst);
@@ -241,23 +241,23 @@ function updateGroups($id, $groups, $groupst)
 
 function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 	{
-	global $body;
+	global $babBody;
 
 	$req = "update users set changepwd='$changepwd', is_confirmed='$is_confirmed', disabled='$disabled' where id='$id'";
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($req);
 	if( !empty($group))
 		{
 		$req = "update users_groups set isprimary='Y'where id_object='$id' and id_group='$group'";
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 		$res = $db->db_query($req);
 		}
-	Header("Location: index.php?tg=users&idx=List");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}
 
 function confirmDeleteUser($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	// delete notes owned by this user
 	$req = "delete from notes where id_user='$id'";
@@ -308,12 +308,12 @@ function confirmDeleteUser($id)
 	$res = $db->db_query($req);	
 
 	// delete files owned by this user
-	deleteUserFiles("N", $id);
+	bab_deleteUploadUserFiles("N", $id);
 
 	// delete user
 	$req = "delete from users where id='$id'";
 	$res = $db->db_query($req);	
-	Header("Location: index.php?tg=users&idx=List");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}
 
 /* main */
@@ -332,37 +332,37 @@ if( isset($action) && $action == "Yes")
 switch($idx)
 	{
 	case "Delete":
-		$body->title = babTranslate("Delete a user");
+		$babBody->title = bab_translate("Delete a user");
 		deleteUser($item);
-		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
-		//$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=users&idx=Create");
+		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
+		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create");
 		break;
 	case "Updateu";
 		updateGroups($item, $groups, $groupst);
 		/* no break */
 	case "Groups":
-		$body->title = getUserName($item) . babTranslate(" is member of");
+		$babBody->title = bab_getUserName($item) . bab_translate(" is member of");
 		listGroups($item);
-		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Modify", babTranslate("User"),$GLOBALS['babUrl']."index.php?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Upadteu", babTranslate("Update"), "javascript:(submitForm('Updateu'))");
+		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Modify", bab_translate("User"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Upadteu", bab_translate("Update"), "javascript:(submitForm('Updateu'))");
 		break;
 	case "Modify":
-		$body->title = /* babTranslate("Modify a user") . ": " . */getUserName($item);
+		$babBody->title = /* bab_translate("Modify a user") . ": " . */bab_getUserName($item);
 		modifyUser($item);
-		$body->addItemMenu("List", babTranslate("Users"),$GLOBALS['babUrl']."index.php?tg=users&idx=List&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Groups", babTranslate("Groups"),$GLOBALS['babUrl']."index.php?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
-		//$body->addItemMenu("Create", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=users&idx=Create");
+		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=user&idx=Delete&item=".$item."&pos=".$pos."&grp=".$grp);
+		//$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create");
 		break;
 	default:
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 ?>

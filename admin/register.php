@@ -8,7 +8,7 @@ include $babInstallPath."utilit/mailincl.php";
 
 function notifyUserRegistration($link, $name, $email)
 	{
-	global $body, $babAdminEmail, $babInstallPath;
+	global $babBody, $babAdminEmail, $babInstallPath;
 
 	class tempa
 		{
@@ -23,29 +23,29 @@ function notifyUserRegistration($link, $name, $email)
 			{
             global $babSiteName;
             $this->linkurl = $link;
-            $this->linkname = babTranslate("link");
+            $this->linkname = bab_translate("link");
             $this->username = $name;
 			$this->sitename = $babSiteName;
-			$this->message = babTranslate("Thank You For Registering at our site");
-			$this->message .= "<br>". babTranslate("To confirm your registration");
-			$this->message .= ", ". babTranslate("simply follow this").": ";
+			$this->message = bab_translate("Thank You For Registering at our site");
+			$this->message .= "<br>". bab_translate("To confirm your registration");
+			$this->message .= ", ". bab_translate("simply follow this").": ";
 			}
 		}
 	
 	$tempa = new tempa($link, $name);
-	$message = babPrintTemplate($tempa,"mailinfo.html", "userregistration");
+	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistration");
 
     $mail = new babMail();
     $mail->mailTo($email);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
-    $mail->mailSubject(babTranslate("Registration Confirmation"));
+    $mail->mailSubject(bab_translate("Registration Confirmation"));
     $mail->mailBody($message, "html");
     $mail->send();
 	}
 
 function notifyAdminRegistration($name, $useremail)
 	{
-	global $body, $babAdminEmail, $babInstallPath;
+	global $babBody, $babAdminEmail, $babInstallPath;
 
 	class tempb
 		{
@@ -61,15 +61,15 @@ function notifyAdminRegistration($name, $useremail)
             $this->email = $useremail;
             $this->username = $name;
 			$this->sitename = $babSiteName;
-			$this->message = babTranslate("Your site recorded a new registration on behalf of");
+			$this->message = bab_translate("Your site recorded a new registration on behalf of");
 			}
 		}
 	
 	$tempb = new tempb($name, $useremail);
-	$message = babPrintTemplate($tempb,"mailinfo.html", "adminregistration");
+	$message = bab_printTemplate($tempb,"mailinfo.html", "adminregistration");
 
     $mail = new babMail();
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$sql = "select * from users_groups where id_group='3'";
 	$result=$db->db_query($sql);
 	if( $result && $db->db_num_rows($result) > 0 )
@@ -84,41 +84,41 @@ function notifyAdminRegistration($name, $useremail)
 		}
 
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
-    $mail->mailSubject(babTranslate("Registration Confirmation"));
+    $mail->mailSubject(bab_translate("Registration Confirmation"));
     $mail->mailBody($message, "html");
     $mail->send();
 	}
 
 function addUser( $firstname, $lastname, $nickname, $email, $password1, $password2)
 	{
-	global $body;
+	global $babBody;
 	if( empty($firstname) || empty($lastname) || empty($email) || empty($password1) || empty($password2))
 		{
-		$body->msgerror = babTranslate( "You must complete all fields !!");
+		$babBody->msgerror = bab_translate( "You must complete all fields !!");
 		return false;
 		}
 	if( $password1 != $password2)
 		{
-		$body->msgerror = babTranslate("Passwords not match !!");
+		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return;
 		}
 	if ( strlen($password1) < 6 )
 		{
-		$body->msgerror = babTranslate("Password must be at least 6 characters !!");
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return false;
 		}
 
-	if ( !isEmailValid($email))
+	if ( !bab_isEmailValid($email))
 		{
-		$body->msgerror = babTranslate("Your email is not valid !!");
+		$babBody->msgerror = bab_translate("Your email is not valid !!");
 		return false;
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from users where nickname='".$nickname."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("This nickname already exists !!");
+		$babBody->msgerror = bab_translate("This nickname already exists !!");
 		return false;
 		}
 
@@ -129,7 +129,7 @@ function addUser( $firstname, $lastname, $nickname, $email, $password1, $passwor
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("Firstname and Lastname already exists !!");
+		$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
 		return false;
 		}
 	if(!registerUser($nickname, $firstname, $lastname, $email, $password1, $password2, $hash))
@@ -154,12 +154,12 @@ function random_password($length)
 
 function registerUser( $nickname, $firstname, $lastname, $email, $password1, $password2, $hashname)
 	{
-	global $BAB_HASH_VAR, $body, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
+	global $BAB_HASH_VAR, $babBody, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
 	$password1=strtolower($password1);
 	$hash=md5($nickname.$BAB_HASH_VAR);
 	$sql="insert into users (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang) ".
 		"values ('$nickname','$firstname','$lastname','$hashname','". md5($password1) ."','$email', now(),'$hash','0','1','$babLanguage')";
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($result)
 		{
@@ -167,14 +167,14 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 		$sql = "insert into calendar (owner, type) values ('$id', '1')";
 		$result=$db->db_query($sql);
 
-		$body->msgerror = babTranslate("Thank You For Registering at our site") ."<br>";
-		$body->msgerror .= babTranslate("You will receive an email which let you confirm your registration.");
-		$link = $babUrl."index.php?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
-		//mail ($email,babTranslate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
-		$fullname = composeName($firstname , $lastname);
+		$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
+		$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
+		$link = $GLOBALS['babUrlScript']."?tg=register&cmd=confirm&hash=$hash&name=". urlencode($nickname);
+		//mail ($email,bab_translate("Registration Confirmation"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
+		$fullname = bab_composeUserName($firstname , $lastname);
 		notifyUserRegistration($link, $fullname, $email);
 		notifyAdminRegistration($fullname, $email);
-		//$body->msgerror = $msg;
+		//$babBody->msgerror = $msg;
 		return true;
 		}
 	else
@@ -183,44 +183,44 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 
 function userLogin($nickname,$password)
 	{
-	global $body, $BAB_SESS_NICKNAME, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID;
+	global $babBody, $BAB_SESS_NICKNAME, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 	$password=strtolower($password);
 	$sql="select * from users where nickname='$nickname' and password='". md5($password) ."'";
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($db->db_num_rows($result) < 1)
 		{
-		$body->msgerror = babTranslate("User not found or password incorrect");
+		$babBody->msgerror = bab_translate("User not found or password incorrect");
 		return false;
 		} 
 	else 
 		{
 		$arr = $db->db_fetch_array($result);
 		/*
-		if( isUserAlreadyLogged($arr['id']))
+		if( bab_isUserAlreadyLogged($arr['id']))
 			{
-			$body->msgerror = babTranslate("Sorry, this account is already used elsewhere");
+			$babBody->msgerror = bab_translate("Sorry, this account is already used elsewhere");
 			return false;
 			}
 		*/
 		if( $arr['disabled'] == '1')
 			{
-			$body->msgerror = babTranslate("Sorry, your account is disabled. Please contact your adminsitrator");
+			$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your adminsitrator");
 			return false;
 			}
 		if ($arr['is_confirmed'] == '1')
 			{
 			$BAB_SESS_NICKNAME = $arr['nickname'];
-			$BAB_SESS_USER = composeName($arr['firstname'], $arr['lastname']);
+			$BAB_SESS_USER = bab_composeUserName($arr['firstname'], $arr['lastname']);
 			$BAB_SESS_EMAIL = $arr['email'];
 			$BAB_SESS_USERID = $arr['id'];
 			$BAB_SESS_HASHID = $arr['confirm_hash'];
-			$body->msgerror =  babTranslate("SUCCESS - You Are Now Logged In");
+			$babBody->msgerror =  bab_translate("SUCCESS - You Are Now Logged In");
 			return true;
 			}
 		else
 			{
-			$body->msgerror =  babTranslate("Sorry - You haven't Confirmed Your Account Yet");
+			$babBody->msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
 			return false;
 			}
 		}
@@ -229,21 +229,21 @@ function userLogin($nickname,$password)
 
 function confirmUser($hash, $nickname)
 	{
-	global $BAB_HASH_VAR, $body;
+	global $BAB_HASH_VAR, $babBody;
 	$new_hash=md5($nickname.$BAB_HASH_VAR);
 	if ($new_hash && ($new_hash==$hash))
 		{
 		$sql="select * from users where confirm_hash='$hash'";
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 		$result=$db->db_query($sql);
 		if( $db->db_num_rows($result) < 1)
 			{
-			$body->msgerror = babTranslate("User Not Found") ." !";
+			$babBody->msgerror = bab_translate("User Not Found") ." !";
 			return false;
 			}
 		else
 			{
-			$body->msgerror = babTranslate("User Account Updated - You can now log to our site");
+			$babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
 			$sql="update users set is_confirmed='1' WHERE confirm_hash='$hash'";
 			$result=$db->db_query($sql);
 			return true;
@@ -251,7 +251,7 @@ function confirmUser($hash, $nickname)
 		}
 	else
 		{
-		$body->msgerror = babTranslate("Update failed");
+		$babBody->msgerror = bab_translate("Update failed");
 		return false;
 		}
 
@@ -259,15 +259,15 @@ function confirmUser($hash, $nickname)
 
 function userChangePassword($oldpwd, $newpwd)
 	{
-	global $body, $BAB_SESS_USERID, $BAB_SESS_HASHID;
+	global $babBody, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 
 	$new_password1=strtolower($newpwd);
 	$sql="select * from users where id='". $BAB_SESS_USERID ."'";
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
 	if ($db->db_num_rows($result) < 1)
 		{
-		$body->msgerror = babTranslate("User not found or bad password");
+		$babBody->msgerror = bab_translate("User not found or bad password");
 		return false;
 		}
 	else
@@ -281,18 +281,18 @@ function userChangePassword($oldpwd, $newpwd)
 			$result=$db->db_query($sql);
 			if ($db->db_affected_rows() < 1)
 				{
-				$body->msgerror = babTranslate("Nothing Changed");
+				$babBody->msgerror = bab_translate("Nothing Changed");
 				return false;
 				}
 			else
 				{
-				$body->msgerror = babTranslate("Password Changed");
+				$babBody->msgerror = bab_translate("Password Changed");
 				return true;
 				}
 			}
 		else
 			{
-			$body->msgerror = babTranslate("ERROR: Old password incorrect !!");
+			$babBody->msgerror = bab_translate("ERROR: Old password incorrect !!");
 			return false;
 			}
 		}
@@ -300,7 +300,7 @@ function userChangePassword($oldpwd, $newpwd)
 
 function notifyUserPassword($passw, $email)
 	{
-	global $body, $babAdminEmail, $babInstallPath;
+	global $babBody, $babAdminEmail, $babInstallPath;
 
 	class tempa
 		{
@@ -314,34 +314,34 @@ function notifyUserPassword($passw, $email)
 		function tempa($passw)
 			{
             global $babSiteName;
-			$this->sitename = babTranslate("On site").": ". $babSiteName."( <a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babUrl']."</a> )";
-			$this->message = babTranslate("Your password has been reset to").": ". $passw;
+			$this->sitename = bab_translate("On site").": ". $babSiteName."( <a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babUrl']."</a> )";
+			$this->message = bab_translate("Your password has been reset to").": ". $passw;
 			}
 		}
 	
 	$tempa = new tempa($passw);
-	$message = babPrintTemplate($tempa,"mailinfo.html", "sendpassword");
+	$message = bab_printTemplate($tempa,"mailinfo.html", "sendpassword");
 
     $mail = new babMail();
     $mail->mailTo($email);
     $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
-    $mail->mailSubject("Ovidentia: ". babTranslate("Password Reset"));
+    $mail->mailSubject("Ovidentia: ". bab_translate("Password Reset"));
     $mail->mailBody($message, "html");
     $mail->send();
 	}
 
 function sendPassword ($nickname)
 	{
-	global $body, $BAB_HASH_VAR, $babAdminEmail;
+	global $babBody, $BAB_HASH_VAR, $babAdminEmail;
 
 	if (!empty($nickname))
 		{
 		$req="select * from users where nickname='$nickname'";
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 		$res = $db->db_query($req);
 		if (!$res || $db->db_num_rows($res) < 1)
 			{
-			$body->msgerror = babTranslate("Incorrect nickname");
+			$babBody->msgerror = bab_translate("Incorrect nickname");
 			return false;
 			}
 		else
@@ -355,13 +355,13 @@ function sendPassword ($nickname)
 
 			//send a simple email with the new password
 			notifyUserPassword($new_pass, $arr['email']);
-			$body->msgerror = babTranslate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
+			$babBody->msgerror = bab_translate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
 			return true;
 			}
 		}
 	else
 		{
-		$body->msgerror = babTranslate("ERROR - Nickname is required");
+		$babBody->msgerror = bab_translate("ERROR - Nickname is required");
 		return false;
 		}
 }

@@ -6,7 +6,7 @@
  ***********************************************************************/
 define('CRLF', "\r\n");
 
-function get_mime_type($type, $subtype)
+function bab_getMimeType($type, $subtype)
 	{ 
 	$primary_mime_type = array("TEXT", "MULTIPART", "MESSAGE", "APPLICATION", "AUDIO", "IMAGE", "VIDEO", "OTHER");
 	if($subtype) 
@@ -17,7 +17,7 @@ function get_mime_type($type, $subtype)
 	} 
 
 // function by cleong@organic.com
-function get_part($mbox, $msg_number, $mime_type, $structure = false, $part_number = false) 
+function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $part_number = false) 
 {
 	if(!$structure) 
 		{
@@ -26,7 +26,7 @@ function get_part($mbox, $msg_number, $mime_type, $structure = false, $part_numb
 
 	if($structure) 
 		{ 
-		if($mime_type == get_mime_type($structure->type, $structure->subtype)) 
+		if($mime_type == bab_getMimeType($structure->type, $structure->subtype)) 
 			{
 			if(!$part_number) 
 				{ 
@@ -65,7 +65,7 @@ function get_part($mbox, $msg_number, $mime_type, $structure = false, $part_numb
 					{ 
 					$prefix = $part_number . '.';
 					}
-				$data = get_part($mbox, $msg_number, $mime_type, $sub_structure, $prefix . ($index + 1)); 
+				$data = bab_getMimePart($mbox, $msg_number, $mime_type, $sub_structure, $prefix . ($index + 1)); 
 				if($data) 
 					{
 					return $data; 
@@ -91,7 +91,7 @@ class babMail
 	var $parts = array();
 	var $add_headers;
 	var $message;
-	var $body;
+	var $babBody;
 	var $format;
 
 	function addHeadder($arg, $val)
@@ -140,9 +140,9 @@ class babMail
 		$this->subject = $subject;
 	}
 
-	function mailBody($body, $format="plain")
+	function mailBody($babBody, $format="plain")
 	{
-		$this->body = $body;
+		$this->body = $babBody;
 		$this->format = $format;
 	}
 
@@ -437,7 +437,7 @@ class babMailInfo extends babMail
 
     function send()
         {
-        $msg = babPrintTemplate($this,$this->file, $this->section);
+        $msg = bab_printTemplate($this,$this->file, $this->section);
         $this->mailBody($msg, "html");
         $this->mailBuild();
 		return mail(join(', ', $this->to), $this->subject, $this->message, $this->add_headers);

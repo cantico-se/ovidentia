@@ -9,7 +9,7 @@ include $babInstallPath."utilit/topincl.php";
 function isUserManager($item)
 	{
 	global $BAB_SESS_USERID;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from faqcat where id='$item'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -23,7 +23,7 @@ function isUserManager($item)
 
 function listCategories()
 	{
-	global $body;
+	global $babBody;
 	$arrid = array();
 	class temp
 		{
@@ -38,7 +38,7 @@ function listCategories()
 
 		function temp($arrid)
 			{
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$this->count = count($arrid);
 			$this->arrid = $arrid;
 			}
@@ -54,7 +54,7 @@ function listCategories()
 					{
 					$this->arr = $this->db->db_fetch_array($res);
 					$this->arr['description'] = $this->arr['description'];// nl2br($this->arr['description']);
-					$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$this->arr['id'];
+					$this->urlcategory = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$this->arr['id'];
 					$this->namecategory = $this->arr['category'];
 					}
 				$i++;
@@ -64,19 +64,19 @@ function listCategories()
 				return false;
 			}
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from faqcat";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
-		if(isAccessValid("faqcat_groups", $row['id']))
+		if(bab_isAccessValid("faqcat_groups", $row['id']))
 			{
 			array_push($arrid, $row['id']);
 			}
 		}
 
 	$temp = new temp($arrid);
-	$body->babecho(	babPrintTemplate($temp,"faq.html", "categorylist"));
+	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "categorylist"));
 
 	return count($arrid);
 	}
@@ -84,7 +84,7 @@ function listCategories()
 
 function listQuestions($idcat)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $idcat;
@@ -98,7 +98,7 @@ function listQuestions($idcat)
 		function temp($id)
 			{
 			$this->idcat = $id;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from faqqr where idcat='$id' order by id asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -111,7 +111,7 @@ function listQuestions($idcat)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->question = $this->arr['question'];
-				$this->questionurl = $GLOBALS['babUrl']."index.php?tg=faq&idx=viewq&item=".$this->idcat."&idq=".$this->arr['id'];
+				$this->questionurl = $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$this->idcat."&idq=".$this->arr['id'];
 				//$this->arr['response'] = nl2br($this->arr['response']);
 				$i++;
 				return true;
@@ -121,13 +121,13 @@ function listQuestions($idcat)
 			}
 		}
 	$temp = new temp($idcat);
-	$body->babecho(	babPrintTemplate($temp,"faq.html", "questionlist"));
+	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "questionlist"));
 	return true;
 	}
 
 function viewQuestion($idcat, $id)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $arr = array();
@@ -138,25 +138,25 @@ function viewQuestion($idcat, $id)
 
 		function temp($idcat, $id)
 			{
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->arr['response'] = babReplace($this->arr['response']);
-			$this->returnurl = $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$idcat;
-			$this->return = babTranslate("Return to Questions");
+			$this->arr['response'] = bab_replace($this->arr['response']);
+			$this->returnurl = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$idcat;
+			$this->return = bab_translate("Return to Questions");
 			}
 
 		}
 
 	$temp = new temp($idcat, $id);
-	$body->babecho(	babPrintTemplate($temp,"faq.html", "viewquestion"));
+	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "viewquestion"));
 	return true;
 	}
 
 function faqPrint($idcat)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		
@@ -178,7 +178,7 @@ function faqPrint($idcat)
 			$this->indexquestions = "Index questions";
 			$this->sitename = $babSiteName;
 			$this->urlsite = $babUrl;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from faqcat where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr1 = $this->db->db_fetch_array($this->res);
@@ -221,15 +221,15 @@ function faqPrint($idcat)
 		}
 
 	$temp = new temp($idcat);
-	echo babPrintTemplate($temp,"faqprint.html");
+	echo bab_printTemplate($temp,"faqprint.html");
 	}
 
 function listAdmQuestions($idcat)
 	{
-	global $body;
+	global $babBody;
 	if( !isset($idcat))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid category !!");
 		return false;
 		}
 
@@ -248,7 +248,7 @@ function listAdmQuestions($idcat)
 		function temp($id)
 			{
 			$this->idcat = $id;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from faqqr where idcat='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -265,8 +265,8 @@ function listAdmQuestions($idcat)
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->editurl = $GLOBALS['babUrl']."index.php?tg=faq&idx=ModifyQ&item=".$this->idcat."&idq=".$this->arr['id'];
-				$this->editname = babTranslate("Edit");
+				$this->editurl = $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$this->idcat."&idq=".$this->arr['id'];
+				$this->editname = bab_translate("Edit");
 				$i++;
 				return true;
 				}
@@ -275,13 +275,13 @@ function listAdmQuestions($idcat)
 			}
 		}
 	$temp = new temp($idcat);
-	$body->babecho(	babPrintTemplate($temp,"faq.html", "admquestionlist"));
+	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "admquestionlist"));
 	return true;
 	}
 
 function addQuestion($idcat)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $question;
@@ -292,11 +292,11 @@ function addQuestion($idcat)
 
 		function temp($id)
 			{
-			$this->question = babTranslate("Question");
-			$this->response = babTranslate("Response");
-			$this->add = babTranslate("Add");
+			$this->question = bab_translate("Question");
+			$this->response = bab_translate("Response");
+			$this->add = bab_translate("Add");
 			$this->idcat = $id;
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -304,15 +304,15 @@ function addQuestion($idcat)
 		}
 
 	$temp = new temp($idcat);
-	$body->babecho(	babPrintTemplate($temp,"faq.html", "admquestioncreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "admquestioncreate"));
 	}
 
 function modifyQuestion($item, $idq)
 	{
-	global $body;
+	global $babBody;
 	if( !isset($idq))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid question !!");
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid question !!");
 		return;
 		}
 	class temp
@@ -329,27 +329,27 @@ function modifyQuestion($item, $idq)
 
 		function temp($idcat, $idq)
 			{
-			$this->question = babTranslate("Question");
-			$this->response = babTranslate("Response");
-			$this->add = babTranslate("Update Question");
+			$this->question = bab_translate("Question");
+			$this->response = bab_translate("Response");
+			$this->add = bab_translate("Update Question");
 			$this->idcat = $idcat;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from faqqr where id='$idq'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
 			}
 		}
 	$temp = new temp($item, $idq);
-	$body->babecho(	babPrintTemplate($temp,"faq.html", "admquestionmodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "admquestionmodify"));
 	}
 
 function deleteQuestion($item, $idq)
 	{
-	global $body;
+	global $babBody;
 	
 	class temp
 		{
@@ -365,18 +365,18 @@ function deleteQuestion($item, $idq)
 
 		function temp($item, $idq)
 			{
-			$this->message = babTranslate("Are you sure you want to delete this question");
+			$this->message = bab_translate("Are you sure you want to delete this question");
 			$this->title = "";
-			$this->warning = babTranslate("WARNING: This operation will delete question and its response"). "!";
-			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$item."&idq=".$idq."&action=Yes";
-			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS['babUrl']."index.php?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq;
-			$this->no = babTranslate("No");
+			$this->warning = bab_translate("WARNING: This operation will delete question and its response"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idq=".$idq."&action=Yes";
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq;
+			$this->no = bab_translate("No");
 			}
 		}
 
 	$temp = new temp($item, $idq);
-	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 
@@ -384,10 +384,10 @@ function saveQuestion($item, $question, $response)
 	{
 	if( empty($question) || empty($response))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide question and response !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "insert into faqqr (idcat, question, response) values ('" .$item. "', '" .$question. "', '" . $response. "')";
 	$db->db_query($query);
 	
@@ -397,10 +397,10 @@ function updateQuestion($idq, $question, $response)
 	{
 	if( empty($question) || empty($response))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide question and response !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide question and response !!");
 		return;
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "update faqqr set question='$question', response='$response' where id = '$idq'";
 	$db->db_query($query);
 
@@ -408,7 +408,7 @@ function updateQuestion($idq, $question, $response)
 
 function confirmDeleteQuestion($item, $idq)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "delete from faqqr where id = '$idq'";
 	$res = $db->db_query($req);
 	}
@@ -433,97 +433,97 @@ if( isset($updatequestion))
 if( isset($action) && $action == "Yes" && isUserManager($item))
 	{
 	confirmDeleteQuestion($item, $idq);
-	Header("Location: index.php?tg=faq&idx=questions&item=".$item);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 	}
 
 switch($idx)
 	{
 	case "questions":
-		$body->title = babTranslate("Questions and Answers");
-		if( isAccessValid("faqcat_groups", $item))
+		$babBody->title = bab_translate("Questions and Answers");
+		if( bab_isAccessValid("faqcat_groups", $item))
 			{
 			listQuestions($item);
-			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Categories");
-			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Print&item=$item");
-			$body->addItemMenuAttributes("Print Friendly", "target=_blank");
-			$body->addItemMenu("questions", babTranslate("Questions"),$GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$item);
+			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
+			$babBody->addItemMenu("Print Friendly", bab_translate("Print Friendly"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=$item");
+			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
+			$babBody->addItemMenu("questions", bab_translate("Questions"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			if( isUserManager($item))
-				$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Add Question&item=$item");
-			//	$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Questions&item=".$item);
+				$babBody->addItemMenu("Add Question", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=Add Question&item=$item");
+			//	$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
 
 	case "viewq":
-		$body->title = babTranslate("Questions and Answers");
-		if( isAccessValid("faqcat_groups", $item))
+		$babBody->title = bab_translate("Questions and Answers");
+		if( bab_isAccessValid("faqcat_groups", $item))
 			{
 			viewQuestion($item, $idq);
-			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Categories");
-			$body->addItemMenu("Print Friendly", babTranslate("Print Friendly"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Print&item=$item");
-			$body->addItemMenuAttributes("Print Friendly", "target=_blank");
-			$body->addItemMenu("questions", babTranslate("Questions"),$GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=".$item);
+			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
+			$babBody->addItemMenu("Print Friendly", bab_translate("Print Friendly"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=$item");
+			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
+			$babBody->addItemMenu("questions", bab_translate("Questions"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			if( isUserManager($item))
-				$body->addItemMenu("ModifyQ", babTranslate("Edit"),$GLOBALS['babUrl']."index.php?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq);
-			//	$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Questions&item=".$item);
+				$babBody->addItemMenu("ModifyQ", bab_translate("Edit"),$GLOBALS['babUrlScript']."?tg=faq&idx=ModifyQ&item=".$item."&idq=".$idq);
+			//	$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=".$item);
 			}
 		break;
 
 	case "Delete":
-		$body->title = babTranslate("Delete question");
+		$babBody->title = bab_translate("Delete question");
 		if( isUserManager($item))
 			{
 			deleteQuestion($item, $idq);
-			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Delete&item=$item&idq=$idq");
+			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=faq&idx=Delete&item=$item&idq=$idq");
 			}
 		break;
 	/*
 	case "Questions":
-		$body->title = babTranslate("List of questions");
+		$babBody->title = bab_translate("List of questions");
 		if(isUserManager($item) && listAdmQuestions($item))
 			{
-			$body->addItemMenu("Questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Questions&item=$item");
-			$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Add Question&item=$item");
+			$babBody->addItemMenu("Questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=Questions&item=$item");
+			$babBody->addItemMenu("Add Question", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=Add Question&item=$item");
 			}		
 		break;
 	*/
 
 	case "Add Question":
-		$body->title = babTranslate("Add question");
+		$babBody->title = bab_translate("Add question");
 		if( isUserManager($item))
 			{
 			addQuestion($item);
-			$body->addItemMenu("questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=$item");
-			$body->addItemMenu("Add Question", babTranslate("Add Question"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Add Question&item=$item");
+			$babBody->addItemMenu("questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=$item");
+			$babBody->addItemMenu("Add Question", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=Add Question&item=$item");
 			}
 		break;
 
 	case "ModifyQ":
-		$body->title = babTranslate("Modify question");
+		$babBody->title = bab_translate("Modify question");
 		if( isUserManager($item))
 			{
 			modifyQuestion($item, $idq);
-			$body->addItemMenu("questions", babTranslate("Questions"), $GLOBALS['babUrl']."index.php?tg=faq&idx=questions&item=$item");
-			$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=faq&idx=Delete&item=$item&idq=$idq");
+			$babBody->addItemMenu("questions", bab_translate("Questions"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=$item");
+			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=faq&idx=Delete&item=$item&idq=$idq");
 			}
 		break;
 
 	case "Print":
-		if( isAccessValid("faqcat_groups", $item))
+		if( bab_isAccessValid("faqcat_groups", $item))
 			faqPrint($item);
 		exit();
 		break;
 
 	default:
 	case "Categories":
-		$body->title = babTranslate("List of all faqs");
+		$babBody->title = bab_translate("List of all faqs");
 		if( listCategories() > 0 )
 			{
-			$body->addItemMenu("Categories", babTranslate("Categories"),$GLOBALS['babUrl']."index.php?tg=faq&idx=Categories");
+			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
 			}
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 
 ?>

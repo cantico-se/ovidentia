@@ -28,7 +28,7 @@
 function upgrade()
 {
 $ret = "";
-$db = new db_mysql();
+$db = $GLOBALS['babDB'];
 
 $req = "ALTER TABLE files ADD hits INT(11) UNSIGNED NOT NULL";
 $res = $db->db_query($req);

@@ -13,20 +13,24 @@ session_register("BAB_SESS_USERID");
 session_register("BAB_SESS_HASHID");
 include $babInstallPath."utilit/utilit.php";
 
-userIsloggedin();
-updateSiteSettings();
-updateUserSettings();
+$babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
+$babUrlScript = $babUrl.$babPhpSelf;
+
+
+bab_userIsloggedin();
+bab_updateSiteSettings();
+bab_updateUserSettings();
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
 
-$babMonths = array(1=>babTranslate("January"), babTranslate("February"), babTranslate("March"), babTranslate("April"),
-                        babTranslate("May"), babTranslate("June"), babTranslate("July"), babTranslate("August"),
-                        babTranslate("September"), babTranslate("October"), babTranslate("November"), babTranslate("December"));
+$babMonths = array(1=>bab_translate("January"), bab_translate("February"), bab_translate("March"), bab_translate("April"),
+                        bab_translate("May"), bab_translate("June"), bab_translate("July"), bab_translate("August"),
+                        bab_translate("September"), bab_translate("October"), bab_translate("November"), bab_translate("December"));
 
-$babDays = array(babTranslate("Sunday"), babTranslate("Monday"),
-				babTranslate("Tuesday"), babTranslate("Wednesday"), babTranslate("Thursday"),
-				babTranslate("Friday"), babTranslate("Saturday"));
+$babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
+				bab_translate("Tuesday"), bab_translate("Wednesday"), bab_translate("Thursday"),
+				bab_translate("Friday"), bab_translate("Saturday"));
 
 $babSearchUrl = "";
 $babSearchItems = array ('a' => "Articles", 'b' => "Forums", 'c' => "Faq", 'd' => "Notes", 'e' => "Files", 'f' => "Contacts");  
@@ -69,7 +73,7 @@ function printBody()
 
 		function tpl()
 			{
-			global $body, $LOGGED_IN, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
+			global $babBody, $LOGGED_IN, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
 			$this->version = $GLOBALS['babVersion'];
 			$this->babLogoLT = "";
 			$this->babLogoRT = "";
@@ -78,44 +82,44 @@ function printBody()
 			$this->babBanner = "";
 			$this->babMeta = "";
 
-			$this->babCss = babPrintTemplate($this, "config.html", "babCss");
-			$this->babLogoLT = babPrintTemplate($this, "config.html", "babLogoLT");
-			$this->babLogoRT = babPrintTemplate($this, "config.html", "babLogoRT");
-			$this->babLogoLB = babPrintTemplate($this, "config.html", "babLogoLB");
-			$this->babLogoRB = babPrintTemplate($this, "config.html", "babLogoRB");
-			$this->babBanner = babPrintTemplate($this, "config.html", "babBanner");
-			$this->babMeta = babPrintTemplate($this, "config.html", "babMeta");
-			$this->script = $body->script;
-			$this->home = babTranslate("Home");
-			$this->homeurl = $GLOBALS['babUrl']."index.php?tg=entry";
+			$this->babCss = bab_printTemplate($this, "config.html", "babCss");
+			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
+			$this->babLogoRT = bab_printTemplate($this, "config.html", "babLogoRT");
+			$this->babLogoLB = bab_printTemplate($this, "config.html", "babLogoLB");
+			$this->babLogoRB = bab_printTemplate($this, "config.html", "babLogoRB");
+			$this->babBanner = bab_printTemplate($this, "config.html", "babBanner");
+			$this->babMeta = bab_printTemplate($this, "config.html", "babMeta");
+			$this->script = $babBody->script;
+			$this->home = bab_translate("Home");
+			$this->homeurl = $GLOBALS['babUrlScript']."?tg=entry";
 			if( isset($LOGGED_IN) && $LOGGED_IN == true )
 				{
-				$this->login = babTranslate("Logout");
-				$this->logurl = $GLOBALS['babUrl']."index.php?tg=login&cmd=signoff";
+				$this->login = bab_translate("Logout");
+				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&cmd=signoff";
 				}
 			else
 				{
-				$this->login = babTranslate("Login");
-				$this->logurl = $GLOBALS['babUrl']."index.php?tg=login&cmd=signon";
+				$this->login = bab_translate("Login");
+				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&cmd=signon";
 				}
 
-			$this->search = babTranslate("Search");
+			$this->search = bab_translate("Search");
 			if( !empty($babSearchUrl))
 				{
-				$this->searchurl = $GLOBALS['babUrl']."index.php?tg=search&pat=".$babSearchUrl;
+				$this->searchurl = $GLOBALS['babUrlScript']."?tg=search&pat=".$babSearchUrl;
 				$this->bsearch = 1;
 				}
 			else
 				{
 				$this->bsearch = 0;
 				}
-			$this->menukeys = array_keys($body->menu->items);
-			$this->menuvals = array_values($body->menu->items);
+			$this->menukeys = array_keys($babBody->menu->items);
+			$this->menuvals = array_values($babBody->menu->items);
 			$this->menuitems = count($this->menukeys);
 
 			$this->nbsectleft = 0;
 			$this->nbsectright = 0;
-			foreach($body->sections as $sec)
+			foreach($babBody->sections as $sec)
 				{
 				if(  $sec->isVisible())
 					{
@@ -132,17 +136,17 @@ function printBody()
 					}
 				}
 
-			$this->content = $body->printout();
-			$this->message = $body->message;
+			$this->content = $babBody->printout();
+			$this->message = $babBody->message;
 			}
 
 		function getNextMenu()
 			{
-			global $body;
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->menuitems)
 				{
-				if(!strcmp($this->menukeys[$i], $body->menu->curItem))
+				if(!strcmp($this->menukeys[$i], $babBody->menu->curItem))
 					{
 					$this->menuclass = "BabMenuCurArea";
 					}
@@ -174,7 +178,7 @@ function printBody()
 
 		function getNextSectionLeft()
 			{
-			global $body;
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->nbsectleft)
 				{
@@ -189,7 +193,7 @@ function printBody()
 
 		function getNextSectionRight()
 			{
-			global $body;
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->nbsectright)
 				{
@@ -206,7 +210,7 @@ function printBody()
 	
 
 	$temp = new tpl();
-	echo babPrintTemplate($temp,"page.html", "");
+	echo bab_printTemplate($temp,"page.html", "");
 	}
 
 if( !isset($tg))
@@ -218,46 +222,46 @@ switch($tg)
 		$incl = "login";
 		break;
 	case "sections":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/sections";
 		break;
 	case "section":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/section";
 		break;
 	case "register":
 		$incl = "admin/register";
 		break;
 	case "users":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/users";
 		break;
 	case "user":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/user";
 		break;
 	case "groups":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/groups";
 		break;
 	case "group":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/group";
 		break;
 	case "admfaqs":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/admfaqs";
 		break;
 	case "admfaq":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/admfaq";
 		break;
 	case "topcat":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/topcat";
 		break;
 	case "topcats":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/topcats";
 		break;
 	case "topman":
@@ -276,39 +280,39 @@ switch($tg)
 		$incl = "topusr";
 		break;
 	case "forums":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/forums";
 		break;
 	case "forum":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/forum";
 		break;
 	case "admvacs":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/admvacs";
 		break;
 	case "admvac":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/admvac";
 		break;
 	case "admcals":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/admcals";
 		break;
 	case "admcal":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/admcal";
 		break;
 	case "sites":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/sites";
 		break;
 	case "site":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/site";
 		break;
 	case "admfiles":
-		if( isset($LOGGED_IN) && $LOGGED_IN && isUserAdministrator())
+		if( isset($LOGGED_IN) && $LOGGED_IN && bab_isUserAdministrator())
 			$incl = "admin/admfiles";
 		break;
 	case "options":
@@ -439,7 +443,7 @@ if( !empty($incl))
 	include $babInstallPath."$incl.php";
 	}
 
-getSections();
+$babBody->loadSections();
 printBody();
 unset($tg);
 ?>

@@ -8,7 +8,7 @@ include $babInstallPath."admin/acl.php";
 
 function getFaqName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from faqcat where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -24,7 +24,7 @@ function getFaqName($id)
 
 function addCategory()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $category;
@@ -35,11 +35,11 @@ function addCategory()
 
 		function temp()
 			{
-			$this->category = babTranslate("Category");
-			$this->description = babTranslate("Description");
-			$this->manager = babTranslate("Manager");
-			$this->add = babTranslate("Add");
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			$this->category = bab_translate("Category");
+			$this->description = bab_translate("Description");
+			$this->manager = bab_translate("Manager");
+			$this->add = bab_translate("Add");
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -47,12 +47,12 @@ function addCategory()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"admfaqs.html", "categorycreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"admfaqs.html", "categorycreate"));
 	}
 
 function listCategories()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		
@@ -69,8 +69,8 @@ function listCategories()
 
 		function temp()
 			{
-			$this->access = babTranslate("Access");
-			$this->db = new db_mysql();
+			$this->access = bab_translate("Access");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from faqcat";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -87,8 +87,8 @@ function listCategories()
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->arr['description'] = $this->arr['description'];// nl2br($this->arr['description']);
-				$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$this->arr['id'];
-				$this->accessurl = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Groups&item=".$this->arr['id'];
+				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$this->arr['id'];
+				$this->accessurl = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$this->arr['id'];
 				$this->namecategory = $this->arr['category'];
 				$i++;
 				return true;
@@ -98,39 +98,39 @@ function listCategories()
 			}
 		}
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"admfaqs.html", "categorylist"));
+	$babBody->babecho(	bab_printTemplate($temp,"admfaqs.html", "categorylist"));
 	return $temp->count;
 	}
 
 
 function saveCategory($category, $description, $manager)
 	{
-	global $body;
+	global $babBody;
 	if( empty($category))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
 		return;
 		}
 
 	if( empty($manager))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a manager !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a manager !!");
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from faqcat where category='$category'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This category already exists");
+		$babBody->msgerror = bab_translate("ERROR: This category already exists");
 		return;
 		}
 
-	$managerid = getUserId($manager);
+	$managerid = bab_getUserId($manager);
 	if( $managerid < 1)
 		{
-		$body->msgerror = babTranslate("ERROR: The manager doesn't exist !!");
+		$babBody->msgerror = bab_translate("ERROR: The manager doesn't exist !!");
 		return;
 		}
 
@@ -153,23 +153,23 @@ if( isset($add))
 switch($idx)
 	{
 	case "Add":
-		$body->title = babTranslate("Add a new faq");
+		$babBody->title = bab_translate("Add a new faq");
 		addCategory();
-		$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
-		$body->addItemMenu("Add", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add");
+		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
+		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Add");
 		break;
 
 	default:
 	case "Categories":
-		$body->title = babTranslate("List of all faqs");
+		$babBody->title = bab_translate("List of all faqs");
 		if( listCategories() > 0 )
 			{
-			$body->addItemMenu("Categories", babTranslate("Faqs"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Categories");
+			$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 			}
-		$body->addItemMenu("Add", babTranslate("Add"), $GLOBALS['babUrl']."index.php?tg=admfaqs&idx=Add");
+		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Add");
 
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

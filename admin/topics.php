@@ -9,7 +9,7 @@ include $babInstallPath."utilit/topincl.php";
 
 function addCategory($cat)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $category;
@@ -26,17 +26,17 @@ function addCategory($cat)
 
 		function temp($cat)
 			{
-			$this->topcat = babTranslate("Topic category");
-			$this->category = babTranslate("Topic");
-			$this->description = babTranslate("Description");
-			$this->approver = babTranslate("Approver");
-			$this->add = babTranslate("Add");
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			$this->topcat = bab_translate("Topic category");
+			$this->category = bab_translate("Topic");
+			$this->description = bab_translate("Description");
+			$this->approver = bab_translate("Approver");
+			$this->add = bab_translate("Add");
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
 			$this->idcat = $cat;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from topics_categories";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -61,12 +61,12 @@ function addCategory($cat)
 
 
 	$temp = new temp($cat);
-	$body->babecho(	babPrintTemplate($temp,"topics.html", "categorycreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
 function listCategories($cat, $adminid)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		
@@ -92,12 +92,12 @@ function listCategories($cat, $adminid)
 
 		function temp($cat, $adminid)
 			{
-			global $body, $BAB_SESS_USERID;
-			$this->groups = babTranslate("View");
-			$this->comments = babTranslate("Comment");
-			$this->submit = babTranslate("Submit");
-			$this->articles = babTranslate("Article") ."(s)";
-			$this->db = new db_mysql();
+			global $babBody, $BAB_SESS_USERID;
+			$this->groups = bab_translate("View");
+			$this->comments = bab_translate("Comment");
+			$this->submit = bab_translate("Submit");
+			$this->articles = bab_translate("Article") ."(s)";
+			$this->db = $GLOBALS['babDB'];
 			if( $adminid > 0)
 				$req = "select * from topics where id_cat='".$cat."'";
 			else
@@ -120,21 +120,21 @@ function listCategories($cat, $adminid)
 					$this->select = "";
 					
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->urlgroups = $GLOBALS['babUrl']."index.php?tg=topic&idx=Groups&item=".$this->arr['id']."&cat=".$this->idcat;
-				$this->urlcomments = $GLOBALS['babUrl']."index.php?tg=topic&idx=Comments&item=".$this->arr['id']."&cat=".$this->idcat;
-				$this->urlsubmit = $GLOBALS['babUrl']."index.php?tg=topic&idx=Submit&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlgroups = $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlcomments = $GLOBALS['babUrlScript']."?tg=topic&idx=Comments&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlsubmit = $GLOBALS['babUrlScript']."?tg=topic&idx=Submit&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->arr['description'] = $this->arr['description'];//nl2br($this->arr['description']);
-				$this->urlcategory = $GLOBALS['babUrl']."index.php?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$this->arr['id']."&cat=".$this->idcat;
 				$this->namecategory = $this->arr['category'];
 				$req = "select * from users where id='".$this->arr['id_approver']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				$this->approver = composeName($arr2['firstname'], $arr2['lastname']);
+				$this->approver = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
 				$req = "select count(*) as total from articles where id_topic='".$this->arr['id']."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
 				$this->nbarticles = $arr2['total'];
-				$this->urlarticles = $GLOBALS['babUrl']."index.php?tg=topic&idx=Articles&item=".$this->arr['id']."&cat=".$this->idcat;
+				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topic&idx=Articles&item=".$this->arr['id']."&cat=".$this->idcat;
 				$i++;
 				return true;
 				}
@@ -143,37 +143,37 @@ function listCategories($cat, $adminid)
 			}
 		}
 	$temp = new temp($cat, $adminid);
-	$body->babecho(	babPrintTemplate($temp,"topics.html", "categorylist"));
+	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorylist"));
 	return $temp->count;
 	}
 
 function saveCategory($category, $description, $approver, $cat)
 	{
-	global $body;
+	global $babBody;
 	if( empty($category))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a category !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a category !!");
 		return;
 		}
 
 	if( empty($approver))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide an approver !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide an approver !!");
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from topics where category='$category' and id_cat='".$cat."'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This topic already exists");
+		$babBody->msgerror = bab_translate("ERROR: This topic already exists");
 		}
 
-	$approverid = getUserId($approver);	
+	$approverid = bab_getUserId($approver);	
 	if( $approverid < 1)
 		{
-		$body->msgerror = babTranslate("ERROR: The approver doesn't exist !!");
+		$babBody->msgerror = bab_translate("ERROR: The approver doesn't exist !!");
 		return;
 		}
 
@@ -183,10 +183,10 @@ function saveCategory($category, $description, $approver, $cat)
 
 
 /* main */
-$adminid = isUserAdministrator();
+$adminid = bab_isUserAdministrator();
 if( $adminid < 1 )
 	{
-	$body->title = babTranslate("Access denied");
+	$babBody->title = bab_translate("Access denied");
 	exit;
 	}
 
@@ -203,32 +203,32 @@ if( isset($add) && $adminid > 0)
 switch($idx)
 	{
 	case "addtopic":
-		$body->title = babTranslate("Add a new topic");
+		$babBody->title = bab_translate("Add a new topic");
 		if( $adminid > 0)
 		{
 		addCategory($cat);
-		$body->addItemMenu("List", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=List");
-		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&cat=".$cat);
-		$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=topics&idx=addtopic&cat=".$cat);
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		}
 		break;
 
 	default:
 	case "list":
-		$catname = getTopicCategoryTitle($cat);
-		$body->title = babTranslate("List of all topics"). " [ " . $catname . " ]";
-		$body->addItemMenu("List", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=topcats&idx=List");
+		$catname = bab_getTopicCategoryTitle($cat);
+		$babBody->title = bab_translate("List of all topics"). " [ " . $catname . " ]";
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
 		if( listCategories($cat, $adminid) > 0 )
 			{
-			$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS['babUrl']."index.php?tg=topics&idx=list&cat=".$cat);
+			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 			}
 		else
-			$body->title = babTranslate("There is no topic"). " [ " . $catname . " ]";
+			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
 
 		if( $adminid > 0)
-			$body->addItemMenu("addtopic", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=topics&idx=addtopic&cat=".$cat);
+			$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -10,7 +10,7 @@ include "config.php";
 function upgrade()
 {
 $ret = "";
-$db = new db_mysql();
+$db = $GLOBALS['babDB'];
 
 $req = "CREATE TABLE caloptions (";
 $req .= "id INT (11) UNSIGNED not null AUTO_INCREMENT, ";

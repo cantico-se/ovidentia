@@ -10,7 +10,7 @@ define('MAX_MSGROWS', 10);
 
 function listMails($accid, $criteria, $reverse, $start)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -45,7 +45,7 @@ function listMails($accid, $criteria, $reverse, $start)
 
 		function temp($accid, $criteria, $reverse, $start)
 			{
-			global $body, $BAB_SESS_USERID, $BAB_HASH_VAR;
+			global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->reverse = $reverse;
 			$this->criteria = $criteria;
 			$this->accid = $accid;
@@ -53,12 +53,12 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->start = $start;
 			$this->burl = 0;
 
-			$this->viewthis = babTranslate("View this account");
-			$this->fromname = babTranslate("From");
-			$this->subjectname = babTranslate("Subject");
-			$this->datename = babTranslate("Date");
-			$this->uncheckall = babTranslate("Uncheck all mails");
-			$this->checkall = babTranslate("Check all mails");
+			$this->viewthis = bab_translate("View this account");
+			$this->fromname = bab_translate("From");
+			$this->subjectname = bab_translate("Subject");
+			$this->datename = bab_translate("Date");
+			$this->uncheckall = bab_translate("Uncheck all mails");
+			$this->checkall = bab_translate("Check all mails");
 
 			if( $reverse )
 				{
@@ -92,12 +92,12 @@ function listMails($accid, $criteria, $reverse, $start)
 						break;
 					}
 				}
-			$this->fromurl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTFROM'."&reverse=".$reverse;
-			$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTSUBJECT'."&reverse=".$reverse;
-			$this->dateurl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTARRIVAL'."&reverse=".$reverse;
+			$this->fromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTFROM'."&reverse=".$reverse;
+			$this->subjecturl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTSUBJECT'."&reverse=".$reverse;
+			$this->dateurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".'SORTARRIVAL'."&reverse=".$reverse;
 
 			$this->mailcount = 0;
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			if( empty($accid))
 				{
 				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and prefered='Y'";
@@ -128,7 +128,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					$this->mbox = imap_open($cnxstring, $arr['account'], $arr['accpass']);
 					if(!$this->mbox)
 						{
-						$body->msgerror = babTranslate("ERROR"). " : ". imap_last_error();
+						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
 						}
 					else
 						{
@@ -172,7 +172,7 @@ function listMails($accid, $criteria, $reverse, $start)
 				else
 					$this->partname .= (($k+1)*$this->maxrows);
 				$this->partname .= "]";
-				$this->parturl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=list&accid=".$this->accid."&criteria=".$this->criteria."&reverse=".$this->reverse."&start=".$start;
+				$this->parturl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".$this->criteria."&reverse=".$this->reverse."&start=".$start;
 				$k++;
 				return true;
 				}
@@ -193,8 +193,8 @@ function listMails($accid, $criteria, $reverse, $start)
 					$this->msgfromurlname = $headinfo->from[0]->personal;
 				$arr = imap_mime_header_decode($this->msgfromurlname);
 				$this->msgfromurlname = htmlentities($arr[0]->text);
-				$this->msgfromurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse."')";
-				//$this->msgfromurl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
+				$this->msgfromurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse."')";
+				//$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				$arr = imap_mime_header_decode($headinfo->subject);
 				$this->msgsubjecturlname = htmlentities($arr[0]->text);
 				$this->msgsubjecturl = $this->msgfromurl;
@@ -263,13 +263,13 @@ function listMails($accid, $criteria, $reverse, $start)
 
 		}
 	$temp = new temp($accid, $criteria, $reverse, $start);
-	$body->babecho(	babPrintTemplate($temp,"inbox.html", "maillist"));
+	$babBody->babecho(	bab_printTemplate($temp,"inbox.html", "maillist"));
 	return array('count'=> $temp->count, 'accid' => $temp->accid, 'mailbox' => $temp->mailboxname);
 	}
 
 function viewMail($accid, $msg, $criteria, $reverse, $start)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -303,30 +303,30 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 
 		function temp($accid, $msg, $criteria, $reverse, $start)
 			{
-			global $body, $BAB_HASH_VAR;
-			$this->fromname = babTranslate("From");
-			$this->subjectname = babTranslate("Subject");
-			$this->toname = babTranslate("To");
-			$this->ccname = babTranslate("Cc");
-			$this->datename = babTranslate("Date");
-			$this->attachmentname = babTranslate("Attachments");
-			$this->addcontact = babTranslate("Add to contacts");
-			$this->replyname = babTranslate("Reply");
-			$this->replyaname = babTranslate("Reply to all");
-			$this->forwardname = babTranslate("Forward");
+			global $babBody, $BAB_HASH_VAR;
+			$this->fromname = bab_translate("From");
+			$this->subjectname = bab_translate("Subject");
+			$this->toname = bab_translate("To");
+			$this->ccname = bab_translate("Cc");
+			$this->datename = bab_translate("Date");
+			$this->attachmentname = bab_translate("Attachments");
+			$this->addcontact = bab_translate("Add to contacts");
+			$this->replyname = bab_translate("Reply");
+			$this->replyaname = bab_translate("Reply to all");
+			$this->forwardname = bab_translate("Forward");
 			$this->criteria = $criteria;
 			$this->reverse = $reverse;
 			$this->start = $start;
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 
-			$this->replyurl = $GLOBALS['babUrl']."index.php?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg;	$this->replyaurl = $GLOBALS['babUrl']."index.php?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1";
-			$this->forwardurl = $GLOBALS['babUrl']."index.php?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1";
+			$this->replyurl = $GLOBALS['babUrlScript']."?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg;	$this->replyaurl = $GLOBALS['babUrlScript']."?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1";
+			$this->forwardurl = $GLOBALS['babUrlScript']."?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1";
 
 			$this->msg = $msg;
 			$this->accid = $accid;
 			$this->ccval = "";
 
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where id='".$accid."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
@@ -341,7 +341,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$this->mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
 					if(!$this->mbox)
 						{
-						$body->msgerror = babTranslate("ERROR"). " : ". imap_last_error();
+						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
 						}
 					else
 						{
@@ -372,21 +372,21 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 
 						$mhc = imap_mime_header_decode($headinfo->subject);
 						if(empty($mhc[0]->text))
-							$this->subjectval = "(".babTranslate("none").")";
+							$this->subjectval = "(".bab_translate("none").")";
 						else
 							$this->subjectval = htmlentities($mhc[0]->text);
 						$this->dateval = bab_strftime($headinfo->udate);
 
-						$this->msgbody = get_part($this->mbox, $msg, "TEXT/HTML");
+						$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/HTML");
 						if(!$this->msgbody)
 							{
-							$this->msgbody = get_part($this->mbox, $msg, "TEXT/PLAIN");
+							$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/PLAIN");
 							$this->msgbody= nl2br(htmlentities ( $this->msgbody));
 							$this->msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a target='blank' href='\\1'>\\1</a>",$this->msgbody); 
 							}
 						else
 							{
-							$this->msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2index.php?tg=inbox&accid=".$this->accid."&idx=getpart&msg=$msg&cid=\\3\\4", $this->msgbody);
+							$this->msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$this->accid."&idx=getpart&msg=$msg&cid=\\3\\4", $this->msgbody);
 							}
 						$this->get_attachment($msg);
 						$this->count = count($this->attachment);
@@ -402,7 +402,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->attachmenturl = $GLOBALS['babUrl']."index.php?tg=inbox&idx=attach&accid=".$this->accid."&msg=".$this->msg."&part=".$this->attachment[$i]['part_number']."&mime=".strtolower($this->attachment[$i]['mime_type']."&enc=".$this->attachment[$i]['encoding']."&file=".$this->attachment[$i]['filename']);
+				$this->attachmenturl = $GLOBALS['babUrlScript']."?tg=inbox&idx=attach&accid=".$this->accid."&msg=".$this->msg."&part=".$this->attachment[$i]['part_number']."&mime=".strtolower($this->attachment[$i]['mime_type']."&enc=".$this->attachment[$i]['encoding']."&file=".$this->attachment[$i]['filename']);
 				$this->attachmentval = $this->attachment[$i]['filename'];
 				$i++;
 				return true;
@@ -430,7 +430,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$firstn = $arr[0];
 					$lastn = $arr[1];
 					}
-				$this->addurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrto[$i][1]."&bliste=0')";
+				$this->addurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrto[$i][1]."&bliste=0')";
 				$this->addname = $this->arrto[$i][0]. " &lt;" . $this->arrto[$i][1] . "&gt;";
 				$i++;
 				return true;
@@ -458,7 +458,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$firstn = $arr[0];
 					$lastn = $arr[1];
 					}
-				$this->addurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrfrom[$i][1]."&bliste=0')";
+				$this->addurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrfrom[$i][1]."&bliste=0')";
 				$this->addname = $this->arrfrom[$i][0]. " &lt;" . $this->arrfrom[$i][1] . "&gt;";
 				$i++;
 				return true;
@@ -485,7 +485,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$firstn = $arr[0];
 					$lastn = $arr[1];
 					}
-				$this->addurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrcc[$i][1]."&bliste=0')";
+				$this->addurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&firstname=".$firstn."&lastname=".$lastn."&email=".$this->arrcc[$i][1]."&bliste=0')";
 				$this->addname = $this->arrcc[$i][0]. " &lt;" . $this->arrcc[$i][1] . "&gt;";
 				$i++;
 				return true;
@@ -544,7 +544,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 						$this->attachment[] = array( "part_number" => urlencode (htmlentities ($part_number))
 													,"filename" => urlencode (htmlentities ($filename))
 													,"encoding" => urlencode (htmlentities ($structure->encoding))
-													,"mime_type" => urlencode (htmlentities (get_mime_type($structure->type, $structure->subtype))));
+													,"mime_type" => urlencode (htmlentities (bab_getMimeType($structure->type, $structure->subtype))));
 						}
 					}
 				else
@@ -563,7 +563,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			}
 		}
 	$temp = new temp($accid, $msg, $criteria, $reverse, $start);
-	echo babPrintTemplate($temp,"inbox.html", "mailview");
+	echo bab_printTemplate($temp,"inbox.html", "mailview");
 	}
 
 function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number = false) 
@@ -593,7 +593,7 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 				$text = imap_qprint($text); 
 				} 
 
-			return array($text, get_mime_type ($structure->type, $structure->subtype)); 
+			return array($text, bab_getMimeType ($structure->type, $structure->subtype)); 
 			}
 		if($structure->type == 1) /* multipart */ 
 			{ 
@@ -618,7 +618,7 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 function showPart($accid, $msg, $cid)
 	{
 		global $BAB_HASH_VAR;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
@@ -649,7 +649,7 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 	{
 	global $BAB_SESS_USERID, $BAB_HASH_VAR;
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
@@ -714,7 +714,7 @@ function deleteMails($item, $accid, $criteria, $reverse)
 	{
 	global $BAB_SESS_USERID, $BAB_HASH_VAR;
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
@@ -733,7 +733,7 @@ function deleteMails($item, $accid, $criteria, $reverse)
 					imap_delete($mbox, $item[$i], FT_UID);
 				imap_expunge($mbox);
 				imap_close($mbox);
-				Header("Location: index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 				}
 			else
 				return;
@@ -761,7 +761,7 @@ if( !isset($start) || empty($start))
 
 if( isset($viewacc) && $viewacc == "view")
 {
-	Header("Location: index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&start=".$start);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&start=".$start);
 }
 
 switch($idx)
@@ -784,15 +784,15 @@ switch($idx)
 		break;
 
 	case "view":
-		$body->title = babTranslate("Email");
+		$babBody->title = bab_translate("Email");
 		viewMail($accid, $msg, $criteria, $reverse, $start);
 		exit;
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&start=".$start);
-		$body->addItemMenu("reply", babTranslate("Reply"), $GLOBALS['babUrl']."index.php?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg);
-		$body->addItemMenu("replya", babTranslate("Reply to all"), $GLOBALS['babUrl']."index.php?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1");
-		$body->addItemMenu("forward", babTranslate("Forward"), $GLOBALS['babUrl']."index.php?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1");
-		$body->addItemMenu("compose", babTranslate("Compose"), $GLOBALS['babUrl']."index.php?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-		$body->addItemMenu("deletem", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=inbox&idx=deletem&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&msg=".$msg);
+		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&start=".$start);
+		$babBody->addItemMenu("reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg);
+		$babBody->addItemMenu("replya", bab_translate("Reply to all"), $GLOBALS['babUrlScript']."?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1");
+		$babBody->addItemMenu("forward", bab_translate("Forward"), $GLOBALS['babUrlScript']."?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1");
+		$babBody->addItemMenu("compose", bab_translate("Compose"), $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		$babBody->addItemMenu("deletem", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=inbox&idx=deletem&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&msg=".$msg);
 		break;
 
 	default:
@@ -801,15 +801,15 @@ switch($idx)
 		/* no break */
 	case "list":
 		$nbm = listMails($accid, $criteria, $reverse, $start);
-	    $body->title = $nbm['mailbox']. " : ". $nbm['count']." ".babTranslate("Message")."(s)";
+	    $babBody->title = $nbm['mailbox']. " : ". $nbm['count']." ".bab_translate("Message")."(s)";
 		$accid = $nbm['accid'];
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-		$body->addItemMenu("refresh", babTranslate("Refresh"), $GLOBALS['babUrl']."index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-		$body->addItemMenu("compose", babTranslate("Compose"), "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."')");
+		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		$babBody->addItemMenu("refresh", bab_translate("Refresh"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		$babBody->addItemMenu("compose", bab_translate("Compose"), "javascript:Start('".$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."')");
 		if( $nbm['count'] > 0)
-			$body->addItemMenu("delete", babTranslate("Delete"), "javascript:(submitForm('delete'))");
+			$babBody->addItemMenu("delete", bab_translate("Delete"), "javascript:(submitForm('delete'))");
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -8,7 +8,7 @@ include $babInstallPath."admin/acl.php";
 
 function getSectionName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from sections where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -24,7 +24,7 @@ function getSectionName($id)
 
 function sectionsList()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $title;
@@ -53,15 +53,15 @@ function sectionsList()
 
 		function temp()
 			{
-			$this->title = babTranslate("Title");
-			$this->description = babTranslate("Description");
-			$this->disabled = babTranslate("Disabled");
-			$this->uncheckall = babTranslate("Uncheck all");
-			$this->checkall = babTranslate("Check all");
-			$this->update = babTranslate("Update");
-			$this->access = babTranslate("Access");
-			$this->groups = babTranslate("View");
-			$this->db = new db_mysql();
+			$this->title = bab_translate("Title");
+			$this->description = bab_translate("Description");
+			$this->disabled = bab_translate("Disabled");
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
+			$this->update = bab_translate("Update");
+			$this->access = bab_translate("Access");
+			$this->groups = bab_translate("View");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from sections";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -80,8 +80,8 @@ function sectionsList()
 			if( $i < $this->counta)
 				{
 				$this->arr = $this->db->db_fetch_array($this->resa);
-				$this->arr['title'] = babTranslate($this->arr['title']);
-				$this->arr['description'] = babTranslate($this->arr['description']);
+				$this->arr['title'] = bab_translate($this->arr['title']);
+				$this->arr['description'] = bab_translate($this->arr['description']);
 				$this->idvalue = $this->arr['id']."-1";
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
@@ -122,8 +122,8 @@ function sectionsList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$this->arr['id'];
-				$this->accessurl = $GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$this->arr['id'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$this->arr['id'];
+				$this->accessurl = $GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id'];
 				$this->idvalue = $this->arr['id']."-2";
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
@@ -139,13 +139,13 @@ function sectionsList()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "sections.html", "sectionslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "sections.html", "sectionslist"));
 	return $temp->count;
 	}
 
 function sectionsOrder()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $id;
@@ -158,12 +158,12 @@ function sectionsOrder()
 
 		function temp()
 			{
-			$this->listleftsectxt = "----------------- ". babTranslate("Left sections") . " -----------------";
-			$this->listrightsectxt = "----------------- ". babTranslate("Right sections") . " -----------------";
-			$this->update = babTranslate("Update");
-			$this->moveup = babTranslate("Move Up");
-			$this->movedown = babTranslate("Move Down");
-			$this->db = new db_mysql();
+			$this->listleftsectxt = "----------------- ". bab_translate("Left sections") . " -----------------";
+			$this->listrightsectxt = "----------------- ". bab_translate("Right sections") . " -----------------";
+			$this->update = bab_translate("Update");
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from sections_order where position='0' order by ordering asc";
 			$this->resleft = $this->db->db_query($req);
 			$this->countleft = $this->db->db_num_rows($this->resleft);
@@ -193,7 +193,7 @@ function sectionsOrder()
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
 				if( $arr['type'] == "1" )
-					$this->listleftsecval = babTranslate($arr2['title']);
+					$this->listleftsecval = bab_translate($arr2['title']);
 				else
 					$this->listleftsecval = $arr2['title'];
 				$this->secid = $arr['id'];
@@ -225,7 +225,7 @@ function sectionsOrder()
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
 				if( $arr['type'] == "1" )
-					$this->listrightsecval = babTranslate($arr2['title']);
+					$this->listrightsecval = bab_translate($arr2['title']);
 				else
 					$this->listrightsecval = $arr2['title'];
 				$this->secid = $arr['id'];
@@ -239,13 +239,13 @@ function sectionsOrder()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "sections.html", "sectionordering"));
+	$babBody->babecho(	bab_printTemplate($temp, "sections.html", "sectionordering"));
 	return $temp->count;
 	}
 
 function sectionCreate($jscript)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $title;
@@ -261,16 +261,16 @@ function sectionCreate($jscript)
 
 		function temp($jscript)
 			{
-			$this->title = babTranslate("Title");
-			$this->description = babTranslate("Description");
-			$this->position = babTranslate("Position");
-			$this->content = babTranslate("Content");
-			$this->create = babTranslate("Create");
-			$this->left = babTranslate("Left");
-			$this->right = babTranslate("Right");
-			$this->script = babTranslate("PHP script");
+			$this->title = bab_translate("Title");
+			$this->description = bab_translate("Description");
+			$this->position = bab_translate("Position");
+			$this->content = bab_translate("Content");
+			$this->create = bab_translate("Create");
+			$this->left = bab_translate("Left");
+			$this->right = bab_translate("Right");
+			$this->script = bab_translate("PHP script");
 			$this->jscript = $jscript;
-			if(( $jscript == 0 && strtolower(browserAgent()) == "msie") && (browserOS() == "windows"))
+			if(( $jscript == 0 && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -278,26 +278,26 @@ function sectionCreate($jscript)
 		}
 
 	$temp = new temp($jscript);
-	$body->babecho(	babPrintTemplate($temp,"sections.html", "sectionscreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"sections.html", "sectionscreate"));
 	}
 
 
 
 function sectionSave($title, $pos, $desc, $content, $script, $js)
 	{
-	global $body;
+	global $babBody;
 	if( empty($title))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a title !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a title !!");
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from sections where title='$title'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This section already exists");
+		$babBody->msgerror = bab_translate("ERROR: This section already exists");
 		}
 	else
 		{
@@ -329,7 +329,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 
 function saveSectionsOrder($listleft, $listright)
 	{
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 
 		for( $i = 0; $i < count($listleft); $i++)
 		{
@@ -354,7 +354,7 @@ function saveSectionsOrder($listleft, $listright)
 
 function disableSections($sections)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select id from sections";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
@@ -416,46 +416,46 @@ if( !isset($idx))
 switch($idx)
 	{
 	case "Order":
-		$body->title = babTranslate("Sections order");
+		$babBody->title = bab_translate("Sections order");
 		sectionsOrder();
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
-		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
+		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
+		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 	case "ch":
-		$body->title = babTranslate("Create section");
+		$babBody->title = bab_translate("Create section");
 		sectionCreate(0);
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
-		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
+		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
+		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 	case "cj":
-		$body->title = babTranslate("Create section");
+		$babBody->title = bab_translate("Create section");
 		sectionCreate(1);
-		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
-		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
-		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
+		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
+		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 	case "List":
 	default:
-		$body->title = babTranslate("Sections list");
+		$babBody->title = bab_translate("Sections list");
 		if( sectionsList() > 0 )
 			{
-			$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
+			$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 			}
 		else
-			$body->title = babTranslate("There is no section");
+			$babBody->title = bab_translate("There is no section");
 
-		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
-		$body->addItemMenu("ch", babTranslate("Create")."(html)",$GLOBALS['babUrl']."index.php?tg=sections&idx=ch");
-		$body->addItemMenu("cj", babTranslate("Create")."(script)",$GLOBALS['babUrl']."index.php?tg=sections&idx=cj");
+		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
+		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 
 ?>

@@ -7,7 +7,7 @@
 
 function categoryCreate($userid, $grpid)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -23,15 +23,15 @@ function categoryCreate($userid, $grpid)
 
 		function temp($userid, $grpid)
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->groupsname = babTranslate("Groups");
-			$this->bgcolor = babTranslate("Color");
-			$this->add = babTranslate("Add Category");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->groupsname = bab_translate("Groups");
+			$this->bgcolor = bab_translate("Color");
+			$this->add = bab_translate("Add Category");
 			$this->idgrp = $grpid;
 			$this->userid = $userid;
 			$this->count = count($grpid);
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			}
 
 		function getnextgroup()
@@ -56,12 +56,12 @@ function categoryCreate($userid, $grpid)
 		}
 
 	$temp = new temp($userid, $grpid);
-	$body->babecho(	babPrintTemplate($temp,"confcals.html", "categorycreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"confcals.html", "categorycreate"));
 	}
 
 function resourceCreate($userid, $grpid)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -77,14 +77,14 @@ function resourceCreate($userid, $grpid)
 
 		function temp($userid, $grpid)
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->groupsname = babTranslate("Groups");
-			$this->add = babTranslate("Add Resource");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->groupsname = bab_translate("Groups");
+			$this->add = bab_translate("Add Resource");
 			$this->idgrp = $grpid;
 			$this->userid = $userid;
 			$this->count = count($grpid);
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			}
 
 		function getnextgroup()
@@ -110,12 +110,12 @@ function resourceCreate($userid, $grpid)
 		}
 
 	$temp = new temp($userid, $grpid);
-	$body->babecho(	babPrintTemplate($temp,"confcals.html", "resourcecreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"confcals.html", "resourcecreate"));
 	}
 
 function categoriesList($grpid, $userid)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -137,13 +137,13 @@ function categoriesList($grpid, $userid)
 
 		function temp($grpid, $userid)
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->bgcolor = babTranslate("Color");
-			$this->group = babTranslate("Group");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->bgcolor = bab_translate("Color");
+			$this->group = bab_translate("Group");
 			$this->idgrp = $grpid;
 			$this->count = count($grpid);
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$this->userid = $userid;
 			$req = "select * from categoriescal";
 			$this->res = $this->db->db_query($req);
@@ -156,7 +156,7 @@ function categoriesList($grpid, $userid)
 			if( $i < $this->countcal)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->groupname = getGroupName($this->arr['id_group']);
+				$this->groupname = bab_getGroupName($this->arr['id_group']);
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)
 					{
@@ -167,7 +167,7 @@ function categoriesList($grpid, $userid)
 						}
 					}
 
-				$this->url = $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifycat&item=".$this->arr['id']."&userid=".$this->userid;
+				$this->url = $GLOBALS['babUrlScript']."?tg=confcal&idx=modifycat&item=".$this->arr['id']."&userid=".$this->userid;
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
@@ -182,12 +182,12 @@ function categoriesList($grpid, $userid)
 		}
 
 	$temp = new temp($grpid, $userid);
-	$body->babecho(	babPrintTemplate($temp, "confcals.html", "categorieslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "confcals.html", "categorieslist"));
 	}
 
 function resourcesList($grpid, $userid)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -208,12 +208,12 @@ function resourcesList($grpid, $userid)
 
 		function temp($grpid, $userid)
 			{
-			$this->name = babTranslate("Name");
-			$this->description = babTranslate("Description");
-			$this->group = babTranslate("Group");
+			$this->name = bab_translate("Name");
+			$this->description = bab_translate("Description");
+			$this->group = bab_translate("Group");
 			$this->idgrp = $grpid;
 			$this->count = count($grpid);
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$this->userid = $userid;
 			$req = "select * from resourcescal";
 			$this->res = $this->db->db_query($req);
@@ -236,8 +236,8 @@ function resourcesList($grpid, $userid)
 						break;
 						}
 					}
-				$this->groupname = getGroupName($this->arr['id_group']);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=confcal&idx=modifyres&item=".$this->arr['id']."&userid=".$this->userid;
+				$this->groupname = bab_getGroupName($this->arr['id_group']);
+				$this->url = $GLOBALS['babUrlScript']."?tg=confcal&idx=modifyres&item=".$this->arr['id']."&userid=".$this->userid;
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
@@ -252,25 +252,25 @@ function resourcesList($grpid, $userid)
 		}
 
 	$temp = new temp($grpid, $userid);
-	$body->babecho(	babPrintTemplate($temp, "confcals.html", "resourceslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "confcals.html", "resourceslist"));
 	}
 
 function addCalCategory($groups, $name, $description, $bgcolor)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("You must provide a name"). " !!";
+		$babBody->msgerror = bab_translate("You must provide a name"). " !!";
 		return;
 		}
 
 	$count = count ( $groups );
 	if( $count == 0 )
 		{
-		$body->msgerror = babTranslate("You must select at least one group"). " !!";
+		$babBody->msgerror = bab_translate("You must select at least one group"). " !!";
 		return;
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	for( $i = 0; $i < $count; $i++)
 		{		
@@ -278,7 +278,7 @@ function addCalCategory($groups, $name, $description, $bgcolor)
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
-			//$body->msgerror = babTranslate("ERROR: This category already exists");
+			//$babBody->msgerror = bab_translate("ERROR: This category already exists");
 			}
 		else
 			{
@@ -290,20 +290,20 @@ function addCalCategory($groups, $name, $description, $bgcolor)
 
 function addCalResource($groups, $name, $description)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("You must provide a name"). " !!";
+		$babBody->msgerror = bab_translate("You must provide a name"). " !!";
 		return;
 		}
 	$count = count ( $groups );
 	if( $count == 0 )
 		{
-		$body->msgerror = babTranslate("You must select at least one group"). " !!";
+		$babBody->msgerror = bab_translate("You must select at least one group"). " !!";
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	for( $i = 0; $i < $count; $i++)
 		{		
@@ -311,7 +311,7 @@ function addCalResource($groups, $name, $description)
 		$res = $db->db_query($query);
 		if( $db->db_num_rows($res) > 0)
 			{
-			//$body->msgerror = babTranslate("This resource already exists");
+			//$babBody->msgerror = bab_translate("This resource already exists");
 			}
 		else
 			{
@@ -339,7 +339,7 @@ if( isset($addres) && $addres == "add")
 $grpid = array();
 if( $userid == 0 )
 	{
-	if( !isUserAdministrator())
+	if( !bab_isUserAdministrator())
 		{
 		return;
 		}
@@ -347,7 +347,7 @@ if( $userid == 0 )
 	}
 else
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from groups where manager='".$userid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -365,35 +365,35 @@ switch($idx)
 	{
 	case "createcat":
 		categoryCreate($userid, $grpid);
-		$body->title = babTranslate("Create a calendar category");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("createcat", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=createcat&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
+		$babBody->title = bab_translate("Create a calendar category");
+		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("createcat", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=confcals&idx=createcat&userid=".$userid);
+		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 		break;
 	case "createres":
 		resourceCreate($userid, $grpid);
-		$body->title = babTranslate("Create Calendar resource");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
-		$body->addItemMenu("createres", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=createres&userid=".$userid);
+		$babBody->title = bab_translate("Create Calendar resource");
+		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
+		$babBody->addItemMenu("createres", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=confcals&idx=createres&userid=".$userid);
 		break;
 	case "listres":
 		resourcesList($grpid, $userid);
-		$body->title = babTranslate("Calendar resources list");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
-		$body->addItemMenu("createres", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=createres&userid=".$userid);
+		$babBody->title = bab_translate("Calendar resources list");
+		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
+		$babBody->addItemMenu("createres", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=confcals&idx=createres&userid=".$userid);
 		break;
 	case "listcat":
 	default:
 		categoriesList($grpid, $userid);
-		$body->title = babTranslate("Calendar categories list");
-		$body->addItemMenu("listcat", babTranslate("Categories"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listcat&userid=".$userid);
-		$body->addItemMenu("createcat", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=createcat&userid=".$userid);
-		$body->addItemMenu("listres", babTranslate("Resources"), $GLOBALS['babUrl']."index.php?tg=confcals&idx=listres&userid=".$userid);
+		$babBody->title = bab_translate("Calendar categories list");
+		$babBody->addItemMenu("listcat", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listcat&userid=".$userid);
+		$babBody->addItemMenu("createcat", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=confcals&idx=createcat&userid=".$userid);
+		$babBody->addItemMenu("listres", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=confcals&idx=listres&userid=".$userid);
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -9,7 +9,7 @@ include $babInstallPath."utilit/mailincl.php";
 function getContactId( $name )
 	{
 	$replace = array( " " => "", "-" => "");
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$hash = md5(strtolower(strtr($name, $replace)));
 	$req = "select * from contacts where hashname='".$hash."'";	
 	$res = $db->db_query($req);
@@ -26,7 +26,7 @@ function addAddress( $val, $to, &$class)
 {
 	if( !empty($val))
 	{
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 		$tmp = explode(",", $val);
 		for($i=0; $i<count($tmp); $i++)
 		{
@@ -37,10 +37,10 @@ function addAddress( $val, $to, &$class)
 			}
 			else if( strtolower(substr($addr, -3)) == "(g)")
 			{
-				$id = getUserId(substr($addr, 0, -3));
+				$id = bab_getUserId(substr($addr, 0, -3));
 				if( $id < 1) // it's a group
 				{
-					$idgrp = isMemberOf($addr);
+					$idgrp = bab_isMemberOfGroup($addr);
 					if( $idgrp > 0 )
 					{
 					$req = "select p1.firstname, p1.lastname, p1.email from users as p1, users_groups as p2 where p2.id_group='".$idgrp."' and p1.id=p2.id_object";
@@ -49,7 +49,7 @@ function addAddress( $val, $to, &$class)
 						{
 						while( $arr = $db->db_fetch_array($res))
 							{
-							$class->$to($arr['email'], composeName($arr['firstname'], $arr['lastname']));
+							$class->$to($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 							}
 						}
 					}
@@ -61,7 +61,7 @@ function addAddress( $val, $to, &$class)
 					if( $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$class->$to($arr['email'], composeName($arr['firstname'], $arr['lastname']));
+						$class->$to($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 						}
 				}
 			}
@@ -78,7 +78,7 @@ function addAddress( $val, $to, &$class)
 					if( $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$class->$to($arr['email'], composeName($arr['firstname'], $arr['lastname']));
+						$class->$to($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
 						}
 				}
 			}
@@ -89,7 +89,7 @@ function addAddress( $val, $to, &$class)
 
 function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -173,21 +173,21 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$this->reverse = 1;
 			if( !empty($reverse))
 				$this->reverse = $reverse;
-			$this->send = babTranslate("Send");
-			$this->cancel = babTranslate("Cancel");
-			$this->from = babTranslate("From");
-			$this->to = babTranslate("To");
-			$this->cc = babTranslate("Cc");
-			$this->bcc = babTranslate("Bcc");
-			$this->subject = babTranslate("Subject");
-			$this->attachments = babTranslate("Attachments");
-			$this->format = babTranslate("Format");
-			$this->plain = babTranslate("Plain text");
-			$this->html = babTranslate("Html");
-            $this->selectsig = "-- ".babTranslate("Select signature"). " --";
-			$this->none = "-- ".babTranslate("Select destinataire"). " --";
-			$this->urlto = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=address&idx=list')";
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			$this->send = bab_translate("Send");
+			$this->cancel = bab_translate("Cancel");
+			$this->from = bab_translate("From");
+			$this->to = bab_translate("To");
+			$this->cc = bab_translate("Cc");
+			$this->bcc = bab_translate("Bcc");
+			$this->subject = bab_translate("Subject");
+			$this->attachments = bab_translate("Attachments");
+			$this->format = bab_translate("Format");
+			$this->plain = bab_translate("Plain text");
+			$this->html = bab_translate("Html");
+            $this->selectsig = "-- ".bab_translate("Select signature"). " --";
+			$this->none = "-- ".bab_translate("Select destinataire"). " --";
+			$this->urlto = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=address&idx=list')";
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				{
 				$this->bhtml = 1;
 				$this->msie = 1;
@@ -197,7 +197,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 				$this->bhtml = 0;
 				$this->msie = 0;
 				}
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0)
@@ -232,7 +232,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' order by lastname asc";
 			$this->rescl = $this->db->db_query($req);
 			$this->countcl = $this->db->db_num_rows($this->rescl);
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			}
 
         function getnextsig()
@@ -263,30 +263,30 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		}
 	
 	$temp = new temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error);
-	//$body->babecho(	babPrintTemplate($temp,"mail.html", "mailcompose"));
-	echo babPrintTemplate($temp,"mail.html", "mailcompose");
+	//$babBody->babecho(	bab_printTemplate($temp,"mail.html", "mailcompose"));
+	echo bab_printTemplate($temp,"mail.html", "mailcompose");
 	}
 
 function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid)
 	{
-	global $body, $BAB_SESS_USERID;
+	global $babBody, $BAB_SESS_USERID;
 	if( empty($to))
 		{
-		$body->msgerror = babTranslate("You must fill to field !!");
+		$babBody->msgerror = bab_translate("You must fill to field !!");
 		return false;
 		}
 	if( empty($subject))
 		{
-		$body->msgerror = babTranslate("You must fill subject field !!");
+		$babBody->msgerror = bab_translate("You must fill subject field !!");
 		return false;
 		}
 	if( empty($message))
 		{
-		$body->msgerror = babTranslate("You must fill message field !!");
+		$babBody->msgerror = bab_translate("You must fill message field !!");
 		return false;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -336,23 +336,23 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 					$mime->mailFileAttach($files[$i], $files_name[$i], $files_type[$i]);
 			if(!$mime->send())
 				{
-				$body->msgerror = babTranslate("Error occured when sending email !!");
+				$babBody->msgerror = bab_translate("Error occured when sending email !!");
 				}
 			else
 				{
 				return true;
-				Header("Location: index.php?tg=inbox&idx=list&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 				}
 			}
 		else
 			{
-			$body->msgerror = babTranslate("Invalid mail domain !!");
+			$babBody->msgerror = bab_translate("Invalid mail domain !!");
 			return false;
 			}
 		}
 	else
 		{
-		$body->msgerror = babTranslate("Invalid mail account !!");
+		$babBody->msgerror = bab_translate("Invalid mail account !!");
 		return false;
 		}
 	}
@@ -360,8 +360,8 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 
 function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
     {
-    global $body, $BAB_SESS_USERID, $BAB_HASH_VAR;
-	$db = new db_mysql();
+    global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
+	$db = $GLOBALS['babDB'];
 	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
     if( $res && $db->db_num_rows($res) > 0 )
@@ -376,7 +376,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
             $mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
             if(!$mbox)
                 {
-                $body->msgerror = babTranslate("ERROR"). " : ". imap_last_error();
+                $babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
                 }
             else
                 {
@@ -425,19 +425,19 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
                 else
                     $subjectval = $re." ".$mhc[0]->text;
 
-                $msgbody .= get_part($mbox, $idreply, "TEXT/HTML");
+                $msgbody .= bab_getMimePart($mbox, $idreply, "TEXT/HTML");
                 if(!$msgbody)
                     {
 					$format = "plain";
-                    $msgbody = get_part($mbox, $idreply, "TEXT/PLAIN");
+                    $msgbody = bab_getMimePart($mbox, $idreply, "TEXT/PLAIN");
                     $msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a href='\\1'>\\1</a>",$msgbody); 
                     }
                 else
                     {
 					$format = "html";
-                    $msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2index.php?tg=inbox&accid=".$accid."&idx=getpart&msg=$msg&cid=\\3\\4", $msgbody);
+                    $msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$msg&cid=\\3\\4", $msgbody);
                     }
-                $messageval = CRLF.CRLF.CRLF.CRLF."------".babTranslate("Original Message")."------".CRLF;
+                $messageval = CRLF.CRLF.CRLF.CRLF."------".bab_translate("Original Message")."------".CRLF;
                 $messageval .= "From: ".$fromorg.CRLF;
                 $messageval .= "Sent: ".bab_strftime($headinfo->udate).CRLF;
                 $messageval .= "To: ".$toorg.CRLF;
@@ -462,14 +462,14 @@ function mailUnload()
 
 		function temp()
 			{
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
-			$this->message = babTranslate("Your message has been sent");
-			$this->close = babTranslate("Close");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->message = bab_translate("Your message has been sent");
+			$this->close = bab_translate("Close");
 			}
 		}
 
 	$temp = new temp();
-	echo babPrintTemplate($temp,"mail.html", "mailunload");
+	echo bab_printTemplate($temp,"mail.html", "mailunload");
 	}
 
 /* main */
@@ -515,22 +515,22 @@ switch($idx)
 	case "reply":
 	case "replyall":
 	case "forward":
-		$body->title = babTranslate("Email");
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-		$body->addItemMenu("compose", babTranslate("Compose"), $GLOBALS['babUrl']."index.php?tg=inbox&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		$babBody->title = bab_translate("Email");
+		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		$babBody->addItemMenu("compose", bab_translate("Compose"), $GLOBALS['babUrlScript']."?tg=inbox&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		mailReply($accid, $criteria, $reverse, $idreply, $all, $fw);
 		break;
 
 	default:
 	case "compose":
-		$body->title = babTranslate("Email");
-		$body->addItemMenu("list", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-		$body->addItemMenu("compose", babTranslate("Compose"), $GLOBALS['babUrl']."index.php?tg=inbox&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-	    composeMail($accid, $criteria, $reverse, $to, $cc, $bcc, $subject, /*$files_name*/array(), $format, $message, $sigid, $body->msgerror);
+		$babBody->title = bab_translate("Email");
+		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+		$babBody->addItemMenu("compose", bab_translate("Compose"), $GLOBALS['babUrlScript']."?tg=inbox&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
+	    composeMail($accid, $criteria, $reverse, $to, $cc, $bcc, $subject, /*$files_name*/array(), $format, $message, $sigid, $babBody->msgerror);
 		break;
 	}
 
 exit;
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

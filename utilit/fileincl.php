@@ -4,7 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-function getFullPath($gr, $id)
+function bab_getUploadFullPath($gr, $id)
 {
 	if( substr($GLOBALS['babUploadPath'], -1) == "/" )
 		$path = $GLOBALS['babUploadPath'];
@@ -17,7 +17,7 @@ function getFullPath($gr, $id)
 		return $path."U".$id."/";
 }
 
-function formatSize($size, $roundoff = true)
+function bab_formatSizeFile($size, $roundoff = true)
 {
 	if( $size <= 0 )
 		return 0;
@@ -46,7 +46,7 @@ function formatSize($size, $roundoff = true)
 		
 }
 
-function babDeleteFiles($path)
+function bab_deleteUploadDir($path)
 	{
 	if (file_exists($path))
 		{
@@ -58,7 +58,7 @@ function babDeleteFiles($path)
 				{
 		        if ($filename != "." && $filename != "..")
 					{
-			        babDeleteFiles($path."/".$filename);
+			        bab_deleteUploadDir($path."/".$filename);
 					}
 				}
 			closedir($handle);
@@ -72,11 +72,11 @@ function babDeleteFiles($path)
 	}
 
 
-function deleteUserFiles($gr, $id)
+function bab_deleteUploadUserFiles($gr, $id)
 	{
-	$db = new db_mysql();	
-	$pathx = getFullPath($gr, $id);
+	$db = $GLOBALS['babDB'];	
+	$pathx = bab_getUploadFullPath($gr, $id);
 	$db->db_query("delete from files where id_owner='".$id."' and bgroup='".$gr."'");
-	@babDeleteFiles($pathx);
+	@bab_deleteUploadDir($pathx);
 	}
 ?>

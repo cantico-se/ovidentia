@@ -4,10 +4,10 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-function isUserApprover($topics)
+function bab_isUserApprover($topics)
 	{
 	global $BAB_SESS_USERID;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from topics where id='$topics' and id_approver='$BAB_SESS_USERID'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -20,7 +20,7 @@ function isUserApprover($topics)
 		}
 	}
 
-function isUserGroupManager($grpid="")
+function bab_isUserGroupManager($grpid="")
 	{
 	global $BAB_SESS_USERID;
 	if( empty($BAB_SESS_USERID))
@@ -30,7 +30,7 @@ function isUserGroupManager($grpid="")
 		$query = "select * from groups where manager='$BAB_SESS_USERID'";
 	else
 		$query = "select * from groups where manager='$BAB_SESS_USERID' and id='$grpid'";
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -43,14 +43,14 @@ function isUserGroupManager($grpid="")
 	}
 
 
-function isMemberOf($groupname, $userid="")
+function bab_isMemberOfGroup($groupname, $userid="")
 {
 	global $BAB_SESS_USERID;
 	if( !empty($groupname))
 		{
 		if( $userid == "")
 			$userid = $BAB_SESS_USERID;
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 		$req = "select * from groups where name='$groupname'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0)
@@ -70,10 +70,10 @@ function isMemberOf($groupname, $userid="")
 		return 0;
 }
 
-function isUserAdministrator()
+function bab_isUserAdministrator()
 {
 	global $BAB_SESS_USERID;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from users_groups where id_object='".$BAB_SESS_USERID."' and id_group='3'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -85,16 +85,16 @@ function isUserAdministrator()
 }
 
 
-function isAccessValid($table, $idobject)
+function bab_isAccessValid($table, $idobject)
 {
-	global $body, $BAB_SESS_USERID, $LOGGED_IN;
+	global $babBody, $BAB_SESS_USERID, $LOGGED_IN;
 	$add = false;
 	if( !isset($idobject))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid item !!");
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid item !!");
 		return $add;
 		}
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from ".$table." where id_object='$idobject' and id_group='0'"; // everybody
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -142,9 +142,9 @@ function isAccessValid($table, $idobject)
 }
 
 /* for all users */
-function isUserAlreadyLogged($iduser)
+function bab_isUserAlreadyLogged($iduser)
 {
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req="select * from users_log where id_user='$iduser'";
 	$res=$db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -157,7 +157,7 @@ function isUserAlreadyLogged($iduser)
 }
 
 /* for current user */
-function userIsloggedin()
+function bab_userIsloggedin()
 	{
 	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$LOGGED_IN;
 
@@ -184,15 +184,15 @@ function userIsloggedin()
     return $LOGGED_IN;
 	}
 
-function getUserName($id)
+function bab_getUserName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from users where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		return composeName($arr['firstname'], $arr['lastname']);
+		return bab_composeUserName($arr['firstname'], $arr['lastname']);
 		}
 	else
 		{
@@ -200,10 +200,10 @@ function getUserName($id)
 		}
 	}
 
-function isUserVacationApprover($groupid = 0)
+function bab_isUserVacationApprover($groupid = 0)
 	{
 	global $BAB_SESS_USERID;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	if( $groupid == 0)
 		$query = "select * from vacationsman_groups where id_object='$BAB_SESS_USERID' or supplier='$BAB_SESS_USERID'";
 	else
@@ -221,9 +221,9 @@ function isUserVacationApprover($groupid = 0)
 	}
 
 
-function useVacation($iduser)
+function bab_isUserUseVacation($iduser)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from users_groups where id_object='$iduser' and isprimary='Y'";
 	$res = $db->db_query($query);
 
@@ -245,16 +245,16 @@ function useVacation($iduser)
 		}
 	}
 
-function getGroupName($id)
+function bab_getGroupName($id)
 	{
 	switch( $id )
 		{
 		case 1:
-			return babTranslate("Registered users");
+			return bab_translate("Registered users");
 		case 2:
-			return babTranslate("Unregistered users");
+			return bab_translate("Unregistered users");
 		default:
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			$query = "select * from groups where id='$id'";
 			$res = $db->db_query($query);
 			if( $res && $db->db_num_rows($res) > 0)
@@ -269,9 +269,9 @@ function getGroupName($id)
 		}
 	}
 
-function getPrimaryGroupId($userid)
+function bab_getPrimaryGroupId($userid)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from users_groups where id_object='$userid' and isprimary='Y'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -286,9 +286,9 @@ function getPrimaryGroupId($userid)
 	}
 
 /* 0 no access, 1 user, 2 user/manager, 3 manager*/ 
-function mailAccessLevel()
+function bab_mailAccessLevel()
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	$bemail = 0;
 	$req = "select * from users_groups join groups where id_object='".$GLOBALS['BAB_SESS_USERID']."' and mail='Y'";
@@ -308,12 +308,12 @@ function mailAccessLevel()
 	return $bemail;
 	}
 
-function fileManagerAccessLevel()
+function bab_fileManagerAccessLevel()
 	{
 	global $BAB_SESS_USERID;
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$aret = array();
-	$badmin = isUserAdministrator();
+	$badmin = bab_isUserAdministrator();
 
 	$req = "select * from groups where id=2 and (ustorage ='Y' or gstorage ='Y')";
 	$res = $db->db_query($req);
@@ -371,10 +371,10 @@ function fileManagerAccessLevel()
 	return $aret;
 	}
 
-function getUserId( $name )
+function bab_getUserId( $name )
 	{
 	$replace = array( " " => "", "-" => "");
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$hash = md5(strtolower(strtr($name, $replace)));
 	$query = "select * from users where hashname='".$hash."'";	
 	$res = $db->db_query($query);
@@ -387,9 +387,9 @@ function getUserId( $name )
 		return 0;
 	}
 
-function babReplace( $txt )
+function bab_replace( $txt )
 {
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$reg = "/\\\$ARTICLE\((.*?)\)/";
 	if( preg_match_all($reg, $txt, $m))
 		{
@@ -400,8 +400,8 @@ function babReplace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if(isAccessValid("topicsview_groups", $arr['id_topic'])) 
-					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS['babUrl']."index.php?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']."\">".$arr['title']."</a>", $txt);
+				if(bab_isAccessValid("topicsview_groups", $arr['id_topic'])) 
+					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']."\">".$arr['title']."</a>", $txt);
 				else
 					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr['title'], $txt);
 				}
@@ -418,7 +418,7 @@ function babReplace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrl']."/index.php?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
+				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrl']."/".$GLOBALS['babPhpSelf']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
 				}
 			else
 				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", $m[1][$k]." ".$m[2][$k], $txt);

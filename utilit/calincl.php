@@ -4,9 +4,9 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-function getCategoryCalName($id)
+function bab_getCategoryCalName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from categoriescal where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -20,9 +20,9 @@ function getCategoryCalName($id)
 		}
 	}
 
-function getResourceCalName($id)
+function bab_getResourceCalName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from resourcescal where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -36,9 +36,9 @@ function getResourceCalName($id)
 		}
 	}
 
-function getCalendarid($iduser, $type)
+function bab_getCalendarId($iduser, $type)
 {
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from calendar where owner='$iduser' and actif='Y' and type='".$type."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -52,9 +52,9 @@ function getCalendarid($iduser, $type)
 		}
 }
 
-function getCalendarType($idcal)
+function bab_getCalendarType($idcal)
 {
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from calendar where id='$idcal'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -68,9 +68,9 @@ function getCalendarType($idcal)
 		}
 }
 
-function getCalendarOwner($idcal)
+function bab_getCalendarOwner($idcal)
 {
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from calendar where id='$idcal'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -84,9 +84,9 @@ function getCalendarOwner($idcal)
 		}
 }
 
-function getEventTitle($evtid)
+function bab_getCalendarEventTitle($evtid)
 {
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from cal_events where id='$evtid'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -100,10 +100,10 @@ function getEventTitle($evtid)
 		}
 }
 
-function getCalendarOwnerName($idcal, $type)
+function bab_getCalendarOwnerName($idcal, $type)
 {
 	$ret = "";
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from calendar where id='$idcal'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -114,7 +114,7 @@ function getCalendarOwnerName($idcal, $type)
 			$query = "select * from users where id='".$arr['owner']."'";
 			$res = $db->db_query($query);
 			$arr = $db->db_fetch_array($res);
-			$ret = composeName( $arr['firstname'], $arr['lastname']);
+			$ret = bab_composeUserName( $arr['firstname'], $arr['lastname']);
 			}
 		else if( $type == 2)
 			{

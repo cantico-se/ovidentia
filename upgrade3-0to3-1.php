@@ -41,7 +41,7 @@ function updateConfig()
 function upgrade()
 {
 $ret = "";
-$db = new db_mysql();
+$db = $GLOBALS['babDB'];
 
 $req = "ALTER TABLE articles CHANGE body body LONGTEXT not null";
 $res = $db->db_query($req);

@@ -6,7 +6,7 @@
  ***********************************************************************/
 function changePassword()
 	{
-	global $body,$BAB_SESS_USERID;
+	global $babBody,$BAB_SESS_USERID;
 	class tempb
 		{
 		var $oldpwd;
@@ -17,15 +17,15 @@ function changePassword()
 
 		function tempb()
 			{
-			$this->oldpwd = babTranslate("Old Password");
-			$this->newpwd = babTranslate("New Password");
-			$this->renewpwd = babTranslate("Retype New Password");
-			$this->update = babTranslate("Update Password");
-			$this->title = babTranslate("Change password");
+			$this->oldpwd = bab_translate("Old Password");
+			$this->newpwd = bab_translate("New Password");
+			$this->renewpwd = bab_translate("Retype New Password");
+			$this->update = bab_translate("Update Password");
+			$this->title = bab_translate("Change password");
 			}
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from users where id='$BAB_SESS_USERID'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
@@ -33,15 +33,15 @@ function changePassword()
 	if( $arr['changepwd'] != 0)
 		{
 		$tempb = new tempb();
-		$body->babecho(	babPrintTemplate($tempb,"options.html", "changepassword"));
+		$babBody->babecho(	bab_printTemplate($tempb,"options.html", "changepassword"));
 		}
 	else
-		$body->msgerror = babTranslate("Sorry, You cannot change your password. Please contact administrator");
+		$babBody->msgerror = bab_translate("Sorry, You cannot change your password. Please contact administrator");
 	}
 
 function changeUserInfo($firstname, $lastname, $nickname, $email)
 	{
-	global $body,$BAB_SESS_USERID;
+	global $babBody,$BAB_SESS_USERID;
 	class temp
 		{
 		var $firstname;
@@ -63,29 +63,29 @@ function changeUserInfo($firstname, $lastname, $nickname, $email)
 			$this->lastnameval = $lastname != ""? $lastname: "";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->emailval = $email != ""? $email: "";
-			$this->firstname = babTranslate("First Name");
-			$this->lastname = babTranslate("Last Name");
-			$this->nickname = babTranslate("Nickname");
-			$this->email = babTranslate("Email");
+			$this->firstname = bab_translate("First Name");
+			$this->lastname = bab_translate("Last Name");
+			$this->nickname = bab_translate("Nickname");
+			$this->email = bab_translate("Email");
 
-			$this->password = babTranslate("Password");
-			$this->update = babTranslate("Update Info");
-			$this->title = babTranslate("Change user info");
+			$this->password = bab_translate("Password");
+			$this->update = bab_translate("Update Info");
+			$this->title = bab_translate("Change user info");
 			}
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from users where id='$BAB_SESS_USERID'";
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
 	$temp = new temp($firstname, $lastname, $nickname, $email);
-	$body->babecho(	babPrintTemplate($temp,"options.html", "changeuserinfo"));
+	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changeuserinfo"));
 	}
 
 function changeLanguage()
 	{
-	global $body;
+	global $babBody;
 
 	class tempa
 		{
@@ -102,11 +102,11 @@ function changeLanguage()
 		function tempa()
 			{
         	global $BAB_SESS_USERID;
-			$this->title = babTranslate("Prefered language");
-			$this->update = babTranslate("Update Language");
+			$this->title = bab_translate("Prefered language");
+			$this->update = bab_translate("Update Language");
             $this->count = 0;
 
-            $db = new db_mysql();
+            $db = $GLOBALS['babDB'];
             $req = "select * from users where id='$BAB_SESS_USERID'";
             $res = $db->db_query($req);
             if( $res && $db->db_num_rows($res) > 0 )
@@ -160,13 +160,13 @@ function changeLanguage()
 
 
     $tempa = new tempa();
-    $body->babecho(	babPrintTemplate($tempa,"options.html", "changelang"));
+    $babBody->babecho(	bab_printTemplate($tempa,"options.html", "changelang"));
 
     }
 
 function changeSkin()
 	{
-	global $body;
+	global $babBody;
 
 	class tempc
 		{
@@ -183,11 +183,11 @@ function changeSkin()
 		function tempc()
 			{
         	global $BAB_SESS_USERID;
-			$this->title = babTranslate("Prefered skin");
-			$this->update = babTranslate("Update Skin");
+			$this->title = bab_translate("Prefered skin");
+			$this->update = bab_translate("Update Skin");
             $this->count = 0;
 
-            $db = new db_mysql();
+            $db = $GLOBALS['babDB'];
             $req = "select * from users where id='$BAB_SESS_USERID'";
             $res = $db->db_query($req);
             if( $res && $db->db_num_rows($res) > 0 )
@@ -240,27 +240,27 @@ function changeSkin()
 
 
     $tempc = new tempc();
-    $body->babecho(	babPrintTemplate($tempc,"options.html", "changeskin"));
+    $babBody->babecho(	bab_printTemplate($tempc,"options.html", "changeskin"));
     }
 
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
-	global $body, $babInstallPath;
+	global $babBody, $babInstallPath;
 	include $babInstallPath."admin/register.php";
 
 	if( empty($oldpwd) || empty($newpwd1) || empty($newpwd2))
 		{
-		$body->msgerror = babTranslate("You must complete all fields !!");
+		$babBody->msgerror = bab_translate("You must complete all fields !!");
 		return;
 		}
 	if( $newpwd1 != $newpwd2)
 		{
-		$body->msgerror = babTranslate("Passwords not match !!");
+		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return;
 		}
 	if ( strlen($newpwd1) < 6 )
 		{
-		$body->msgerror = babTranslate("Password must be at least 6 characters !!");
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return;
 		}
 
@@ -273,11 +273,11 @@ function updateLanguage($lang)
     global $BAB_SESS_USERID;
 	if( !empty($lang))
 		{
-        $db = new db_mysql();
+        $db = $GLOBALS['babDB'];
         $req = "update users set lang='".$lang."' where id='".$BAB_SESS_USERID."'";
         $res = $db->db_query($req);
 		}
-	Header("Location: index.php?tg=options&idx=global");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
 function updateSkin($skin)
@@ -285,24 +285,24 @@ function updateSkin($skin)
     global $BAB_SESS_USERID;
 	if( !empty($skin))
 		{
-        $db = new db_mysql();
+        $db = $GLOBALS['babDB'];
         $req = "update users set skin='".$skin."' where id='".$BAB_SESS_USERID."'";
         $res = $db->db_query($req);
 		}
-	Header("Location: index.php?tg=options&idx=global");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
 function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 	{
-	global $body, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 
 	$password = strtolower($password);
 	$req = "select * from users where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$res = $db->db_query($req);
 	if (!$res || $db->db_num_rows($res) < 1)
 		{
-		$body->msgerror = babTranslate("Password incorrect");
+		$babBody->msgerror = bab_translate("Password incorrect");
 		return false;
 		}
 	else
@@ -310,13 +310,13 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 		$arr = $db->db_fetch_array($res);
 		if( empty($firstname) || empty($lastname) || empty($email))
 			{
-			$body->msgerror = babTranslate( "You must complete all fields !!");
+			$babBody->msgerror = bab_translate( "You must complete all fields !!");
 			return false;
 			}
 
-		if ( !isEmailValid($email))
+		if ( !bab_isEmailValid($email))
 			{
-			$body->msgerror = babTranslate("Your email is not valid !!");
+			$babBody->msgerror = bab_translate("Your email is not valid !!");
 			return false;
 			}
 		
@@ -326,16 +326,16 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 			$res = $db->db_query($req);
 			if( $db->db_num_rows($res) > 0)
 				{
-				$body->msgerror = babTranslate("This nickname already exists !!");
+				$babBody->msgerror = bab_translate("This nickname already exists !!");
 				return false;
 				}
 			}
 
 		if( $arr['firstname'] != $firstname || $arr['lastname'] != $lastname )
 			{
-			if( getUserId($firstname. " " . $lastname) != 0)
+			if( bab_getUserId($firstname. " " . $lastname) != 0)
 				{
-				$body->msgerror = babTranslate("Firstname and Lastname already exists !!");
+				$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
 				return false;
 				}
 			}
@@ -345,7 +345,7 @@ function updateUserInfo($password, $firstname, $lastname, $nickname, $email)
 		$req = "update users set firstname='".$firstname."', lastname='".$lastname."', nickname='".$nickname."', email='".$email."', confirm_hash='".$hash."', hashname='".$hashname."' where id='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 		$BAB_SESS_NICKNAME = $nickname;
-		$BAB_SESS_USER = composeName($firstname, $lastname);
+		$BAB_SESS_USER = bab_composeUserName($firstname, $lastname);
 		$BAB_SESS_EMAIL = $email;
 		$BAB_SESS_HASHID = $hash;
 		return true;
@@ -358,7 +358,7 @@ if(!isset($idx))
 	{
 	$idx = "global";
 	}
-$body->msgerror = "";
+$babBody->msgerror = "";
 
 if( isset($update))
 	{
@@ -391,7 +391,7 @@ function updateStateSection($c, $w, $closed)
 
 	if( !empty($BAB_SESS_USERID))
 		{
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 		$req = "select * from sections_states where type='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
 		$res = $db->db_query($req);
 		if( $res && $db->db_num_rows($res) > 0 )
@@ -407,7 +407,7 @@ function updateStateSection($c, $w, $closed)
 
 if( !isset($firstname) &&  !isset($lastname) && !isset($nickname) && !isset($email))
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "select * from users where id='".$BAB_SESS_USERID."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -432,21 +432,21 @@ switch($idx)
 
 	default:
 	case "global":
-		//$body->title = babTranslate("");
-		$idcal = getCalendarid($BAB_SESS_USERID, 1);
+		//$babBody->title = bab_translate("");
+		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		changeUserInfo($firstname, $lastname, $nickname, $email);
 		changePassword();
 		changeSkin();
 		changeLanguage();
-		$body->addItemMenu("global", babTranslate("Options"), $GLOBALS['babUrl']."index.php?tg=options&idx=global");
-		if( (getCalendarId(1, 2) != 0  || getCalendarId(getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
+		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
+		if( (bab_getCalendarId(1, 2) != 0  || bab_getCalendarId(bab_getPrimaryGroupId($BAB_SESS_USERID), 2) != 0) && $idcal != 0 )
 		{
-			$body->addItemMenu("calendar", babTranslate("Calendar"), $GLOBALS['babUrl']."index.php?tg=calopt&idx=options");
+			$babBody->addItemMenu("calendar", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 		}
-		if( mailAccessLevel())
-			$body->addItemMenu("options", babTranslate("Mail"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
+		if( bab_mailAccessLevel())
+			$babBody->addItemMenu("options", bab_translate("Mail"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -7,7 +7,7 @@
 
 function getSiteName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from sites where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -23,7 +23,7 @@ function getSiteName($id)
 
 function sitesList()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -41,11 +41,11 @@ function sitesList()
 
 		function temp()
 			{
-			$this->name = babTranslate("Site name");
-			$this->description = babTranslate("Description");
-			$this->lang = babTranslate("Lang");
-			$this->email = babTranslate("Email");
-			$this->db = new db_mysql();
+			$this->name = bab_translate("Site name");
+			$this->description = bab_translate("Description");
+			$this->lang = bab_translate("Lang");
+			$this->email = bab_translate("Email");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from sites";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -57,7 +57,7 @@ function sitesList()
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = $GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$this->arr['id'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
@@ -69,14 +69,14 @@ function sitesList()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "sites.html", "siteslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "siteslist"));
 	return $temp->count;
 	}
 
 
 function siteCreate($name, $description, $siteemail)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -102,12 +102,12 @@ function siteCreate($name, $description, $siteemail)
 		function temp($name, $description, $siteemail)
 			{
 
-			$this->name = babTranslate("Site name");
-			$this->description = babTranslate("Description");
-			$this->lang = babTranslate("Lang");
-			$this->skin = babTranslate("Skin");
-			$this->siteemail = babTranslate("Email site");
-			$this->create = babTranslate("Create");
+			$this->name = bab_translate("Site name");
+			$this->description = bab_translate("Description");
+			$this->lang = bab_translate("Lang");
+			$this->skin = bab_translate("Skin");
+			$this->siteemail = bab_translate("Email site");
+			$this->create = bab_translate("Create");
 
 			$this->nameval = $name == ""? $GLOBALS['babSiteName']: $name;
 			$this->descriptionval = $description == ""? "": $description;
@@ -169,13 +169,13 @@ function siteCreate($name, $description, $siteemail)
 		}
 
 	$temp = new temp($name, $description, $siteemail);
-	$body->babecho(	babPrintTemplate($temp,"sites.html", "sitecreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "sitecreate"));
 	}
 
 
 function viewVersion()
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $urlphpinfo;
@@ -190,29 +190,29 @@ function viewVersion()
 		function temp()
 			{
 			include $GLOBALS['babInstallPath']."version.inc";
-			$this->srcversiontxt = babTranslate("Ovidentia version");
+			$this->srcversiontxt = bab_translate("Ovidentia version");
 			$this->srcversion = $CurrentVersion.".".$CurrentRelease;
-			$this->phpversiontxt = babTranslate("Php version");
+			$this->phpversiontxt = bab_translate("Php version");
 			$this->phpversion = phpversion();//$GLOBALS['CurrentVersion'];
-			$this->baseversiontxt = babTranslate("Database server version");
-			$db = new db_mysql();
+			$this->baseversiontxt = bab_translate("Database server version");
+			$db = $GLOBALS['babDB'];
 			$arr = $db->db_fetch_array($db->db_query("show variables like 'version'"));
 			$this->baseversion = $arr['Value'];
-			$this->urlphpinfo = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=sites&idx=phpinfo');";
+			$this->urlphpinfo = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=sites&idx=phpinfo');";
 			$this->phpinfo = "phpinfo";
 			}
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp,"sites.html", "versions"));
+	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
 function siteSave($name, $description, $lang, $siteemail, $skin)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a name !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return false;
 		}
 
@@ -222,12 +222,12 @@ function siteSave($name, $description, $lang, $siteemail, $skin)
 		$name = addslashes($name);
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from sites where name='$name'";	
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This site already exists");
+		$babBody->msgerror = bab_translate("ERROR: This site already exists");
 		return false;
 		}
 	else
@@ -258,35 +258,35 @@ switch($idx)
 		break;
 
 	case "version":
-		$body->title = babTranslate("Ovidentia info");
+		$babBody->title = bab_translate("Ovidentia info");
 		viewVersion();
-		$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
-		$body->addItemMenu("version", babTranslate("Versions"),$GLOBALS['babUrl']."index.php?tg=sites&idx=version");
+		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
 		break;
 
 	case "create":
-		$body->title = babTranslate("Create site");
+		$babBody->title = bab_translate("Create site");
 		siteCreate($name, $description, $siteemail);
-		$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
-		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sites&idx=create");
-		$body->addItemMenu("version", babTranslate("Versions"),$GLOBALS['babUrl']."index.php?tg=sites&idx=version");
+		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sites&idx=create");
+		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
 		break;
 	case "list":
 	default:
-		$body->title = babTranslate("Sites list");
+		$babBody->title = bab_translate("Sites list");
 		if( sitesList() > 0 )
 			{
-			$body->addItemMenu("list", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
+			$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 			}
 		else
-			$body->title = babTranslate("There is no site");
+			$babBody->title = bab_translate("There is no site");
 
-		$body->addItemMenu("create", babTranslate("Create"),$GLOBALS['babUrl']."index.php?tg=sites&idx=create");
-		$body->addItemMenu("version", babTranslate("Versions"),$GLOBALS['babUrl']."index.php?tg=sites&idx=version");
+		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sites&idx=create");
+		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 
 ?>

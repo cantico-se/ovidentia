@@ -5,9 +5,9 @@
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
 
-function getForumName($id)
+function bab_getForumName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from forums where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -21,9 +21,9 @@ function getForumName($id)
 		}
 	}
 
-function isForumModerated($forum)
+function bab_isForumModerated($forum)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from forums where id='$forum'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -37,9 +37,9 @@ function isForumModerated($forum)
 	return false;
 	}
 
-function isThreadOpen($thread)
+function bab_isForumThreadOpen($thread)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from threads where id='$thread'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -53,9 +53,9 @@ function isThreadOpen($thread)
 	return false;
 	}
 
-function getThreadTitle($id)
+function bab_getForumThreadTitle($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from threads where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -76,12 +76,12 @@ function getThreadTitle($id)
 		}
 	}
 
-function isUserModerator($forum, $id)
+function bab_isUserForumModerator($forum, $id)
 	{
 	if( empty($forum) || empty($id))
 		return false;
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from forums where id='$forum' and moderator='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)

@@ -8,7 +8,7 @@ include $babInstallPath."admin/acl.php";
 
 function getSiteName($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from sites where id='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
@@ -25,7 +25,7 @@ function getSiteName($id)
 function siteModify($id)
 	{
 
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $name;
@@ -52,15 +52,15 @@ function siteModify($id)
 
 		function temp($id)
 			{
-			$this->name = babTranslate("Site name");
-			$this->description = babTranslate("Description");
-			$this->lang = babTranslate("Lang");
-			$this->skin = babTranslate("Skin");
-			$this->siteemail = babTranslate("Email site");
-			$this->create = babTranslate("Modify");
+			$this->name = bab_translate("Site name");
+			$this->description = bab_translate("Description");
+			$this->lang = bab_translate("Lang");
+			$this->skin = bab_translate("Skin");
+			$this->siteemail = bab_translate("Email site");
+			$this->create = bab_translate("Modify");
 			$this->id = $id;
 
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from sites where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
@@ -136,13 +136,13 @@ function siteModify($id)
 		}
 
 	$temp = new temp($id);
-	$body->babecho(	babPrintTemplate($temp, "sites.html", "sitemodify"));
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "sitemodify"));
 	}
 
 function siteHomePage0($id)
 	{
 
-	global $body;
+	global $babBody;
 	class temp0
 		{
 		var $create;
@@ -161,15 +161,15 @@ function siteHomePage0($id)
 
 		function temp0($id)
 			{
-			$this->title = babTranslate("Unregistered users home page");
-			$this->listhometxt = babTranslate("---- Proposed Home articles ----");
-			$this->listpagetxt = babTranslate("---- Home page articles ----");
-			$this->moveup = babTranslate("Move Up");
-			$this->movedown = babTranslate("Move Down");
-			$this->create = babTranslate("Modify");
+			$this->title = bab_translate("Unregistered users home page");
+			$this->listhometxt = bab_translate("---- Proposed Home articles ----");
+			$this->listpagetxt = bab_translate("---- Home page articles ----");
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->create = bab_translate("Modify");
 			$this->id = $id;
 
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from homepages where id_group='2' and id_site='$id' and ordering='0'";
 			$this->reshome0 = $this->db->db_query($req);
 			$this->counthome0 = $this->db->db_num_rows($this->reshome0);
@@ -216,13 +216,13 @@ function siteHomePage0($id)
 		}
 
 	$temp0 = new temp0($id);
-	$body->babecho(	babPrintTemplate($temp0, "sites.html", "sitehomepage0"));
+	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "sitehomepage0"));
 	}
 
 function siteHomePage1($id)
 	{
 
-	global $body;
+	global $babBody;
 	class temp1
 		{
 		var $create;
@@ -241,15 +241,15 @@ function siteHomePage1($id)
 
 		function temp1($id)
 			{
-			$this->title = babTranslate("Registered users home page");
-			$this->listhometxt = babTranslate("---- Proposed Home articles ----");
-			$this->listpagetxt = babTranslate("---- Home page articles ----");
-			$this->moveup = babTranslate("Move Up");
-			$this->movedown = babTranslate("Move Down");
-			$this->create = babTranslate("Modify");
+			$this->title = bab_translate("Registered users home page");
+			$this->listhometxt = bab_translate("---- Proposed Home articles ----");
+			$this->listpagetxt = bab_translate("---- Home page articles ----");
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->create = bab_translate("Modify");
 			$this->id = $id;
 
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from homepages where id_group='1' and id_site='$id' and ordering='0'";
 			$this->reshome1 = $this->db->db_query($req);
 			$this->counthome1 = $this->db->db_num_rows($this->reshome1);
@@ -296,12 +296,12 @@ function siteHomePage1($id)
 		}
 
 	$temp0 = new temp1($id);
-	$body->babecho(	babPrintTemplate($temp0, "sites.html", "sitehomepage1"));
+	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "sitehomepage1"));
 	}
 
 function sectionDelete($id)
 	{
-	global $body;
+	global $babBody;
 	
 	class temp
 		{
@@ -317,26 +317,26 @@ function sectionDelete($id)
 
 		function temp($id)
 			{
-			$this->message = babTranslate("Are you sure you want to delete this site");
+			$this->message = bab_translate("Are you sure you want to delete this site");
 			$this->title = getSiteName($id);
-			$this->warning = babTranslate("WARNING: This operation will delete the site and all references"). "!";
-			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=site&idx=Delete&site=".$id."&action=Yes";
-			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$id;
-			$this->no = babTranslate("No");
+			$this->warning = bab_translate("WARNING: This operation will delete the site and all references"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=site&idx=Delete&site=".$id."&action=Yes";
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$id;
+			$this->no = bab_translate("No");
 			}
 		}
 
 	$temp = new temp($id);
-	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 function siteUpdate($id, $name, $description, $lang, $siteemail, $skin)
 	{
-	global $body;
+	global $babBody;
 	if( empty($name))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a name !!");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return false;
 		}
 
@@ -346,12 +346,12 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin)
 		$name = addslashes($name);
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from sites where name='$name' and id!='$id'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
-		$body->msgerror = babTranslate("ERROR: This site already exists");
+		$babBody->msgerror = bab_translate("ERROR: This site already exists");
 		return false;
 		}
 	else
@@ -359,22 +359,22 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin)
 		$query = "update sites set name='$name', description='$description', lang='$lang', adminemail='$siteemail', skin='$skin' where id='$id'";
 		$db->db_query($query);
 		}
-	Header("Location: index.php?tg=sites&idx=list");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
 function confirmDeleteSite($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 
 	// delete site
 	$req = "delete from sites where id='$id'";
 	$res = $db->db_query($req);
-	Header("Location: index.php?tg=sites&idx=list");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
 function siteUpdateHomePage0($item, $listpage0)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "update homepages set ordering='0' where id_site='".$item."' and id_group='2'";
 	$res = $db->db_query($req);
 
@@ -388,7 +388,7 @@ function siteUpdateHomePage0($item, $listpage0)
 
 function siteUpdateHomePage1($item, $listpage1)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "update homepages set ordering='0' where id_site='".$item."' and id_group='1'";
 	$res = $db->db_query($req);
 
@@ -432,25 +432,25 @@ if( isset($action) && $action == "Yes")
 switch($idx)
 	{
 	case "Delete":
-		$body->title = getSiteName($item);
+		$babBody->title = getSiteName($item);
 		sectionDelete($item);
-		$body->addItemMenu("List", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
-		$body->addItemMenu("modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=site&idx=Delete&item=".$item);
+		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=site&idx=Delete&item=".$item);
 		break;
 	default:
 	case "modify":
-		$body->title = getSiteName($item);
+		$babBody->title = getSiteName($item);
 		siteModify($item);
 		siteHomePage0($item);
 		siteHomePage1($item);
-		$body->addItemMenu("List", babTranslate("Sites"),$GLOBALS['babUrl']."index.php?tg=sites&idx=list");
-		$body->addItemMenu("modify", babTranslate("Modify"),$GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"),$GLOBALS['babUrl']."index.php?tg=site&idx=Delete&item=".$item);
+		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"),$GLOBALS['babUrlScript']."?tg=site&idx=Delete&item=".$item);
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 
 ?>

@@ -9,7 +9,7 @@ include $babInstallPath."utilit/vacincl.php";
 
 function findVacations()
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -34,13 +34,13 @@ function findVacations()
 			{
 			global $BAB_SESS_USERID;
 
-			$this->group = babTranslate("Group name");
-			$this->status = babTranslate("Status");
-			$this->user = babTranslate("User email");
-			$this->all = babTranslate("All");
-			$this->search = babTranslate("List");
+			$this->group = bab_translate("Group name");
+			$this->status = bab_translate("Status");
+			$this->user = bab_translate("User email");
+			$this->all = bab_translate("All");
+			$this->search = bab_translate("List");
 
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from vacationsmana_groups where id_object='$BAB_SESS_USERID' and approver='Y'";
 			$this->resgroups = $this->db->db_query($req);
 			$this->countgroups = $this->db->db_num_rows($this->resgroups);
@@ -56,7 +56,7 @@ function findVacations()
 			if( $i < $this->countgroups)
 				{
 				$arr = $this->db->db_fetch_array($this->resgroups);
-				$this->groupname = getGroupName($arr['id_group']);
+				$this->groupname = bab_getGroupName($arr['id_group']);
 				$this->groupid = $arr['id_group'];
 				$i++;
 				return true;
@@ -72,7 +72,7 @@ function findVacations()
 			if( $i < $this->countstatus)
 				{
 				$arr = $this->db->db_fetch_array($this->resstatus);
-				$this->statusname = getstatusName($arr['id']);
+				$this->statusname = bab_getStatusName($arr['id']);
 				$this->statusid = $arr['id'];
 				$i++;
 				return true;
@@ -84,13 +84,13 @@ function findVacations()
 		}
 
 	$temp = new temp();
-	$body->babecho(	babPrintTemplate($temp, "vacapp.html", "findvacations"));
+	$babBody->babecho(	bab_printTemplate($temp, "vacapp.html", "findvacations"));
 	return $temp->count;
 	}
 
 function listVacations( $group, $email)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -109,11 +109,11 @@ function listVacations( $group, $email)
 		function temp($group, $email)
 			{
 			global $BAB_SESS_USERID;
-			$this->type = babTranslate("Type");
-			$this->begin = babTranslate("Begin date");
-			$this->end = babTranslate("End date");
-			$this->user = babTranslate("User");
-			$this->db = new db_mysql();
+			$this->type = bab_translate("Type");
+			$this->begin = bab_translate("Begin date");
+			$this->end = bab_translate("End date");
+			$this->user = bab_translate("User");
+			$this->db = $GLOBALS['babDB'];
 
 			$thsi->email = $email;
 			$req = "select id_group, ordering, status from vacationsman_groups join groups where id_object='$BAB_SESS_USERID'";
@@ -196,9 +196,9 @@ function listVacations( $group, $email)
 				$arr = $this->db->db_fetch_array($this->resvac);
 				$this->datebegin = bab_strftime(bab_mktime($arr['datebegin']), false) . "  " . $babDayType[$arr['daybegin']];
 				$this->dateend = bab_strftime(bab_mktime($arr['dateend']), false) . "  " . $babDayType[$arr['dayend']];
-				//$this->statusval = getStatusName($arr['status']);
-				$this->userurl = $GLOBALS['babUrl']."index.php?tg=vacapp&idx=updatevac&item=".$arr['id']."&groupid=".$this->groupid;
-				$this->username = getUserName($this->userid);
+				//$this->statusval = bab_getStatusName($arr['status']);
+				$this->userurl = $GLOBALS['babUrlScript']."?tg=vacapp&idx=updatevac&item=".$arr['id']."&groupid=".$this->groupid;
+				$this->username = bab_getUserName($this->userid);
 				$req = "select * from vacations_types where id='".$arr['type']."'";
 				$r = $this->db->db_query($req);
 				$ar = $this->db->db_fetch_array($r);
@@ -216,13 +216,13 @@ function listVacations( $group, $email)
 		}
 
 	$temp = new temp($group, $email);
-	$body->babecho(	babPrintTemplate($temp, "vacapp.html", "vacationslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "vacapp.html", "vacationslist"));
 	return $temp->count;
 	}
 
 function updateVacation($vacid, $groupid)
 	{
-	global $body;
+	global $babBody;
 	
 	class temp
 		{
@@ -251,27 +251,27 @@ function updateVacation($vacid, $groupid)
 		function temp($vacid, $groupid)
 			{
 			global $babDayType;
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			$req = "select * from vacations where id='".$vacid."'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 			$this->groupid = $groupid;
-			$this->from = babTranslate("From");
-			$this->to = babTranslate("To");
-			$this->type = babTranslate("Vacation type");
-			$this->remarkstext = babTranslate("Remarks");
-			$this->confirm = babTranslate("Update");
-			$this->refused = babTranslate("Refused");
-			$this->accepted = babTranslate("Accepted");
-			$this->commentrefused = babTranslate("Reasons of refusal");
-			$this->user = babTranslate("User");
+			$this->from = bab_translate("From");
+			$this->to = bab_translate("To");
+			$this->type = bab_translate("Vacation type");
+			$this->remarkstext = bab_translate("Remarks");
+			$this->confirm = bab_translate("Update");
+			$this->refused = bab_translate("Refused");
+			$this->accepted = bab_translate("Accepted");
+			$this->commentrefused = bab_translate("Reasons of refusal");
+			$this->user = bab_translate("User");
 			$this->datefrom = bab_strftime(bab_mktime($arr['datebegin']), false);
 			$this->halfdayfrom = $babDayType[$arr['daybegin']];
 
 			$this->dateto = bab_strftime(bab_mktime($arr['dateend']), false);
 			$this->halfdayto =  $babDayType[$arr['dayend']];
 			$this->remarks = $arr['comment'];
-			$this->username = getUserName($arr['userid']);
+			$this->username = bab_getUserName($arr['userid']);
 
 			$req = "select * from vacations_types where id='".$arr['type']."'";
 			$res = $db->db_query($req);
@@ -304,27 +304,27 @@ function updateVacation($vacid, $groupid)
 		}
 
 	$temp = new temp($vacid, $groupid);
-	$body->babecho(	babPrintTemplate($temp,"vacapp.html", "updatevacation"));
+	$babBody->babecho(	bab_printTemplate($temp,"vacapp.html", "updatevacation"));
 	}
 
 function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 	{
 		global $BAB_SESS_USERID, $babAdminEmail, $babDayType;
 
-		$db = new db_mysql();
+		$db = $GLOBALS['babDB'];
 		$req = "select * from vacations where id='".$vacid."'";
 		$res = $db->db_query($req);
 		$arr = $db->db_fetch_array($res);
 
-		$subject = babTranslate("Vacation request"); 
-		$username = getUserName($arr['userid']);
+		$subject = bab_translate("Vacation request"); 
+		$username = bab_getUserName($arr['userid']);
 	
-		$message = babTranslate("Mr")."/".babTranslate("Mrs"). " ". $username . " ." .babTranslate("request a vacation").":\n";
-		$message .= babTranslate("Request date") .": " . bab_strftime(bab_mktime($arr['date']), false) ."\n";
+		$message = bab_translate("Mr")."/".bab_translate("Mrs"). " ". $username . " ." .bab_translate("request a vacation").":\n";
+		$message .= bab_translate("Request date") .": " . bab_strftime(bab_mktime($arr['date']), false) ."\n";
 
-		$message .= babTranslate("Vacation").":\n";
-		$message .= babTranslate("from"). " " . bab_strftime(bab_mktime($arr['datebegin']), false). " ". $babDayType[$arr['daybegin']] . "\n";
-		$message .= babTranslate("to"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend']] . "\n";
+		$message .= bab_translate("Vacation").":\n";
+		$message .= bab_translate("from"). " " . bab_strftime(bab_mktime($arr['datebegin']), false). " ". $babDayType[$arr['daybegin']] . "\n";
+		$message .= bab_translate("to"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend']] . "\n";
 
 		$req = "select * from users where id='".$arr['userid']."'";
 		$res = $db->db_query($req);
@@ -352,7 +352,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 				{
 				$req = "select * from vacationsman_groups where id_group='".$groupid."' and id_object!='".$BAB_SESS_USERID."'";
 				$newstatus = 2;
-				$result = babTranslate("has been accepted");
+				$result = bab_translate("has been accepted");
 				}
 			else
 				{
@@ -360,7 +360,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 				$res = $db->db_query($req);
 				$r = $db->db_fetch_array($res);
 				$newstatus = $r['status'];
-				$result = babTranslate("has a new status")." :" . getStatusName($newstatus);
+				$result = bab_translate("has a new status")." :" . bab_getStatusName($newstatus);
 			}
 		}
 
@@ -379,7 +379,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		if( $status != 0 && $ordering != 0)
 		{
 			mail($email, $subject, $message.$result, $header);
-			$result = babTranslate("is waiting to be validated");
+			$result = bab_translate("is waiting to be validated");
 			$email = implode($arrrecipients, " ");
 			mail($email, $subject, $message.$result, $header);
 		}
@@ -414,36 +414,36 @@ if( isset($updatevac) && $updatevac == "update")
 switch($idx)
 	{
 	case "updatevac":
-		if( isUserVacationApprover())
+		if( bab_isUserVacationApprover())
 			{
-			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=listvac");
-			//$body->addItemMenu("findvac", babTranslate("Search"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=findvac");
-			$body->addItemMenu("updatevac", babTranslate("Update"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=updatevac&item=".$item);
+			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=listvac");
+			//$babBody->addItemMenu("findvac", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=findvac");
+			$babBody->addItemMenu("updatevac", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=updatevac&item=".$item);
 			updateVacation($item, $groupid);
 			}
 		break;
 
 	/*
 	case "findvac":
-		if( isUserVacationApprover())
+		if( bab_isUserVacationApprover())
 			{
-			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=listvac");
-			$body->addItemMenu("findvac", babTranslate("Search"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=findvac");
+			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=listvac");
+			$babBody->addItemMenu("findvac", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=findvac");
 			findVacations();
 			}
 		break;
 	*/
 	case "listvac":
 	default:
-		if( isUserVacationApprover())
+		if( bab_isUserVacationApprover())
 			{
-			$body->addItemMenu("listvac", babTranslate("Vacations"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=listvac");
-			//$body->addItemMenu("findvac", babTranslate("Search"), $GLOBALS['babUrl']."index.php?tg=vacapp&idx=findvac");
+			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=listvac");
+			//$babBody->addItemMenu("findvac", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=findvac");
 			listVacations("","");
 			}
 
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

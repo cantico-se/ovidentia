@@ -9,7 +9,7 @@ include $babInstallPath."utilit/topincl.php";
 
 function listArticles($topics)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -25,7 +25,7 @@ function listArticles($topics)
 
 		function temp($topics)
 			{
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from articles where id_topic='$topics' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -39,12 +39,12 @@ function listArticles($topics)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = babReplace($this->arr['head']);
-				$this->moreurl = $GLOBALS['babUrl']."index.php?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
+				$this->content = bab_replace($this->arr['head']);
+				$this->moreurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 				if( isset($new) && $new > 0)
 					$this->more .= "&new=".$new;
 
-				$this->morename = babTranslate("Read more")."...";
+				$this->morename = bab_translate("Read more")."...";
 				$i++;
 				return true;
 				}
@@ -54,12 +54,12 @@ function listArticles($topics)
 		}
 	
 	$temp = new temp($topics);
-	$body->babecho(	babPrintTemplate($temp,"waiting.html", "introlist"));
+	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "introlist"));
 	}
 
 function readMore($topics, $article)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -74,7 +74,7 @@ function readMore($topics, $article)
 
 		function temp($topics, $article)
 			{
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from articles where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -87,7 +87,7 @@ function readMore($topics, $article)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = babReplace($this->arr['body']);
+				$this->content = bab_replace($this->arr['body']);
 				$i++;
 				return true;
 				}
@@ -97,19 +97,19 @@ function readMore($topics, $article)
 		}
 	
 	$temp = new temp($topics, $article);
-	$body->babecho(	babPrintTemplate($temp,"waiting.html", "readmore"));
+	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "readmore"));
 	}
 
 function modifyArticle($topics, $article)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
 	
 		var $head;
 		var $headval;
-		var $body;
+		var $babBody;
 		var $bodyval;
 		var $title;
 		var $titleval;
@@ -126,11 +126,11 @@ function modifyArticle($topics, $article)
 			{
 			$this->article = $article;
 			$this->topics = $topics;
-			$this->head = babTranslate("Head");
-			$this->body = babTranslate("Body");
-			$this->title = babTranslate("Title");
-			$this->modify = babTranslate("Modify");
-			$this->db = new db_mysql();
+			$this->head = bab_translate("Head");
+			$this->body = bab_translate("Body");
+			$this->title = bab_translate("Title");
+			$this->modify = bab_translate("Modify");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from articles where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -141,7 +141,7 @@ function modifyArticle($topics, $article)
 				$this->bodyval = htmlentities($this->arr['body']);
 				$this->titleval = $this->arr['title'];
 				}
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -149,12 +149,12 @@ function modifyArticle($topics, $article)
 		}
 	
 	$temp = new temp($topics, $article);
-	$body->babecho(	babPrintTemplate($temp,"waiting.html", "modifyarticle"));
+	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "modifyarticle"));
 	}
 
 function confirmArticle($article, $topics)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -184,19 +184,19 @@ function confirmArticle($article, $topics)
 			$this->article = $article;
 			$this->topics = $topics;
 			$this->new = $new;
-			$this->name = babTranslate("Submiter");
-			$this->modify = babTranslate("Update");
-			$this->action = babTranslate("Action");
-			$this->confirm = babTranslate("Confirm");
-			$this->refuse = babTranslate("Refuse");
-			$this->homepage0 = babTranslate("Add to unregistered users home page");
-			$this->homepage1 = babTranslate("Add to registered users home page");
-			$this->what = babTranslate("Send an email to author");
-			$this->message = babTranslate("Message");
+			$this->name = bab_translate("Submiter");
+			$this->modify = bab_translate("Update");
+			$this->action = bab_translate("Action");
+			$this->confirm = bab_translate("Confirm");
+			$this->refuse = bab_translate("Refuse");
+			$this->homepage0 = bab_translate("Add to unregistered users home page");
+			$this->homepage1 = bab_translate("Add to registered users home page");
+			$this->what = bab_translate("Send an email to author");
+			$this->message = bab_translate("Message");
 			$this->confval = "article";
 			$this->idxval = "Waiting";
 
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from articles where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -206,19 +206,19 @@ function confirmArticle($article, $topics)
 				$req = "select * from users where id='".$arr['id_author']."'";
 				$this->res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($this->res);
-				$this->fullname = composeName($arr2['firstname'], $arr2['lastname']);
+				$this->fullname = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
 				$this->author = $arr['id_author'];
 				}
 			}
 		}
 	
 	$temp = new temp($topics, $article);
-	$body->babecho(	babPrintTemplate($temp,"waiting.html", "confirmarticle"));
+	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "confirmarticle"));
 	}
 
 function listWaitingComments($topics, $article, $newc)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -236,7 +236,7 @@ function listWaitingComments($topics, $article, $newc)
 
 		function temp($topics, $article, $newc)
 			{
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from comments where id_article='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -257,7 +257,7 @@ function listWaitingComments($topics, $article, $newc)
 					$this->alternate = 0;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
-				$this->subjecturl = $GLOBALS['babUrl']."index.php?tg=waiting&idx=ReadC&topics=".$this->topics."&article=".$this->article."&com=".$this->arr['id']."&newc=".$this->newc;
+				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=waiting&idx=ReadC&topics=".$this->topics."&article=".$this->article."&com=".$this->arr['id']."&newc=".$this->newc;
 				if( empty($this->arr['subject']))
 					$this->subjectname = "-oOo-";
 				else
@@ -271,13 +271,13 @@ function listWaitingComments($topics, $article, $newc)
 		}
 	
 	$temp = new temp($topics, $article, $newc);
-	$body->babecho(	babPrintTemplate($temp,"comments.html", "commentslist"));
+	$babBody->babecho(	bab_printTemplate($temp,"comments.html", "commentslist"));
 	return $temp->count;
 	}
 
 function readComment($topics, $article, $com)
 	{
-	global $body;
+	global $babBody;
 	
 	class ctp
 		{
@@ -289,12 +289,12 @@ function readComment($topics, $article, $com)
 
 		function ctp($topics, $article, $com)
 			{
-			$this->subject = babTranslate("Subject");
-			$this->by = babTranslate("By");
-			$this->date = babTranslate("Date");
+			$this->subject = bab_translate("Subject");
+			$this->by = bab_translate("By");
+			$this->date = bab_translate("Date");
 			$this->topics = $topics;
 			$this->article = $article;
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			$req = "select * from comments where id='$com'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
@@ -303,13 +303,13 @@ function readComment($topics, $article, $com)
 		}
 
 	$ctp = new ctp($topics, $article, $com);
-	$body->babecho(	babPrintTemplate($ctp,"comments.html", "commentread"));
+	$babBody->babecho(	bab_printTemplate($ctp,"comments.html", "commentread"));
 	}
 
 
 function confirmComment($article, $topics, $com, $newc)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -339,17 +339,17 @@ function confirmComment($article, $topics, $com, $newc)
 			$this->topics = $topics;
 			$this->new = $newc;
 			$this->com = $com;
-			$this->name = babTranslate("Submiter");
-			$this->modify = babTranslate("Update");
-			$this->action = babTranslate("Action");
-			$this->confirm = babTranslate("Confirm");
-			$this->refuse = babTranslate("Refuse");
-			$this->what = babTranslate("Send an email to author");
-			$this->message = babTranslate("Message");
+			$this->name = bab_translate("Submiter");
+			$this->modify = bab_translate("Update");
+			$this->action = bab_translate("Action");
+			$this->confirm = bab_translate("Confirm");
+			$this->refuse = bab_translate("Refuse");
+			$this->what = bab_translate("Send an email to author");
+			$this->message = bab_translate("Message");
 			$this->confval = "comment";
 			$this->idxval = "WaitingC";
 
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from comments where id='$com'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -363,12 +363,12 @@ function confirmComment($article, $topics, $com, $newc)
 		}
 	
 	$temp = new temp($topics, $article, $com, $newc);
-	$body->babecho(	babPrintTemplate($temp,"waiting.html", "confirmcomment"));
+	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "confirmcomment"));
 	}
 
 function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 	{
-	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include $babInstallPath."utilit/mailincl.php";
 
 	class tempa
@@ -388,19 +388,19 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 		function tempa($subject, $msg, $title, $from, $to)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-            $this->about = babTranslate("About your article");
-            $this->title = babTranslate("Title");
+            $this->about = bab_translate("About your article");
+            $this->title = bab_translate("Title");
             $this->titlename = $title;
-            $this->site = babTranslate("Web site");
+            $this->site = bab_translate("Web site");
             $this->sitename = $babSiteName;
-            $this->date = babTranslate("Date");
+            $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
             $this->message = $msg;
 			}
 		}
 	
 	$tempa = new tempa($subject, $msg, $title, $from, $to);
-	$message = babPrintTemplate($tempa,"mailinfo.html", "confirmarticle");
+	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmarticle");
 
     $mail = new babMail();
     $mail->mailTo($to);
@@ -412,8 +412,8 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 
 function updateConfirmArticle($topics, $article, $action, $send, $author, $message, $homepage0, $homepage1)
 	{
-	global $body, $new;
-	$db = new db_mysql();
+	global $babBody, $new;
+	$db = $GLOBALS['babDB'];
 
 	$query = "select * from articles where id='$article'";
 	$res = $db->db_query($query);
@@ -436,7 +436,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	if( $action == "1")
 		{
 		$query = "update articles set confirmed='Y' where id = '$article'";
-		$subject = babTranslate("Your article has been accepted");
+		$subject = bab_translate("Your article has been accepted");
 		$res = $db->db_query($query);
 
 		$query = "select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
@@ -461,7 +461,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	else
 		{
 		$query = "delete from articles where id = '$article'";
-		$subject = babTranslate("Your article has been refused");
+		$subject = bab_translate("Your article has been refused");
 		$res = $db->db_query($query);
 		}
 
@@ -476,21 +476,21 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 
 	$new--;
 	if( $new < 1)
-		Header("Location: index.php?tg=articles&topics=".$topics);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 	}
 
 
 function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	{
-	global $body;
+	global $babBody;
 
 	if( empty($title))
 		{
-		$body->msgerror = babTranslate("ERROR: You must provide a title");
+		$babBody->msgerror = bab_translate("ERROR: You must provide a title");
 		return;
 		}
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	if(get_cfg_var("magic_quotes_gpc"))
 		{
 		$headtext = stripslashes($headtext);
@@ -499,14 +499,14 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$req = "update articles set title='$title', head='$headtext', body='$bodytext' where id='$article'";
 	$res = $db->db_query($req);		
 	}
 
 function notifyCommentAuthor($subject, $msg, $from, $to)
 	{
-	global $body, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
     include $babInstallPath."utilit/mailincl.php";
 
 	class tempa
@@ -524,17 +524,17 @@ function notifyCommentAuthor($subject, $msg, $from, $to)
 		function tempa($subject, $msg, $from, $to)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
-            $this->about = babTranslate("About your comment");
-            $this->site = babTranslate("Web site");
+            $this->about = bab_translate("About your comment");
+            $this->site = bab_translate("Web site");
             $this->sitename = $babSiteName;
-            $this->date = babTranslate("Date");
+            $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
             $this->message = $msg;
 			}
 		}
 	
 	$tempa = new tempa($subject, $msg, $from, $to);
-	$message = babPrintTemplate($tempa,"mailinfo.html", "confirmcomment");
+	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmcomment");
 
     $mail = new babMail();
     $mail->mailTo($to);
@@ -546,9 +546,9 @@ function notifyCommentAuthor($subject, $msg, $from, $to)
 
 function updateConfirmComment($topics, $article, $action, $send, $author, $message, $com, $newc)
 	{
-	global $body, $new, $BAB_SESS_USER, $babAdminEmail;
+	global $babBody, $new, $BAB_SESS_USER, $babAdminEmail;
 
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "select * from comments where id='$com'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
@@ -572,13 +572,13 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 		$msg = nl2br($message);
 		if(get_cfg_var("magic_quotes_gpc"))
 			$msg = stripslashes($msg);
-		//mail ($arr['email'], babTranslate("About your comment"), $msg,"From: ".$arr2['email']);
+		//mail ($arr['email'], bab_translate("About your comment"), $msg,"From: ".$arr2['email']);
         notifyCommentAuthor($subject, $msg, empty($BAB_SESS_USER)? $babAdminEmail: $BAB_SESS_USER, $arr['email']);
 		}
 
 	$newc--;
 	if( $newc < 1)
-		Header("Location: index.php?tg=articles&topics=".$topics);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 	}
 
 /* main */
@@ -587,7 +587,7 @@ if(!isset($idx))
 	$idx = "Waiting";
 	}
 
-if( !isUserApprover($topics))
+if( !bab_isUserApprover($topics))
 	return;
 
 if( isset($modify))
@@ -606,57 +606,57 @@ if( isset($confirm) )
 switch($idx)
 	{
 	case "More":
-		$body->title = getCategoryTitle($topics);
+		$babBody->title = bab_getCategoryTitle($topics);
 		readMore($topics, $article);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
-		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
+		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
 	case "Modify":
-		$body->title = getArticleTitle($article);
+		$babBody->title = bab_getArticleTitle($article);
 		modifyArticle($topics, $article);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
-		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
+		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
 	case "Confirm":
-		$body->title = getArticleTitle($article);
+		$babBody->title = bab_getArticleTitle($article);
 		confirmArticle($article, $topics);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
-		$body->addItemMenu("Confirm", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
+		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$topics."&article=".$article."&new=".$new);
+		$babBody->addItemMenu("Confirm", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$topics."&article=".$article."&new=".$new);
 		break;
 
 	case "WaitingC":
-		$body->title = babTranslate("Waiting comments");
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
-		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$babBody->title = bab_translate("Waiting comments");
+		$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
+		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
 		listWaitingComments($topics, $article, $newc);
 		break;
 
 	case "ReadC":
-		$body->title = babTranslate("Waiting Comment");
-		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
-		$body->addItemMenu("ConfirmC", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com);
+		$babBody->title = bab_translate("Waiting Comment");
+		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$babBody->addItemMenu("ConfirmC", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc."&com=".$com);
 		readComment($topics, $article, $com);
 		break;
 
 	case "ConfirmC":
-		$body->title = babTranslate("Confirm a comment");
+		$babBody->title = bab_translate("Confirm a comment");
 		confirmComment($article, $topics, $com, $newc);
-		$body->addItemMenu("WaitingC", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
-		$body->addItemMenu("ConfirmC", babTranslate("Confirm"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article."&newc=".$newc);
+		$babBody->addItemMenu("ConfirmC", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=waiting&idx=ConfirmC&topics=".$topics."&article=".$article."&newc=".$newc);
 		break;
 
 	default:
 	case "Waiting":
-		$body->title = getCategoryTitle($topics);
-		$body->addItemMenu("Waiting", babTranslate("Waiting"), $GLOBALS['babUrl']."index.php?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
+		$babBody->title = bab_getCategoryTitle($topics);
+		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
 		listArticles($topics);
 		break;
 	}
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

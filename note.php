@@ -2,10 +2,10 @@
 
 function notesModify($id)
 	{
-	global $body;
+	global $babBody;
 	if( !isset($id))
 		{
-		$body->msgerror = babTranslate("ERROR: You must choose a valid notes")." !!";
+		$babBody->msgerror = bab_translate("ERROR: You must choose a valid notes")." !!";
 		return;
 		}
 	class temp
@@ -20,13 +20,13 @@ function notesModify($id)
 
 		function temp($id)
 			{
-			$this->notes = babTranslate("Content");
-			$this->modify = babTranslate("Update Note");
-			$this->db = new db_mysql();
+			$this->notes = bab_translate("Content");
+			$this->modify = bab_translate("Update Note");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from notes where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
@@ -34,23 +34,23 @@ function notesModify($id)
 		}
 
 	$temp = new temp($id);
-	$body->babecho(	babPrintTemplate($temp,"notes.html", "notesmodify"));
+	$babBody->babecho(	bab_printTemplate($temp,"notes.html", "notesmodify"));
 	}
 
 function deleteNotes($id)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "delete from notes where id = '$id'";
 	$db->db_query($query);
-	Header("Location: index.php?tg=notes&idx=List");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 	}
 
 function updateNotes($id, $content)
 	{
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	$query = "update notes set content='$content' where id = '$id'";
 	$db->db_query($query);
-	Header("Location: index.php?tg=notes&idx=List");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
 	}
 
 /* main */
@@ -69,14 +69,14 @@ switch($idx)
 
 	default:
 	case "Modify":
-		$body->title = babTranslate("Modify a note");
+		$babBody->title = bab_translate("Modify a note");
 		notesModify($item);
-		$body->addItemMenu("List", babTranslate("List"), $GLOBALS['babUrl']."index.php?tg=notes&idx=List");
-		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=note&idx=Modify&item=".$item);
-		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=note&idx=Delete&item=".$item);
+		$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$item);
+		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=note&idx=Delete&item=".$item);
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 
 ?>

@@ -7,7 +7,7 @@
 
 function listAddress($pos)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $fullname;
@@ -52,22 +52,22 @@ function listAddress($pos)
 		function temp($pos)
 			{
 			global $BAB_SESS_USERID;
-			$this->fullname = babTranslate("Contact")." / ".babTranslate("List");
-			$this->email = babTranslate("Email");
-			$this->allname = babTranslate("All");
-			$this->totoname = babTranslate("To") ." ->";
-			$this->toccname = babTranslate("Cc")." ->";
-			$this->tobccname = babTranslate("Bcc")." ->";
-			$this->uncheckall = babTranslate("Uncheck all");
-			$this->checkall = babTranslate("Check all");
-			$this->closename = babTranslate("Close");
+			$this->fullname = bab_translate("Contact")." / ".bab_translate("List");
+			$this->email = bab_translate("Email");
+			$this->allname = bab_translate("All");
+			$this->totoname = bab_translate("To") ." ->";
+			$this->toccname = bab_translate("Cc")." ->";
+			$this->tobccname = bab_translate("Bcc")." ->";
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
+			$this->closename = bab_translate("Close");
 			$this->totourl = "javascript:updateDestination('to')";
 			$this->toccurl = "javascript:updateDestination('cc')";
 			$this->tobccurl = "javascript:updateDestination('bcc')";
 			$this->closeurl = "javascript:this.close()";
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 
-			$this->db = new db_mysql();
+			$this->db = $GLOBALS['babDB'];
 
 			$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->res = $this->db->db_query($req);
@@ -79,7 +79,7 @@ function listAddress($pos)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrl']."index.php?tg=address&idx=list&pos=";
+			$this->allurl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=";
 			$req = "select distinct p3.id, p3.firstname, p3.lastname, p3.email from users as p3, users_groups as p1,  users_groups as p2 where p1.id_object='".$BAB_SESS_USERID."' and p1.id_group = p2.id_group and p3.id=p2.id_object and firstname like '".$pos."%' order by firstname, lastname asc";
 			$this->resgrpm = $this->db->db_query($req);
 			$this->countgrpm = $this->db->db_num_rows($this->resgrpm);
@@ -96,7 +96,7 @@ function listAddress($pos)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->nameval = composeName($this->arr['firstname'],$this->arr['lastname']);
+				$this->nameval = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 				$this->emailval = $this->arr['email'];
 				$this->checkval = $this->nameval;
 				$i++;
@@ -115,7 +115,7 @@ function listAddress($pos)
 			if( $j < $this->countgrpm)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrpm);
-				$this->nameval = composeName($arr['firstname'],$arr['lastname']);
+				$this->nameval = bab_composeUserName($arr['firstname'],$arr['lastname']);
 				$this->emailval = $arr['email'];
 				$this->checkval = $this->nameval."(g)";
 				$j++;
@@ -155,7 +155,7 @@ function listAddress($pos)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrl']."index.php?tg=address&idx=list&pos=".$this->selectname;
+				$this->selecturl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=".$this->selectname;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -198,7 +198,7 @@ function listAddress($pos)
 		}
 
 	$temp = new temp($pos);
-	echo babPrintTemplate($temp, "address.html", "addresslist");
+	echo bab_printTemplate($temp, "address.html", "addresslist");
 	}
 
 /* main */
@@ -211,14 +211,14 @@ if( !isset($idx))
 switch($idx)
 	{
 	case "list":
-		$body->title = babTranslate("Users list");
+		$babBody->title = bab_translate("Users list");
 		listAddress($pos);
-		$body->addItemMenu("list", babTranslate("Users"),$GLOBALS['babUrl']."index.php?tg=address&idx=list");
-		//$body->addItemMenu("Find", babTranslate("Find"), $GLOBALS['babUrl']."index.php?tg=users&idx=Find");
+		$babBody->addItemMenu("list", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=address&idx=list");
+		//$babBody->addItemMenu("Find", bab_translate("Find"), $GLOBALS['babUrlScript']."?tg=users&idx=Find");
 		break;
 	default:
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 ?>

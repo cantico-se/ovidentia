@@ -43,7 +43,7 @@ function upgrade()
 {
 $ret = "";
 
-$db = new db_mysql();
+$db = $GLOBALS['babDB'];
 
 $req = "ALTER TABLE groups ADD manager INT (11) UNSIGNED not null AFTER vacation";
 $res = $db->db_query($req);

@@ -16,7 +16,7 @@ function highlightWord( $w, $text)
 
 function searchKeyword($pat, $what)
 	{
-	global $body;
+	global $babBody;
 
 	class tempb
 		{
@@ -37,9 +37,9 @@ function searchKeyword($pat, $what)
 		function tempb($pat, $what)
 			{
 			global $babSearchItems;
-			$this->search = babTranslate("Search");
-			$this->all = babTranslate("All");
-			$this->in = babTranslate("in");
+			$this->search = bab_translate("Search");
+			$this->all = bab_translate("All");
+			$this->in = bab_translate("in");
 			$this->pat = $pat;
 			$this->what = stripslashes($what);
 
@@ -58,7 +58,7 @@ function searchKeyword($pat, $what)
 			if( $i < $this->count)
 				{
 				$this->itemvalue = $this->arr[$i];
-				$this->itemname = babTranslate($babSearchItems[$this->arr[$i]]);
+				$this->itemname = bab_translate($babSearchItems[$this->arr[$i]]);
 				$i++;
 				return true;
 				}
@@ -68,12 +68,12 @@ function searchKeyword($pat, $what)
 		}
 
 	$tempb = new tempb($pat, $what);
-	$body->babecho(	babPrintTemplate($tempb,"search.html", "search"));
+	$babBody->babecho(	bab_printTemplate($tempb,"search.html", "search"));
 	}
 
 function startSearch($pat, $item, $what, $pos)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -92,16 +92,16 @@ function startSearch($pat, $item, $what, $pos)
 			{
 			global $BAB_SESS_USERID, $babLimit;
 
-			$this->db = new db_mysql();
-			$this->search = babTranslate("Search");
-			$this->arttitle = babTranslate("Articles");
-			$this->comtitle = babTranslate("Comments");
-			$this->fortitle = babTranslate("Posts");
-			$this->faqtitle = babTranslate("Faq");
-			$this->nottitle = babTranslate("Notes");
-			$this->filtitle = babTranslate("Files");
-			$this->contitle = babTranslate("Contacts");
-			$this->next = babTranslate( "Next" );
+			$this->db = $GLOBALS['babDB'];
+			$this->search = bab_translate("Search");
+			$this->arttitle = bab_translate("Articles");
+			$this->comtitle = bab_translate("Comments");
+			$this->fortitle = bab_translate("Posts");
+			$this->faqtitle = bab_translate("Faq");
+			$this->nottitle = bab_translate("Notes");
+			$this->filtitle = bab_translate("Files");
+			$this->contitle = bab_translate("Contacts");
+			$this->next = bab_translate( "Next" );
 
 			//$this->like = "not regexp '<.*".$what."[^>]*'";
 			$this->like = "like '%".$what."%'";
@@ -129,7 +129,7 @@ function startSearch($pat, $item, $what, $pos)
 				$res = $this->db->db_query($req);
 				while( $row = $this->db->db_fetch_array($res))
 					{
-					if(isAccessValid("topicsview_groups", $row['id']))
+					if(bab_isAccessValid("topicsview_groups", $row['id']))
 						{
 						$req = "insert into artresults select id, id_topic, title from articles where title ".$this->like." and confirmed='Y' and id_topic='".$row['id']."'";
 						$this->db->db_query($req);
@@ -159,7 +159,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->artpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->artnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->artnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -174,7 +174,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->compage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->comnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->comnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -189,7 +189,6 @@ function startSearch($pat, $item, $what, $pos)
 
 			if( empty($item) || $item == "b")
 				{
-				//http://dev.ovidentia.org/index.php?tg=posts&idx=List&forum=6&thread=45&post=141
 				$req = "create temporary table forresults select id, id_thread, subject from posts where 0";
 				$this->db->db_query($req);
 				$req = "alter table forresults add unique (id)";
@@ -198,7 +197,7 @@ function startSearch($pat, $item, $what, $pos)
 				$res = $this->db->db_query($req);
 				while( $row = $this->db->db_fetch_array($res))
 					{
-					if(isAccessValid("forumsview_groups", $row['id']))
+					if(bab_isAccessValid("forumsview_groups", $row['id']))
 						{
 						$req = "select id from threads where forum='".$row['id']."'";
 						$res2 = $this->db->db_query($req);
@@ -220,7 +219,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->forpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->fornext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->fornext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -243,7 +242,7 @@ function startSearch($pat, $item, $what, $pos)
 				$res = $this->db->db_query($req);
 				while( $row = $this->db->db_fetch_array($res))
 					{
-					if(isAccessValid("faqcat_groups", $row['id']))
+					if(bab_isAccessValid("faqcat_groups", $row['id']))
 						{
 						$req = "insert into faqresults select * from faqqr where question ".$this->like." and idcat='".$row['id']."'";
 						$this->db->db_query($req);
@@ -260,7 +259,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->faqpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->faqnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->faqnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -279,7 +278,7 @@ function startSearch($pat, $item, $what, $pos)
 				$this->db->db_query($req);
 				$req = "alter table filresults add unique (id)";
 				$this->db->db_query($req);
-				$aclfm = fileManagerAccessLevel();
+				$aclfm = bab_fileManagerAccessLevel();
 				$private = false;
 				for( $i = 0; $i < count($aclfm['id']); $i++)
 					{
@@ -315,7 +314,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->filpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->filnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->filnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -337,7 +336,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->notpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->notnext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->notnext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -384,7 +383,7 @@ function startSearch($pat, $item, $what, $pos)
 				if( $pos + $babLimit < $nbrows )
 					{
 					$this->conpage = ($pos + 1) . "-". $babLimit. " / " . $nbrows . " ";
-					$this->connext = $GLOBALS['babUrl']."index.php?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
+					$this->connext = $GLOBALS['babUrlScript']."?tg=search&idx=find&item=".$item."&pos=".( $pos + $babLimit)."&pat".$pat."&what=".$this->what;
 					}
 				else
 					{
@@ -405,7 +404,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
 				$this->article = $arr['title'];
-				$this->articleurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=a&id=".$arr['id']."&w=".$this->what."')";
+				$this->articleurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -424,7 +423,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->com = $arr['subject'];
-				$this->comurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what."')";
+				$this->comurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -443,7 +442,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resfor);
 				$this->post = $arr['subject'];
-				$this->posturl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what."')";
+				$this->posturl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -461,7 +460,7 @@ function startSearch($pat, $item, $what, $pos)
 				{
 				$arr = $this->db->db_fetch_array($this->resfaq);
 				$this->question = $arr['question'];
-				$this->questionurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what."')";
+				$this->questionurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -484,7 +483,7 @@ function startSearch($pat, $item, $what, $pos)
 					$this->filedesc = "( ".$arr['description']." )";
 				else
 					$this->filedesc = "";
-				$this->fileurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=e&id=".$arr['id']."&w=".$this->what."')";
+				$this->fileurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what."')";
 				$i++;
 				return true;
 				}
@@ -502,8 +501,8 @@ function startSearch($pat, $item, $what, $pos)
 			if( $i < $this->countcon)
 				{
 				$arr = $this->db->db_fetch_array($this->rescon);
-				$this->fullname = composeName( $arr['firstname'], $arr['lastname']);
-				$this->fullnameurl = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=search&idx=f&id=".$arr['id']."&w=".$this->what."')";;
+				$this->fullname = bab_composeUserName( $arr['firstname'], $arr['lastname']);
+				$this->fullnameurl = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=search&idx=f&id=".$arr['id']."&w=".$this->what."')";;
 				$i++;
 				return true;
 				}
@@ -533,12 +532,12 @@ function startSearch($pat, $item, $what, $pos)
 		}
 
 	$temp = new temp($pat, $item, $what, $pos);
-	$body->babecho(	babPrintTemplate($temp,"search.html", "searchresult"));
+	$babBody->babecho(	bab_printTemplate($temp,"search.html", "searchresult"));
 	}
 
 function viewArticle($article, $w)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -551,26 +550,26 @@ function viewArticle($article, $w)
 
 		function temp($article, $w)
 			{
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
-			$db = new db_mysql();
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$db = $GLOBALS['babDB'];
 			$req = "select * from articles where id='$article' and confirmed='Y'";
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 	
-			$this->head = highlightWord( $w, babReplace($arr['head']));
-			$this->content = highlightWord( $w, babReplace($arr['body']));
+			$this->head = highlightWord( $w, bab_replace($arr['head']));
+			$this->content = highlightWord( $w, bab_replace($arr['body']));
 			$this->title = highlightWord( $w, $arr['title']);
-			$this->topic =getCategoryTitle($arr['id_topic']);
+			$this->topic =bab_getCategoryTitle($arr['id_topic']);
 			}
 		}
 	
 	$temp = new temp($article, $w);
-	echo babPrintTemplate($temp,"search.html", "viewart");
+	echo bab_printTemplate($temp,"search.html", "viewart");
 	}
 
 function viewComment($topics, $article, $com, $w)
 	{
-	global $body;
+	global $babBody;
 	
 	class ctp
 		{
@@ -583,16 +582,16 @@ function viewComment($topics, $article, $com, $w)
 
 		function ctp($topics, $article, $com, $w)
 			{
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->babUrl = $GLOBALS['babUrl'];
 			$this->sitename = $GLOBALS['babSiteName'];
-			$this->title = getArticleTitle($article);
-			$this->subject = babTranslate("Subject");
-			$this->by = babTranslate("By");
-			$this->date = babTranslate("Date");
+			$this->title = bab_getArticleTitle($article);
+			$this->subject = bab_translate("Subject");
+			$this->by = bab_translate("By");
+			$this->date = bab_translate("Date");
 			$this->topics = $topics;
 			$this->article = $article;
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			$req = "select * from comments where id='$com'";
 			$res = $db->db_query($req);
 			$this->arr = $db->db_fetch_array($res);
@@ -603,12 +602,12 @@ function viewComment($topics, $article, $com, $w)
 		}
 
 	$ctp = new ctp($topics, $article, $com, $w);
-	echo babPrintTemplate($ctp,"search.html", "viewcom");
+	echo bab_printTemplate($ctp,"search.html", "viewcom");
 	}
 
 function viewPost($thread, $post, $w)
 	{
-	global $body;
+	global $babBody;
 
 	class temp
 		{
@@ -622,10 +621,10 @@ function viewPost($thread, $post, $w)
 
 		function temp($thread, $post, $w)
 			{
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			$req = "select forum from threads where id='".$thread."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
-			$this->title = getForumName($arr['forum']);
+			$this->title = bab_getForumName($arr['forum']);
 			$req = "select * from posts where id='".$post."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
 			$this->postdate = bab_strftime(bab_mktime($arr['date']));
@@ -634,17 +633,17 @@ function viewPost($thread, $post, $w)
 			$this->postmessage = $arr['message'];
 			$this->postsubject = highlightWord( $w, $arr['subject']);
 			$this->postmessage = highlightWord( $w, $arr['message']);
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			}
 		}
 	
 	$temp = new temp($thread, $post, $w);
-	echo babPrintTemplate($temp,"search.html", "viewfor");
+	echo bab_printTemplate($temp,"search.html", "viewfor");
 	}
 
 function viewQuestion($idcat, $id, $w)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $arr = array();
@@ -654,8 +653,8 @@ function viewQuestion($idcat, $id, $w)
 
 		function temp($idcat, $id, $w)
 			{
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
-			$this->db = new db_mysql();
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from faqqr where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
@@ -669,13 +668,13 @@ function viewQuestion($idcat, $id, $w)
 		}
 
 	$temp = new temp($idcat, $id, $w);
-	echo babPrintTemplate($temp,"search.html", "viewfaq");
+	echo bab_printTemplate($temp,"search.html", "viewfaq");
 	return true;
 	}
 
 function viewFile($id, $w)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $arr = array();
@@ -695,18 +694,18 @@ function viewFile($id, $w)
 
 		function temp($id, $w)
 			{
-			$this->description = babTranslate("Description");
-			$this->keywords = babTranslate("Keywords");
-			$this->modifiedtxt = babTranslate("Modified");
-			$this->postedbytxt = babTranslate("Posted by");
-			$this->download = babTranslate("Download");
-			$this->sizetxt = babTranslate("Size");
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
-			$this->db = new db_mysql();
+			$this->description = bab_translate("Description");
+			$this->keywords = bab_translate("Keywords");
+			$this->modifiedtxt = bab_translate("Modified");
+			$this->postedbytxt = bab_translate("Posted by");
+			$this->download = bab_translate("Download");
+			$this->sizetxt = bab_translate("Size");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
+			$this->db = $GLOBALS['babDB'];
 			$req = "select * from files where id='$id' and state='' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$aclfm = fileManagerAccessLevel();
+			$aclfm = bab_fileManagerAccessLevel();
 			$access = false;
 			if( $this->arr['bgroup'] == "Y")
 				{
@@ -734,17 +733,17 @@ function viewFile($id, $w)
 				$this->arr['description'] = highlightWord( $w, $this->arr['description']);
 				$this->arr['keywords'] = highlightWord( $w, $this->arr['keywords']);
 				$this->modified = date("d/m/Y H:i", bab_mktime($this->arr['modified']));
-				$this->postedby = getUserName($this->arr['author']);
-				$this->geturl = $GLOBALS['babUrl']."index.php?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".$this->arr['path']."&file=".$this->arr['name'];
+				$this->postedby = bab_getUserName($this->arr['author']);
+				$this->geturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->arr['id_owner']."&gr=".$this->arr['bgroup']."&path=".$this->arr['path']."&file=".$this->arr['name'];
 				if( $this->arr['bgroup'] == "Y")
 					$fstat = stat($GLOBALS['babUploadPath']."/G".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				else
 					$fstat = stat($GLOBALS['babUploadPath']."/U".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
-				$this->size = formatSize($fstat[7])." ".babTranslate("Kb");
+				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
 				}
 			else
 				{
-				$this->title = babTranslate("Access denied");
+				$this->title = bab_translate("Access denied");
 				$this->arr['description'] = "";
 				$this->arr['keywords'] = "";
 				$this->modified = "";
@@ -756,7 +755,7 @@ function viewFile($id, $w)
 		}
 
 	$temp = new temp($id, $w);
-	echo babPrintTemplate($temp,"search.html", "viewfil");
+	echo bab_printTemplate($temp,"search.html", "viewfil");
 	return true;
 	}
 
@@ -795,22 +794,22 @@ function viewContact($id, $what)
 		function temp($id, $what)
 			{
 			global $BAB_SESS_USERID;
-			$this->firstname = babTranslate("First Name");
-			$this->lastname = babTranslate("Last Name");
-			$this->email = babTranslate("Email");
-			$this->compagny = babTranslate("Compagny");
-			$this->hometel = babTranslate("Home Tel");
-			$this->mobiletel = babTranslate("Mobile Tel");
-			$this->businesstel = babTranslate("Business Tel");
-			$this->businessfax = babTranslate("Business Fax");
-			$this->jobtitle = babTranslate("Job Title");
-			$this->businessaddress = babTranslate("Business Address");
-			$this->homeaddress = babTranslate("Home Address");
-			$this->cancel = babTranslate("Cancel");
-			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->firstname = bab_translate("First Name");
+			$this->lastname = bab_translate("Last Name");
+			$this->email = bab_translate("Email");
+			$this->compagny = bab_translate("Compagny");
+			$this->hometel = bab_translate("Home Tel");
+			$this->mobiletel = bab_translate("Mobile Tel");
+			$this->businesstel = bab_translate("Business Tel");
+			$this->businessfax = bab_translate("Business Fax");
+			$this->jobtitle = bab_translate("Job Title");
+			$this->businessaddress = bab_translate("Business Address");
+			$this->homeaddress = bab_translate("Home Address");
+			$this->cancel = bab_translate("Cancel");
+			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->msgerror = "";
 
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			$req = "select * from contacts where id='".$id."'";
 			$arr = $db->db_fetch_array($db->db_query($req));
 			if( !empty($BAB_SESS_USERID) && $arr['owner'] == $BAB_SESS_USERID )
@@ -829,7 +828,7 @@ function viewContact($id, $what)
 				}
 			else
 				{
-				$this->msgerror = babTranslate("You don't have access to this contact");
+				$this->msgerror = bab_translate("You don't have access to this contact");
 				$this->firstnameval = "";
 				$this->lastnameval = "";
 				$this->emailval = "";
@@ -846,7 +845,7 @@ function viewContact($id, $what)
 		}
 
 	$temp = new temp($id, $what);
-	echo babPrintTemplate($temp,"search.html", "viewcon");
+	echo bab_printTemplate($temp,"search.html", "viewcon");
 	}
 
 if( !isset($pos))
@@ -891,17 +890,17 @@ switch($idx)
 		break;
 
 	case "find":
-		$body->title = babTranslate("Search");
+		$babBody->title = bab_translate("Search");
 		searchKeyword($pat, $what);
 		startSearch($pat, $item, $what, $pos);
 		break;
 
 	default:
-		$body->title = babTranslate("Search");
+		$babBody->title = bab_translate("Search");
 		searchKeyword($pat, $what);
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 ?>
 

@@ -7,7 +7,7 @@
 
 function listContacts($pos)
 	{
-	global $body;
+	global $babBody;
 	class temp
 		{
 		var $fullname;
@@ -34,26 +34,26 @@ function listContacts($pos)
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
 				$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and lastname like '".$this->pos."%' order by lastname, firstname asc";
-				$this->fullname = babTranslate("Lastname Firstname");
-				$this->urlfullname = $GLOBALS['babUrl']."index.php?tg=contacts&idx=chg&pos=".$pos;
+				$this->fullname = bab_translate("Lastname Firstname");
+				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
 			else
 				{
 				$this->pos = $pos;
 				$this->ord = "";
 				$req = "select * from contacts where owner='".$BAB_SESS_USERID."' and firstname like '".$this->pos."%' order by firstname, lastname asc";
-				$this->fullname = babTranslate("Firstname Lastname");
-				$this->urlfullname = $GLOBALS['babUrl']."index.php?tg=contacts&idx=chg&pos=".$pos;
+				$this->fullname = bab_translate("Firstname Lastname");
+				$this->urlfullname = $GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos;
 				}
-			$this->email = babTranslate("Email");
-			$this->compagny = babTranslate("Compagny");
-			$this->htel = babTranslate("Home Tel");
-			$this->mtel = babTranslate("Mobile Tel");
-			$this->btel = babTranslate("Business Tel");
-			$this->uncheckall = babTranslate("Uncheck all");
-			$this->checkall = babTranslate("Check all");
-			$this->allname = babTranslate("All");
-			$this->db = new db_mysql();
+			$this->email = bab_translate("Email");
+			$this->compagny = bab_translate("Compagny");
+			$this->htel = bab_translate("Home Tel");
+			$this->mtel = bab_translate("Mobile Tel");
+			$this->btel = bab_translate("Business Tel");
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
+			$this->allname = bab_translate("All");
+			$this->db = $GLOBALS['babDB'];
 			$this->res = $this->db->db_query($req);
 			if( $this->res )
 				$this->count = $this->db->db_num_rows($this->res);
@@ -64,7 +64,7 @@ function listContacts($pos)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = $GLOBALS['babUrl']."index.php?tg=contacts&idx=list&pos=";
+			$this->allurl = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=";
 
 			/* find prefered mail account */
 			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and prefered='Y'";
@@ -90,12 +90,12 @@ function listContacts($pos)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->url = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1');";
-				$this->urlmail = "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email']."');";
+				$this->url = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1');";
+				$this->urlmail = "javascript:Start('".$GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email']."');";
 				if( $this->ord == "-" )
-					$this->urlname = composeName( $this->arr['lastname'], $this->arr['firstname']);
+					$this->urlname = bab_composeUserName( $this->arr['lastname'], $this->arr['firstname']);
 				else
-					$this->urlname = composeName( $this->arr['firstname'], $this->arr['lastname']);
+					$this->urlname = bab_composeUserName( $this->arr['firstname'], $this->arr['lastname']);
 				$i++;
 				return true;
 				}
@@ -111,7 +111,7 @@ function listContacts($pos)
 			if( $k < 26)
 				{
 				$this->selectname = substr($t, $k, 1);
-				$this->selecturl = $GLOBALS['babUrl']."index.php?tg=contacts&idx=list&pos=".$this->ord.$this->selectname;
+				$this->selecturl = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$this->ord.$this->selectname;
 
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -141,13 +141,13 @@ function listContacts($pos)
 		}
 
 	$temp = new temp($pos);
-	$body->babecho(	babPrintTemplate($temp, "contacts.html", "contactslist"));
+	$babBody->babecho(	bab_printTemplate($temp, "contacts.html", "contactslist"));
 	return $temp->count;
 	}
 
 function contactsDelete($item, $pos)
 	{
-	global $body, $idx;
+	global $babBody, $idx;
 
 	class tempa
 		{
@@ -162,10 +162,10 @@ function contactsDelete($item, $pos)
 		function tempa($item, $pos)
 			{
 			global $BAB_SESS_USERID;
-			$this->message = babTranslate("Are you sure you want to delete those contacts");
+			$this->message = bab_translate("Are you sure you want to delete those contacts");
 			$this->title = "";
 			$items = "";
-			$db = new db_mysql();
+			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($item); $i++)
 				{
 				$req = "select * from contacts where id='".$item[$i]."'and owner='".$BAB_SESS_USERID."'";	
@@ -173,29 +173,29 @@ function contactsDelete($item, $pos)
 				if( $db->db_num_rows($res) > 0)
 					{
 					$arr = $db->db_fetch_array($res);
-					$this->title .= "<br>". composeName($arr['firstname'], $arr['lastname']);
+					$this->title .= "<br>". bab_composeUserName($arr['firstname'], $arr['lastname']);
 					$items .= $arr['id'];
 					}
 				if( $i < count($item) -1)
 					$items .= ",";
 				}
-			$this->warning = babTranslate("WARNING: This operation will delete contacts and their references"). "!";
-			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=contacts&idx=list&pos=".$pos."&action=Yes&items=".$items;
-			$this->yes = babTranslate("Yes");
-			$this->urlno = $GLOBALS['babUrl']."index.php?tg=contacts&idx=list&pos=".$pos;
-			$this->no = babTranslate("No");
+			$this->warning = bab_translate("WARNING: This operation will delete contacts and their references"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$pos."&action=Yes&items=".$items;
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$pos;
+			$this->no = bab_translate("No");
 			}
 		}
 
 	if( count($item) <= 0)
 		{
-		$body->msgerror = babTranslate("Please select at least one item");
+		$babBody->msgerror = bab_translate("Please select at least one item");
 		listContacts($pos);
 		$idx = "list";
 		return;
 		}
 	$tempa = new tempa($item, $pos);
-	$body->babecho(	babPrintTemplate($tempa,"warning.html", "warningyesno"));
+	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
 
@@ -203,7 +203,7 @@ function confirmDeleteContacts($items)
 {
 	$arr = explode(",", $items);
 	$cnt = count($arr);
-	$db = new db_mysql();
+	$db = $GLOBALS['babDB'];
 	for($i = 0; $i < $cnt; $i++)
 		{
 		$req = "delete from contacts where id='".$arr[$i]."'";	
@@ -226,11 +226,11 @@ if( isset($action) && $action == "Yes")
 switch($idx)
 	{
 	case "delete":
-		$body->title = babTranslate("Delete contact");
+		$babBody->title = bab_translate("Delete contact");
 		contactsDelete($item, $pos);
-		$body->addItemMenu("list", babTranslate("Contacts"),$GLOBALS['babUrl']."index.php?tg=contacts&idx=list");
-		$body->addItemMenu("create", babTranslate("Create"), "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=contact&idx=create&bliste=1')");
-		$body->addItemMenu("delete", babTranslate("Delete"), "javascript:(submitForm('delete'))");
+		$babBody->addItemMenu("list", bab_translate("Contacts"),$GLOBALS['babUrlScript']."?tg=contacts&idx=list");
+		$babBody->addItemMenu("create", bab_translate("Create"), "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1')");
+		$babBody->addItemMenu("delete", bab_translate("Delete"), "javascript:(submitForm('delete'))");
 		break;
 
 	case "chg":
@@ -241,16 +241,16 @@ switch($idx)
 		/* no break */
 	case "list":
 	default:
-		$body->title = babTranslate("Contacts list");
+		$babBody->title = bab_translate("Contacts list");
 		$count = listContacts($pos);
-		$body->addItemMenu("list", babTranslate("Contacts"),$GLOBALS['babUrl']."index.php?tg=contacts&idx=list");
-		$body->addItemMenu("create", babTranslate("Create"), "javascript:Start('".$GLOBALS['babUrl']."index.php?tg=contact&idx=create&bliste=1')");
+		$babBody->addItemMenu("list", bab_translate("Contacts"),$GLOBALS['babUrlScript']."?tg=contacts&idx=list");
+		$babBody->addItemMenu("create", bab_translate("Create"), "javascript:Start('".$GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1')");
 		if( $count > 0 )
 			{
-			$body->addItemMenu("delete", babTranslate("Delete"), "javascript:(submitForm('delete'))");
+			$babBody->addItemMenu("delete", bab_translate("Delete"), "javascript:(submitForm('delete'))");
 			}
 		break;
 	}
 
-$body->setCurrentItemMenu($idx);
+$babBody->setCurrentItemMenu($idx);
 ?>
