@@ -11,20 +11,20 @@
 <tr> 
 <td class="BabLetterlists" colspan="5"> 
 <!--#if allselected "== 1" -->
-{ allname }&nbsp;&nbsp; 
+{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
 <!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a>&nbsp;&nbsp; 
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
 <!--#endif allselected -->
 <!--#in getnextselect -->
 <!--#if selected "== 1" -->
-{ selectname }&nbsp;&nbsp; 
+{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
 <!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a>&nbsp;&nbsp; 
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-<td class="BabLetterlists" align="right">&nbsp;
-<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', 'OviAdContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addcontact }</a>
+<td class="BabLetterlists" align="right"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+<a class="BabAlphabetLink" href="javascript: Start('{ addurl }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ addcontact }</a>
 </td></tr>
 <tr> 
               
@@ -40,26 +40,24 @@
 <td valign="middle" width="1%"> 
 <input type="checkbox" name="item[]" value="{ arr[id] }">
 </td>
-<td valign="middle" width="20%" nowrap><a class="BabNameEmailLink" href="javascript: Start('{ url }', 'OviVContact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
+<td valign="middle" width="20%" nowrap><a class="BabNameEmailLink" href="javascript: Start('{ url }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
 urlname }</a></td>
 <!--#if accid "!= 0" -->
-<td width="20%" nowrap><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', 'OviMail', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arr[email] }</a></td>
+<td width="20%" nowrap><a class="BabNameEmailLink" href="javascript: Start('{ urlmail }', '', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ arr[email] }</a></td>
 <!--#else accid -->
 <td width="20%" nowrap><a href="mailto:{ arr[email] }" target=_top class="BabNameEmailLink">{ 
 arr[email] }</a></td>
 <!--#endif accid -->
-<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[compagny] }</td>
-<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[businesstel] }</td>
-<td class="BabFontBackground" valign="middle" width="20%">&nbsp;{ arr[mobiletel] }</td>
+<td class="BabFontBackground" valign="middle" width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ arr[compagny] }</td>
+<td class="BabFontBackground" valign="middle" width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ arr[businesstel] }</td>
+<td class="BabFontBackground" valign="middle" width="20%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ arr[mobiletel] }</td>
 </tr> 
 <!--#endin getnext -->
 <tr> 
-<td class="BabSiteAdminSmall" width="1%" align="center"><a href="javascript:submitForm('delete','listform')"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="{ deletealt }" width="20" height="20" border="0"></a></td>
-<td class="BabSiteAdminSmall" colspan="5">&nbsp;</td>
+<td class="BabSiteAdminSmall" width="1%" align="center"><a href="javascript:submitForm('delete','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0"></a></td>
+<td class="BabSiteAdminSmall" colspan="5"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
 </tr></table>
 </td>
 </tr>
-</table>
-</form>
+</table></form>
 <!--#end contactslist -->
-
