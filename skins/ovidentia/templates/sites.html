@@ -4,11 +4,6 @@
 <input type="hidden" name="tg" value="sites">
 <input type="hidden" name="idx" value="0">
 <input type="hidden" name="create" value="create">
-  <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
-    <!--#in getnextskin -->
-    <option value="{ skinval }" { skinselected }>{ skinval }</option>
-    <!--#endin getnextskin -->
-  </select>
   <table class="BabLoginCadreBackground"  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -38,6 +33,11 @@
 <tr> 
             <td class="BabLoginMenuBackground"  align="right" nowrap valign="middle">{ skin }</td>
             <td class="BabLoginMenuBackground" align="left" valign="middle"> 
+  <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
+    <!--#in getnextskin -->
+    <option value="{ skinval }" { skinselected }>{ skinval }</option>
+    <!--#endin getnextskin -->
+  </select>
               <select name="style">
                 </select>
             </td>
