@@ -85,7 +85,8 @@ a img {
 	font-weight:bold;
 	text-align:center;
 	white-space:nowrap;
-		
+	font-family:Arial;
+	font-size:11px;
 	}
 
 .bab_calendar .innertable tbody tr, .bab_calendar th div {
@@ -227,6 +228,9 @@ a img {
 	white-space:nowrap;
 	text-align:center;
 	height:20px;
+	font-weight:normal;
+	font-size:11px;
+	font-family:Arial;
 	}
 
 .bab_calendar .innertable td.event span, 

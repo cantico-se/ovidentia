@@ -224,46 +224,56 @@ document.onmousemove = bab_tooltipPosition;
 	</tr>
 </table>
 
- <br>
-<table class="BabCalendarBodyBackground" width="98%" cellpadding="2" cellspacing="0" align="center">
-	<tr>
-		<td class="BabCalendarDays" align="center" colspan="{ colspan }" valign="middle">{ dayname } ({ week })</td>
-	</tr>
-</table>
+ <br />
 
 <table id="bab_calday" class="bab_calendar" width="98%" align="center">
 	<thead>
 	<tr>
 		<th>&nbsp;</th>
+		<td class="BabCalendarDays" align="center">{ dayname } ({ week })</td>
 	</tr>
 	</thead>
 	<tbody>
-<!--#in getnexthour -->
 	<tr>
-		<th>
-			<!--#if bowner "== 1" -->
-			<a href="{ hoururl }">{ hour }</a>
-			<!--#else bowner -->
-			{ hour }
-			<!--#endif bowner -->
+		<th valign="top">
+			<!--#in getnexthour -->
+			<div>{ hour }</div>
+			<!--#endin getnexthour -->
 		</th>
 
+		<td class="day">
+		<table class="innertable">
+			<thead>
+				<tr>
+					<!--#in getnextcal -->
+					<td colspan="{ cols }">&nbsp;</td>
+					<!--#endin getnextcal -->
+				</tr>
+			</thead>
+			<tbody>
+			<!--#in getnexthour -->
+				<tr>
+					<!--#in getfreeevent -->
+					<!--#if free -->
+						<td class="freeevent" <!--#if allow_create --> style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)"<!--#endif allow_create --> onmouseover="bab_showOnMouse('{ md5 }',1);" onmouseout="bab_showOnMouse('{ md5 }',0);">
+					<!--#else free -->
+						<td class="used">
+					<!--#endif free -->
+							<!--#if first -->
+							<span><strong>{ t_date_from } : </strong> { startdate }&nbsp;{ starttime }</span><br />
+							<span><strong>{ t_date_to } : </strong> { enddate }&nbsp;{ endtime }</span>
+							<!--#endif first -->
 
-		<!--#in getfreeevent -->
-		<!--#if free -->
-			<td class="freeevent" <!--#if allow_create --> style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)"<!--#endif allow_create -->>
-		<!--#else free -->
-			<td class="used">
-		<!--#endif free -->
-				<!--#if first -->
-				<span><strong>{ t_date_from } : </strong> { startdate }&nbsp;{ starttime }</span><br />
-				<span><strong>{ t_date_to } : </strong> { enddate }&nbsp;{ endtime }</span>
-				<!--#endif first -->
-			</td>
-		<!--#endin getfreeevent -->
+							<span id="{ md5 }" class="calfreeover">{ h_start }</span>&nbsp;
+						</td>
+					<!--#endin getfreeevent -->
+				</tr>
+			</tbody>
+			<!--#endin getnexthour -->
+		</table>
+		</td>
 	</tr>
 	</tbody>
-<!--#endin getnexthour -->
 </table>
 
 <div class="bab_cal_buttons">

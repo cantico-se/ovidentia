@@ -23,8 +23,8 @@
 ************************************************************************/
 include_once "base.php";
 
-define("BAB_CAL_NAME_LENGTH", 20);
-define("BAB_CAL_EVENT_LENGTH", 20);
+define("BAB_CAL_NAME_LENGTH", 18);
+define("BAB_CAL_EVENT_LENGTH", 18);
 
 class bab_mcalendars
 {

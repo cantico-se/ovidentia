@@ -127,7 +127,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				$idxhour = $i;
 				$curhour = $this->startwtime * 60 + $i * $this->elapstime;
 				$endhour = $this->startwtime * 60 + ($i+1) * $this->elapstime;
-				
+
 				$this->h_start = sprintf("%02d:%02d", $curhour/60, $curhour%60);
 				$this->h_end = sprintf("%02d:%02d", $endhour/60, $endhour%60);
 				if( $babBody->ampm)
@@ -384,7 +384,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->endtime = bab_time($time1);
 			$this->enddate = bab_shortDate($time1, false);
 
-			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1."&st=".$time0;
+			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1."&st=".bab_mktime($this->startdt);
 
 
 			$this->md5 = md5($this->dayname.$this->currday.$this->h_start);

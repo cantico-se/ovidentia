@@ -281,7 +281,9 @@ class cal_dayCls extends cal_wmdbaseCls
 			$this->startdate = bab_shortDate($time0, false);
 			$this->endtime = bab_time($time1);
 			$this->enddate = bab_shortDate($time1, false);
-			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1;
+			$this->addeventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->currentdate."&calid=".implode(',',$this->idcals)."&view=viewm&date0=".$time0."&date1=".$time1.'&st='.bab_mktime($this->startdt);
+
+			$this->md5 = md5($this->cindex.$this->h_start);
 			return true;
 			}
 		else
