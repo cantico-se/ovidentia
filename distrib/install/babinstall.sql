@@ -1678,40 +1678,40 @@ CREATE TABLE bab_faq_trees (
 
 CREATE TABLE bab_ldap_sites_fields (
   id int(11) unsigned NOT NULL auto_increment,
-  name varchar(255) NOT NULL default '',
+  id_field int(11) unsigned NOT NULL default '0',
   x_name varchar(255) NOT NULL default '',
   id_site int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
-  KEY name (name),
+  KEY id_field (id_field),
   KEY id_site (id_site)
 );
 
-INSERT INTO bab_ldap_sites_fields VALUES (1, 'cn', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (2, 'sn', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (3, 'mn', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (4, 'givenname', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (5, 'jpegphoto', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (6, 'email', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (7, 'btel', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (8, 'mobile', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (9, 'htel', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (10, 'bfax', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (11, 'title', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (12, 'departmentnumber', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (13, 'organisationname', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (14, 'bstreetaddress', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (15, 'bcity', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (16, 'bpostalcode', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (17, 'bstate', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (18, 'bcountry', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (19, 'hstreetaddress', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (20, 'hcity', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (21, 'hpostalcode', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (22, 'hstate', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (23, 'hcountry', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (24, 'user1', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (25, 'user2', '', '1');
-INSERT INTO bab_ldap_sites_fields VALUES (26, 'user3', '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (1, 1, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (2, 2, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (3, 3, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (4, 4, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (5, 5, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (6, 6, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (7, 7, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (8, 8, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (9, 9, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (10, 10, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (11, 11, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (12, 12, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (13, 13, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (14, 14, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (15, 15, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (16, 16, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (17, 17, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (18, 18, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (19, 19, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (20, 20, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (21, 21, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (22, 22, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (23, 23, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (24, 24, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (25, 25, '', '1');
+INSERT INTO bab_ldap_sites_fields VALUES (26, 26, '', '1');
 
 
 #
