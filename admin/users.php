@@ -78,7 +78,6 @@ function browseUsers($pos, $cb)
 					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
 				else
 					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-				$this->urlname .= "(".$this->arr['id'].")";
 				$this->userid = $this->arr['id'];
 				$i++;
 				return true;
