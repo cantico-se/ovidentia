@@ -56,7 +56,7 @@ class bab_event
 		list($this->curyear,$this->curmonth,$this->curday) = explode(',', $this->curdate);
 
 		$this->curview = !empty($_REQUEST['view']) ? $_REQUEST['view'] : 'viewm';
-		$this->calid = $_REQUEST['calid'];
+		$this->calid = isset($_REQUEST['calid']) ? $_REQUEST['calid']  : $_POST['curcalids'];
 
 		$this->datebegintxt = bab_translate("Begin date");
 		$this->dateendtxt = bab_translate("Until date");
@@ -68,7 +68,6 @@ class bab_event
 		$this->endtime = bab_translate("endtime");
 		$this->daystext = bab_translate("Days");
 		$this->or = bab_translate("Or");
-		$this->repeat = bab_translate("Repeat");
 		$this->everyday = bab_translate("Everyday");
 		$this->title = bab_translate("Title");
 		$this->description = bab_translate("Description");
@@ -77,6 +76,7 @@ class bab_event
 		$this->grpcalendarstxt = bab_translate("Groups calendars");
 		$this->rescalendarstxt = bab_translate("Resources calendars");
 
+		$this->t_repeat = bab_translate("Repeat");
 		$this->t_norepeat = bab_translate("No repeat");
 		$this->t_daily = bab_translate("Daily");
 		$this->t_weekly = bab_translate("Weekly");
@@ -111,7 +111,7 @@ class bab_event
 		$this->icalendar = &$GLOBALS['babBody']->icalendars;
 		$this->icalendar->initializeCalendars();
 
-		$this->rescat = $this->db->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ");
+		$this->rescat = $this->db->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
 		}
 
 
@@ -149,7 +149,8 @@ function newEvent()
 			global $babBodyPopup;
 
 			$this->mcals = explode(",", $this->calid);
-			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 0;
+			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 1;
+			$this->repeat_cb_checked = isset($_POST['repeat_cb']) ? 'checked' : '';
 			$this->titleval = isset($GLOBALS['title'])? $GLOBALS['title']: '';
 				
 			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
@@ -715,7 +716,7 @@ function addEvent(&$message)
 
 	$arrnotify = array();
 
-	if( $_POST['repeat'] != 0)
+	if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0)
 		{
 		$hash = "R_".md5(uniqid(rand(),1));
 		$duration = $end - $begin;

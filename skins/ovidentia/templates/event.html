@@ -73,16 +73,34 @@
 		</td>
 	</tr>
 	<tr> 
-		<td align="right">{ daytype }:</td>
+		<td align="right">
+			{ daytype }:<input type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked } /></td>
 		<td> 
-			<input type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked }>
+			<script type="text/javascript">
+			<!--
+			function repeat_checkbox(obj)
+				{
+
+				if (obj.checked)
+					{
+					document.getElementById('repeat_tr').style.display = '';
+					document.getElementById('repeat_enddate').style.display = '';
+					}
+				else
+					{
+					document.getElementById('repeat_tr').style.display = 'none';
+					document.getElementById('repeat_enddate').style.display = 'none';
+					}
+				}
+			-->
+			</script>
+			&nbsp;&nbsp;&nbsp;
+			{ t_repeat }:<input type="checkbox" name="repeat_cb" value="0" onclick="repeat_checkbox(this)" { repeat_cb_checked } />
 		</td>
 	</tr>
 	
-	<tr> 
-		<td align="right" nowrap>
-			<label for="repeat_radio_0">{ t_norepeat }</label>
-			<input type="radio" id="repeat_radio_0" name="repeat" value="0" onclick="repeat_switch(this)" /><br />
+	<tr id="repeat_tr"> 
+		<td align="right" valign="top" nowrap>
 			<label for="repeat_radio_1">{ t_daily }</label>
 			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" /><br />
 			<label for="repeat_radio_2">{ t_weekly }</label>
@@ -141,8 +159,9 @@
 		document.forms['vacform'].repeat.value = { repeat };
 		document.getElementById('repeat_radio_'+document.forms['vacform'].repeat.value).checked = true;
 		repeat_switch();
-
+		repeat_checkbox(document.forms['vacform'].repeat_cb);
 		daytypeswitch();
+
 		//-->
 		</script>
 
@@ -158,7 +177,7 @@
 	<tr> 
 		<td align="right">{ category }:</td>
 		<td> 
-			<select name="category">
+			<select name="category" onchange="category_switch(this)">
 			<option value="" selected ></option>
 			<!--#in getnextcat -->
 			<option value="{ cat[id] }">{ cat[name] }</option>
@@ -167,17 +186,19 @@
 		</td>
 	</tr>
 	<!--#endif rescat -->
-	<tr> 
+	<tr id="color_tr"> 
 		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
 		<td nowrap> 
 			<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#fff;float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
 			&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 		</td>
 	</tr>
-	<!--#if bprivate -->
+	
 	<tr> 
-		<td align="right">{ t_bprivate }:</td>
-		<td> 
+		<td colspan="2" align="center">
+		
+			<!--#if bprivate -->
+			&nbsp;&nbsp;{ t_bprivate }: 
 			<select name="bprivate">
 				<!--#if arr[bprivate] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
@@ -187,14 +208,10 @@
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif arr[bprivate] -->
 			</select>
-		</td>
-	</tr>
-	<!--#endif bprivate -->
+			<!--#endif bprivate -->
 
-	<!--#if block -->
-	<tr> 
-		<td align="right">{ t_block }:</td>
-		<td> 
+			<!--#if block -->
+			&nbsp;&nbsp;{ t_block }:
 			<select name="block">
 				<!--#if arr[block] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
@@ -204,14 +221,10 @@
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif arr[block] -->
 			</select>
-		</td>
-	</tr>
-	<!--#endif block -->
+			<!--#endif block -->
 
-	<!--#if bfree -->
-	<tr> 
-		<td align="right">{ t_bfree }:</td>
-		<td> 
+			<!--#if bfree -->
+			&nbsp;&nbsp;{ t_bfree }:
 			<select name="bfree">
 				<!--#if arr[bfree] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
@@ -221,9 +234,10 @@
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif arr[bfree] -->
 			</select>
+			<!--#endif bfree -->
 		</td>
 	</tr>
-	<!--#endif bfree -->
+	
 
 	<tr>
 		<td colspan="2">{ editor }</td>
@@ -353,7 +367,7 @@
 	<tr> 
 		<td align="right">{ category }:</td>
 		<td> 
-			<select name="category">
+			<select name="category" onchange="category_switch(this)">
 			<option value="" selected ></option>
 			<!--#in getnextcat -->
 			<option value="{ catid }" { selected }>{ catname }</option>
@@ -362,7 +376,7 @@
 		</td>
 	</tr>
 	<!--#endif rescount -->
-	<tr> 
+	<tr id="color_tr"> 
 		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
 		<td><div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ colorvalue };float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
 		&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
@@ -495,17 +509,6 @@ function repeat_switch(grp)
 			div.style.display = 'none';
 		i++;
 		}
-	var repeat_enddate = document.getElementById('repeat_enddate');
-
-	
-	if (v == 0 && repeat_enddate)
-		{
-		repeat_enddate.style.display = 'none';
-		}
-	else if (repeat_enddate)
-		{
-		repeat_enddate.style.display = '';
-		}
 	}
 
 function updateDates(elemDay, elemMonth, elemYear)
@@ -568,6 +571,10 @@ else
 	}
 }
 
+function category_switch(obj)
+	{
+	document.getElementById('color_tr').style.display  = obj.value != '' ? 'none' : '';
+	}
 
 function evtSetColor(color)
 	{
