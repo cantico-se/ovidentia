@@ -4208,6 +4208,24 @@ function bab_UrlContent($args)
 		}
 	}
 
+function bab_Header($args)
+	{
+	$value = '';
+	if($this->match_args($args, $mm))
+		{
+		for( $j = 0; $j< count($mm[1]); $j++)
+			{
+			switch(strtolower(trim($mm[1][$j])))
+				{
+				case 'value':
+					$value = $mm[3][$j];
+					break;
+				}
+			}
+		header($value);
+		}
+	}
+
 function printout($txt)
 	{
 	return $this->handle_text($txt);
