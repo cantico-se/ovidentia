@@ -294,7 +294,7 @@ function export($id)
 			$res = $db->db_query("SHOW TABLES LIKE '".$arr_ini['db_prefix']."%'");
 			$arr_ini['tbllist'] = '';
 			while(list($tbl) = $db->db_fetch_array($res))
-				$arr_ini['tbllist'] .= ($tbllist != '') ? ','.$tbl : $tbl;
+				$arr_ini['tbllist'] .= ($arr_ini['tbllist'] != '') ? ','.$tbl : $tbl;
 			}
 			
 		if (!empty($arr_ini['description']) && empty($arr_ini['longdesc']))
