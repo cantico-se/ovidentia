@@ -1021,7 +1021,7 @@ function processImportDbFile( $pfile, $id, $separ )
 			return false;
 			}
 
-		if( empty($GLOBALS['sn']) || empty($GLOBALS['givenname']))
+		if( !isset($GLOBALS['sn']) || $GLOBALS['sn'] == "" || !isset($GLOBALS['givenname']) || $GLOBALS['givenname'] == "")
 			{
 			echo $babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
 			return false;
