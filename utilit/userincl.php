@@ -741,6 +741,40 @@ function bab_replace( $txt )
 		}
 	}
 
+	$reg = "/\\\$ARTICLEID\((.*?),(.*?),(.*?)\)/";
+	if( preg_match_all($reg, $txt, $m))
+		{
+		for ($k = 0; $k < count($m[1]); $k++ )
+			{
+			$req = "select * from ".BAB_ARTICLES_TBL." where id=".$m[1][$k];
+			$res = $db->db_query($req);
+			if( $res && $db->db_num_rows($res) > 0)
+				{
+				$arr = $db->db_fetch_array($res);
+				if ($m[2][$k] == '0')
+					{
+					$titre = $arr['title'];
+					}
+				else
+					{
+					$titre = $m[2][$k];
+					}
+				if ($m[3][$k] == '0')
+					{
+					$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$titre."</a>", $txt);
+					}
+				else
+					{
+					$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$titre."</a>", $txt);
+					}
+				}
+			else
+				{
+				$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", $m[2][$k] , $txt);
+				}
+			}
+		}
+
 	$reg = "/\\\$CONTACT\((.*?),(.*?)\)/";
 	if( preg_match_all($reg, $txt, $m))
 		{
