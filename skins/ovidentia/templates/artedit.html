@@ -314,8 +314,19 @@ document.forms[fmname].updstep02.value = cmd;
 <table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <!--#in getnextarticle -->
 <tr> 
-<td width="97%" align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>{ articletitle }</strong></td>
-<td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle"><input type="radio" name="articleid" value="{ articleid }" { articlechecked }>
+<td align="left" valign="top" nowrap class="BabTopicsAdminListTitle"><strong>{ articletitle }</strong></td>
+<td align="left" valign="top" nowrap class="BabTopicsAdminListTitle">
+<!--#if bmodify -->
+&nbsp;
+<!--#else bmodify -->
+<strong>{ modifybytxt }&nbsp;(&nbsp;{ modifauthor }&nbsp;)</strong>
+<!--#endif bmodify -->
+</td>
+<td width="1%" align="right" valign="top" nowrap class="BabTopicsAdminListTitle">&nbsp;
+<!--#if bmodify -->
+<input type="radio" name="articleid" value="{ articleid }" { articlechecked }>
+<!--#endif bmodify -->
+</td>
 </tr>
 <!--#endin getnextarticle -->
 </table>
@@ -355,10 +366,12 @@ document.forms[fmname].updstep0.value = cmd;
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="s1">
 <input type="hidden" name="idart" value="{ idart }">
+<!--#if bcontent -->
 <input type="hidden" name="title" value="{ title }">
 <input type="hidden" name="headtext" value="{ headtext }">
 <input type="hidden" name="bodytext" value="{ bodytext }">
 <input type="hidden" name="lang" value="{ lang }">
+<!--#endif bcontent -->
 <input type="hidden" name="rfurl" value="{ rfurl }">
 <input type="hidden" name="updstep0" value="">
 <br>

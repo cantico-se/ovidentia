@@ -387,6 +387,7 @@ function showChoiceTopic()
 		var $headtext;
 		var $bodytext;
 		var $lang;
+		var $bcontent;
 
 		function temp()
 			{
@@ -397,17 +398,21 @@ function showChoiceTopic()
 				if(!isset($idart)) { $idart = 0;}
 				if(!isset($topicid)) { $topicid = 0;}
 				if(!isset($articleid)) { $articleid = 0;}
-				if( !isset($title)) { $title = '';}
-				if( !isset($headtext)) { $headtext = '';}
-				if( !isset($bodytext)) { $bodytext = '';}
-				if( !isset($lang)) { $lang = '';}
 				$this->rfurl = $rfurl;
 				$this->idart = $idart;
 				$this->idtopicsel = $topicid;
-				$this->title = htmlentities($title);
-				$this->headtext = htmlentities($headtext);
-				$this->bodytext = htmlentities($bodytext);
-				$this->lang = htmlentities($lang);
+				if( (isset($title) && !empty($title)) || (isset($headtext) && !empty($headtext)) || (isset($bodytext) && !empty($bodytext)) )
+					{
+					$this->title = htmlentities($title);
+					$this->headtext = htmlentities($headtext);
+					$this->bodytext = htmlentities($bodytext);
+					$this->lang = htmlentities($lang);
+					$this->bcontent = true;
+					}
+				else
+					{
+					$this->bcontent = false;
+					}
 				$babBodyPopup->title = bab_translate("Choose the topic");
 				$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', $babBody->topsub).") order by id_cat");
 				$this->count = $babDB->db_num_rows($this->res);
@@ -575,6 +580,8 @@ function showChoiceArticleModify($topicid)
 		var $headtext;
 		var $bodytext;
 		var $lang;
+		var $bmodify;
+		var $modifauthor;
 
 		function temp($topicid)
 			{
@@ -586,11 +593,11 @@ function showChoiceArticleModify($topicid)
 				$arr = $babDB->db_fetch_array($res);
 				if( (count($babBody->topmod) && in_array($topicid, $babBody->topmod)) || ($arr['allow_manupdate'] != '0' && count($babBody->topman) && in_array($topicid, $babBody->topman)) )
 					{
-					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and adt.id is null order by at.ordering asc";
+					$req = "select at.id, at.title, adt.id_author from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' order by at.ordering asc";
 					}
 				elseif( $arr['allow_update'] && count($babBody->topsub) && in_array($topicid, $babBody->topsub))
 					{
-					$req = "select at.id, at.title from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' and adt.id is null order by at.ordering asc";
+					$req = "select at.id, at.title, adt.id_author from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$topicid."' and at.archive='N' and at.id_author='".$GLOBALS['BAB_SESS_USERID']."' order by at.ordering asc";
 					}
 				else
 					{
@@ -633,6 +640,18 @@ function showChoiceArticleModify($topicid)
 				else
 					{
 					$this->articlechecked = '';
+					}
+				if( !isset($arr['id_author']) || empty($arr['id_author']))
+					{
+					$this->modifybytxt = '';
+					$this->modifauthor = '';
+					$this->bmodify = true;
+					}
+				else
+					{
+					$this->modifybytxt = bab_translate("In modification by");
+					$this->modifauthor = bab_getUserName($arr['id_author']);
+					$this->bmodify = false;
 					}
 				$i++;
 				return true;
