@@ -274,7 +274,7 @@ function mm()
 </script>
 <!--#endif bhtml -->
 
-<form name="addsig" method="post" name="sigform" action="index.php">
+<form name="sigform" method="post" action="index.php">
 <input type="hidden" name="tg" value="mailopt">
 <input type="hidden" name="idx" value="listsig">
 <input type="hidden" name="addsig" value="add">
@@ -286,7 +286,7 @@ function mm()
 <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ 
 name }</td>
 <td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="name" size="30" maxlength="100" value="{ nameval }">
+<input type="text" name="signame" size="30" maxlength="100" value="{ nameval }">
 </td>
 </tr>
 <!-- Instanciation de la barre d'outils -->
@@ -296,7 +296,7 @@ name }</td>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground"> 
-<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="signature">{ signatureval }</textarea>
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="signature">{ signatureval }</textarea>
 </td>
 </tr>
 <tr> 
@@ -379,7 +379,7 @@ function mm()
 //-->
 </script>
 <!--#endif bhtml -->
-<form name="modsig" method="post" name="sigform" action="index.php">
+<form method="post" name="sigform" action="index.php">
 <input type="hidden" name="tg" value="mailopt">
 <input type="hidden" name="idx" value="listsig">
 <input type="hidden" name="sigid" value="{ id }">
@@ -393,7 +393,7 @@ function mm()
 <td width="30%" align="right" nowrap valign="middle">{ name }
 </td>
 <td width="70%" valign="middle"> 
-<input type="text" name="name" size="30" maxlength="100" value="{ nameval }">
+<input type="text" name="signame" size="30" maxlength="100" value="{ nameval }">
 </td>
 </tr>
 <!-- Instanciation de la barre d'outils -->

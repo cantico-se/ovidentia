@@ -745,6 +745,12 @@ if(!isset($idx))
 	$idx = "listacc";
 	}
 
+if( !isset($signame ))
+	$signame = "";
+
+if( !isset($signature ))
+	$signature = "";
+
 if( isset($addacc) && $addacc == "add")
 	addAccount($fullname, $email, $account, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat);
 
@@ -758,12 +764,12 @@ if( isset($action) && $action == "Yes")
 
 if( isset($addsig) && $addsig == "add")
 	{
-	addSignature($name, $signature, $html);
+	addSignature($signame, $signature, $html);
 	}
 
 if( isset($modsig) && $modsig == "modify")
 	{
-	modifySignature($name, $signature, $html, $sigid);
+	modifySignature($signame, $signature, $html, $sigid);
 	}
 
 switch($idx)
@@ -812,7 +818,7 @@ switch($idx)
 	case "modsig":
 		$body->title = babTranslate("Modify Signature");
 		$bemail = mailAccessLevel();
-		signatureModify($sigid,$signature, $name, $html);
+		signatureModify($sigid,$signature, $signame, $html);
 		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
 		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
 		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
@@ -827,7 +833,7 @@ switch($idx)
     case "addsig":
 		$body->title = babTranslate("Add Signature");
 		$bemail = mailAccessLevel();
-		signatureAdd($signature, $name, $html);
+		signatureAdd($signature, $signame, $html);
 		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listacc");
 		$body->addItemMenu("listsig", babTranslate("Signatures"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=listsig");
 		$body->addItemMenu("addsig", babTranslate("Create"), $GLOBALS['babUrl']."index.php?tg=mailopt&idx=addsig");
