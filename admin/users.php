@@ -39,11 +39,14 @@ function listUsers($pos, $grp)
 		var $userid;
 		var $usert;
 
+		var $nickname;
+
 		function temp($pos, $grp)
 			{
 			$this->email = bab_translate("Email");
 			$this->allname = bab_translate("All");
 			$this->update = bab_translate("Update");
+			$this->nickname = bab_translate("Nickname");
 			$this->db = $GLOBALS['babDB'];
 			$this->group = bab_getGroupName($grp);
 			$this->grp = $grp;

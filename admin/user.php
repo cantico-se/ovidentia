@@ -216,6 +216,34 @@ function deleteUser($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function changePassword($item, $pos, $grp)
+	{
+	global $babBody,$BAB_SESS_USERID;
+	class tempb
+		{
+		var $newpwd;
+		var $renewpwd;
+		var $update;
+		var $item;
+		var $pos;
+		var $grp;
+
+		function tempb($item, $pos, $grp)
+			{
+			$this->item = $item;
+			$this->pos = $pos;
+			$this->grp = $grp;
+			$this->newpwd = bab_translate("New Password");
+			$this->renewpwd = bab_translate("Retype New Password");
+			$this->update = bab_translate("Update Password");
+			}
+		}
+
+	$tempb = new tempb($item, $pos, $grp);
+	$babBody->babecho(	bab_printTemplate($tempb,"users.html", "changepassword"));
+
+	}
+
 function notifyUserconfirmation($name, $email)
 	{
 	global $babBody, $babAdminEmail, $babInstallPath;
@@ -381,6 +409,39 @@ function confirmDeleteUser($id)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}
 
+function updatePassword($item, $newpwd1, $newpwd2)
+	{
+	global $babBody;
+
+	if( empty($newpwd1) || empty($newpwd2))
+		{
+		$babBody->msgerror = bab_translate("You must complete all fields !!");
+		return false;
+		}
+	if( $newpwd1 != $newpwd2)
+		{
+		$babBody->msgerror = bab_translate("Passwords not match !!");
+		return false;
+		}
+	if ( strlen($newpwd1) < 6 )
+		{
+		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		return false;
+		}
+
+	$db = $GLOBALS['babDB'];
+	$req="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' ".
+		"where id='". $item . "'";
+	$res = $db->db_query($req);
+	if ($db->db_affected_rows() < 1)
+		{
+		$babBody->msgerror = bab_translate("Nothing Changed");
+		return false;
+		}
+
+	return true;
+	}
+
 /* main */
 
 if( !isset($idx))
@@ -392,6 +453,17 @@ if( isset($modify))
 		updateUser($item, $changepwd, $is_confirmed, $disabled, $group);
 	else if(isset($bdelete))
 		$idx = "Delete";
+	}
+
+if( isset($update) && $update == "password")
+	{
+	if(!updatePassword($item, $newpwd1, $newpwd2))
+		$idx = "Modify";
+	else
+		{
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+		return;
+		}
 	}
 
 if( isset($action) && $action == "Yes")
@@ -426,6 +498,7 @@ switch($idx)
 	case "Modify":
 		$babBody->title = /* bab_translate("Modify a user") . ": " . */bab_getUserName($item);
 		modifyUser($item, $pos, $grp);
+		changePassword($item, $pos, $grp);
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu("Groups", bab_translate("Groups"),$GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
