@@ -68,3 +68,24 @@ function bab_selectFirstInputField(filterclass)
 			}
 		}
 	}
+
+var bab_popup_obj = null;
+function bab_popup(url,divisor)
+	{
+	if (bab_popup_obj == null || bab_popup_obj.closed)
+		{
+		if (typeof divisor == 'undefined')
+			{
+				divisor = 3;
+			}
+		var wd = Math.round(screen.width/divisor);
+		var hd = Math.round(screen.height/divisor);
+		var w = screen.width-wd;
+		var h = screen.height-hd;
+		var l = Math.round(wd/2);
+		var t = Math.round(hd/2);
+		bab_popup_obj = window.open(url,'bab_popup','status=yes,menubar=no,personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+		}
+	else
+		bab_popup_obj.focus();
+	}
