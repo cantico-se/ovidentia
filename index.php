@@ -105,7 +105,10 @@ include_once "base.php";
 include_once $babInstallPath."utilit/defines.php";
 include_once $babInstallPath."utilit/dbutil.php";
 $babDB = new babDatabase();
+if( $tg != 'version' )
+{
 include_once $babInstallPath."utilit/statincl.php";
+}
 
 include $babInstallPath."utilit/utilit.php";
 unset($BAB_SESS_LOGGED);
