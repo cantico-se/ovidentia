@@ -1186,32 +1186,32 @@ CREATE TABLE bab_dbdir_fieldsextra (
 );
 
 
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 1, 0, 'N', 'N', 'N', 0, 1);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 2, 0, 'Y', 'Y', 'N', 1, 2);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 3, 0, 'Y', 'N', 'N', 0, 3);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 4, 0, 'Y', 'Y', 'N', 2, 4);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 5, 0, 'Y', 'N', 'N', 0, 5);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 6, 0, 'Y', 'Y', 'N', 3, 6);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 7, 0, 'N', 'N', 'N', 0, 7);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 8, 0, 'N', 'N', 'N', 0, 8);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 9, 0, 'N', 'N', 'N', 0, 9);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 10, 0, 'N', 'N', 'N', 0, 10);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 11, 0, 'N', 'N', 'N', 0, 11);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 12, 0, 'N', 'N', 'N', 0, 12);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 13, 0, 'N', 'N', 'N', 0, 13);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 14, 0, 'N', 'N', 'N', 0, 14);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 15, 0, 'N', 'N', 'N', 0, 15);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 16, 0, 'N', 'N', 'N', 0, 16);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 17, 0, 'N', 'N', 'N', 0, 17);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 18, 0, 'N', 'N', 'N', 0, 18);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 19, 0, 'N', 'N', 'N', 0, 19);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 20, 0, 'N', 'N', 'N', 0, 20);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 21, 0, 'N', 'N', 'N', 0, 21);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 22, 0, 'N', 'N', 'N', 0, 22);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 23, 0, 'N', 'N', 'N', 0, 23);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 24, 0, 'N', 'N', 'N', 0, 24);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 25, 0, 'N', 'N', 'N', 0, 25);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 26, 0, 'N', 'N', 'N', 0, 26);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 1, 0, 'N', 'N', 'N', 0, 1);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 2, 0, 'Y', 'Y', 'N', 1, 2);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 3, 0, 'Y', 'N', 'N', 0, 3);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 4, 0, 'Y', 'Y', 'N', 2, 4);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 5, 0, 'Y', 'N', 'N', 0, 5);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 6, 0, 'Y', 'Y', 'N', 3, 6);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 7, 0, 'N', 'N', 'N', 0, 7);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 8, 0, 'N', 'N', 'N', 0, 8);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 9, 0, 'N', 'N', 'N', 0, 9);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 10, 0, 'N', 'N', 'N', 0, 10);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 11, 0, 'N', 'N', 'N', 0, 11);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 12, 0, 'N', 'N', 'N', 0, 12);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 13, 0, 'N', 'N', 'N', 0, 13);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 14, 0, 'N', 'N', 'N', 0, 14);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 15, 0, 'N', 'N', 'N', 0, 15);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 16, 0, 'N', 'N', 'N', 0, 16);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 17, 0, 'N', 'N', 'N', 0, 17);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 18, 0, 'N', 'N', 'N', 0, 18);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 19, 0, 'N', 'N', 'N', 0, 19);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 20, 0, 'N', 'N', 'N', 0, 20);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 21, 0, 'N', 'N', 'N', 0, 21);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 22, 0, 'N', 'N', 'N', 0, 22);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 23, 0, 'N', 'N', 'N', 0, 23);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 24, 0, 'N', 'N', 'N', 0, 24);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 25, 0, 'N', 'N', 'N', 0, 25);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 26, 0, 'N', 'N', 'N', 0, 26);
 
 
 #
