@@ -339,7 +339,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 				{
 				$arr = $this->db->db_fetch_array($this->rescol);
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->coltxt = bab_translate($arr['description']);
+				$this->coltxt = translateDirectoryField($arr['description']);
 				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$arr['name'];
 				$tmp[] = $arr['name'];
 				$i++;
@@ -483,7 +483,7 @@ function summaryLdapContact($id, $cn)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? utf8_decode($this->entries[0][$arr['x_name']][0]) : '';
 				$i++;
 				return true;
@@ -579,7 +579,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = $arr['name'];
 				if( isset($this->fields[$arr['name']]) )
 					{
@@ -723,7 +723,7 @@ function addDbContact($id, $fields)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = $arr['name'];
 				if( isset($this->fields[$arr['name']]) )
 					$this->fvalue = $this->fields[$arr['name']];
@@ -891,7 +891,7 @@ function mapDbFile($id, $file, $tmpfile, $wsepar, $separ)
 				else
 					$this->required = false;
 				
-				$this->ofieldname = bab_translate($arr['description']);
+				$this->ofieldname = translateDirectoryField($arr['description']);
 				$this->ofieldv = $arr['name'];
 				$i++;
 				return true;
@@ -1482,7 +1482,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
 	while( $arr = $db->db_fetch_array($res))
 		{
-		$output .= bab_translate($arr['description']).$separ;
+		$output .= translateDirectoryField($arr['description']).$separ;
 		}
 
 	$output = substr($output, 0, -1);

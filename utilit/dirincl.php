@@ -37,6 +37,16 @@ function getDirectoryName($id, $table)
 		}
 	}
 
+function translateDirectoryField($field)
+	{
+		$txt = bab_translate("DF-".$field);
+		if( substr($txt, 0, 3) == "DF-" )
+		{
+			return bab_translate($field);
+		}
+		return $txt;
+	}
+
 function UBrowseDbDirectory($id, $pos, $xf, $cb)
 {
 	global $babBody;
@@ -94,7 +104,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 				{
 				$arr = $this->db->db_fetch_array($this->rescol);
 				$arr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->coltxt = bab_translate($arr['description']);
+				$this->coltxt = translateDirectoryField($arr['description']);
 				$this->colurl = $GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".$this->ord.$this->pos."&xf=".$arr['name']."&cb=".$this->cb;
 				$tmp[] = $arr['name'];
 				$i++;
@@ -369,7 +379,7 @@ function summaryDbContact($id, $idu, $update=true)
 			if( $i < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = stripslashes($this->arr[$arr['name']]);
 				if( strlen($this->fieldv) > 0 )
 					{
