@@ -147,6 +147,7 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 			}
 		$tempc = new clsNotifyPublicEvent($title, $description, $startdate, $enddate);
 
+		$arrusers = array();
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
 			$tempc->calendar = bab_getCalendarOwnerName($idcals, BAB_CAL_PUB_TYPE);
@@ -158,7 +159,6 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 			$mail->mailAltBody($message);
 
 			$res = $babDB->db_query("select id_group from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where  id_object='".$idclas[$i]."'");
-			$arrusers = array();
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				while( $row = $babDB->db_fetch_array($res))
@@ -181,8 +181,12 @@ function notifyPublicEvent($title, $description, $startdate, $enddate, $idcals)
 						$count = 0;
 						while(($arr = $babDB->db_fetch_array($res2)))
 							{
-							$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-							$count++;
+							if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
+								{
+								$arrusers[] = $arr['id'];
+								$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+								$count++;
+								}
 
 							if( $count > 25 )
 								{
@@ -263,6 +267,7 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 		
 		$db = &$GLOBALS['babDB'];
 
+		$arrusers = array();
 		for( $i = 0; $i < count($idcals); $i++ )
 			{
 			$tempc->calendar = bab_getCalendarOwnerName($idcals, BAB_CAL_RES_TYPE);
@@ -274,7 +279,6 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 			$mail->mailAltBody($message);
 
 			$res = $babDB->db_query("select id_group from ".BAB_CAL_RES_GRP_GROUPS_TBL." where  id_object='".$idcals[$i]."'");
-			$arrusers = array();
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				while( $row = $babDB->db_fetch_array($res))
@@ -297,8 +301,12 @@ function notifyResourceEvent($title, $description, $startdate, $enddate, $idcals
 						$count = 0;
 						while(($arr = $babDB->db_fetch_array($res2)))
 							{
-							$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-							$count++;
+							if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
+								{
+								$arrusers[] = $arr['id'];
+								$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+								$count++;
+								}
 
 							if( $count > 25 )
 								{

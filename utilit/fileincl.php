@@ -277,13 +277,16 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 
 	$tempa = new fileNotifyMembersCls($file, $path, $idgrp, $msg);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "fileuploaded"));
-
 	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "fileuploadedtxt");
+
+	$mail->mailBody($message, "html");
+	$mail->mailAltBody($messagetxt);
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select id_group from ".BAB_FMDOWNLOAD_GROUPS_TBL." where  id_object='".$idgrp."'");
 	if( $res && $db->db_num_rows($res) > 0 )
 		{
+		$arrusers = array();
 		while( $row = $db->db_fetch_array($res))
 			{
 
@@ -305,23 +308,28 @@ function fileNotifyMembers($file, $path, $idgrp, $msg)
 				$count = 0;
 				while(($arr = $db->db_fetch_array($res2)))
 					{
-					$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
-					$count++;
+					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))
+						{
+						$arrusers[] = $arr['id'];
+						$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+						$count++;
+						}
+
 					if( $count == 25 )
 						{
-						$mail->mailBody($message, "html");
-						$mail->mailAltBody($messagetxt);
 						$mail->send();
 						$mail->clearBcc();
+						$mail->clearTo();
 						$count = 0;
 						}
 					}
 
 				if( $count > 0 )
 					{
-					$mail->mailBody($message, "html");
-					$mail->mailAltBody($messagetxt);
 					$mail->send();
+					$mail->clearBcc();
+					$mail->clearTo();
+					$count = 0;
 					}
 				}
 			}
