@@ -77,7 +77,7 @@ function listContacts($pos)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=contact&idx=modify&item=".$this->arr[id]."&bliste=1');";
-				$this->urlmail = $GLOBALS[babUrl]."index.php?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr[email];
+				$this->urlmail = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr[email]."');";
 				$this->urlname = composeName( $this->arr[firstname], $this->arr[lastname]);
 				$i++;
 				return true;
