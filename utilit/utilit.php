@@ -106,40 +106,51 @@ function bab_browserVersion()
 	return 0;
 	}
 
-function bab_translate($str)
+function bab_translate($str, $folder = "")
 {
 	static $langcontent;
+	if(empty($folder))
+		$tmp = &$langcontent;
+	else
+		$tmp = "";
+
 	if( empty($GLOBALS['babLanguage']) || empty($str))
 		return $str;
-	$filename = "lang/lang-".$GLOBALS['babLanguage'].".xml";
-	if( !file_exists($filename))
+	if( empty($folder))
 		$filename = $GLOBALS['babInstallPath']."lang/lang-".$GLOBALS['babLanguage'].".xml";
-	if( empty($langcontent))
+	else
+		$filename = $GLOBALS['babInstallPath']."lang/addons/".$folder."/lang-".$GLOBALS['babLanguage'].".xml";
+
+	if( empty($tmp))
 		{
+		clearstatcache();
 		if( !file_exists($filename))
 			{
 			$file = @fopen($filename, "w");
 			if( $file )
 				fclose($file);
 			}
-		$file = @fopen($filename, "r");
-		$langcontent = fread($file, filesize($filename));
-		fclose($file);
+		else
+			{
+			$file = @fopen($filename, "r");
+			$tmp = fread($file, filesize($filename));
+			fclose($file);
+			}
 		}
 	$reg = "/<".$GLOBALS['babLanguage'].">(.*)<string\s+id=\"".preg_quote($str)."\">(.*?)<\/string>(.*)<\/".$GLOBALS['babLanguage'].">/s";
-	if( preg_match($reg, $langcontent, $m))
+	if( preg_match($reg, $tmp, $m))
 		return $m[2];
 	else
 		{
-		$file = fopen($filename, "w");
+		$file = @fopen($filename, "w");
 		if( $file )
 			{
 			$reg = "/<".$GLOBALS['babLanguage'].">(.*)<\/".$GLOBALS['babLanguage'].">/s";
-			preg_match($reg, $langcontent, $m);
-			$langcontent = "<".$GLOBALS['babLanguage'].">".$m[1];
-			$langcontent .= "<string id=\"".$str."\">".$str."</string>\r\n";
-			$langcontent .= "</".$GLOBALS['babLanguage'].">";
-			fputs($file, $langcontent);
+			preg_match($reg, $tmp, $m);
+			$tmp = "<".$GLOBALS['babLanguage'].">".$m[1];
+			$tmp .= "<string id=\"".$str."\">".$str."</string>\r\n";
+			$tmp .= "</".$GLOBALS['babLanguage'].">";
+			fputs($file, $tmp);
 			fclose($file);
 			}
 		}
@@ -149,20 +160,34 @@ function bab_translate($str)
 function bab_getAddonsMenus($row, $what)
 {
 	$addon_urls = array();
-	$addonpath = $GLOBALS['babAddonsPath'].$row['folder'];
-	if( is_file($addonpath."/".$row['initfile'] ))
+	$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+	if( is_file($addonpath."/init.php" ))
 		{
-		require_once( $addonpath."/".$row['initfile'] );
-		$func = $row[$what];
+		require_once( $addonpath."/init.php" );
+		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
 			{
+			$GLOBALS['babAddonFolder'] = $row['title'];
 			$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
 			$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['folder']."/";
-			$GLOBALS['babAddonHtmlPath'] = "addons/".$row['folder']."/";
+			$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$row['title']."/";
+			$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 			while( $func($url, $txt))
 				{
 				$addon_urls[$txt] = $url;
+				}
+			$func = $row['title']."_onSectionCreate";
+			$db = $GLOBALS['babDB'];
+			$res = $db->db_query("select id from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$row['id']."' and type='4'");
+			if( $res && $db->db_num_rows($res) < 1 && function_exists($func))
+				{
+				$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_SECTIONS_ORDER_TBL." where position='0'"));
+				$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$row['id']. "', '0', '4', '" . ($arr[0]+1). "')";
+				$db->db_query($req);
+				}
+			else if( $res && $db->db_num_rows($res) > 0 && !function_exists($func))
+				{
+				$db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$id."' and type='4'");	
 				}
 			}
 		}
@@ -348,33 +373,20 @@ function babAdminSection()
 	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $db->db_fetch_array($res))
 		{
-		$addonpath = $GLOBALS['babAddonsPath'].$row['folder'];
-		if( is_dir($addonpath))
+		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']))
 			{
-			$arr = bab_getAddonsMenus($row, 'asload');
-			reset ($arr);
-			while (list ($txt, $url) = each ($arr))
+			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+			if( is_dir($addonpath))
 				{
-				$this->addon_urls[$txt] = $url;
+				$arr = bab_getAddonsMenus($row, "getAdminSectionMenus");
+				reset ($arr);
+				while (list ($txt, $url) = each ($arr))
+					{
+					$this->addon_urls[$txt] = $url;
+					}
 				}
 			}
 		}
-	/*
-	$arr_keys = array_keys($GLOBALS['babAddons']);
-	for( $i = 0; $i < sizeof($arr_keys); $i++)
-		{
-		$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
-		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
-			{
-			$arr  = bab_getAddonsMenus($arr_keys[$i], 'bab_admin_section_load');
-			reset ($arr);
-			while (list ($txt, $url) = each ($arr))
-				{
-				$this->addon_urls[$txt] = $url;
-				}
-			}
-		}
-	*/
 	}
 
 function addUrl()
@@ -514,10 +526,10 @@ function babUserSection()
 		{
 		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']))
 			{
-			$addonpath = $GLOBALS['babAddonsPath'].$row['folder'];
+			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 			if( is_dir($addonpath))
 				{
-				$arr = bab_getAddonsMenus($row, 'usload');
+				$arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
 				reset ($arr);
 				while (list ($txt, $url) = each ($arr))
 					{
@@ -526,22 +538,6 @@ function babUserSection()
 				}
 			}
 		}
-/*
-	$arr_keys = array_keys($GLOBALS['babAddons']);
-	for( $i = 0; $i < sizeof($arr_keys); $i++)
-		{
-		$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
-		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
-			{
-			$arr  = bab_getAddonsMenus($arr_keys[$i], 'bab_user_section_load');
-			reset ($arr);
-			while (list ($txt, $url) = each ($arr))
-				{
-				$this->addon_urls[$txt] = $url;
-				}
-			}
-		}
-*/
 	}
 
 function addUrl()
@@ -1031,16 +1027,18 @@ function loadSections()
 				if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id_section']))
 					{
 					$r = $db->db_fetch_array($db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$arr['id_section']."'"));
-					if( $r['enabled'] == "Y" && $r['section'] == "Y")
+					if( $r['enabled'] == "Y")
 						{
-						require_once( $GLOBALS['babAddonsPath'].$r['folder']."/".$r['initfile'] );
-						if( !empty($r['sload']) && function_exists($r['sload']))
+						require_once( $GLOBALS['babAddonsPath'].$r['title']."/init.php" );
+						$func = $r['title']."_onSectionCreate";
+						if( function_exists($func))
 							{
+							$GLOBALS['babAddonFolder'] = $r['title'];
 							$GLOBALS['babAddonTarget'] = "addon/".$r['id'];
 							$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$r['id']."/";
-							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$r['folder']."/";
-							$GLOBALS['babAddonHtmlPath'] = "addons/".$r['folder']."/";
-							if( $r['sload']($stitle, $scontent))
+							$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."/addons/".$r['title']."/";
+							$GLOBALS['babAddonHtmlPath'] = "addons/".$r['title']."/";
+							if( $func($stitle, $scontent))
 								{
 								$add = true;
 								$sec = new babSection($stitle, $scontent);

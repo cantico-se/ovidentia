@@ -454,17 +454,18 @@ switch($tg)
 			$db = $GLOBALS['babDB'];
 			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr[1]))
 				{
-				$res = $db->db_query("select id, folder from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
+				$res = $db->db_query("select title from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
 				if( $res && $db->db_num_rows($res) > 0)
 					{
 					$row = $db->db_fetch_array($res);
-					$incl = "addons/".$row['folder'];
+					$incl = "addons/".$row['title'];
 					for($i = 2; $i < sizeof($arr); $i++)
 						$incl .= "/".$arr[$i];
-					$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['folder']."/";
-					$GLOBALS['babAddonHtmlPath'] = "addons/".$row['folder']."/";
+					$GLOBALS['babAddonFolder'] = $row['title'];
+					$GLOBALS['babAddonTarget'] = "addon/".$arr[1];
+					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$arr[1]."/";
+					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['title']."/";
+					$GLOBALS['babAddonHtmlPath'] = "addons/".$row['title']."/";
 					}
 				}
 			else
