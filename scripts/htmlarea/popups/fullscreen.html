@@ -143,7 +143,7 @@ function init() {
 
   // generate editor and resize it
 
-  editor = new HTMLArea("editor",FORM_DATA['baburl'],FORM_DATA['babInstallPath'],'en',true,config);
+  editor = new HTMLArea("editor",FORM_DATA['baburl'],FORM_DATA['babInstallPath'],'en',FORM_DATA['babPhpSelf'],true,config);
   editor.generate();
   resize_editor();
   editor._iframe.style.width = "100%";
