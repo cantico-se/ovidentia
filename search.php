@@ -232,6 +232,8 @@ function searchKeyword($item , $option = "OR")
 			foreach ($babSearchItems as $key => $value)
 					$this->arr[] = $key;
 
+			$this->addons = new bab_addonsSearch;
+
 			$this->count = count($this->arr);
 
 			$this->el_to_init = Array ( 'a_author','a_dd','a_mm','a_yyyy','before','after','before_display' ,'after_display','before_memo','after_memo','what2','what','advenced');
