@@ -157,6 +157,15 @@ function listImages($editor)
 			$this->border = bab_translate("Border");
 			$this->invalidentry = bab_translate("You must specify a number");
 
+			$this->none = bab_translate("None");
+			$this->left = bab_translate("Left");
+			$this->right = bab_translate("Right");
+			$this->middle = bab_translate("Middle");
+			$this->absmiddle = bab_translate("Absolute middle");
+			$this->top = bab_translate("top");
+			$this->bottom = bab_translate("Bottom");
+			$this->center = bab_translate("Center");
+
 			$this->badmin = bab_isUserAdministrator();
 			$this->comnum = 0;
 			$this->editor = $editor;

@@ -1140,4 +1140,9 @@
 <string id="Please check your date format">Vérifier le format de la date</string>
 <string id="after date">après la date</string>
 <string id="before date">avant la date</string>
+<string id="Middle">Milieu</string>
+<string id="Absolute middle">Milieu absolu</string>
+<string id="top">Haut</string>
+<string id="Bottom">Bas</string>
+<string id="Center">Centre</string>
 </fr>
