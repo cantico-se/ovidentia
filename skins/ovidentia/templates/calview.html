@@ -1,4 +1,5 @@
 <!--#begin eventslist -->
+<br>
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -55,113 +56,6 @@ title }</a></td>
 </table>
 <!--#end eventslist -->
 
-<!--#begin articleslist -->
-<br>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-        <tr> 
-          <td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ newarticles 
-}</td>
-        </tr>
-      </table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="3" cellspacing="0">
-<!--#in getnexttopic -->
-<!--#in getarticle -->
-<tr>
-<td class="BabSummaryContentBackground">{ date }</td>
-<td class="BabSummaryContentBackground">
-<a class="BabSummaryLinkColor" href="javascript: Start('{ titleurl }', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
-title }</a></td>
-<td class="BabSummaryContentBackground">{ author }</td>
-</tr>
-<!--#endin getarticle -->
-<!--#endin getnexttopic -->
-</table>
-</td>
-</tr>
-</table>
-<!--#end articleslist -->
-
-<!--#begin commentslist -->
-<br>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-        <tr> 
-          <td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ newcomments 
-}</td>
-        </tr>
-      </table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="3" cellspacing="0">
-<!--#in getnexttopiccom -->
-<!--#in getcomment -->
-<tr>
-<td class="BabSummaryContentBackground">{ date }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ 
-title }</a></td>
-<td class="BabSummaryContentBackground">{ author }</td>
-</tr>
-<!--#endin getcomment -->
-<!--#endin getnexttopiccom -->
-</table>
-</td>
-</tr>
-</table>
-<!--#end commentslist -->
-
-<!--#begin threadslist -->
-<br>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-        <tr> 
-          <td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ newposts }</td>
-        </tr>
-      </table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table border="0" width="100%" cellpadding="3" cellspacing="0">
-<!--#in getnextforum -->
-<!--#in getnextthread -->
-<!--#in getpost -->
-<!--#if ipost "== 1" -->
-<tr>
-<td class="BabSummaryTitleFontBackground" colspan="3">{ forumname }</td>
-</tr>
-<!--#endif ipost -->
-<tr>
-<td class="BabSummaryContentBackground">{ date }</td>
-<td class="BabSummaryContentBackground"><a class="BabSummaryLinkColor" href="{ titleurl }">{ title }</a></td>
-<td class="BabSummaryContentBackground">{ posts }</td>
-</tr>
-<!--#endin getpost -->
-<!--#endin getnextthread -->
-<!--#endin getnextforum -->
-</table>
-</td>
-</tr>
-</table>
-<!--#end threadslist -->
 <!--#begin mailslist -->
 <br>
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
@@ -194,32 +88,11 @@ class="BabSummaryLinkColor" href="{ domainurl }">{ domain }&nbsp;</a></td>
 <br>
 <!--#end mailslist -->
 
-<!--#begin fileslist -->
-<br>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-        <tr> 
-          <td class="BabSummaryTitleFontBackground" width="90%" valign="middle">{ newfiles }</td>
-        </tr>
-      </table>
-</td>
-</tr>
-</table>
-<table border="0" cellpadding="2" cellspacing="0" align="center" width="95%">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table class="BabSummaryContentBackground" border="0" width="100%" cellpadding="3" cellspacing="0">
-<!--#in getfile -->
-<tr> 
-<td class="BabSummaryContentBackground" nowrap valign="middle" width="1%"><a 
-class="BabSummaryLinkColor" href="javascript: Start('{ fileurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ file }&nbsp;</a></td>
-<td class="BabSummaryContentBackground" valign="middle">&nbsp;{ filedesc }</td>
-</tr>
-<!--#endin getfile -->
-</table>
-</td>
-</tr>
-</table>
-<!--#end fileslist -->
+
+<!--#begin otherslist -->
+{ $OVML(waitingapp.html) }
+{ $OVML(newarticles.html) }
+{ $OVML(newcomments.html) }
+{ $OVML(newposts.html) }
+{ $OVML(newfiles.html) }
+<!--#end otherslist -->
