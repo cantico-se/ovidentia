@@ -72,7 +72,7 @@
 <string id="Allowed">Alloué</string>
 <string id="An article has been modified">Un article a été modifié</string>
 <string id="An article has been published">Un article a été publié</string>
-<string id="And / Or">Et / Oo</string>
+<string id="And / Or">Et / Ou</string>
 <string id="Anonymous">Anonyme</string>
 <string id="Approbation schema for articles">Schéma d'approbation pour les articles</string>
 <string id="Approbation schema for comments">Schéma d'approbation pour les commentaires</string>
@@ -1297,7 +1297,7 @@
 <string id="Allow author to specify dates of publication">Permettre aux auteurs de spécifier des dates de publication</string>
 <string id="Allow author to attach files to articles">Permettre aux auteurs de joindre des fichiers avec leurs articles</string>
 <string id="Allow author to modify their articles">Permettre aux auteurs de modifier leurs articles</string>
-<string id="Allow managers to modify articles">Permettre aux gestionnaires de modifier ls articles</string>
+<string id="Allow managers to modify articles">Permettre aux gestionnaires de modifier les articles</string>
 <string id="Max articles by page">Nombre maximum d'articles par page</string>
 <string id="Yes with approbation">Oui avec approbation</string>
 <string id="Yes without approbation">Oui sans approbation</string>
@@ -1395,5 +1395,6 @@
 <string id="Choose the article">Séléctionner l'article</string>
 <string id="Don't update article modification date">Ne pas mettre à jour la date de modification de l'article</string>
 <string id="File size must not exceed">La taille du fichier ne doit pas excéder</string>
+<string id="The number of days exceed the total allowed">Le nombre de jours excèdent le total permis</string>
 <string id="Do you really want to submit">Voulez-vous vraiment soumettre</string>
 </fr>
