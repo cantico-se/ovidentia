@@ -27,7 +27,7 @@ include $babInstallPath."utilit/forumincl.php";
 include $babInstallPath."utilit/fileincl.php";
 include $babInstallPath."utilit/calincl.php";
 
-$babLimit = 5;
+$babLimit = 20;
 $navbaritems = 10;
 define ("FIELDS_TO_SEARCH", 3);
 
@@ -36,7 +36,10 @@ function highlightWord( $w, $text)
 	$arr = explode(" ",urldecode($w));
 	foreach($arr as $mot)
 		{
+		$mot_he = htmlentities($mot);
 		$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+		if ($mot != $mot_he)
+			$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot_he.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
 		}
 	return $text;
 }
@@ -105,6 +108,13 @@ if (trim($req2) != "")
 	return $like;
 }
 
+
+function returnCategoriesHierarchy($topics)
+	{
+	$article_path = new categoriesHierarchy($topics);
+	$out = bab_printTemplate($article_path,"search.html", "article_path");
+	return $out;
+	}
 
 
 function searchKeyword($item , $option = "OR")
@@ -466,7 +476,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->folder=bab_translate("Folder");
 			$this->author=bab_translate("Author");
 			$this->datem=bab_translate("Last update");
-			$this->directory=bab_translate("Directory");
+			$this->directory=bab_translate("Directory&nbsp;");
 			$this->department=bab_translate("Department");
 
 			$this->fields = $GLOBALS['HTTP_POST_VARS'];
@@ -946,11 +956,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->article = put_text($arr['title']);
 				$this->artdate = $arr['date'];
 				$this->artauthor = $arr['author'];
-				$this->arttopic = put_text($arr['topic']);
+				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
 				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what;
 				$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id'];
-				$this->topicurl = $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id_topic'];
 				$this->authormail = bab_getUserEmail($arr['id_author']);
 				$this->intro = put_text($arr['head'],300);
 				$i++;
@@ -973,11 +982,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->artdate = $arr['date'];
 				$this->artauthor = $arr['name'];
 				$this->authormail = $arr['email'];
-				$this->arttopic = put_text($arr['topic']);
+				//$this->arttopic = put_text($arr['topic']);
+				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->article = put_text($arr['arttitle']);
 				$this->arttopicid = $arr['id_topic'];
 				$this->com = put_text($arr['subject']);
-				$this->topicurl = $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id_topic'];
+				//$this->topicurl = $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id_topic'];
 				$this->articleurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id_article'];
 				$this->articleurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id_article']."&w=".$this->what;
 				$this->comurl = $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$arr['id_topic']."&article=".$arr['id_article'];

@@ -357,7 +357,7 @@ function cleanAfter() {
 <!--#in getnextart -->
 <tr>
 <td class="BabTopicsBackground" valign="top">
-<a class="BabSummaryLinkColor" href="{ topicurl }">{ arttopic }</a> &gt; 
+{ arttopic }&gt; 
 <a class="BabFaqLink" href="{ articleurl }">{ article }</a> 
 [ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
  <br>
@@ -382,7 +382,7 @@ function cleanAfter() {
 <!--#in getnextcom -->
 <tr>
 <td class="BabTopicsBackground" valign="top">
-<a class="BabSummaryLinkColor" href="{ topicurl }">{ arttopic }</a> &gt; 
+{ arttopic }&gt; 
 <a class="BabSummaryLinkColor" href="{ articleurl }">{ article }</a> [ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ] &gt; 
 <a class="BabFaqLink" href="{ comurl }">{ com }</a> 
 [ <a href="javascript: Start('{ comurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
@@ -972,3 +972,13 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end viewdircontact -->
+
+<!--#begin article_path -->
+<!--#in getnextparent -->
+<!--#if burl -->
+<a class="BabSummaryLinkColor" href="{ parenturl }">{ parentname }</a>&nbsp/
+<!--#else burl -->
+<a class="BabSummaryLinkColor" href="{ parenturl }">{ parentname }</a>&nbsp
+<!--#endif burl -->
+<!--#endin getnextparent -->
+<!--#end article_path -->
