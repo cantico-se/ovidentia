@@ -126,8 +126,10 @@ function bab_printOvmlTemplate( $file, $args=array())
 function bab_composeUserName( $F, $L)
 	{
 	global $babBody;
-	eval("\$var0 = \$".$babBody->nameorder[0].";");
-	eval("\$var1 = \$".$babBody->nameorder[1].";");
+	if ($babBody->nameorder[0]) eval("\$var0 = \$".$babBody->nameorder[0].";");
+	else $var0 = $F;
+	if ($babBody->nameorder[1]) eval("\$var1 = \$".$babBody->nameorder[1].";");
+	else $var0 = $L;
 	return trim(sprintf("%s %s", $var0 ,$var1));
 	}
 
