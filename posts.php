@@ -903,9 +903,11 @@ function dlfile($forum,$post,$name)
 			{
 			header('Content-Type:application/octet-stream');
 			header('Content-Disposition: attachment; filename="'.$file['name'].'"');
+			header('Content-Length:'.filesize($file['path']));
+			header('Content-transfert-encoding: binary');
 			$handle = fopen($file['path'], "r");
 			while (!feof($handle)) {
-			   $buffer = fgets($handle, 4096);
+			   $buffer = fread($handle, 4096);
 			   echo $buffer;
 			}
 			fclose($handle);
