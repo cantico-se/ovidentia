@@ -148,7 +148,7 @@ function bab_confirmDeleteArticle($article)
 
 	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$article."'"));
 	deleteImages($arr['head'], $article, "art");
-	deleteImagesArticle($arr['body'], $article, "art");
+	deleteImages($arr['body'], $article, "art");
 	
 	if( $arr['idfai'] != 0 )
 		deleteFlowInstance($arr['idfai']);
