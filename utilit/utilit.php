@@ -717,7 +717,13 @@ function babUserSection($close)
 	$res = $babDB->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL."");
 	while( $row = $babDB->db_fetch_array($res))
 		{
-		if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
+		if( $row['id_group'] != 0 )
+			{
+			list($bdiraccess) = $babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'");
+			}
+		else
+			$bdiraccess = 'Y';
+		if($bdiraccess == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 			{
 			$this->array_urls[bab_translate("Directories")] = $GLOBALS['babUrlScript']."?tg=directory";
 			break;
