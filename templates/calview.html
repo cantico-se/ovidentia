@@ -12,6 +12,7 @@
 <BODY BGCOLOR="#FFFFFF">
 <br><br><br><br><br>
 <!--#begin eventslist -->
+<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ newevents }</center></td></tr></table></center><br>
 <center>
 <table border="0" width="95%" cellpadding="0" cellspacing="0"><tr><td>
 <table class="BabListContentBgnd" border="0" width="100%" cellpadding="3" cellspacing="0">
@@ -77,6 +78,22 @@
 </center>
 <!--#end threadslist -->
 <br><br><br><br><br>
+<!--#begin mailslist -->
+<br>
+<center><table border="0" width="90%" cellpadding="0" cellspacing="0"><tr><td class="BabMessage"><center>{ newmails }</center></td></tr></table></center><br>
+<center>
+<table border="0" cellpadding="0" cellspacing="0"><tr><td>
+<table class="BabListContentBgnd" border="0" width="100%" cellpadding="3" cellspacing="0">
+<TBODY>
+<!--#in getmail -->
+<tr><td class="BabListTitleBgnd" width="30%" nowrap><a class=BabMenuLink href="{ domainurl }">{ domain }</a></td><td class="BabListTitleBgnd" nowrap>{ nbemails }</td></tr>
+<!--#endin getmail -->
+</TBODY>
+</table>
+</td></tr>
+</table>
+</center>
+<!--#end mailslist -->
 <br><br><br><br><br>
 </BODY>
 </HTML>
