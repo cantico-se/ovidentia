@@ -420,6 +420,8 @@ function topicsGetNext()
 		{
 		$req = "select * from topics where id='".$this->arrid[$i]."'";
 		$res = $this->db->db_query($req);
+		$this->newa = "";
+		$this->newc = "";
 		if( $res && $this->db->db_num_rows($res) > 0)
 			{
 			$this->arr = $this->db->db_fetch_array($res);
