@@ -9,6 +9,7 @@
 	- Section ordering
 	- Open/Close section
 	- Search
+	- Add new articles, comments, posts to 
 ************************************************************************/
 include "config.php";
 
