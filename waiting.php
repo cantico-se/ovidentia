@@ -789,6 +789,10 @@ if( $uaapp && isset($modify))
 
 if( isset($confirm) )
 	{
+	if (!isset($send)) $send = '';
+	if (!isset($homepage0)) $homepage0 = '';
+	if (!isset($homepage1)) $homepage1 = '';
+
 	if($uaapp && $confirm == "article")
 		updateConfirmArticle($topics, $article, $action, $send, $author, $message,$homepage0, $homepage1, $bnotif);
 	if($ucapp && $confirm == "comment")

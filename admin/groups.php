@@ -209,6 +209,7 @@ function groupsOptions()
 		var $bdgcontacts;
 		var $bdgdirectories;
 		var $bdgpds;
+		var $altbg = true;
 
 		function temp()
 			{
@@ -277,7 +278,7 @@ function groupsOptions()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->altbg = $this->altbg ? false : true;
+				$this->altbg = !$this->altbg;
 				$this->burl = true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->grpid = $this->arr['id'];
@@ -407,6 +408,8 @@ if( !isset($idx))
 
 if( isset($add) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
 	addGroup($name, $description, $managerid, $bemail, $grpdg);
+
+if (!isset($notgrpids)) $notgrpids = array();
 
 if( isset($update) && $update == "options" && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
 	saveGroupsOptions($mailgrpids, $calgrpids, $notgrpids, $congrpids, $pdsgrpids, $dirgrpids, $calperids);

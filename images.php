@@ -301,7 +301,7 @@ function iframe($editor,$path="")
 			$this->uifiles = 0;
 			$this->cifiles = 0;
 			$this->gdi = extension_loaded('gd');
-
+			$this->countsubdir = 0;
 			$reper = opendir(BAB_IUD_COMMON.$path);
 			while($dir = readdir($reper) )
 				{
@@ -384,6 +384,7 @@ function iframe($editor,$path="")
 		function getnextufile()
 			{
 			static $i = 0;
+			if (!isset($this->arrufile)) $this->arrufile = array();
 			if( $this->uifiles < count($this->arrufile))
 				{
 				$this->geturls($this->arrufile[$this->uifiles], 0);
@@ -525,7 +526,7 @@ if( isset($addf) && $addf == "add")
 	saveImage($uploadf_name, $uploadf_size,$uploadf, $share,$path);
 	}
 
-if ( $directory != "" && bab_isUserAdministrator() )
+if ( isset($directory) && $directory != "" && bab_isUserAdministrator() )
 	{
 	if ( substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
@@ -535,7 +536,7 @@ if ( $directory != "" && bab_isUserAdministrator() )
 		$GLOBALS['msgerror'] = bab_translate("A folder with the same name already exists");
 	}
 
-if ( $old_name != "" && $new_name != "" && $old_name!=$new_name && bab_isUserAdministrator() )
+if ( isset($old_name) && $old_name != "" && isset($new_name) && $new_name != "" && $old_name!=$new_name && bab_isUserAdministrator() )
 	{
 	if ( substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
@@ -557,6 +558,9 @@ if ( $old_name != "" && $new_name != "" && $old_name!=$new_name && bab_isUserAdm
 
 if (!isset($GLOBALS['msgerror']))
 	$GLOBALS['msgerror'] = "";
+
+if (!isset($path))
+	$path = '';
 
 switch($idx)
 	{
