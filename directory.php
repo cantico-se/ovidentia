@@ -1834,7 +1834,7 @@ function exportDbDirectory($id, $wsepar, $separ)
 
 	if( $idgroup > 1 )
 	{
-	$res2 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_group='".$idgroup."' and ".BAB_USERS_GROUPS_TBL.".id_object=".BAB_DBDIR_ENTRIES_TBL.".id_user and ".BAB_DBDIR_ENTRIES_TBL.".id_directory='0'");
+	$res2 = $db->db_query("select det.* from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_GROUPS_TBL." ugt on det.id_user=ugt.id_object where ugt.id_group='".$idgroup."' and det.id_directory='0'");
 	}
 	else
 		$res2 = $db->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id_directory ='".($idgroup != 0? 0: $id)."'");
