@@ -34,6 +34,7 @@ function addForum($nameval, $descriptionval, $moderatorval, $nbmsgdisplayval)
 			$this->nbmsgdisplay = bab_translate("Threads Per Page");
 			$this->moderation = bab_translate("Moderation");
 			$this->notification = bab_translate("Notify moderator");
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -154,7 +155,7 @@ function orderForum()
 	return $temp->count;
 	}
 
-function saveForum($name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active)
+function saveForum($name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody;
 	if( empty($name))
@@ -163,7 +164,7 @@ function saveForum($name, $description, $moderator, $moderation, $notification, 
 		return false;
 		}
 
-	if( $moderation == "Y" && empty($moderator))
+	if( $moderation == "Y" && empty($managerid))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a moderator")." !";
 		return false;
@@ -175,6 +176,9 @@ function saveForum($name, $description, $moderator, $moderation, $notification, 
 		$description = addslashes($description);
 		}
 
+	if( empty($managerid))
+		$managerid = 0;
+
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_FORUMS_TBL." where name='$name'";	
 	$res = $db->db_query($query);
@@ -184,20 +188,8 @@ function saveForum($name, $description, $moderator, $moderation, $notification, 
 		return false;
 		}
 
-	if($moderation == "Y")
-		{
-		$moderatorid = bab_getUserId($moderator);
-		if( $moderatorid < 1)
-			{
-			$babBody->msgerror = bab_translate("ERROR: The moderator doesn't exist !!");
-			return false;
-			}
-		}
-	else
-		$moderatorid = 0;	
-
 	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderator, moderation, notification, active)";
-	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $moderatorid. "', '" . $moderation. "', '" .$notification. "', '" . $active. "')";
+	$query .= " values ('" .$name. "', '" . $description. "', '" . $nbmsgdisplay. "', '" . $managerid. "', '" . $moderation. "', '" .$notification. "', '" . $active. "')";
 	$db->db_query($query);
 	return true;
 
@@ -221,7 +213,7 @@ if(!isset($idx))
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
-	if( !saveForum($name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active))
+	if( !saveForum($name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
 

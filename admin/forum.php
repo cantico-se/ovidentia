@@ -44,6 +44,7 @@ function modifyForum($id)
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->notification = bab_translate("Notify moderator");
+			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FORUMS_TBL." where id='$id'";
@@ -55,11 +56,13 @@ function modifyForum($id)
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				{
 				$this->arr2 = $this->db->db_fetch_array($this->res);
-				$this->moderatorname = bab_composeUserName($this->arr2['firstname'],$this->arr2['lastname']);
+				$this->managerval = bab_composeUserName($this->arr2['firstname'], $this->arr2['lastname']);
+				$this->managerid = $this->arr2['id'];
 				}
 			else
 				{
-				$this->moderatorname = "";
+				$this->managerval = "";
+				$this->managerid = "";
 				}
 			}
 		}
@@ -100,7 +103,7 @@ function deleteForum($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateForum($id, $name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active)
+function updateForum($id, $name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody;
 	if( empty($name))
@@ -109,7 +112,7 @@ function updateForum($id, $name, $description, $moderator, $moderation, $notific
 		return;
 		}
 
-	if( $moderation == "Y" && empty($moderator))
+	if( $moderation == "Y" && empty($managerid))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a moderator")." !";
 		return;
@@ -118,12 +121,7 @@ function updateForum($id, $name, $description, $moderator, $moderation, $notific
 	$db = $GLOBALS['babDB'];
 	if( $moderation == "Y")
 		{
-		$moderatorid = bab_getUserId($moderator);
-		if( $moderatorid < 1)
-			{
-			$babBody->msgerror = bab_translate("ERROR: The moderator doesn't exist !!");
-			return;
-			}
+		$moderatorid = $managerid;
 		}
 	else
 		$moderatorid = 0;
@@ -167,7 +165,7 @@ if(!isset($idx))
 
 if( isset($update) && $update == "updateforum")
 	{
-	updateForum($item, $name, $description, $moderator, $moderation, $notification, $nbmsgdisplay, $active);
+	updateForum($item, $name, $description, $managerid, $moderation, $notification, $nbmsgdisplay, $active);
 	}
 
 if( isset($aclview))
