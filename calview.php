@@ -300,9 +300,9 @@ function newEmails()
 
 		function temp4()
 			{
-			global $BAB_SESS_USERID;
+			global $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->db = new db_mysql();
-			$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."'";
+			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->newmails = babTranslate("New mails");
@@ -324,7 +324,7 @@ function newEmails()
 					$arr2 = $this->db->db_fetch_array($res2);
 					$this->domain = $arr2[name];
 					$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-					$mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+					$mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
 					if($mbox)
 						{
 						$this->domainurl = $GLOBALS[babUrl]."index.php?tg=inbox&&accid=".$arr[id];

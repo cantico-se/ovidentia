@@ -45,7 +45,7 @@ function listMails($accid, $criteria, $reverse, $start)
 
 		function temp($accid, $criteria, $reverse, $start)
 			{
-			global $body, $BAB_SESS_USERID;
+			global $body, $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->reverse = $reverse;
 			$this->criteria = $criteria;
 			$this->accid = $accid;
@@ -100,15 +100,15 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->db = new db_mysql();
 			if( empty($accid))
 				{
-				$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and prefered='Y'";
+				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and prefered='Y'";
 				$res = $this->db->db_query($req);
 				if( !$res || $this->db->db_num_rows($res) == 0 )
 					{
-					$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."'";
+					$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."'";
 					}
 				}
 			else
-				$req = "select * from mail_accounts where id='".$accid."' and owner='".$BAB_SESS_USERID."'";
+				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where id='".$accid."' and owner='".$BAB_SESS_USERID."'";
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0 )
 				{
@@ -125,7 +125,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$arr2 = $this->db->db_fetch_array($res2);
 					$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-					$this->mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+					$this->mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
 					if(!$this->mbox)
 						{
 						$body->msgerror = babTranslate("ERROR"). " : ". imap_last_error();
@@ -292,7 +292,7 @@ function viewMail($accid, $msg)
 
 		function temp($accid, $msg)
 			{
-			global $body;
+			global $body, $BAB_HASH_VAR;
 			$this->fromname = babTranslate("From");
 			$this->subjectname = babTranslate("Subject");
 			$this->toname = babTranslate("To");
@@ -306,7 +306,7 @@ function viewMail($accid, $msg)
 			$this->ccval = "";
 
 			$db = new db_mysql();
-			$req = "select * from mail_accounts where id='".$accid."'";
+			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where id='".$accid."'";
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0 )
 				{
@@ -317,7 +317,7 @@ function viewMail($accid, $msg)
 					{
 					$arr2 = $db->db_fetch_array($res2);
 					$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-					$this->mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+					$this->mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
 					if(!$this->mbox)
 						{
 						$body->msgerror = babTranslate("ERROR"). " : ". imap_last_error();
@@ -591,8 +591,9 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 
 function showPart($accid, $msg, $cid)
 	{
+		global $BAB_HASH_VAR;
 	$db = new db_mysql();
-	$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
 		{
@@ -603,7 +604,7 @@ function showPart($accid, $msg, $cid)
 			{
 			$arr2 = $db->db_fetch_array($res2);
 			$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+			$mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
 			if($mbox)
 				{
 				$data = get_cid_part ($mbox, $msg, "<" . $cid . ">");
@@ -620,10 +621,10 @@ function showPart($accid, $msg, $cid)
 
 function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 	{
-	global $BAB_SESS_USERID;
+	global $BAB_SESS_USERID, $BAB_HASH_VAR;
 
 	$db = new db_mysql();
-	$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
 		{
@@ -634,7 +635,7 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 			{
 			$arr2 = $db->db_fetch_array($res2);
 			$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+			$mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
 			if($mbox)
 				{
             	$structure = imap_fetchstructure($mbox, $msg, FT_UID);
@@ -684,10 +685,10 @@ function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 
 function deleteMails($item, $accid, $criteria, $reverse)
 	{
-	global $BAB_SESS_USERID;
+	global $BAB_SESS_USERID, $BAB_HASH_VAR;
 
 	$db = new db_mysql();
-	$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
 	if( $res && $db->db_num_rows($res)> 0)
 		{
@@ -698,7 +699,7 @@ function deleteMails($item, $accid, $criteria, $reverse)
 			{
 			$arr2 = $db->db_fetch_array($res2);
 			$cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+			$mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
 			if($mbox)
 				{
 				for($i=0; $i < count($item); $i++)

@@ -100,7 +100,7 @@ CREATE TABLE mail_accounts (
 	name VARCHAR (255) not null,
 	email VARCHAR (255) not null,
 	account VARCHAR (255) not null,
-	password VARCHAR (255) not null,
+	password blob not null,
 	domain INT (11) UNSIGNED not null,
 	owner INT (11) UNSIGNED not null,
 	maxrows TINYINT (2) not null,

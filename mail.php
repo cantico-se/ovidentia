@@ -343,9 +343,9 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 
 function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
     {
-    global $body, $BAB_SESS_USERID;
+    global $body, $BAB_SESS_USERID, $BAB_HASH_VAR;
 	$db = new db_mysql();
-	$req = "select * from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
+	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from mail_accounts where owner='".$BAB_SESS_USERID."' and id='".$accid."'";
 	$res = $db->db_query($req);
     if( $res && $db->db_num_rows($res) > 0 )
         {
@@ -356,7 +356,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
             {
             $arr2 = $db->db_fetch_array($res2);
             $cnxstring = "{".$arr2[inserver]."/".$arr2[access].":".$arr2[inport]."}INBOX";
-            $mbox = @imap_open($cnxstring, $arr[account], $arr[password]);
+            $mbox = @imap_open($cnxstring, $arr[account], $arr[accpass]);
             if(!$mbox)
                 {
                 $body->msgerror = babTranslate("ERROR"). " : ". imap_last_error();
