@@ -103,6 +103,8 @@ function groupMembers($id)
 			$this->grpid = $id;
 			$this->fullname = bab_translate("Full Name");
 			$this->deletealt = bab_translate("Delete group's members");
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
 			$this->idgroup = $id;
 			$this->group = bab_getGroupName($id);
 			$this->db = $GLOBALS['babDB'];

@@ -7,7 +7,7 @@
 
 include $babInstallPath."utilit/topincl.php";
 
-function listArticles($topics)
+function listArticles($topics, $new)
 	{
 	global $babBody;
 
@@ -23,26 +23,26 @@ function listArticles($topics)
 		var $morename;
 		var $topics;
 
-		function temp($topics)
+		function temp($topics, $new)
 			{
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
+			$this->new = $new;
 			}
 
 		function getnext()
 			{
-			global $new; 
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->content = bab_replace($this->arr['head']);
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
-				if( isset($new) && $new > 0)
-					$this->more .= "&new=".$new;
+				if( $this->new > 0)
+					$this->moreurl .= "&new=".$this->new;
 
 				$this->morename = bab_translate("Read more")."...";
 				$i++;
@@ -53,7 +53,7 @@ function listArticles($topics)
 			}
 		}
 	
-	$temp = new temp($topics);
+	$temp = new temp($topics, $new);
 	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "introlist"));
 	}
 
@@ -476,7 +476,8 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 
 	$new--;
 	if( $new < 1)
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman");
+		//Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
 	}
 
 
@@ -578,7 +579,7 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 
 	$newc--;
 	if( $newc < 1)
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman");
 	}
 
 /* main */
@@ -654,7 +655,7 @@ switch($idx)
 	case "Waiting":
 		$babBody->title = bab_getCategoryTitle($topics);
 		$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics."&new=".$new);
-		listArticles($topics);
+		listArticles($topics, $new);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

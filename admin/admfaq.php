@@ -43,12 +43,14 @@ function modifyCategory($id)
 		var $arr = array();
 		var $res;
 		var $msie;
+		var $delete;
 
 		function temp($id)
 			{
 			$this->category = bab_translate("Category");
 			$this->description = bab_translate("Description");
 			$this->add = bab_translate("Update Category");
+			$this->delete = bab_translate("Delete");
 			$this->manager = bab_translate("Manager");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
@@ -154,12 +156,16 @@ if(!isset($idx))
 
 if( isset($update))
 	{
-	updateCategory($item, $category, $description, $manager);
+	if( isset($submit))
+		updateCategory($item, $category, $description, $manager);
+	else if( isset($faqdel))
+		$idx = "Delete";
 	}
 
 if( isset($aclfaq))
 	{
 	aclUpdate($table, $item, $groups, $what);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 	}
 
 if( isset($action) && $action == "Yes")
@@ -176,7 +182,6 @@ switch($idx)
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Delete&item=".$item);
 		break;
 
 	case "Delete":
@@ -195,7 +200,6 @@ switch($idx)
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);
-		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Delete&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

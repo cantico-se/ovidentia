@@ -31,6 +31,7 @@ function listCategories()
 			{
 			global $babBody, $BAB_SESS_USERID;
 			$this->articles = bab_translate("Article") ."(s)";
+			$this->comments = bab_translate("Comment") ."(s)";
 			$this->waiting = bab_translate("Waiting");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_TOPICS_TBL." where id_approver='".$BAB_SESS_USERID."'";
@@ -61,6 +62,8 @@ function listCategories()
 				$this->newc = $this->db->db_num_rows($res);
 
 				$this->urlarticles = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
+				$this->urlnewa = $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
+				$this->urlnewc = $GLOBALS['babUrlScript']."?tg=articles&idx=WaitingC&topics=".$this->arr['id']."&new=".$this->newa."&newc=".$this->newc;
 				$i++;
 				return true;
 				}
