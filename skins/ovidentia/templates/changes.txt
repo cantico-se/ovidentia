@@ -42,6 +42,8 @@ topman.html             articleslist        Added test <!--#if badmin --> ... <!
 maildoms.html           domaincreate        Added test <!--#if dummy -->
                         domainmodify        Added test <!--#if dummy -->
 articles.html           introlist           Added <!--#if approver --> .... <!--#endif approver -->
+                        articlecreatebyfile Removed "maxlength in filename input
+                        createarticle       Added headval, bodyval and titleval variables
 vacation.html           newvacation         Updated Javascript
 event.html              scripts             Updated Javascript
 wainting.html           introlist           Added link ( with images ) to let topic manager confirm and modify waitibg article
@@ -53,6 +55,8 @@ config.html             babCss              Changed path to css file
 forums.html             forumcreate         Added 'notification' select
                         forummodify         Added 'notification' select
 entry.html              homepage0           Added link to 'print' with image
+sections.html           sectionsmodify      Removed checkbox "script php'
+                        sectionscreate      Removed checkbox "script php'
 /****************************/
 version 3.3.0 / 3.3.1
 /****************************/

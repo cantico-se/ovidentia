@@ -1,5 +1,5 @@
 /************************************************************************/
-Juin 2002: Version 3.3.2
+Juillet 2002: Version 3.3.2
 /************************************************************************/
 - Added Calendar sharing:  Consultation, Creation and update, and Total access
 - Introduction of a new mail class that addresses some problems in automatic mail

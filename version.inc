@@ -7,5 +7,5 @@
 $bab_ver_major = "3";
 $bab_ver_minor = "3";
 $bab_ver_build = "2";
-$bab_ver_info = " beta";
+$bab_ver_info = "";
 ?>

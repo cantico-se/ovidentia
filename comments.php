@@ -94,10 +94,10 @@ function addComment($topics, $article, $subject, $message, $com="")
 		function temp($topics, $article, $subject, $message, $com)
 			{
 			global $BAB_SESS_USER;
-			$this->subject = bab_translate("Subject");
+			$this->subject = bab_translate("comments-Title");
 			$this->name = bab_translate("Name");
 			$this->email = bab_translate("Email");
-			$this->message = bab_translate("Message");
+			$this->message = bab_translate("comments-Comment");
 			$this->add = bab_translate("Add comment");
 			$this->title = bab_translate("Article");
 			$this->see = bab_translate("Read article");
@@ -290,13 +290,13 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
 
 	if( empty($subject))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a subject");
+		$babBody->msgerror = bab_translate("comments - ERROR: You must provide a title");
 		return false;
 		}
 
 	if( empty($message))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a message");
+		$babBody->msgerror = bab_translate("comments - ERROR: You must provide a comment");
 		return false;
 		}
 
