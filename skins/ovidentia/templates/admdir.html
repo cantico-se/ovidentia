@@ -1,5 +1,10 @@
 
 <!--#begin adlist -->
+<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
+<tr>
+<td class="BabBodyTitleBackground" align="center" >{ ldaptitle }</td>
+</tr></table>
+<br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -9,10 +14,10 @@
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="left" colspan="2"><b>&nbsp;{ desctxt }</b></td>
 </tr>
 <!--#in getnextldap -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ description }</td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gviewurl }">{ gview }</a></td>
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> </td>
+<td align="left" valign="middle">&nbsp;{ description }</td>
+<td align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gviewurl }">{ gview }</a></td>
 </tr>
 <!--#endin getnextldap -->
 <tr> 
@@ -39,13 +44,13 @@
 </tr>
 <!--#in getnextdb -->
 <!--#if bshow "== Y" -->
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ group }</td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ description }</td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gviewurl }">{ gview }</a></td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gmodifyurl }">{ gmodify }</a></td>
-<td class="BabSiteAdminFontBackground" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gaddurl }">{ gadd }</a></td>
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+<td align="left" valign="middle">&nbsp;{ group }</td>
+<td align="left" valign="middle">&nbsp;{ description }</td>
+<td align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gviewurl }">{ gview }</a></td>
+<td align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gmodifyurl }">{ gmodify }</a></td>
+<td align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gaddurl }">{ gadd }</a></td>
 </tr>
 <!--#endif bshow -->
 <!--#endin getnextdb -->

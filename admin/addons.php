@@ -132,6 +132,7 @@ function addonsList($upgradeall)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->title = $this->arr['title'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=addons&idx=mod&item=".$this->arr['id'];

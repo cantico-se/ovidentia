@@ -61,6 +61,7 @@ function listAds()
 			$this->directories = bab_translate("Directories");
 			$this->desctxt = bab_translate("Description");
 			$this->grouptxt = bab_translate("Group");
+			$this->ldaptitle = bab_translate("Ldap Directories list");
 			$this->databasetitle = bab_translate("Databases Directories list");
 			$this->add = bab_translate("Add");
 			$this->gmodify = bab_translate("Modify");
@@ -80,6 +81,7 @@ function listAds()
 			static $i = 0;
 			if( $i < $this->countldap)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$arr = $this->db->db_fetch_array($this->resldap);
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=admdir&idx=mldap&id=".$arr['id'];
@@ -101,10 +103,12 @@ function listAds()
 				if( $arr['id_group'] != '0' )
 					{
 					list($this->bshow) = $this->db->db_fetch_row($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."'"));
+					if ($this->bshow == 'Y') $this->altbg = $this->altbg ? false : true;
 					$this->group = bab_getGroupName($arr['id_group']);
 					}
 				else
 					{
+					$this->altbg = $this->altbg ? false : true;
 					$this->bshow = 'Y';
 					$this->group = "";
 					}
@@ -928,7 +932,7 @@ switch($idx)
 
 	case "list":
 	default:
-		$babBody->title = bab_translate("Ldap Directories list");
+		$babBody->title = bab_translate("Directories");
 		listAds();
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
 		break;

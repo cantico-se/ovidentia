@@ -19,14 +19,14 @@
 </tr>
 
 <!--#in getnext --> 
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="top"><b>{ title }</b></td>
-<td class="BabSiteAdminFontBackground" valign="top">{ description }</td>
-<td class="BabSiteAdminFontBackground" valign="top" align="right">
+<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td valign="top"><b>{ title }</b></td>
+<td valign="top">{ description }</td>
+<td valign="top" align="right">
 <!--#if upgradeurl --><a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a><!--#endif upgradeurl -->&nbsp;</td>
-<td class="BabSiteAdminFontBackground" valign="top">{ addversion }</td>
-<td class="BabSiteAdminFontBackground" valign="top"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"> 
+<td valign="top">{ addversion }</td>
+<td valign="top"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
+<td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="addons[]" { catchecked } value="{ arr[id] }">
 </td>
 </tr>
