@@ -18,7 +18,7 @@
 <!--
 function lock()
 	{
-	var obj = document.getElementById('what');
+	var obj = document.getElementById('acl_what');
 	var groups = document.getElementById('groups');
 	if (obj.value != "") 
 		{groups.disabled = true;}
@@ -26,7 +26,7 @@ function lock()
 	}
 -->
 </script>
-<select name="what" id="what" onchange = "lock();">
+<select name="acl_what" id="acl_what" onchange = "lock();">
 <option value="">{ listgroups }</option>
 <option value="-1" { what[disabled] }>{ disabled }</option>
 <option value="0" { what[everybody] }>{ everybody }</option>
