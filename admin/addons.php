@@ -143,6 +143,7 @@ function addonsList($upgradeall)
 				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$this->arr['title']."/addonini.php");
 				$this->addversion = "";
 				$this->description = "";
+				$this->upgradeurl = false;
 				if( !empty($arr_ini['version']))
 					{
 					$this->addversion = $this->arr['version'];
