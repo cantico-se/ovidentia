@@ -129,6 +129,7 @@ function ListArticles($idgroup)
 		var $author;
 		var $moreurl;
 		var $morename;
+		var $blen;
 
 		function temp($idgroup)
 			{
@@ -159,9 +160,10 @@ function ListArticles($idgroup)
 			if( $i < $this->countres)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
+				$req = "select id, title, head , LENGTH(body) as blen  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
+				$this->blen = $arr['blen'];
 				$this->title = $arr['title'];
 				$this->content = bab_replace($arr['head']);
 				$this->author = bab_translate("by") . " ". bab_getArticleAuthor($arr['id']). " - ". bab_getArticleDate($arr['id']);

@@ -11,7 +11,11 @@
 </tr>
 <tr>
 <td class="BabTopicsAuthorBackground" nowrap>{ author }</td>
-<td class="BabTopicsAuthorBackground" nowrap align="right"><a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a></td>
+<td class="BabTopicsAuthorBackground" nowrap align="right">
+<!--#if blen "> 0" -->
+<a class="BabTopicsFooterLink" href="{ moreurl }">{ morename }</a>
+<!--#endif blen -->&nbsp;
+</td>
 </tr>
 </table>
 <br>
