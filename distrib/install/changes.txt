@@ -1,6 +1,9 @@
 /************************************************************************/
 Decembre 2002: Version 3.4.3
 /************************************************************************/
+- Added support for update and delete reccurrent events
+- Calendar week view can be viewed by colums or rows
+- Add default view for calendar and for week in calendar options
 - Removed primary group notion from Calendar
 - New vacation system
 - Added smtp authentification

@@ -1490,6 +1490,30 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE ".BAB_CALOPTIONS_TBL." ADD defaultview tinyint(3) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CALOPTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_CALOPTIONS_TBL." ADD defaultviewweek tinyint(3) UNSIGNED DEFAULT '0' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CALOPTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD hash char(34) NOT NULL default ''";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_CAL_EVENTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 ?>

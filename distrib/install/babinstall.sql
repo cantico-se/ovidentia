@@ -526,6 +526,7 @@ CREATE TABLE bab_cal_events (
 	end_time TIME not null,
 	id_cat INT (11) UNSIGNED not null,
 	id_creator INT (11) UNSIGNED not null,
+    hash varchar(34) NOT NULL default '',
 	PRIMARY KEY (id),
     KEY id_cal (id_cal),
     KEY start_date (start_date),
@@ -583,6 +584,8 @@ CREATE TABLE bab_caloptions (
 	ampm ENUM ('Y','N') not null, 
 	usebgcolor ENUM ('Y','N') not null, 
     elapstime tinyint(2) unsigned NOT NULL DEFAULT '30' ,
+    defaultview tinyint(3) NOT NULL default '0',
+    defaultviewweek tinyint(3) NOT NULL default '0',
 	PRIMARY KEY (id),
     KEY id_user (id_user)
 );
