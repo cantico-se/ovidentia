@@ -360,6 +360,7 @@ switch($idx)
 		{
 			$body->title = babTranslate("Create a private mail domain");
 		}
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
 		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$body->addItemMenu("create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;
@@ -378,6 +379,7 @@ switch($idx)
 		{
 			$body->title = babTranslate("Private domains list");
 		}
+		$body->addItemMenu("listacc", babTranslate("Accounts"), $GLOBALS[babUrl]."index.php?tg=mailopt&idx=listacc");
 		$body->addItemMenu("list", babTranslate("Domains"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$body->addItemMenu("create", babTranslate("Create"), $GLOBALS[babUrl]."index.php?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;

@@ -185,7 +185,13 @@
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ accname }</b></td>
 <td class="BabListTitleBgnd" align="center" nowrap><b>{ domname }</b></td>
 <!--#in getnext -->
-<tr><td>{ prefered }</td>
+<tr><td>
+<!--#if prefered "== P" -->
+{ prefered }
+<!--#else prefered -->
+&nbsp;
+<!--#endif prefered -->
+</td>
 <td nowrap>
 <a class=BabMenuLink href="{ url }">{ arr[name] }</a>
 </td><td nowrap>&nbsp;{ arr[email] }</td><td nowrap>&nbsp;{ arr[account] }</td><td nowrap>&nbsp;{ domnameval }</td>
