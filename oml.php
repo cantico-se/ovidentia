@@ -797,7 +797,8 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FilePath', $arr['path']);
 			$this->ctx->curctx->push('FileDesc', $arr['description']);
-			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".$arr['path']);
+			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
+			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 			$i++;
