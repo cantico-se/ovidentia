@@ -968,7 +968,7 @@ function updateOrgChartRole($ocid, $name, $description, $oeid, $orid, $cardinali
 		return false;
 		}
 
-	if( $orinfo['cardinality'] != $cardinality )
+	if( !empty($cardinality) && $orinfo['cardinality'] != $cardinality )
 		{
 		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$orid."'"));
 		if( $arr['total'] > 1 && $cardinality == 'N')
@@ -984,7 +984,12 @@ function updateOrgChartRole($ocid, $name, $description, $oeid, $orid, $cardinali
 		$description = addslashes($description);
 		}
 	
-	$req = "update ".BAB_OC_ROLES_TBL." set name='".$name."', description='".$description."', cardinality='".$cardinality."' where id='".$orid."'";
+	$req = "update ".BAB_OC_ROLES_TBL." set name='".$name."', description='".$description."'";
+	if( !empty($cardinality))
+		{
+		$req .= ", cardinality='".$cardinality."'";
+		}
+	$req .= " where id='".$orid."'";
 	$babDB->db_query($req);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid."&ltf=1");
 	return true;
@@ -1194,7 +1199,7 @@ else if( isset($modocr) )
 	switch($modocr)
 	{
 		case "modocr":
-			if( !isset($cardinality)) {$cardinality='N';}
+			if( !isset($cardinality)) {$cardinality='';}
 			if( !updateOrgChartRole($ocid, $fname, $description, $oeid, $orid, $cardinality))
 			{
 			$idx = "modr";
