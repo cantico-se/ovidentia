@@ -16,7 +16,7 @@ var $endPatternI = "-->";
 var $startPatternV = "{";
 var $endPatternV = "}";
 
-function printTemplate($class, $file, $section="")
+function printTemplate(&$class, $file, $section="")
 	{
 	$str = implode("", @file($file));
 
@@ -32,7 +32,7 @@ function printTemplate($class, $file, $section="")
 	return $this->processTemplate($class, $str);
 	}
 
-function processTemplate($class, $str)
+function processTemplate(&$class, $str)
 	{
 	$reg = "/(.*?)".$this->startPatternI."(if|in)\s+(.*)/s";
 
@@ -50,7 +50,7 @@ function processTemplate($class, $str)
 	return $this->replaceVar($class, $str);
 	}
 
-function replaceVar($class, $str)
+function replaceVar(&$class, $str)
 	{
 	$reg = "/".$this->startPatternV."\s+(.*?)\s+".$this->endPatternV."/";
 	preg_match_all($reg, $str, $m);
@@ -75,7 +75,7 @@ function replaceVar($class, $str)
 	}
 
 
-function processIf($class, $str)
+function processIf(&$class, $str)
 	{
 	$reg = "/(.*?)".$this->startPatternI."if\s+(.*?)\s+".$this->endPatternI."/s";
 	$res = preg_match($reg, $str, $m);
@@ -205,7 +205,7 @@ function processIf($class, $str)
 	return $ret;
 	}
 
-function processIn($class, $str)
+function processIn(&$class, $str)
 	{
 	$reg = "/(.*?)".$this->startPatternI."in\s+(.*?)\s+".$this->endPatternI."/s";
 	$res = preg_match($reg, $str, $m);

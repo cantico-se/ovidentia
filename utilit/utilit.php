@@ -35,7 +35,7 @@ function bab_strftime($time, $hour=true)
 		return babTranslate($babDays[date("w", $time)])." ".date("j", $time)." ".babTranslate($babMonths[date("n", $time)])." ".date("Y", $time)." ".date("H", $time).":".date("i", $time); 
 	}
 
-function babPrintTemplate( $class, $file, $section="")
+function babPrintTemplate( &$class, $file, $section="")
 	{
 	global $babInstallPath;
 	$filepath = "templates/". $file;
