@@ -1116,7 +1116,18 @@ function categoriesList($calid)
 /* main */
 if(!isset($idx))
 	{
-	$idx = "viewm";
+	list($view, $wv) = $babDB->db_fetch_row($babDB->db_query("select defaultview, defaultviewweek from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'"));
+	switch($view)
+		{
+		case '1':
+			if( $wv )
+				$idx='viewq';
+			else
+				$idx='viewqc';
+			break;
+		case '2': $idx='viewd'; break;
+		default: $idx='viewm'; break;
+		}
 	}
 
 if( isset($viewcal) && $viewcal == "view")

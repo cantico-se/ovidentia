@@ -404,7 +404,7 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description,
 	}
 
 
-function modifyEvent($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
+function modifyEvent($calendarid, $evtid, $view, $bmodif)
 	{
 	global $babBody;
 	class temp
@@ -441,7 +441,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 		var $thisone;
 		var $updaterec;
 
-		function temp($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
+		function temp($calendarid, $evtid, $view, $bmodif)
 			{
 			global $BAB_SESS_USERID, $babBody;
 
@@ -728,7 +728,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view, $bmodif)
 
 		}
 
-	$temp = new temp($calendarid, $evtid, $day, $month, $year, $view, $bmodif);
+	$temp = new temp($calendarid, $evtid, $view, $bmodif);
 	$babBody->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"event.html", "modifyevent"));
 	}
@@ -1073,7 +1073,7 @@ function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebeg
 	return true;	
 }
 
-function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $description, $category, $bupdrec)
+function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $category, $bupdrec)
 {
 	global $babBody;
 	
@@ -1085,7 +1085,6 @@ function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebe
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
-		$description = addslashes($description);
 		$title = addslashes($title);
 		}
 		
@@ -1243,7 +1242,8 @@ else
 		{
 		if( isset($Submit))
 			{
-			updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $evtdesc, $category, $bupdrec);
+			if( !isset($bupdrec)) { $bupdrec = '';}
+			updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $category, $bupdrec);
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
 			}
 		else if( isset($evtdel))
@@ -1307,9 +1307,9 @@ switch($idx)
 	case "modify":
 		$bmodif = isUpdateEvent($calid, $evtid);
 		if( $bmodif )
-			modifyEvent($calid, $evtid, $day, $month, $year, $view, $bmodif);
+			modifyEvent($calid, $evtid, $view, $bmodif);
 		else
-			viewEvent($calid, $evtid, $day, $month, $year, $view);
+			viewEvent($calid, $evtid);
 
 		if( bab_isUserGroupManager())
 			{

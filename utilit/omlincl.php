@@ -2251,19 +2251,19 @@ class bab_WaitingArticles extends bab_handler
 
 		if( $userid != '')
 			{
-			//include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 			$this->topicid = $ctx->get_value('topicid');
-			$req = "select a.id from ".BAB_ARTICLES_TBL." a join ".BAB_FAR_INSTANCES_TBL." fi where a.confirmed='N'";
+			$req = "select a.id, a.id_topic from ".BAB_ARTICLES_TBL." a where a.confirmed='N'";
 			if( $this->topicid !== false && $this->topicid !== '' )
 				$req .= " and a.id_topic IN (".$this->topicid.")";
-
-			$req .= " and fi.idschi=a.idfai and fi.iduser='".$userid."' and fi.result='' and  fi.notified='Y'";
-			$req .=  "order by a.date desc";
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$this->IdEntries[] = $arr['id'];
+				$waitart = bab_getWaitingArticles($arr['id_topic']);
+				if( count($waitart) > 0  && in_array( $arr['id'], $waitart))
+					{
+					$this->IdEntries[] = $arr['id'];
+					}
 				}
 
 			$this->count = count($this->IdEntries);
@@ -2332,24 +2332,24 @@ class bab_WaitingComments extends bab_handler
 
 		if( $userid != '')
 			{
-			//include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-
 			$this->articleid = $ctx->get_value('articleid');
-			$req = "select c.id from ".BAB_COMMENTS_TBL." c join ".BAB_FAR_INSTANCES_TBL." fi where c.confirmed='N'";
+			$req = "select c.id, c.id_topic from ".BAB_COMMENTS_TBL." c where c.confirmed='N'";
 			if( $this->articleid !== false && $this->articleid !== '' )
 				$req .= " and c.id_article IN (".$this->articleid.")";
-
-			$req .= " and fi.idschi=c.idfai and fi.iduser='".$userid."' and fi.result='' and  fi.notified='Y'";
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$this->IdEntries[] = $arr['id'];
+				$waitcom = bab_getWaitingComments($arr['id_topic']);
+				if( count($waitcom) > 0 && in_array( $arr['id'], $waitcom))
+					{
+					$this->IdEntries[] = $arr['id'];
+					}
 				}
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id IN (".implode(',', $this->IdEntries).")");
+				$this->res = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id IN (".implode(',', $this->IdEntries).") order by date desc");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -2408,29 +2408,35 @@ class bab_WaitingFiles extends bab_handler
 
 		if( $userid != '')
 			{
-			//include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-
 			$this->folderid = $ctx->get_value('folderid');
-			$req = "select f.id from ".BAB_FILES_TBL." f join ".BAB_FAR_INSTANCES_TBL." fi where f.bgroup='Y' and f.confirmed='N'";
+			$req = "select f.id, f.idfai from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.confirmed='N'";
 			if( $this->folderid !== false && $this->folderid !== '' )
 				$req .= " and f.id_owner IN (".$this->folderid.")";
 
-			$req .= " and fi.idschi=f.idfai and fi.iduser='".$userid."' and fi.result='' and  fi.notified='Y'";
+			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+			if( count($arrschi) > 0 )
+				{
+				$res = $babDB->db_query($req);
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+					if(in_array( $arr['idfai'], $arrschi))
+						{
+						$this->IdEntries[] = $arr['id'];
+						}
+					}
 
-			$res = $babDB->db_query($req);
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				$this->IdEntries[] = $arr['id'];
-				}
-			$this->count = count($this->IdEntries);
-			if( $this->count > 0 )
-				{
-				$this->res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id IN (".implode(',', $this->IdEntries).")");
-				$this->count = $babDB->db_num_rows($this->res);
+				$this->count = count($this->IdEntries);
+				if( $this->count > 0 )
+					{
+					$this->res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id IN (".implode(',', $this->IdEntries).")");
+					$this->count = $babDB->db_num_rows($this->res);
+					}
 				}
 			}
 		else
+			{
 			$this->count = 0;
+			}
 
 		$this->ctx->curctx->push('CCount', $this->count);
 		}
@@ -3004,6 +3010,7 @@ class bab_Calendars extends bab_handler
 			$this->ctx->curctx->push('CalendarName', $this->IdEntries[$this->idx]['name']);
 			$this->ctx->curctx->push('CalendarOwnerId', $this->IdEntries[$this->idx]['owner']);
 			$this->ctx->curctx->push('CalendarType', $this->IdEntries[$this->idx]['type']);
+			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewm&calid".$this->IdEntries[$this->idx]['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3058,6 +3065,7 @@ class bab_CalendarCategories extends bab_handler
 			$this->ctx->curctx->push('CalendarCategoryId', $arr['id']);
 			$this->ctx->curctx->push('CalendarCategoryName', $arr['name']);
 			$this->ctx->curctx->push('CalendarCategoryDescription', $arr['description']);
+			$this->ctx->curctx->push('CalendarCategoryColor', $arr['bgcolor']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3154,7 +3162,7 @@ class bab_CalendarUserEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		$req = "select cet.*, rct.name from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
@@ -3178,11 +3186,16 @@ class bab_CalendarUserEvents extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('EventTitle', $arr['title']);
-			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventDescription', bab_replace($arr['description'],'OVML'));
 			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']." ".$arr['start_time']));
 			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']." ".$arr['end_time']));
 			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
+			$this->ctx->curctx->push('EventCategoryColor', $arr['bgcolor']);
 			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], 1));
+			$date = explode('-', $arr['start_date']);
+			$this->ctx->curctx->push('EventUrl', $GLOBALS['babUrlScript']."?tg=event&idx=modify&view=viewm&calid=".$arr['id_cal']."&day=".$date[2]."&month=".$date[1]."&year=".$date[0]."&evtid=".$arr['id']);
+			$this->ctx->curctx->push('EventCalendarUrl', $GLOBALS['babUrlScript']."?tg=calendar&calid=".$arr['id_cal']."&day=".$date[2]."&month=".$date[1]."&year=".$date[0]);
+			$this->ctx->curctx->push('EventCategoriesPopupUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$arr['id_cal']);
 			if( isset($arr['name']))
 				{
 				$this->ctx->curctx->push('EventCategoryName', $arr['name']);
@@ -3308,7 +3321,7 @@ class bab_CalendarGroupEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		$req = "select cet.*, rct.name from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
@@ -3333,11 +3346,16 @@ class bab_CalendarGroupEvents extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('EventTitle', $arr['title']);
-			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventDescription', bab_replace($arr['description'],'OVML'));
 			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']." ".$arr['start_time']));
 			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']." ".$arr['end_time']));
 			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
+			$this->ctx->curctx->push('EventCategoryColor', $arr['bgcolor']);
 			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], 2));
+			$date = explode('-', $arr['start_date']);
+			$this->ctx->curctx->push('EventUrl', $GLOBALS['babUrlScript']."?tg=event&idx=modify&view=viewm&calid=".$arr['id_cal']."&day=".$date[2]."&month=".$date[1]."&year=".$date[0]."&evtid=".$arr['id']);
+			$this->ctx->curctx->push('EventCalendarUrl', $GLOBALS['babUrlScript']."?tg=calendar&calid=".$arr['id_cal']."&day=".$date[2]."&month=".$date[1]."&year=".$date[0]);
+			$this->ctx->curctx->push('EventCategoriesPopupUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$arr['id_cal']);
 			if( isset($arr['name']))
 				{
 				$this->ctx->curctx->push('EventCategoryName', $arr['name']);
@@ -3466,7 +3484,7 @@ class bab_CalendarResourceEvents extends bab_handler
 			$categoryid = '';
 			}
 
-		$req = "select cet.*, rct.name from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
@@ -3491,11 +3509,16 @@ class bab_CalendarResourceEvents extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('EventTitle', $arr['title']);
-			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventDescription', bab_replace($arr['description'],'OVML'));
 			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']." ".$arr['start_time']));
 			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']." ".$arr['end_time']));
 			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
+			$this->ctx->curctx->push('EventCategoryColor', $arr['bgcolor']);
 			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], 3));
+			$date = explode('-', $arr['start_date']);
+			$this->ctx->curctx->push('EventUrl', $GLOBALS['babUrlScript']."?tg=event&idx=modify&view=viewm&calid=".$arr['id_cal']."&day=".$date[2]."&month=".$date[1]."&year=".$date[0]."&evtid=".$arr['id']);
+			$this->ctx->curctx->push('EventCalendarUrl', $GLOBALS['babUrlScript']."?tg=calendar&calid=".$arr['id_cal']."&day=".$date[2]."&month=".$date[1]."&year=".$date[0]);
+			$this->ctx->curctx->push('EventCategoriesPopupUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$arr['id_cal']);
 			if( isset($arr['name']))
 				{
 				$this->ctx->curctx->push('EventCategoryName', $arr['name']);
