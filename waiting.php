@@ -8,7 +8,7 @@ include_once "base.php";
 include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function listArticles($topics)
+function listArticles($topics, $res)
 	{
 	global $babBody;
 
@@ -29,13 +29,12 @@ function listArticles($topics)
 		var $confirmurl;
 
 
-		function temp($topics)
+		function temp($topics, $res)
 			{
 			$this->modify = bab_translate("Modify");
 			$this->confirm = bab_translate("Confirm");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' order by date desc";
-			$this->res = $this->db->db_query($req);
+			$this->res = $res;
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
 			}
@@ -65,7 +64,7 @@ function listArticles($topics)
 			}
 		}
 	
-	$temp = new temp($topics);
+	$temp = new temp($topics, $res);
 	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "introlist"));
 	}
 
@@ -198,6 +197,7 @@ function confirmArticle($article, $topics)
 		var $res;
 		var $confval;
 		var $idxval;
+		var $showhpages;
 
 
 		function temp($topics, $article)
@@ -218,6 +218,7 @@ function confirmArticle($article, $topics)
 			$this->message = bab_translate("Message");
 			$this->confval = "article";
 			$this->idxval = "Waiting";
+			$this->showhpages = false;
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
@@ -231,6 +232,9 @@ function confirmArticle($article, $topics)
 				$arr2 = $this->db->db_fetch_array($this->res);
 				$this->fullname = bab_composeUserName($arr2['firstname'], $arr2['lastname']);
 				$this->author = $arr['id_author'];
+				$nfusers = getWaitingApproversFlowInstance($arr['idfai'], false);
+				if( count($nfusers) < 2 )
+					$this->showhpages = true;
 				}
 			$arr = $this->db->db_fetch_array($this->db->db_query("select notify from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 			if( $arr['notify'] == "N" )
@@ -250,7 +254,7 @@ function confirmArticle($article, $topics)
 	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "confirmarticle"));
 	}
 
-function listWaitingComments($topics, $article)
+function listWaitingComments($topics, $article, $res)
 	{
 	global $babBody;
 
@@ -267,11 +271,10 @@ function listWaitingComments($topics, $article)
 		var $article;
 		var $alternate;
 
-		function temp($topics, $article)
+		function temp($topics, $article, $res)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='$article' and confirmed='N'";
-			$this->res = $this->db->db_query($req);
+			$this->res = $res;
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
 			$this->article = $article;
@@ -302,7 +305,7 @@ function listWaitingComments($topics, $article)
 			}
 		}
 	
-	$temp = new temp($topics, $article);
+	$temp = new temp($topics, $article, $res);
 	$babBody->babecho(	bab_printTemplate($temp,"comments.html", "commentslist"));
 	return $temp->count;
 	}
@@ -665,23 +668,10 @@ if( isset($confirm) )
 		updateConfirmComment($topics, $article, $action, $send, $author, $message, $comment, $new);
 	}
 
-$db = $GLOBALS['babDB'];
-if( $uaapp )
-{
-	$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$topics."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-	$res = $db->db_query($req);
-	$new = $db->db_num_rows($res);
-}
 
-if( $ucapp )
-	{
-	$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$article."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$GLOBALS['BAB_SESS_USERID']."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-	$res = $db->db_query($req);			
-	$newc = $db->db_num_rows($res);
-	}
 
 $babLevelTwo = bab_getCategoryTitle($topics);
-$arr = $db->db_fetch_array($db->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+$arr = $babDB->db_fetch_array($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
 $babLevelOne = bab_getTopicCategoryTitle($arr['id_cat']);
 
 switch($idx)
@@ -729,12 +719,16 @@ switch($idx)
 	case "WaitingC":
 		if( $ucapp )
 		{
+		$newc = 0;
+		$req = "select ".BAB_COMMENTS_TBL.".* from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_article='".$article."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+		$res = $babDB->db_query($req);			
+		$newc = $babDB->db_num_rows($res);
 		if( $newc > 0 )
 			{
 			$babBody->title = bab_translate("Waiting comments");
 			$babBody->addItemMenu("List", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article);
 			$babBody->addItemMenu("WaitingC", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$topics."&article=".$article);
-			listWaitingComments($topics, $article);
+			listWaitingComments($topics, $article, $res);
 			}
 		else
 			{
@@ -762,18 +756,27 @@ switch($idx)
 
 	default:
 	case "Waiting":
-		if( $uaapp && $new > 0)
+		if( $uaapp )
 		{
-			$babBody->title = $babLevelTwo;
-			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
-			$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
-			listArticles($topics, $new);
+			$new = 0;
+			$req = "select ".BAB_ARTICLES_TBL.".* from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$topics."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y' order by date desc";
+			$res = $babDB->db_query($req);
+			$new = $babDB->db_num_rows($res);
+			if( $new > 0 )
+			{
+				$babBody->title = $babLevelTwo;
+				$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+				$babBody->addItemMenu("Waiting", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=waiting&idx=Waiting&topics=".$topics);
+				listArticles($topics, $res);
+			}
+			else
+				{
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
+				exit;
+				}
 		}
 		else
-		{
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
-			exit;
-		}
+			$babBody->title = bab_translate("Access denied");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
