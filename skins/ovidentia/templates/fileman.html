@@ -66,7 +66,7 @@
 <td class="BabSiteAdminFontBackground" align="center"> 
 <table border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 <tr>
-<td class="BabBodyTitleBackground" align="center" ><a class="BabSiteAdminListLink" 
+<td class="BabSiteAdminTitleFontBackground" align="center" ><a class="BabSiteAdminListLink" 
 href="{ rooturl }">{ root }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" 
 href="{ refreshurl }">{ refresh }</a></td>
 </tr>
@@ -132,15 +132,15 @@ href="{ url }">{ name }</a></td>
 <td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }
 </td>          
-<td class="BabSiteAdminFontBackground">&nbsp; 
-<a 
-class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ name }</a>&nbsp; 
-<!--#if bmanager -->
-<!--#if bconfirmed "== 1" -->
-* 
-<!--#endif bconfirmed -->
-<!--#endif bmanager -->
-</td>
+                <td class="BabSiteAdminFontBackground">&nbsp; <a 
+class="BabSiteAdminListLink" href="javascript: Start('{ viewurl }', '', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
+                  name }</a>&nbsp; 
+                  <!--#if bmanager -->
+                  <!--#if bconfirmed "== 1" -->
+                  <font color="#FF0000">* </font>
+                  <!--#endif bconfirmed -->
+                  <!--#endif bmanager -->
+                </td>
 <td align="right" nowrap class="BabSiteAdminFontBackground">&nbsp;{ readonly }</td>
                 <td align="left" nowrap class="BabSiteAdminFontBackground">{ sizef 
                   } &nbsp;</td>
@@ -163,16 +163,16 @@ src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="mid
 <!--#in getnextxfile --> <tr valign="middle"> 
 <td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }</td>          
-<td class="BabSiteAdminFontBackground">&nbsp; 
-<!--#if bmanager -->
-<a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
-<!--#if bconfirmed "== 1" -->
-* 
-<!--#endif bconfirmed -->
-<!--#else bmanager -->
-{ name } 
-<!--#endif bmanager -->
-</td>
+                <td class="BabSiteAdminFontBackground">&nbsp; 
+                  <!--#if bmanager -->
+                  <a class="BabSiteAdminListLink" href="{ url }">{ name }</a>&nbsp; 
+                  <!--#if bconfirmed "== 1" -->
+                  <font color="#FF0000">*</font> 
+                  <!--#endif bconfirmed -->
+                  <!--#else bmanager -->
+                  { name } 
+                  <!--#endif bmanager -->
+                </td>
 <td align="left" nowrap class="BabSiteAdminFontBackground">&nbsp;{ sizef }&nbsp;</td>
                 <td align="right" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
 <td align="right" nowrap class="BabSiteAdminFontBackground">{ postedby }&nbsp;</td>
