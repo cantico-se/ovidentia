@@ -299,7 +299,6 @@ class bab_stats_modules extends bab_stats_base
 			case "version":
 			case "imgget":
 			case "link":
-				echo $datas['url']."<br>";
 				$id = 1; /* others */
 				break;
 			case "accden":
@@ -335,7 +334,6 @@ class bab_stats_modules extends bab_stats_base
 					else
 						{
 						$id = 1;
-						echo $datas['url']."<br>";
 						}
 				}
 				break;
