@@ -6,40 +6,44 @@
 <input type="hidden" name="grp" value="{ grp }">
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabMailBackground" align="center" valign="middle"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td colspan="5" nowrap class="BabLetterlists"><!--#if allselected "== 1" -->{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#else allselected --><a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#endif allselected --><!--#in getnextselect --><!--#if selected "== 1" -->{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#else selected --><a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#endif selected --><!--#endin getnextselect --></td>
-</tr>
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="right" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-
-<td class="BabSiteAdminTitleFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ nickname }</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">{ email }</td>
-<td class="BabSiteAdminTitleFontBackground" align="center" valign="middle"><a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a></td>
-</tr>
-<!--#in getnext -->
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-<td width="1%" align="right" valign="middle" nowrap><!--#if status "== *" --><img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt="" align="absmiddle"><!--#endif status --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td valign="middle">
-<!--#if bmodname -->
-<a class="BabNameEmailLink" href="{ url }">{ urlname }</a>
-<!--#else bmodname -->
-{ urlname }
-<!--#endif bmodname -->
-</td>
-<td valign="middle">{ arr[nickname] }</td>
-<td valign="middle"><a class="BabNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a></td>
-<td align="center" valign="middle"><input type="checkbox" name="users[]" value="{ userid }"{ checked }></td>
-</tr>
-<!--#endin getnext -->
-</table>
-</td>
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td colspan="5" nowrap class="BabLetterlists"><!--#if allselected "== 1" -->{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#else allselected --><a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#endif allselected --><!--#in getnextselect --><!--#if selected "== 1" -->{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#else selected --><a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><!--#endif selected --><!--#endin getnextselect --></td>
+		</tr>
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td width="1%" align="right" nowrap valign="middle">&nbsp;</td>
+			<td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
+			<td>{ nickname }</td>
+			<td>{ email }</td>
+			<td align="center"><a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a></td>
+		</tr>
+		<!--#in getnext -->
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+			<td width="1%" align="right" nowrap>
+				<!--#if status "== *" --><acronym title="{ t_online }"><img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt="{ t_online }" align="absmiddle"></acronym><!--#endif status -->
+				<!--#if arr[is_confirmed] "== 0" --><acronym title="{ t_unconfirmed }"><img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ t_unconfirmed }" align="absmiddle"></acronym><!--#endif arr[is_confirmed] -->
+				<!--#if arr[disabled] "== 1" --><acronym title="{ t_disabled }"><img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ t_disabled }" align="absmiddle"></acronym><!--#endif arr[disabled] -->
+				&nbsp;
+			</td>
+			<td valign="middle">
+				<!--#if bmodname -->
+				<a class="BabNameEmailLink" href="{ url }">{ urlname }</a>
+				<!--#else bmodname -->
+				{ urlname }
+				<!--#endif bmodname -->
+			</td>
+			<td>{ arr[nickname] }</td>
+			<td><a class="BabNameEmailLink" href="mailto:{ arr[email] }" target=_top>{ arr[email] }</a></td>
+			<td align="center"><input type="checkbox" name="users[]" value="{ userid }"{ checked }></td>
+		</tr>
+		<!--#endin getnext -->
+		</table>
+	</td>
 </tr>
 </table>
 <input type="hidden" name="userst" value="{ userst }">
-<br><center><input type="submit" name="Updateg" value="{ update }"></center>
+<div align="center"><br /><input type="submit" name="Updateg" value="{ update }"></div>
 </form>
 <!--#end userslist -->
 

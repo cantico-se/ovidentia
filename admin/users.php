@@ -69,6 +69,11 @@ function listUsers($pos, $grp)
 			$this->allname = bab_translate("All");
 			$this->update = bab_translate("Update");
 			$this->nickname = bab_translate("Nickname");
+
+			$this->t_online = bab_translate("Online");
+			$this->t_unconfirmed = bab_translate("Unconfirmed");
+			$this->t_disabled = bab_translate("Disabled");
+
 			$this->db = $GLOBALS['babDB'];
 			$this->group = bab_getGroupName($grp);
 			$this->grp = $grp;
