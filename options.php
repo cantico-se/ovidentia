@@ -69,7 +69,7 @@ function changePasswordUnload($msg)
 			$this->close = bab_translate("Close");
 			}
 		}
-	$temp = new temp($msg, $refresh);
+	$temp = new temp($msg);
 	die(bab_printTemplate($temp,"options.html", "changePasswordUnload"));
 	}
 
@@ -116,7 +116,7 @@ function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changeuserinfo"));
 	}
 
-function changeNickname($nickname,$changePassword)
+function changeNickname($nickname)
 	{
 	global $babBody,$BAB_SESS_USERID;
 	class temp
@@ -129,9 +129,11 @@ function changeNickname($nickname,$changePassword)
 		var $updateuserinfo;
 		var $urldbmod;
 
-		function temp($nickname,$changePassword)
+		function temp($nickname)
 			{
 			global $babDB;
+			
+			
 
 			$this->bupdateuserinfo = false;
 
@@ -151,7 +153,11 @@ function changeNickname($nickname,$changePassword)
 				$this->updateuserinfo = bab_translate("Update personal informations");
 				}
 
-			$this->changepassword = $changePassword ? bab_translate("Update Password") : false;
+			$req="select s.change_nickname,s.change_password,u.changepwd from ".BAB_SITES_TBL." s LEFT JOIN ".BAB_USERS_TBL." u ON u.id='".$GLOBALS['BAB_SESS_USERID']."' where name='".addslashes($GLOBALS['babSiteName'])."'";
+			$res=$babDB->db_query($req);
+			$arr = $babDB->db_fetch_array($res);
+			$this->changenickname = $arr['change_nickname'] == 'Y' ? true : false;
+			$this->changepassword = $arr['change_password'] == 'Y' && $arr['changepwd'] == 1 ? bab_translate("Update Password") : false;
 			$this->urlchangepassword = $GLOBALS['babUrlScript']."?tg=options&idx=changePassword";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->nickname = bab_translate("Nickname");
@@ -160,7 +166,7 @@ function changeNickname($nickname,$changePassword)
 			}
 		}
 
-	$temp = new temp($nickname,$changePassword);
+	$temp = new temp($nickname);
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changenickname"));
 	}
 
@@ -762,13 +768,10 @@ switch($idx)
 		break;
 	default:
 	case "global":
-		$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-		$res=$babDB->db_query($req);
-		$arr = $babDB->db_fetch_array($res);
+		
 		$babBody->title = bab_translate("Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if ($arr['change_nickname'] == 'Y' ) changeNickname($nickname,($arr['change_password'] == 'Y' ? true : false));
-		
+		changeNickname($nickname);
 		changeSkin($skin);
 		changeLanguage();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
