@@ -2262,7 +2262,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `total_diskspace` INT( 11 ) UNSIGNED DEFAULT '190' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `total_diskspace` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2270,7 +2270,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `user_diskspace` INT( 11 ) UNSIGNED DEFAULT '50' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `user_diskspace` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2278,7 +2278,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `folder_diskspace` INT( 11 ) UNSIGNED DEFAULT '100' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `folder_diskspace` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{
@@ -2286,7 +2286,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxfilesize` INT( 11 ) UNSIGNED DEFAULT '50' NOT NULL";
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `maxfilesize` INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{

@@ -1804,49 +1804,45 @@ function bab_updateSiteSettings()
 	else
 		$GLOBALS['babLangFilter']->setFilter(0);
 	// options bloc2
-	if( $arr['total_diskspace'] != "")
+	if( $arr['total_diskspace'] != 0)
 		{
 		$GLOBALS['babMaxTotalSize'] = $arr['total_diskspace']*1048576;
 		}
-	else
+	elseif ($GLOBALS['babMaxTotalSize'] == 0)
 		$GLOBALS['babMaxTotalSize'] = "200000000";
-	if( $arr['user_diskspace'] != "")
+	if( $arr['user_diskspace'] != 0)
 		{
 		$GLOBALS['babMaxUserSize'] = $arr['user_diskspace']*1048576;
 		}
-	else
+	elseif ($GLOBALS['babMaxUserSize'] == 0)
 		$GLOBALS['babMaxUserSize'] = "30000000";
-	if( $arr['folder_diskspace'] != "")
+	if( $arr['folder_diskspace'] != 0)
 		{
 		$GLOBALS['babMaxGroupSize'] = $arr['folder_diskspace']*1048576;
 		}
-	else
+	elseif ($GLOBALS['babMaxGroupSize'] == 0)
 		$GLOBALS['babMaxGroupSize'] = "50000000";
-	if( $arr['maxfilesize'] != "")
+	if( $arr['maxfilesize'] != 0)
 		{
 		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize']*1048576;
 		}
-	else
+	elseif ($GLOBALS['babMaxFileSize'] == 0)
 		$GLOBALS['babMaxFileSize'] = "30000000";
 	if( $arr['uploadpath'] != "")
 		{
 		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
 		}
-	else
-		$GLOBALS['babUploadPath'] = "";
 	if( $arr['babslogan'] != "")
 		{
 		$GLOBALS['babSlogan'] = $arr['babslogan'];
 		}
-	else
-		$GLOBALS['babSlogan'] = "";
 	if( $arr['name_order'] != "")
 		{
 		$GLOBALS['babBody']->nameorder = explode(" ",$arr['name_order']);
 		}
 	else
 		$GLOBALS['babBody']->nameorder = Array('F','L');
-	if( $arr['remember_login'] == "Y")
+	if( $arr['remember_login'] == "Y" || $GLOBALS['babCookieIdent'])
 		{
 		$GLOBALS['babCookieIdent'] = true;
 		}

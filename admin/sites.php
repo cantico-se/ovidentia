@@ -202,16 +202,37 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 
 			$this->dbvalue = $GLOBALS['HTTP_POST_VARS'];
 
-			if (!isset($this->dbvalue['uploadpath'])) $this->dbvalue['uploadpath'] = "";
-			if (!isset($this->dbvalue['babslogan'])) $this->dbvalue['babslogan'] = "";
-			if (!isset($this->dbvalue['remember_login'])) $this->dbvalue['remember_login'] = "N";
+			if (!isset($this->dbvalue['uploadpath'])) $this->dbvalue['uploadpath'] = $GLOBALS['babUploadPath'];
+			if (!isset($this->dbvalue['babslogan'])) $this->dbvalue['babslogan'] = $GLOBALS['babSlogan'];
+			if (!isset($this->dbvalue['remember_login'])) 
+				{
+				if ($GLOBALS['babCookieIdent']) $this->dbvalue['remember_login'] = "Y";
+				else $this->dbvalue['remember_login'] = "N";
+				}
 			if (!isset($this->dbvalue['change_password'])) $this->dbvalue['change_password'] = "Y";
 			if (!isset($this->dbvalue['change_nickname'])) $this->dbvalue['change_nickname'] = "Y";
 			if (!isset($this->dbvalue['name_order'])) $this->dbvalue['name_order'] = "F L";
-			if (!isset($this->dbvalue['total_diskspace'])) $this->dbvalue['total_diskspace'] = "200";
-			if (!isset($this->dbvalue['user_diskspace'])) $this->dbvalue['user_diskspace'] = "50";
-			if (!isset($this->dbvalue['folder_diskspace'])) $this->dbvalue['folder_diskspace'] = "100";
-			if (!isset($this->dbvalue[ 'maxfilesize'])) $this->dbvalue[ 'maxfilesize'] = "50";
+			
+			if ($this->dbvalue['total_diskspace'] == 0) 
+				{
+				if ($GLOBALS['babMaxTotalSize'] > 0) $this->dbvalue['total_diskspace'] = $GLOBALS['babMaxTotalSize']/1048576;
+				else $this->dbvalue['total_diskspace'] = "200";
+				}
+			if ($this->dbvalue['user_diskspace'] == 0)
+				{
+				if ($GLOBALS['babMaxUserSize'] > 0) $this->dbvalue['user_diskspace'] = $GLOBALS['babMaxUserSize']/1048576;
+				else $this->dbvalue['user_diskspace'] = "50";
+				}
+			if ($this->dbvalue['folder_diskspace'] == 0)
+				{
+				if ($GLOBALS['babMaxGroupSize'] > 0) $this->dbvalue['folder_diskspace'] = $GLOBALS['babMaxGroupSize']/1048576;
+				else $this->dbvalue['folder_diskspace'] = "100";
+				}
+			if ($this->dbvalue['maxfilesize'] == 0)
+				{
+				if ($GLOBALS['babMaxFileSize'] > 0) $this->dbvalue['maxfilesize'] = $GLOBALS['babMaxFileSize']/1048576;
+				else $this->dbvalue['maxfilesize'] = "50";
+				}
 
 			$this->nameval = $name == ""? $GLOBALS['babSiteName']: $name;
 			$this->descriptionval = $description == ""? "": $description;

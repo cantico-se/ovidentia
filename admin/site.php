@@ -174,7 +174,11 @@ function siteModify($id)
 				$this->smtpuserval = $arr['smtpuser'];
 				$this->smtppassval = $arr['smtppass'];
 				$this->dbvalue = $arr;
-				if( $arr['registration'] == "Y")
+				$this->dbvalue['total_diskspace'] = round($GLOBALS['babMaxTotalSize']/1048576);
+				$this->dbvalue['user_diskspace'] = round($GLOBALS['babMaxUserSize']/1048576);
+				$this->dbvalue['folder_diskspace'] = round($GLOBALS['babMaxGroupSize']/1048576);
+				$this->dbvalue['maxfilesize'] = round($GLOBALS['babMaxFileSize']/1048576);
+				if( $arr['registration'] == "Y" || $GLOBALS['babCookieIdent'])
 					{
 					$this->nregister = "";
 					$this->yregister = "selected";
@@ -834,6 +838,5 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
 
 ?>
