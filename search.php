@@ -1019,19 +1019,26 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->db->db_query($req);
 				$req = "alter table ageresults add unique (id)";
 				$this->db->db_query($req);
-
-				$av_cal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
-				$list_id_cal = '';
-				foreach($av_cal as $value)
-					$list_id_cal .= $value['idcal'].",";
-
+				
+				$list_id_cal = array();
+				$tmp = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
+				foreach ($tmp as $arr)
+					$list_id_cal[] = $arr['idcal'];
+				
 				if ($this->like || $this->like2)
-					$reqsup = "(".finder($this->like,"h.title",$option,$this->like2)." or ".finder($this->like,"h.description",$option,$this->like2)." or ".finder($this->like,"C.description",$option,$this->like2)." or ".finder($this->like,"C.name",$option,$this->like2).") and";
-				else $reqsup = "";
-
-				if ($list_id_cal != "") 
 					{
-					$req = "insert into ageresults select h.id id,h.title title, h.description description,DATE_FORMAT(h.start_date,'%d-%m-%Y') start_date, h.start_time start_time ,DATE_FORMAT(h.end_date,'%d-%m-%Y') end_date,h.end_time end_time, A.owner owner,A.type type,h.id_cal id_cal, C.name categorie, C.description catdesc from ".BAB_CAL_EVENTS_TBL." h, ".BAB_CATEGORIESCAL_TBL." C,".BAB_CALENDAR_TBL." A where ".$reqsup." C.id=h.id_cat and A.id=h.id_cal".$crit_date." and h.id_cal in(".substr($list_id_cal,0,-1).")".$select_idcal." order by ".$order;
+					$reqsup = "(".finder($this->like,"h.title",$option,$this->like2)." or ".finder($this->like,"h.description",$option,$this->like2).") and";
+					$reqsupc = "AND (".finder($this->like,"C.description",$option,$this->like2)." or ".finder($this->like,"C.name",$option,$this->like2).")";
+					}
+				else 
+					{
+					$reqsup = "";
+					$reqsupc = "";
+					}
+
+				if (count($list_id_cal) > 0) 
+					{
+					$req = "insert into ageresults select h.id id,h.title title, h.description description,DATE_FORMAT(h.start_date,'%d-%m-%Y') start_date, h.start_time start_time ,DATE_FORMAT(h.end_date,'%d-%m-%Y') end_date,h.end_time end_time, A.owner owner,A.type type,h.id_cal id_cal, C.name categorie, C.description catdesc from ".BAB_CAL_EVENTS_TBL." h, ".BAB_CALENDAR_TBL." A LEFT JOIN ".BAB_CATEGORIESCAL_TBL." C ON C.id=h.id_cat ".$reqsupc." where ".$reqsup." A.id=h.id_cal".$crit_date." and h.id_cal in(".implode(',',$list_id_cal).")".$select_idcal." order by ".$order;
 					$this->db->db_query($req);
 					}
 
