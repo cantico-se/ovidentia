@@ -955,9 +955,9 @@ switch($idx)
 		break;
 
 	case "Confirm":
-		confirm($forum, $thread, $post);
-		$idx = "List";
-		/* no break */
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
+		exit;
+		break;
 	case "List":
 	default:
 		$babBody->title = bab_getForumName($forum);
