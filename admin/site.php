@@ -698,21 +698,13 @@ function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspa
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_SITES_TBL." where name='".$namev."' and id!='".$id."'";
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("ERROR: This site already exists");
-		return false;
-		}
-	else
-		{
-		list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
-		$req = "update ".BAB_SITES_TBL." set ";
 
-		$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', email_password='".$email_password."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."' where id='".$id."'";
-		$db->db_query($req);
-		}
+	list($oldname) = $db->db_fetch_row($db->db_query("select name from ".BAB_SITES_TBL." where id='".$id."'"));
+	$req = "update ".BAB_SITES_TBL." set ";
+
+	$req .= "total_diskspace='".$total_diskspace."', user_diskspace='".$user_diskspace."', folder_diskspace='".$folder_diskspace."', maxfilesize='".$maxfilesize."', uploadpath='".$uploadpath."', babslogan='".$babslogan."', remember_login='".$remember_login."', email_password='".$email_password."', change_password='".$change_password."', change_nickname='".$change_nickname."', name_order='".$name_order."' where id='".$id."'";
+	$db->db_query($req);
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 

@@ -220,7 +220,7 @@ function babLoadLanguage($lang, $folder, &$arr)
 		$tmp = fread($file, filesize($filename));
 		fclose($file);
 		preg_match("/<".$lang.">(.*)<\/".$lang.">/s", $tmp, $m);
-		preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", $m[1], $arr);
+		preg_match_all("/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s", isset($m[1]) ? $m[1] : '' , $arr);
 		}
 		
 	if (isset($filename_m) && file_exists($filename_m))
