@@ -782,7 +782,7 @@ function emptyDb($id)
 			$this->message = ad_translate("Are you sure you want to empty this directory");
 			$this->title = getDirectoryName($id);
 			$this->warning = ad_translate("WARNING: This operation will delete all entries"). "!";
-			$this->urlyes = $GLOBALS['babAddonUrl']."main&idx=list&db=".$id."&action=Yes";
+			$this->urlyes = $GLOBALS['babAddonUrl']."main&idx=list&id=".$id."&action=Yes";
 			$this->yes = ad_translate("Yes");
 			$this->urlno = $GLOBALS['babAddonUrl']."main&idx=list";
 			$this->no = ad_translate("No");
@@ -1056,7 +1056,7 @@ function confirmAddDbContact($id, $idu, $fields, $file, $tmp_file)
 	}
 
 
-function conformEmptyDb($id)
+function confirmEmptyDb($id)
 	{
 	$db = $GLOBALS['babDB'];
 	$db->db_query("delete from ".ADDON_DBENTRIES_TBL." where id_directory='".$id."'");
