@@ -1146,7 +1146,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							{
 							$replace = array( " " => "", "-" => "");
 							$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
-							$hash=md5($GLOBALS['nickname'].$GLOBALS['BAB_HASH_VAR']);
+							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
 							$db->db_query("insert into ".BAB_USERS_TBL." set nickname='".$arr[$GLOBALS['nickname']]."', firstname='".addslashes($arr[$GLOBALS['givenname']])."', lastname='".addslashes($arr[$GLOBALS['sn']])."', email='".addslashes($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$password1."', confirm_hash='".$hash."', date=now(), is_confirmed='1', changepwd='1', lang='".$GLOBALS['babLanguage']."'");
 							$iduser = $db->db_insert_id();
 							$db->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$iduser."', '1')");
