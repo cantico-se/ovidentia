@@ -261,7 +261,7 @@ function modifyFieldFolder($fid, $ffid, $fname, $defval)
 			$this->fid = $fid;
 			$this->field = bab_translate("Field name");
 			$this->default = bab_translate("Default value");
-			$this->add = bab_translate("Modfiy");
+			$this->add = bab_translate("Modify");
 			$this->fname = $fname;
 			$this->defval = $defval;
 			$this->what = 'fmod';
@@ -334,9 +334,9 @@ function deleteFieldsFolder($fid, $fields)
 
 		function temp($fid, $fields)
 			{
-			$this->message = bab_translate("Are you sure you want to delete fields of folder");
+			$this->message = bab_translate("Are you sure you want to delete slecetde fields");
 			$this->title = bab_getFolderName($fid);
-			$this->warning = bab_translate("WARNING: This operation will delete fields with their values"). "!";
+			$this->warning = bab_translate("WARNING: This operation will delete those fields with their values"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid."&action=ffyes&fields=".implode(',', $fields);
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid;
@@ -454,16 +454,7 @@ function modifyField($fid, $ffid, $ffname, $defval)
 		$defval = addslashes($defval);
 		}
 
-	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where name='".$ffname."' and id!='".$ffid."'");
-	if( $babDB->db_num_rows($res) > 0)
-		{
-		$babBody->msgerror = bab_translate("This field already exists");
-		return false;
-		}
-	else
-		{
-		$babDB->db_query("update ".BAB_FM_FIELDS_TBL." set name='" . $ffname. "', defaultval='".$defval."' where id='".$ffid."'");
-		}
+	$babDB->db_query("update ".BAB_FM_FIELDS_TBL." set name='" . $ffname. "', defaultval='".$defval."' where id='".$ffid."'");
 
 	return true;
 }
@@ -500,7 +491,8 @@ else if( isset($fmf))
 else if( isset($aclview))
 	{
 	aclUpdate($table, $item, $groups, $what);
-	$fid = $item;
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+	exit;
 	}
 
 switch($idx)

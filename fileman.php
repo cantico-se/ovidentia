@@ -1059,6 +1059,22 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$id."'"));
 		if( $rr['filenotify'] == "Y" )
 			$bnotify = true;
+
+		if( $bexist )
+			{
+			if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
+				{
+				$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$arr['id']."'");
+				while($rr = $db->db_fetch_array($res))
+					{
+					unlink($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
+					}
+				}
+			$db->db_query("delete from ".BAB_FM_FILESVER_TBL." where id_file='".$arr['id']."'");
+			$db->db_query("delete from ".BAB_FM_FILESLOG_TBL." where id_file='".$arr['id']."'");
+			$db->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$arr['id']."'");
+			}
+		
 		}
 
 	if( $bexist)
@@ -1542,7 +1558,17 @@ function removeDirectory($id, $gr, $path)
 			$uppath = "";
 		$GLOBALS['path'] = $uppath;
 
-		if(!@rmdir($pathx.$path))
+		$ret = true;
+		if( is_dir($pathx.$path."/".BAB_FVERSION_FOLDER."/"))
+			{
+			if(!@rmdir($pathx.$path."/".BAB_FVERSION_FOLDER."/"))
+				$ret = false;
+			}
+
+		if($ret && !@rmdir($pathx.$path))
+			$ret = false;
+
+		if( $ret == false )
 			{
 			$babBody->msgerror = bab_translate("Cannot remove directory");
 			return false;
@@ -2037,6 +2063,19 @@ function restoreFiles($items)
 	$db = $GLOBALS['babDB'];	
 	for( $i = 0; $i < count($items); $i++)
 		{
+		$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FILES_TBL." where id='".$items[$i]."'"));
+		$pathx = bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']);
+		if( !is_dir($pathx.$arr['path']."/"))
+			{
+			$rr = explode("/", $arr['path']);
+			$path = $pathx;
+			for( $k = 0; $k < count($rr); $k++ )
+				{
+				$path .= $rr[$k]."/";
+				if( !is_dir($path))
+					mkdir($path, 0700);
+				}
+			}
 		$db->db_query("update ".BAB_FILES_TBL." set state='' where id='".$items[$i]."'");
 		}
 	}

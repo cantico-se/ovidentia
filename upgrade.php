@@ -1706,7 +1706,7 @@ if( !$res || $db->db_num_rows($res) == 0 )
 return $ret;
 }
 
-function upgrade400to402()
+function upgrade401to402()
 {
 $ret = "";
 $db = $GLOBALS['babDB'];
