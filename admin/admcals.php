@@ -218,7 +218,7 @@ function calendarsPublic()
 				$this->name = $arr['name'];
 				$this->description = $arr['description'];
 				$this->idcal = $arr['idcal'];
-				$this->nameurl = $GLOBALS['babUrlScript']."?tg=admcal&idx=modp&idcal=".$arr['idcal'];
+				$this->nameurl = $GLOBALS['babUrlScript']."?tg=admcal&idx=modp&grpid=".$arr['id']."&idcal=".$arr['idcal'];
 				$this->rightsurl = $GLOBALS['babUrlScript']."?tg=admcal&idx=rigthsp&idcal=".$arr['idcal'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=admcals&idx=delp&idcal=".$arr['idcal'];
 				if( $arr['actif'] == 'Y')
@@ -281,7 +281,7 @@ function calendarsResource()
 				$this->name = $arr['name'];
 				$this->description = $arr['description'];
 				$this->idcal = $arr['idcal'];
-				$this->nameurl = $GLOBALS['babUrlScript']."?tg=admcal&idx=modr&idcal=".$arr['idcal'];
+				$this->nameurl = $GLOBALS['babUrlScript']."?tg=admcal&idx=modr&grpid=".$arr['id']."&idcal=".$arr['idcal'];
 				$this->rightsurl = $GLOBALS['babUrlScript']."?tg=admcal&idx=rigthsr&idcal=".$arr['idcal'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=admcals&idx=delr&idcal=".$arr['idcal'];
 				if( $arr['actif'] == 'Y')
