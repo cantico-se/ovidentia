@@ -72,14 +72,25 @@ function listUsers($pos, $grp)
 			$this->group = bab_getGroupName($grp);
 			$this->grp = $grp;
 
+			switch ($babBody->nameorder[0]) {
+				case "F":
+					$namesearch = "firstname";
+					$namesearch2 = "lastname";
+				break;
+				case "L":
+				default:
+					$namesearch = "lastname";
+					$namesearch2 = "firstname";
+				break; }
+
 			if( $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where lastname like '".$this->pos."%' order by lastname, firstname asc";
+					$req = "select * from ".BAB_USERS_TBL." where ".$namesearch2." like '".$this->pos."%' order by ".$namesearch2.", ".$namesearch." asc";
 				else
-					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.lastname like '".$this->pos."%' order by u.lastname, u.firstname asc";
+					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$namesearch2." like '".$this->pos."%' order by u.".$namesearch2.", u.".$namesearch." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
@@ -88,9 +99,9 @@ function listUsers($pos, $grp)
 				$this->pos = $pos;
 				$this->ord = "";
 				if( $babBody->currentAdmGroup == 0)
-					$req = "select * from ".BAB_USERS_TBL." where firstname like '".$this->pos."%' order by firstname, lastname asc";
+					$req = "select * from ".BAB_USERS_TBL." where ".$namesearch." like '".$this->pos."%' order by ".$namesearch.", ".$namesearch2." asc";
 				else
-					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.firstname like '".$this->pos."%' order by u.firstname, u.lastname asc";
+					$req = "select u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug where u.disabled != '1' and ug.id_object=u.id and ug.id_group='".$babBody->currentAdmGroup."' and u.".$namesearch." like '".$this->pos."%' order by u.".$namesearch.", u.".$namesearch2." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".$this->ord.$this->pos."&grp=".$this->grp;
 				}
