@@ -452,7 +452,7 @@ function sectionCreate($jscript)
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->jscript = $jscript;
-			if(( $jscript == 0)
+			if( $jscript == 0)
 				{
 				$this->editor = bab_editor('', 'content', 'secmod');
 				}
