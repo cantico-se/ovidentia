@@ -19,6 +19,7 @@ function listArticles($id)
 		var $item;
 		var $checkall;
 		var $uncheckall;
+		var $urltitle;
 
 		var $db;
 		var $res;
@@ -31,7 +32,7 @@ function listArticles($id)
 			$this->checkall = babTranslate("Check all");
 			$this->item = $id;
 			$this->db = new db_mysql();
-			$req = "select * from articles where id_topic='$id'";
+			$req = "select * from articles where id_topic='$id' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -44,6 +45,7 @@ function listArticles($id)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->title = $arr[title];
 				$this->articleid = $arr[id];
+				$this->urltitle = "javascript:Start('".$GLOBALS[babUrl]."index.php?tg=topic&idx=viewa&item=".$arr[id]."');";
 				$i++;
 				return true;
 				}
@@ -186,6 +188,44 @@ function deleteCategory($id)
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function viewArticle($article)
+	{
+	global $body;
+
+	class temp
+		{
+	
+		var $content;
+		var $arr = array();
+		var $db;
+		var $count;
+		var $res;
+		var $more;
+		var $topics;
+		var $style;
+		var $babUrl;
+		var $sitename;
+		var $close;
+
+
+		function temp($article)
+			{
+			$this->style = $GLOBALS[babStyle];
+			$this->babUrl = $GLOBALS[babUrl];
+			$this->sitename = $GLOBALS[babSiteName];
+			$this->close = babTranslate("Close");
+			$this->db = new db_mysql();
+			$req = "select * from articles where id='$article'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->content = $this->arr[body];
+			}
+		}
+	
+	$temp = new temp($article);
+	echo babPrintTemplate($temp,"topics.html", "articleview");
+	}
+
 function updateCategory($id, $category, $description, $approver)
 	{
 	global $body;
@@ -262,6 +302,9 @@ if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
+	case "viewa":
+		viewArticle($item);
+		exit;
 	case "Deletea":
 		$body->title = babTranslate("Delete articles");
 		deleteArticles($art, $item);
@@ -271,7 +314,7 @@ switch($idx)
 		break;
 
 	case "Articles":
-		$body->title = babTranslate("List of articles");
+		$body->title = babTranslate("List of articles").": ".getCategoryTitle($item);
 		listArticles($item);
 		$body->addItemMenu("list", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=topics&idx=list");
 		$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS[babUrl]."index.php?tg=topic&idx=Articles&item=".$item);
@@ -340,5 +383,4 @@ switch($idx)
 		break;
 	}
 $body->setCurrentItemMenu($idx);
-
 ?>

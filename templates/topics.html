@@ -51,7 +51,13 @@
 <table class="BabFaqContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="0">
 <TBODY>
 <tr><td class="BabFaqTitleBgnd" nowrap><b><a class=BabMenuLink href="{ urlcategory }">{ namecategory }</a>   ( { approver } )</b></td>
-<td class="BabFaqTitleBgnd"  align="right">{ articlesval }&nbsp;{ articles }</td>
+<td class="BabFaqTitleBgnd"  align="right">
+<!--#if nbarticles "== 0" -->
+{ nbarticles }&nbsp;{ articles }
+<!--#else nbarticles -->
+<a class=BabMenuLink href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>
+<!--#endif nbarticles -->
+</td>
 </tr>
 <tr colspan="2"><td>{ arr[description] }</td>
 </tr>
@@ -120,6 +126,13 @@ if( typeof document.forms.listform != "object" ) return;
 document.forms.listform.idx.value = cmd;
 document.forms.listform.submit();
 }
+
+function Start(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "", "width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes");
+}
+
 </script>
 <form method="post" action="index.php" name="listform">
 <input type="hidden" name="tg" value="topic">
@@ -135,7 +148,7 @@ document.forms.listform.submit();
 <!--#in getnext -->
 <tr>
 <td><input width="2%" type="checkbox" name="art[]" value="{ articleid }">
-<td nowrap>{ title }</td>
+<td nowrap><a class=BabMenuLink href="{ urltitle }">{ title }</a></td>
 </tr>
 <!--#endin getnext -->
 <tr>
@@ -148,6 +161,41 @@ document.forms.listform.submit();
 </center>
 </form>
 <!--#end articleslist -->
+<!--#begin articleview -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY class="BabBodyBgnd">
+<br>
+<center>
+<table border="0" width="95%" cellpadding="1" cellspacing="0"><tr><td>
+<table class="BabArticleContentBgnd" border="0" width="100%" cellpadding="2" cellspacing="2">
+<TBODY>
+<tr><td class="BabArticleTitleBgnd" align="center" nowrap><b>{ arr[title] }</b></td></tr>
+<tr><td>{ content }</td></tr>
+<tr><td colspan="2" class="BabArticleTitleBgnd" align="right" nowrap></td></tr>
+</TBODY>
+</table>
+</td></tr>
+</table>
+<br>
+<a href="javascript:this.close()">{ close }</a><br><br>
+</center>
+</BODY>
+</HTML>
+<!--#end articleview -->
 <br><br><br><br><br>
 </BODY>
 </HTML>

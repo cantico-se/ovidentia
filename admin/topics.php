@@ -46,7 +46,8 @@ function listCategories()
 		var $urlcategory;
 		var $namecategory;
 		var $articles;
-		var $articlesval;
+		var $urlarticles;
+		var $nbarticles;
 
 		function temp()
 			{
@@ -78,7 +79,8 @@ function listCategories()
 				$req = "select count(*) as total from articles where id_topic='".$this->arr[id]."'";
 				$res = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res);
-				$this->articlesval = $arr2[total];
+				$this->nbarticles = $arr2[total];
+				$this->urlarticles = $GLOBALS[babUrl]."index.php?tg=topic&idx=Articles&item=".$this->arr[id];
 				$i++;
 				return true;
 				}
