@@ -102,6 +102,30 @@
 <br>
 <br>
 <!--#begin sectionslist --> 
+<script language="javascript">
+function onCheckAll(ctrlPrefix, state)
+{
+	var i;
+	var objCtrl;
+
+	for (i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		objCtrl = document.forms.listform.elements[i];
+		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+			objCtrl.checked = state;
+		}
+}
+function submitForm(cmd) 
+{ 
+if( typeof document.forms.listform != "object" ) return;
+document.forms.listform.idx.value = cmd;
+document.forms.listform.submit();
+}
+</script>
+<form method="post" action="index.php" name="listform">
+<input type="hidden" name="tg" value="sections">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="update" value="disable">
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -111,6 +135,7 @@
 valign="middle"><b>{ title }</b></td>
 <td class="BabSiteAdminTitleFontBackground" 
 valign="middle"><b>{ description }</b> </td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ disabled }</td>
 </tr>
 <!--#in getnext --> 
 <tr> 
@@ -118,12 +143,26 @@ valign="middle"><b>{ description }</b> </td>
 urltitle }</a></td>
 <td class="BabSiteAdminFontBackground" valign="middle">&nbsp;{ arr[description] 
 } </td>
+<td valign="middle" width="0%" align="center"> 
+<input type="checkbox" name="sections[]" { secchecked } value="{ arr[id] }">
+</td>
 </tr>
 <!--#endin getnext --> 
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap 
+valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" 
+valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </table>
 </td>
 </tr>
 </table>
+<br>
+<div align="center">
+<input type="submit" name="submit" value="{ update }"></div>
+<br>
+</form>
 <!--#end sectionslist --> <br>
 <br>
 <br>

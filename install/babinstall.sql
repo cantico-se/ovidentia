@@ -206,6 +206,7 @@ CREATE TABLE sections (
    content text,
    script enum('N','Y') DEFAULT 'N' NOT NULL,
    jscript enum('N','Y') DEFAULT 'N' NOT NULL,
+   enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
    PRIMARY KEY (id)
 );
 
@@ -694,6 +695,7 @@ CREATE TABLE files (
   modified datetime default NULL,
   modifiedby int(11) unsigned NOT NULL default '0',
   confirmed enum('N','Y') NOT NULL default 'N',
+  hits int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id)
 );
 

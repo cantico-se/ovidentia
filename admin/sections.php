@@ -37,14 +37,22 @@ function sectionsList()
 		var $db;
 		var $count;
 		var $res;
-		var $checked;
+		var $secchecked;
+		var $disabled;
+		var $checkall;
+		var $uncheckall;
+		var $update;
 
 		function temp()
 			{
 			$this->title = babTranslate("Title");
 			$this->description = babTranslate("Description");
+			$this->disabled = babTranslate("Disabled");
+			$this->uncheckall = babTranslate("Uncheck all");
+			$this->checkall = babTranslate("Check all");
+			$this->update = babTranslate("Disable");
 			$this->db = new db_mysql();
-			$req = "select id, title, description from sections";
+			$req = "select * from sections";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -54,13 +62,13 @@ function sectionsList()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				if( $i == 0)
-					$this->checked = "checked";
-				else
-					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$this->arr['id'];
 				$this->urltitle = $this->arr['title'];
+				if( $this->arr['enabled'] == "N")
+					$this->secchecked = "checked";
+				else
+					$this->secchecked = "";
 				$i++;
 				return true;
 				}
@@ -116,7 +124,10 @@ function sectionsOrder()
 					$req = "select * from sections where id ='".$arr['id_section']."'";
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
-				$this->listleftsecval = $arr2['title'];
+				if( $arr['private'] == "Y" )
+					$this->listleftsecval = babTranslate($arr2['title']);
+				else
+					$this->listleftsecval = $arr2['title'];
 				$this->secid = $arr['id'];
 				$i++;
 				return true;
@@ -137,7 +148,10 @@ function sectionsOrder()
 					$req = "select * from sections where id ='".$arr['id_section']."'";
 				$res2 = $this->db->db_query($req);
 				$arr2 = $this->db->db_fetch_array($res2);
-				$this->listrightsecval = $arr2['title'];
+				if( $arr['private'] == "Y" )
+					$this->listrightsecval = babTranslate($arr2['title']);
+				else
+					$this->listrightsecval = $arr2['title'];
 				$this->secid = $arr['id'];
 				$j++;
 				return true;
@@ -251,6 +265,22 @@ function saveSectionsOrder($listleft, $listright)
 		}
 	}
 
+function disableSections($sections)
+	{
+	$db = new db_mysql();
+	$req = "select id from sections";
+	$res = $db->db_query($req);
+	while( $row = $db->db_fetch_array($res))
+		{
+		if( count($sections) > 0 && in_array($row['id'], $sections))
+			$enabled = "N";
+		else
+			$enabled = "Y";
+
+		$req = "update sections set enabled='".$enabled."' where id='".$row['id']."'";
+		$db->db_query($req);
+		}
+	}
 
 /* main */
 if( isset($create))
@@ -258,9 +288,12 @@ if( isset($create))
 	sectionSave($title, $position, $description, $content, $script, $js);
 	}
 
-if( isset($update) && $update = "order")
+if( isset($update))
 	{
-	saveSectionsOrder($listleft, $listright);
+	if( $update == "order" )
+		saveSectionsOrder($listleft, $listright);
+	else if( $update == "disable" )
+		disableSections($sections);
 	}
 
 if( !isset($idx))
@@ -270,7 +303,7 @@ if( !isset($idx))
 switch($idx)
 	{
 	case "Order":
-		$body->title = babTranslate("Create section");
+		$body->title = babTranslate("Sections order");
 		sectionsOrder();
 		$body->addItemMenu("List", babTranslate("Sections"),$GLOBALS['babUrl']."index.php?tg=sections&idx=List");
 		$body->addItemMenu("Order", babTranslate("Order"),$GLOBALS['babUrl']."index.php?tg=sections&idx=Order");
