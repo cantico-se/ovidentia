@@ -38,6 +38,7 @@ function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 			$this->ocid = $ocid;
 			$this->update = $update;
 			$this->disp = $disp;
+			$this->coeid = $oeid;
 
 			$this->roles = bab_translate("Roles");
 			$this->delete = bab_translate("Delete");
@@ -143,10 +144,6 @@ function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 					}
 				if($this->arr[0] == $row['id_node'])
 					{
-					if( $this->currentoe == 0 )
-						{
-						$this->currentoe = $this->oeid;
-						}
 					$this->first = 1;
 					if (count($this->arr) == 1)
 						{
@@ -170,7 +167,7 @@ function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 						}
 					}
 
-				if( $this->currentoe == $this->oeid )
+				if( $this->coeid == $this->oeid )
 					{
 					$this->current = true;
 					}
@@ -275,6 +272,7 @@ class orgtemp
 		$this->updateurlb = $this->obj->updateurlb;
 		$this->updateurlt = $this->obj->updateurlt;
 		$this->currentoe = $this->obj->currentoe;
+		$this->coeid = $this->obj->coeid;
 
 		if( !empty($this->obj->babTree->nodes[$id]['datas']['description']))
 			{
@@ -330,10 +328,6 @@ class orgtemp
 
 		if( $this->obj->babTree->rootid == $id )
 			{
-			if( $this->currentoe == 0 )
-				{
-				$this->currentoe = $this->oeid;
-				}
 			$this->first = 1;
 			}
 		else
@@ -366,7 +360,7 @@ class orgtemp
 			{
 			$this->bparent = false;
 			}
-		if( $this->currentoe == $this->oeid )
+		if( $this->coeid == $this->oeid )
 			{
 			$this->current = true;
 			}
@@ -426,6 +420,7 @@ function displayChartTree($ocid, $oeid, $update, $iduser)
 			$this->startnode = bab_translate("Start");
 			$this->closenode = bab_translate("Close");
 			$this->closednodes = array();
+			$this->coeid = $oeid;
 
 
 			$this->babTree  = new bab_arraytree(BAB_OC_TREES_TBL, $ocid, "", $ocinfo['id_first_node']);
@@ -810,7 +805,7 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos)
 			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(ocrt.id) as total from ".$req));
 			if( $total > ORG_MAX_REQUESTS_LIST )
 				{
-				$urltmp = $GLOBALS['babUrlScript']."?tg=frchart&idx=disp5&ocid=".$this->ocid."&eid=".$this->oeid."&type=".$this->type."&role=".$this->role."&echo=".$this->echo."&vpos=";
+				$urltmp = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp4&ocid=".$this->ocid."&eid=".$this->oeid."&type=".$this->type."&role=".$this->role."&echo=".$this->echo."&vpos=";
 
 				if( $vpos > 0)
 					{
@@ -1060,6 +1055,8 @@ if (!$update)
 $ocinfo['id_closed_nodes'] = isset($GLOBALS['BAB_SESS_CHARTCN-'.$ocid])? $GLOBALS['BAB_SESS_CHARTCN-'.$ocid]: '';
 $ocinfo['id_first_node'] = isset($GLOBALS['BAB_SESS_CHARTRN-'.$ocid])?$GLOBALS['BAB_SESS_CHARTRN-'.$ocid]:0;
 }
+$oeid = empty($oeid)?$GLOBALS['BAB_SESS_CHARTOEID-'.$ocid]:$oeid;
+
 if(!isset($idx))
 	{
 	$idx = "list";

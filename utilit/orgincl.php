@@ -157,16 +157,9 @@ function printFlbChartPage()
 function chart_session_oeid($ocid)
 	{
 	global $oeid;
-	
-	if (isset($oeid))
-	{
 	session_register("BAB_SESS_CHARTOEID-".$ocid);
-	$GLOBALS['BAB_SESS_CHARTOEID-'.$ocid] = $oeid;
-	}
-	elseif( isset($GLOBALS['BAB_SESS_CHARTOEID-'.$ocid]))
-		{
-		$oeid = $GLOBALS['BAB_SESS_CHARTOEID-'.$ocid];
-		}
+	$GLOBALS['BAB_SESS_CHARTOEID-'.$ocid] = $oeid ;
+
 	}
 
 
