@@ -3685,7 +3685,7 @@ class bab_CalendarResourceEvents extends bab_handler
 				reset($babBody->icalendars->rescal);
 				while( $row=each($babBody->icalendars->rescal) ) 
 					{
-					if( in_array($row['idowner'], $rr) )
+					if( in_array($row[0], $rr) )
 						{
 						$ar[] = $row[0];
 						}
@@ -3749,7 +3749,7 @@ class bab_CalendarResourceEvents extends bab_handler
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
 			}
-		$req .= " order by start_date, start_time asc";
+		$req .= " order by start_date asc";
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);
 		}
