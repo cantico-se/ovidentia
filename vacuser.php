@@ -108,12 +108,14 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 			$begin = mktime(0, 0, 0, $monthbegin, $daybegin, $yearbegin );
 			$end = mktime(0, 0, 0, $monthend, $dayend, $yearend);
 
-			
-			if (empty($this->period_nbdays))
+			$calcul = round(($end - $begin)/86400) + 1;
+			if (empty($this->period_nbdays) || ($this->period_nbdays == 1 && $calcul > 1))
 				{
-				$this->period_nbdays = round(($end - $begin)/86400) + 1;
+				$this->period_nbdays = $calcul;
 				$this->t_days = bab_translate("Day(s)");
 				}
+
+			$this->period_nbdays2 = $this->period_nbdays;
 
 			$this->begin = $yearbegin.'-'.$monthbegin.'-'.$daybegin;
 			$this->end = $yearend.'-'.$monthend.'-'.$dayend;
@@ -161,17 +163,17 @@ function requestVacation($begin,$end, $halfdaybegin, $halfdayend, $id)
 					else
 						$this->nbdays = 0;
 					}
-				elseif ( isset($_POST['period_nbdays']) && $_POST['period_nbdays']>0 && $this->right['quantitydays'] > 0)
+				elseif ( $this->period_nbdays2 > 0 && $this->right['quantitydays'] > 0)
 					{
-					if ($_POST['period_nbdays'] >= $this->right['quantitydays'])
+					if ($this->period_nbdays2 >= $this->right['quantitydays'])
 						{
 						$this->nbdays = $this->right['quantitydays'];
-						$_POST['period_nbdays'] -= $this->right['quantitydays'];
+						$this->period_nbdays2 -= $this->right['quantitydays'];
 						}
 					elseif ($this->right['quantitydays'] > 0)
 						{
-						$this->nbdays = $_POST['period_nbdays'];
-						$_POST['period_nbdays'] = 0;
+						$this->nbdays = $this->period_nbdays2;
+						$this->period_nbdays2 = 0;
 						}
 					}
 				else

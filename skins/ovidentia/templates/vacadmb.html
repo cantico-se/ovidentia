@@ -497,7 +497,21 @@ window.focus();
 <!--#end vpersonnellist -->
 
 <!--#begin reqexport -->
-<form method="post" action="{ babPhpSelf }">
+<script type="text/javascript">
+<!--
+
+function dateBegin(day, month, year)
+{
+	document.forms['export'].dateb.value = day+'-'+month+'-'+year;
+}
+
+function dateEnd(day, month, year)
+{
+	document.forms['export'].datee.value = day+'-'+month+'-'+year;
+}
+//-->
+</script>
+<form method="post" name="export" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="vacadmb">
 <input type="hidden" name="idx" value="lreq">
 <table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
