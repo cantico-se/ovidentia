@@ -3871,6 +3871,8 @@ function bab_PutVar($args)
 				{
 				case 'name':
 					$name = $mm[3][$j];
+					$global = true;
+					break;
 				case 'value':
 					$value = $mm[3][$j];
 					$global = false;
@@ -3881,11 +3883,11 @@ function bab_PutVar($args)
 						case 'babError': $babBody->msgerror = $value; break;
 						default: break;
 					}
-					break;
+					
 					break;
 				}
 			}					
-		if( $global )
+		if( $global && isset($GLOBALS[$name]) )
 			{
 			$value = $GLOBALS[$name];
 			}
