@@ -280,7 +280,7 @@
 	<tr> 
 		<td align="right">&nbsp;</td>
 		<td colspan="2"> 
-			<select name="bupdrec" onchange="bupdrec_change(this)">
+			<select name="bupdrec">
 				<option value="1">{ all }</option>
 				<option value="2" selected>{ thisone }</option>
 			</select>
@@ -489,14 +489,6 @@ window.focus();
 <!--#begin scripts -->
 <SCRIPT language="JavaScript">
 <!--
-function bupdrec_change(obj)
-	{
-	if (obj.value==2)
-		document.getElementById('event_date_time').style.display = ''; // one
-	else
-		document.getElementById('event_date_time').style.display = 'none'; // all
-	}
-
 function repeat_switch(grp)
 	{
 	var v = grp ? grp.value : 0 ;

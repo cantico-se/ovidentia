@@ -40,7 +40,6 @@
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<tr>
 <td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left">
 <select name="bconfirm">
 <!--#in getnextstatus -->
@@ -49,6 +48,21 @@
 </select>
 </td>
 </tr>
+<!--#if brepetitive -->
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left">
+{ repetitivetxt }
+</td>
+</tr>
+<tr>
+<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left">
+<select name="bupdrec">
+<option value="1"  selected>{ all }</option>
+<option value="2">{ thisone }</option>
+</select>
+</td>
+</tr>
+<!--#endif brepetitive -->
 <tr>
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment"></textarea>
 </td>
