@@ -44,7 +44,7 @@ function newEvent($calendarid, $day, $month, $year)
 			$this->type = babTranslate("Type");
 
 			$this->daytype = babTranslate("All day");
-			$this->addvac = babTranslate("Add Vacation");
+			$this->addvac = babTranslate("Add Event");
 			$this->from = babTranslate("From");
 			$this->to = babTranslate("To");
 			$this->recurrence = babTranslate("Week recurrence");

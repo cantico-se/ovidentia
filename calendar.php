@@ -25,7 +25,8 @@ function getAvailableCalendars()
 			$arr = $db->db_fetch_array($resgroups);
 			$rr[name] = $arr[name];
 			$rr[idcal] = getCalendarId($arr[id], 2);
-			array_push($tab, $rr);
+			if( $rr[idcal] != 0)
+				array_push($tab, $rr);
 			$req .= " or id_group='".$arr[id]."'"; 
 			}
 		$db->db_data_seek($resgroups, 0);
@@ -38,7 +39,6 @@ function getAvailableCalendars()
 		$rr[name] = $arr[name];
 		$rr[idcal] = getCalendarId($arr[id], 3);
 		array_push($tab, $rr);
-		$req .= " or id_group='".$arr[id]."'"; 
 		}
 	return $tab;
 }
@@ -83,6 +83,7 @@ function calendarMonth($calid, $day, $month, $year)
 
 		var $db;
 		var $nbevent;
+		var $new;
 	
 		function temp($calid, $day, $month, $year)
 			{
@@ -98,6 +99,7 @@ function calendarMonth($calid, $day, $month, $year)
 			$this->calid = $calid;
 			$this->caltype = getCalendarType($calid);
 			$this->viewthis = babTranslate("View this calendar");
+			$this->new = babTranslate("New");
 
 			$this->previousmonth = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&day=".$day;
 			$this->previousmonth .= "&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
@@ -384,6 +386,7 @@ function calendarWeek($calid, $day, $month, $year)
 			$this->dayurlname = babTranslate("Day");
 			$this->previous = babTranslate("Previous");
 			$this->next = babTranslate("Next");
+			$this->new = babTranslate("New");
 			$this->gotodayname = babTranslate("Go to Today");
 			$this->gotodayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewq&day=".date("j")."&month=".date("n")."&year=".date("Y"). "&calid=".$this->calid;
 			$this->calendars = getAvailableCalendars();
