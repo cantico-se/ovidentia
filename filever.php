@@ -623,7 +623,7 @@ function commitFile($idf, $comment, $vermajor, $filename, $size, $tmp )
 		$pathx .= $arrfile['path']."/";
 
 	if( !is_dir($pathx.BAB_FVERSION_FOLDER))
-		mkdir($pathx.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMask']);
+		bab_mkdir($pathx.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 
 	if( $vermajor == 'Y' )
 		{

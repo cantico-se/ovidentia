@@ -86,9 +86,14 @@ if (!empty($_FILES))
 			}
 	}
 
-if( !isset($GLOBALS['babMkdirMask']))
+if( !isset($GLOBALS['babMkdirMode']))
 	{
-	$GLOBALS['babMkdirMask'] = '0700';
+	$GLOBALS['babMkdirMode'] = 0770;
+	}
+
+if( !isset($GLOBALS['babUmaskMode']))
+	{
+	$GLOBALS['babUmaskMode'] = 0;
 	}
 
 $babSiteName = substr($babSiteName, 0, 30);

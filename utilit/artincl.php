@@ -62,7 +62,7 @@ function bab_getUploadDraftsPath()
 
 	$path = $path."drafts/";
 
-	if(!is_dir($path) && !mkdir($path, $GLOBALS['babMkdirMask']))
+	if(!is_dir($path) && !bab_mkdir($path, $GLOBALS['babMkdirMode']))
 		{
 		return false;
 		}
@@ -82,7 +82,7 @@ function bab_getUploadArticlesPath()
 
 	$path = $path."articles/";
 
-	if(!is_dir($path) && !mkdir($path, $GLOBALS['babMkdirMask']))
+	if(!is_dir($path) && !bab_mkdir($path, $GLOBALS['babMkdirMode']))
 		{
 		return false;
 		}

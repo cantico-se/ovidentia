@@ -193,8 +193,8 @@ function cpaddons($from,$to)
          return $arr;
      }
 	function cp($wf, $wto){ 
-		  if (!is_dir($wto)) mkdir($wto,$GLOBALS['babMkdirMask']);
-		   $arr=ls_a($wf);
+		  if (!is_dir($wto)) { bab_mkdir($wto,$GLOBALS['babMkdirMode']); }
+		  $arr=ls_a($wf);
 		  foreach ($arr as $fn){
 				  if($fn){
 					  $fl="$wf/$fn";
@@ -209,7 +209,7 @@ function cpaddons($from,$to)
 	$el = explode("/",$path);
 	foreach ($el as $rep)
 		{
-		if (!is_dir($memo.$rep)) mkdir($memo.$rep,$GLOBALS['babMkdirMask']);
+		if (!is_dir($memo.$rep)) { bab_mkdir($memo.$rep,$GLOBALS['babMkdirMode']); }
 		$memo = $memo.$rep."/";
 		}
 	}

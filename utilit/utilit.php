@@ -28,6 +28,17 @@ include_once $babInstallPath."utilit/template.php";
 include_once $babInstallPath."utilit/userincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 
+function bab_mkdir($path, $mode)
+{
+	if( substr($path, -1) == "/" )
+		{
+		$path = substr($path, 0, -1);
+		}
+	$umask = umask($GLOBALS['babUmaskMode']);
+	mkdir($path, $mode);
+	umask($umask);
+}
+
 function bab_formatDate($format, $time)
 {
 	global $babDays, $babMonths;
@@ -435,7 +446,7 @@ function bab_translate_old($str, $folder = "")
 		if( !file_exists($filename))
 			{
 			if( !empty($folder) && !is_dir($GLOBALS['babInstallPath']."lang/addons/".$folder))
-				mkdir($GLOBALS['babInstallPath']."lang/addons/".$folder, $GLOBALS['babMkdirMask']);
+				bab_mkdir($GLOBALS['babInstallPath']."lang/addons/".$folder, $GLOBALS['babMkdirMode']);
 			$file = @fopen($filename, "w");
 			if( $file )
 				fclose($file);

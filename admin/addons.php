@@ -453,7 +453,9 @@ function import()
 		foreach ($loc_in as $directory)
 			{
 			if (!is_dir($GLOBALS['babInstallPath'].$directory))
-				@mkdir($GLOBALS['babInstallPath'].$directory,$GLOBALS['babMkdirMask']);
+				{
+				bab_mkdir($GLOBALS['babInstallPath'].$directory,$GLOBALS['babMkdirMode']);
+				}
 			}
 		
 		$path_file = array();

@@ -815,7 +815,7 @@ function listFiles($id, $gr, $path, $bmanager)
 		$pathx = bab_getUploadFullPath($gr, $id);
 		if( substr($pathx, -1) == "/" )
 			$pathx = substr($pathx, 0, -1);
-		if(!is_dir($pathx) && !mkdir($pathx, $GLOBALS['babMkdirMask']))
+		if(!is_dir($pathx) && !bab_mkdir($pathx, $GLOBALS['babMkdirMode']))
 			$babBody->msgerror = bab_translate("Can't create directory: ").$pathx;
 		}
 
@@ -1276,7 +1276,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
 					{
 					if( !is_dir($pathxnew.BAB_FVERSION_FOLDER."/"))
-						mkdir($pathxnew.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMask']);
+						bab_mkdir($pathxnew.BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 
 					$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
 					while($rr = $db->db_fetch_array($res))
@@ -1415,7 +1415,7 @@ function createDirectory($dirname, $id, $gr, $path)
 		}
 	else
 		{
-		mkdir($pathx, $GLOBALS['babMkdirMask']);
+		bab_mkdir($pathx, $GLOBALS['babMkdirMode']);
 		}
 	}
 
@@ -1719,7 +1719,7 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 		if( is_dir($pathx.$path."/".BAB_FVERSION_FOLDER."/"))
 			{
 			if( !is_dir($pathx.$tp."/".BAB_FVERSION_FOLDER))
-				mkdir($pathx.$tp."/".BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMask']);
+				bab_mkdir($pathx.$tp."/".BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 
 			$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
 			while($arr = $db->db_fetch_array($res))
@@ -2076,7 +2076,7 @@ function restoreFiles($items)
 				{
 				$path .= $rr[$k]."/";
 				if( !is_dir($path))
-					mkdir($path, $GLOBALS['babMkdirMask']);
+					bab_mkdir($path, $GLOBALS['babMkdirMode']);
 				}
 			}
 		$db->db_query("update ".BAB_FILES_TBL." set state='' where id='".$items[$i]."'");

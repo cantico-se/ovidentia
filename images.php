@@ -25,13 +25,6 @@ include_once "base.php";
 include_once $babInstallPath."utilit/tempfile.php";
 include_once $babInstallPath."utilit/imgincl.php";
 
-function bab_mkdir($path, $mode)
-{
-	if( substr($path, -1) == "/" )
-		$path = substr($path, 0, -1);
-	mkdir($path, $mode);
-}
-
 function put_text($txt,$limit=12,$limitmot=15)
 {
 	if (strlen($txt) > $limit)
@@ -162,11 +155,11 @@ function listImages($editor,$path="")
 			$this->comnum = 0;
 			$this->editor = $editor;
 			if( !is_dir(BAB_IUD_TMP))
-				bab_mkdir(BAB_IUD_TMP, $GLOBALS['babMkdirMask']);
+				bab_mkdir(BAB_IUD_TMP, $GLOBALS['babMkdirMode']);
 			if( !is_dir(BAB_IUD_COMMON))
-				bab_mkdir(BAB_IUD_COMMON, $GLOBALS['babMkdirMask']);
+				bab_mkdir(BAB_IUD_COMMON, $GLOBALS['babMkdirMode']);
 			if( !is_dir(BAB_IUD_ARTICLES))
-				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMask']);
+				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMode']);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON);
 			$this->arrcfile = array();
@@ -237,11 +230,11 @@ function iframe($editor,$path="")
 			$this->msg_renametree = bab_translate("WARNING!: If you rename this folder, the articles containing the a picture from this folder will be corrupted. Do really whant to rename this directory")."?";
 
 			if( !is_dir(BAB_IUD_TMP))
-				bab_mkdir(BAB_IUD_TMP, $GLOBALS['babMkdirMask']);
+				bab_mkdir(BAB_IUD_TMP, $GLOBALS['babMkdirMode']);
 			if( !is_dir(BAB_IUD_COMMON))
-				bab_mkdir(BAB_IUD_COMMON, $GLOBALS['babMkdirMask']);
+				bab_mkdir(BAB_IUD_COMMON, $GLOBALS['babMkdirMode']);
 			if( !is_dir(BAB_IUD_ARTICLES))
-				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMask']);
+				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMode']);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON.$path);
 			$this->arrcfile = array();
@@ -503,7 +496,7 @@ if ( isset($directory) && $directory != "" && bab_isUserAdministrator() )
 	if ( substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
 	if (!is_dir(BAB_IUD_COMMON.$p.$directory))
-		mkdir(BAB_IUD_COMMON.$p.$directory,$GLOBALS['babMkdirMask']);
+		bab_mkdir(BAB_IUD_COMMON.$p.$directory,$GLOBALS['babMkdirMode']);
 	else
 		$GLOBALS['msgerror'] = bab_translate("A folder with the same name already exists");
 	}
