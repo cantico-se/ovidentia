@@ -277,7 +277,7 @@ function listMails($accid, $criteria, $reverse, $start)
 			if( $k < $this->countacc)
 				{
 				$arr = $this->db->db_fetch_array($this->resacc);
-				$this->accountname = $arr['account'];
+				$this->accountname = $arr['name']." &lt;".$arr['email']."&gt;";
 				$this->accountid = $arr['id'];
 				if( $this->accountid == $this->accid)
 					$this->selected = "selected";
