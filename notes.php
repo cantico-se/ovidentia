@@ -59,7 +59,7 @@ function notesList()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->editurl = $GLOBALS['babUrl']."index.php?tg=note&idx=Modify&item=".$this->arr['id'];
 				$this->editname = babTranslate("Edit");
-				$this->arr['content'] = $this->arr['content'];// nl2br($this->arr['content']);
+				$this->arr['content'] = babReplace($this->arr['content']);// nl2br($this->arr['content']);
 				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
 				$i++;
 				return true;
