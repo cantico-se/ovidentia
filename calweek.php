@@ -38,7 +38,14 @@ class cal_weekCls extends cal_wmdbaseCls
 		$workdays = explode(',', $babBody->icalendars->workdays);
 		$time = mktime(0,0,0,$this->month,$this->day,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
+		$this->weekname = bab_translate('Week').' '.date('W',$time);
 		$this->totaldays = date("t", $time);
+
+		$this->elapstime = $babBody->icalendars->elapstime;
+		list($this->startwtime, , ) = sscanf($babBody->icalendars->starttime, "%d:%d:%d");
+		list($this->endwtime, , ) = sscanf($babBody->icalendars->endtime, "%d:%d:%d");
+		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
+
 		$b = date("w", $time) - $babBody->icalendars->startday;
 		if( $b < 0)
 			$b += 7;
@@ -58,10 +65,15 @@ class cal_weekCls extends cal_wmdbaseCls
 		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[0]], $this->year);
 		$time2 = $time1 + 41*24*3600;
 
+		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
+
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 
+		$this->allow_insert = count($babBody->icalendars->usercal) > 0 || count($babBody->icalendars->pubcal) > 0 || count($babBody->icalendars->rescal) > 0;
 
 		$this->cindex = 0;
+		$this->h_start = '00:00';
+		$this->h_end = '00:00';
 		}
 
 	function getnextdayname()
@@ -70,6 +82,27 @@ class cal_weekCls extends cal_wmdbaseCls
 		static $i = 0;
 		if( $i < count($this->workdays))
 			{
+			$this->mday = $this->dworkdays[$this->workdays[$i]];
+			if( $this->mday <= 0 || $this->mday > $this->totaldays)
+				{
+				$this->currentmonth = 0;
+				}
+			else
+				{
+				$this->currentmonth = 1;
+				}
+			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
+			$dday = date("j", $mktime);
+			$this->daynumbername = $dday;
+			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
+			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
+				{
+				$this->currentday = 1;
+				}
+			else
+				{
+				$this->currentday = 0;
+				}
 			$this->dayname = $babDays[$this->workdays[$i]];
 			$i++;
 			return true;
@@ -80,6 +113,60 @@ class cal_weekCls extends cal_wmdbaseCls
 			return false;
 			}
 		}
+
+	function getnexthour()
+			{
+			global $babBody;
+			static $i = 0;
+			if( $i < $this->maxidx)
+				{
+				$idxhour = $i;
+				$curhour = $this->startwtime * 60 + $i * $this->elapstime;
+				$endhour = $this->startwtime * 60 + ($i+1) * $this->elapstime;
+				$this->h_start = sprintf("%02d:%02d", $curhour/60, $curhour%60);
+				$this->h_end = sprintf("%02d:%02d", $endhour/60, $endhour%60);
+				if( $babBody->ampm)
+					{
+					$h = explode(" ", bab_toAmPm($st));
+					$hh = explode(":", $h[0]);
+					$this->hour = sprintf("%02d<sup>%s</sup>%02d", $hh[0], $h[1], $hh[1]);
+					if( $i == 0 )
+						$this->hour = sprintf("%02d<sup>%s", $hh[0], $h[1]);
+					else if( $hh[0] == "12" && $hh[1] == "00")
+						$this->hour = sprintf("%02d<sup>%s", $hh[0], $h[1]);
+					else if( $hh[1] != "00")
+						$this->hour = sprintf("__<sup>%02d</sup>", $hh[1]);
+					else
+						$this->hour = sprintf("%02d<sup>%02d</sup>", $hh[0], $hh[1]);
+					}
+				else
+					{
+					if( $curhour%60 == 0)
+						$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
+					else
+						$this->hour = sprintf("__<sup>%02d</sup>", $curhour%60);
+					}
+				$this->hoururl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd&st=".$this->h_start;
+				if( $i % 2)
+					{
+					$this->altbgcolor = true;
+					}
+				else
+					{
+					$this->altbgcolor = false;
+					}
+				
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->h_start = '00:00';
+				$this->h_end = '00:00';
+				$i = 0;
+				return false;
+				}
+			}
 	
 	function getnextday()
 		{
@@ -87,16 +174,8 @@ class cal_weekCls extends cal_wmdbaseCls
 		static $d = 0;
 		if( $d < count($this->workdays))
 			{
+			
 			$this->mday = $this->dworkdays[$this->workdays[$d]];
-			if( $this->mday <= 0 || $this->mday > $this->totaldays)
-				{
-				$this->currentmonth = 0;
-				}
-			else
-				{
-				$this->currentmonth = 1;
-				}
-
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));
@@ -108,9 +187,9 @@ class cal_weekCls extends cal_wmdbaseCls
 				{
 				$this->currentday = 0;
 				}
-			$this->daynumbername = $dday;
+			
 			$this->daynumberurl = $this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
-			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$dday."&month=".date("n", $mktime). "&year=".date("Y", $mktime)."&calid=".$this->idcals."&view=viewm";
+			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm";
 			$d++;
 			return true;
 			}
@@ -127,7 +206,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
-			$this->fullnameten = htmlentities(substr($calname, 0, 16));
+			$this->abbrev = htmlentities(substr($calname, 0, 4));
 			return true;
 			}
 		else
@@ -141,12 +220,11 @@ class cal_weekCls extends cal_wmdbaseCls
 		{
 		global $babBody;
 		$arr = array();
-		if( $this->mcals->getNextEvent($this->idcals[$this->cindex], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $arr))
+		if( $this->mcals->getNextEvent($this->idcals[$this->cindex], $this->cdate." ".$this->h_start.":00", $this->cdate." ".$this->h_end.":59", $arr))
 			{
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
 			$this->bgcolor = $arr['color'];
-			//$this->bgcolor = $this->icals[$this->cindex]->getCategoryColor($arr['id_cat']);
 			$this->idevent = $arr['id'];
 			$time = bab_mktime($arr['start_date']);
 			$this->starttime = bab_time($time);
