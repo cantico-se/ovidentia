@@ -375,7 +375,7 @@ function siteUpdate($id, $name, $description, $lang, $siteemail, $skin, $registe
 		return false;
 		}
 
-	if(!get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$description = addslashes($description);
 		$name = addslashes($name);

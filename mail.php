@@ -126,7 +126,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $urlto;
 		var $msie;
 		var $bhtml;
-		var $babCss;
 		var $msgerror;
 
 
@@ -150,7 +149,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$this->messageval = "";
 			if( !empty($pmsg))
 				{
-				if(get_cfg_var("magic_quotes_gpc"))
+				if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 					{
 					$this->messageval = stripslashes($pmsg);
 					}
@@ -206,17 +205,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 				$this->fromval = "\"".$arr['name']."\" &lt;".$arr['email']."&gt;";
                 if( empty($pformat))
                     $pformat = $arr['format'];
-				if( $pformat == "plain")
-                    {
-					$this->msie = 0;
-					$this->plainselect = "selected";
-					$this->htmlselect = "";
-                    }
-				else
-                    {
-					$this->htmlselect = "selected";
-					$this->plainselect = "";
-                    }
                 $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$BAB_SESS_USERID."'";
                 $this->ressig = $this->db->db_query($req);
                 $this->countsig = $this->db->db_num_rows($this->ressig);
@@ -225,6 +213,17 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 				{
 				$this->fromval = "\"".$BAB_SESS_USER."\" &lt;".$BAB_SESS_EMAIL."&gt;";
 				}
+			if( $pformat == "plain")
+				{
+				$this->msie = 0;
+				$this->plainselect = "selected";
+				$this->htmlselect = "";
+				}
+			else
+				{
+				$this->htmlselect = "selected";
+				$this->plainselect = "";
+				}
             if( $psigid == 0 || empty($psigid)) 
                 $this->defaultselected = "selected";
             else
@@ -232,7 +231,6 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$BAB_SESS_USERID."' order by lastname asc";
 			$this->rescl = $this->db->db_query($req);
 			$this->countcl = $this->db->db_num_rows($this->rescl);
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			}
 
         function getnextsig()
@@ -303,7 +301,7 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 				$mime = new babMail();
 			addAddress($to, "mailTo", $mime);
 			$mime->mailFrom($arr['email'], $arr['name']);
-			if(get_cfg_var("magic_quotes_gpc"))
+			if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 				{
 				$message = stripslashes($message);
 				$subject = stripslashes($subject);

@@ -86,6 +86,10 @@ function saveNotes($content)
 		{
 		return;
 		}
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+		{
+		$content = addslashes($content);
+		}
 
 	$db = $GLOBALS['babDB'];
 	$query = "insert into ".BAB_NOTES_TBL." (id_user, date, content) VALUES ('". $BAB_SESS_USERID. "',now(), '" . $content. "')";

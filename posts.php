@@ -497,7 +497,7 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	else
 		$confirmed = "Y";
 
-	if(!get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$subject = addslashes($subject);
 		$message = addslashes($message);

@@ -48,6 +48,10 @@ function deleteNotes($id)
 function updateNotes($id, $content)
 	{
 	$db = $GLOBALS['babDB'];
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+		{
+		$content = addslashes($content);
+		}
 	$query = "update ".BAB_NOTES_TBL." set content='$content' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");

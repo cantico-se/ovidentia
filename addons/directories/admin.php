@@ -384,7 +384,7 @@ function addLdapDirectory($name, $description, $host, $basedn, $userdn, $passwor
 		return;
 		}
 
-	if(!get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$description = addslashes($description);
 		$name = addslashes($name);
@@ -415,7 +415,7 @@ function addDbDirectory($name, $description, $fields, $rw, $rq, $ml)
 		return false;
 		}
 
-	if(!get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$description = addslashes($description);
 		$name = addslashes($name);
@@ -480,7 +480,7 @@ function modifyAdLdap($id, $name, $description, $host, $basedn, $userdn, $passwo
 			}
 		}
 
-	if(!get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$description = addslashes($description);
 		$name = addslashes($name);
@@ -514,7 +514,7 @@ function modifyAdDb($id, $name, $description, $fields, $rw, $rq, $ml)
 		return false;
 		}
 
-	if(!get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$description = addslashes($description);
 		$name = addslashes($name);

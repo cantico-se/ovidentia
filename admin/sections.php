@@ -307,7 +307,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		}
 	else
 		{
-		if(!get_cfg_var("magic_quotes_gpc"))
+		if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 			{
 			$desc = addslashes($desc);
 			$content = addslashes($content);

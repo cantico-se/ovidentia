@@ -600,7 +600,7 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		}
 	$db = $GLOBALS['babDB'];
 
-	if(!get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$headtext = addslashes($headtext);
 		$bodytext = addslashes($bodytext);
@@ -640,7 +640,7 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext)
 		return;
 		}
 
-	if(get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
 		{
 		$headtext = stripslashes($headtext);
 		$bodytext = stripslashes($bodytext);

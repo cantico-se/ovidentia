@@ -61,7 +61,6 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->checkall = bab_translate("Check all mails");
 			$this->deletealt = bab_translate("Delete");
 			$this->compose = bab_translate("Compose");
-			$this->composeurl = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse;
 
 			if( $reverse )
 				{
@@ -112,6 +111,8 @@ function listMails($accid, $criteria, $reverse, $start)
 				}
 			else
 				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$accid."' and owner='".$BAB_SESS_USERID."'";
+			$this->composeurl = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse;
+
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0 )
 				{
