@@ -323,7 +323,7 @@ function babLoadLanguage($lang, $folder, &$arr)
 		return;
 		}
 
-	if( !$bfile_c || (($filename && ($time > $time_c)) || ($filename_m && ($time > $time_c)) ))
+	if( !$bfile_c || (($filename && ($time > $time_c)) || ($filename_m && ($time_m > $time_c)) ))
 		{
 		if( $filename )
 			{
