@@ -1169,7 +1169,7 @@ function loadSections()
 	$res = $babDB->db_query($req);
 	while( $arr =  $babDB->db_fetch_array($res))
 		{
-		$hidden = false;
+		$bshow = false;
 		$close = 0;
 		$res2 = $babDB->db_query("select * from ".BAB_SECTIONS_STATES_TBL." where id_section='".$arr['id_section']."' and id_user='".$BAB_SESS_USERID."' and type='".$arr['type']."'");
 		if( $res2 && $babDB->db_num_rows($res2) > 0)
@@ -1179,9 +1179,9 @@ function loadSections()
 				{
 				$close = 1;
 				}		
-			if( $arrst['hidden'] == "Y")
+			if( $arrst['hidden'] == "N")
 				{
-				$hidden = true;
+				$bshow = true;
 				}		
 			}
 		else
@@ -1202,7 +1202,7 @@ function loadSections()
 							}
 						break;
 					case 2: // month
-						if( $r['enabled'] == "Y" && ( $r['optional'] == 'N' || !$hidden ))
+						if( $r['enabled'] == "Y" && ( $r['optional'] == 'N' || $bshow ))
 							{
 							$add = true;
 							$sec = new babMonthA();
@@ -1212,7 +1212,7 @@ function loadSections()
 						$sec = new babTopcatSection($close);
 						if( $sec->count > 0 )
 							{
-							if( $r['enabled'] == "Y" && !$hidden)
+							if( $r['enabled'] == "Y" && $bshow)
 								$add = true;
 							}
 						break;
@@ -1220,7 +1220,7 @@ function loadSections()
 						$sec = new babForumsSection($close);
 						if( $sec->count > 0 )
 							{
-							if( $r['enabled'] == "Y"  && !$hidden)
+							if( $r['enabled'] == "Y"  && $bshow)
 								$add = true;
 							}
 						break;
@@ -1233,7 +1233,7 @@ function loadSections()
 				break;
 			case "3": // BAB_TOPICS_CATEGORIES_TBL sections
 				$r = $babDB->db_fetch_array($babDB->db_query("select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_section']."'"));
-				if( $r['enabled'] == "Y" && ( $r['optional'] == 'N' || !$hidden ))
+				if( $r['enabled'] == "Y" && ( $r['optional'] == 'N' || $bshow ))
 					{
 					$sec = new babTopicsSection($r['id'], $close);
 					if( $sec->count > 0 )
@@ -1280,7 +1280,7 @@ function loadSections()
 					if( $res2 && $babDB->db_num_rows($res2) > 0)
 						{
 						$arr2 = $babDB->db_fetch_array($res2);
-						if( $arr2['optional'] == 'N' || !$hidden )
+						if( $arr2['optional'] == 'N' || $bshow )
 							{
 							if( !$close )
 								{

@@ -53,6 +53,8 @@ function sectionsList()
 		var $titleval;
 		var $arrcatid = array();
 
+		var $maxallowedsectxt;
+
 		function temp()
 			{
 			global $babBody;
@@ -64,6 +66,7 @@ function sectionsList()
 			$this->update = bab_translate("Update");
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
+			$this->maxallowedsectxt = bab_translate("The maximum number of authorized optional sections was reached");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select distinct s.* from ".BAB_SECTIONS_TBL." s, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_SECTIONS_GROUPS_TBL." sg where s.optional='Y' and s.id=sg.id_object and ( (ug.id_group=sg.id_group and ug.id_object='".$GLOBALS['BAB_SESS_USERID']."') or sg.id_group='0' or sg.id_group='1')";
 			$this->res = $this->db->db_query($req);
