@@ -329,7 +329,7 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $dir
 
 	$db = $GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N', pcalendar='N' where  id_dgowner='".$babBody->currentAdmGroup."'"); 
+	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N' where  id_dgowner='".$babBody->currentAdmGroup."'"); 
 
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{

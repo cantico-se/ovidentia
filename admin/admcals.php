@@ -525,7 +525,7 @@ function updatePersonalCalendars($calperids)
 
 	$db = $GLOBALS['babDB'];
 
-	$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', directory='N', pcalendar='N' where  id_dgowner='".$babBody->currentAdmGroup."'"); 
+	$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='N' where  id_dgowner='".$babBody->currentAdmGroup."'"); 
 
 	for( $i = 0; $i < count($calperids); $i++)
 	{
