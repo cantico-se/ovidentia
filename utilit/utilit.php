@@ -1063,7 +1063,7 @@ function updateUserSettings()
                 {
                 $GLOBALS['babLanguage'] = $arr['lang'];
                 }
-            if( $arr['skin'] != "")
+            if( $arr['skin'] != "" && is_dir($GLOBALS['babInstallPath']."skins/".$arr['skin']))
                 {
                 $GLOBALS['babSkin'] = $arr['skin'];
                 }
