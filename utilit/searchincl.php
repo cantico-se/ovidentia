@@ -62,8 +62,8 @@ function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
 
 if( !bab_isMagicQuotesGpcOn())
 	{
-	$req2 = $db->db_escape_string($req2);
-	$req1 = $db->db_escape_string($req1);
+	$req2 = $babDB->db_escape_string($req2);
+	$req1 = $babDB->db_escape_string($req1);
 	}
 
 if (trim($req1) != "") 
