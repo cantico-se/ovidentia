@@ -180,16 +180,6 @@ if( !$res)
 	$ret = "Creation of <b>".BAB_ADDONS_GROUPS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
-
-$req = "CREATE TABLE favorites_list (";
-$req .= "id INT(11) UNSIGNED NOT NULL auto_increment, ";
-$req .= "id_owner INT(11) UNSIGNED NOT NULL, ";
-$req .= "url TINYTEXT NOT NULL, ";
-$req .= "description TEXT NOT NULL,";
-$req .= "PRIMARY KEY (id)";
-$req .= ");";
-$res = $db->db_query($req);
-
 return $ret;
 }
 ?>
