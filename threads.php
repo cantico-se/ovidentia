@@ -155,6 +155,7 @@ function listThreads($forum, $active, $pos)
 
 		function getnext()
 			{
+			global $babBody;
 			static $i = 0;
 			if( $i < $this->count)
 				{
@@ -195,10 +196,21 @@ function listThreads($forum, $active, $pos)
 					$arr0 = explode("-", $tmp[0]);
 					$arr1 = explode(":", $tmp[1]);
 					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
-					if( mktime() - bab_mktime($ar['date']) <= 86400 )
-						$this->brecent = true;
+					if($GLOBALS['BAB_SESS_LOGGED'])
+						{
+						if( $ar['date'] >= $babBody->lastlog )
+							$this->brecent = true;
+						else
+							$this->brecent = false;
+						}
 					else
-						$this->brecent = false;
+						{
+						if( mktime() - bab_mktime($ar['date']) <= DELTA_TIME )
+							$this->brecent = true;
+						else
+							$this->brecent = false;
+						}
+
 					}
 				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);

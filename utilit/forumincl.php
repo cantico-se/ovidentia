@@ -23,6 +23,8 @@
 ************************************************************************/
 include_once "base.php";
 
+define("DELTA_TIME", 86400);
+
 function bab_getForumName($id)
 	{
 	$db = $GLOBALS['babDB'];

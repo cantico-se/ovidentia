@@ -205,7 +205,7 @@ function listPosts($forum, $thread, $post)
 
 		function getnext()
 			{
-			global $flat;
+			global $babBody, $flat;
 			static $i = 0;
 			if( $i < $this->count)
 				{
@@ -215,7 +215,6 @@ function listPosts($forum, $thread, $post)
 				$req = "select * from ".BAB_POSTS_TBL." where id='".$this->arrresult['id'][$i]."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
-				//$this->replydate = bab_strftime(bab_mktime($arr['date']));
 				$tmp = explode(" ", $arr['date']);
 				$arr0 = explode("-", $tmp[0]);
 				$arr1 = explode(":", $tmp[1]);
@@ -239,10 +238,17 @@ function listPosts($forum, $thread, $post)
 				else
 					$this->confirmed = "";
 
-				if( mktime() - bab_mktime($arr['date']) <= 86400 )
-					$this->brecent = true;
+				$this->brecent = false;
+				if($GLOBALS['BAB_SESS_LOGGED'])
+					{
+					if( $arr['date'] >= $babBody->lastlog )
+						$this->brecent = true;
+					}
 				else
-					$this->brecent = false;
+					{
+					if( mktime() - bab_mktime($arr['date']) <= DELTA_TIME )
+						$this->brecent = true;
+					}
 
 				
 				if( $this->alternate == 0)
@@ -387,7 +393,7 @@ function listPostsFlat($forum, $thread, $open)
 
 		function getnext()
 			{
-			global $flat;
+			global $babBody, $flat;
 			static $i = 0;
 			if( $i < $this->count)
 				{
@@ -399,10 +405,17 @@ function listPostsFlat($forum, $thread, $open)
 				$this->postmessage = bab_replace($arr['message']);
 				$this->more = "";
 
-				if( mktime() - bab_mktime($arr['date']) <= 86400 )
-					$this->brecent = true;
+				$this->brecent = false;
+				if($GLOBALS['BAB_SESS_LOGGED'])
+					{
+					if( $arr['date'] >= $babBody->lastlog )
+						$this->brecent = true;
+					}
 				else
-					$this->brecent = false;
+					{
+					if( mktime() - bab_mktime($arr['date']) <= DELTA_TIME )
+						$this->brecent = true;
+					}
 
 				$dateupdate = bab_mktime($arr['dateupdate']);
 				if(  $arr['confirmed'] == "Y" && $dateupdate > 0)
