@@ -759,6 +759,10 @@ switch($tg)
 		include $babInstallPath."htmlarea.php";
 		exit;
 		break;
+	case "editorarticle":
+		include $babInstallPath."editorarticle.php";
+		exit;
+		break;
 	case "imgget":
 		include $babInstallPath."imgget.php";
 		exit;
