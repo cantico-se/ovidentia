@@ -257,7 +257,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$this->idgroup = $arr['id_group'];
-				$this->rescol = $this->db->db_query("select id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$this->id."' and ordering!='0' order by ordering asc");
+				$this->rescol = $this->db->db_query("select id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->id)."' and ordering!='0' order by ordering asc");
 				$this->countcol = $this->db->db_num_rows($this->rescol);
 				}
 			else
