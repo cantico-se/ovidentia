@@ -69,6 +69,9 @@ function listThreads($forum, $active, $pos)
 		var $brecent;
 		var $altrecentposts;
 
+		var $active;
+		var $alternate;
+
 		function temp($forum, $active, $pos)
 			{
 			$this->topurl = "";
@@ -90,6 +93,8 @@ function listThreads($forum, $active, $pos)
 			$this->altnoflattxt = bab_translate("View thread as hierarchical list");
 			$this->altflattxt = bab_translate("View thread as flat list");
 			$this->altrecentposts = bab_translate("Recent posts");
+			$this->alternate = 0;
+			$this->active = $active;
 
 			$this->moderator = bab_isUserForumModerator($forum, $GLOBALS['BAB_SESS_USERID']);
 
@@ -203,6 +208,10 @@ function listThreads($forum, $active, $pos)
 				else
 					$this->status = "";
 
+				if( $this->alternate == 0)
+					$this->alternate = 1;
+				else
+					$this->alternate = 0;
 				$i++;
 				return true;
 				}
