@@ -1653,7 +1653,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			return false;
 			}
 
-		$iduser = registerUser($fields['givenname'], $fields['sn'], $fields['mn'], $fields['email'], $nickname, $password1, $password2, true);
+		$iduser = registerUser(stripslashes($fields['givenname']), stripslashes($fields['sn']), stripslashes($fields['mn']), $fields['email'], $nickname, $password1, $password2, true);
 		if( $iduser == false )
 			{
 			return false;

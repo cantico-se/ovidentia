@@ -253,10 +253,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 
 	$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
 		"values ('";
-	if( !bab_isMagicQuotesGpcOn())
-		$sql .= addslashes($nickname)."','".addslashes($firstname)."','".addslashes($lastname);
-	else
-		$sql .= $nickname."','".$firstname."','".$lastname;
+	$sql .= addslashes($nickname)."','".addslashes($firstname)."','".addslashes($lastname);
 	$sql .= "','".$hashname."','". md5($password1) ."','$email', now(),'$hash','".$isconfirmed."','1','$babLanguage'";
 	$sql .= ",'".$GLOBALS['babLangFilter']->getFilterAsInt()."', now(), now())";
 	$result=$db->db_query($sql);

@@ -346,7 +346,7 @@ if( !isset($idx))
 
 if( isset($adduser) && $babBody->isSuperAdmin )
 {
-	if( !registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, true))
+	if( !registerUser( stripslashes($firstname), stripslashes($lastname), stripslashes($middlename), $email, $nickname, $password1, $password2, true))
 		$idx = "Create";
 	else
 		{
