@@ -430,6 +430,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 		
 		function temp($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			{
+			global $BAB_SESS_USERID;
 			$this->db = new db_mysql();
 			$this->view = "viewq";
 			$this->calid = $calid;
