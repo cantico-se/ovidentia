@@ -1,5 +1,35 @@
 <!--#begin sectionslist --> 
-<form method="post" action="{ babPhpSelf }" name="listform">
+<script type="text/javascript">
+<!--
+function checkmax(obj)
+	{
+	var num_checked = 0;
+	var temp = '{ babMaxOptionalSections }';
+	var babMaxOptionalSections = parseInt(temp);
+	if (babMaxOptionalSections == 0) { return true; }
+	for (var i = 0; i < document.forms.listform.elements.length; i++)
+		{
+		var el = document.forms.listform.elements[i];
+		if ( el.name.substring(0,8) == 'sections' && el.checked && num_checked <= babMaxOptionalSections)
+			{
+			num_checked++;
+			}
+		else if (num_checked > babMaxOptionalSections)
+			{
+			var d1;
+			alert('{ maxallowedsectxt }');
+			if ( typeof obj.name == 'string' )
+			if (obj.name.substring(0,8) == 'sections' ) { obj.checked = false; }
+			return false;
+			}
+		}
+	return true;
+	}
+
+
+//-->
+</script>
+<form method="post" action="{ babPhpSelf }" name="listform" onSubmit="return checkmax(this)">
 <input type="hidden" name="tg" value="sectopt">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="update" value="enable">
@@ -15,22 +45,29 @@
 <tr> 
 <td class="BabSiteAdminFontBackground" nowrap valign="middle">{ titleval }</td>
 <td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" OnClick="checkmax(this)" name="sections[]" { secchecked } value="{ idvalue }"></td>
 </tr><!--#endin getnextp --><!--#in getnextcat -->
 <tr> 
 <td class="BabSiteAdminFontBackground" nowrap valign="middle">{ titleval }</td>
 <td class="BabSiteAdminFontBackground" valign="middle">{ descval  }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" OnClick="checkmax(this)" name="sections[]" { secchecked } value="{ idvalue }"></td>
 </tr><!--#endin getnextcat --><!--#in getnext -->
 <tr> 
 <td class="BabSiteAdminFontBackground" nowrap valign="middle">{ titleval }</td>
 <td class="BabSiteAdminFontBackground" valign="middle">{ descval }</td>
-<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }"></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center" nowrap><input type="checkbox" OnClick="checkmax(this)" name="sections[]" { secchecked } value="{ idvalue }"></td>
 </tr><!--#endin getnext -->
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap><a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center" nowrap>
+<!--#if babMaxOptionalSections -->
+<!--#else babMaxOptionalSections -->
+<a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a>
+<!--#endif babMaxOptionalSections -->
+<a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a>
+
+</td>
 </table>
 </td>
 </tr>
