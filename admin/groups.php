@@ -410,6 +410,8 @@ if( !isset($idx))
 
 if( isset($add) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y'))
 	{
+	if( !isset($bemail)) { $bemail =''; }
+	if( !isset($grpdg)) { $grpdg = ''; }
 	addGroup($name, $description, $managerid, $bemail, $grpdg);
 	}
 

@@ -119,6 +119,12 @@ function bab_addGroup($name, $description, $managerid, $grpdg)
 
 	$db = $GLOBALS['babDB'];
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$description = addslashes($description);
+		$name = addslashes($name);
+		}
+
 	$req = "select * from ".BAB_GROUPS_TBL." where name='$name'";	
 	$res = $db->db_query($req);
 	if( $db->db_num_rows($res) > 0)
@@ -128,11 +134,6 @@ function bab_addGroup($name, $description, $managerid, $grpdg)
 		}
 	else
 		{
-		if( !bab_isMagicQuotesGpcOn())
-			{
-			$description = addslashes($description);
-			$name = addslashes($name);
-			}
 		if( empty($managerid))
 			$managerid = 0;
 		if( empty($grpdg))
