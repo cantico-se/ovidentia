@@ -1808,6 +1808,7 @@ class bab_WaitingArticles extends bab_handler
 				$req .= " and a.id_topic IN (".$this->topicid.")";
 
 			$req .= " and fi.idschi=a.idfai and fi.iduser='".$GLOBALS['BAB_SESS_USERID']."' and fi.result='' and  fi.notified='Y'";
+			$req .=  "order by a.date desc";
 
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
