@@ -760,6 +760,9 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else if( !empty($path))
 		$pathx .= $path."/";	
 
+	if( isset($GLOBALS['babFileNameTranslation']))
+		$filename = strtr($filename, $GLOBALS['babFileNameTranslation']);
+
 	if( file_exists($pathx.$filename))
 		{
 		$body->msgerror = babTranslate("A file with the same name already exists");
@@ -860,6 +863,9 @@ function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keyw
 	if( !empty($path))
 		$pathx .= $path."/";	
 
+	if( isset($GLOBALS['babFileNameTranslation']))
+		$name = strtr($name, $GLOBALS['babFileNameTranslation']);
+
 	if( strcmp($file, $name))
 		{
 		if( !file_exists($pathx.$file))
@@ -867,7 +873,6 @@ function saveUpdateFile($idf, $file, $id, $gr, $path, $name, $description, $keyw
 			$body->msgerror = babTranslate("File does'nt exist");
 			return false;
 			}
-		
 		if( !rename($pathx.$file, $pathx.$name))
 			{
 			$body->msgerror = babTranslate("The file could not be renamed");
@@ -897,6 +902,9 @@ function createDirectory($dirname, $id, $gr, $path)
 		$body->msgerror = babTranslate("Please give a valid directory name");
 		return false;
 		}
+
+	if( isset($GLOBALS['babFileNameTranslation']))
+		$dirname = strtr($dirname, $GLOBALS['babFileNameTranslation']);
 
 	$pathx = getFullPath($gr, $id).$path."/".$dirname;
 
@@ -944,6 +952,8 @@ function renameDirectory($dirname, $id, $gr, $path)
 		$oldname = $path;
 		}
 
+	if( isset($GLOBALS['babFileNameTranslation']))
+		$dirname = strtr($dirname, $GLOBALS['babFileNameTranslation']);
 
 	if( is_dir($pathx.$uppath.$dirname))
 		{
