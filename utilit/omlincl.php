@@ -67,6 +67,72 @@ class bab_handler
 
 }
 
+class bab_IfIsSet extends bab_handler
+{
+	var $count;
+
+	function bab_IfIsSet( &$ctx)
+	{
+		$this->count = 0;
+		$this->bab_handler($ctx);
+		$name = $ctx->get_value('name');
+		if( $name !== false && !empty($name))
+			{
+			if( $ctx->get_value($name) !== false )
+				{
+				$this->count = 1;
+				}
+			}
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count)
+		{
+			$this->idx++;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+class bab_IfNotIsSet extends bab_handler
+{
+	var $count;
+
+	function bab_IfNotIsSet( &$ctx)
+	{
+		$this->count = 0;
+		$this->bab_handler($ctx);
+		$name = $ctx->get_value('name');
+		if( $name !== false && !empty($name))
+			{
+			if( $ctx->get_value($name) === false )
+				{
+				$this->count = 1;
+				}
+			}
+	}
+
+	function getnext()
+	{
+		if( $this->idx < $this->count)
+		{
+			$this->idx++;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
 class bab_Operator extends bab_handler
 {
 	var $count;
