@@ -694,6 +694,9 @@ CREATE TABLE bab_sites (
    skin char(255) NOT NULL,
    registration enum('Y','N') DEFAULT 'Y' NOT NULL,
    email_confirm enum('Y','N') DEFAULT 'Y' NOT NULL,
+   mailfunc char(20) NOT NULL DEFAUL 'mail',
+   smtpserver char(255) NOT NULL DEFAUL '',
+   smtpport char(20) NOT NULL DEFAUL '25',
    PRIMARY KEY (id)
 );
 
