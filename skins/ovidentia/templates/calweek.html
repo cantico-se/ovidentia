@@ -34,7 +34,7 @@
 <br>
 
 
-<table class="BabCalendarBodyBackground" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
+<table class="BabCalendarBodyBackground" width="98%" border="0" cellspacing="1" cellpadding="0" align="center">
 	<tr class="BabCalendarMenuBackground">
 		<td class="BabCalendarBodyBadMonthBackground" width="1%">&nbsp;</td>
 		<!--#in getnextdayname -->
@@ -48,9 +48,12 @@
 	<tr>
 		<td class="BabMonthCalendarCurentDayBackground" width="1%">
 			<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
+				<tr height="30">
+					<td>&nbsp;</td>
+				</tr>
 			<!--#in getnexthour -->
-				<tr>
-					<td class="BabMonthCalendarCurentDayBackground" height="30">
+				<tr height="30">
+					<td class="BabMonthCalendarCurentDayBackground" >
 					<!--#if allow_insert -->
 					<a class="BabDayCalendarHourLink" href="javascript:bab_popup('{ hoururl }',5)">{ hour }</a>
 					<!--#else allow_insert -->
@@ -64,30 +67,36 @@
 
 		<!--#in getnextday -->
 		<td valign="top" class="BabMonthCalendarCurentDayBackground" >
-			<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
+			<table width="100%" cellspacing="0" cellpadding="1" style="border-collapse:collapse;" border="0">
+				<tr>
+					<!--#in getnextcal -->
+					<!--#if nbCalEvents -->
+					<td colspan="{ nbmaxcol }" align="center" nowrap>{ fullname }</td>
+					<!--#else nbCalEvents -->
+					<td>&nbsp;</td>
+					<!--#endif nbCalEvents -->
+					<!--#endin getnextcal -->
+				<tr>
 				<!--#in getnexthour -->
-				<tr >
-					
-					<td height="30" style="border-bottom:#ccc 1px dashed">
-					<table width="100%" height="27" cellspacing="0" cellpadding="0" border="1" style="border-collapse:collapse">
-						<tr>
-							<!--#in getnextcal -->
-							<!--#in getnexteventcol -->
-							<!--#in getnextevent -->
-							<!--#if bevent -->
-							<td class="BabCalendarBodyFont" style="background-color: { bgcolor };" title="{ title }" nowrap>
-								{ starttime }&nbsp;<a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>	
-							</td>
-							<!--#else bevent -->
-							<td nowrap>&nbsp;</td>
-							<!--#endif bevent -->
-							<!--#endin getnextevent -->
-							<!--#endin getnexteventcol -->
-							<!--#endin getnextcal -->
-						</tr>
-					</table>
-					</td>
-					
+				<tr height="30">
+					<!--#in getnextcal -->
+					<!--#in getnexteventcol -->
+					<!--#in getnextevent -->
+						<!--#if bevent -->
+						<td class="BabCalendarBodyFont" style="background-color:{ bgcolor };" title="{ title }" nowrap>
+							<!--#if first -->
+							<!--{ starttime }&nbsp;-->
+							<a class="BabMonthCalendarEventLink" href="{ titletenurl }">{ titleten }</a>
+							<!--#else first -->
+							&nbsp;
+							<!--#endif first -->
+						</td>
+						<!--#else bevent -->
+						<td nowrap>&nbsp;</td>
+						<!--#endif bevent -->
+					<!--#endin getnextevent -->
+					<!--#endin getnexteventcol -->
+					<!--#endin getnextcal -->
 				</tr>
 				<!--#endin getnexthour -->
 			</table>

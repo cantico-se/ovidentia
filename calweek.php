@@ -193,9 +193,15 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->daynumberurl = $this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
 			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm";
 			$this->harray = array();
+			$this->hcols[0] = 0;
 			for( $i = 0; $i < count($this->idcals); $i++ )
 				{
 				$this->mcals->getHtmlArea($this->idcals[$i], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$i]);
+				if (!isset($this->hcols[$i])) $this->hcols[$i] = 0;
+				foreach($this->harray[$i] as $arr)
+					{
+					$this->hcols[$i] += count($arr);
+					}
 				}
 			$d++;
 			return true;
@@ -213,8 +219,11 @@ class cal_weekCls extends cal_wmdbaseCls
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
-			$this->abbrev = htmlentities(substr($calname, 0, 4));
+			$this->abbrev = htmlentities(substr($calname, 0, 6));
 			$this->cols = count($this->harray[$this->cindex]);
+			$this->nbmaxcol = $this->hcols[$this->cindex];
+			$this->nbCalEvents = isset($this->harray[$this->cindex][0]) ? count($this->harray[$this->cindex][0]) : 0;
+			$this->cindex++;
 			$this->icols = 0;
 			return true;
 			}
@@ -245,11 +254,18 @@ class cal_weekCls extends cal_wmdbaseCls
 		{
 		global $babBody;
 		static $i =0;
-		if( $i < count($this->harray[$this->cindex][$this->icols-1]))
+		if( $i < count($this->harray[$this->cindex-1][$this->icols-1]))
 			{
-			$arr = & $this->harray[$this->cindex][$this->icols-1][$i];
+			$arr = & $this->harray[$this->cindex-1][$this->icols-1][$i];
 			if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
 				{
+				$ts1 = bab_mktime($arr['start_date']);
+				$ts2 = bab_mktime($this->startdt);
+				$ts3 = bab_mktime($this->startdt)+($this->elapstime*60);
+				if ($ts1 >= $ts2 && $ts1 <= $ts3)
+					$this->first=1;
+				else
+					$this->first=0;
 				$this->bevent = true;
 				$this->idcal = $arr['id_cal'];
 				$this->status = $arr['status'];
@@ -275,7 +291,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				$this->block = $arr['block'];
 				$this->bfree = $arr['bfree'];
 				$this->description = $arr['description'];
-				$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
+				$this->title = $this->startdate." ".$this->starttime. " - ".$this->enddate." ".$this->endtime." ".$arr['title'];
 				$this->titleten = htmlentities(substr($arr['title'], 0, 10));
 				$this->nbowners = $arr['nbowners'];
 				$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];

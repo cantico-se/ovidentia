@@ -34,7 +34,6 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->cal_wmdbaseCls("calday", $idx, $calids, $date);
 
 		$this->w = 0;
-		$this->colspan ="";
 		$this->elapstime = $babBody->icalendars->elapstime;
 		list($this->startwtime, , ) = sscanf($babBody->icalendars->starttime, "%d:%d:%d");
 		list($this->endwtime, , ) = sscanf($babBody->icalendars->endtime, "%d:%d:%d");
@@ -51,7 +50,7 @@ class cal_dayCls extends cal_wmdbaseCls
 
 
 		$this->harray = array();
-		$this->hcols[$i] = 0;
+		$this->hcols[0] = 0;
 		for( $i = 0; $i < count($this->idcals); $i++ )
 			{
 			$this->mcals->getHtmlArea($this->idcals[$i], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$i]);
@@ -61,6 +60,7 @@ class cal_dayCls extends cal_wmdbaseCls
 				$this->hcols[$i] += count($this->harray[$i][$k]);
 				}
 			}
+
 		}
 
 		function getnexthour()
@@ -123,7 +123,9 @@ class cal_dayCls extends cal_wmdbaseCls
 			$this->fullname = htmlentities($calname);
 			$this->fullnameten = htmlentities(substr($calname, 0, 16));
 			$this->cols = count($this->harray[$this->cindex]);
+			$this->nbmaxcol = $this->hcols[$this->cindex];
 			$this->cindex++;
+			
 			$this->icols = 0;
 			return true;
 			}
