@@ -425,7 +425,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		{
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup, smtpuser, smtppassword) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', " . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group. "', '" . $smtpuser. "', 'ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"))";
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup, smtpuser, smtppassword) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group. "', '" . $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"))";
 		$db->db_query($query);
 		}
 	return true;
