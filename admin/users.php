@@ -378,7 +378,7 @@ switch($idx)
 			{
 			$babBody->title = bab_translate("Users list");
 			$cnt = listUsers($pos, $grp);
-			if ($grp != 0) $babBody->addItemMenu("cancel", bab_translate("Cancel"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
+			if ($grp != 3 && $grp != $babBody->currentAdmGroup) $babBody->addItemMenu("cancel", bab_translate("Group's members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
