@@ -103,6 +103,7 @@ function groupDelegatMembers($id)
 			global $babDB;
 			$this->userstxt = bab_translate("Add");
 			$this->fullname = bab_translate("Fullname");
+			$this->delusers = bab_translate("Delete users");
 			$this->res = $babDB->db_query("select * from ".BAB_DG_USERS_GROUPS_TBL." where id_group=".$id);
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=aclug&idx=list&table=".BAB_DG_USERS_GROUPS_TBL."&return=mem&target=delegat&idgroup=".$id;
 			$this->count = $babDB->db_num_rows($this->res);
