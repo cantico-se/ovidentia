@@ -186,7 +186,11 @@ function listPosts($forum, $thread, $post)
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$arr = $this->db->db_fetch_array($res);
-					$this->replydate = bab_strftime(bab_mktime($arr[date]));
+					//$this->replydate = bab_strftime(bab_mktime($arr[date]));
+					$tmp = explode(" ", $arr[date]);
+					$arr0 = explode("-", $tmp[0]);
+					$arr1 = explode(":", $tmp[1]);
+					$this->replydate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
 					$this->replyauthor = $arr[author];
 					$this->replysubject = $arr[subject];
 					}
