@@ -136,6 +136,8 @@ function changeLanguage()
                 }
             closedir($h);
             $this->count = count($this->arrfiles);
+			sort($this->arrfiles);
+			reset($this->arrfiles);
 			}
 
 		function getnextlang()
