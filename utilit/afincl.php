@@ -426,7 +426,7 @@ function getWaitingApprobations($iduser, $update=false)
 					if( $row['fit_iduser'] != 0 )
 						{
 						$rr = bab_getSuperior($row['fit_iduser']);
-						if( count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
+						if( isset($rr['iduser']) && count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
 							{
 							if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))
 								{
