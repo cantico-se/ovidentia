@@ -704,7 +704,7 @@ function loadSections()
 		if( $add )
 			{
 			$sec->setPosition($arr[position]);
-			$req = "select * from sections_states where id_section='".$arr[id_section]."' and id_user='".$BAB_SESS_USERID."'";
+			$req = "select * from sections_states where id_section='".$arr[id_section]."' and id_user='".$BAB_SESS_USERID."' and private='".$arr[private]."'";
 			$res2 = $db->db_query($req);
 			$sec->bbox = 1;
 			if( $res2 && $db->db_num_rows($res2) > 0)
@@ -713,17 +713,17 @@ function loadSections()
 				if( $arr2[closed] == "Y")
 					{
 					$sec->close = 1;
-					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=sections&idx=ob&s=".$arr[id_section]."&w=".$arr[private];
+					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=options&idx=ob&s=".$arr[id_section]."&w=".$arr[private];
 					}
 				else
 					{
-					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=sections&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
+					$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=options&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
 					$sec->close = 0;
 					}
 				}
 			else if(!empty($BAB_SESS_USERID))
 				{
-				$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=sections&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
+				$sec->boxurl = $GLOBALS[babUrl]."index.php?tg=options&idx=cb&s=".$arr[id_section]."&w=".$arr[private];
 				$sec->close = 0;
 				}
 			else

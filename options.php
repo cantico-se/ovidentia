@@ -292,6 +292,25 @@ if( isset($update))
         }
 	}
 
+function updateStateSection($c, $w, $closed)
+	{
+	global $HTTP_REFERER, $BAB_SESS_USERID;
+
+	if( !empty($BAB_SESS_USERID))
+		{
+		$db = new db_mysql();
+		$req = "select * from sections_states where private='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 )
+			$req = "update sections_states set closed='".$closed."' where private='".$w."' and id_section='".$c."' and  id_user='".$BAB_SESS_USERID."'";
+		else
+			$req = "insert into sections_states (id_section, closed, private, id_user) values ('".$c."', '".$closed."', '".$w."', '".$BAB_SESS_USERID."')";
+
+		$db->db_query($req);
+		}
+
+	Header("Location: ". $HTTP_REFERER);
+	}
 
 if( !isset($firstname) &&  !isset($lastname) && !isset($nickname) && !isset($email))
 	{
@@ -310,6 +329,13 @@ if( !isset($firstname) &&  !isset($lastname) && !isset($nickname) && !isset($ema
 
 switch($idx)
 	{
+	case "cb":
+		updateStateSection($s, $w, "Y");
+		break;
+
+	case "ob":
+		updateStateSection($s, $w, "N");
+		break;
 
 	default:
 	case "global":
