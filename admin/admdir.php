@@ -815,7 +815,7 @@ if( isset($modify))
 
 			case "db":
 				if (!isset($ml)) { $ml = array(); }
-				if (!isset($rw)) { $rw = array; }
+				if (!isset($rw)) { $rw = array(); }
 				if (!isset($allowuu)) { $allowuu= ''; }
 				if( !modifyAdDb($id, $adname, $description, $fields, $rw, $req, $ml, $allowuu))
 				{
