@@ -3,7 +3,7 @@ and any resources used by your site ( like files, images, ... )!!!
 
 To upgrade from previous Ovidentia versions:
 
-Copy the files located in ovidentia3-2b folder in your
+Copy the files located in ovidentia folder in your
 old ovidentia distribution.
 
 Make sure to chmod 666 config.php to let ovidentia update
