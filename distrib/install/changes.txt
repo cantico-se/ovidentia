@@ -1,9 +1,17 @@
 /************************************************************************/
 January 2005: Version 5.5.3
 /************************************************************************/
+- Bug #474 Error SQL when trying to attach file to a draft with simple quote in its name
+- Statistics of Optional sections are not correctly handled
+- Bug #468 Statistics:  Urls in forum's posts part are not correctly generated
+- Bug #465 When an article is created and proposed to unregistered home page it's 
+    proposed to registered home page instead and conversely
+- Bug #461 "Notify members" parameter ( darft ) is not initialized with value in topic definition
+- Bug #460 Publication date is not checked in some OVML articles containers
 - Bug #459 Publication date is not updated when topic manager update it
 - Bug #458 Publication and archive date are not correctly displayed
 - Bug #456 When an article is modified date archive is reset
+- Bug #445 Restriction access is not correctly handled when an article is modified
 - Fixed some minors bugs
 
 /************************************************************************/
