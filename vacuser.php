@@ -216,6 +216,7 @@ function period($id_user, $id = 0)
 			$this->totaltxt = bab_translate("Total");
 			$this->balancetxt = bab_translate("Balance");
 			$this->calendar = bab_translate("Planning");
+			$this->t_total = bab_translate("Total");
 			$this->totalval = 0;
 			$this->maxallowed = 0;
 			$this->db = & $GLOBALS['babDB'];
@@ -259,6 +260,9 @@ function period($id_user, $id = 0)
 			$this->halfdaysel = $this->halfdaybegin;
 
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user;
+
+			$this->rights = bab_getRightsOnPeriod();
+			$this->total = 0;
 			}
 
 
@@ -338,6 +342,19 @@ function period($id_user, $id = 0)
 				$this->halfdaysel = $this->halfdayend;
 				return false;
 				}
+
+			}
+
+		function getnextright()
+			{
+			if ($this->right = & current($this->rights))
+				{
+				next($this->rights);
+				$this->total += $this->right['quantitydays'];
+				return true;
+				}
+			else
+				return false;
 
 			}
 

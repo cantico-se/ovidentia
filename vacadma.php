@@ -658,7 +658,7 @@ function listVacationRightPersonnel($pos, $idvr)
 			$this->idvr = $idvr;
 			list($this->idtype) = $this->db->db_fetch_row($this->db->db_query("select id_type from ".BAB_VAC_RIGHTS_TBL." where id='".$idvr."'")); 
 
-			if( $pos[0] == "-" )
+			if( isset($pos[0]) && $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];

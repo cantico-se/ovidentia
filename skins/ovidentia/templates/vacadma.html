@@ -126,7 +126,6 @@ function dateEnd(day, month, year)
 <!--
 function use_rules_change(obj)
 {
-
 var tbody = document.getElementById('vac_use_rules');
 	switch (obj.value)
 	{
@@ -240,11 +239,11 @@ function calwin(callback)
 				<td > 
 					<select name="cbalance">
 					<!--#if arr[cbalance] "== Y" -->
-					<option value="Y" selected>{ yes }</option>
+					<option value="Y" selected="selected">{ yes }</option>
 					<option value="N">{ no }</option>
 					<!--#else arr[cbalance] -->
 					<option value="Y">{ yes }</option>
-					<option value="N" selected>{ no }</option>
+					<option value="N" selected="selected">{ no }</option>
 					<!--#endif arr[cbalance] -->
 					</select>
 				</td>
@@ -253,11 +252,11 @@ function calwin(callback)
 				<td align="right">{ t_use_rules }:</td>
 				<td > 
 					<select name="use_rules" onchange="use_rules_change(this)">
-					<!--#if arr[use_rules] "== Y" -->
+					<!--#if arr[use_rules] -->
 					<option value="N">{ no }</option>
-					<option value="Y" selected>{ yes }</option>
+					<option value="Y" selected="selected">{ yes }</option>
 					<!--#else arr[use_rules] -->
-					<option value="N" selected>{ no }</option>
+					<option value="N" selected="selected">{ no }</option>
 					<option value="Y">{ yes }</option>
 					<!--#endif arr[use_rules] -->
 					</select>
