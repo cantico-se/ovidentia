@@ -716,7 +716,7 @@ function bab_fileManagerAccessLevel()
 	$babBody->aclfm = array();
 	$babBody->ustorage = false;
 
-	if( $babBody->ovgroups[1]['ustorage'] == 'Y')
+	if( $GLOBALS['BAB_SESS_LOGGED'] && $babBody->ovgroups[1]['ustorage'] == 'Y')
 		{
 		$babBody->ustorage = true;
 		}
