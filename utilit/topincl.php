@@ -148,4 +148,21 @@ function deleteComments($com)
 	$res = $db->db_query($req);	
 	}
 
+function locateArticle( $txt )
+{
+	$reg = "/\\\$ARTICLE\((.*?)\)/";
+	preg_match_all($reg, $txt, $m);
+
+	for ($k = 0; $k < count($m[1]); $k++ )
+		{
+		$req = "select * from articles where title like '%".addslashes(trim($m[1][$k]))."%'";
+		$res = $this->db->db_query($req);
+		if( $res && $this->db->db_num_rows($res) > 0)
+			{
+			$arr = $this->db->db_fetch_array($res);
+			$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$arr[id_topic]."&article=".$arr[id]."\">".$arr[title]."</a>", $txt);
+			}
+		}
+	return $txt;
+}
 ?>
