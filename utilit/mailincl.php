@@ -85,7 +85,7 @@ class babMail
 	{
 		$this->mail = new phpmailer();
 		$this->mail->From = $GLOBALS['babAdminEmail'];
-		$this->mail->FromName = "Ovidentia Administrator";
+		$this->mail->FromName = bab_translate("Ovidentia Administrator");
 	}
 
 	function mailFrom($email, $name='')

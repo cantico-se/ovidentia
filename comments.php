@@ -271,7 +271,7 @@ function notifyApprover($top, $article, $title, $approveremail, $modcom)
 		return;
 
     $mail->mailTo($approveremail);
-    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject(bab_translate("New waiting comment"));
 
 	$tempa = new tempa($top, $article, $title, $modcom);

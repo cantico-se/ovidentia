@@ -804,7 +804,7 @@ function notifyApprover($grpname, $file, $path, $approveremail)
 		return;
 	
     $mail->mailTo($approveremail);
-    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject(bab_translate("New waiting file"));
 
 	$tempa = new tempa($grpname, $file, $path);

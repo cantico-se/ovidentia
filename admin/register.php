@@ -34,7 +34,7 @@ function notifyUserRegistration($link, $name, $email)
 	if( $mail == false )
 		return;
     $mail->mailTo($email, $name);
-    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 	
 	$message = bab_translate("Thank You For Registering at our site");
@@ -98,7 +98,7 @@ function notifyAdminRegistration($name, $useremail, $warning)
 			$mail->mailTo($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
 			}
 		}
-    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 
 	$tempb = new tempb($name, $useremail, $warning);
@@ -381,7 +381,7 @@ function notifyUserPassword($passw, $email)
 		return;
 	
     $mail->mailTo($email);
-    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject("Ovidentia: ". bab_translate("Password Reset"));
 
 	$tempa = new tempa($passw);

@@ -271,7 +271,7 @@ function notifyUserconfirmation($name, $email)
 		return;
 
 	$mail->mailTo($email, $name);
-    $mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+    $mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 	
 

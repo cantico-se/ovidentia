@@ -421,7 +421,7 @@ function notifyArticleAuthor($subject, $msg, $title, $from, $to)
 		return;
 
     $mail->mailTo($to);
-    $mail->mailFrom($from, "Ovidentia Administrator");
+    $mail->mailFrom($from, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject($subject);
 
 	$tempc = new tempc($subject, $msg, $title, $from, $to);
@@ -572,7 +572,7 @@ function notifyCommentAuthor($subject, $msg, $from, $to)
 		return;
 
 	$mail->mailTo($to);
-    $mail->mailFrom($from, "Ovidentia Administrator");
+    $mail->mailFrom($from, bab_translate("Ovidentia Administrator"));
     $mail->mailSubject($subject);
 
 	$tempa = new tempa($subject, $msg, $from, $to);

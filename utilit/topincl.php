@@ -238,7 +238,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 			}
 		}
 
-	$mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
 	$mail->mailSubject(bab_translate("New article for home page"));
 
 	$tempa = new tempa($top, $title, $homepage0, $homepage1);

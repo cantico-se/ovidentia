@@ -330,6 +330,7 @@ function readMore($topics, $article)
 
 		function temp($topics, $article)
 			{
+			$this->printable = bab_translate("Print Friendly");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
@@ -349,6 +350,7 @@ function readMore($topics, $article)
 				$this->articleauthor = bab_getArticleAuthor($this->arr['id']);
 				$this->articledate = bab_getArticleDate($this->arr['id']);
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
+				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$i++;
 				return true;
 				}
@@ -618,7 +620,7 @@ function notifyApprover($top, $title, $approveremail)
 		return;
 
 	$mail->mailTo($approveremail);
-	$mail->mailFrom($babAdminEmail, "Ovidentia Administrator");
+	$mail->mailFrom($babAdminEmail, bab_translate("Ovidentia Administrator"));
 	$mail->mailSubject(bab_translate("New waiting article"));
 
 	$tempa = new tempa($top, $title);
@@ -854,8 +856,6 @@ switch($idx)
 				{
 				$babBody->addItemMenu("Comments", bab_translate("Comments"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 				}
-			$babBody->addItemMenu("Print Friendly", bab_translate("Print Friendly"),$GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$topics."&article=".$article."&new=".$new."&newc=".$newc);
-			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
 			}
 		break;
 
