@@ -1138,7 +1138,7 @@ function eventAvariabilityCheck(&$avariability_message)
 
 	while ($arr = $db->db_fetch_array($res))
 		{
-		$calopt[$arr['id']] = explode( ',', $arr['workdays'] );
+		$calopt[$arr['id']] = empty($arr['workdays']) ? explode( ',', $GLOBALS['babBody']->babsite['workdays']) : explode( ',', $arr['workdays'] );
 		$workdays = array_merge ($workdays,  $calopt[$arr['id']]);
 		
 		$s = time_to_sec($arr['start_time']);
