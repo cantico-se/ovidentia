@@ -151,12 +151,14 @@ CREATE TABLE groups (
    vacation enum('N','Y') DEFAULT 'N' NOT NULL,
    mail enum('N','Y') DEFAULT 'N' NOT NULL,
    manager int(11) unsigned  DEFAULT '0' NOT NULL,
+   gstorage enum('N','Y') DEFAULT 'N' NOT NULL,
+   ustorage enum('N','Y') DEFAULT 'N' NOT NULL,
    PRIMARY KEY (id)
 );
 
-INSERT INTO groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0');
-INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0');
-INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0');
+INSERT INTO groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'N');
+INSERT INTO groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N');
+INSERT INTO groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'N');
 
 # --------------------------------------------------------
 #
@@ -673,3 +675,62 @@ CREATE TABLE homepages (
 	ordering INT (11) UNSIGNED not null,
 	PRIMARY KEY (id)
 );
+
+CREATE TABLE files (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  description tinytext NOT NULL,
+  keywords tinytext NOT NULL,
+  path tinytext NOT NULL,
+  id_owner int(11) unsigned NOT NULL default '0',
+  bgroup enum('N','Y') NOT NULL default 'N',
+  link int(11) unsigned NOT NULL default '0',
+  readonly enum('N','Y') NOT NULL default 'N',
+  state char(1) NOT NULL default '',
+  created datetime default NULL,
+  author int(11) unsigned NOT NULL default '0',
+  modified datetime default NULL,
+  modifiedby int(11) unsigned NOT NULL default '0',
+  confirmed enum('N','Y') NOT NULL default 'N',
+  PRIMARY KEY  (id)
+);
+
+
+CREATE TABLE mime_types (
+	ext VARCHAR(10) NOT NULL, 
+	mimetype TINYTEXT NOT NULL,
+	PRIMARY KEY (ext)
+); 
+
+INSERT INTO mime_types VALUES ('ai', 'application/postscript');
+INSERT INTO mime_types VALUES ('asc', 'text/plain');
+INSERT INTO mime_types VALUES ('au', 'audio/basic');
+INSERT INTO mime_types VALUES ('avi', 'video/x-msvideo');
+INSERT INTO mime_types VALUES ('bin', 'application/octet-stream');
+INSERT INTO mime_types VALUES ('bmp', 'image/bmp');
+INSERT INTO mime_types VALUES ('class', 'application/octet-stream');
+INSERT INTO mime_types VALUES ('css', 'text/css');
+INSERT INTO mime_types VALUES ('doc', 'application/msword');
+INSERT INTO mime_types VALUES ('dvi', 'application/x-dvi');
+INSERT INTO mime_types VALUES ('exe', 'application/octet-stream');
+INSERT INTO mime_types VALUES ('gif', 'image/gif');
+INSERT INTO mime_types VALUES ('htm', 'text/html');
+INSERT INTO mime_types VALUES ('html', 'text/html');
+INSERT INTO mime_types VALUES ('jpe', 'image/jpeg');
+INSERT INTO mime_types VALUES ('jpeg', 'image/jpeg');
+INSERT INTO mime_types VALUES ('jpg', 'image/jpeg');
+INSERT INTO mime_types VALUES ('js', 'application/x-javascript');
+INSERT INTO mime_types VALUES ('mid', 'audio/midi');
+INSERT INTO mime_types VALUES ('midi', 'audio/midi');
+INSERT INTO mime_types VALUES ('mp3', 'audio/mpeg');
+INSERT INTO mime_types VALUES ('mpeg', 'video/mpeg');
+INSERT INTO mime_types VALUES ('png', 'image/png');
+INSERT INTO mime_types VALUES ('ppt', 'application/vnd.ms-powerpoint');
+INSERT INTO mime_types VALUES ('ps', 'application/postscript');
+INSERT INTO mime_types VALUES ('rtf', 'text/rtf');
+INSERT INTO mime_types VALUES ('tar', 'application/x-tar');
+INSERT INTO mime_types VALUES ('txt', 'text/plain');
+INSERT INTO mime_types VALUES ('wav', 'audio/x-wav');
+INSERT INTO mime_types VALUES ('xls', 'application/vnd.ms-excel');
+INSERT INTO mime_types VALUES ('xml', 'text/xml');
+INSERT INTO mime_types VALUES ('zip', 'application/zip');

@@ -13,4 +13,9 @@ $babAdminEmail = "info@cantico.fr";
 $babLanguage = "fr";
 $babMaxRows = 10; // threads.php
 $babVersion = "3.1";
+$babMaxFileSize = 1000000;
+$babMaxUserSize = 2000000;
+$babMaxGroupSize = 5000000;
+$babMaxTotalSize = 100000000;
+$babUploadPath = "C:\\easyphp\\www\\tmp";
 ?>
