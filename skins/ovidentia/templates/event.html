@@ -265,6 +265,12 @@ function Start(page)
 	OpenWin = this.open(page, "CalendarWindow", "width=250,height=250,status=no,resizable=no,top=200,left=200");
 }
 
+function StartWW(page)
+{
+	var dummy;
+	OpenWin = this.open(page, "Editor", "width=600,height=400,status=no,resizable=yes,top=200,left=200");
+}
+
 function dateBegin(day, month, year)
 {
 	document.vacform.elements['daybegin'].options[day-1].selected = true;
@@ -373,12 +379,17 @@ dateendtxt }</a>:</td>
 </tr>
 <tr>
 <tr> 
-<td align="right" valign="top">{ description }</td>
-<td colspan="4" valign="top"> 
-<textarea cols="40" rows="5" name="description">{ evtarr[description] }</textarea>
-</td>
+<td align="right" valign="top">&nbsp;</td>
+<td colspan="4" valign="top">&nbsp;</td>
 </tr>
-<!--#if bcategory "== 1" -->
+<tr> 
+<td align="right" valign="top"><a class="BabEventFaqLink" href="{ descurl }">{ description }</a></td>
+<td colspan="4" valign="top">{ evtarr[description] }</td>
+</tr>
+<tr> 
+<td align="right" valign="top">&nbsp;</td>
+<td colspan="4" valign="top">&nbsp;</td>
+</tr><!--#if bcategory "== 1" -->
 <tr> 
 <td align="right" valign="middle">{ category }</td>
 <td colspan="4" valign="middle"> 
@@ -435,3 +446,132 @@ dateendtxt }</a>:</td>
 </tr>
 </table>
 <!--#end viewevent -->
+
+<!--#begin descmodify -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+	<META http-equiv="Pragma" content="no-cache">
+	<META name="Generator" content="Ovidentia">
+	<META name="Author" content="Ovidentia Community">
+	<META name="Keywords" content="">
+	<META name="Description" content="">
+	{ babCss }
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY>
+<br>
+<form name="descmod" method="post" action="index.php">
+<input type="hidden" name="tg" value="event">
+<input type="hidden" name="idx" value="updesc">
+<input type="hidden" name="calid" value="{ calid }">
+<input type="hidden" name="evtid" value="{ evtid }">
+<input type="hidden" name="update" value="desc">
+<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td align="center" valign="middle">{ evtdesc }</td>
+</tr>
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
+<script src="{ babScriptPath }editor.js"></script>
+<td> 
+<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="content">{ arr[description] }</textarea>
+</td>
+</tr>
+<tr align="center" valign="middle"> 
+<td> 
+     <script language="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator, '{ babEditorImages }');
+	editor.ToolBar();
+	</script>
+</td>
+</tr>
+<!--#endif msie -->
+<tr> 
+<td align="center" valign="middle"> 
+<!--#if msie "== 1" -->
+	            <script language="JavaScript">
+	editor.InFrame(0, "content", "descmod", "90%", "160");
+				</script>
+<!--#else msie -->
+<textarea cols="50" rows="20" name="content">{ arr[description] }</textarea>
+<!--#endif msie -->
+</td>
+</tr>
+<!--#if msie "== 1" -->
+<tr> 
+<td align="center" valign="middle">
+<input onClick=SetVals() type="submit" name="submit" value="{ modify }">
+<br>
+</td>
+</tr>
+        <script language="JavaScript">
+		editor.FinalInstantiate(0);
+		editor.CloseInitSection();
+		</script>
+<!--#else msie -->
+<tr> 
+<td align="center" valign="middle">
+<input type="submit" name="submit" value="{ modify }">
+<br>
+</td>
+</tr>
+<!--#endif msie -->
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+</BODY>
+</HTML>
+<!--#end descmodify -->
+<!--#begin eventunload -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META http-equiv="Pragma" content="no-cache">
+<META name="Generator" content="Bab">
+<META name="Author" content="">
+<META name="Keywords" content="">
+<META name="Description" content="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
+//-->
+</script>
+
+</HEAD>
+<BODY onUnload="this.opener.location.reload()">
+<br><br><br><br>
+
+<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+
+<script type="text/javascript">
+	setTimeout("this.close()","1000");
+</script>
+
+</BODY>
+</HTML>
+<!--#end eventunload -->

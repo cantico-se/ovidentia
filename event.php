@@ -389,6 +389,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 		var $curmonth;
 		var $curyear;
 		var $curview;
+		var $descurl;
 
 		function temp($calendarid, $evtid, $day, $month, $year, $view)
 			{
@@ -403,7 +404,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 			$req = "select * from cal_events where id='$evtid'";
 			$res = $this->db->db_query($req);
 			$this->evtarr = $this->db->db_fetch_array($res);
-
+			$this->evtarr['description'] = babReplace($this->evtarr['description']);
 			$this->ymin = 2;
 			$this->ymax = 5;
 			$this->yearbegin = substr($this->evtarr['start_date'], 0,4 );
@@ -427,7 +428,7 @@ function modifyEvent($calendarid, $evtid, $day, $month, $year, $view)
 			$this->title = babTranslate("Title");
 			$this->description = babTranslate("Description");
 			$this->category = babTranslate("Category");
-
+			$this->descurl = "javascript:StartWW('".$GLOBALS['babUrl']."index.php?tg=event&idx=updesc&calid=".$calendarid."&evtid=".$evtid."');";
 			$this->curday = $this->daybegin;
 			$this->curmonth = $this->monthbegin;
 			$this->curyear = $this->yearbegin;
@@ -769,6 +770,61 @@ function viewEvent($calid, $evtid)
 	$body->babecho(	babPrintTemplate($temp,"event.html", "viewevent"));
 	}
 
+function editDescription($calid, $evtid)
+	{
+	global $body;
+
+	class temp
+		{
+		var $evtdesc;
+		var $modify;
+
+		var $db;
+		var $arr = array();
+		var $res;
+		var $msie;
+
+		function temp($calid, $evtid)
+			{
+			$this->evtdesc = babTranslate("Description");
+			$this->modify = babTranslate("Update");
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->db = new db_mysql();
+			$req = "select * from cal_events where id='".$evtid."'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
+			}
+		}
+
+	$temp = new temp($calid, $evtid);
+	echo babPrintTemplate($temp,"event.html", "descmodify");
+	}
+
+function eventUnload()
+	{
+	class temp
+		{
+		var $babCss;
+		var $message;
+		var $close;
+		var $url;
+		var $bliste;
+
+		function temp()
+			{
+			$this->babCss = babPrintTemplate($this,"config.html", "babCss");
+			$this->message = babTranslate("Your event has been updated");
+			}
+		}
+
+	$temp = new temp();
+	echo babPrintTemplate($temp,"event.html", "eventunload");
+	}
+
 function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, 	$description, $category)
 {
 	global $body;
@@ -971,6 +1027,12 @@ function confirmDeleteEvent($calid, $evtid)
 	$res = $db->db_query($req);	
 }
 
+function updateDescription($calid, $evtid, $content)
+{
+	$db = new db_mysql();
+	$db->db_query("update cal_events set description='".$content."' where id='".$evtid."'");
+}
+
 /* main */
 if( !isset($idx))
 	$idx = "newevent";
@@ -980,6 +1042,12 @@ if( isset($action) && $action == "Yes")
 	{
 	confirmDeleteEvent($calid, $evtid);
 	Header("Location: index.php?tg=calendar&idx=".$curview."&calid=".$calid."&day=".$curday."&month=".$curmonth."&year=".$curyear);
+	}
+
+if( isset($update) && $update == "desc")
+	{
+	updateDescription($calid, $evtid, $content);
+	$idx = "unload";
 	}
 
 if( isset($modifyevent) && $modifyevent == "modify")
@@ -1004,6 +1072,16 @@ if( isset($addevent) && $addevent == "add")
 
 switch($idx)
 	{
+	case "unload":
+		eventUnload();
+		exit;
+		break;
+
+	case "updesc":
+		editDescription($calid, $evtid);
+		exit;
+		break;
+
 	case "delete":
 		deleteEvent($calid, $evtid, $day, $month, $year, $view);
 		if( isUserGroupManager())
