@@ -276,7 +276,7 @@ function confirmUser($hash, $nickname)
 		else
 			{
 			$babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
-			$sql="update ".BAB_USERS_TBL." set is_confirmed='1' WHERE confirm_hash='$hash'";
+			$sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now(),  WHERE confirm_hash='$hash'";
 			$result=$db->db_query($sql);
 			return true;
 			}
