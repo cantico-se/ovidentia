@@ -1,4 +1,13 @@
 <!--#begin addonslist -->
+<script type="text/javascript">
+<!--
+function deladdon(id)
+	{
+	//{ confirmdelete }
+	if (window.confirm('{ confirmdelete }'))
+		window.document.location.href = '{ babUrlScript }?tg=addons&idx=del&item='+id;
+	}
+//-->
 </script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="addons">
@@ -14,8 +23,7 @@
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ desctxt }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><a href="{ upgradeallurl }">{ upgradetxt }</a></td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ versiontxt }</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" colspan="3">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ disabled }</td>
 </tr>
 
@@ -28,18 +36,18 @@
 <td valign="middle" align="center">{ addversion }</td>
 <td valign="middle" align="center"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
 <td valign="middle" align="center"><a href="{ exporturl }"><img border="0" src="{ babSkinPath }images/Puces/download.gif"></a></td>
+<td valign="middle" align="center">
+	<!--#if delete -->
+	<a href="javascript:deladdon({ arr[id] })" title="{ t_delete }"><img border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
+	<!--#endif delete -->
+</td>
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="addons[]" { catchecked } value="{ arr[id] }">
 </td>
 </tr>
 <!--#endin getnext -->
 <tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" colspan="7">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('addons', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('addons', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </tr>
 </table>
@@ -51,6 +59,7 @@
 <br>
 </form>
 <!--#end addonslist -->
+
 
 <!--#begin addon_txt -->
 <html>

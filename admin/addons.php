@@ -104,6 +104,8 @@ function addonsList($upgradeall)
 			$this->update = bab_translate("Update");
 			$this->view = bab_translate("View");
 			$this->versiontxt = bab_translate("Version");
+			$this->t_delete = bab_translate("Delete");
+			$this->confirmdelete = bab_translate("Are you sure you want to delete this add-on").' ?';
 			$this->db = $GLOBALS['babDB'];
 			$this->upgradeall = $upgradeall;
 			$this->upgradeallurl = $GLOBALS['babUrlScript']."?tg=addons&idx=list&upgradeall=1";
@@ -156,6 +158,7 @@ function addonsList($upgradeall)
 				else
 					$this->catchecked = "";
 				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$this->arr['title']."/addonini.php");
+				$this->delete = isset($arr_ini['delete']) && $arr_ini['delete']==1 ? true : false;
 				$this->addversion = "";
 				$this->description = "";
 				$this->upgradeurl = false;
@@ -351,6 +354,59 @@ function export($id)
 	header("Content-Disposition: attachment; filename=".$row['title'].'-'.$version.".zip");
 	die($zip->get_file());
 	}
+	
+	
+function del($id)
+	{
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$id."'");
+	$row = $db->db_fetch_array($res);
+
+	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+		{
+		$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+
+		if (isset($arr_ini['delete']) && $arr_ini['delete'] == 1 )
+			{
+			$tbllist = array();
+			if (!empty($arr_ini['db_prefix']) && strlen($arr_ini['db_prefix']) >= 3 && substr($arr_ini['db_prefix'],0,3) != 'bab')
+				{
+				$res = $db->db_query("SHOW TABLES LIKE '".$arr_ini['db_prefix']."%'");
+				while(list($tbl) = $db->db_fetch_array($res))
+					$tbllist[] = $tbl;
+				}
+				
+			function deldir($dir)
+				{
+				  $current_dir = opendir($dir);
+				  while($entryname = readdir($current_dir)){
+					 if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
+					   deldir($dir.'/'.$entryname);
+					 }elseif($entryname != "." and $entryname!=".."){
+					   unlink($dir.'/'.$entryname);
+					 }
+				  }
+				  closedir($current_dir);
+				  rmdir($dir);
+				}
+			
+			$loc_in = $GLOBALS['addons_files_location']['loc_in'];	
+			
+			foreach ($loc_in as $path)
+				{
+				if (is_dir($GLOBALS['babInstallPath'].$path.'/'.$row['title'])) deldir($GLOBALS['babInstallPath'].$path.'/'.$row['title']);
+				}
+				
+			if (count($tbllist) > 0)
+				{
+				foreach($tbllist as $tbl)
+					{
+					$db->db_query("DROP TABLE ".$tbl."");
+					}
+				}
+			}
+		}
+	}
 
 
 function upload()
@@ -490,12 +546,15 @@ switch($idx)
 	case "export":
 		export($item);
 		break;
-	
+
 	case "upgrade":
 		upgrade($item);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 		exit;
-
+		
+	case "del":
+		del($item);
+		$idx = 'list';
 	case "list":
 	default:
 		if (isset($errormsg)) $babBody->msgerror = urldecode($errormsg);
