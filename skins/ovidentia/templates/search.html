@@ -358,7 +358,11 @@ function cleanAfter() {
 <tr>
 <td class="BabTopicsBackground" valign="top">
 { arttopic }&gt; 
+<!--#if urlok -->
 <a class="BabFaqLink" href="{ articleurl }">{ article }</a> 
+<!--#else urlok -->
+{ article } 
+<!--#endif urlok -->
 [ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
  <br>
  { intro }
@@ -383,7 +387,12 @@ function cleanAfter() {
 <tr>
 <td class="BabTopicsBackground" valign="top">
 { arttopic }&gt; 
-<a class="BabSummaryLinkColor" href="{ articleurl }">{ article }</a> [ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ] &gt; 
+<!--#if urlok -->
+<a class="BabSummaryLinkColor" href="{ articleurl }">{ article }</a> 
+<!--#else urlok -->
+{ article } 
+<!--#endif urlok -->
+[ <a href="javascript: Start('{ articleurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ] &gt; 
 <a class="BabFaqLink" href="{ comurl }">{ com }</a> 
 [ <a href="javascript: Start('{ comurlpop }', 'OviSearchA', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ popup }</a> ]
  <br>
