@@ -27,41 +27,145 @@ include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);
 
+class listArticles
+{
+
+	var $parentscount;
+	var $parentname;
+	var $parenturl;
+	var $burl;
+	var $template;
+	var $topurl;
+	var $bottomurl;
+	var $nexturl;
+	var $prevurl;
+	var $topname;
+	var $bottomname;
+	var $nextname;
+	var $prevname;
+	var $topics;
+	var $bnavigation;
+	var $printtxt;
+	var $deletetxt;
+	var $modifytxt;
+	var $approver;
+	var $commentstxt;
+	var $commentsurl;
+	var $content;
+	var $title;
+	var $topictitle;
+	var $bbody;
+	var $author;
+	var $articleauthor;
+	var $articledate;
+	var $moretxt;
+	var $articleid;
+	var $moreurl;
+	var $modifyurl;
+	var $delurl;
+	var $morename;
+
+	function listArticles($topics)
+		{
+		global $babDB;
+
+		$this->topurl = "";
+		$this->bottomurl = "";
+		$this->nexturl = "";
+		$this->prevurl = "";
+		$this->topname = "";
+		$this->bottomname = "";
+		$this->nextname = "";
+		$this->prevname = "";
+
+		$this->topics = $topics;
+		$this->bnavigation = false;
+		$this->approver = false;
+		$this->commentstxt = false;
+
+		$this->printtxt = bab_translate("Print Friendly");
+		$this->deletetxt = bab_translate("Delete");
+		$this->modifytxt = bab_translate("Modify");
+		$this->moretxt = bab_translate("Read More");
+		$this->morename = bab_translate("Read more");
+
+		$this->template = "default";
+		if( !empty($topics) )
+			{
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arr = $babDB->db_fetch_array($res);
+				if( $arr['display_tmpl'] != '' )
+					$this->template = $arr['display_tmpl'];
+				}
+			}
+	
+		$this->arrparents[] = $topics;
+		list($cat) = $babDB->db_fetch_row($babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+		$this->arrparents[] = $cat;
+		$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			if( $arr['id_parent'] == 0 )
+				break;
+			$this->arrparents[] = $arr['id_parent'];
+			$res = $babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
+			}
+
+		$this->arrparents[] = 0;
+
+		$this->parentscount = count($this->arrparents);
+		$this->arrparents = array_reverse($this->arrparents);
+		}
+
+	function getnextparent()
+		{
+		static $i = 0;
+		if( $i < $this->parentscount)
+			{
+			if( $i == $this->parentscount - 1 )
+				{
+				$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
+				$this->parenturl = "";
+				$this->burl = false;
+				}
+			else
+				{
+				$this->burl = true;
+				if( $this->arrparents[$i] == 0 )
+					$this->parentname = bab_translate("Top");
+				else
+					$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
+				$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
+				}
+			$i++;
+			return true;
+			}
+		else
+			return false;
+		}
+}
+
 function listSubmittedArticles($topics)
 	{
 	global $babBody, $babDB;
 
-	class temp
+	class temp extends listArticles
 		{
 	
-		var $content;
 		var $arr = array();
 		var $db;
 		var $count;
 		var $res;
-		var $topics;
-		var $date;
-		var $topictitle;
-		var $barchive;
-		var $approver;
-		var $commentstxt;
-		var $bbody;
-		var $articleauthor;
-		var $articleauthor;
-		var $author;
-		var $printxt;
-		var $printurl;
-
 
 		function temp($topics)
 			{
+			$this->listArticles($topics);
+
 			$this->db = $GLOBALS['babDB'];
-			$this->barchive = false;
-			$this->approver = false;
-			$this->commentstxt = false;
 			$this->bbody = 0;
 
-			$this->printtxt = bab_translate("Print Friendly");
 			if( $GLOBALS['BAB_SESS_USERID'] != '' )
 				{
 				$req = "select id, id_topic, id_author, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
@@ -71,26 +175,8 @@ function listSubmittedArticles($topics)
 			else
 				$this->count = 0;
 
-			$this->topics = $topics;
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
-
-			$this->arrparents[] = $topics;
-			list($cat) = $this->db->db_fetch_row($this->db->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
-			$this->arrparents[] = $cat;
-			$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
-			while($arr = $this->db->db_fetch_array($res))
-				{
-				if( $arr['id_parent'] == 0 )
-					break;
-				$this->arrparents[] = $arr['id_parent'];
-				$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
-				}
-
-			$this->arrparents[] = 0;
-
-			$this->parentscount = count($this->arrparents);
-			$this->arrparents = array_reverse($this->arrparents);
 			}
 
 		function getnext()
@@ -99,6 +185,7 @@ function listSubmittedArticles($topics)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->articleid = $this->arr['id'];
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
 				else
@@ -116,48 +203,10 @@ function listSubmittedArticles($topics)
 			else
 				return false;
 			}
-
-		function getnextparent()
-			{
-			static $i = 0;
-			if( $i < $this->parentscount)
-				{
-				if( $i == $this->parentscount - 1 )
-					{
-					$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
-					$this->parenturl = "";
-					$this->burl = false;
-					}
-				else
-					{
-					$this->burl = true;
-					if( $this->arrparents[$i] == 0 )
-						$this->parentname = bab_translate("Top");
-					else
-						$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
-					$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
 		}
 	
-	$template = "default";
-	if( !empty($topics) )
-		{
-		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-			$arr = $babDB->db_fetch_array($res);
-			if( $arr['display_tmpl'] != '' )
-				$template = $arr['display_tmpl'];
-			}
-		}
 	$temp = new temp($topics);
-	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$template));
+	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$temp->template));
 	$arr = array($temp->count, $temp->nbarch);
 	return $arr;
 	}
@@ -166,38 +215,21 @@ function listArticles($topics, $approver)
 	{
 	global $babBody, $babDB;
 
-	class temp
+	class temp extends listArticles
 		{
 	
-		var $content;
 		var $arr = array();
 		var $db;
 		var $count;
 		var $res;
 		var $more;
-		var $topics;
 		var $com;
-		var $commentsurl;
-		var $commentstxt;
-		var $moreurl;
-		var $moretxt;
-		var $approver;
-		var $modifytxt;
-		var $deletetxt;
-		var $modifyurl;
-		var $delurl;
-		var $topictitle;
-		var $barchive;
-		var $printxt;
-		var $articleid;
+		var $nbws;
 
 
 		function temp($topics, $approver)
 			{
-			$this->printtxt = bab_translate("Print Friendly");
-			$this->modifytxt = bab_translate("Modify");
-			$this->deletetxt = bab_translate("Delete");
-			$this->barchive = false;
+			$this->listArticles($topics);
 			$this->db = $GLOBALS['babDB'];
 			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
 			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and confirmed='Y' and archive='N'";
@@ -207,35 +239,15 @@ function listArticles($topics, $approver)
 			$req .= " order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->topics = $topics;
 			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserCommentApprover($topics))
 				$this->com = true;
 			else
 				$this->com = false;
-			$this->moretxt = bab_translate("Read More");
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' and confirmed='N'");
 			list($this->nbws) = $this->db->db_fetch_row($res);
 			$this->approver = $approver;
-
-			$this->arrparents[] = $topics;
-			list($cat) = $this->db->db_fetch_row($this->db->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
-			$this->arrparents[] = $cat;
-			$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
-			while($arr = $this->db->db_fetch_array($res))
-				{
-				if( $arr['id_parent'] == 0 )
-					break;
-				$this->arrparents[] = $arr['id_parent'];
-				$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
-				}
-
-			$this->arrparents[] = 0;
-
-			$this->parentscount = count($this->arrparents);
-			$this->arrparents = array_reverse($this->arrparents);
-			
 			}
 
 		function getnext()
@@ -293,34 +305,6 @@ function listArticles($topics, $approver)
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 
-				$this->morename = bab_translate("Read more");
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnextparent()
-			{
-			static $i = 0;
-			if( $i < $this->parentscount)
-				{
-				if( $i == $this->parentscount - 1 )
-					{
-					$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
-					$this->parenturl = "";
-					$this->burl = false;
-					}
-				else
-					{
-					$this->burl = true;
-					if( $this->arrparents[$i] == 0 )
-						$this->parentname = bab_translate("Top");
-					else
-						$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
-					$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
-					}
 				$i++;
 				return true;
 				}
@@ -330,19 +314,8 @@ function listArticles($topics, $approver)
 
 		}
 	
-	$template = "default";
-	if( !empty($topics) )
-		{
-		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-			$arr = $babDB->db_fetch_array($res);
-			if( $arr['display_tmpl'] != '' )
-				$template = $arr['display_tmpl'];
-			}
-		}
 	$temp = new temp($topics, $approver);
-	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$template));
+	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$temp->template));
 	$arr = array($temp->count, $temp->nbarch, $temp->nbws);
 	return $arr;
 	}
@@ -351,49 +324,30 @@ function listOldArticles($topics, $pos, $approver)
 	{
 	global $babBody, $babDB;
 
-	class temp
+	class temp extends listArticles
 		{
 	
-		var $content;
 		var $arr = array();
 		var $db;
 		var $count;
 		var $res;
 		var $more;
 		var $newc;
-		var $topics;
 		var $com;
-		var $commentsurl;
-		var $commentstxt;
-		var $moreurl;
-		var $moretxt;
-		var $deletetxt;
-		var $modifytxt;
-		var $topictitle;
-		var $articleid;
 
 		function temp($topics, $pos, $approver)
 			{
-			$this->approver = $approver;
-			$this->topurl = "";
-			$this->bottomurl = "";
-			$this->nexturl = "";
-			$this->prevurl = "";
-			$this->topname = "";
-			$this->bottomname = "";
-			$this->nextname = "";
-			$this->prevname = "";
-			$this->printtxt = bab_translate("Print Friendly");
-			$this->deletetxt = bab_translate("Delete");
-			$this->modifytxt = bab_translate("Modify");
+			$this->listArticles($topics);
+
 			$this->db = $GLOBALS['babDB'];
+			$this->approver = $approver;
 
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y'");
 			list($total)= $this->db->db_fetch_array($res);
 
 			if( $total > MAX_ARTICLES)
 				{
-				$this->barchive = true;
+				$this->bnavigation = true;
 				if( $pos > 0)
 					{
 					$this->topurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics;
@@ -423,7 +377,7 @@ function listOldArticles($topics, $pos, $approver)
 					}
 				}
 			else
-				$this->barchive = false;
+				$this->bnavigation = false;
 
 
 			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
@@ -433,29 +387,10 @@ function listOldArticles($topics, $pos, $approver)
 				}
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$this->topics = $topics;
 			if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics) || bab_isUserCommentApprover($topics))
 				$this->com = true;
 			else
 				$this->com = false;
-			$this->moretxt = bab_translate("Read More");
-
-			$this->arrparents[] = $topics;
-			list($cat) = $this->db->db_fetch_row($this->db->db_query("select id_cat from ".BAB_TOPICS_TBL." where id='".$topics."'"));
-			$this->arrparents[] = $cat;
-			$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'");
-			while($arr = $this->db->db_fetch_array($res))
-				{
-				if( $arr['id_parent'] == 0 )
-					break;
-				$this->arrparents[] = $arr['id_parent'];
-				$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$arr['id_parent']."'");
-				}
-
-			$this->arrparents[] = 0;
-
-			$this->parentscount = count($this->arrparents);
-			$this->arrparents = array_reverse($this->arrparents);
 			}
 
 		function getnext()
@@ -504,7 +439,6 @@ function listOldArticles($topics, $pos, $approver)
 					}
 
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
-				$this->morename = bab_translate("Read more");
 				$i++;
 				return true;
 				}
@@ -512,47 +446,10 @@ function listOldArticles($topics, $pos, $approver)
 				return false;
 			}
 
-		function getnextparent()
-			{
-			static $i = 0;
-			if( $i < $this->parentscount)
-				{
-				if( $i == $this->parentscount - 1 )
-					{
-					$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
-					$this->parenturl = "";
-					$this->burl = false;
-					}
-				else
-					{
-					$this->burl = true;
-					if( $this->arrparents[$i] == 0 )
-						$this->parentname = bab_translate("Top");
-					else
-						$this->parentname = bab_getTopicCategoryTitle($this->arrparents[$i]);
-					$this->parenturl = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i];
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
 		}
 	
-	$template = "default";
-	if( !empty($topics) )
-		{
-		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$topics."'");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-			$arr = $babDB->db_fetch_array($res);
-			if( $arr['display_tmpl'] != '' )
-				$template = $arr['display_tmpl'];
-			}
-		}
 	$temp = new temp($topics, $pos, $approver);
-	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$template));
+	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$temp->template));
 	return $temp->count;
 	}
 
