@@ -10,14 +10,6 @@ this.focus();
 babOpUL.close();
 }
 
-function onSa(id, fn)
-{
-document.forms.fmcreate.saname.value=fn;
-document.forms.fmcreate.said.value=id;
-this.focus();
-babOpSA.close();
-}
-
 var babOpUL = null;
 function openPopupUL(url)
 {
@@ -25,15 +17,6 @@ if( babOpUL == null || babOpUL.closed )
 	babOpUL = this.open(url+'babOnApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 else
 	babOpUL.focus();
-}
-
-var babOpSA = null;
-function openPopupSA(url)
-{
-if( babOpSA == null || babOpSA.closed )
-	babOpSA = this.open(url+'onSa', 'babsalist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
-else
-	babOpSA.focus();
 }
 //-->
 </script>
@@ -70,10 +53,14 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopupSA('{ sabrowurl }');">{ moderation }</a>:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="saname" size="45" maxlength="255" value="" disabled>
-<input type="hidden" name="said" value="">
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ moderation }:</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="said">
+<option value="0">{ none }</option>
+<!--#in getnextschapp -->
+<option value="{ said }">{ saname }</option>
+ <!--#endin getnextschapp -->
+</select>
 </td>
 </tr>
 <tr> 
@@ -156,14 +143,6 @@ this.focus();
 babOpUL.close();
 }
 
-function onSa(id, fn)
-{
-document.forms.fmcreate.saname.value=fn;
-document.forms.fmcreate.said.value=id;
-this.focus();
-babOpSA.close();
-}
-
 var babOpUL = null;
 function openPopupUL(url)
 {
@@ -171,15 +150,6 @@ if( babOpUL == null || babOpUL.closed )
 	babOpUL = this.open(url+'babOnApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 else
 	babOpUL.focus();
-}
-
-var babOpSA = null;
-function openPopupSA(url)
-{
-if( babOpSA == null || babOpSA.closed )
-	babOpSA = this.open(url+'onSa', 'babsalist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
-else
-	babOpSA.focus();
 }
 //-->
 </script>
@@ -217,10 +187,14 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle"><a class="BabAlphabetLink" href="javascript: openPopupSA('{ sabrowurl }');">{ moderation }</a>:</td>
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ moderation }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="saname" size="45" maxlength="255" value="{ saname }" disabled>
-<input type="hidden" name="said" value="{ said }">
+<select name="said">
+<option value="0">{ none }</option>
+<!--#in getnextschapp -->
+<option value="{ said }" { sasel }>{ saname }</option>
+ <!--#endin getnextschapp -->
+</select>
 </td>
 </tr>
 <tr> 

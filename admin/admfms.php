@@ -14,19 +14,42 @@ function addFolder()
 		{
 		function temp()
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->moderator = bab_translate("Manager");
 			$this->moderation = bab_translate("Approbation schema");
 			$this->notification = bab_translate("Notification");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
-			$this->sabrowurl = $GLOBALS['babUrlScript']."?tg=lsa&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
 			$this->active = bab_translate("Active");
+			$this->none = bab_translate("None");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL."");
+			if( !$this->sares )
+				$this->sacount = 0;
+			else
+				$this->sacount = $babDB->db_num_rows($this->sares);
 			}
 
+		function getnextschapp()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
 		}
 
 	$temp = new temp();

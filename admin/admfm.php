@@ -13,6 +13,30 @@ function modifyFolder($fid)
 	global $babBody;
 	class temp
 		{
+		var $name;
+		var $description;
+		var $moderator;
+		var $moderation;
+		var $notification;
+		var $usersbrowurl;
+		var $yes;
+		var $no;
+		var $add;
+		var $del;
+		var $active;
+		var $fid;
+		var $folderval;
+		var $said;
+		var $manager;
+		var $none;
+		var $yactsel;
+		var $nactsel;
+		var $ynfsel;
+		var $ynfsel;
+		var $safm;
+		var $sares;
+		var $sacount;
+
 		function temp($fid)
 			{
 			global $babDB;
@@ -22,7 +46,6 @@ function modifyFolder($fid)
 			$this->moderation = bab_translate("Approbation schema");
 			$this->notification = bab_translate("Notification");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
-			$this->sabrowurl = $GLOBALS['babUrlScript']."?tg=lsa&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Update");
@@ -34,6 +57,7 @@ function modifyFolder($fid)
 			$this->said = $arr['idsa'];
 			$this->manager = bab_getUserName($arr['manager']);
 			$this->managerid = $arr['manager'];
+			$this->none = bab_translate("None");
 			if( $arr['active'] == "Y" )
 				{
 				$this->yactsel = "selected";
@@ -55,10 +79,37 @@ function modifyFolder($fid)
 				$this->nnfsel = "selected";
 				$this->ynfsel = "";
 				}
-			$arr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$arr['idsa']."'"));
-			$this->saname = $arr['name'] == "" ? "": $arr['name'];
+
+			$this->safm = $arr['idsa'];
+
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL."");
+			if( !$this->sares )
+				$this->sacount = 0;
+			else
+				$this->sacount = $babDB->db_num_rows($this->sares);
 			}
 
+		function getnextschapp()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->sacount)
+				{
+				$arr = $babDB->db_fetch_array($this->sares);
+				$this->saname = $arr['name'];
+				$this->said = $arr['id'];
+				if( $this->said == $this->safm )
+					$this->sasel = "selected";
+				else
+					$this->sasel = "";
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
 		}
 
 	$temp = new temp($fid);
