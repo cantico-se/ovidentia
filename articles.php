@@ -785,7 +785,7 @@ if( isset($addart) && $addart == "add")
 
 if( isset($action) && $action == "Yes" && bab_isUserApprover($topics))
 	{
-	bab_confirmDeleteArticle($topics, $article);
+	bab_confirmDeleteArticle($article);
 	}
 
 if( isset($modify))
