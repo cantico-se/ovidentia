@@ -148,7 +148,7 @@ EOD;
 			if( $i < 7 )
 				{
 				$this->days = $i;
-				$this->daysname = babTranslate($babDays[$i]);
+				$this->daysname = $babDays[$i];
 				if( 1 == $i)
 					{
 					$this->selected = "selected";
@@ -200,7 +200,7 @@ EOD;
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = babTranslate($babMonths[$i]);
+				$this->monthname = $babMonths[$i];
 				if( $this->monthbegin == $i)
 					{
 					$this->selected = "selected";
@@ -543,7 +543,7 @@ EOD;
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = babTranslate($babMonths[$i]);
+				$this->monthname = $babMonths[$i];
 				if( $tr == 0 && $this->monthbegin == $i)
 					{
 					$this->selected = "selected";

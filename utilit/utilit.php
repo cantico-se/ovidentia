@@ -10,11 +10,13 @@ include $babInstallPath."utilit/template.php";
 include $babInstallPath."utilit/userincl.php";
 include $babInstallPath."utilit/calincl.php";
 
-$babMonths = array(1=>"January", "February", "March", "April",
-                        "May", "June", "July", "August",
-                        "September", "October", "November", "December");
+$babMonths = array(1=>babTranslate("January"), babTranslate("February"), babTranslate("March"), babTranslate("April"),
+                        babTranslate("May"), babTranslate("June"), babTranslate("July"), babTranslate("August"),
+                        babTranslate("September"), babTranslate("October"), babTranslate("November"), babTranslate("December"));
 
-$babDays = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+$babDays = array(babTranslate("Sunday"), babTranslate("Monday"),
+				babTranslate("Tuesday"), babTranslate("Wednesday"), babTranslate("Thursday"),
+				babTranslate("Friday"), babTranslate("Saturday"));
 
 function isEmailValid ($email)
 	{
@@ -35,9 +37,9 @@ function bab_strftime($time, $hour=true)
 	if( $time < 0)
 		return "";
 	if( !$hour )
-		return babTranslate($babDays[date("w", $time)])." ".date("j", $time)." ".babTranslate($babMonths[date("n", $time)])." ".date("Y", $time); 
+		return $babDays[date("w", $time)]." ".date("j", $time)." ".$babMonths[date("n", $time)]." ".date("Y", $time); 
 	else
-		return babTranslate($babDays[date("w", $time)])." ".date("j", $time)." ".babTranslate($babMonths[date("n", $time)])." ".date("Y", $time)." ".date("H", $time).":".date("i", $time); 
+		return $babDays[date("w", $time)]." ".date("j", $time)." ".$babMonths[date("n", $time)]." ".date("Y", $time)." ".date("H", $time).":".date("i", $time); 
 	}
 
 function babPrintTemplate( &$class, $file, $section="")
@@ -718,7 +720,7 @@ function babMonthA($month = "", $year = "")
 function printout()
 	{
 	global $babMonths, $BAB_SESS_USERID;
-	$this->curmonth = babTranslate($babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))]);
+	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
 	$this->curyear = $this->currentYear;
 	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
 	$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
@@ -741,7 +743,7 @@ function printout()
 			$a = $i + $this->babCalendarStartDay;
 			if( $a > 6)
 				$a -=  7;
-			$this->day3 = substr(babTranslate($babDays[$a]), 0, 1);
+			$this->day3 = substr($babDays[$a], 0, 1);
 			$i++;
 			return true;
 			}

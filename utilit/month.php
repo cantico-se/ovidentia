@@ -70,7 +70,7 @@ function setMinYear( $delta )
 function printout()
 	{
 	global $babMonths;
-	$this->curmonth = babTranslate($babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))]);
+	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
 	$this->curyear = $this->currentYear;
 	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
 	$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
@@ -139,7 +139,7 @@ function printout()
 		static $i = 0;
 		if( $i < 7)
 			{
-			$this->day3 = substr(babTranslate($babDays[$i]), 0, 3);
+			$this->day3 = substr($babDays[$i], 0, 3);
 			$i++;
 			return true;
 			}

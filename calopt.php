@@ -157,7 +157,7 @@ function calendarOptions($calid)
 				else
 					$this->selected = "";
 				$this->dayid = $i;
-				$this->dayname = babTranslate($babDays[$i]);		
+				$this->dayname = $babDays[$i];		
 				$i++;
 				return true;
 				}

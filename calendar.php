@@ -196,7 +196,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 			$this->gotodayname = babTranslate("Go to Today");
 			$this->gotodayurl = $GLOBALS[babUrl]."index.php?tg=calendar&idx=viewm&day=".date("j")."&month=".date("n")."&year=".date("Y"). "&calid=".$this->calid;
 
-			$this->monthname = babTranslate($babMonths[date("n", mktime( 0,0,0, $month, 1, $year))]). "  ". $year;
+			$this->monthname = $babMonths[date("n", mktime( 0,0,0, $month, 1, $year))]. "  ". $year;
 			$this->firstday = date("w", mktime(0,0,0,$this->month,1,$this->year));
 			$this->calendars = getAvailableCalendars();
 			}
@@ -210,7 +210,7 @@ function calendarMonth($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$a = $i + $this->babCalendarStartDay;
 				if( $a > 6)
 					$a -=  7;
-				$this->dayname = babTranslate($babDays[$a]);
+				$this->dayname = $babDays[$a];
 				$i++;
 				return true;
 				}

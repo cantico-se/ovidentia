@@ -40,7 +40,7 @@ function echoLang($path)
 {
 	$arr = array();
 	if( empty($GLOBALS[babLanguage]))
-		return;
+		return $arr;
 	$handle = opendir($path); 
 	while (false !== ($filename = readdir($handle)))
 		{ 
@@ -103,19 +103,25 @@ switch($idx)
 			$txt = fread($file, filesize($filename));
 			fclose($file);
 			}
-		$append = "";
+		$old = "";
+		$new = "";
 		for( $i = 0; $i < count($tab); $i++)
 			{
 			$reg = "<string[[:space:]]*id=\"$tab[$i]\">([^<]*)<\/string>";
-			if( !empty($tab[$i]) && !ereg($reg, $txt, $m))
+			if( !empty($tab[$i]))
 				{
-				$append .= "<string id=\"$tab[$i]\">".$tab[$i]."</string>"."\r\n";
+				if( !ereg($reg, $txt, $m))
+					{
+					$new .= "<string id=\"$tab[$i]\">".$tab[$i]."</string>"."\r\n";
+					}
+				else
+					{
+					$old .= "<string id=\"$tab[$i]\">".$m[1]."</string>"."\r\n";
+					}
 				}
 			}
-		$reg = "/<".$GLOBALS[babLanguage].">(.*)<\/".$GLOBALS[babLanguage].">/s";
-		preg_match($reg, $txt, $m);
 		$file = fopen($filename, "w");
-		fputs($file, "<".$GLOBALS[babLanguage].">".$m[1].$append."</".$GLOBALS[babLanguage].">");
+		fputs($file, "<".$GLOBALS[babLanguage].">\r\n".$old.$new."</".$GLOBALS[babLanguage].">");
 		fclose($file);
 		$str = babTranslate("You language file has been updated") ."( ".$filename." )";
 		break;
