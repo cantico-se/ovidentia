@@ -713,9 +713,8 @@ switch($tg)
 		include $babInstallPath."version.php";
 		exit;
 		break;
-	case "ovtemplate":
-		include $babInstallPath."ovtemplate.php";
-		exit;
+	case "ovt":
+		$incl = "ovt";
 		break;
 	case "accden":
 		$babBody->msgerror = bab_translate("Access denied");
