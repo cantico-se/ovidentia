@@ -171,7 +171,7 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleReadMoreUrl', $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
@@ -396,7 +396,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleReadMoreUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$i++;
 			return true;
@@ -442,7 +442,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleHead', bab_replace($this->arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($this->arr['body']));
 			$this->ctx->curctx->push('ArticleId', $this->arr['id']);
-			$this->ctx->curctx->push('ArticleReadMoreUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->arr['id_topic']."&article=".$this->arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->arr['id_topic']."&article=".$this->arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $this->arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($this->arr['date']));
 			$i++;
@@ -467,24 +467,25 @@ class bab_RecentArticles extends bab_handler
 	var $countarticles;
 	var $lastlog;
 	var $nbdays;
+	var $last;
 
 	function bab_RecentArticles($ctx)
 		{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
-		if( $this->nbdays == false )
-			$this->nbdays = 0;
+		$this->last = $ctx->get_value('last');
 
 		if( count($babBody->topview) > 0 )
 			{
-			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y'and date >= ";
-			if( $this->nbdays > 0)
-				$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-			else
-				$req .= "'".$babBody->lastlog."'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y'";
+			if( $this->nbdays !== false)
+				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
 			$req .= " and id_topic IN (".implode(',', $babBody->topview).")";
 			$req .= " order by date desc";
+			if( $this->last !== false)
+				$req .= " limit 0, ".$this->last;
 			$this->resarticles = $babDB->db_query($req);
 			$this->countarticles = $babDB->db_num_rows($this->resarticles);
 			}
@@ -505,7 +506,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('ArticleReadMoreUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$k++;
 			return true;
 			}
@@ -527,24 +528,25 @@ class bab_RecentComments extends bab_handler
 	var $countcomments;
 	var $lastlog;
 	var $nbdays;
+	var $last;
 
 	function bab_RecentComments($ctx)
 		{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
-		if( $this->nbdays == false )
-			$this->nbdays = 0;
+		$this->last = $ctx->get_value('last');
 
 		if( count($babBody->topview) > 0 )
 			{
-			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y'and date >= ";
-			if( $this->nbdays > 0)
-				$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-			else
-				$req .= "'".$babBody->lastlog."'";
+			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y'";
+			if( $this->nbdays !== false)
+				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
 			$req .= " and id_topic IN (".implode(',', $babBody->topview).")";
 			$req .= " order by date desc";
+			if( $this->last !== false)
+				$req .= " limit 0, ".$this->last;
 			$this->rescomments = $babDB->db_query($req);
 			$this->countcomments = $babDB->db_num_rows($this->resarticles);
 			}
@@ -565,6 +567,7 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleId', $arr['id_article']);
 			$this->ctx->curctx->push('CommentDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
 			$k++;
 			return true;
 			}
@@ -581,25 +584,29 @@ class bab_RecentPosts extends bab_handler
 	var $ctx;
 	var $db;
 	var $arrid = array();
+	var $arrfid = array();
 	var $count;
 	var $resposts;
 	var $countposts;
 	var $lastlog;
 	var $nbdays;
+	var $last;
 
 	function bab_RecentPosts($ctx)
 		{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
-		if( $this->nbdays == false )
-			$this->nbdays = 0;
+		$this->last = $ctx->get_value('last');
 
-		$req = "select id, id_thread from ".BAB_POSTS_TBL." where confirmed='Y' and date >=";
-		if( $this->nbdays > 0)
-			$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-		else
-			$req .= "'".$babBody->lastlog."'";
+		$req = "select id, id_thread from ".BAB_POSTS_TBL." where confirmed='Y'";
+		if( $this->nbdays !== false)
+			$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
+		$req .= " order by date desc";
+		if( $this->last !== false)
+			$req .= " limit 0, ".$this->last;
+
 		$res = $babDB->db_query($req);
 
 		while( $row = $babDB->db_fetch_array($res))
@@ -608,6 +615,7 @@ class bab_RecentPosts extends bab_handler
 			if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 				{
 				array_push($this->arrid, $row['id']);
+				array_push($this->arrfid, $forum);
 				}
 			}
 		$this->countposts = count($this->arrid);
@@ -626,6 +634,7 @@ class bab_RecentPosts extends bab_handler
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$k]."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			$k++;
 			return true;
 			}
@@ -640,23 +649,27 @@ class bab_RecentPosts extends bab_handler
 class bab_RecentFiles extends bab_handler
 	{
 
-	var $db;
 	var $count;
 	var $res;
+	var $lastlog;
+	var $nbdays;
+	var $last;
+
 
 	function bab_RecentFiles($ctx)
 		{
 		global $babBody, $BAB_SESS_USERID, $babDB;
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
-		if( $this->nbdays == false )
-			$this->nbdays = 0;
+		$this->last = $ctx->get_value('last');
 
-		$req = "select ".BAB_FILES_TBL.".id, ".BAB_FILES_TBL.".name, ".BAB_FILES_TBL.".description from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state='' and ".BAB_FILES_TBL.".modified >=";
-		if( $this->nbdays > 0)
-			$req .= "DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-		else
-			$req .= "'".$babBody->lastlog."'";
+		$req = "select ".BAB_FILES_TBL.".* from ".BAB_FILES_TBL." join ".BAB_USERS_GROUPS_TBL." where ".BAB_USERS_GROUPS_TBL.".id_object = '".$BAB_SESS_USERID."' and ".BAB_FILES_TBL.".confirmed='Y' and ".BAB_FILES_TBL.".id_owner=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_FILES_TBL.".bgroup='Y' and ".BAB_FILES_TBL.".state=''";
+		if( $this->nbdays !== false)
+			$req .= " and ".BAB_FILES_TBL.".modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
+		$req .= " order by ".BAB_FILES_TBL.".modified desc";
+		if( $this->last !== false)
+			$req .= " limit 0, ".$this->last;
 
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);
@@ -664,6 +677,7 @@ class bab_RecentFiles extends bab_handler
 
 	function getnext()
 		{
+		global $babDB;
 		static $i=0;
 		if( $i < $this->count )
 			{
@@ -672,9 +686,9 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FileName', $arr['name']);
 			$this->ctx->curctx->push('FilePath', $arr['path']);
 			$this->ctx->curctx->push('FileDesc', $arr['description']);
-			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']);
+			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".$arr['path']);
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
-			$this->ctx->curctx->push('FileDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 			$i++;
 			return true;
 			}
