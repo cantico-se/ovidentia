@@ -1193,6 +1193,7 @@ if( !$res)
 $req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." select * from ad_directories_fields";
 $res = $db->db_query($req);
 
+/* id_directory = '0' means entry is owned by Ovidentia directory */
 $db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 1, '', 'N', 'N', 'N', 0)");
 $db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 2, '', 'Y', 'Y', 'N', 1)");
 $db->db_query("INSERT INTO ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes, ordering) VALUES (0, 3, '', 'Y', 'N', 'N', 0)");
@@ -1272,14 +1273,15 @@ $req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group) val
 $res = $db->db_query($req);
 $iddir = $db->db_insert_id();
 
+/*
 $res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
 while( $arr = $db->db_fetch_array($res))
 	{
-	/* id_directory = '0' means entry is owned by Ovidentia directory */
+	// id_directory = '0' means entry is owned by Ovidentia directory
 	$req = "insert into ".BAB_DBDIR_FIELDSEXTRA_TBL." (id_directory, id_field, default_value, modifiable, required, multilignes) VALUES ('0', '" . $arr['id']. "', '', 'N', 'N', 'N')";
 	$db->db_query($req);
 	}
-
+*/
 
 $req = "ALTER TABLE ".BAB_DBDIR_ENTRIES_TBL." ADD id_user INT(11) UNSIGNED NOT NULL";
 $res = $db->db_query($req);
