@@ -184,7 +184,7 @@ function newThread($forum)
 			{
 			global $BAB_SESS_USER;
 			$this->subject = babTranslate("Subject");
-			$this->name = babTranslate("Name");
+			$this->name = babTranslate("Your Name");
 			$this->notifyme = babTranslate("Notify me whenever someone replies ( only valid for registered users )");
 			$this->message = babTranslate("Message");
 			$this->add = babTranslate("New thread");
@@ -227,8 +227,7 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 		{
 		if( empty($name))
 			{
-			$body->msgerror = babTranslate("ERROR: You must provide a name")." !";
-			return;
+			$name = babTranslate("Anonymous");
 			}
 		$idstarter = 0;
 		}

@@ -6,6 +6,9 @@
  ***********************************************************************/
 /* upgrade from 3.1 to 3.2 */
 /************************************************************************
+	- Added an hierarchy in topics ( see documentation )
+	- Added a section by topic
+	- Enable/Disable section
 	- Delete reference section from section_states
 	- Section activation
 	- Added number of hits for downladed files
@@ -19,6 +22,8 @@
 	- Added $CONTACT(firstname, lastname)
 	- Changed event modification: now description is static text
 	- Moved section bullet/icon to config.html
+	- Increased timeout script when we upload files
+	- Added delete note to notes list
 ************************************************************************/
 function upgrade()
 {
