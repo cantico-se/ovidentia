@@ -1,4 +1,12 @@
 /************************************************************************/
+Avril 2003: Version 4.0.1
+/************************************************************************/
+- An "experimental" version (one that you can experiment with) of 
+    OvML (Ovidentia Markup Language);  
+- Improved security
+- Fixed some minors bugs
+
+/************************************************************************/
 Mars 2003: Version 4.0.0
 /************************************************************************/
 - Fixed some minors bugs

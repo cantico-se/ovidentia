@@ -20,7 +20,7 @@ In order to setup Ovidentia the folowing prerequisits are necessary.
 - PHP 4.0.3 (http://www.php.net)
 - MySQL 3.23 database server (http://www.mysql.com)
 
-The above doesn't mean it work with other configurations, OS's, DB's etc,
+The above doesn't mean that it doesn't work with other configurations, OS's, DB's etc,
 but we only provide INSTALL instructions for the above configuration.
 Set-up of these required packages is beyond the scope of this document
 and if you are unsure you should check with each of the appropriate web
