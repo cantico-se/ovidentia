@@ -297,6 +297,7 @@ function listSchemas()
 		var $urltxt;
 		var $url;
 		var $description;
+		var $altbg = true;
 
 		function temp()
 			{
@@ -553,6 +554,11 @@ switch($idx)
 	case "newa":
 	case "newb":
 		$babBody->title = bab_translate("Create a new approbation schema");
+		if (!isset($formula)) $formula = '';
+		if (!isset($idsch)) $idsch = '';
+		if (!isset($schname)) $schname = '';
+		if (!isset($schdesc)) $schdesc = '';
+		if (!isset($order)) $order = '';
 		schemaCreate($formula, $idsch, $schname, $schdesc, $order, false, $type);
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("newa", bab_translate("Create")." A", $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");

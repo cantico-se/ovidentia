@@ -94,7 +94,7 @@ function calendarGroups()
 
 			}
 		}
-	$temp = new temp($target, $index, $table, $id, $return);
+	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp, "admcals.html", "calendargroups"));
 	}
 

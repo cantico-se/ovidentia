@@ -118,6 +118,7 @@ function listFolders()
 		var $urldownname;
 		var $urlupdaname;
 		var $version;
+		var $altbg = true;
 
 		function temp()
 			{

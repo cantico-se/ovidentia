@@ -405,7 +405,7 @@ function listCategories($cat)
 				return false;
 			}
 		}
-	$temp = new temp($cat, $adminid);
+	$temp = new temp($cat);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorylist"));
 	return $temp->count;
 	}

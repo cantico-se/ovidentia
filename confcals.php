@@ -150,7 +150,7 @@ function categoriesList($grpid, $userid)
 		var $count;
 		var $countcal;
 		var $res;
-
+		var $altbg = true;
 		var $userid;
 
 		function temp($grpid, $userid)
@@ -228,7 +228,7 @@ function resourcesList($grpid, $userid)
 		var $resid;
 		var $disabled;
 		var $update;
-
+		var $altbg = true;
 
 		function temp($grpid, $userid)
 			{

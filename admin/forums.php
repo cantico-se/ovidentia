@@ -337,6 +337,10 @@ switch($idx)
 		$babBody->title = bab_translate("Add a new forum");
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("addforum", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=forums&idx=addforum");
+		if (!isset($name)) $name  ='';
+		if (!isset($description)) $description  ='';
+		if (!isset($moderator)) $moderator  ='';
+		if (!isset($nbmsgdisplay)) $nbmsgdisplay  ='';
 		addForum($name, $description, $moderator, $nbmsgdisplay);
 		break;
 
