@@ -77,7 +77,7 @@ function searchKeyword($pat, $what)
 			if( $i < $this->count)
 				{
 				$this->itemvalue = $this->arr[$i];
-				$this->itemname = bab_translate($babSearchItems[$this->arr[$i]]);
+				$this->itemname = $babSearchItems[$this->arr[$i]];
 				$i++;
 				return true;
 				}

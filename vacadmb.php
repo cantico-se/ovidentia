@@ -355,10 +355,10 @@ function listVacationRequests($idstatus, $userid, $dateb, $datee, $vpos)
 				$this->urlname = bab_getUserName($arr['id_user']);
 				$this->begindate = bab_strftime(bab_mktime($arr['date_begin']), false);
 				if( $arr['day_begin'] != 1)
-					$this->begindate .= " ". bab_translate($babDayType[$arr['day_begin']]);
+					$this->begindate .= " ". $babDayType[$arr['day_begin']];
 				$this->enddate = bab_strftime(bab_mktime($arr['date_end']), false);
 				if( $arr['day_begin'] != 1)
-					$this->enddate .= " ". bab_translate($babDayType[$arr['day_end']]);
+					$this->enddate .= " ". $babDayType[$arr['day_end']];
 				switch($arr['status'])
 					{
 					case 'Y':
@@ -708,9 +708,9 @@ function viewVacationRequestDetail($id)
 			$this->db = $GLOBALS['babDB'];
 			$row = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$id."'"));
 			$this->datebegin = bab_strftime(bab_mktime($row['date_begin']), false);
-			$this->halfnamebegin = bab_translate($babDayType[$row['day_begin']]);
+			$this->halfnamebegin = $babDayType[$row['day_begin']];
 			$this->dateend = bab_strftime(bab_mktime($row['date_end']), false);
-			$this->halfnameend = bab_translate($babDayType[$row['day_end']]);
+			$this->halfnameend = $babDayType[$row['day_end']];
 			$this->fullname = bab_getUserName($row['id_user']);
 			$this->statarr = array(bab_translate("Waiting to be valiadte by"), bab_translate("Accepted"), bab_translate("Refused"));
 			$this->commenttxt = bab_translate("Description");
