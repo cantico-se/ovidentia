@@ -547,7 +547,7 @@ switch($idx)
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
 		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
 		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Write"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
+		$babBody->addItemMenu("upda", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
 		break;
 	
 	case "down":
@@ -558,7 +558,7 @@ switch($idx)
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
 		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
 		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Write"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
+		$babBody->addItemMenu("upda", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
 		break;
 
 	case "upda":
@@ -569,7 +569,7 @@ switch($idx)
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
 		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
 		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Write"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
+		$babBody->addItemMenu("upda", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
 		break;
 
 	case "delf":
