@@ -62,7 +62,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			}
 
 		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[0]], $this->year);
-		$time2 = $time1 + 41*24*3600;
+		$time2 = $time1 + 7*24*3600;
 
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
 
