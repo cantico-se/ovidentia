@@ -1297,4 +1297,11 @@
 <string id="Delete request vacation">Supprimer une demande de congé</string>
 <string id="Print">Imprimer</string>
 <string id="Vacation requests list">Liste des demandes de congés</string>
+<string id="No filter">Pas de filtre</string>
+<string id="Filter language">Filtre sur le language</string>
+<string id="Filter language and country">Filtre sur le language et le pays</string>
+<string id="Filter translated">Filtre traduit</string>
+<string id="Language filter">Filtre de la langue</string>
+<string id="Recent posts">Contributions récentes</string>
+<string id="Your request has been updated">Votre demande a été exécutée</string>
 </fr>

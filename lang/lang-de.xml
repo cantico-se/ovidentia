@@ -1013,4 +1013,12 @@
 <string id="Add vacation type's collection">Add vacation type's collection</string>
 <string id="Modify vacation type">Modify vacation type</string>
 <string id="Add vacation type">Add vacation type</string>
+<string id="No filter">No filter</string>
+<string id="Filter language">Filter language</string>
+<string id="Filter language and country">Filter language and country</string>
+<string id="Filter translated">Filter translated</string>
+<string id="Language filter">Language filter</string>
+<string id="Recent posts">Recent posts</string>
+<string id="Vacation requests list">Vacation requests list</string>
+<string id="Your request has been updated">Your request has been updated</string>
 </de>
