@@ -455,7 +455,7 @@ function signOn( $nickname, $password,$lifetime)
 			{
 			$cpw = bab_encrypt($password, md5($arr['id'].$arr['sessid'].$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
 			}
-		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."', cpw='".$cpw."' where id='".$arr['id']."'");
+		$db->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$BAB_SESS_USERID."', cpw='".addslashes($cpw)."' where id='".$arr['id']."'");
 		}
 
 	// ajout cookie
