@@ -279,7 +279,7 @@ class bab_ArticleTopics extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and  ".BAB_TOPICS_TBL.".id_cat='".$ctx->get_value('category')."'";
+		$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and  ".BAB_TOPICS_TBL.".id_cat='".$ctx->get_value('categoryid')."'";
 		$req .= " order by ordering asc";
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
