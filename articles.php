@@ -380,6 +380,11 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	{
 	global $BAB_SESS_USERID, $body , $babAdminEmail;
 
+	class dummy
+		{
+		}
+
+	$dummy = new dummy();
 	if( $filename == "none")
 		{
 		$body->msgerror = babTranslate("ERROR: You must provide a file name");
@@ -393,8 +398,8 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 		}
 
 	$tp = new Template();
-	$headtext = $tp->printTemplate(none, $filename, $introtag);
-	$bodytext = $tp->printTemplate(none, $filename, $doctag);
+	$headtext = $tp->printTemplate($dummy, $filename, $introtag);
+	$bodytext = $tp->printTemplate($dummy, $filename, $doctag);
 
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
