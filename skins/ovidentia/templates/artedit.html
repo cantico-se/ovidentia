@@ -213,6 +213,7 @@ window.focus();
 
 
 <!--#begin modtopicchoicestep -->
+<!--#if count "> 0" -->
 <script type="text/javascript">
 <!--
 function stepSubmitForm(cmd, fmname) 
@@ -276,6 +277,7 @@ document.forms[fmname].updstep01.value = cmd;
 </tr>
 </table>
 </form>
+<!--#endif count -->
 <!--#end modtopicchoicestep -->
 
 
