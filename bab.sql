@@ -139,10 +139,6 @@ CREATE TABLE contacts (
    KEY id (id)
 );
 
-ALTER TABLE users CHANGE name nickname CHAR (30);
-ALTER TABLE users ADD firstname CHAR (60) not null AFTER nickname , ADD lastname CHAR (60) not null AFTER firstname;
-ALTER TABLE posts ADD id_parent INT (11) UNSIGNED not null AFTER id_thread;
-
 CREATE TABLE sites (
    id int(11) unsigned NOT NULL auto_increment,
    name char(30) NOT NULL,
