@@ -767,9 +767,10 @@ function removeOrgChartEntity($ids, $all)
 	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id IN (".$oeids.")");
 }
 
-function confirmDeleteOrgChartEntity($ocid, $oeid, $what, $all)
+function confirmDeleteOrgChartEntity($ocid, $oeid, $what)
 	{
 	global $babBody, $babDB, $babLittleBody, $oeinfo;
+	$all = 'N'; /* Forced to No for moment. DON'T CHANGE THIS LINE */
 
 	list($idnode) = $babDB->db_fetch_row($babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."'"));
 
@@ -1154,7 +1155,7 @@ else if( isset($deloce) )
 	switch($deloce)
 	{
 		case "deloce":
-			if( !confirmDeleteOrgChartEntity($ocid, $oeid, $what, $all))
+			if( !confirmDeleteOrgChartEntity($ocid, $oeid, $what))
 			{
 			$idx = "delr";
 			}
