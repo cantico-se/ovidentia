@@ -66,6 +66,8 @@ function listThreads($forum, $active, $pos)
 		var $openthreadsinfo;
 		var $waitthreadsinfo;
 		var $closedthreadsinfo;
+		var $brecent;
+		var $altrecentposts;
 
 		function temp($forum, $active, $pos)
 			{
@@ -87,6 +89,7 @@ function listThreads($forum, $active, $pos)
 			$this->closedthreadsinfo = bab_translate("Closed threads");
 			$this->altnoflattxt = bab_translate("View thread as hierarchical list");
 			$this->altflattxt = bab_translate("View thread as flat list");
+			$this->altrecentposts = bab_translate("Recent posts");
 
 			$this->moderator = bab_isUserForumModerator($forum, $GLOBALS['BAB_SESS_USERID']);
 
@@ -187,6 +190,10 @@ function listThreads($forum, $active, $pos)
 					$arr0 = explode("-", $tmp[0]);
 					$arr1 = explode(":", $tmp[1]);
 					$this->lastpostdate = $arr0[2]."/".$arr0[1]."/".$arr0[0]." ".$arr1[0].":".$arr1[1];
+					if( mktime() - bab_mktime($ar['date']) <= 43200 )
+						$this->brecent = true;
+					else
+						$this->brecent = false;
 					}
 				$req = "select count(*) as total from ".BAB_POSTS_TBL." where id_thread='".$this->arrthread['id']."' and confirmed='N'";
 				$res = $this->db->db_query($req);
