@@ -68,7 +68,7 @@ function listComments($topics, $article, $newc)
 	}
 
 
-function addComment($topics, $article, $subject, $com="")
+function addComment($topics, $article, $subject, $message, $com="")
 	{
 	global $babBody;
 	
@@ -91,7 +91,7 @@ function addComment($topics, $article, $subject, $com="")
 		var $urlsee;
 		var $see;
 
-		function temp($topics, $article, $subject, $com)
+		function temp($topics, $article, $subject, $message, $com)
 			{
 			global $BAB_SESS_USER;
 			$this->subject = bab_translate("Subject");
@@ -104,6 +104,7 @@ function addComment($topics, $article, $subject, $com="")
 			$this->topics = $topics;
 			$this->article = $article;
 			$this->subjectval = $subject;
+			$this->messageval = $message;
 			$this->com = $com;
 			if( empty($BAB_SESS_USER))
 				$this->anonyme = 1;
@@ -132,13 +133,13 @@ function addComment($topics, $article, $subject, $com="")
 			}
 		}
 
-	$temp = new temp($topics, $article, $subject, $com);
+	$temp = new temp($topics, $article, $subject, $message, $com);
 	$tpl = new babTemplate();
 	$babBody->babecho(	bab_printTemplate($temp,"comments.html", "commentcreate"));
 	return $temp->nbarch;
 	}
 
-function readComment($topics, $article, $com)
+function readComment($topics, $article, $subject, $message, $com)
 	{
 	global $babBody;
 	
@@ -170,7 +171,11 @@ function readComment($topics, $article, $com)
 	$ctp = new ctp($topics, $article, $com);
 	$babBody->babecho(	bab_printTemplate($ctp,"comments.html", "commentread"));
 	if( $ctp->barch == "N" )
-		addComment($topics, $article, "RE: ".$ctp->arr['subject'], $com);
+		{
+		if( empty($subject))
+			$subject = "RE: ".$ctp->arr['subject'];
+		addComment($topics, $article, $subject, $message, $com);
+		}
 	return $ctp->barch;
 	}
 
@@ -275,7 +280,19 @@ function notifyApprover($top, $article, $title, $approveremail, $modcom)
 
 function saveComment($topics, $article, $name, $subject, $message, $com)
 	{
-	global $BAB_SESS_USER, $BAB_SESS_EMAIL;
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+
+	if( empty($subject))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a subject");
+		return false;
+		}
+
+	if( empty($message))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a message");
+		return false;
+		}
 
 	if( empty($com))
 		$com = 0;
@@ -313,6 +330,7 @@ function saveComment($topics, $article, $name, $subject, $message, $com)
             notifyApprover($top, $arr3['title'], $subject, $arr2['email'], $arr['mod_com']);
 			}
 		}
+	return true;
 	}
 
 function confirmDeleteComment($topics, $article, $com)
@@ -333,7 +351,13 @@ if(isset($addcomment))
 	{
 	if( isset($name) && empty($name))
 		$name = "Anonymous";
-	saveComment($topics, $article, $name, $subject, $message, $com);
+	if( !saveComment($topics, $article, $name, $subject, $message, $com))
+		{
+		if( empty($com))
+			$idx = "addComment";
+		else
+			$idx = "read";
+		}
 	}
 
 if( isset($action) && $action == "Yes" && $approver)
@@ -348,7 +372,13 @@ switch($idx)
 		$babBody->title = bab_getArticleTitle($article);
 		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
-			$nbarch = addComment($topics, $article, "");
+			if(!isset($subject))
+				$subject = "";
+			if(!isset($message))
+				$message = "";
+			if(!isset($com))
+				$com = "";
+			$nbarch = addComment($topics, $article, $subject, $message, $com);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 			$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&topics=".$topics."&newc=".$newc);
@@ -361,7 +391,11 @@ switch($idx)
 		$babBody->title = bab_getArticleTitle($article);
 		if( bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics) || $approver)
 			{
-			$barch = readComment($topics, $article, $com);
+			if(!isset($subject))
+				$subject = "";
+			if(!isset($message))
+				$message = "";
+			$barch = readComment($topics, $article, $subject, $message, $com);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 			if( $barch == "N" )
 				$babBody->addItemMenu("addComment", bab_translate("Add Comment"), $GLOBALS['babUrlScript']."?tg=comments&idx=addComment&topics=".$topics."&article=".$article."&newc=".$newc);
