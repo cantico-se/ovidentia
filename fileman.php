@@ -1251,33 +1251,40 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 		else
 			$idcreator = $BAB_SESS_USERID;
 	
+		$tmp = array();
 		if( $descup )
-			$req = "description='".$description."', keywords='".$keywords."'";
+			{
+			$tmp[] = "description='".$description."'";
+			$tmp[] = "keywords='".$keywords."'";
+			}
 		if( $bmodified)
-			$req .= ", modified=now(), modifiedby='".$idcreator."'";
+			{
+			$tmp[] = "modified=now()";
+			$tmp[] = "modifiedby='".$idcreator."'";
+			}
 		if( $frename)
 			{
-			$req .= ", name='".$fname."'";
+			$tmp[] = "name='".$name."'";
 			}
 		else
 			$osfname = $arr['name'];
 
 		if( !empty($readonly))
-			$req .= ", readonly='".$readonly."'";
+			$tmp[] = "readonly='".$readonly."'";
 		if( !empty($newfolder))
 			{
 			$pathxnew = bab_getUploadFullPath($arr['bgroup'], $newfolder);
 
 			if( rename( $pathx.$osfname, $pathxnew.$osfname))
 				{
-				$req .= ", id_owner='".$newfolder."'";
-				$req .= ", path=''";
+				$tmp[] = "id_owner='".$newfolder."'";
+				$tmp[] = "path=''";
 				$arr['id_owner'] = $newfolder;
 				}
 			}
 
-		if( $req != "" )
-			$db->db_query("update ".BAB_FILES_TBL." set ".$req." where id='".$idf."'");
+		if( count($tmp) > 0 )
+			$db->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$idf."'");
 
 		if( empty($bnotify))
 			{
