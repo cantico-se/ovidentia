@@ -397,7 +397,7 @@ function startSearch($pat, $item, $what, $pos)
 
 			if( empty($item) || $item == "g")
 				{
-				$likedir = "( sn ".$this->like." or givenname ".$this->like." or mn ".$this->like.")";
+				$likedir = "( sn ".$this->like." or givenname ".$this->like." or mn ".$this->like." or organisationname ".$this->like." or bcity ".$this->like.")";
 				$req = "create temporary table dirresults select * from ".BAB_DBDIR_ENTRIES_TBL." where 0";
 				$this->db->db_query($req);
 				$req = "alter table dirresults add unique (id)";
