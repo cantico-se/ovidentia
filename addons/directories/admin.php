@@ -313,7 +313,7 @@ function modifyDb($id)
 				else
 					$this->mlchecked = "";
 				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".ADDON_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->fieldn = $arr['description'];
+				$this->fieldn = ad_translate($arr['description']);
 				$this->fieldv = $arr['name'];
 				$i++;
 				return true;

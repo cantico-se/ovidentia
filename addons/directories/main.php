@@ -432,6 +432,10 @@ function summaryDbContact($id, $idu)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldn = ad_translate($arr['description']);
 				$this->fieldv = $this->arr[$arr['name']];
+				if( strlen($this->arr[$arr['name']]) > 0 )
+					$this->bfieldv = true;
+				else
+					$this->bfieldv = false;
 				$i++;
 				return true;
 				}
