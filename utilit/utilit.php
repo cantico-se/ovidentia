@@ -58,15 +58,7 @@ function bab_browserOS()
 		{
 	 	return "windows";
 		}
-	if ( stristr($HTTP_USER_AGENT, "macintosh"))
-		{
-		return "macos";
-		}
-	if ( stristr($HTTP_USER_AGENT, "mac_powerpc"))
-		{
-		return "macos";
-		}
-	if ( stristr($HTTP_USER_AGENT, "ppc mac os x"))
+	if ( stristr($HTTP_USER_AGENT, "mac"))
 		{
 		return "macos";
 		}
