@@ -220,6 +220,9 @@ function listOldArticles($id)
 		var $archivealt;
 		var $archivehelp;
 
+		var $deletealt;
+		var $deletehelp;
+
 		function temp($id)
 			{
 			$this->titlename = bab_translate("Title");
@@ -227,6 +230,8 @@ function listOldArticles($id)
 			$this->checkall = bab_translate("Check all");
 			$this->archivealt = bab_translate("Move selected articles from archive");
 			$this->archivehelp = bab_translate("Click on this image to move out selected articles from archive");
+			$this->deletealt = bab_translate("Delete articles");
+			$this->deletehelp = bab_translate("Click on this image to delete selected articles");
 
 			$this->item = $id;
 			$this->db = $GLOBALS['babDB'];
