@@ -322,7 +322,8 @@ function sendPassword ($nickname)
 			$res=$db->db_query($req);
 
 			//send a simple email with the new password
-			$message = babTranslate("Your password has been reset to")." : ". $new_pass;
+			$message = babTranslate("On site")." : ". $GLOBALS['babSiteName']."( <a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babUrl']."</a> )<br>";
+			$message .= babTranslate("Your password has been reset to")." : ". $new_pass;
 			mail ($arr['email'], babTranslate("Password Reset"),$message,"From: \"".$babAdminEmail."\" \nContent-Type:text/html;charset=iso-8859-1\n");
 			$body->msgerror = babTranslate("Your new password has been emailed to you.") ." &lt;".$arr['email']."&gt;";
 			return true;
