@@ -4616,8 +4616,6 @@ if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 					$id = $db->db_insert_id();
 					$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['manager']."','".$id."')");
 					$arrusersgroups[$arr['manager']] = $id;
-					$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
-					$db->db_query($req);
 					}
 				}
 			if( isset($arrusersgroups[$arr['manager']])) 
@@ -4628,6 +4626,57 @@ if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 		}
 
 	$db->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." DROP manager");
+	}
+
+
+$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_FAQMANAGERS_GROUPS_TBL."'"));
+if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
+	{
+	$res = $db->db_query("
+		CREATE TABLE `".BAB_FAQMANAGERS_GROUPS_TBL."` (
+			  `id` int(11) unsigned NOT NULL auto_increment,
+			  `id_object` int(11) unsigned NOT NULL default '0',
+			  `id_group` int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (`id`),
+			  KEY `id_object` (`id_object`),
+			  KEY `id_group` (`id_group`)
+			)
+		");
+	if( !$res)
+		{
+		$ret = "Creation of <b>".BAB_FAQMANAGERS_GROUPS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+
+	$res = $db->db_query("select id, id_manager, id_dgowner from ".BAB_FAQCAT_TBL."");
+	$arrusersgroups = array();
+	while( $arr = $db->db_fetch_array($res))
+		{
+		if( $arr['id_manager'] != 0 )
+			{
+			if( !isset($arrusersgroups[$arr['id_manager']])) 
+				{
+				$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_manager']."'");
+				$rr = $db->db_fetch_array($res2);
+				if( $res2 && $db->db_num_rows($res2) > 0 )
+					{
+					$grpname = "OVFAQ_".$rr['firstname']."_".$rr['lastname'];
+					$description = bab_translate("Folder manager");
+					$db->db_query("insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$grpname. "', '" . $description. "', 'N', '0', '".$arr['id_dgowner']."', 'N', 'N', 'N','0')");
+					$id = $db->db_insert_id();
+					$db->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id_manager']."','".$id."')");
+					$arrusersgroups[$arr['id_manager']] = $id;
+
+					}
+				}
+			if( isset($arrusersgroups[$arr['id_manager']])) 
+				{
+				$db->db_query("insert into ".BAB_FAQMANAGERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['id_manager']]."')");
+				}
+			}
+		}
+
+	$db->db_query("ALTER TABLE ".BAB_FAQCAT_TBL." DROP id_manager");
 	}
 
 return $ret;

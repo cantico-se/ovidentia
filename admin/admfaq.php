@@ -74,7 +74,6 @@ function modifyCategory($id)
 			$this->description = bab_translate("Description");
 			$this->add = bab_translate("Update FAQ");
 			$this->delete = bab_translate("Delete");
-			$this->manager = bab_translate("Manager");
 			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
@@ -157,7 +156,7 @@ function deleteCategory($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateCategory($id, $category, $description, $managerid, $lang)
+function updateCategory($id, $category, $description, $lang)
 	{
 	global $babBody;
 	if( empty($category))
@@ -173,7 +172,7 @@ function updateCategory($id, $category, $description, $managerid, $lang)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "update ".BAB_FAQCAT_TBL." set id_manager='".$managerid."', category='".$category."', description='".$description."', lang='".$lang."' where id = '".$id."'";
+	$query = "update ".BAB_FAQCAT_TBL." set category='".$category."', description='".$description."', lang='".$lang."' where id = '".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 
@@ -202,7 +201,7 @@ if( isset($add))
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $faqdesc, $managerid, $lang))
+		if(!updateCategory($item, $category, $faqdesc, $lang))
 			$idx = "Modify";
 		}
 	else if( isset($faqdel))
@@ -225,8 +224,14 @@ switch($idx)
 	{
 
 	case "Groups":
-		$babBody->title = bab_translate("FAQ").": ". getFaqName($item)." ".bab_translate("is visible by") ;
-		aclGroups("admfaq", "Modify", BAB_FAQCAT_GROUPS_TBL, $item, "aclfaq");
+		$babBody->title = bab_translate("FAQ").": ". getFaqName($item);
+
+		$macl = new macl("admfaq", "Modify", $item, "aclfaq");
+		$macl->addtable( BAB_FAQCAT_GROUPS_TBL,bab_translate("View"));
+		$macl->addtable( BAB_FAQMANAGERS_GROUPS_TBL,bab_translate("Manage"));
+		$macl->filter(0,0,1,1,1);
+		$macl->babecho();
+
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$item);

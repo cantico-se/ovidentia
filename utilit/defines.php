@@ -83,6 +83,7 @@ define("BAB_DG_GROUPS_TBL", "bab_dg_groups");
 define("BAB_DG_USERS_GROUPS_TBL", "bab_dg_users_groups");
 define("BAB_FAQ_TREES_TBL", "bab_faq_trees");
 define("BAB_FAQCAT_TBL", "bab_faqcat");
+define("BAB_FAQMANAGERS_GROUPS_TBL", "bab_faqmanagers_groups");
 define("BAB_FAQCAT_GROUPS_TBL", "bab_faqcat_groups");
 define("BAB_FAQQR_TBL", "bab_faqqr");
 define("BAB_FAQ_SUBCAT_TBL", "bab_faq_subcat");

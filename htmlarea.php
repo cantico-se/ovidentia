@@ -97,7 +97,7 @@ function get_js_style_list()
 		echo "HTMLArea.babstyle = {};\n";
 		}
 	echo "\n\n";
-	if (trim($style) != "")
+	if (isset($style))
 		echo "HTMLArea.bodyStyle = \"".trim($style)."\";\n";
 	else
 		echo "HTMLArea.bodyStyle = \"background-color: #fff; font-family: Verdana, Arial, sans-serif ; font-size:11px\";\n";

@@ -153,12 +153,11 @@ class bab_addonsSearch
 			}
 		}
 
-	function setSearchParam($q1, $q2, $option, $pos, $nb_result)
+	function setSearchParam($q1, $q2, $option, $nb_result)
 		{
 		$this->q1 = $q1;
 		$this->q2 = $q2;
 		$this->option = $option;
-		$this->pos = $pos;
 		$this->nb_result = $nb_result;
 		}
 
@@ -167,7 +166,7 @@ class bab_addonsSearch
 		{
 		$this->defineAddonGlobals($id);
 		$func = $this->func_results[$id];
-		return $func($this->q1, $this->q2, $this->option, $this->pos, $this->nb_result);
+		return $func($this->q1, $this->q2, $this->option, $this->pos[$id], $this->nb_result);
 		}
 	}
 
@@ -1348,7 +1347,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->addons = new bab_addonsSearch;
 			$this->addonSearchArray = $this->addons->getsearcharray($item);
 			$this->countaddons = count($this->addonSearchArray);
-			$this->addons->setSearchParam($this->like2, $this->like, $option, $navpos, $babLimit);
+			$this->addons->setSearchParam($this->like2, $this->like, $option, $babLimit);
 
 			$this->addonsdata = array();
 			$first_addon_searchresults = array();
@@ -1359,7 +1358,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if (isset($addon_id) && is_numeric($addon_id))
 						{
 						$navpos = $this->navitem == 'as-'.$addon_id ? $this->navpos : 0;
-						$this->addons->pos = $navpos;
+						$this->addons->pos[$addon_id] = $navpos;
 
 						$first_addon_searchresults[$addon_id] = $this->addons->callSearchFunction($addon_id);
 						$nbrows = $first_addon_searchresults[$addon_id][1];
