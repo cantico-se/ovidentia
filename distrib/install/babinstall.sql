@@ -172,13 +172,14 @@ CREATE TABLE bab_groups (
    ustorage enum('N','Y') DEFAULT 'N' NOT NULL,
    notes enum('Y','N') NOT NULL default 'Y',
    contacts enum('Y','N') NOT NULL default 'Y',
+   directory enum('N','Y') NOT NULL default 'N',
    PRIMARY KEY (id),
    KEY manager (manager)
 );
 
-INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'Y', 'Y');
-INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N', 'N');
-INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'Y', 'Y');
+INSERT INTO bab_groups VALUES ( '1', 'Registered', 'All registered users', 'N', 'N', '0', 'N', 'Y', 'Y', 'N');
+INSERT INTO bab_groups VALUES ( '2', 'Guests', 'all not registered users', 'N', 'N', '0', 'N', 'N', 'N', 'N');
+INSERT INTO bab_groups VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', '0', 'N', 'Y', 'Y', 'N');
 
 
 # --------------------------------------------------------
@@ -1009,6 +1010,190 @@ CREATE TABLE bab_fmupdate_groups (
 #
 
 CREATE TABLE bab_fmupload_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table `bab_db_directories`
+#
+
+CREATE TABLE bab_db_directories (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_dbdir_entries`
+#
+
+CREATE TABLE bab_dbdir_entries (
+  id int(11) unsigned NOT NULL auto_increment,
+  cn varchar(255) NOT NULL default '',
+  sn varchar(255) NOT NULL default '',
+  mn varchar(255) NOT NULL default '',
+  givenname varchar(255) NOT NULL default '',
+  jpegphoto varchar(255) NOT NULL default '',
+  email text NOT NULL,
+  btel varchar(255) NOT NULL default '',
+  mobile varchar(255) NOT NULL default '',
+  htel varchar(255) NOT NULL default '',
+  bfax varchar(255) NOT NULL default '',
+  title varchar(255) NOT NULL default '',
+  departmentnumber varchar(255) NOT NULL default '',
+  organisationname varchar(255) NOT NULL default '',
+  bstreetaddress text NOT NULL,
+  bcity varchar(255) NOT NULL default '',
+  bpostalcode varchar(10) NOT NULL default '',
+  bstate varchar(255) NOT NULL default '',
+  bcountry varchar(255) NOT NULL default '',
+  hstreetaddress text NOT NULL,
+  hcity varchar(255) NOT NULL default '',
+  hpostalcode varchar(10) NOT NULL default '',
+  hstate varchar(255) NOT NULL default '',
+  hcountry varchar(255) NOT NULL default '',
+  user1 text NOT NULL,
+  user2 text NOT NULL,
+  user3 text NOT NULL,
+  photo_data longblob NOT NULL,
+  photo_type varchar(20) NOT NULL default '',
+  id_directory int(11) unsigned NOT NULL default '0',
+  id_user int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY sn (sn),
+  KEY mn (mn),
+  KEY givenname (givenname),
+  KEY id_directory (id_directory)
+);
+
+INSERT INTO bab_dbdir_entries (sn, id_directory, id_user) VALUES ('Administrator', '0', '1');
+
+
+#
+# Structure de la table `bab_dbdir_fields`
+#
+
+CREATE TABLE bab_dbdir_fields (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  x_name varchar(255) NOT NULL default '',
+  description tinytext NOT NULL,
+  PRIMARY KEY  (id),
+  KEY name (name)
+);
+
+INSERT INTO bab_dbdir_fields VALUES (1, 'cn', 'cn', 'Common Name');
+INSERT INTO bab_dbdir_fields VALUES (2, 'sn', 'sn', 'Last Name');
+INSERT INTO bab_dbdir_fields VALUES (3, 'mn', '', 'Middle Name');
+INSERT INTO bab_dbdir_fields VALUES (4, 'givenname', 'givenname', 'First Name');
+INSERT INTO bab_dbdir_fields VALUES (5, 'jpegphoto', 'jpegphoto', 'Photo');
+INSERT INTO bab_dbdir_fields VALUES (6, 'email', 'mail', 'E-mail Address');
+INSERT INTO bab_dbdir_fields VALUES (7, 'btel', 'telephonenumber', 'Business Phone');
+INSERT INTO bab_dbdir_fields VALUES (8, 'mobile', 'mobile', 'Mobile Phone');
+INSERT INTO bab_dbdir_fields VALUES (9, 'htel', 'homephone', 'Home Phone');
+INSERT INTO bab_dbdir_fields VALUES (10, 'bfax', 'facsimiletelephonenumber', 'Business Fax');
+INSERT INTO bab_dbdir_fields VALUES (11, 'title', 'title', 'Title');
+INSERT INTO bab_dbdir_fields VALUES (12, 'departmentnumber', 'departmentnumber', 'Department');
+INSERT INTO bab_dbdir_fields VALUES (13, 'organisationname', 'o', 'Company');
+INSERT INTO bab_dbdir_fields VALUES (14, 'bstreetaddress', 'street', 'Business Street');
+INSERT INTO bab_dbdir_fields VALUES (15, 'bcity', 'l', 'Business City');
+INSERT INTO bab_dbdir_fields VALUES (16, 'bpostalcode', 'postalcode', 'Business Postal Code');
+INSERT INTO bab_dbdir_fields VALUES (17, 'bstate', 'st', 'Business State');
+INSERT INTO bab_dbdir_fields VALUES (18, 'bcountry', 'st', 'Business Country');
+INSERT INTO bab_dbdir_fields VALUES (19, 'hstreetaddress', 'homepostaladdress', 'Home Street');
+INSERT INTO bab_dbdir_fields VALUES (20, 'hcity', '', 'Home City');
+INSERT INTO bab_dbdir_fields VALUES (21, 'hpostalcode', '', 'Home Postal Code');
+INSERT INTO bab_dbdir_fields VALUES (22, 'hstate', '', 'Home State');
+INSERT INTO bab_dbdir_fields VALUES (23, 'hcountry', '', 'Home Country');
+INSERT INTO bab_dbdir_fields VALUES (24, 'user1', '', 'User 1');
+INSERT INTO bab_dbdir_fields VALUES (25, 'user2', '', 'User 2');
+INSERT INTO bab_dbdir_fields VALUES (26, 'user3', '', 'User 3');
+
+#
+# Structure de la table `bab_dbdir_fieldsextra`
+#
+
+CREATE TABLE bab_dbdir_fieldsextra (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_directory int(11) unsigned NOT NULL default '0',
+  id_field int(11) unsigned NOT NULL default '0',
+  default_value text NOT NULL,
+  modifiable enum('N','Y') NOT NULL default 'N',
+  required enum('N','Y') NOT NULL default 'N',
+  multilignes enum('N','Y') NOT NULL default 'N',
+  ordering int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_directory (id_directory)
+);
+
+#
+# Structure de la table `bab_dbdiradd_groups`
+#
+
+CREATE TABLE bab_dbdiradd_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table `bab_dbdirupdate_groups`
+#
+
+CREATE TABLE bab_dbdirupdate_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+#
+# Structure de la table `bab_dbdirview_groups`
+#
+
+CREATE TABLE bab_dbdirview_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
+# Structure de la table `bab_ldap_directories`
+#
+
+CREATE TABLE bab_ldap_directories (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  host tinytext NOT NULL,
+  basedn text NOT NULL,
+  userdn text NOT NULL,
+  password tinyblob NOT NULL,
+  PRIMARY KEY  (id)
+);
+
+#
+# Structure de la table `bab_ldapdirview_groups`
+#
+
+CREATE TABLE bab_ldapdirview_groups (
   id int(11) unsigned NOT NULL auto_increment,
   id_object int(11) unsigned NOT NULL default '0',
   id_group int(11) unsigned NOT NULL default '0',
