@@ -101,6 +101,15 @@
 <!--#end articlecreatebyfile -->
 
 <!--#begin modifyarticle -->
+<script type="text/javascript">
+<!--
+function warn()
+{
+var dummy;
+alert('{ warntxt }');
+}
+//-->
+</script>
 <!--#if parentscount -->
 <table border="0" width="100%" cellpadding="1" cellspacing="0">
 <tr>
@@ -173,17 +182,25 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <table width="100%"><tr>
 <td class="BabLoginMenuBackground" valign="middle" align="center">{ title } </td>
 <td class="BabLoginMenuBackground" valign="middle" align="center">{ topicstxt } </td>
+<td class="BabLoginMenuBackground" valign="middle" align="center">
+<!--#if raurl -->
+<a class="BabAlphabetLink" href="javascript: Start('{ raurl }', 'OVRestriction', 'width=350,height=350,status=no,resizable=yes,top=200,left=200');">{ restrictiontxt }</a>
+<!--#else raurl -->&nbsp;
+<!--#endif raurl -->
+</td>
 </tr>
 <tr> 
 <td align="center" valign="middle"> 
 <input type="text" name="title" size="50" value="{ titleval }" maxlength="100">
 </td>
 <td align="center" valign="middle">
-<select name="topicid">
+<select name="topicid" <!--#if brestriction -->onChange="warn()"<!--#endif brestriction -->>
 <!--#in getnexttopic -->
 <option value="{ topicid }" { selected }>{ topictitle }</option>
  <!--#endin getnexttopic -->
 </select>
+</td>
+<td align="center" valign="middle">&nbsp;
 </td>
 </tr></table>
 
@@ -202,10 +219,10 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <!--#else babOldEditor -->
 <iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1', 'headtext','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
 </iframe>
-<textarea id="headtext" name="headtext"  onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea>
+<textarea id="headtext" name="headtext"  onfocus="savef(document.modarticle.headtext)" style="width:100%" rows="20">{ headval }</textarea>
 <!--#endif babOldEditor -->
 <!--#else msie -->
-<textarea id="headtext" name="headtext" onblur="this.focus()" onfocus="savef(document.createart.headtext)" style="width:100%" rows="20">{ headval }</textarea><!--#endif msie -->
+<textarea id="headtext" name="headtext" onblur="this.focus()" onfocus="savef(document.modarticle.headtext)" style="width:100%" rows="20">{ headval }</textarea><!--#endif msie -->
 </td>
 </tr>
 <tr> 
@@ -221,7 +238,7 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
 <!--#else babOldEditor -->
 <iframe width="0" height="0" style="visibility: hidden" onload="initEditor('1', 'bodytext','{ babUrl }','{ babInstallPath }','{ babLanguage }')">
 </iframe>
-<textarea id="bodytext" name="bodytext" onfocus="savef(document.createart.bodytext)" style="width:100%" rows="20">{ bodyval } </textarea>
+<textarea id="bodytext" name="bodytext" onfocus="savef(document.modarticle.bodytext)" style="width:100%" rows="20">{ bodyval } </textarea>
 <!--#endif babOldEditor -->
 <!--#else msie -->
 <textarea cols="50" rows="20" name="bodytext" onfocus="savef(document.modarticle.bodytext)">{ bodyval }</textarea>
@@ -515,3 +532,78 @@ savef(document.createart.headtext);
 </script>
 <!--#endif msie -->
 <!--#end createarticle -->
+
+<!--#begin restrict_access_article -->
+<!--#if popup -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
+{ babCss }
+<script type="text/javascript" src="{ babOvidentiaJs }"></script>
+<script type="text/javascript">
+<!--
+window.focus();
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br>
+<center>
+<!--#endif popup -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="articles">
+<input type="hidden" name="idx" value="Articles">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="popup" value="{ popup }">
+<input type="hidden" name="updacc" value="updacc">
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ restrictiontxt }:</td>
+</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="restriction">
+<option value="" { norestrictsel }>{ norestricttxt }</option>
+<option value="1" { yesrestrictsel }>{ yesrestricttxt }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ operatortxt }:</td>
+</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="operator">
+<option value="," { operatororysel }>{ ortxt }</option>
+<option value="&" { operatorornsel }>{ andtxt }</option>
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ groupstxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<!--#in getnextrow -->
+<br><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
+<!--#endin getnextrow -->
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="Submit" value="{ update }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#if popup -->
+<br>
+</BODY></HTML>
+<!--#endif popup -->
+<!--#end restrict_access_article -->

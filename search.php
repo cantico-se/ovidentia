@@ -489,12 +489,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 // ---------------------------------------- SEARCH ARTICLES AND ARTICLES COMMENTS ---------
 			if( empty($item) || $item == "a")
 				{
-				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.title, a.head, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, 'yyyy-mm-dd' date from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id AND 0";
+				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.title, a.head, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, 'yyyy-mm-dd' date from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id AND 0";
 				$this->db->db_query($req);
 				$req = "alter table artresults add unique (id)";
 				$this->db->db_query($req);
 
-				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name,email, a.title arttitle, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
+				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name,email, a.title arttitle, a.restriction, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
 				$this->db->db_query($req);
 				$req = "alter table comresults add unique (id)";
 				$this->db->db_query($req); 
@@ -527,15 +527,28 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$reqsup = "and (".finder($this->like,"title",$option,$this->like2)." or ".finder($this->like,"head",$option,$this->like2)." or ".finder($this->like,"body",$option,$this->like2).")";
 				else $reqsup = 0;
 				
-				$req = "insert into artresults SELECT a.id, a.id_topic, a.title title,a.head, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." and confirmed='Y' and id_topic in (".implode($babBody->topview,",").") ".$crit_art." order by $order ";
+				$req = "insert into artresults SELECT a.id, a.id_topic, a.title title,a.head, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,a.id_author, DATE_FORMAT(a.date, '%d-%m-%Y') date  from ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T, ".BAB_USERS_TBL." U where a.id_topic = T.id AND a.id_author = U.id ".$reqsup." and confirmed='Y' and id_topic in (".implode($babBody->topview,",").") ".$crit_art." order by $order ";
 				$this->db->db_query($req);
+
+				$res = $this->db->db_query("select id, restriction from artresults where restriction!=''");
+				while( $rr = $this->db->db_fetch_array($res))
+					{
+					if( !bab_articleAccessByRestriction($rr['restriction']))
+						$this->db->db_query("delete from artresults where id='".$rr['id']."'");
+					}
 
 				if ($this->like || $this->like2)
 					$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
 
-				$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name author,email,  a.title arttitle, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' and C.id_topic in (".implode($babBody->topview,",").") ".$crit_com." order by $order ";
+				$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, DATE_FORMAT(C.date, '%d-%m-%Y') date, name author,email,  a.title arttitle, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' and C.id_topic in (".implode($babBody->topview,",").") ".$crit_com." order by $order ";
 
 				$this->db->db_query($req);
+				$res = $this->db->db_query("select id, restriction from comresults where restriction!=''");
+				while( $rr = $this->db->db_fetch_array($res))
+					{
+					if( !bab_articleAccessByRestriction($rr['restriction']))
+						$this->db->db_query("delete from comresults where id='".$rr['id']."'");
+					}
 
 				$req = "select count(*) from artresults";
 				$res = $this->db->db_query($req);
@@ -1138,10 +1151,20 @@ function viewArticle($article, $w)
 			$res = $db->db_query($req);
 			$arr = $db->db_fetch_array($res);
 	
-			$this->head = highlightWord( $w, bab_replace($arr['head']));
-			$this->content = highlightWord( $w, bab_replace($arr['body']));
-			$this->title = highlightWord( $w, $arr['title']);
-			$this->topic =bab_getCategoryTitle($arr['id_topic']);
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && bab_articleAccessByRestriction($arr['restriction']))
+				{
+				$this->head = highlightWord( $w, bab_replace($arr['head']));
+				$this->content = highlightWord( $w, bab_replace($arr['body']));
+				$this->title = highlightWord( $w, $arr['title']);
+				$this->topic =bab_getCategoryTitle($arr['id_topic']);
+				}
+			else
+				{
+				$this->head = '';
+				$this->content = bab_translate("Access denied");
+				$this->title = '';
+				$this->topic ='';
+				}
 			}
 		}
 	

@@ -114,7 +114,7 @@ function browse($topics,$cat,$cb)
 			$this->restop = $this->db->db_query($reqtop);
 			$this->counttop = $this->db->db_num_rows($this->restop);
 
-			$req = "select id, id_topic, id_author, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' order by date desc";
+			$req = "select id, id_topic, id_author, date, title, head, restriction from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' order by date desc";
 			$this->resart = $this->db->db_query($req);
 			$this->countarticles = $this->db->db_num_rows($this->resart);
 			
@@ -169,13 +169,20 @@ function browse($topics,$cat,$cb)
 				return false;
 			}
 
-		function getnextarticle()
+		function getnextarticle(&$skip)
 			{
 			global $babBody;
 			static $i = 0;
 			if( $i < $this->countarticles)
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
+				if( $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+
 				if (in_array($arr['id_topic'],$babBody->topview))
 					{
 					$this->display = true;

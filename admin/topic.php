@@ -170,7 +170,7 @@ function deleteArticles($art, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
+function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -222,8 +222,11 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $disptid;
 		var $arrdisptmpl;
 		var $countdisptmpl;
+		var $restrictysel;
+		var $restrictnsel;
+		var $restricttxt;
 
-		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
+		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
@@ -240,6 +243,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->delete = bab_translate("Delete");
 			$this->arttmpltxt = bab_translate("Article's model");
 			$this->disptmpltxt = bab_translate("Display template");
+			$this->restricttxt = bab_translate("Articles's authors can restrict access to articles");
 			$this->tgval = "topic";
 			$this->item = $id;
 			$this->langLabel = bab_translate("Language");
@@ -295,6 +299,20 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				{
 				$this->notifnsel = "";
 				$this->notifysel = "selected";
+				}
+
+			if(empty($restrict))
+				$restrict = $this->arr['restrict_access'];
+
+			if( $restrict == "N")
+				{
+				$this->restrictnsel = "selected";
+				$this->restrictysel = "";
+				}
+			else
+				{
+				$this->restrictnsel = "";
+				$this->restrictysel = "selected";
 				}
 
 			if(empty($atid))
@@ -485,7 +503,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 
 		}
 
-	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
+	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -557,7 +575,39 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"topics.html", "articleview");
 	}
 
-function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang, $atid, $disptid)
+function warnRestrictionArticle($topics)
+	{
+	global $babBody;
+
+	class tempw
+		{
+	
+		var $warningtxt;
+		var $wdisplay;
+
+		function tempw($topics)
+			{
+			global $babDB;
+			$this->wdisplay = false;
+			list($acc) = $babDB->db_fetch_row($babDB->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+			if( $acc == 'N' )
+				{
+				$res = $babDB->db_query("select id from ".BAB_ARTICLES_TBL." where id_topic='".$topics."' and restriction!=''");
+				if( $res && $babDB->db_num_rows($res) > 0 )
+					$this->wdisplay = true;
+				}
+			else
+				$this->wdisplay = true;
+
+			$this->warningtxt = bab_translate("WARNING! Some articles uses access restriction. Changing access topic can make them inaccessible");
+			}
+		}
+	
+	$temp = new tempw($topics);
+	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
+	}
+
+function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang, $atid, $disptid, $restrict)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -627,7 +677,7 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 		$db->db_query($query);
 	}
 
-	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."', display_tmpl='".$disptid."', restrict_access='".$restrict."' where id = '".$id."'";
 	$db->db_query($query);
 
 	if( $arr['id_cat'] != $cat )
@@ -703,7 +753,7 @@ if( isset($add) )
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $topdesc, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid, $disptid))
+		if(!updateCategory($item, $category, $topdesc, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid, $disptid, $restrict))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -773,6 +823,7 @@ switch($idx)
 	case "Groups":
 		$babBody->title = bab_getCategoryTitle($item);
 		aclGroups("topic", "Modify", BAB_TOPICSVIEW_GROUPS_TBL, $item, "aclview");
+		warnRestrictionArticle($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
@@ -784,6 +835,7 @@ switch($idx)
 	case "Comments":
 		$babBody->title = bab_getCategoryTitle($item);
 		aclGroups("topic", "Modify", BAB_TOPICSCOM_GROUPS_TBL, $item, "aclview");
+		warnRestrictionArticle($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
@@ -795,6 +847,7 @@ switch($idx)
 	case "Submit":
 		$babBody->title = bab_getCategoryTitle($item);
 		aclGroups("topic", "Modify", BAB_TOPICSSUB_GROUPS_TBL, $item, "aclview");
+		warnRestrictionArticle($item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);
@@ -818,7 +871,7 @@ switch($idx)
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a topic");
-		modifyCategory($item, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
+		modifyCategory($item, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);

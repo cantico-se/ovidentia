@@ -162,6 +162,9 @@ function modifyArticle($topics, $article)
 		var $langSelected;
 		var $langFiles;
 		var $countLangFiles;
+		var $raurl;
+		var $restrictiontxt;
+		var $brestriction;
 
 		function temp($topics, $article)
 			{
@@ -172,18 +175,28 @@ function modifyArticle($topics, $article)
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
 			$this->langLabel = bab_translate("Language");
+			$this->restrictiontxt = bab_translate("Access restriction");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			$this->raurl = false;
+			$this->brestriction = false;
 			if( $this->count > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->headval = htmlentities($this->arr['head']);
 				$this->bodyval = htmlentities($this->arr['body']);
 				$this->titleval = htmlentities($this->arr['title']);
+				if( $this->arr['restriction'] != '' )
+					$this->brestriction = true;
+				list($restrict_access) = $this->db->db_fetch_array($this->db->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$this->arr['id_topic']."'"));
+				if( $restrict_access == 'Y' || $this->brestriction )
+					{
+					$this->raurl = $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$article."&popup=1";
+					}
 				}
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
@@ -566,7 +579,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	global $babBody;
 	$db = $GLOBALS['babDB'];
 
-	$req = "select idfai, title, id_author from ".BAB_ARTICLES_TBL." where id='".$article."'";
+	$req = "select idfai, title, id_author, restriction from ".BAB_ARTICLES_TBL." where id='".$article."'";
 	$res = $db->db_query($req);
 	$arrart = $db->db_fetch_array($res);
 
@@ -617,7 +630,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 			$artauthor = bab_translate("Anonymous");
 
 		if( $bnotify == "Y" )
-			notifyArticleGroupMembers(bab_getCategoryTitle($topics), $topics, $arrart['title'], $artauthor, 'add');
+			notifyArticleGroupMembers(bab_getCategoryTitle($topics), $topics, $arrart['title'], $artauthor, 'add', $arrart['restriction']);
 			break;
 		default:
 			$subject = bab_translate("About your article");

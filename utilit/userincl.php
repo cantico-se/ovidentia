@@ -439,6 +439,7 @@ function bab_notesAccess()
 	return false;
 	}
 
+
 function bab_contactsAccess()
 	{
 	$db = $GLOBALS['babDB'];
@@ -478,6 +479,46 @@ function bab_vacationsAccess()
 		}
 
 	return $array;
+	}
+
+function bab_articleAccessByRestriction($restriction, $iduser ='')
+	{
+	$db = $GLOBALS['babDB'];
+
+	if( empty($restriction))
+		return true;
+
+	if( strchr($restriction, ","))
+		$sep = ',';
+	else
+		$sep = '&';
+
+	$arr = explode($sep, $restriction);
+	if( empty($iduser))
+		$iduser = $GLOBALS['BAB_SESS_USERID'];
+
+	$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$iduser."' and id_group IN (".implode(',', $arr).")";
+	$res = $db->db_query($req);
+	$num = $db->db_num_rows($res);
+	if( $res && $num > 0)
+		{
+		if( $sep == ',' )
+			return true;
+
+		if( $num == count($arr))
+			return true;
+		}
+	return false;
+	}
+
+function bab_articleAccessById($id, $iduser ='')
+	{
+	$db = $GLOBALS['babDB'];
+
+	list($restriction) = $db->db_fetch_row($db->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".id."'"));
+	if( empty($restriction))
+		return true;
+	return bab_articleAccessByRestriction($restriction, $iduser);
 	}
 	
 function bab_getCalendarId($iduser, $type)
@@ -661,6 +702,30 @@ function bab_getGroups()
 	return $arr;
 	}
 
+
+function bab_getGroupEmails($id)
+{
+	$db = $GLOBALS['babDB'];
+	$query = "select email from ".BAB_USERS_TBL." usr , ".BAB_USERS_GROUPS_TBL." grp where grp.id_group='$id' and grp.id_object=usr.id";
+	$res = $db->db_query($query);
+	$emails = "";
+	if( $res && $db->db_num_rows($res) > 0)
+		{
+		while ($arr = $db->db_fetch_array($res)){
+		if ($arr['email'])
+			{
+			$emails .= $arr['email'].",";
+			}
+		}
+		$emails = substr("$emails", 0, -1);
+		return $emails;
+		}
+	else
+		{
+		return "";
+		}
+}
+
 function bab_replace( $txt )
 {
 	global $babBody;
@@ -727,7 +792,7 @@ function bab_replace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if(in_array($arr['id_topic'], $babBody->topview))
+				if(in_array($arr['id_topic'], $babBody->topview) && bab_articleAccessByRestriction($arr['restriction']))
 					{
 					if( $i == 0 )
 						$txt = preg_replace("/\\\$".$artarray[$i]."\(".preg_quote($m[1][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$arr['title']."</a>", $txt);
@@ -746,29 +811,35 @@ function bab_replace( $txt )
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
+			$repl = false;
 			$req = "select * from ".BAB_ARTICLES_TBL." where id=".$m[1][$k];
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				if ($m[2][$k] == '0')
+				if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
 					{
-					$titre = $arr['title'];
-					}
-				else
-					{
-					$titre = $m[2][$k];
-					}
-				if ($m[3][$k] == '0')
-					{
-					$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$titre."</a>", $txt);
-					}
-				else
-					{
-					$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$titre."</a>", $txt);
+					$repl = true;
+					if ($m[2][$k] == '0')
+						{
+						$titre = $arr['title'];
+						}
+					else
+						{
+						$titre = $m[2][$k];
+						}
+					if ($m[3][$k] == '0')
+						{
+						$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$titre."</a>", $txt);
+						}
+					else
+						{
+						$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$titre."</a>", $txt);
+						}
 					}
 				}
-			else
+
+			if( $repl == false )
 				{
 				$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k]).",".preg_quote($m[3][$k])."\)/", $m[2][$k] , $txt);
 				}

@@ -27,6 +27,130 @@ include $babInstallPath."utilit/topincl.php";
 
 define("MAX_ARTICLES", 10);
 
+
+function print_groups_access($topics, $article, $popup=0)
+{
+	global $babBody;
+
+	class tpga
+	{
+		var $operatortxt;
+		var $operatororysel;
+		var $ortxt;
+		var $operatorornsel;
+		var $andtxt;
+		var $grpname;
+		var $bgashow;
+		var $count;
+		var $res;
+		var $arrrest;
+		var $grpcheck;
+		var $restrictiontxt;
+		var $norestrictsel;
+		var $yesrestrictsel;
+		var $norestricttxt;
+		var $yesrestricttxt;
+		var $groupstxt;
+		var $update;
+		var $article;
+		var $topics;
+		var $popup;
+
+		function tpga($topics, $article, $popup)
+			{
+			global $babDB;
+
+			$this->operatortxt = bab_translate("Operator");
+			$this->ortxt = bab_translate("Or");
+			$this->andtxt = bab_translate("And");
+			$this->groupstxt = bab_translate("Groups");
+			$this->restrictiontxt = bab_translate("Access restriction");
+			$this->norestricttxt = bab_translate("No restriction");
+			$this->yesrestricttxt = bab_translate("Groups");
+			$this->update = bab_translate("Update");
+			$this->article = $article;
+			$this->topics = $topics;
+			$this->popup = $popup;
+
+			$this->bgashow = false;
+			$this->res = $babDB->db_query("select * from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='".$topics."' and id_object > '2'");
+			if( $this->res )
+				{
+				$this->bgashow = true;
+				$this->count = $babDB->db_num_rows($this->res);
+				}
+			else
+				{
+				$this->count = 0;
+				}
+
+			$this->operatorornsel = '';
+			$this->operatororysel = 'selected';
+
+			list($restriction) = $babDB->db_fetch_row($babDB->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+			if( strchr($restriction, "&"))
+				{
+				$this->arrrest = explode('&', $restriction);
+				$this->operatororysel = '';
+				$this->operatorornsel = 'selected';
+				}
+			else if( strchr($restriction, ","))
+				{
+				$this->arrrest = explode(',', $restriction);
+				}
+			else
+				$this->arrrest = array($restriction);
+
+			if( empty($restriction))
+				{
+				$this->norestrictsel = 'selected';
+				$this->yesrestrictsel = '';
+				}
+			else
+				{
+				$this->norestrictsel = '';
+				$this->yesrestrictsel = 'selected';
+				}
+			}
+		
+		function getnextrow()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				if( $i % 3 )
+					$this->newrow = false;
+				else
+					$this->newrow = true;
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->grpid = $arr['id_group'];
+				$this->grpname = bab_getGroupName($arr['id_group']);
+				if( in_array($this->grpid, $this->arrrest))
+					$this->grpcheck = 'checked';
+				else
+					$this->grpcheck = '';
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+
+	}
+
+	$temp = new tpga($topics, $article, $popup);
+	if( $popup )
+		echo bab_printTemplate($temp,"articles.html", "restrict_access_article");
+	else
+		$babBody->babecho(bab_printTemplate($temp,"articles.html", "restrict_access_article"));
+}
+
+
 class listArticles extends categoriesHierarchy
 {
 
@@ -185,7 +309,7 @@ function listArticles($topics, $approver)
 			$this->listArticles($topics);
 			$this->db = $GLOBALS['babDB'];
 
-			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL."";
+			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen, restriction from ".BAB_ARTICLES_TBL."";
 			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
 			switch($langFilterValue)
 				{
@@ -213,12 +337,18 @@ function listArticles($topics, $approver)
 			$this->approver = $approver;
 			}
 
-		function getnext()
+		function getnext(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				if( !$this->approver && $this->arr['restriction'] != '' && !bab_articleAccessByRestriction($this->arr['restriction']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
 				$this->articleid = $this->arr['id'];
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
@@ -343,7 +473,7 @@ function listOldArticles($topics, $pos, $approver)
 				$this->bnavigation = false;
 
 
-			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
+			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen, restriction from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
 			if( $total > MAX_ARTICLES)
 				{
 				$req .= " limit ".$pos.",".MAX_ARTICLES;
@@ -356,13 +486,19 @@ function listOldArticles($topics, $pos, $approver)
 				$this->com = false;
 			}
 
-		function getnext()
+		function getnext(&$skip)
 			{
 			global $new; 
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				if( !$this->approver && $this->arr['restriction'] != '' && !bab_articleAccessByRestriction($this->arr['restriction']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
 				$this->articleid = $this->arr['id'];
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					$this->articleauthor = $author;
@@ -443,11 +579,11 @@ function viewArticle($article)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']))
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
-			$this->content = bab_replace($this->arr['body']);
-			$this->head = bab_replace($this->arr['head']);
-			}
+				$this->content = bab_replace($this->arr['body']);
+				$this->head = bab_replace($this->arr['head']);
+				}
 			else
 				$this->content = bab_translate("Access denied");
 
@@ -458,7 +594,7 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"articles.html", "articleview");
 	}
 
-function readMore($topics, $article)
+function readMore($topics, $article, $approver)
 	{
 	global $babBody, $babDB;
 
@@ -480,8 +616,9 @@ function readMore($topics, $article)
 		var $title;
 		var $titlearticle;
 		var $printtxt;
+		var $approver;
 
-		function temp($topics, $article)
+		function temp($topics, $article, $approver)
 			{
 			$this->categoriesHierarchy($topics);
 			$this->printtxt = bab_translate("Print Friendly");
@@ -491,18 +628,25 @@ function readMore($topics, $article)
 			$this->count = $this->db->db_num_rows($this->res);
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
-			$req = "select id,title from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and confirmed='Y' and archive='N' order by date desc";
+			$req = "select id,title, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$this->topics."' and confirmed='Y' and archive='N' order by date desc";
 			$this->resart = $this->db->db_query($req);
 			$this->countart = $this->db->db_num_rows($this->resart);
 			$this->topictxt = bab_translate("In the same topic");
+			$this->approver = $approver;
 			}
 
-		function getnext()
+		function getnext(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
+				if( !$this->approver && $this->arr['restriction'] != '' && !bab_articleAccessByRestriction($this->arr['restriction']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
 				$this->title = bab_replace($this->arr['title']);
 				if( !empty($this->arr['body']))
 					$this->content = bab_replace($this->arr['body']);
@@ -522,12 +666,18 @@ function readMore($topics, $article)
 				return false;
 			}
 
-		function getnextart()
+		function getnextart(&$skip)
 			{
 			static $i = 0;
 			if( $i < $this->countart)
 				{
 				$arr = $this->db->db_fetch_array($this->resart);
+				if( !$this->approver && $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
 				$this->titlearticle = $arr['title']; 
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id'];
 				$this->urlreadmore = $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id'];
@@ -551,7 +701,7 @@ function readMore($topics, $article)
 			}
 		}
 
-	$temp = new temp($topics, $article);
+	$temp = new temp($topics, $article, $approver);
 	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "body_".$template));
 	return $temp->nbarch;
 	}
@@ -681,6 +831,10 @@ function modifyArticle($topics, $article)
 		var $langFiles;
 		var $countLangFiles;
 		var $topicid;
+		var $raurl;
+		var $restrictiontxt;
+		var $warntxt;
+		var $brestriction;
 
 
 		function temp($topics, $article)
@@ -693,32 +847,41 @@ function modifyArticle($topics, $article)
 			$this->modify = bab_translate("Modify");
 			$this->topicstxt = bab_translate("Topic");
 			$this->notifymembers = bab_translate("Notify group members by mail");
+			$this->restrictiontxt = bab_translate("Access restriction");
+			$this->warntxt = bab_translate("This article uses the access restriction. Its displacement towards another topic can make it inaccessible");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->db = $GLOBALS['babDB'];
+			$res = $this->db->db_query("select lang, restrict_access  from ".BAB_TOPICS_TBL." where id='".$topics."'");
+			$arrtopic = $this->db->db_fetch_array($res);
 			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
-				$this->db = $GLOBALS['babDB'];
-				$this->res = $this->db->db_query("select lang from ".BAB_TOPICS_TBL." where id='".$topics."'");
-				$this->arr = $this->db->db_fetch_array($this->res);
-				if($this->arr['lang'] != '*')
+				if($arrtopic['lang'] != '*')
 				{
 					$this->langFiles = array();
 					$this->langFiles[] = '*';
 				}
 			}
 			$this->countLangFiles = count($this->langFiles);
-			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+			$this->raurl = false;
+			$this->brestriction = false;
 			if( $this->count > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->headval = htmlentities($this->arr['head']);
 				$this->bodyval = htmlentities($this->arr['body']);
 				$this->titleval = htmlentities($this->arr['title']);
+				if( $this->arr['restriction'] != '' )
+					$this->brestriction = true;
+				if( $arrtopic['restrict_access'] == 'Y' || $this->brestriction )
+					{
+					$this->raurl = $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$article."&popup=1";
+					}
 				}
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
@@ -913,6 +1076,7 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "createarticle"));
 	}
 
+
 function articlePrint($topics, $article)
 	{
 	global $babBody;
@@ -932,7 +1096,7 @@ function articlePrint($topics, $article)
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
-			if( $this->count > 0 )
+			if( $this->count > 0)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->head = bab_replace($this->arr['head']);
@@ -959,12 +1123,12 @@ function notifyApprovers($id, $topics)
 		if( $arr['idsaart'] == 0 )
 			{
 			$db->db_query("update ".BAB_ARTICLES_TBL." set confirmed='Y' where id='".$id."'");
-			$rr = $db->db_fetch_array($db->db_query("select title, id_author from ".BAB_ARTICLES_TBL." where id='".$id."'"));
+			$rr = $db->db_fetch_array($db->db_query("select title, id_author, restriction from ".BAB_ARTICLES_TBL." where id='".$id."'"));
 		
 			if( $rr['id_author'] == 0 || (($artauthor = bab_getUserName($rr['id_author'])) == ''))
 				$artauthor = bab_translate("Anonymous");
 			if( $arr['notify'] == "Y" )
-				notifyArticleGroupMembers(bab_getCategoryTitle($topics), $topics, $rr['title'], $artauthor, 'add');
+				notifyArticleGroupMembers(bab_getCategoryTitle($topics), $topics, $rr['title'], $artauthor, 'add', $rr['restriction']);
 			return true;
 			}
 
@@ -1013,6 +1177,9 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics, $lang
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 	notifyApprovers($id, $topics);
+	list($accrestriction) = $db->db_fetch_row($db->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+	if( $accrestriction == 'Y' )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$id);
 	}
 
 
@@ -1054,10 +1221,12 @@ function saveArticle($title, $headtext, $bodytext, $topics, $lang='')
 	$res = $db->db_query($req);
 
 	notifyApprovers($id, $topics);
+	list($accrestriction) = $db->db_fetch_row($db->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$topics."'"));
+	if( $accrestriction == 'Y' )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics."&article=".$id);
 	return true;
 	}
 
-//@@: warn this function is duplicated in waiting.php file 
 function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif, $lang)
 	{
 	global $babBody;
@@ -1099,9 +1268,25 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	if( $bnotif == "Y" )
 		{
 		$arr = $db->db_fetch_array($db->db_query("select category from ".BAB_TOPICS_TBL." where id='".$topics."'"));
-		notifyArticleGroupMembers($arr['category'], $topics, $title, bab_getArticleAuthor($article), 'mod');
+		$rr = $db->db_fetch_array($db->db_query("select restriction from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+		notifyArticleGroupMembers($arr['category'], $topics, $title, bab_getArticleAuthor($article), 'mod', $rr['restriction']);
 	}
 	} // function updateArticle
+
+
+function updateArticleRestricionAccess($article, $topics, $grpids, $operator, $restriction, $popup)
+{
+	global $babBody, $babDB;
+
+	$ra = '';
+	if( !empty($restriction) && count($grpids) > 0)
+	{
+		$ra = implode($operator, $grpids);
+	}
+	$babDB->db_query("update ".BAB_ARTICLES_TBL." set restriction='".$ra."' where id='".$article."'");
+	if( $popup )
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=raunload&topics=".$topics."&article=".$article);
+}
 
 
 /* main */
@@ -1137,6 +1322,11 @@ if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != "" && $approver)
 	bab_confirmDeleteArticle($article);
 	}
 
+if( isset($updacc) && $updacc == "updacc")
+	{
+	updateArticleRestricionAccess($article, $topics, $grpids, $operator, $restriction, $popup);
+	}
+
 if( isset($modify) && $approver)
 	{
 	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif, $lang);
@@ -1169,6 +1359,27 @@ switch($idx)
 		viewArticle($article);
 		exit;
 
+	case "resacc":
+		if( !isset($popup)) $popup =0;
+		$babBody->title = bab_translate("Access restriction");
+		if( in_array($topics, $babBody->topview))
+			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+		list($artauthor) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$article."'"));
+		if( ($artauthor != 0 && $artauthor == $BAB_SESS_USERID) || $approver)
+			{
+			$babBody->addItemMenu("resacc", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=articles&idx=resacc&topics=".$topics);
+			print_groups_access($topics, $article, $popup);
+			if( $popup )
+				exit;
+			}
+		break;
+
+	case "raunload":
+		include_once $babInstallPath."utilit/uiutil.php";
+		popupUnload(bab_translate("Update done"), '');
+		exit;
+	
+
 	case "Submit":
 		$babBody->title = bab_translate("Submit an article")." [ ". $babLevelTwo ." ]";
 		if( in_array($topics, $babBody->topview))
@@ -1198,9 +1409,9 @@ switch($idx)
 
 	case "More":
 		$babBody->title = $babLevelTwo;
-		if( in_array($topics, $babBody->topview) || $access)
+		if( $access || (in_array($topics, $babBody->topview) && bab_articleAccessById($article)))
 			{
-			$barch = readMore($topics, $article);
+			$barch = readMore($topics, $article, $approver);
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topics) || $approver)
 				{
@@ -1240,9 +1451,9 @@ switch($idx)
 		break;
 
 	case "Print":
-		if( in_array($topics, $babBody->topview) || $access)
+		if( $access || (in_array($topics, $babBody->topview) && bab_articleAccessById($article)))
 			articlePrint($topics, $article);
-		exit();
+		exit;
 		break;
 
 	case "larch":

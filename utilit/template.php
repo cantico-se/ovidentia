@@ -153,9 +153,12 @@ function processTemplate(&$class, $str)
 				if(!preg_match("/".$this->startPatternI."in\s+".$m[2]."\s+".$this->endPatternI."(.*?)".$this->startPatternI."endin\s+".$m[2]."\s+".$this->endPatternI."(.*)/s", $str, $m2) )
 					die("<BR>in ".$m[2].".... endif ??? : no matching </BR>");
 				$rep = trim($m2[1]);
-				while( $class->$m[2]() )
+				$skip = false;
+				while( $class->$m[2]($skip) )
 					{
-					$ret .= $this->processTemplate($class, $rep);
+					if( !$skip )
+						$ret .= $this->processTemplate($class, $rep);
+					$skip = false;
 					}
 
 				$str = $ret.$m2[2];

@@ -21,6 +21,7 @@ CREATE TABLE bab_articles (
    archive enum('N','Y') NOT NULL default 'N',
    idfai int(11) unsigned NOT NULL default '0',
    lang varchar(10) NOT NULL default '',
+   restriction varchar(255) NOT NULL,
    PRIMARY KEY (id),
    KEY id_topic (id_topic),
    KEY date (date)
@@ -371,6 +372,7 @@ CREATE TABLE bab_topics (
    lang varchar(10) NOT NULL default '',
    article_tmpl varchar(255),
    display_tmpl varchar(255),
+   restrict_access enum('N','Y') NOT NULL default 'N',
    PRIMARY KEY (id),
    KEY id_approver (id_approver),
    KEY id_cat (id_cat),

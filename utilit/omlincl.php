@@ -127,9 +127,12 @@ class bab_handler
 	{
 		$this->ctx->push_handler($this);
 		$res = '';
-		while($this->getnext())
+		$skip = false;
+		while($this->getnext($skip))
 		{
-			$res .= $this->ctx->handle_text($txt);
+			if( !$skip)
+				$res .= $this->ctx->handle_text($txt);
+			$skip = false;
 		}
 		$this->ctx->pop_handler();
 		return $res;
@@ -241,6 +244,7 @@ class bab_IfGreaterThanOrEqual extends bab_Operator
 
 class bab_ArticlesHomePages extends bab_handler
 {
+	var $IdEntries = array();
 	var $arrid = array();
 	var $index;
 	var $count;
@@ -281,11 +285,22 @@ class bab_ArticlesHomePages extends bab_handler
 		$filter = $ctx->get_value('filter');
 
 		if (($filter == "")||(strtoupper($filter) == "NO")) 
-			$this->res = $babDB->db_query("select id_article from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$arr['id']."' and ordering!='0' order by ".$order);
-		else 
-			$this->res = $babDB->db_query("select H.id_article from ".BAB_HOMEPAGES_TBL." H LEFT JOIN ".BAB_ARTICLES_TBL." A ON (H.id_article=A.id) where id_group='".$idgroup."' and id_site='".$arr['id']."' and ordering!='0'  and id_topic in (".implode(',',$babBody->topview).") order by ".$order);
+			$filter = false;
+		else
+			$filter = true;
 
-		$this->count = $babDB->db_num_rows($this->res);
+		$this->res = $babDB->db_query("select id_article from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$arr['id']."' and ordering!='0' order by ".$order);
+		while($arr = $babDB->db_fetch_array($this->res))
+		{
+			list($restriction, $idtopic) = $babDB->db_fetch_array($babDB->db_query("select restriction, id_topic from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'"));
+			if( $restriction == '' || bab_articleAccessByRestriction($restriction) )
+				{
+				if( $filter == false || in_array($idtopic, $babBody->topview))
+					$this->IdEntries[] = $arr['id_article'];
+				}
+		}
+
+		$this->count = count($this->IdEntries);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -295,8 +310,7 @@ class bab_ArticlesHomePages extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($this->res);
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."' and confirmed='Y'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."' and confirmed='Y'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
@@ -692,6 +706,7 @@ class bab_ArticleTopic extends bab_handler
 
 class bab_Articles extends bab_handler
 {
+	var $IdEntries = array();
 	var $index;
 	var $count;
 	var $res;
@@ -708,7 +723,7 @@ class bab_Articles extends bab_handler
 
 		if( count($topicid) > 0)
 		{
-			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y' and id_topic IN (".implode(',', $topicid).") order by date desc";
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' and id_topic IN (".implode(',', $topicid).") order by date desc";
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
 			if( $rows === false || $rows === '')
@@ -717,8 +732,12 @@ class bab_Articles extends bab_handler
 			if( $offset === false || $offset === '')
 				$offset = "0";
 			$req .= " limit ".$offset.", ".$rows;
-
 			$this->res = $babDB->db_query($req);
+
+			while( $arr = $babDB->db_fetch_array($this->res) )
+				if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
+					$this->IdEntries[] = $arr['id'];
+
 			$this->count = $babDB->db_num_rows($this->res);
 		}
 		else
@@ -732,7 +751,7 @@ class bab_Articles extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($this->res);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
@@ -774,9 +793,9 @@ class bab_Article extends bab_handler
 			$rr = explode(',', $articleid);
 			for( $i=0; $i < count($rr); $i++ )
 			{
-				$res = $babDB->db_query("select id_topic from ".BAB_ARTICLES_TBL." where id='".$rr[$i]."' and confirmed='Y'");
+				$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where id='".$rr[$i]."' and confirmed='Y'");
 				$arr = $babDB->db_fetch_array($res);
-				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
+				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
 					$this->IdEntries[] = $rr[$i];
 			}
 		$this->count = count($this->IdEntries);
@@ -1521,6 +1540,7 @@ class bab_FileNext extends bab_File
 
 class bab_RecentArticles extends bab_handler
 {
+	var $IdEntries = array();
 	var $arrid = array();
 	var $index;
 	var $count;
@@ -1543,7 +1563,7 @@ class bab_RecentArticles extends bab_handler
 
 		if( count($this->topicid) > 0 )
 			{
-			$req = "select * from ".BAB_ARTICLES_TBL." where confirmed='Y'";
+			$req = "select id, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y'";
 			if( $this->nbdays !== false)
 				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 
@@ -1551,8 +1571,12 @@ class bab_RecentArticles extends bab_handler
 			$req .= " order by date desc";
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
+
 			$this->resarticles = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->resarticles);
+			while( $arr = $babDB->db_fetch_array($this->resarticles))
+				if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
+					$this->IdEntries[] = $arr['id'];
+			$this->count = count($this->IdEntries);
 			}
 		else
 			{
@@ -1567,7 +1591,7 @@ class bab_RecentArticles extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($this->resarticles);
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
@@ -1958,10 +1982,10 @@ class bab_WaitingArticles extends bab_handler
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$this->idEntries[] = $arr['id'];
+				$this->IdEntries[] = $arr['id'];
 				}
 
-			$this->count = count($this->idEntries);
+			$this->count = count($this->IdEntries);
 			}
 		else
 			$this->count = 0;
@@ -1976,7 +2000,7 @@ class bab_WaitingArticles extends bab_handler
 		if( $i < $this->count)
 			{
 			$this->ctx->curctx->push('CIndex', $i);
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->idEntries[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
 			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
@@ -2026,9 +2050,9 @@ class bab_WaitingComments extends bab_handler
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$this->idEntries[] = $arr['id'];
+				$this->IdEntries[] = $arr['id'];
 				}
-			$this->count = count($this->idEntries);
+			$this->count = count($this->IdEntries);
 			}
 		else
 			$this->count = 0;
@@ -2042,7 +2066,7 @@ class bab_WaitingComments extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$this->idEntries[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('CommentTitle', $arr['subject']);
 			$this->ctx->curctx->push('CommentText', $arr['message']);
@@ -2093,9 +2117,9 @@ class bab_WaitingFiles extends bab_handler
 			$res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$this->idEntries[] = $arr['id'];
+				$this->IdEntries[] = $arr['id'];
 				}
-			$this->count = count($this->idEntries);
+			$this->count = count($this->IdEntries);
 			}
 		else
 			$this->count = 0;
@@ -2109,7 +2133,7 @@ class bab_WaitingFiles extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->idEntries[$i]."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('FileId', $arr['id']);
 			$this->ctx->curctx->push('FileName', $arr['name']);

@@ -25,7 +25,7 @@ include_once "base.php";
 include $babInstallPath."admin/acl.php";
 include $babInstallPath."utilit/topincl.php";
 
-function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
+function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict)
 	{
 	global $babBody;
 	class temp
@@ -66,8 +66,11 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 		var $disptid;
 		var $arrdisptmpl;
 		var $countdisptmpl;
+		var $restrictysel;
+		var $restrictnsel;
+		var $restricttxt;
 
-		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid)
+		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
@@ -79,6 +82,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$this->notiftxt = bab_translate("Notify group members by mail");
 			$this->arttmpltxt = bab_translate("Article's model");
 			$this->disptmpltxt = bab_translate("Display template");
+			$this->restricttxt = bab_translate("Articles's authors can restrict access to articles");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->add = bab_translate("Add");
@@ -138,6 +142,20 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 				{
 				$this->notifnsel = "";
 				$this->notifysel = "selected";
+				}
+
+			if(empty($restrict))
+				$restrict = "N";
+
+			if( $restrict == "N")
+				{
+				$this->restrictnsel = "selected";
+				$this->restrictysel = "";
+				}
+			else
+				{
+				$this->restrictnsel = "";
+				$this->restrictysel = "selected";
 				}
 
 			if(empty($ncat))
@@ -309,7 +327,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			}
 		}
 
-	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
+	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -392,7 +410,7 @@ function listCategories($cat)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid)
+function saveCategory($category, $description, $cat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid, $restrict)
 	{
 	global $babBody;
 	if( empty($category))
@@ -422,7 +440,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid,
 		return false;
 		}
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, notify, lang, article_tmpl, display_tmpl) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "', '" .$disptid. "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, notify, lang, article_tmpl, display_tmpl, restrict_access) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . $bnotif. "', '" .$lang. "', '" .$atid. "', '" .$disptid. "', '" .$restrict. "')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 
@@ -452,7 +470,7 @@ if(!isset($idx))
 
 if( isset($add) )
 	{
-	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid))
+	if(!saveCategory($category, $topdesc, $ncat, $sacom, $saart, $managerid, $bnotif, $lang, $atid, $disptid, $restrict))
 		$idx = "addtopic";
 	else
 		{
@@ -469,7 +487,7 @@ switch($idx)
 	{
 	case "addtopic":
 		$babBody->title = bab_translate("Create new topic");
-		addCategory($cat, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid);
+		addCategory($cat, $ncat, $category, $topdesc, $managerid, $saart, $sacom, $bnotif, $atid, $disptid, $restrict);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);

@@ -132,4 +132,113 @@ function bab_isCalendarAccessValid($calid)
 		}
 	return false;
 	}
+
+
+function getAvailableUsersCalendars($bwrite = false)
+{
+	global $BAB_SESS_USERID,$BAB_SESS_USER;
+	$tab = array();
+	$rr = array();
+
+	$iducal = bab_getCalendarId($BAB_SESS_USERID, 1);
+	if( $iducal != 0 )
+	{
+		$rr['name'] = $BAB_SESS_USER;
+		$rr['idcal'] = $iducal;
+		array_push($tab, $rr);
+	}
+
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_user='".$BAB_SESS_USERID."'");
+	while($row = $db->db_fetch_array($res))
+	{
+		$arr = $db->db_fetch_array($db->db_query("select owner from ".BAB_CALENDAR_TBL." where actif='Y' and id='".$row['id_cal']."'"));
+		$add = false;
+		if( bab_getCalendarId($arr['owner'], 1) != 0)
+		{
+		if( $bwrite )
+			{
+			if($row['bwrite'] == "1" || $row['bwrite'] == "2")
+				$add = true;
+			}
+		else
+			$add = true;
+
+		if( $add )
+			{
+			$rr['name'] = bab_getCalendarOwnerName($row['id_cal'], 1);
+			$rr['idcal'] = $row['id_cal'];
+			array_push($tab, $rr);
+			}
+		}
+	}
+	return $tab;
+}	
+
+
+function getAvailableGroupsCalendars($bwrite = false)
+{
+	global $babBody,$BAB_SESS_USERID,$BAB_SESS_USER;
+	$tab = array();
+	$rr = array();
+
+	$grparr = bab_getUserGroups();
+	$grparr['id'][] = '1'; 
+	$grparr['name'][] = ''; 
+
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select * from ".BAB_CALENDAR_TBL." where type='2' and actif='Y' and owner IN ( ".implode(',', $grparr['id']).")");
+	while( $arr2 = $db->db_fetch_array($res))
+	{
+		$add = false;
+
+		if( $bwrite )
+		{
+			if( $arr2['owner'] == 1 && $babBody->isSuperAdmin || bab_isUserGroupManager($arr2['owner']))
+				$add = true;
+		}
+		else
+			$add = true;
+
+		if( $add )
+		{
+			if( $arr2['owner'] == 1 )
+				$rr['name'] = bab_getGroupName($arr2['owner']);
+			else
+				$rr['name'] = $grparr['name'][bab_array_search($arr2['owner'], $grparr['id'] )];
+			$rr['idcal'] = $arr2['id'];
+			array_push($tab, $rr);
+		}
+	}
+
+	return $tab;
+}
+
+
+function getAvailableResourcesCalendars($bwrite = false)
+{
+	global $BAB_SESS_USERID,$BAB_SESS_USER;
+	$tab = array();
+	$rr = array();
+
+	$db = $GLOBALS['babDB'];
+
+	$req = "select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
+	$resgroups = $db->db_query($req);
+
+	$req = "select * from ".BAB_RESOURCESCAL_TBL." where id_group='1'";
+	while($arr = $db->db_fetch_array($resgroups))
+	{
+		$req .= " or id_group='".$arr['id']."'"; 
+	}
+	$res = $db->db_query($req);
+	while($arr = $db->db_fetch_array($res))
+	{
+		$rr['name'] = $arr['name'];
+		$rr['idcal'] = bab_getCalendarId($arr['id'], 3);
+		array_push($tab, $rr);
+	}
+	return $tab;
+}
+
 ?>

@@ -1653,10 +1653,10 @@ function bab_updateUserSettings()
 
 			if( count($babBody->topview) > 0 )
 				{
-				$res = $babDB->db_query("select id_topic from ".BAB_ARTICLES_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
+				$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where confirmed='Y' and date >= '".$babBody->lastlog."'");
 				while( $row = $babDB->db_fetch_array($res))
 					{
-					if( in_array($row['id_topic'], $babBody->topview) )
+					if( in_array($row['id_topic'], $babBody->topview) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
 						{
 						$babBody->newarticles++;
 						}

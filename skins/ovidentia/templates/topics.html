@@ -155,6 +155,14 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
                       <option value="N" { notifnsel }>{ no }</option>
                     </select> </td>
                 </tr>
+                <tr> 
+                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ 
+                    restricttxt }:</td>
+                  <td nowrap> <select name="restrict">
+                      <option value="Y" { restrictysel }>{ yes }</option>
+                      <option value="N" { restrictnsel }>{ no }</option>
+                    </select> </td>
+                </tr>
               </table></td>
           </tr>
           <tr> 
@@ -246,156 +254,6 @@ href="{ urlarticles }">{ nbarticles }&nbsp;{ articles }</a>
 <!--#endin getnext -->
 <!--#end categorylist -->
 <br>
-<br><br><br><br>
-<!--#begin categorymodify -->
-
-<form name="catmod" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="topic">
-<input type="hidden" name="idx" value="Modify">
-<input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="update" value="update">
-<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td nowrap>{ category }:&nbsp; 
-<input type="text" name="category" size="30" maxlength="60" value="{ arr[category] }">
-</td>
-</tr>
-<tr> 
-<td align="center">{ description }</td>
-</tr>
-<!-- Toolbar -->
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-<tr> 
-<td> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="topdesc">{ arr[description] }</textarea>
-</td>
-</tr>
-<tr> 
-<td align="center"> 
-<script language="JavaScript"> 
-var idGenerator = new IDGenerator(0);
-	var editor = new Editor(idGenerator, '{ babEditorImages }');
-editor.ToolBar();
-</script>
-</td>
-</tr>
-<!--#else babOldEditor -->
-<style type="text/css">
-@import url({ babUrl }{ babScriptPath }htmlarea/htmlarea.css);
-</style>
-
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/htmlarea-lang-{ babLanguage }.js"></script>
-<script type="text/javascript" src="{ babUrl }{ babScriptPath }htmlarea/dialog.js"></script>
-<script type="text/javascript" src="{ babUrlScript }?tg=htmlarea&idx=js"></script>
-<script language="JavaScript">
-initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf }');
-</script>
-<!--#endif babOldEditor -->
-<!--#endif msie --> 
-<tr>
-<td align="center"> 
-<!--#if msie "== 1" -->
-<!--#if babOldEditor -->
-<script language="JavaScript">
-	editor.InFrame(0, "topdesc", "catmod", "90%", "160");
-</script>
-<!--#else babOldEditor -->
-<iframe width="0" height="0" style="visibility: hidden" onload="initEditor('0','topdesc')">
-</iframe>
-<textarea id="topdesc" name="topdesc"  onfocus="savef(document.catmod.topdesc)" style="width:100%" rows="20">{ headval }</textarea>
-<!--#endif babOldEditor -->
-<!--#else msie --> 
-<textarea id="topdesc" name="topdesc" onblur="this.focus()" onfocus="savef(document.catmod.topdesc)" style="width:100%" rows="20">{ headval }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
-<tr> 
-<td nowrap>{ approver }: &nbsp; 
-<input type="text" name="approver" size="40" maxlength="80" value="{ approvername }">
-</td>
-</tr>
-<tr> 
-<td nowrap>{ topcat }:&nbsp; 
-<select name="cat">
-<!--#in getnextcat -->
-<option value="{ arr2[id] }" { selected }>{ arr2[title] }</option>
- <!--#endin getnextcat -->
-</select>
-</td>
-</tr>
-<tr><td nowrap>
-{ langLabel }&nbsp;:&nbsp;<select name="lang">
-<!--#in getnextlang -->
- <option value="{ langValue }" { langSelected }>{ langValue }</option>
-<!--#endin getnextlang -->
-</select>
-</td></tr>
-<tr> 
-<td nowrap>{ modcom }:&nbsp; 
-<select name="modcom">
-<option value="Y" { yesselected }>{ yes }</option>
-<option value="N" { noselected }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr>
-<td align="center"> 
-<!--#if msie "== 1" --> 
-<!--#if babOldEditor -->
-<input onClick="SetVals()" type="submit" name="Submit" value="{ add }">&nbsp;&nbsp;<input type="submit" name="topdel" value="{ delete }">
-<script language="JavaScript">
-editor.FinalInstantiate(0);
-editor.CloseInitSection();
-</script>
-<!--#else babOldEditor -->
-<input type="submit" name="submit" value="{ modify }">
-<!--#endif babOldEditor -->
-<!--#else msie -->  
-<input type="submit" name="Submit" value="{ add }">&nbsp;&nbsp;<input type="submit" name="topdel" value="{ delete }">
-<!--#endif msie --> 
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</form>
-<!--#if msie "!= 1" -->
-<script type="text/javascript">
-<!--
-var ctrlf = null;
-function onInsertFile(idf,txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
-}
-
-function onInsertImage(txt)
-{
-if(ctrlf != null)
-ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
-}
-
-function savef(t)
-{
-ctrlf = t;
-}
-
-savef(document.createart.headtext);
-//-->
-</script>
-<!--#endif msie -->
-<br>
-<!--#end categorymodify -->
-<br><br><br><br><br>
 <!--#begin articleslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topic">
@@ -488,3 +346,18 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end articleview -->
+
+<!--#begin articlewarning -->
+<!--#if wdisplay -->
+<br>
+<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr><td class="BabTopicsAdminListTitle">{ warningtxt }</td></tr>
+</table>
+</td>
+</tr>
+</table>
+<!--#endif wdisplay -->
+<!--#end articlewarning -->

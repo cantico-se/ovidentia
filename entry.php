@@ -54,16 +54,22 @@ function ListArticles($idgroup)
 			$this->printable = bab_translate("Print Friendly");
 			}
 
-		function getnext()
+		function getnext(&$skip)
 			{
 			global $new; 
 			static $i = 0;
 			if( $i < $this->countres)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select id, id_topic ,id_author, date, title, head , LENGTH(body) as blen  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
+				$req = "select id, id_topic ,id_author, date, title, head , LENGTH(body) as blen, restriction  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
 				$res = $this->db->db_query($req);
 				$arr = $this->db->db_fetch_array($res);
+				if( $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
 				$this->blen = $arr['blen'];
 				$this->title = $arr['title'];
 				$this->content = bab_replace($arr['head']);
@@ -173,6 +179,10 @@ function isAccessValid($article, $idg)
 {
 	$access = false;
 	$db = $GLOBALS['babDB'];
+
+	if( !bab_articleAccessById($article))
+		return $access;
+
 	$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res = $db->db_query($req);
 	if( $res &&  $db->db_num_rows($res) > 0)
