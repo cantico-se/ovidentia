@@ -73,7 +73,7 @@ function groupModify($id)
 			$this->yes = bab_translate("Yes");
 			$this->add = bab_translate("Modify Group");
 			$this->delete = bab_translate("Delete");
-			$this->grpdgtxt = bab_translate("Delegation group");
+			$this->grpdgtxt = bab_translate("Delegation");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$req = "select * from ".BAB_GROUPS_TBL." where id='".$id."'";
 			$res = $babDB->db_query($req);
