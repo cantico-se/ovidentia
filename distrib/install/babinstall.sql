@@ -753,6 +753,10 @@ CREATE TABLE bab_files (
   confirmed enum('N','Y') NOT NULL default 'N',
   hits int(11) unsigned NOT NULL default '0',
   idfai int(11) unsigned NOT NULL default '0',
+  edit int(11) unsigned NOT NULL default '0',
+  ver_major smallint(5) unsigned NOT NULL default '1',
+  ver_minor smallint(5) unsigned NOT NULL default '0',
+  ver_comment tinytext NOT NULL,
   PRIMARY KEY  (id),
   KEY id_owner (id_owner),
   KEY name (name)
@@ -838,7 +842,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '4');
 INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '1');
+INSERT INTO bab_ini VALUES ('ver_build', '2');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -904,6 +908,7 @@ CREATE TABLE bab_fm_folders (
   idsa int(11) unsigned NOT NULL default '0',
   filenotify enum('N','Y') NOT NULL default 'N',
   active enum('Y','N') NOT NULL default 'Y',
+  version enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY folder (folder)
 );
@@ -1297,4 +1302,65 @@ CREATE TABLE bab_vac_users_rights (
   PRIMARY KEY  (id),
   KEY id_user (id_user),
   KEY id_right (id_right)
+);
+
+#
+# Structure de la table `bab_fm_fields`
+#
+
+CREATE TABLE bab_fm_fields (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_folder int(11) unsigned NOT NULL default '0',
+  name char(255) NOT NULL default '',
+  defaultval char(255) NOT NULL default '',
+  PRIMARY KEY  (id),
+  KEY id_user (id_folder)
+);
+
+#
+# Structure de la table `bab_fm_fieldsval`
+#
+
+CREATE TABLE bab_fm_fieldsval (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_field int(11) unsigned NOT NULL default '0',
+  id_file int(11) unsigned NOT NULL default '0',
+  fvalue char(255) NOT NULL default '',
+  PRIMARY KEY  (id),
+  KEY id_user (id_file),
+  KEY id_user (id_folder)
+);
+
+#
+# Structure de la table `bab_fm_filesver`
+#
+
+CREATE TABLE bab_fm_filesver (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_file int(11) unsigned NOT NULL default '0',
+  date datetime NOT NULL default '0000-00-00 00:00:00',
+  author int(11) unsigned NOT NULL default '0',
+  ver_major smallint(5) unsigned NOT NULL default '1',
+  ver_minor smallint(5) unsigned NOT NULL default '0',
+  comment tinytext NOT NULL,
+  idfai int(11) unsigned NOT NULL default '0',
+  confirmed enum('N','Y') NOT NULL default 'N',
+  PRIMARY KEY  (id),
+  PRIMARY KEY  (id_file)
+); 
+
+#
+# Structure de la table `bab_fm_fileslog`
+#
+
+CREATE TABLE bab_fm_fileslog (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_file int(11) unsigned NOT NULL default '0',
+  date datetime NOT NULL default '0000-00-00 00:00:00',
+  author int(11) unsigned NOT NULL default '0',
+  action smallint(5) unsigned NOT NULL default '0',
+  comment tinytext NOT NULL,
+  version varchar(10) NOT NULL default '',
+  PRIMARY KEY  (id),
+  PRIMARY KEY  (id_file)
 );

@@ -1,4 +1,11 @@
 /************************************************************************/
+Avril 2003: Version 4.0.2
+/************************************************************************/
+- Possibily to add customized fields to files in File Manager
+- Possibily to handle multiple versions of files
+- Fixed some minors bugs
+
+/************************************************************************/
 Avril 2003: Version 4.0.1
 /************************************************************************/
 - An "experimental" version (one that you can experiment with) of 

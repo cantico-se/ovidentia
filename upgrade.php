@@ -1706,4 +1706,106 @@ if( !$res || $db->db_num_rows($res) == 0 )
 return $ret;
 }
 
+function upgrade400to402()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "CREATE TABLE ".BAB_FM_FIELDS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_folder int(11) unsigned NOT NULL default '0',";
+$req .= "name char(255) NOT NULL default '',";
+$req .= "defaultval char(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "PRIMARY KEY  (id_folder)";
+$req .= ")";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FM_FIELDS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FM_FIELDSVAL_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_field int(11) unsigned NOT NULL default '0',";
+$req .= "id_file int(11) unsigned NOT NULL default '0',";
+$req .= "fvalue char(255) NOT NULL default '',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_user (id_file),";
+$req .= "KEY id_user (id_folder)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FM_FIELDSVAL_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "CREATE TABLE ".BAB_FM_FILESVER_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_file int(11) unsigned NOT NULL default '0',";
+$req .= "date datetime NOT NULL default '0000-00-00 00:00:00',";
+$req .= "author int(11) unsigned NOT NULL default '0',";
+$req .= "ver_major smallint(5) unsigned NOT NULL default '1',";
+$req .= "ver_minor smallint(5) unsigned NOT NULL default '0',";
+$req .= "comment tinytext NOT NULL,";
+$req .= "idfai int(11) unsigned NOT NULL default '0',";
+$req .= "confirmed enum('N','Y') NOT NULL default 'N',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "PRIMARY KEY  (id_file)";
+$req .= ");"; 
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_FM_FILESVER_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD version ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FM_FOLDERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FILES_TBL." ADD edit INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FILES_TBL." ADD ver_major smallint(5) unsigned NOT NULL default '1'";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FILES_TBL." ADD ver_minor smallint(5) unsigned NOT NULL default '0'";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_FILES_TBL." ADD ver_comment tinytext NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FILES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+return $ret;
+}
+
 ?>
