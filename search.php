@@ -797,7 +797,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			// ---------------------------------------------- FAQ
 			if( empty($item) || $item == "c")
 				{
-				$req = "create temporary table faqresults select id, idcat, question title, response, question topic,question id_manager, question author from ".BAB_FAQQR_TBL." where 0";
+				$req = "create temporary table faqresults select id, idcat, question title, response, question topic from ".BAB_FAQQR_TBL." where 0";
 				$this->db->db_query($req);
 				$req = "alter table faqresults add unique (id)";
 				$this->db->db_query($req);
@@ -819,7 +819,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else $plus = "";
 
 				if ($idcat != "") {
-					$req = "insert into faqresults select T.id, idcat, question title, response, category topic,C.id_manager, concat( U.lastname, ' ', U.firstname ) author from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C, ".BAB_USERS_TBL." U where idcat=C.id and C.id_manager=U.id and ".$plus." idcat in (".substr($idcat,0,-1).") order by ".$order;
+					$req = "insert into faqresults select T.id, idcat, question title, response, category topic from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C where idcat=C.id and ".$plus." idcat in (".substr($idcat,0,-1).") order by ".$order;
 					$this->db->db_query($req);
 				}
 
@@ -1496,8 +1496,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$arr = $this->db->db_fetch_array($this->resfaq);
 				$this->question = put_text($arr['title']);
 				$this->faqtopic = put_text($arr['topic']);
-				$this->faqauthor = $arr['author'];
-				$this->faqauthormail = bab_getUserEmail($arr['id_manager']);
 				$this->faqtopicid = $arr['idcat'];
 				$this->topicurl = $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat'];
 				$this->questionurlpop = $GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".$this->what;
