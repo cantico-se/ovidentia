@@ -479,7 +479,7 @@ switch($idx)
 			readMore($topics, $article);
 			if( isAccessValid("topicssub_groups", $topics) || $approver)
 				{
-				$body->addItemMenu("Articles", babTranslate("Topics"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Articles&topics=".$topics."&new=".$new."&newc=".$newc);
+				$body->addItemMenu("Articles", babTranslate("Articles"), $GLOBALS[babUrl]."index.php?tg=articles&idx=Articles&topics=".$topics."&new=".$new."&newc=".$newc);
 				//$body->addItemMenu("Comments", babTranslate("Comments"), $GLOBALS[babUrl]."index.php?tg=comments&idx=List&topics=".$topics."&article=".$article."&newc=".$newc);
 				if( $approver)
 					{
