@@ -667,6 +667,11 @@ switch($tg)
 		$babLevelTwo = bab_translate("File manager");
 		$incl = "fileman";
 		break;
+	case "filever":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("File manager");
+		$incl = "filever";
+		break;
 	case "notes":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Notes");

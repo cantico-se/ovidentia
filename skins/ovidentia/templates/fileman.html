@@ -141,9 +141,49 @@ class="BabSiteFileLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width
                   <!--#endif bconfirmed -->
                   <!--#endif bmanager -->
                 </td>
-                <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+                <td align="left" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
                   <!--#if readonly -->
                   <img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle">
+				  <!--#else readonly -->
+                  <!--#if bversion -->
+				<!--#if bdownload -->
+					<a class="BabSiteFileLink" href="javascript: Start('{ ovfversurl }', 'OVFileH', 'width=650,height=370,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ lastversion }</a>
+				<!--#endif bdownload -->
+				<!--#if bupdate -->
+				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfhisturl }', 'OVFileH', 'width=700,height=450,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <img src="{ babSkinPath }images/Puces/FileLog.gif" alt="{ altfilelog }" border="0" align="middle">
+				  </a>
+                  <!--#if block -->
+                  <!--#if blockauth -->
+				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle">
+				  </a>
+                  <!--#else blockauth -->
+                  <!--#if bmanager -->
+				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle">
+                  <!--#else bmanager -->
+				  <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="{ altfilelock }" border="0" align="middle">
+                  <!--#endif bmanager -->
+                  <!--#endif blockauth -->
+                  <!--#else block -->
+				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfurl }', 'OVFile', 'width=650,height=310,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="{ altfileunlock }" border="0" align="middle">
+				  </a>
+                  <!--#endif block -->				  	
+                  <!--#if bfvwait -->
+				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ altfilewrite }" border="0" align="middle">
+				  </a>
+                  <!--#else bfvwait -->
+                  <!--#if blockauth -->
+				  <a class="BabSiteFileLink" href="javascript: Start('{ ovfcommiturl }', 'OVFileC', 'width=650,height=350,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">
+				  <img src="{ babSkinPath }images/Puces/FileWrite.gif" alt="{ altfilewrite }" border="0" align="middle">
+				  </a>
+                  <!--#endif blockauth -->
+                  <!--#endif bfvwait -->
+					<!--#endif bupdate -->
+				  <!--#endif bversion -->
                   <!--#endif readonly -->
                 </td>
                 <td align="center" nowrap class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
