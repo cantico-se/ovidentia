@@ -176,7 +176,7 @@ function bab_mail()
 		return false;
 
 	$mail = new babMail();
-	switch($arr['mail'])
+	switch($arr['mailfunc'])
 	{
 		case "mail":
 			$mail->mail->IsMail();
