@@ -63,7 +63,7 @@ function browserAgent()
 	$tab = explode(";", $HTTP_USER_AGENT);
 	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
 		{
-		return $res[1];
+		return trim($res[1]);
 		}
 	return "";
 	}
@@ -74,7 +74,7 @@ function browserVersion()
 	$tab = explode(";", $HTTP_USER_AGENT);
 	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
 		{
-		return $res[2];
+		return trim($res[2]);
 		}
 	return 0;
 	}
