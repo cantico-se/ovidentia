@@ -45,12 +45,12 @@ $tab2 = explode(".",$tmp2[0]);
 if ( count($tab1) >= count($tab2) )
 	{
 	foreach( $tab1 as $key => $value )
-		if ( is_numeric($tab2[$key]) && is_numeric($value) && $tab2[$key] > $value ) return true;
+		if (isset($tab2[$key]) && is_numeric($tab2[$key]) && is_numeric($value) && $tab2[$key] > $value ) return true;
 	}
 else
 	{
 	foreach( $tab2 as $key => $value )
-		if ( is_numeric($tab1[$key]) && is_numeric($value) && $tab1[$key] > $value ) return true;
+		if (isset($tab1[$key]) && is_numeric($tab1[$key]) && is_numeric($value) && $tab1[$key] > $value ) return true;
 	}
 return false;
 }

@@ -269,14 +269,16 @@ class zip
      if(!is_dir($to.$tmp.$pth[$i])) @mkdir($to.$pth[$i],0777);
      $tmp.=$pth[$i]."/";
    }
-  if (isset($header['external']) && !($header['external']==0x41FF0010)&&!($header['external']==16))
+   
+  if (!isset($header['external']) || (isset($header['external']) && !($header['external']==0x41FF0010)&&!($header['external']==16)))
   {
+	  
    if ($header['compression']==0)
    {
     $fp = @fopen($to.$header['filename'], 'wb');
     if(!$fp) return(-1);
     $size = $header['compressed_size'];
-
+	
     while ($size != 0)
     {
       $read_size = ($size < 2048 ? $size : 2048);
@@ -289,6 +291,7 @@ class zip
     touch($to.$header['filename'], $header['mtime']);
 
   }else{
+	  
    $fp = @fopen($to.$header['filename'].'.gz','wb');
    if(!$fp) return(-1);
    $binary_data = pack('va1a1Va1a1', 0x8b1f, Chr($header['compression']),
