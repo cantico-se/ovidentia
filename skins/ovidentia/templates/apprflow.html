@@ -7,8 +7,8 @@ function onApprover(id, fn)
 if(ctrlf != null)
 	{
 	ctrlf.value=fn;
-	nm = ctrlf.name.split(/fn/);
-	document.forms.sccreate.elements['fh'+nm[0]].value = id;
+	var nm = ctrlf.name.substring((ctrlf.name.indexOf('fn')) + 2);
+	eval('document.forms.sccreate.fh'+nm+'.value = id');
 	ctrlf = null;
 	}
 this.focus();
