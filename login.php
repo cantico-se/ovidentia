@@ -262,6 +262,8 @@ function userLogin($nickname,$password)
 				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
 				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
 				$_SESSION['BAB_SESS_HASHID'] = $arr['confirm_hash'];
+				$_SESSION['BAB_SESS_GROUPID'] = bab_getPrimaryGroupId($arr['id']);
+				$_SESSION['BAB_SESS_GROUPNAME'] = bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
 				$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
 				$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
 				$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
@@ -275,6 +277,8 @@ function userLogin($nickname,$password)
 				$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
 				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
 				$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
+				$GLOBALS['BAB_SESS_GROUPID']  = bab_getPrimaryGroupId($arr['id']);
+				$GLOBALS['BAB_SESS_GROUPNAME'] = bab_getGroupName($GLOBALS['BAB_SESS_GROUPID']);
 				}
 			return true;
 			}
