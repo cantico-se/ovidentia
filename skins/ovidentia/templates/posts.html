@@ -197,29 +197,42 @@
     <td valign="middle"> 
       <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
         <tr> 
-          <td class="BabForumTopicsNavTitle" width="100%" valign="middle">{ postsubject 
-            }</td>
-<!--#if what "== N" -->
-          <td class="BabForumTopicsNavTitle"  valign="middle" align="right" nowrap><img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+          <td colspan="2" valign="middle" class="BabForumTopicsNavTitle">{ postsubject 
+            }
+          
+          </td>
+        </tr>
+        
+          <!--#if what "== N" --><tr> 
+		  <td colspan="2" align="right" valign="middle" class="BabForumBackground">  
+                      <img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ confirmed }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
 class="BabForumTopicsConfirm" href="{ confirmurl }">{ 
             confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
 class="BabForumTopicsConfirm" href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
-<!--#else what -->
-          <td colspan="3" class="BabForumTopicsNavTitle" align="right" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
-            more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td> 
-<!--#endif what -->
-</tr>
-<tr> 
-<td colspan="3" class="BabForumBackground">{ postmessage }</td>
-</tr>
-<tr> 
-          <td class="BabForumTopicsNavDate" nowrap width="60%" valign="middle">{ 
+class="BabForumTopicsConfirm" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+                  </td></tr>
+		  	     <!--#else what --><!--#if more --><tr>
+		  <td colspan="2" align="right" valign="middle" class="BabForumBackground">  
+       <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">{ 
+            more }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+      </td>   </tr><!--#else more --><!--#endif more -->
+		   <!--#endif what -->
+		  
+		  
+		  
+		  
+		  
+     
+        <tr>
+          <td colspan="2" class="BabForumBackground">{ postmessage }</td>
+        </tr>
+        <tr> 
+          <td class="BabForumTopicsNavDate" nowrap width="100%" valign="middle">{ 
             postdate }</td>
-          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="middle" colspan="2">{ 
+          <td class="BabForumTopicsNavAuthor" nowrap width="40%" align="right" valign="middle" >{ 
             postauthor }</td>
-</tr>
-</table>
+        </tr>
+      </table>
 </td>
 </tr>
 </table>
