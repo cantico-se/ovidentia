@@ -813,7 +813,7 @@ CREATE TABLE `bab_sites` (
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',
   `stat_update_time` datetime NOT NULL default '0000-00-00 00:00:00',
-  `workdays` varchar(20) NOT NULL default '',
+  `workdays` varchar(20) NOT NULL default '1,2,3,4,5',
   `user_workdays` enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (`id`),
@@ -821,7 +821,7 @@ CREATE TABLE `bab_sites` (
 );
 
 
-INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_fx', 'ovidentia.css');
+INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, workdays) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_fx', 'ovidentia.css', '1,2,3,4,5');
 
 
 # --------------------------------------------------------

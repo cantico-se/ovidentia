@@ -200,7 +200,11 @@ function redimimg()
 		</tr>
 <tr class="BabForumBackground1">
 		<td width="90%" align="left" valign="middle">
+			<!--#if mailto -->
+			&nbsp;&nbsp;&nbsp;<a href="mailto:{ fieldv }">{ fieldv }</a>
+			<!--#else mailto -->
 			&nbsp;&nbsp;&nbsp;{ fieldv }
+			<!--#endif mailto -->
 		</td>
 	</tr>
 <!--#endif bfieldv -->

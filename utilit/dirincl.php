@@ -339,7 +339,15 @@ function bab_viewDirectoryUser($id)
 					$rr = $this->db->db_fetch_array($this->db->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$row['id_field']."'"));
 					if( $rr['name'] != 'jpegphoto' )
 						{
-						$this->fields[] = array('name' => translateDirectoryField($rr['description']), 'value' => stripslashes($arr[$rr['name']]));
+						if ('email' == $rr['name'])
+							{
+							$this->fields[] = array('name' => translateDirectoryField($rr['description']), 'value' => stripslashes($arr[$rr['name']]), 'email' => true);
+							}
+						else
+							{
+							$this->fields[] = array('name' => translateDirectoryField($rr['description']), 'value' => stripslashes($arr[$rr['name']]));
+							}
+						
 						}
 					}
 				else
