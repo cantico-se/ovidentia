@@ -93,8 +93,8 @@ function listCategories($cat, $adminid)
 		function temp($cat, $adminid)
 			{
 			global $body, $BAB_SESS_USERID;
-			$this->groups = babTranslate("Groups");
-			$this->comments = babTranslate("Comments");
+			$this->groups = babTranslate("View");
+			$this->comments = babTranslate("Comment");
 			$this->submit = babTranslate("Submit");
 			$this->articles = babTranslate("Article") ."(s)";
 			$this->db = new db_mysql();
