@@ -6,6 +6,18 @@
  ***********************************************************************/
 include $babInstallPath."version.inc";
 
+function bab_array_search($str, $vars)
+{
+	foreach ($vars as $key => $val)
+	{
+		if ($val == $str)
+		{
+			return $key;
+		}
+	}
+	return false;
+}
+
 function upgrade()
 {
 $bab_versions = array("310", "320", "330", "331");
@@ -36,8 +48,8 @@ if( $ver_from == $ver_to )
 	return bab_translate("You site is already up to date");
 	}
 
-$i_from = array_search($ver_from, $bab_versions);
-$i_to = array_search($ver_to, $bab_versions);
+$i_from = bab_array_search($ver_from, $bab_versions);
+$i_to = bab_array_search($ver_to, $bab_versions);
 
 include $GLOBALS['babInstallPath']."upgrade.php";
 for( $i = $i_from; $i < $i_to; $i++)
