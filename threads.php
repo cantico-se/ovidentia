@@ -43,7 +43,6 @@ function listThreads($forum, $active, $pos)
 
 		function temp($forum, $active, $pos)
 			{
-			global $babMaxRows;
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -60,6 +59,9 @@ function listThreads($forum, $active, $pos)
 			$this->moderator = bab_isUserForumModerator($forum, $GLOBALS['BAB_SESS_USERID']);
 
 			$this->db = $GLOBALS['babDB'];
+			$row = $this->db->db_fetch_array($this->db->db_query("select display from ".BAB_FORUMS_TBL." where id='".$forum."'"));
+			$maxrows = $row['display'];
+
 			$req = "select count(*) as total from ".BAB_THREADS_TBL." where forum='$forum' and active='$active'";
 			$this->res = $this->db->db_query($req);
 			$row = $this->db->db_fetch_array($this->res);
@@ -69,7 +71,7 @@ function listThreads($forum, $active, $pos)
 			else
 				$idx = "ListC";
 
-			if( $total > $babMaxRows)
+			if( $total > $maxrows)
 				{
 				if( $pos > 0)
 					{
@@ -77,21 +79,21 @@ function listThreads($forum, $active, $pos)
 					$this->topname = "&lt;&lt;";
 					}
 
-				$next = $pos - $babMaxRows;
+				$next = $pos - $maxrows;
 				if( $next >= 0)
 					{
 					$this->prevurl = $GLOBALS['babUrlScript']."?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$next;
 					$this->prevname = "&lt;";
 					}
 
-				$next = $pos + $babMaxRows;
+				$next = $pos + $maxrows;
 				if( $next < $total)
 					{
 					$this->nexturl = $GLOBALS['babUrlScript']."?tg=threads&idx=".$idx."&forum=".$forum."&pos=".$next;
 					$this->nextname = "&gt;";
-					if( $next + $babMaxRows < $total)
+					if( $next + $maxrows < $total)
 						{
-						$bottom = $total - $babMaxRows;
+						$bottom = $total - $maxrows;
 						}
 					else
 						$bottom = $next;
@@ -101,9 +103,9 @@ function listThreads($forum, $active, $pos)
 				}
 
 			$req = "select * from ".BAB_THREADS_TBL." where forum='$forum' and active='$active' order by date desc";
-			if( $total > $babMaxRows)
+			if( $total > $maxrows)
 				{
-				$req .= " limit ".$pos.",".$babMaxRows;
+				$req .= " limit ".$pos.",".$maxrows;
 				}
 
 			$this->res = $this->db->db_query($req);
