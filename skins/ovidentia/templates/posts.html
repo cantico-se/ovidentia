@@ -305,7 +305,7 @@ alt=""><!--#else parent --><img src="{ babSkinPath }images/Puces/Puce-h.gif" wid
 </td>
 <td class="BabForumTopicsNavTreeAuthor" nowrap valign="middle" align="center">
 <!--#if replymail "!= 0" -->
-<a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ replyauthor }</a>
+<!--#if BAB_SESS_LOGGED --><a class="BabForumTopicsNavContribution" href="mailto:{ replymail }" target=_top>{ replyauthor }</a><!--#else BAB_SESS_LOGGED -->{ replyauthor }<!--#endif BAB_SESS_LOGGED -->
 <!--#else replymail -->
 { replyauthor }
 <!--#endif replymail -->
