@@ -20,6 +20,7 @@ version 3.2 / 3.3.0 beta
 file			        section		       change 
 --------------------------------------------------------------------------------
 acl.html					            changed action="index.php" to action="{ babPhpSelf }"
+addons.html					            new
 address.html					        changed action="index.php" to action="{ babPhpSelf }"
 admcals.html					        changed action="index.php" to action="{ babPhpSelf }"
 admfaqs.html					        changed action="index.php" to action="{ babPhpSelf }"

@@ -676,6 +676,11 @@ CREATE TABLE contacts (
    KEY id (id)
 );
 
+# --------------------------------------------------------
+#
+# Structure de la table 'sites'
+#
+
 CREATE TABLE sites (
    id int(11) unsigned NOT NULL auto_increment,
    name char(30) NOT NULL,
@@ -688,6 +693,11 @@ CREATE TABLE sites (
    PRIMARY KEY (id)
 );
 
+# --------------------------------------------------------
+#
+# Structure de la table 'homepages'
+#
+
 CREATE TABLE homepages (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
 	id_article INT (11) UNSIGNED not null,
@@ -697,6 +707,11 @@ CREATE TABLE homepages (
 	ordering INT (11) UNSIGNED not null,
 	PRIMARY KEY (id)
 );
+
+# --------------------------------------------------------
+#
+# Structure de la table 'files'
+#
 
 CREATE TABLE files (
   id int(11) unsigned NOT NULL auto_increment,
@@ -718,6 +733,11 @@ CREATE TABLE files (
   PRIMARY KEY  (id)
 );
 
+
+# --------------------------------------------------------
+#
+# Structure de la table 'mime_types'
+#
 
 CREATE TABLE mime_types (
 	ext VARCHAR(10) NOT NULL, 
@@ -757,3 +777,25 @@ INSERT INTO mime_types VALUES ('wav', 'audio/x-wav');
 INSERT INTO mime_types VALUES ('xls', 'application/vnd.ms-excel');
 INSERT INTO mime_types VALUES ('xml', 'text/xml');
 INSERT INTO mime_types VALUES ('zip', 'application/zip');
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_addons'
+#
+
+CREATE TABLE bab_addons (
+   id int(11) unsigned NOT NULL auto_increment,
+   name varchar(60) NOT NULL,
+   description varchar(255) NOT NULL,
+   folder varchar(255) NOT NULL,
+   initfile varchar(60) NOT NULL,
+   usload varchar(255) NOT NULL,
+   asload varchar(255) NOT NULL,
+   ucreate varchar(255) NOT NULL,
+   udelete varchar(255) NOT NULL,
+   gcreate varchar(255) NOT NULL,
+   gdelete varchar(255) NOT NULL,
+   section enum('N','Y') DEFAULT 'N' NOT NULL,
+   enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
+   PRIMARY KEY (id)
+);
