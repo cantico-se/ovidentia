@@ -9,7 +9,7 @@ include_once "base.php";
 function bab_getForumName($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FORUMS_TBL." where id='$id'";
+	$query = "select name from ".BAB_FORUMS_TBL." where id='".$id."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -25,7 +25,7 @@ function bab_getForumName($id)
 function bab_isForumModerated($forum)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FORUMS_TBL." where id='$forum'";
+	$query = "select moderation from ".BAB_FORUMS_TBL." where id='".$forum."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -38,10 +38,10 @@ function bab_isForumModerated($forum)
 	return false;
 	}
 
-function bab_isForumThreadOpen($thread)
+function bab_isForumThreadOpen($forum, $thread)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_THREADS_TBL." where id='$thread'";
+	$query = "select active from ".BAB_THREADS_TBL." where id='".$thread."' and forum='".$forum."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -57,12 +57,12 @@ function bab_isForumThreadOpen($thread)
 function bab_getForumThreadTitle($id)
 	{
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_THREADS_TBL." where id='$id'";
+	$query = "select post from ".BAB_THREADS_TBL." where id='".$id."'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$query = "select * from ".BAB_POSTS_TBL." where id='".$arr['post']."'";
+		$query = "select subject from ".BAB_POSTS_TBL." where id='".$arr['post']."'";
 		$res = $db->db_query($query);
 		if( $res && $db->db_num_rows($res) > 0)
 			{
@@ -83,7 +83,7 @@ function bab_isUserForumModerator($forum, $id)
 		return false;
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_FORUMS_TBL." where id='$forum' and moderator='$id'";
+	$query = "select id from ".BAB_FORUMS_TBL." where id='$forum' and moderator='$id'";
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{

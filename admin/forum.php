@@ -120,12 +120,8 @@ function updateForum($id, $name, $description, $managerid, $moderation, $notific
 		}
 
 	$db = $GLOBALS['babDB'];
-	if( $moderation == "Y")
-		{
-		$moderatorid = $managerid;
-		}
-	else
-		$moderatorid = 0;
+	if( empty($managerid))
+		$managerid = 0;
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
@@ -133,7 +129,7 @@ function updateForum($id, $name, $description, $managerid, $moderation, $notific
 		$description = addslashes($description);
 		}
 
-	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', moderator='$moderatorid', display='$nbmsgdisplay', active='$active' where id = '$id'";
+	$query = "update ".BAB_FORUMS_TBL." set name='$name', description='$description', moderation='$moderation', notification='$notification', moderator='$managerid', display='$nbmsgdisplay', active='$active' where id = '$id'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 

@@ -724,7 +724,7 @@ switch($idx)
 			$babBody->title = bab_getForumName($forum);
 			newReply($forum, $thread, $post);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post);
-			$open = bab_isForumThreadOpen($thread);
+			$open = bab_isForumThreadOpen($forum, $thread);
 			if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) && $open)
 				{
 				$babBody->addItemMenu("reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&post=".$post);
@@ -745,7 +745,7 @@ switch($idx)
 			$babBody->title = bab_getForumName($forum);
 			editPost($forum, $thread, $post);
 			$babBody->addItemMenu("List", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post);
-			$open = bab_isForumThreadOpen($thread);
+			$open = bab_isForumThreadOpen($forum, $thread);
 			if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $forum) && $open)
 				{
 				$babBody->addItemMenu("reply", bab_translate("Reply"), $GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".$forum."&thread=".$thread."&post=".$post);
@@ -777,7 +777,7 @@ switch($idx)
 	default:
 	case "List":
 		$babBody->title = bab_getForumName($forum);
-		$open = bab_isForumThreadOpen($thread);
+		$open = bab_isForumThreadOpen($forum, $thread);
 		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $forum))
 			{
 			$count = listPosts($forum, $thread, $post);
