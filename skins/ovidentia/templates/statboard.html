@@ -1,0 +1,259 @@
+<!--#begin summarypanel -->
+<table width="95%" border="1" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+</tr>
+<!--#in getnextitem -->
+<!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td>&nbsp;
+<!--#if disabled -->
+<b>{ itemurltxt }</b>
+<!--#else disabled -->
+<a class="BabSiteAdminListLink" href="{ itemurl }">{ itemurltxt }</a>
+<!--#endif disabled -->
+</td>
+</tr>
+<!--#endin getnextitem -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end summarypanel -->
+
+
+<!--#begin summaryfolderlist -->
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td><a class="BabSiteAdminListLink" href="{ urlordfn }" title="{ sorttxt }">{ fullname }</a>
+<!--#if sortcol "== folder" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+<td><a class="BabSiteAdminListLink" href="{ urlorddg }" title="{ sorttxt }">{ dgtxt }</a>
+<!--#if sortcol "== dgname" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+<td align="center"><a class="BabSiteAdminListLink" href="{ urlordds }" title="{ sorttxt }">{ diskspacetxt }</a>
+<!--#if sortcol "== diskspace" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+<td align="center"><a class="BabSiteAdminListLink" href="{ urlordf }" title="{ sorttxt }">{ filestxt }</a>
+<!--#if sortcol "== files" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+<td align="center"><a class="BabSiteAdminListLink" href="{ urlordfv }" title="{ sorttxt }">{ versionstxt }</a>
+<!--#if sortcol "== versions" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
+<td>
+<!--#if url -->
+<a class="BabSiteAdminListLink" href="javascript:bab_popup('{ url }',2)">{ urlname }</a>
+<!--#else url -->
+{ urlname }
+<!--#endif url -->
+</td>
+<td>{ dgname }</td>
+<td>
+<table width="100%" border="0" cellpadding="0" cellspacing="3"><tr><td align="right" width="50%">{ diskspace }</td><td width="50%">({ diskspacepc }%)</td></tr></table>
+</td>
+<td align="right">
+<table width="100%" border="0" cellpadding="0" cellspacing="3"><tr><td align="right" width="50%">{ nbfiles }</td><td width="50%">({ nbfilespc }%)</td></tr></table>
+</td>
+<td align="right">
+<table width="100%" border="0" cellpadding="0" cellspacing="3"><tr><td align="right" width="50%">{ nbfilesv }</td><td width="50%">({ nbfilesvpc }%)</td></tr></table>
+</td>
+</tr>        
+<!--#endin getnext -->
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right" >
+<table width="100%" border="0" cellpadding="0" cellspacing="3"><tr class="BabSiteAdminTitleFontBackground"><td align="right" width="50%">{ diskspacettxt }</td><td width="50%">({ diskspacetpc }%)</td></tr></table>
+</td>
+<td align="right">
+<table width="100%" border="0" cellpadding="0" cellspacing="3"><tr class="BabSiteAdminTitleFontBackground"><td align="right" width="50%">{ nbfilest }</td><td width="50%">(100%)</td></tr></table>
+</td>
+<td align="right">
+<table width="100%" border="0" cellpadding="0" cellspacing="3"><tr class="BabSiteAdminTitleFontBackground"><td align="right" width="50%">{ nbfilesvt }</td><td width="50%">(100%)</td></tr></table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<!--#end summaryfolderlist -->
+
+<!--#begin personalfoldersdetail -->
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>{ fullnametxt }</td>
+<td align="right">{ diskspacetxt }</td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
+<td>{ fullname }</td>
+<td align="right">{ diskspace }</td>
+</tr>        
+<!--#endin getnext -->
+<tr class="BabSiteAdminTitleFontBackground"> 
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<!--#end personalfoldersdetail -->
+
+<!--#begin summarydelegationlist -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground">
+<a class="BabSiteAdminListLink" href="{ urlordgr }" title="{ sorttxt }">{ grouptxt }</a>
+<!--#if sortcol "== grpname" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+<br>({ delegtxt })</td>
+<!--#in getnextdg -->
+<td class="BabSiteAdminTitleFontBackground">
+<a class="BabSiteAdminListLink" href="{ urlord }" title="{ sorttxt }">{ delegitemdesc }</a>
+<!--#if bsorturl -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif bsorturl -->
+</td>
+<!--#endin getnextdg -->
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td><b>{ groupname }</b><br>({ delegname })</td>
+<!--#in getnextdg -->
+<td align="center">{ total }</td>
+<!--#endin getnextdg -->
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<!--#end summarydelegationlist -->
+
+<!--#begin sectionssummary --> 
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground">
+<a class="BabSiteAdminListLink" href="{ urlordsec }" title="{ sorttxt }">{ sectiontxt }</a>
+<!--#if sortcol "== section" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+<td class="BabSiteAdminTitleFontBackground">
+<a class="BabSiteAdminListLink" href="{ urlorddesc }" title="{ sorttxt }">{ delegattxt }</a>
+<!--#if sortcol "== dgname" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+<td class="BabSiteAdminTitleFontBackground"  width="10%">
+<a class="BabSiteAdminListLink" href="{ urlordusage }" title="{ sorttxt }">{ usagetxt }</a>
+<!--#if sortcol "== usage" -->
+<!--#if sortord "== asc" -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" alt="{ sorttxt }" border="0">
+<!--#else sortord -->
+&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" alt="{ sorttxt }" border="0">
+<!--#endif sortord -->
+<!--#endif sortcol -->
+</td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td>{ sectionname }</td>
+<td>{ delegation }</td>
+<td align="center">{ total }%</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<!--#end sectionssummary -->
+
+<!--#begin userssummary -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<!--#if altbg --><tr class="BabFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+<td><b>{ itemtxt }</b></td>
+<td align="right">{ total }</td>
+</tr>
+<!--#endin getnext -->
+</table>
+</td>
+</tr>
+</table>
+<br>
+<!--#end userssummary -->
+
