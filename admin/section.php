@@ -277,7 +277,10 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
 if( isset($modify))
 	{
 	if( isset($submit))
+		{
+		if( !isset($script)) { $script = '';}
 		sectionUpdate($item, $title, $description, $content, $script, $template, $lang, $opt);
+		}
 	else if(isset($secdel))
 		$idx = "Delete";
 	}
