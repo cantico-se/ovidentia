@@ -4,7 +4,7 @@
 <string id="---- Home page articles ----">---- Articles affichés sur la page d'accueil ----</string>
 <string id="---- Proposed Home articles ----">---- Articles proposés pour la page d'accueil ----</string>
 <string id="A file with the same name already exists">Il existe déjà un fichier portant ce nom</string>
-<string id="A new article is proposed for home page(s)">Un nouveau article est proposé pour les pages d'accueil</string>
+<string id="A new article is proposed for home page(s)">Un nouvel article est proposé pour les pages d'accueil</string>
 <string id="A new article is waiting for you">Un nouvel article vous attend</string>
 <string id="A new comment is waiting for you">Il y a un commentaire en attente pour vous</string>
 <string id="A new file has been uploaded">Un nouveau fichier a été chargé</string>
@@ -505,7 +505,7 @@
 <string id="Multilignes">Multilignes</string>
 <string id="Name">Nom</string>
 <string id="New Password">Nouveau mot de passe</string>
-<string id="New article for home page">Nouveau article pour la page d'accueil</string>
+<string id="New article for home page">Nouvel article pour la page d'accueil</string>
 <string id="New articles">Nouveaux articles</string>
 <string id="New calendar event">Nouvel évènement</string>
 <string id="New comments">Nouveaux commentaires</string>
@@ -1398,4 +1398,5 @@
 <string id="The number of days exceed the total allowed">Le nombre de jours excèdent le total permis</string>
 <string id="Do you really want to submit">Voulez-vous vraiment soumettre</string>
 <string id="Login only">identifiant seulement</string>
+<string id="Reason of the modification">Raison de la modification</string>
 </fr>

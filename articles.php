@@ -767,9 +767,9 @@ function modifyArticle($topics, $article)
 					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
 					if( !isset($arr['id_modifier']) || empty($arr['id_modifier']) )
 						{
-						$this->commenttxt = bab_translate("Comment");
+						$this->commenttxt = bab_translate("Reason of the modification");
 						$this->canceltxt = bab_translate("Cancel");
-						$this->updatetxt = bab_translate("Modify");
+						$this->updatetxt = bab_translate("Update");
 						$this->updatemodtxt = bab_translate("Don't update article modification date");
 						$this->bmodify = true;
 						}
@@ -1210,7 +1210,7 @@ switch($idx)
 
 	case "Modify":
 		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Modify article");
+		$babBodyPopup->title = bab_translate("Reason of the modification");
 		$blog = modifyArticle($topics, $article);
 		
 		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
