@@ -467,45 +467,55 @@ function updatePassword($item, $newpwd1, $newpwd2, $newnick)
 	{
 	global $babBody, $BAB_HASH_VAR;
 
-	if( empty($newpwd1) || empty($newpwd2) || empty($newnick))
-		{
-		$babBody->msgerror = bab_translate("You must complete all fields !!");
-		return false;
-		}
-	if( $newpwd1 != $newpwd2)
+	if( (!empty($newpwd1) || !empty($newpwd2)) && $newpwd1 != $newpwd2)
 		{
 		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return false;
 		}
-	if ( strlen($newpwd1) < 6 )
+	
+	if ( !empty($newpwd1) && strlen($newpwd1) < 6 )
 		{
 		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return false;
 		}
 
-	if ( strpos($newnick, ' ') !== false )
+	if ( !empty($newnick) && strpos($newnick, ' ') !== false )
 		{
 		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
 		return false;
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_USERS_TBL." where nickname='".$newnick."' and id!='".$item."'";	
-	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
+	if( !empty($newnick))
 		{
-		$babBody->msgerror = bab_translate("This nickname already exists !!");
-		return false;
+		$query = "select * from ".BAB_USERS_TBL." where nickname='".$newnick."' and id!='".$item."'";	
+		$res = $db->db_query($query);
+		if( $db->db_num_rows($res) > 0)
+			{
+			$babBody->msgerror = bab_translate("This nickname already exists !!");
+			return false;
+			}
+
+		$hash=md5($newnick.$BAB_HASH_VAR);
+		$req="update ".BAB_USERS_TBL." set confirm_hash='".$hash."', nickname='".$newnick."'".
+			"where id='". $item . "'";
+		$res = $db->db_query($req);
+		if ($db->db_affected_rows() < 1)
+			{
+			$babBody->msgerror = bab_translate("Nothing Changed");
+			return false;
+			}
 		}
 
-	$hash=md5($newnick.$BAB_HASH_VAR);
-	$req="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "', confirm_hash='".$hash."', nickname='".$newnick."'".
-		"where id='". $item . "'";
-	$res = $db->db_query($req);
-	if ($db->db_affected_rows() < 1)
+	if( (!empty($newpwd1) && !empty($newpwd2)) && $newpwd1 == $newpwd2)
 		{
-		$babBody->msgerror = bab_translate("Nothing Changed");
-		return false;
+		$req="update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' where id='". $item . "'";
+		$res = $db->db_query($req);
+		if ($db->db_affected_rows() < 1)
+			{
+			$babBody->msgerror = bab_translate("Nothing Changed");
+			return false;
+			}
 		}
 
 	return true;
