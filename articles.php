@@ -378,11 +378,17 @@ function viewArticle($article)
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->close = bab_translate("Close");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."' and confirmed='Y'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']))
+				{
 			$this->content = bab_replace($this->arr['body']);
 			$this->head = bab_replace($this->arr['head']);
+			}
+			else
+				$this->content = bab_translate("Access denied");
+
 			}
 		}
 	
