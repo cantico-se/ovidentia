@@ -110,7 +110,6 @@ function startSearch($pat, $item, $what, $pos)
 			else
 				$this->like = "like '%".$what."%'";
 			$this->what = urlencode(addslashes($what));
-			echo $this->what;
 			$this->countart = 0;
 			$this->countfor = 0;
 			$this->countnot = 0;
