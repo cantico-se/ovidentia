@@ -727,14 +727,7 @@ function addEvent(&$message)
 					$_POST['repeat_n_2'] = 1;
 					}
 
-				if( !isset($_POST['repeat_wd']) )
-					{
-					$rtime = 24*3600*7*$_POST['repeat_n_2'];
-					}
-				else
-					{
-					$rtime = 24*3600;
-					}
+				$rtime = 24*3600*7*$_POST['repeat_n_2'];
 
 				if( $duration > $rtime)
 					{
@@ -767,7 +760,7 @@ function addEvent(&$message)
 						do
 							{
 							$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
-							$time += 24*3600*7;
+							$time += $rtime;
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							}
 						while( $time < $repeatdate );
