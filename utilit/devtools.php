@@ -154,53 +154,5 @@ if (count($cols) > 0)
 return false;
 }
 
-// Used in addons from 5.4.2
-function bab_sqlAutoCreateTables($file)
-	{
-	$fileContent = '';
-	$f = fopen($file,'r');
-	if ($f === false)
-		{
-		trigger_error('bab_sqlAutoCreateTables : can\'t read sql dump file : '.$file, E_USER_ERROR);
-		return false;
-		}
-	while (!feof($f)) 
-		{
-		$fileContent .= fread($f, 1024);
-		}
-
-	$reg = "/((CREATE\s+TABLE).*?)\;/s";
-	if (preg_match_all($reg, $fileContent, $m))
-		{
-		$db = & $GLOBALS['babDB'];
-		for ($k = 0; $k < count($m[1]); $k++ )
-			{
-			$query = $m[1][$k];
-			
-			if (preg_match("/(CREATE\s+TABLE)\s+`?(.*?)`?\s+\(/", $query, $matches))
-				{
-				$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".$matches[2]."'"));
-				if ( $arr[0] != $matches[2] && !$db->db_query($query))
-					{
-					trigger_error('bab_sqlAutoCreateTables : There is an error into sql dump file at query : <p>'.nl2br($query).'</p>', E_USER_ERROR);
-					return false;
-					}
-				}
-			else
-				{
-				trigger_error('bab_sqlAutoCreateTables : can\'t find table name in this query : <p>'.nl2br($query).'</p>', E_USER_ERROR);
-				return false;
-				}
-			
-			}
-		return true;
-		}
-	else
-		{
-		trigger_error('bab_sqlAutoCreateTables : can\'t fetch file content : '.$file, E_USER_ERROR);
-		return false;
-		}
-	}
-
 
 ?>
