@@ -4142,4 +4142,13 @@ if( !$res)
 
 return $ret;
 }
+
+function upgrade540to541()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+return $ret;
+}
+
 ?>

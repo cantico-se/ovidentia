@@ -1,4 +1,12 @@
 /************************************************************************/
+July 2004: Version 5.4.1
+/************************************************************************/
+- calendars: Possility to update all recurents events
+- calendars: Possility to accept or refuse all recurents events
+- More improvement in calendars
+- Fixed some minors bugs
+
+/************************************************************************/
 July 2004: Version 5.4.0
 /************************************************************************/
 - Ovidentia Statistics ( Articles, Forums, Faqs, Files, ... )
