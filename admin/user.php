@@ -363,7 +363,7 @@ function confirmDeleteUser($id)
 	// delete user
 	$req = "delete from ".BAB_USERS_TBL." where id='$id'";
 	$res = $db->db_query($req);
-	bab_callAddonsFunction('bab_user_delete', $id);
+	bab_callAddonsFunction('onUserDelete', $id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
 	}
 

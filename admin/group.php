@@ -512,7 +512,7 @@ function confirmDeleteGroup($id)
     // delete group
 	$req = "delete from ".BAB_GROUPS_TBL." where id='$id'";
 	$res = $db->db_query($req);
-	bab_callAddonsFunction('bab_group_delete', $id);
+	bab_callAddonsFunction('onGroupDelete', $id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 	}
 

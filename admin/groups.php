@@ -130,7 +130,7 @@ function addGroup($name, $description, $manager, $bemail)
 		$id = $db->db_insert_id();
 
 		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'Y', '2')";
-		bab_callAddonsFunction('bab_group_create', $id);
+		bab_callAddonsFunction('onGroupCreate', $id);
 		$db->db_query($req);
 		}
 	}

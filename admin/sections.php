@@ -140,7 +140,7 @@ function sectionsList()
 
 	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp, "sections.html", "sectionslist"));
-	return $temp->count;
+	return $temp->count + $temp->countcat + $temp->counta;
 	}
 
 function sectionsOrder()

@@ -191,7 +191,7 @@ function registerUser( $nickname, $firstname, $lastname, $email, $password1, $pa
 			}
 		notifyAdminRegistration($fullname, $email, $warning);
 		//$babBody->msgerror = $msg;
-		bab_callAddonsFunction('bab_user_create', $id);
+		bab_callAddonsFunction('onUserCreate', $id);
 		return true;
 		}
 	else
