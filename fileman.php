@@ -96,7 +96,7 @@ class listFiles
 			$this->arrudir[] = $GLOBALS['babUrlScript']."?tg=fileman&idx=".$what."&id=".$id."&gr=".$gr."&path=".$p;
 			}
 
-		if( is_dir($this->fullpath.$path."/"))
+		if( $id != 0  && is_dir($this->fullpath.$path."/"))
 			{
 			$h = opendir($this->fullpath.$path."/");
 			while (($f = readdir($h)) != false)
@@ -116,6 +116,8 @@ class listFiles
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
+		else
+			$this->count = 0;
 		}
 
 	}
@@ -390,10 +392,10 @@ function browseFiles($id, $gr, $path, $bmanager, $editor)
 				$this->rootpath = bab_getFolderName($id);
 			else
 				$this->rootpath = "";
-			if( !empty($BAB_SESS_USERID))
+			//if( !empty($BAB_SESS_USERID))
 				$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$BAB_SESS_USERID."&gr=N&path=&editor=".$this->editor;
-			else
-				$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=2&gr=Y&path=&editor=".$this->editor;
+			//else
+			//	$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=2&gr=Y&path=&editor=".$this->editor;
 			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow&id=".$id."&gr=".$gr."&path=".$path."&editor=".$this->editor;
 			}
 
@@ -675,10 +677,13 @@ function listFiles($id, $gr, $path, $bmanager)
 
 		}
 
-	$pathx = bab_getUploadFullPath($gr, $id);
-	if( !is_dir($pathx))
+	if( $id != 0 )
 		{
-		mkdir($pathx, 0700);
+		$pathx = bab_getUploadFullPath($gr, $id);
+		if( !is_dir($pathx))
+			{
+			mkdir($pathx, 0700);
+			}
 		}
 
 	$temp = new temp($id, $gr, $path, $bmanager);
@@ -1824,6 +1829,7 @@ if(!isset($path))
 else if( bab_isMagicQuotesGpcOn())
 	$path = stripslashes($path);
 
+
 if( !empty($BAB_SESS_USERID) && $babBody->ustorage)
 	{
 	if(!isset($id))
@@ -1837,9 +1843,16 @@ if( !empty($BAB_SESS_USERID) && $babBody->ustorage)
 	}
 else
 	{
-	$id = $babBody->aclfm['id'][0];
-	$gr = "Y";
+	if(!isset($id))
+		{
+		$id = 0;
+		}
+	if(!isset($gr))
+		{
+		$gr = "N";
+		}
 	}
+
 
 if( $gr == "N" && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id )
 	{

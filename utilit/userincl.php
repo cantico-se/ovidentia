@@ -483,7 +483,15 @@ function bab_fileManagerAccessLevel()
 	$res = $babDB->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".ustorage ='Y'");
 
 	if( $res && $babDB->db_num_rows($res) > 0 )
+		{
 		$babBody->ustorage = true;
+		}
+	else
+		{
+		$arr = $babDB->db_fetch_array($babDB->db_query("select ustorage from ".BAB_GROUPS_TBL." where id='1'"));
+		if( $arr['ustorage'] == "Y")
+			$babBody->ustorage = true;
+		}
 	
 	$res = $babDB->db_query("select id, manager, idsa from ".BAB_FM_FOLDERS_TBL." where active='Y'");
 	while($row = $babDB->db_fetch_array($res))

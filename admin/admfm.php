@@ -6,22 +6,7 @@
  ***********************************************************************/
 include_once "base.php";
 include $babInstallPath."admin/acl.php";
-//include $babInstallPath."utilit/fmincl.php";
-
-function bab_getFolderName($id)
-	{
-	global $babDB;
-	$res = $babDB->db_query("select folder from ".BAB_FM_FOLDERS_TBL." where id='".$id."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['folder'];
-		}
-	else
-		{
-		return "";
-		}
-	}
+include $babInstallPath."utilit/fileincl.php";
 
 function modifyFolder($fid)
 	{
