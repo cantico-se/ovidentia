@@ -133,6 +133,7 @@ function listGroups($id, $pos, $grp)
 
 		function temp($id, $pos, $grp)
 			{
+			global $babBody;
 			$this->name = bab_translate("Groups Names");
 			$this->group = bab_translate("Group");
 			$this->updategroups = bab_translate("Update Groups");
@@ -147,7 +148,7 @@ function listGroups($id, $pos, $grp)
 			if( $this->count1 < 1)
 				$this->select = "selected";
 
-			$req = "select * from ".BAB_GROUPS_TBL." where id > 2 order by id asc";
+			$req = "select * from ".BAB_GROUPS_TBL." where id > 2  and id_dgowner='".$babBody->currentAdmGroup."' order by id asc";
 			$this->res2 = $this->db->db_query($req);
 			$this->count2 = $this->db->db_num_rows($this->res2);
 			}
