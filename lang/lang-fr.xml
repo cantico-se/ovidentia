@@ -1134,4 +1134,7 @@
 <string id="Section disabled">Section désactivée</string>
 <string id="Section enabled">Section activée</string>
 <string id="Results">Résultats</string>
+<string id="or">ou</string>
+<string id="and">et</string>
+<string id="not">non</string>
 </fr>
