@@ -2175,8 +2175,19 @@ class babLanguageFilter
 }
 				$tmpLangFiles[] = '*';
 				sort($tmpLangFiles);
-				$this->langFiles = array_unique($tmpLangFiles);
-			} // readLangFiles()
+				$this->langFiles = array();
+				$tmpLang = '';
+				$i = 0;
+				$tmpLangFiles[-1]='';
+				while ($i < count($tmpLangFiles) - 1)
+				{
+					if ($tmpLangFiles[$i] != $tmpLangFiles[$i-1])
+					{
+						$this->langFiles[] = $tmpLangFiles[$i];
+					}
+					$i++;
+				}
+			} // function readLangFiles() // 2003-09-08
 		
 		function getLangFiles()
 			{
