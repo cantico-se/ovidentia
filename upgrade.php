@@ -330,6 +330,15 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD style VARCHAR(255) NOT NULL AFTER skin";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
 $req = "select id, bwrite from ".BAB_CALACCESS_USERS_TBL;
 $res = $db->db_query($req);
 
@@ -364,5 +373,14 @@ if( !$res)
 	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
 	return $ret;
 	}
+
+$req = "ALTER TABLE ".BAB_FORUMS_TBL." ADD notification ENUM('N','Y') DEFAULT 'N' NOT NULL AFTER moderation";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 }
 ?>
