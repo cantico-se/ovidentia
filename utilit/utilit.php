@@ -170,6 +170,30 @@ function bab_translate($str, $folder = "")
 	return $str;
 }
 
+function bab_callAddonsFunction($func)
+{
+	$arr_keys = array_keys($GLOBALS['babAddons']);
+	for( $i = 0; $i < sizeof($arr_keys); $i++)
+		{
+		$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$arr_keys[$i]]['bab_folder'];
+		if( strtolower($GLOBALS['babAddons'][$arr_keys[$i]]['bab_enabled']) == "yes" && is_dir($addonpath))
+			{
+			require_once( $addonpath."/".$GLOBALS['babAddons'][$arr_keys[$i]]['bab_init_file'] );
+			$call = $GLOBALS['babAddons'][$arr_keys[$i]][$func];
+			if( !empty($call)  && function_exists($call) )
+				{
+				$args = func_get_args();
+				$call .= "(";
+				for($k=1; $k < sizeof($args); $k++)
+					eval ( "\$call .= \"$args[$k],\";");
+				$call = substr($call, 0, -1);
+				$call .= ")";
+				eval ( "\$retval = $call;");
+				}
+			}
+		}
+}
+
 function bab_getAddonsMenus($row, $what)
 {
 	$addon_urls = array();
