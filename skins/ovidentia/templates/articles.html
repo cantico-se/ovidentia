@@ -202,6 +202,12 @@ if(ctrlf != null)
 ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
 }
 
+function onInsertImage(txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
+}
+
 function savef(t)
 {
 ctrlf = t;
@@ -340,6 +346,12 @@ function onInsertFile(idf,txt)
 {
 if(ctrlf != null)
 ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+}
+
+function onInsertImage(txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '<img src="' + txt + '" border=0  hspace=5 vspace=5>';
 }
 
 function savef(t)
