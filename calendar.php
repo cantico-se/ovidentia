@@ -380,8 +380,8 @@ function calendarMonth($calid, $day, $month, $year)
 			if( $k < count($this->mcals))
 				{
 				$this->fullname = htmlentities(bab_getCalendarOwnerName($this->mcals[$k], 0));
-				//$this->fullnameten = htmlentities(substr($this->fullname, 0, 22));
-				$this->fullnameten = htmlentities($this->fullname);
+				$this->fullnameten = htmlentities(substr($this->fullname, 0, 16));
+				//$this->fullnameten = htmlentities($this->fullname);
 				$this->resevent = getEventsResult($this->mcals[$k], $this->mday, $this->month, $this->year);
 				$this->countevent = $this->db->db_num_rows($this->resevent);
 				$k++;
@@ -412,10 +412,7 @@ function calendarMonth($calid, $day, $month, $year)
 					$this->hourten = htmlentities(bab_toAmPm(substr($arr['start_time'], 0 ,5)));
 				else
 					$this->hourten = htmlentities(substr($arr['start_time'], 0 ,5));
-				$this->titleten = htmlentities($arr['title']) ;
-/*
 				$this->titleten = htmlentities(substr($arr['title'], 0, 10)) ;
-*/
 				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr['id_cal']."&evtid=".$arr['id']. "&view=viewm";
 				if( $this->babCalendarUsebgColor == "Y")
 					{
