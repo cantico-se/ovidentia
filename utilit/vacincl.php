@@ -144,7 +144,29 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 
 	$db = & $GLOBALS['babDB'];
 
-	$res = $db->db_query("select r.*,r.id idright, rules.*, ur.quantity ur_quantity from ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." c, ".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_USERS_RIGHTS_TBL." ur, ".BAB_VAC_PERSONNEL_TBL." p LEFT JOIN ".BAB_VAC_RIGHTS_RULES_TBL." rules ON rules.id_right = r.id where t.id = c.id_type and c.id_coll=p.id_coll AND p.id_user='".$id_user."' AND r.active='Y' and ur.id_user='".$id_user."' and ur.id_right=r.id and r.id_type=t.id GROUP BY r.id  ORDER BY r.description");
+	$res = $db->db_query("SELECT 
+				r.*, 
+				r.id idright, rules.*, 
+				ur.quantity ur_quantity 
+				FROM 
+					".BAB_VAC_TYPES_TBL." t, 
+					".BAB_VAC_COLL_TYPES_TBL." c, 
+					".BAB_VAC_RIGHTS_TBL." r, 
+					".BAB_VAC_USERS_RIGHTS_TBL." ur, 
+					".BAB_VAC_PERSONNEL_TBL." p 
+				LEFT JOIN 
+					".BAB_VAC_RIGHTS_RULES_TBL." rules 
+					ON rules.id_right = r.id 
+				WHERE t.id = c.id_type 
+					AND c.id_coll=p.id_coll 
+					AND p.id_user='".$id_user."' 
+					AND r.active='Y' 
+					AND ur.id_user='".$id_user."' 
+					AND ur.id_right=r.id 
+					AND r.id_type=t.id 
+				GROUP BY r.id 
+				ORDER BY r.description
+					");
 	
 	while ( $arr = $db->db_fetch_array($res) )
 		{
@@ -153,7 +175,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 		if (!$end)
 			$end = bab_mktime($arr['date_end']);
 
-		$row = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id_type']."' and el.id_entry=e.id"));
+		$row = $db->db_fetch_array($db->db_query("select sum(quantity) as total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user='".$id_user."' and e.status='Y' and el.id_type='".$arr['id']."' and el.id_entry=e.id"));
 				
 		$qdp = isset($row['total'])? $row['total'] : 0;
 
@@ -243,7 +265,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 						'quantity' =>   $arr['quantity'],
 						'description' =>$arr['description'],
 						'cbalance' =>   $arr['cbalance'],
-						'quantitydays'=>$quantitydays
+						'quantitydays'=>$quantitydays,
+						'used' =>		$qdp
 						);
 		}
 
