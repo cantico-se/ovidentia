@@ -1110,31 +1110,34 @@ function bab_replace( $txt, $remove = '' )
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
 			$repl = false;
-			$req = "select * from ".BAB_ARTICLES_TBL." where id=".$m[1][$k];
-			$res = $db->db_query($req);
-			if( $res && $db->db_num_rows($res) > 0)
+			if (isset($m[1][$k]) && is_int($m[1][$k]) )
 				{
-				$arr = $db->db_fetch_array($res);
-				if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$m[1][$k]."'";
+				$res = $db->db_query($req);
+				if( $res && $db->db_num_rows($res) > 0)
 					{
-					if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
+					$arr = $db->db_fetch_array($res);
+					if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
 						{
-						$repl = true;
-						if ($m[2][$k] == '0')
+						if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
 							{
-							$titre = $arr['title'];
-							}
-						else
-							{
-							$titre = $m[2][$k];
-							}
-						if ($m[3][$k] == '0')
-							{
-							$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$titre."</a>", $txt);
-							}
-						else
-							{
-							$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$titre."</a>", $txt);
+							$repl = true;
+							if ($m[2][$k] == '0')
+								{
+								$titre = $arr['title'];
+								}
+							else
+								{
+								$titre = $m[2][$k];
+								}
+							if ($m[3][$k] == '0')
+								{
+								$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']."\">".$titre."</a>", $txt);
+								}
+							else
+								{
+								$txt = preg_replace("/\\\$ARTICLEID\(".preg_quote($m[1][$k],"/").",".preg_quote($m[2][$k],"/").",".preg_quote($m[3][$k],"/")."\)/", "<a href=\"javascript:Start('".$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&article=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');\">".$titre."</a>", $txt);
+								}
 							}
 						}
 					}
