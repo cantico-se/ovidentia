@@ -373,7 +373,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid,
 
 	$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_TOPICS_TBL." where id_cat='".$cat."'"));
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering, notify, lang) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "', '" . $bnotify. "', '" .$lang. "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering, notify, lang) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "', '" . $bnotif. "', '" .$lang. "')";
 	$db->db_query($query);
 	return true;
 	}
@@ -436,7 +436,7 @@ switch($idx)
 		if( orderCategories($cat, $adminid, $catname) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-			$babBody->addItemMenu("ord", bab_translate("Ordre"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
+			$babBody->addItemMenu("ord", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
 			}
 		else
 			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
@@ -453,7 +453,7 @@ switch($idx)
 		if( listCategories($cat, $adminid) > 0 )
 			{
 			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
-			$babBody->addItemMenu("ord", bab_translate("Ordre"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
+			$babBody->addItemMenu("ord", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topics&idx=ord&cat=".$cat);
 			}
 		else
 			$babBody->title = bab_translate("There is no topic"). " [ " . $catname . " ]";
