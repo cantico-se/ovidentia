@@ -215,7 +215,7 @@ function bab_viewDirectoryUser($id)
 	$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'");
 	$this->showph = false;
 	$this->count = 0;
-	$access = false;
+	$this->access = false;
 	if( $res && $this->db->db_num_rows($res) > 0)
 		{
 		$this->arr = $this->db->db_fetch_array($res);
@@ -229,13 +229,13 @@ function bab_viewDirectoryUser($id)
 					{
 					if( $row['id_group'] == 1 && $GLOBALS['BAB_SESS_USERID'] != "" )
 						{
-						$access = true;
+						$this->access = true;
 						break;
 						}
 					$res2 = $this->db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->arr['id_user']."' and id_group='".$row['id_group']."'");
 					if( $res2 && $this->db->db_num_rows($res2) > 0 )
 						{
-						$access = true;
+						$this->access = true;
 						break;
 						}
 					}
@@ -243,19 +243,25 @@ function bab_viewDirectoryUser($id)
 				}
 			}
 		else if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->arr['id_directory']))
-			$access = true;
+			{
+			$this->access = true;
+			}
 
-		if( $access )
+		if( $this->access )
 			{
 			$this->name = $this->arr['givenname']. " ". $this->arr['sn'];
 			if( $this->arr['plen'] > 0 )
+				{
 				$this->showph = true;
+				}
 
 			$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->arr['id_directory']."&idu=".$id;
 			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
 
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				{
 				$this->count = $this->db->db_num_rows($this->res);
+				}
 			}
 		}
 	else
@@ -268,5 +274,136 @@ function bab_viewDirectoryUser($id)
 }
 
 
+function summaryDbContact($id, $idu, $update=true)
+{
+	global $babBody;
+
+	class temp
+		{
+
+		function temp($id, $idu, $update)
+			{
+			$this->db = $GLOBALS['babDB'];
+			list($idgroup, $allowuu) = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+
+			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
+			if( $this->res && $this->db->db_num_rows($this->res) > 0)
+				$this->count = $this->db->db_num_rows($this->res);
+			else
+				$this->count = 0;
+			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup != 0? 0: $id)."' and id='".$idu."'");
+			$this->showph = false;
+			if( $res && $this->db->db_num_rows($res) > 0)
+				{
+				$this->arr = $this->db->db_fetch_array($res);
+				$this->name = stripslashes($this->arr['givenname']). " ". stripslashes($this->arr['sn']);
+				if( $this->arr['plen'] > 0 )
+					$this->showph = true;
+
+				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu;
+
+				if( $idgroup != 0 )
+					$this->del = false;
+				else
+					{
+					$allowuu = "N";
+					$this->del = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+					}
+
+				$this->modify = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
+
+				if( $this->modify == false && $allowuu == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
+					{
+					$this->modify = true;
+					}
+
+				if( $this->modify )
+					{
+					$this->modifytxt = bab_translate("Modify");
+					$this->modifyurl = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&idu=".$idu;
+					}
+
+				if( $this->del )
+					{
+					$this->deltxt = bab_translate("Delete");
+					$this->delurl = $GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu;
+					}
+
+				$this->idu = $idu;
+				$this->resorg = $this->db->db_query("SELECT distinct oct.name, oct.id, oct.id_directory from ".BAB_ORG_CHARTS_TBL." oct left join ".BAB_OC_ROLES_TBL." ocrt on oct.id=ocrt.id_oc left join ".BAB_OC_ROLES_USERS_TBL." ocrut on ocrt.id=ocrut.id_role where ocrut.id_user='".$idu."'");
+				$this->orgcount = $this->db->db_num_rows($this->resorg);
+				if( $this->orgcount > 0 )
+					{
+					$this->vieworg = bab_translate("View this organizational chart");
+					$this->vieworgurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=";
+					}
+				}
+			else
+				{
+				$this->name = "";
+				$this->urlimg = "";
+				}
+
+			if( !$update )
+				{
+				$this->modify = false;
+				$this->del = false;
+				}
+			}
+		
+		function getnextfield()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldv = stripslashes($this->arr[$arr['name']]);
+				if( strlen($this->arr[$arr['name']]) > 0 )
+					$this->bfieldv = true;
+				else
+					$this->bfieldv = false;
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextorg(&$skip)
+			{
+			static $i = 0;
+			if( $i < $this->orgcount)
+				{
+				$arr = $this->db->db_fetch_array($this->resorg);
+				if( !bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $arr['id']))
+					{
+					$skip = true;
+					$i++;
+					return true;
+					}
+				$this->orgn = $arr['name'];
+				$this->orgid = $arr['id'];
+				$res = $this->db->db_query("SELECT  ocrt.id_entity FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role WHERE ocrut.id_user='".$this->idu."' and ocrt.id_oc='".$this->orgid."' and ocrut.isprimary='Y' ");
+				if( $res && $this->db->db_num_rows($res) > 0 )
+					{
+					$arr = $this->db->db_fetch_array($res);
+					$this->oeid = $arr['id_entity'];
+					}
+				else
+					{
+					$this->oeid = 0;
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp = new temp($id, $idu, $update);
+	echo bab_printTemplate($temp, "directory.html", "summarydbcontact");
+}
 
 ?>

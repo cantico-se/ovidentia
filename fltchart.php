@@ -316,6 +316,11 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 				$this->bab_viewDirectoryUser($iduser);
 				}
 			$this->altbg = false;
+			if( !$this->access )
+				{
+				$this->showph = true;
+				$this->urlimg = $GLOBALS['babSkinPath']."/images/nophoto.jpg";
+				}
 			}
 
 		function getnextfield()
@@ -341,6 +346,7 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 
 	$temp = new temp($ocid, $oeid, $iduser);
 	$babLittleBody->babecho( bab_printTemplate($temp,"fltchart.html", "userdetail"));
+	return $temp->access;
 	}
 
 
@@ -422,12 +428,16 @@ switch($idx)
 		break;
 	case "detr":
 		$babLittleBody->title = '';
+		$access = false;
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 		if( $oeid )
 		{
-		$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
-		viewOrgChartRoleDetail($ocid, $oeid, $iduser);
+		$access = viewOrgChartRoleDetail($ocid, $oeid, $iduser);
 		}
+		if( $access )
+			{
+			$babLittleBody->addItemMenu("more", bab_translate("More"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
+			}
 		$babLittleBody->setCurrentItemMenu($idx);
 		break;
 

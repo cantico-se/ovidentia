@@ -1697,91 +1697,47 @@ function viewContact($id, $what)
 
 function viewDirectoryUser($id, $what)
 {
-	global $babBody;
-
-	class temp
-		{
-
-		function temp($id, $what)
+	global $babBody, $babDB, $babInstallPath;
+	include_once $babInstallPath."utilit/dirincl.php";
+	list($idd, $idu) = $babDB->db_fetch_array($babDB->db_query("select id_directory, id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'"));
+	$access = false;
+	if( $idd == 0 )
+	{
+		$res = $babDB->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id_group != '0'");
+		while( $row = $babDB->db_fetch_array($res))
 			{
-			$this->db = $GLOBALS['babDB'];
-			
-			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'");
-			$this->showph = false;
-			$this->count = 0;
-			$access = false;
-			if( $res && $this->db->db_num_rows($res) > 0)
+			$idd = $row['id'];
+			list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
+			if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 				{
-				$this->arr = $this->db->db_fetch_array($res);
-				if( $this->arr['id_directory'] == 0 )
+				if( $row['id_group'] == 1 && $GLOBALS['BAB_SESS_USERID'] != "" )
 					{
-					$res = $this->db->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL." where id_group != '0'");
-					while( $row = $this->db->db_fetch_array($res))
-						{
-						list($bdir) = $this->db->db_fetch_array($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
-						if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
-							{
-							if( $row['id_group'] == 1 && $GLOBALS['BAB_SESS_USERID'] != "" )
-								{
-								$access = true;
-								break;
-								}
-							$res2 = $this->db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$this->arr['id_user']."' and id_group='".$row['id_group']."'");
-							if( $res2 && $this->db->db_num_rows($res2) > 0 )
-								{
-								$access = true;
-								break;
-								}
-							}
-
-						}
-					}
-				else if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->arr['id_directory']))
 					$access = true;
-
-				if( $access )
+					break;
+					}
+				$res2 = $babDB->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$idu."' and id_group='".$row['id_group']."'");
+				if( $res2 && $babDB->db_num_rows($res2) > 0 )
 					{
-					$this->name = $this->arr['givenname']. " ". $this->arr['sn'];
-					if( $this->arr['plen'] > 0 )
-						$this->showph = true;
-
-					$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->arr['id_directory']."&idu=".$id;
-					$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
-
-					if( $this->res && $this->db->db_num_rows($this->res) > 0)
-						$this->count = $this->db->db_num_rows($this->res);
+					$access = true;
+					break;
 					}
 				}
-			else
-				{
-				$this->name = "";
-				$this->urlimg = "";
-				}
-			}
-		
-		function getnextfield()
-			{
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->fieldn = bab_translate($arr['description']);
-				$this->fieldv = $this->arr[$arr['name']];
-				if( strlen($this->arr[$arr['name']]) > 0 )
-					$this->bfieldv = true;
-				else
-					$this->bfieldv = false;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
 
+			}
+	}
+	elseif( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $idd))
+		{
+		$access = true;
 		}
 
-	$temp = new temp($id, $what);
-	echo bab_printTemplate($temp, "search.html", "viewdircontact");
+	if( $access )
+	{
+	echo summaryDbContact($idd, $id, false);
+	}
+	else
+	{
+		echo bab_translate("Access denied");
+	}
 }
 
 if( !isset($what))
