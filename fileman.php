@@ -43,6 +43,13 @@ function notifyApprovers($id, $fid)
 	return false;
 	}
 
+function deleteFile($idf)
+	{
+	global $babDB;
+	$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."'");
+	$db->db_query("delete from ".BAB_FILES_TBL." where id='".$idf."'");
+	}
+
 class listFiles
 	{
 	var $db;
@@ -773,9 +780,15 @@ function addFile($id, $gr, $path, $description, $keywords)
 		var $maxfilesize;
 		var $descval;
 		var $keysval;
+		var $field;
+		var $fieldname;
+		var $fieldval;
+		var $count;
+		var $res;
 
 		function temp($id, $gr, $path, $description, $keywords)
 			{
+			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->keywords = bab_translate("Keywords");
@@ -789,7 +802,34 @@ function addFile($id, $gr, $path, $description, $keywords)
 			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
 			$this->descval = isset($description)? $description: "";
 			$this->keysval = isset($keywords)? $keywords: "";
+			if( $gr == 'Y' )
+				{
+				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$id."'");
+				$this->count = $babDB->db_num_rows($this->res);
+				}
+			else
+				$this->count = 0;
 			}
+		
+
+		function getnextfield()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->fieldname = bab_translate($arr['name']);
+				$this->field = 'field'.$arr['id'];
+				$this->fieldval = htmlentities($arr['defaultval']);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+
 		}
 
 	$access = false;
@@ -1072,7 +1112,8 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 
 	$name = $filename;
-	if( !bab_isMagicQuotesGpcOn())
+	$mqgo = bab_isMagicQuotesGpcOn();
+	if( !$mqgo)
 		{
 		$name = addslashes($filename);
 		$description = addslashes($description);
@@ -1135,6 +1176,33 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 		$idf = $db->db_insert_id(); 
 		}
 
+	if( $gr == 'Y')
+		{
+		$res = $db->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$id."'");
+		while($arr = $db->db_fetch_array($res))
+			{
+			$fd = 'field'.$arr['id'];
+			if( isset($GLOBALS[$fd]) )
+				{
+				if( !$mqgo)
+					{
+					$fval = addslashes($GLOBALS[$fd]);
+					}
+				else
+					$fval = $GLOBALS[$fd];
+				$res2 = $db->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."' and id_field='".$arr['id']."'");
+				if( $res2 && $db->db_num_rows($res2) > 0)
+					{
+					$arr2 = $db->db_fetch_array($res2);
+					$db->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."' where id='".$arr2['id']."'");
+					}
+				else
+					{
+					$db->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."', id_file='".$idf."', id_field='".$arr['id']."'");
+					}
+				}
+			}
+		}
 
 	if( $gr == "Y" && $confirmed == "N" )
 		{
@@ -1239,7 +1307,8 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				$frename = true;
 			}
 
-		if( !bab_isMagicQuotesGpcOn())
+		$mqgo = bab_isMagicQuotesGpcOn();
+		if( !$mqgo )
 			{
 			$fname = addslashes($fname);
 			$description = addslashes($description);
@@ -1286,6 +1355,34 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 		if( count($tmp) > 0 )
 			$db->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$idf."'");
 
+		if( $arr['bgroup'] == 'Y')
+			{
+			$res = $db->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$arr['id_owner']."'");
+			while($arrf = $db->db_fetch_array($res))
+				{
+				$fd = 'field'.$arrf['id'];
+				if( isset($GLOBALS[$fd]) )
+					{
+					if( !$mqgo)
+						{
+						$fval = addslashes($GLOBALS[$fd]);
+						}
+					else
+						$fval = $GLOBALS[$fd];
+					$res2 = $db->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$idf."' and id_field='".$arrf['id']."'");
+					if( $res2 && $db->db_num_rows($res2) > 0)
+						{
+						$arr2 = $db->db_fetch_array($res2);
+						$db->db_query("update ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."' where id='".$arr2['id']."'");
+						}
+					else
+						{
+						$db->db_query("insert into ".BAB_FM_FIELDSVAL_TBL." set fvalue='".$fval."', id_file='".$idf."', id_field='".$arrf['id']."'");
+						}
+					}
+				}
+			}
+
 		if( empty($bnotify))
 			{
 			$rr = $db->db_fetch_array($db->db_query("select filenotify from ".BAB_FM_FOLDERS_TBL." where id='".$arr['id_owner']."'"));
@@ -1300,7 +1397,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				switch($res)
 					{
 					case 0:
-						$db->db_query("delete from ".BAB_FILES_TBL." where id='".$arr['id']."'");
+						deleteFile($arr['id']);
 						unlink($pathx.$arr['name']);
 						break;
 					case 1:
@@ -1511,7 +1608,7 @@ function removeDirectory($id, $gr, $path)
 		while( $arr = $db->db_fetch_array($res))
 			{
 			if( @unlink($pathx.$path."/".$arr['name']))
-				$db->db_query("delete from ".BAB_FILES_TBL." where id='".$arr['id']."'");
+				deleteFile($arr['id']);
 			}
 
 		if( $pos = strrpos($path, "/"))
@@ -1692,6 +1789,8 @@ function viewFile( $idf)
 		var $no;
 		var $descval;
 		var $keysval;
+		var $descvalhtml;
+		var $keysvalhtml;
 		var $confirm;
 		var $confirmno;
 		var $confirmyes;
@@ -1708,6 +1807,13 @@ function viewFile( $idf)
 		var $fsizetxt;
 		var $fsize;
 		var $movetofolder;
+
+		var $field;
+		var $resff;
+		var $countff;
+		var $fieldval;
+		var $fieldid;
+		var $fieldvalhtml;
 
 		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload)
 			{
@@ -1735,6 +1841,8 @@ function viewFile( $idf)
 				$this->title = $arr['name'];
 				$this->descval = $arr['description'];
 				$this->keysval = $arr['keywords'];
+				$this->descvalhtml = htmlentities($arr['description']);
+				$this->keysvalhtml = htmlentities($arr['keywords']);
 
 				$this->fsizetxt = bab_translate("Size");
 				$fstat = stat(bab_getUploadFullPath($arr['bgroup'], $arr['id_owner']).$arr['path']."/".$arr['name']);
@@ -1809,6 +1917,13 @@ function viewFile( $idf)
 				else
 					$this->countfm = 0;
 				
+				if( $arr['bgroup'] == 'Y' )
+					{
+					$this->resff = $db->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$arr['id_owner']."'");
+					$this->countff = $db->db_num_rows($this->resff);
+					}
+				else
+					$this->countff = 0;
 				}
 			else
 				{
@@ -1832,6 +1947,34 @@ function viewFile( $idf)
 				return false;
 			}
 
+		function getnextfield()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countff)
+				{
+				$arr = $babDB->db_fetch_array($this->resff);
+				$this->field = bab_translate($arr['name']);
+				$this->fieldid = 'field'.$arr['id'];
+				$this->fieldval = '';
+				$this->fieldvalhtml = '';
+				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."' and id_file='".$this->idf."'");
+				if( $res && $babDB->db_num_rows($res) > 0)
+					{
+					list($this->fieldval) = $babDB->db_fetch_array($res);
+					$this->fieldvalhtml = htmlentities($this->fieldval);
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				if( $this->countff > 0 )
+					$babDB->db_data_seek($this->resff, 0 );
+				$i = 0;
+				return false;
+				}
+			}
 
 		}
 	echo $babBody->msgerror;
@@ -1935,8 +2078,9 @@ function deleteFiles($items, $gr, $id)
 				{
 				if( unlink($pathx.$arr['path']."/".$arr['name']))
 					{
-					$db->db_query("delete from ".BAB_FILES_TBL." where id='".$items[$i]."' or link='".$items[$i]."'");
+					deleteFile($items[$i]);
 					}
+
 				}
 			}
 		}

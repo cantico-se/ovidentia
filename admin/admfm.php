@@ -53,6 +53,9 @@ function modifyFolder($fid)
 		var $safm;
 		var $sares;
 		var $sacount;
+		var $version;
+		var $yversel;
+		var $nversel;
 
 		function temp($fid)
 			{
@@ -62,6 +65,7 @@ function modifyFolder($fid)
 			$this->moderator = bab_translate("Manager");
 			$this->moderation = bab_translate("Approbation schema");
 			$this->notification = bab_translate("Notification");
+			$this->version = bab_translate("Versioning");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
@@ -95,6 +99,17 @@ function modifyFolder($fid)
 				{
 				$this->nnfsel = "selected";
 				$this->ynfsel = "";
+				}
+
+			if( $arr['version'] == "Y" )
+				{
+				$this->yversel = "selected";
+				$this->nversel = "";
+				}
+			else
+				{
+				$this->nversel = "selected";
+				$this->yversel = "";
 				}
 
 			$this->safm = $arr['idsa'];
@@ -134,6 +149,140 @@ function modifyFolder($fid)
 	}
 
 
+function fieldsFolder($fid)
+	{
+	global $babBody;
+	
+	class temp
+		{
+		var $fid;
+		var $fieldname;
+		var $fieldnameval;
+		var $fieldid;
+		var $altdelf;
+		var $fieldurl;
+		var $fielddefval;
+		var $defaultname;
+
+		function temp($fid)
+			{
+			global $babDB;
+			$this->fid = $fid;
+			$this->fieldname = bab_translate("Field");
+			$this->defaultname = bab_translate("Default Value");
+			$this->altdelf = bab_translate("Delete fields");
+			$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'order by id asc");
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+
+		function getnext()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->fieldnameval = $arr['name'];
+				$this->fielddefval = $arr['defaultval'];
+				$this->fieldid = $arr['id'];
+				$this->fieldurl = $GLOBALS['babUrlScript']."?tg=admfm&idx=mfield&fid=".$this->fid."&ffid=".$arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		}
+
+	$temp = new temp($fid);
+	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "fmfields"));
+	}
+
+function addFieldFolder($fid, $fname, $defval)
+	{
+	global $babBody;
+	
+	class tempa
+		{
+		var $fid;
+		var $ffid;
+		var $field;
+		var $add;
+		var $fname;
+		var $what;
+		var $defval;
+		var $default;
+
+		function tempa($fid, $fname, $defval)
+			{
+			$this->fid = $fid;
+			$this->ffid = '';
+			$this->field = bab_translate("Field name");
+			$this->default = bab_translate("Default Value");
+			$this->add = bab_translate("Add");
+			if( !empty($fname))
+				{
+				$fname = htmlentities(stripslashes($fname));
+				}
+			if( !empty($defval))
+				{
+				$defval = htmlentities(stripslashes($defval));
+				}
+			$this->fname = $fname;
+			$this->defval = $defval;
+			$this->what = 'fadd';
+			}
+
+		}
+
+	$temp = new tempa($fid, $fname, $defval);
+	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "fmfieldadd"));
+	}
+
+function modifyFieldFolder($fid, $ffid, $fname, $defval)
+	{
+	global $babBody;
+	
+	class tempa
+		{
+		var $fid;
+		var $ffid;
+		var $field;
+		var $add;
+		var $fname;
+		var $what;
+		var $default;
+		var $defval;
+
+		function tempa($fid, $ffid, $fname, $defval)
+			{
+			global $babDB;
+			$this->fid = $fid;
+			$this->field = bab_translate("Field name");
+			$this->default = bab_translate("Default value");
+			$this->add = bab_translate("Modfiy");
+			$this->fname = $fname;
+			$this->defval = $defval;
+			$this->what = 'fmod';
+			if( empty($fname))
+				{
+				$res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id='".$ffid."'");
+				if( $res && $babDB->db_num_rows($res) > 0 )
+					{
+					$arr = $babDB->db_fetch_array($res);
+					$this->fname = htmlentities($arr['name']);
+					$this->defval = htmlentities($arr['defaultval']);
+					}
+				}
+			}
+
+		}
+
+	$temp = new tempa($fid, $ffid, $fname, $defval);
+	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "fmfieldadd"));
+	}
+
 function deleteFolder($fid)
 	{
 	global $babBody;
@@ -155,7 +304,7 @@ function deleteFolder($fid)
 			$this->message = bab_translate("Are you sure you want to delete this folder");
 			$this->title = bab_getFolderName($fid);
 			$this->warning = bab_translate("WARNING: This operation will delete the folder with all files"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=list&fid=".$fid."&action=Yes";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=list&fid=".$fid."&action=fyes";
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=admfms&idx=list";
 			$this->no = bab_translate("No");
@@ -167,7 +316,40 @@ function deleteFolder($fid)
 	}
 
 
-function updateFolder($fid, $fname, $managerid, $active, $said, $notification)
+function deleteFieldsFolder($fid, $fields)
+	{
+	global $babBody;
+	
+	class temp
+		{
+		var $warning;
+		var $message;
+		var $title;
+		var $urlyes;
+		var $urlno;
+		var $yes;
+		var $no;
+		var $topics;
+		var $article;
+
+		function temp($fid, $fields)
+			{
+			$this->message = bab_translate("Are you sure you want to delete fields of folder");
+			$this->title = bab_getFolderName($fid);
+			$this->warning = bab_translate("WARNING: This operation will delete fields with their values"). "!";
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid."&action=ffyes&fields=".implode(',', $fields);
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid;
+			$this->no = bab_translate("No");
+			}
+		}
+
+	$temp = new temp($fid, $fields);
+	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
+	}
+
+
+function updateFolder($fid, $fname, $managerid, $active, $said, $notification, $version)
 {
 	global $babBody, $babDB;
 	if( empty($fname))
@@ -192,7 +374,7 @@ function updateFolder($fid, $fname, $managerid, $active, $said, $notification)
 			$managerid = 0;
 		if( empty($said))
 			$said = 0;
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', manager='".$managerid."', idsa='".$said."', filenotify='".$notification."', active='".$active."' where id ='".$fid."'");
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set folder='".$fname."', manager='".$managerid."', idsa='".$said."', filenotify='".$notification."', active='".$active."', version='".$version."' where id ='".$fid."'");
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;
 		}
@@ -204,30 +386,111 @@ function confirmDeleteFolder($fid)
 	// delete files owned by this group
 	bab_deleteUploadUserFiles("Y", $fid);
 
-    // delete group
+	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'");
+	while( $arr = $babDB->db_fetch_array($res))
+		$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."'");
+
+	$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'");
+
+	// delete folder
 	$babDB->db_query("delete from ".BAB_FM_FOLDERS_TBL." where id='".$fid."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	exit;
 }
 
-/* main */
+function confirmDeleteFields($fid, $fields)
+{
+	global $babDB;
 
+	if( !empty($fields))
+	{
+	$arr = explode(',', $fields);
+	for( $i = 0; $i < count($arr); $i++)
+		{
+		$babDB->db_query("delete from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr[$i]."'");
+		$babDB->db_query("delete from ".BAB_FM_FIELDS_TBL." where id='".$arr[$i]."' and id_folder='".$fid."'");
+		}
+	}
+}
+
+function addField($fid, $ffname, $defval)
+{
+	global $babBody, $babDB;
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$ffname = addslashes($ffname);
+		$defval = addslashes($defval);
+		}
+
+	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where name='".$ffname."' and id_folder='".$fid."'");
+	if( $babDB->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("This field already exists");
+		return false;
+		}
+	else
+		{
+		$babDB->db_query("insert into ".BAB_FM_FIELDS_TBL." (id_folder, name, defaultval) VALUES ('" .$fid. "', '" . $ffname. "', '" . $defval. "')");
+		}
+
+	return true;
+}
+
+function modifyField($fid, $ffid, $ffname, $defval)
+{
+	global $babBody, $babDB;
+
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$ffname = addslashes($ffname);
+		$defval = addslashes($defval);
+		}
+
+	$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where name='".$ffname."' and id!='".$ffid."'");
+	if( $babDB->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("This field already exists");
+		return false;
+		}
+	else
+		{
+		$babDB->db_query("update ".BAB_FM_FIELDS_TBL." set name='" . $ffname. "', defaultval='".$defval."' where id='".$ffid."'");
+		}
+
+	return true;
+}
+
+/* main */
 if( isset($mod) && $mod == "modfolder")
 {
 	if( isset($bupdate))
-		updateFolder($fid, $fname, $managerid, $active, $said, $notification);
+		updateFolder($fid, $fname, $managerid, $active, $said, $notification, $version);
 	else if(isset($bdel))
 		$idx = "delf";
 }
-
-
-if( isset($action) && $action == "Yes")
+else if( isset($action))
 	{
-	confirmDeleteFolder($fid);
+	if( $action == 'fyes')
+		confirmDeleteFolder($fid);
+	else if( $action == 'ffyes' )
+		confirmDeleteFields($fid, $fields);
 	}
+else if( isset($fmf))
+	{
+	if( $fmf == 'fadd' )
+		{
+		if( !addField($fid, $ffname, $defval))
+			$idx = 'afield';
+		}
+	else if( $fmf == 'fmod' )
+		{
+		if( !modifyField($fid, $ffid, $ffname, $defval))
+			$idx = 'mfield';
+		}
 
-
-if( isset($aclview))
+	}
+else if( isset($aclview))
 	{
 	aclUpdate($table, $item, $groups, $what);
 	$fid = $item;
@@ -241,9 +504,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
-		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
 		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Write"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
 		break;
 	
 	case "down":
@@ -253,8 +514,6 @@ switch($idx)
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
 		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
-		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Write"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
 		break;
 
 	case "upda":
@@ -263,28 +522,67 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
-		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
-		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
 		$babBody->addItemMenu("upda", bab_translate("Write"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
 		break;
 
 	case "delf":
-		$babBody->title = bab_translate("Delete folder");
+		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Delete folder");
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		deleteFolder($fid);
 		break;
 
+	case "mfield":
+		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Modify folder's field");
+		if( !isset($ffname)) $ffname = '';
+		if( !isset($defval)) $defval = '';
+		modifyFieldFolder($fid, $ffid, $ffname, $defval);
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
+		$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
+		$babBody->addItemMenu("mfield", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=mfield&fid=".$fid);
+		break;
+
+	case "afield":
+		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Add folder's field");
+		if( !isset($ffname)) $ffname = '';
+		if( !isset($defval)) $defval = '';
+		addFieldFolder($fid, $ffname, $defval);
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
+		$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
+		$babBody->addItemMenu("afield", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfm&idx=afield&fid=".$fid);
+		break;
+
+	case "delff":
+		if( count($fields) > 0)
+		{
+			$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Delete folder's fields");
+			deleteFieldsFolder($fid, $fields);
+			$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+			$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
+			$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
+			$babBody->addItemMenu("delff", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admfm&idx=delff&fid=".$fid);
+			break;
+		}
+		/* no break ; */
+	case "fields":
+		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Folder's fields");
+		fieldsFolder($fid);
+		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
+		$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
+		$babBody->addItemMenu("afield", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfm&idx=afield&fid=".$fid);
+		break;
+
 	default:
 	case "modify":
-		$babBody->title = bab_translate("Modify folder");
+		$babBody->title = bab_getFolderName($fid) . ": ".bab_translate("Modify folder");
 		modifyFolder($fid);
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify");
-		$babBody->addItemMenu("down", bab_translate("Download"), $GLOBALS['babUrlScript']."?tg=admfm&idx=down&fid=".$fid);
-		$babBody->addItemMenu("uplo", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=admfm&idx=uplo&fid=".$fid);
-		$babBody->addItemMenu("upda", bab_translate("Write"), $GLOBALS['babUrlScript']."?tg=admfm&idx=upda&fid=".$fid);
+		$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

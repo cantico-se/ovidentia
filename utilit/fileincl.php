@@ -119,10 +119,11 @@ function bab_isAccessFileValid($gr, $id)
 	$access = false;
 	if( $gr == "Y")
 		{
-		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id ='".$id."' and active='Y'");
+		$res = $babDB->db_query("select id, manager from ".BAB_FM_FOLDERS_TBL." where id ='".$id."' and active='Y'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			if( bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $id))
+			$arr = $babDB->db_fetch_array($res);
+			if( $arr['manager'] == $GLOBALS['BAB_SESS_USERID'] || bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $id))
 				$access = true;
 			}
 		}

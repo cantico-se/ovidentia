@@ -28,6 +28,23 @@ function addFolder()
 	global $babBody;
 	class temp
 		{
+		var $name;
+		var $description;
+		var $moderator;
+		var $moderation;
+		var $notification;
+		var $usersbrowurl;
+		var $yes;
+		var $no;
+		var $add;
+		var $active;
+		var $none;
+		var $sares;
+		var $sacount;
+		var $saname;
+		var $said;
+		var $version;
+
 		function temp()
 			{
 			global $babDB;
@@ -36,6 +53,7 @@ function addFolder()
 			$this->moderator = bab_translate("Manager");
 			$this->moderation = bab_translate("Approbation schema");
 			$this->notification = bab_translate("Notification");
+			$this->version = bab_translate("Versioning");
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
@@ -77,12 +95,38 @@ function listFolders()
 	global $babBody;
 	class temp
 		{
+		var $fullname;
+		var $manager;
+		var $notify;
+		var $access;
+		var $modify;
+		var $uncheckall;
+		var $checkall;
+		var $res;
+		var $count;
+		var $fnotify;
+		var $factive;
+		var $fversion;
+		var $fid;
+		var $url;
+		var $urlname;
+		var $managername;
+		var $urluplo;
+		var $urldown;
+		var $urlupda;
+		var $urluploname;
+		var $urldownname;
+		var $urlupdaname;
+		var $access;
+		var $version;
+
 		function temp()
 			{
 			global $babDB;
 			$this->fullname = bab_translate("Folders");
 			$this->manager = bab_translate("Manager");
 			$this->notify = bab_translate("Notify");
+			$this->version = bab_translate("Versioning");
 			$this->access = bab_translate("Access");
 			$this->active = bab_translate("Enabled");
 			$this->notify = bab_translate("Notify");
@@ -110,6 +154,11 @@ function listFolders()
 				else
 					$this->factive = "";
 
+				if( $arr['version'] == "Y")
+					$this->fversion = "checked";
+				else
+					$this->fversion = "";
+
 				$this->fid = $arr['id'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$arr['id'];
 				$this->urlname = $arr['folder'];
@@ -136,7 +185,7 @@ function listFolders()
 	return $temp->count;
 	}
 
-function saveFolder($fname, $managerid, $active, $said, $notification)
+function saveFolder($fname, $managerid, $active, $said, $notification, $version)
 {
 	global $babBody, $babDB;
 	if( empty($fname))
@@ -161,12 +210,12 @@ function saveFolder($fname, $managerid, $active, $said, $notification)
 			$managerid = 0;
 		if( empty($said))
 			$said = 0;
-		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, manager, idsa, filenotify, active) VALUES ('" .$fname. "', '" . $managerid. "', '". $said. "', '" . $notification. "', '" . $active. "')");
+		$babDB->db_query("insert into ".BAB_FM_FOLDERS_TBL." (folder, manager, idsa, filenotify, active, version) VALUES ('" .$fname. "', '" . $managerid. "', '". $said. "', '" . $notification. "', '" . $active. "', '" . $version. "')");
 		}
 
 }
 
-function updateFolders($notifies, $actives)
+function updateFolders($notifies, $actives, $versions)
 {
 	global $babDB;
 	$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL."");
@@ -182,7 +231,12 @@ function updateFolders($notifies, $actives)
 		else
 			$act = "N";
 
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set filenotify='".$not."', active='".$act."' where id='".$row['id']."'");
+		if( count($versions) > 0 && in_array($row['id'], $versions))
+			$ver = "Y";
+		else
+			$ver = "N";
+
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set filenotify='".$not."', active='".$act."', version='".$ver."' where id='".$row['id']."'");
 		}
 }
 
@@ -192,10 +246,10 @@ if( !isset($idx))
 	$idx = "list";
 
 if( isset($add) && $add == "addfolder")
-	saveFolder($fname, $managerid, $active, $said, $notification);
+	saveFolder($fname, $managerid, $active, $said, $notification, $version);
 
 if( isset($update) && $update == "folders")
-	updateFolders($notifies, $actives);
+	updateFolders($notifies, $actives, $versions);
 
 switch($idx)
 	{

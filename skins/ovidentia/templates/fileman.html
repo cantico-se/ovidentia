@@ -32,6 +32,14 @@
 <input type="text" name="keywords" size="45" maxlength="255" value="{ keysval }">
 </td>
 </tr>
+<!--#in getnextfield -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ fieldname }</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="{ field }" size="45" maxlength="255" value="{ fieldval }">
+</td>
+</tr>
+<!--#endin getnextfield -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
@@ -125,7 +133,7 @@ href="{ url }">{ name }</a></td>
                 <td width="1%" align="center" class="BabSiteAdminFontBackground"> 
                   { fileimage } </td>
                 <td align="left" class="BabSiteAdminFontBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> <a 
-class="BabSiteFileLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ 
+class="BabSiteFileLink" href="javascript: Start('{ viewurl }', 'OviFile', 'width=650,height=600,status=no,resizable=yes,top=100,left=100,scrollbars=yes');">{ 
                   name }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
                   <!--#if bmanager -->
                   <!--#if bconfirmed "== 1" -->
@@ -363,6 +371,12 @@ window.focus();
 <td class="BabSiteAdminFontBackground">{ keywords }</td>
 <td class="BabSiteAdminFontBackground" valign="top">{ keysval }</td>
 </tr>
+<!--#in getnextfield -->
+<tr>
+<td class="BabSiteAdminFontBackground">{ field }</td>
+<td class="BabSiteAdminFontBackground" valign="top">{ fieldval }</td>
+</tr>
+<!--#endin getnextfield -->
 <tr>
 <td class="BabSiteAdminFontBackground">{ fsizetxt }</td>
 <td class="BabSiteAdminFontBackground" valign="top">{ fsize }</td>
@@ -422,15 +436,23 @@ window.focus();
 <tr>
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }</td>
 <td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="description" size="60" maxlength="255" value="{ descval }">
+<input type="text" name="description" size="60" maxlength="255" value="{ descvalhtml }">
 </td>
 </tr>
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ keywords }</td>
 <td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="keywords" size="60" maxlength="255" value="{ keysval }">
+<input type="text" name="keywords" size="60" maxlength="255" value="{ keysvalhtml }">
 </td>
 </tr>
+<!--#in getnextfield -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ field }</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<input type="text" name="{ fieldid }" size="60" maxlength="255" value="{ fieldvalhtml }">
+</td>
+</tr>
+<!--#endin getnextfield -->
 <tr> 
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attribute }</td>
 <td class="BabLoginMenuBackground" valign="middle">

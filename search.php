@@ -308,7 +308,10 @@ function startSearch($pat, $item, $what, $pos)
 					if( $babBody->aclfm['down'][$i] == 1 || $babBody->aclfm['ma'][$i] == 1)
 						{
 						$req = "insert into filresults select * from ".BAB_FILES_TBL." where (name ".$this->like." or description ".$this->like." or keywords ".$this->like.") and id_owner='".$babBody->aclfm['id'][$i]."' and bgroup='Y' and state='' and confirmed='Y'";
-						$this->db->db_query($req);						
+						$this->db->db_query($req);
+
+						$req = "insert into filresults select f.* from ".BAB_FILES_TBL." f,".BAB_FM_FIELDSVAL_TBL." ff where ff.fvalue ".$this->like."  and f.id_owner='".$babBody->aclfm['id'][$i]."' and f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id= ff.id_file";
+						$this->db->db_query($req);
 						}
 					}
 
@@ -816,10 +819,17 @@ function viewFile($id, $w)
 					$fstat = stat($GLOBALS['babUploadPath']."/U".$this->arr['id_owner']."/".$this->arr['path']."/".$this->arr['name']);
 				$this->size = bab_formatSizeFile($fstat[7])." ".bab_translate("Kb");
 				if( $this->arr['bgroup'] == "Y")
-					$this->rootpath = bab_getGroupName($this->arr['id_owner']);
+					$this->rootpath = bab_getFolderName($this->arr['id_owner']);
 				else
 					$this->rootpath = "";
 				$this->path = $this->rootpath."/".$this->arr['path'];
+				if( $this->arr['bgroup'] == 'Y' )
+					{
+					$this->resff = $this->db->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$this->arr['id_owner']."'");
+					$this->countff = $this->db->db_num_rows($this->resff);
+					}
+				else
+					$this->countff = 0;
 				}
 			else
 				{
@@ -831,9 +841,33 @@ function viewFile($id, $w)
 				$this->modified = "";
 				$this->postedby = "";
 				$this->geturl = "";
+				$this->countff = 0;
 				}
 			}
 
+		function getnextfield()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countff)
+				{
+				$arr = $babDB->db_fetch_array($this->resff);
+				$this->field = bab_translate($arr['name']);
+				$this->fieldval = '';
+				$res = $babDB->db_query("select fvalue from ".BAB_FM_FIELDSVAL_TBL." where id_field='".$arr['id']."' and id_file='".$this->arr['id']."'");
+				if( $res && $babDB->db_num_rows($res) > 0)
+					{
+					list($this->fieldval) = $babDB->db_fetch_array($res);
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
 		}
 
 	$temp = new temp($id, $w);

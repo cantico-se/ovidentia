@@ -45,6 +45,8 @@ define("BAB_FAQQR_TBL", "bab_faqqr");
 define("BAB_FA_INSTANCES_TBL", "bab_fa_instances");
 define("BAB_FAR_INSTANCES_TBL", "bab_far_instances");
 define("BAB_FLOW_APPROVERS_TBL", "bab_flow_approvers");
+define("BAB_FM_FIELDS_TBL", "bab_fm_fields");
+define("BAB_FM_FIELDSVAL_TBL", "bab_fm_fieldsval");
 define("BAB_FM_FOLDERS_TBL", "bab_fm_folders");
 define("BAB_FMUPLOAD_GROUPS_TBL", "bab_fmupload_groups");
 define("BAB_FMDOWNLOAD_GROUPS_TBL", "bab_fmdownload_groups");

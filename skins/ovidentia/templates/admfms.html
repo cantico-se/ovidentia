@@ -73,6 +73,15 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ version }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="version">
+<option value="Y">{ yes }</option>
+<option value="N" selected>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
 <td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle">
 <input type="submit" name="Submit" value="{ add }">
@@ -102,6 +111,7 @@ valign="middle">{  name }:</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center" colspan="3">{ access }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ notify } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ active } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ version } </td>
 </tr>
 <!--#in getnext -->
 <tr> 
@@ -112,6 +122,7 @@ valign="middle">{  name }:</td>
 <td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ urlupda }">{ urlupdaname }</a></td>
 <td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }"></td>
 <td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }"></td>
+<td class="BabSiteAdminFontBackground" valign="middle" width="0%" align="center"><input type="checkbox" name="versions[]" { fversion } value="{ fid }"></td>
 </tr>        
 <!--#endin getnext -->
 <tr> 
@@ -120,6 +131,7 @@ valign="middle">{  name }:</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" colspan="3">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('notifies', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notifies', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('actives', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('actives', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('versions', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('versions', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 </tr>
 </table>
 </td>
@@ -207,6 +219,15 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ version }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="version">
+<option value="Y" { yversel }>{ yes }</option>
+<option value="N" { nversel }>{ no }</option>
+</select>
+</td>
+</tr>
+<tr> 
 <td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle">
 <input type="submit" name="bupdate" value="{ add }">&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }">
@@ -220,3 +241,81 @@ valign="middle">{  name }:</td>
 </form>
 <br>
 <!--#end foldermodify -->
+<!--#begin fmfields -->
+<form name="fmfield" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admfm">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="fid" value="{ fid }">
+<input type="hidden" name="fmf" value="del">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap 
+valign="middle"><b>{ fieldname }</b></td>
+<td class="BabSiteAdminTitleFontBackground" align="left" 
+valign="middle">{ defaultname }</td>
+<td class="BabSiteAdminTitleFontBackground" width="2%" align="right" 
+valign="middle">&nbsp;</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" align="left" nowrap 
+valign="middle"><a class="BabSiteAdminListLink" href="{ fieldurl }">{ fieldnameval }</a></td>
+<td class="BabSiteAdminFontBackground" align="left" nowrap 
+valign="middle">{ fielddefval }</td>
+<td class="BabSiteAdminFontBackground" align="left" 
+valign="middle"><input type="checkbox" name="fields[]" value="{ fieldid }"></td>
+</tr>
+<!--#endin getnext -->
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap 
+valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap 
+valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" align="right" 
+valign="middle"><a href="javascript:submitForm('delff', 'fmfield')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ altdelf }" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end fmfields -->
+<!--#begin fmfieldadd -->
+<form name="addfield" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admfm">
+<input type="hidden" name="idx" value="fields">
+<input type="hidden" name="fid" value="{ fid }">
+<input type="hidden" name="ffid" value="{ ffid }">
+<input type="hidden" name="fmf" value="{ what }">
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ field }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="ffname" size="45" maxlength="255" value="{ fname }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ default }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="defval" size="45" maxlength="255" value="{ defval }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="addfmf" value="{ add }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end fmfieldadd -->
