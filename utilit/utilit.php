@@ -687,14 +687,20 @@ function babMonthA($month = "", $year = "")
 		$this->currentYear = $year;
 		}
 
-	$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
-	$res = $this->db->db_query($req);
-	$this->babCalendarStartDay = 0;
-	if( $res && $this->db->db_num_rows($res) > 0)
+	if( !empty($BAB_SESS_USERID))
 		{
-		$arr = $this->db->db_fetch_array($res);
-		$this->babCalendarStartDay = $arr[startday];
+		$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+		$res = $this->db->db_query($req);
+		$this->babCalendarStartDay = 0;
+		if( $res && $this->db->db_num_rows($res) > 0)
+			{
+			$arr = $this->db->db_fetch_array($res);
+			$this->babCalendarStartDay = $arr[startday];
+			}
 		}
+	else
+		$this->babCalendarStartDay = 0;
+
 	}
 
 function printout()
