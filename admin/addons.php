@@ -247,6 +247,107 @@ function upgrade($id)
 		}
 	}
 
+function export($id)
+	{
+	function rd($d)
+		{
+		$res = array();
+		$d = substr($d,-1) != '/' ? $d.'/' : $d;
+		if (is_dir($d))
+			{
+			$handle=opendir($d);
+			while ($file = readdir($handle)) 
+				{
+				if ($file != "." && $file != "..") 
+					{
+					if (is_dir($d.$file)) $res = array_merge($res, rd($d.$file));
+					elseif (is_file($d.$file)) $res[] = $d.$file;
+					}
+				}
+			closedir($handle);
+			}
+		return $res;
+		}
+		
+	class addon_txt
+		{
+		function addon_txt($arr)
+			{
+			$this->arr_ini = $arr;
+			$this->year = date('Y');
+			$this->date = date('d/m/Y');
+			}
+		}
+	
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$id."'");
+	$row = $db->db_fetch_array($res);
+	
+	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
+		{
+		$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
+		if(!empty($arr_ini['version']))
+			$version = str_replace('.','-',$arr_ini['version']);
+			
+		if (!empty($arr_ini['db_prefix']))
+			{
+			$res = $db->db_query("SHOW TABLES LIKE '".$arr_ini['db_prefix']."%'");
+			$arr_ini['tbllist'] = '';
+			while(list($tbl) = $db->db_fetch_array($res))
+				$arr_ini['tbllist'] .= ($tbllist != '') ? ','.$tbl : $tbl;
+			}
+			
+		if (!empty($arr_ini['description']) && empty($arr_ini['longdesc']))
+			$arr_ini['longdesc'] = $arr_ini['description'];
+
+		$arr_ini['title'] = $row['title'];
+		$arr_to_init = array('title','description','version','db_prefix','ov_version','author','longdesc','tbllist');
+		
+		foreach ($arr_to_init as $field)
+			$arr_ini[$field] = isset($arr_ini[$field]) ? $arr_ini[$field] : '';
+		
+		$temp = new addon_txt($arr_ini);
+		$addon_txt = bab_printTemplate($temp, "addons.html", "addon_txt");
+		$addarr[] = array('description.html',$addon_txt);
+		}
+	
+	$loc_in = array("addons",
+				"lang/addons",
+				"skins/ovidentia/templates/addons",
+				"skins/ovidentia/ovml/addons",
+				"skins/ovidentia/images/addons");
+				
+	$loc_out = array("programs",
+				"langfiles",
+				"skins/ovidentia/templates",
+				"skins/ovidentia/ovml",
+				"skins/ovidentia/images");
+				
+	include $GLOBALS['babInstallPath']."utilit/zip.lib.php";
+	$zip = new Zip;
+	$res = array();
+	foreach ($loc_in as $k => $path)
+		{
+		$res = rd($GLOBALS['babInstallPath'].$path.'/'.$row['title']);
+		$len = strlen($GLOBALS['babInstallPath'].$path.'/'.$row['title']);
+		foreach ($res as $file)
+			{
+			if (is_file($file))
+				{
+				$rec_into = $loc_out[$k].substr($file,$len);
+				$fp=fopen($file,"r");
+				$contents = fread ($fp, filesize($file));
+				fclose($fp);			
+				$addarr[] = array($rec_into,$contents);
+				}
+			}
+		}
+	$zip->Add($addarr,0);
+	header("Content-Type:application/zip");
+	header("Content-Disposition: attachment; filename=".$row['title'].'-'.$version.".zip");
+	die($zip->get_file());
+	}
+
 /* main */
 if( !isset($idx))
 	$idx = "list";
@@ -276,6 +377,10 @@ switch($idx)
 		aclGroups("addons", "list", BAB_ADDONS_GROUPS_TBL, $item, "acladd");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 		$babBody->addItemMenu("view", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$item);
+		break;
+
+	case "export":
+		export($item);
 		break;
 	
 	case "upgrade":

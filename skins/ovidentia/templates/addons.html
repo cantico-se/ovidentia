@@ -15,23 +15,26 @@
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center"><a href="{ upgradeallurl }">{ upgradetxt }</a></td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="center">{ versiontxt }</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ disabled }</td>
 </tr>
 
 <!--#in getnext --> 
 <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td valign="top"><b>{ title }</b></td>
-<td valign="top">{ description }</td>
-<td valign="top" align="center">
+<td valign="middle"><b>{ title }</b></td>
+<td valign="middle">{ description }</td>
+<td valign="middle" align="center">
 <!--#if upgradeurl --><a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a><!--#endif upgradeurl -->&nbsp;</td>
-<td valign="top" align="center">{ addversion }</td>
-<td valign="top" align="center"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
+<td valign="middle" align="center">{ addversion }</td>
+<td valign="middle" align="center"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
+<td valign="middle" align="center"><a href="{ exporturl }"><img border="0" src="{ babSkinPath }images/Puces/download.gif"></a></td>
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="addons[]" { catchecked } value="{ arr[id] }">
 </td>
 </tr>
 <!--#endin getnext -->
 <tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
@@ -48,3 +51,35 @@
 <br>
 </form>
 <!--#end addonslist -->
+
+<!--#begin addon_txt -->
+<html>
+<head>
+<title>OVIDENTIA add-on { arr_ini[title] }</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<table cellspacing="0" cellpadding="3" bordercolor="#000000" border="1">
+  <tr>
+    <td><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">OVIDENTIA add-on<br>
+      Copyright (c) { year } by CANTICO (info@cantico.fr)<br>
+
+      http://www.cantico.fr <br>
+      This program is free software. You can redistribute it and/or modify <br>
+      it under the terms of the GNU General Public License as published by <br>
+      the Free Software Foundation; either version 2 of the License. </font></font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on name :</b> { arr_ini[title] }</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on description :</b> { arr_ini[longdesc] }</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on version :</b> { arr_ini[version] }</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Date :</b> { date }</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on database prefixe :</b> { arr_ini[db_prefix] }</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Author :</b> { arr_ini[author] }</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Prerequisites:</b> Ovidentia { arr_ini[ov_version] } miminum</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Database tables:</b> { arr_ini[tbllist] }</font></p>
+
+</body>
+</html>
+<!--#end addon_txt -->
