@@ -219,6 +219,9 @@ function period($id_user, $id = 0)
 			$this->balancetxt = bab_translate("Balance");
 			$this->calendar = bab_translate("Planning");
 			$this->t_total = bab_translate("Total");
+			$this->t_avariable_days = bab_translate("Avariable days");
+			$this->t_waiting_days = bab_translate("Waiting days");
+
 			$this->totalval = 0;
 			$this->maxallowed = 0;
 			$this->db = & $GLOBALS['babDB'];
@@ -265,6 +268,7 @@ function period($id_user, $id = 0)
 
 			$this->rights = bab_getRightsOnPeriod();
 			$this->total = 0;
+			$this->total_waiting = 0;
 			}
 
 
@@ -353,6 +357,7 @@ function period($id_user, $id = 0)
 				{
 				next($this->rights);
 				$this->total += $this->right['quantitydays'];
+				$this->total_waiting += $this->right['waiting'];
 				return true;
 				}
 			else

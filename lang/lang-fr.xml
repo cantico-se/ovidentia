@@ -1672,4 +1672,6 @@
 <string id="Print in landscape">Imprimer en paysage</string>
 <string id="The event isn't on displayed hours for all calendars">L'évènement ne sera pas visible sur les vues jour et semaine</string>
 <string id="Show / hide finished events">Afficher / cacher les évènements terminés</string>
+<string id="Avariable days">Jours disponibles</string>
+<string id="Waiting days">Jours en attente d'approbation</string>
 </fr>
