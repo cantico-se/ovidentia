@@ -851,7 +851,11 @@ class bab_sqlExport
 			{
 			$str = $collumn['Field'].' '.$collumn['Type'];
 			if (!empty($collumn['Default']) )
+				{
+				$collumn['Default'] = str_replace('\\','\\\\',$collumn['Default']);
+				$collumn['Default'] = str_replace("'","''",$collumn['Default']);
 				$str .= ' DEFAULT \''.$collumn['Default'].'\'';
+				}
 			if ($collumn['Null'] != 'YES')
 				$str .= ' NOT NULL';
 			if (!empty($collumn['Extra']))
