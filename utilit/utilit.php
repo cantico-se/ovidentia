@@ -860,12 +860,13 @@ function babUserSection($close)
 		}
 
 
+	if( count($babBody->topsub) > 0  || count($babBody->topmod) > 0 )
+		{
+		$this->array_urls[bab_translate("Publication")] = $GLOBALS['babUrlScript']."?tg=artedit";
+		}
+
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		if( count($babBody->topsub) > 0  || count($babBody->topmod) > 0 )
-			{
-			$this->array_urls[bab_translate("Publication")] = $GLOBALS['babUrlScript']."?tg=artedit";
-			}
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 		if( count($arrschi) > 0 )
 			{
