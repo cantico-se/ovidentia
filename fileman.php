@@ -1783,7 +1783,7 @@ function viewFile( $idf)
 		var $fieldid;
 		var $fieldvalhtml;
 
-		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload)
+		function temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion)
 			{
 			$this->access = $access;
 			if( $access)
@@ -1806,7 +1806,7 @@ function viewFile( $idf)
 				$this->gr = $arr['bgroup'];
 				$this->path = $arr['path'];
 				$this->file = $arr['name'];
-				$this->title = $arr['name']." (".$arr['ver_major'].".".$arr['ver_minor'].")";
+				$this->title = $arr['name'].( ($bversion == 'Y') ? " (".$arr['ver_major'].".".$arr['ver_minor'].")" : "" );
 				$this->descval = $arr['description'];
 				$this->keysval = $arr['keywords'];
 				$this->descvalhtml = htmlentities($arr['description']);
@@ -2012,7 +2012,7 @@ function viewFile( $idf)
 			}
 		}
 
-	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload);
+	$temp = new temp($idf, $arr, $bmanager, $access, $bconfirm, $bupdate, $bdownload,$bversion);
 	echo bab_printTemplate($temp,"fileman.html", "viewfile");
 	}
 
