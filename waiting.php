@@ -39,7 +39,7 @@ function listArticles($topics)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr['head']);
+				$this->content = babReplace($this->arr['head']);
 				$this->moreurl = $GLOBALS['babUrl']."index.php?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
 				if( isset($new) && $new > 0)
 					$this->more .= "&new=".$new;
@@ -87,7 +87,7 @@ function readMore($topics, $article)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr['body']);
+				$this->content = babReplace($this->arr['body']);
 				$i++;
 				return true;
 				}

@@ -51,7 +51,7 @@ function listArticles($topics, $newc)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->author = babTranslate("by") . " ". getArticleAuthor($this->arr['id']). " - ". getArticleDate($this->arr['id']);
-				$this->content = locateArticle($this->arr['head']);
+				$this->content = babReplace($this->arr['head']);
 
 				if( $this->com)
 					{
@@ -127,7 +127,7 @@ function readMore($topics, $article)
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr['body']);
+				$this->content = babReplace($this->arr['body']);
 				$i++;
 				return true;
 				}
@@ -309,7 +309,7 @@ function articlePrint($topics, $article)
 			if( $this->count > 0 )
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->content = locateArticle($this->arr['body']);
+				$this->content = babReplace($this->arr['body']);
 				$this->title = getArticleTitle($this->arr['id']);
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}

@@ -80,7 +80,7 @@ function listPosts($forum, $thread, $post)
 				$this->postdate = bab_strftime(bab_mktime($arr['date']));
 				$this->postauthor = $arr['author'];
 				$this->postsubject = $arr['subject'];
-				$this->postmessage = locateArticle($arr['message']);
+				$this->postmessage = babReplace($arr['message']);
 				$dateupdate = bab_mktime($this->arr['dateupdate']);
 				$this->confirmurl = "";
 				$this->confirmname = "";
