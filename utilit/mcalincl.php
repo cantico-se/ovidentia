@@ -23,6 +23,9 @@
 ************************************************************************/
 include_once "base.php";
 
+define("BAB_CAL_NAME_LENGTH", 20);
+define("BAB_CAL_EVENT_LENGTH", 20);
+
 class bab_mcalendars
 {
 	var $categories;
@@ -416,6 +419,8 @@ class cal_wmdbaseCls
 {
 	function cal_wmdbaseCls($tg, $idx, $calids, $date)
 	{
+		global $babBody;
+
 		$this->currentidcals = $calids;
 		$this->currentdate = $date;
 		$this->idcals = explode(",", $calids);
@@ -423,6 +428,11 @@ class cal_wmdbaseCls
 		$this->year = $rr[0];
 		$this->month = $rr[1];
 		$this->day = $rr[2];
+
+		$this->allow_create = false;
+		$this->allow_modify = false;
+		$this->allow_view = false;
+		$this->allow_viewtitle = true;
 
 		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
 
@@ -491,6 +501,68 @@ class cal_wmdbaseCls
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
 		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
 
+	}
+
+	function updateAccess($evtarr, $calinfo)
+	{
+		$this->allow_view = true;
+
+		switch( $calinfo['type'] )
+			{
+			case BAB_CAL_USER_TYPE:
+				if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE )
+					{
+					$this->allow_create = true;
+					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+						{
+						$this->allow_modify = true;
+						}
+					elseif( $calinfo['access'] == BAB_CAL_ACCESS_FULL && $evtarr['block'] == 'N')
+						{
+						$this->allow_modify = true;
+						}
+					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE && $calinfo['idowner'] !=  $GLOBALS['BAB_SESS_USERID'] && $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'])
+						{
+						$this->allow_modify = true;
+						}
+					}
+				break;
+			case BAB_CAL_PUB_TYPE:
+			case BAB_CAL_RES_TYPE:
+				if( $calinfo['manager'] )
+					{
+					$this->allow_create = true;
+					$this->allow_modify = true;
+					}
+				break;
+			}
+
+		if( $evtarr['bprivate'] == "Y" && $calinfo['type'] ==  BAB_CAL_USER_TYPE && $GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] )
+			{
+			$this->allow_viewtitle = false;
+			}
+		else
+			{
+			$this->allow_viewtitle = true;
+			}
+	
+		if( $evtarr['status'] == BAB_CAL_STATUS_NONE )
+			{
+			$this->bstatus = true;
+			if( $calinfo['type'] == BAB_CAL_USER_TYPE && $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+				{
+				$this->bstatuswc = true;
+				}
+			else
+				{
+				$this->bstatuswc = false;
+				}
+			}
+		else
+			{
+			$this->bstatus = false;
+			}
+	
 	}
 }
 

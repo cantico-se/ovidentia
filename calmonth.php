@@ -35,7 +35,6 @@ class cal_monthCls  extends cal_wmdbaseCls
 		$this->cal_wmdbaseCls("calmonth", $idx, $calids, $date);
 		
 		$this->w = 0;
-		$this->allow_insert = !empty($babBody->icalendars->id_percal) || count($babBody->icalendars->usercal) > 0 || count($babBody->icalendars->pubcal) > 0 || count($babBody->icalendars->rescal) > 0;
 
 		$workdays = explode(',', $babBody->icalendars->workdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
@@ -144,7 +143,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
-			$this->fullnameten = htmlentities(substr($calname, 0, 16));
+			$this->fullnameten = htmlentities(substr($calname, 0, BAB_CAL_NAME_LENGTH))."...";
 			$this->evtarr = array();
 			$this->mcals->getEvents($this->idcals[$this->cindex], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
 			$this->countevent = count($this->evtarr);
@@ -167,22 +166,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->idcal = $arr['id_cal'];
 			$this->status = $arr['status'];
 			$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
-			if( $this->status == BAB_CAL_STATUS_NONE )
-				{
-				$this->bstatus = true;
-				if( $iarr['type'] == BAB_CAL_USER_TYPE && $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
-					{
-					$this->bstatuswc = true;
-					}
-				else
-					{
-					$this->bstatuswc = false;
-					}
-				}
-			else
-				{
-				$this->bstatus = false;
-				}
+			$this->updateAccess($arr, $iarr);
 			if( $arr['id_cat'] == 0 )
 				{
 				$this->category = '';
@@ -212,7 +196,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->bfree = $arr['bfree'];
 			$this->description = $arr['description'];
 			$this->nbowners = $arr['nbowners'];
-			if( $this->bprivate == "Y" && $iarr['type'] ==  BAB_CAL_USER_TYPE && $GLOBALS['BAB_SESS_USERID'] != $iarr['idowner'] )
+			if( !$this->allow_viewtitle  )
 				{
 				$this->title = "xxxxxxxxxx";
 				$this->titleten = "xxxxxxxxxx";
@@ -220,28 +204,19 @@ class cal_monthCls  extends cal_wmdbaseCls
 			else
 				{
 				$this->title = $arr['title'];
-				$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+				$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH))."...";
 				}
-			$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-			switch( $iarr['type'] )
+			if( $this->allow_modify )
 				{
-				case BAB_CAL_USER_TYPE:
-					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || ($iarr['access'] == BAB_CAL_ACCESS_FULL && $this->block == 'N'))
-						{
-						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
-						}
-					elseif( $iarr['idowner'] !=  $GLOBALS['BAB_SESS_USERID'] && $iarr['access'] == BAB_CAL_ACCESS_UPDATE && $this->id_creator ==  $GLOBALS['BAB_SESS_USERID'])
-						{
-						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
-						}
-					break;
-				case BAB_CAL_PUB_TYPE:
-				case BAB_CAL_RES_TYPE:
-					if( $iarr['manager'] )
-						{
-						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
-						}
-					break;
+				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
+				}
+			elseif( $this->allow_view )
+				{
+				$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+				}
+			else
+				{
+				$this->titletenurl = "";
 				}
 			$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 			$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];

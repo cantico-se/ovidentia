@@ -91,7 +91,7 @@ document.onmousemove = bab_tooltipPosition;
 					<!--#in getnextcal -->
 					<!--#in getnexteventcol -->
 						<!--#if bevent -->
-						<td class="event" style="background-color:#{ bgcolor }" onclick="bab_popup('{ editurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
+						<td class="event" style="background-color:#{ bgcolor }" onclick="bab_popup('{ titletenurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
 							<!--#if first -->
 							{ titleten }
 							<div id="calevent{ idcal }{ idevent }" class="bab_tooltip" style="background-color:#{ bgcolor }">
@@ -121,7 +121,11 @@ document.onmousemove = bab_tooltipPosition;
 							<!--#endif first -->
 						</td>
 						<!--#else bevent -->
+						<!--#if allow_create -->		
 						<td class="free" onmouseover="this.className='freeover'" onmouseout="this.className='free'" onclick="bab_popup('{ hoururl }',5)">&nbsp;</td>
+						<!--#else allow_insert -->		
+						<td>&nbsp;</td>
+						<!--#endif allow_create -->		
 						<!--#endif bevent -->
 					<!--#endin getnexteventcol -->
 					<!--#endin getnextcal -->

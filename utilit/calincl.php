@@ -329,8 +329,8 @@ class bab_icalendars
 		$this->usebgcolor = 'Y';
 		$this->elapstime = 60;
 		$this->defaultview = BAB_CAL_VIEW_MONTH;
-		$this->starttime = "08:00:00";
-		$this->endtime = "18:00:00";
+		$this->starttime = "00:00:00";
+		$this->endtime = "23:59:59";
 		$this->workdays = "1,2,3,4,5";
 		$this->user_calendarids = '';
 

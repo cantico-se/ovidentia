@@ -68,8 +68,6 @@ class cal_weekCls extends cal_wmdbaseCls
 
 		$this->mcals = & new bab_mcalendars(sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1)), sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2)), $this->idcals);
 
-		$this->allow_insert = count($babBody->icalendars->usercal) > 0 || count($babBody->icalendars->pubcal) > 0 || count($babBody->icalendars->rescal) > 0;
-
 		$this->cindex = 0;
 		$this->h_start = '00:00';
 		$this->h_end = '00:00';
@@ -220,7 +218,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			{
 			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
 			$this->fullname = htmlentities($calname);
-			$this->abbrev = htmlentities(substr($calname, 0, 6));
+			$this->abbrev = htmlentities(substr($calname, 0, BAB_CAL_NAME_LENGTH));
 			$this->cols = count($this->harray[$this->cindex]);
 			$this->nbCalEvents = isset($this->harray[$this->cindex][0]) ? count($this->harray[$this->cindex][0]) : 0;
 			$this->cindex++;
@@ -247,6 +245,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					{
 					$arr = & $this->harray[$this->cindex-1][$this->icols][$i];
 					$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+					$this->updateAccess($arr, $iarr);
 					if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
 						{
 						if( !isset($this->bfirstevents[$this->cindex-1][$arr['id']]) )
@@ -261,22 +260,6 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->bevent = true;
 						$this->idcal = $arr['id_cal'];
 						$this->status = $arr['status'];
-						if( $this->status == BAB_CAL_STATUS_NONE )
-							{
-							$this->bstatus = true;
-							if( $iarr['type'] == BAB_CAL_USER_TYPE && $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
-								{
-								$this->bstatuswc = true;
-								}
-							else
-								{
-								$this->bstatuswc = false;
-								}
-							}
-						else
-							{
-							$this->bstatus = false;
-							}
 
 						if( $arr['id_cat'] == 0 )
 							{
@@ -303,13 +286,35 @@ class cal_weekCls extends cal_wmdbaseCls
 						$this->bprivate = $arr['bprivate'];
 						$this->block = $arr['block'];
 						$this->bfree = $arr['bfree'];
-						$this->description = $arr['description'];
-						$this->title = $arr['title'];
-						$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+						if( !$this->allow_viewtitle  )
+							{
+							$this->title = "xxxxxxxxxx";
+							$this->titleten = "xxxxxxxxxx";
+							$this->description = "";
+							}
+						else
+							{
+							$this->title = $arr['title'];
+							$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH))."...";
+							$this->description = $arr['description'];
+							}
 						$this->nbowners = $arr['nbowners'];
+
+						if( $this->allow_modify )
+							{
+							$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
+							}
+						elseif( $this->allow_view )
+							{
+							$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+							}
+						else
+							{
+							$this->titletenurl = "";
+							}
 						$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 						$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-						$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&view=viewd&date=".$this->currentdate."&cci=".$this->currentidcals;
+
 						break;
 						}
 					$i++;
@@ -367,7 +372,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				$this->bfree = $arr['bfree'];
 				$this->description = $arr['description'];
 				$this->title = $this->startdate." ".$this->starttime. " - ".$this->enddate." ".$this->endtime." ".$arr['title'];
-				$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+				$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH));
 				$this->nbowners = $arr['nbowners'];
 				$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 				$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
@@ -410,7 +415,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->bfree = $arr['bfree'];
 			$this->description = $arr['description'];
 			$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
-			$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+			$this->titleten = htmlentities(substr($arr['title'], 0, BAB_CAL_EVENT_LENGTH));
 			return true;
 			}
 		else

@@ -652,26 +652,22 @@ switch($tg)
 	case "calendar":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Calendar");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "calendar";
+   		$incl = "calendar";
 		break;
 	case "calmonth":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Calendar");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "calmonth";
+   		$incl = "calmonth";
 		break;
 	case "calweek":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Calendar");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "calweek";
+   		$incl = "calweek";
 		break;
 	case "calday":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Calendar");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "calday";
+   		$incl = "calday";
 		break;
 	case "event":
 		$babLevelOne = bab_translate("User's section");
@@ -682,14 +678,12 @@ switch($tg)
 	case "calview":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Summary");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "calview";
+   		$incl = "calview";
 		break;
 	case "calopt":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Calendar");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "calopt";
+   		$incl = "calopt";
 		break;
 	case "sectopt":
 		$babLevelOne = bab_translate("User's section");
