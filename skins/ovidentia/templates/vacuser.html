@@ -489,6 +489,7 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end ventrydetail -->
+
 <!--#begin calendarbyuser -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -498,48 +499,35 @@ window.focus();
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
 <!--
-//-->
-</script>
-<script type="text/javascript">
-<!--
 window.focus();
 //-->
 </script>
 </HEAD>
 <BODY class="BabBackground">
 <br>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ fullname }</td>
-</tr></table></center>
-<br>
 <br>
 <table width="100%" cellpadding="5" cellspacing="0" align="center">
 <tr valign="middle"> 
-<td class="BabCalendarMenuBackground" width="25%">&nbsp;<a class="BabCalendarNavLinkColor" href="{ previousyear }">&lt;&lt;</a>&nbsp;&nbsp;&nbsp; <a class="BabCalendarNavLinkColor" href="{ previousmonth }">&lt; </a> </td>		
-<td class="BabCalendarMenuActiveBackground" width="10%" align="center">&nbsp;&nbsp;</td>
-<td class="BabCalendarMenuBackground" width="10%" align="center">&nbsp;&nbsp;</td>
-<td class="BabCalendarMenuBackground" width="10%" align="center">&nbsp;&nbsp;</td>
-<td width="20%" align="center" class="BabCalendarMenuBackground">&nbsp;&nbsp;</td>
-<td class="BabCalendarMenuBackground" width="25%" align="right"> <a class="BabCalendarNavLinkColor" href="{ nextmonth }">&gt;</a>&nbsp;&nbsp;&nbsp;<a class="BabCalendarNavLinkColor" href="{ nextyear }">&gt;&gt;</a>&nbsp; </td>
+<td class="BabCalendarMenuBackground" width="25%">&nbsp;<a class="BabCalendarNavLinkColor" href="{ previousyear }">&lt;&lt;</a>&nbsp;&nbsp;&nbsp; 
+<a class="BabCalendarNavLinkColor" href="{ previousmonth }">&lt; </a> </td>
+<td width="20%" align="right" class="BabCalendarMenuBackground">&nbsp;{ fullname 
+}&nbsp;</td>
+<td width="20%" nowrap class="BabCalendarMenuBackground">{ yearname }</td>
+<td class="BabCalendarMenuBackground" width="25%" align="right"> <a class="BabCalendarNavLinkColor" href="{ nextmonth }">&gt;</a>&nbsp;&nbsp;&nbsp;<a class="BabCalendarNavLinkColor" href="{ nextyear }">&gt;&gt;</a>&nbsp; 
+</td>
 </tr>
 </table>
-
-<table cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabCalendarMenuActiveBackground" align="center" valign="middle">{ yearname }</td>
-</tr>
-</table>
+ 
 <br>
-
+ 
 <table width="1%" border="1" align="center" cellpadding="2" cellspacing="0" bordercolor="#000000" class="BabCalendarBodyBackground">
 <tr>
 <th class="BabCalendarDays"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="9" height="8" border="0"></th>
 <!--#in getdayname -->
 <th class="BabCalendarDays">{ dayname }</th>
-<!--#endin getdayname -->	
+<!--#endin getdayname --> 
 </tr>
-
+ 
 <!--#in getmonth -->
 <tr>
 <td valign="middle" class="BabMonthCalendarCurentDayBackground" width="0" height="0">{ monthname }</td> 
@@ -569,16 +557,19 @@ window.focus();
 <table>
   <tr align="center" valign="middle">
     <td><img src="{ babSkinPath }images/Puces/VacOK.gif" border="0" alt="{ vacapprovedtxt }" align="absmiddle"></td>
-    <td>{ vacapprovedtxt }</td>
+    
+<td class="BabName">{ vacapprovedtxt }</td>
     <td><img src="{ babSkinPath }images/Puces/VacWait.gif" border="0" alt="{ vacwaitingtxt }" align="absmiddle"></td>
-    <td>{ vacwaitingtxt }</td>
+    
+<td class="BabName">{ vacwaitingtxt }</td>
   </tr>
   <tr align="left" valign="middle">
-    <td colspan="4"><a class="BabTopicsFooterLink" href="javascript:window.print()"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ print }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
-      print }</a></td>
+    <td colspan="4"><a class="BabTopicsFooterLink" href="javascript:window.print()"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ print }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ print }</a></td>
   </tr>
 </table>
-<center><a  href="javascript:window.close()">{ close }</a></center>
+<center>
+<a href="javascript:window.close()" class="BabSiteAdminListLink">{ close }</a> 
+</center>
 </BODY>
 </HTML>
 <!--#end calendarbyuser -->
