@@ -1764,7 +1764,7 @@ function updateArticleDraft($idart, $title, $headtext, $bodytext, $lang, $approb
 
 	if($lang == '') { $lang = $GLOBALS['babLanguage']; }
 
-	if( !strcasecmp($bodytext, "<P>&nbsp;</P>"))
+	if( !strcasecmp($bodytext, "<P>&nbsp;</P>") || !strcasecmp($bodytext, "<P />"))
 		{
 		$bodytext = "";
 		}
