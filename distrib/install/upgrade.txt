@@ -13,7 +13,7 @@ Please consult your system Administrator )
 
 Otherwise you must do this by hand in config.php:
 
-$babVersion="3.3"
+$babVersion="3.4"
 
 point your browser to:
 

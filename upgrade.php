@@ -519,6 +519,102 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD idsaart INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD idsacom INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." ADD idfai INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "update ".BAB_ARTICLES_TBL." set confirmed='Y' where archive='Y'";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$req = "ALTER TABLE ".BAB_COMMENTS_TBL." ADD idfai INT(11) UNSIGNED NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_COMMENTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "select * from ".BAB_TOPICS_TBL;
+$res = $db->db_query($req);
+while($row = $db->db_fetch_array($res))
+	{
+	$res2 = $db->db_query("select * from ".BAB_USERS_TBL." where id='".$row['id_approver']."'");
+	if( $res2 && $db->db_num_rows($res2) > 0 )
+		{
+		$res2 = $db->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where formula='".$row['id_approver']."'");
+		if( !$res2 || $db->db_num_rows($res2) == 0 )
+			{
+			$req = "insert into ".BAB_FLOW_APPROVERS_TBL." (name, description, formula, forder) VALUES ('" .bab_getUserName($row['id_approver']). "', '', '" .  $row['id_approver']. "', 'N')";
+			$db->db_query($req);
+			$idfa = $db->db_insert_id();
+			$refcount = 0;
+			}
+		else
+			{
+			$arr = $db->db_fetch_array($res2);
+			$idfa = $arr['id'];
+			$refcount = $arr['refcount'];
+			}
+
+		$db->db_query("update ".BAB_TOPICS_TBL." set idsaart='".$idfa."' where id='".$row['id']."'");
+
+		$res2 = $db->db_query("select * from ".BAB_ARTICLES_TBL." where confirmed='N' and id_topic='".$row['id']."'");
+		while($arr = $db->db_fetch_array($res2))
+			{
+			$db->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra) VALUES ('".$idfa."', 'art-".$arr['id']."')");
+			$idfaia = $db->db_insert_id();
+			$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".++$refcount."' where id='".$idfa."'");
+			$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser, notified) VALUES ('".$idfaia."', '".$row['id_approver']."', 'Y')");
+			$db->db_query("update ".BAB_ARTICLES_TBL." set idfai='".$idfaia."' where id='".$arr['id']."'");
+			}
+
+		if( $row['mod_com'] == "Y")
+			{
+			$db->db_query("update ".BAB_TOPICS_TBL." set idsacom='".$idfa."' where id='".$row['id']."'");
+
+			$res2 = $db->db_query("select * from ".BAB_COMMENTS_TBL." where confirmed='N' and id_topic='".$row['id']."'");
+			while($arr = $db->db_fetch_array($res2))
+				{
+				$db->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra) VALUES ('".$idfa."', 'com-".$arr['id']."')");
+				$idfaic = $db->db_insert_id();
+				$db->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".++$refcount."' where id='".$idfa."'");
+				$db->db_query("insert into ".BAB_FAR_INSTANCES_TBL." (idschi, iduser, notified) VALUES ('".$idfaic."', '".$row['id_approver']."', 'Y')");
+				$db->db_query("update ".BAB_COMMENTS_TBL." set idfai='".$idfaic."' where id='".$arr['id']."'");
+				}
+			}
+		}
+	else
+		{
+		$db->db_query("update ".BAB_TOPICS_TBL." set id_approver='0' where id='".$row['id']."'");
+		}	
+	}
+
 return $ret;
 }
 
