@@ -126,7 +126,7 @@ function sectionDelete($id)
 	$body->babecho(	babPrintTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function sectionUpdate($id, $title, $pos, $desc, $content, $script)
+function sectionUpdate($id, $title, $desc, $content, $script)
 	{
 	if( $script == "Y")
 		$php = "Y";
@@ -136,6 +136,7 @@ function sectionUpdate($id, $title, $pos, $desc, $content, $script)
 	$query = "select * from sections where id='".$id."'";
 	$res = $db->db_query($query);
 	$arr = $db->db_fetch_array($res);
+	/*
 	if( $arr['position'] != $pos)
 		{
 		$query = "select max(ordering) from sections_order where private='N' and position='".$arr['position']."'";
@@ -144,6 +145,7 @@ function sectionUpdate($id, $title, $pos, $desc, $content, $script)
 		$query = "update sections_order set position='".$pos."', ordering='".($arr[0]+1)."' where id_section='".$id."'";
 		$db->db_query($query);
 		}
+	*/
 	//$query = "update sections set title='$title', position='$pos', description='$desc', content='$content', script='$php' where id=$id";
 	$query = "update sections set title='$title', description='$desc', content='$content', script='$php' where id=$id";
 	$db->db_query($query);
@@ -171,7 +173,7 @@ function confirmDeleteSection($id)
 /* main */
 if( isset($modify))
 	{
-	sectionUpdate($item, $title, $position, $description, $content, $script);
+	sectionUpdate($item, $title, $description, $content, $script);
 	}
 
 if( isset($aclsec))
