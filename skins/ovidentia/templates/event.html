@@ -545,6 +545,14 @@ function dateEnd(day, month, year)
 	updateDates(document.vacform.elements['dayend'], document.vacform.elements['monthend'], document.vacform.elements['yearend']);
 }
 
+function repeat_dateend(day, month, year)
+{
+	document.vacform.elements['repeat_dayend'].options[day-1].selected = true;
+	document.vacform.elements['repeat_monthend'].options[month-1].selected = true;
+	document.vacform.elements['repeat_yearend'].options[year-{ yearmin }].selected = true;
+	updateDates(document.vacform.elements['repeat_dayend'], document.vacform.elements['repeat_monthend'], document.vacform.elements['repeat_yearend']);
+}
+
 function daytypeswitch()
 {
 var f = document.forms.vacform;

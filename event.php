@@ -154,6 +154,7 @@ function newEvent()
 				
 			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
 			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
+			$this->repeat_dateend = $this->urlDate('repeat_dateend',$this->curmonth,$this->curyear);
 			$this->yearmin = $this->curyear - $this->ymin;
 
 			$this->yearbegin = !isset($GLOBALS['date0'])? $this->curyear: date("Y", (int)$GLOBALS['date0']);
