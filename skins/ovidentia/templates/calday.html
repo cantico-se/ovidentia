@@ -127,3 +127,100 @@ document.onmousemove = bab_tooltipPosition;
 	<!--#endif print -->
 </div>
 <!--#end calday -->
+
+<!--#begin calfreeday -->
+<script type="text/javascript">
+<!--
+document.onmousemove = bab_tooltipPosition;
+-->
+</script>
+<style type="text/css">
+@import url('{ babInstallPath }skins/ovidentia/styles/calendar.css');
+</style>
+<table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0" align="center">
+	<tr class="BabCalendarMenuBackground"> 
+		<td class="prev" width="25%">
+			<a onmouseover="bab_showOnMouse('cal_btn_prev_day',1)" onmouseout="bab_showOnMouse('cal_btn_prev_day',0)" href="{ previousdayurl }" class="prev3"><strong>&lt;</strong></a>
+			<span id="cal_btn_prev_day">{ t_prev_day }</span>
+			<a onmouseover="bab_showOnMouse('cal_btn_prev_month',1)" onmouseout="bab_showOnMouse('cal_btn_prev_month',0)" href="{ previousmonthurl }" class="prev2"><strong>&lt;&lt;</strong></a>
+			<span id="cal_btn_prev_month">{ t_prev_month }</span>
+			<a onmouseover="bab_showOnMouse('cal_btn_prev_year',1)" onmouseout="bab_showOnMouse('cal_btn_prev_year',0)" href="{ previousyearurl }" class="prev1"><strong>&lt;&lt;&lt;</strong></a>
+			<span id="cal_btn_prev_year">{ t_prev_year }</span>
+		</td>		
+		<td width="10%" align="center">
+			<a class="BabCalendarNavLinkColor" href="{ monthurl }">{ monthurlname }</a>
+		</td>
+		<td width="10%" align="center">
+			<a class="BabCalendarNavLinkColor" href="{ weekurl }">{ weekurlname }</a>
+		</td>
+		<td class="BabCalendarMenuActiveBackground" width="10%" align="center">
+			{ dayurlname }
+		</td>
+		<td  width="20%" align="center"> 
+			<a class="BabCalendarNavLinkColor" href="{ gotodayurl }">{ gotodayname }</a> 
+		</td>
+		<td class="next" width="25%" align="right">
+			<a onmouseover="bab_showOnMouse('cal_btn_next_day',1)" onmouseout="bab_showOnMouse('cal_btn_next_day',0)" href="{ nextdayurl }" class="next3"><strong>&gt;</strong></a>
+			<span id="cal_btn_next_day">{ t_next_day }</span>
+			<a onmouseover="bab_showOnMouse('cal_btn_next_month',1)" onmouseout="bab_showOnMouse('cal_btn_next_month',0)" href="{ nextmonthurl }" class="next2"><strong>&gt;&gt;</strong></a>
+			<span id="cal_btn_next_month">{ t_next_month }</span>
+			<a onmouseover="bab_showOnMouse('cal_btn_next_year',1)" onmouseout="bab_showOnMouse('cal_btn_next_year',0)" href="{ nextyearurl }" class="next1"><strong>&gt;&gt;&gt;</strong></a>
+			<span id="cal_btn_next_year">{ t_next_year }</span>
+		</td>
+	</tr>
+</table>
+
+ <br>
+<table class="BabCalendarBodyBackground" width="98%" cellpadding="2" cellspacing="0" align="center">
+	<tr>
+		<td class="BabCalendarDays" align="center" colspan="{ colspan }" valign="middle">{ dayname } ({ week })</td>
+	</tr>
+</table>
+
+<table id="bab_calday" class="bab_calendar" width="98%" align="center">
+	<thead>
+	<tr>
+		<th>&nbsp;</th>
+	</tr>
+	</thead>
+	<tbody>
+<!--#in getnexthour -->
+	<tr>
+		<th>
+			<!--#if bowner "== 1" -->
+			<a href="{ hoururl }">{ hour }</a>
+			<!--#else bowner -->
+			{ hour }
+			<!--#endif bowner -->
+		</th>
+
+		<td class="event">
+					<!--#in getfreeevent -->
+			<!--#if free -->
+				<!--#if allow_freeevent_create -->
+				<div class="freeevent" style="cursor:pointer" onClick="bab_popup('{ addeventurl }',5)">
+				<!--#else allow_freeevent_create -->
+				<div class="freeevent">
+				<!--#endif allow_freeevent_create -->
+			<!--#else free -->
+				<div class="used">
+			<!--#endif free -->
+					{ startdate } { starttime }&nbsp;{ enddate } { endtime }
+				</div>
+					<!--#endin getfreeevent -->
+		</td>
+	</tr>
+	</tbody>
+<!--#endin getnexthour -->
+</table>
+
+<br />
+<div class="bab_buttons" align="center">
+	<!--#if print -->
+	<a class="print" href="javascript:window.print()">{ t_print }</a>
+	<!--#else print -->
+	<a class="calendars" href="javascript:bab_popup('{ calendarchoiceurl }')">{ t_calendarchoice }</a>
+	<a class="print" href="javascript:bab_popup(document.location.href+'&print=1')">{ t_print_friendly }</a>
+	<!--#endif print -->
+</div>
+<!--#end calfreeday -->
