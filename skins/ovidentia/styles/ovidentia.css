@@ -294,27 +294,25 @@ a.BabSectionsDayLink:Hover {
 	}
 
 /**************** CATEGORIES ****************************/
-.BabCategTitleNavigation {
+.BabCategTitleNavigation,
+.BabCategTitleNavigation td {
 	color: #FFFFFF; 
 	font-weight: bold;
 	}
-.BabCategChildNavigation {
-	color: #DDDDDD; 
-	font-style:italic; 
-	}
 
-a.BabCategTitleNavigation:Link,
-a.BabCategTitleNavigation:Visited,
-a.BabCategNavigationLink:Link,
-a.BabCategNavigationLink:Visited { 
+.BabCategTitleNavigation a:Link,
+.BabCategTitleNavigation a:Visited { 
 	color: #FFFFFF; 
 	text-decoration: underline; 
 	}
 	
-a.BabCategTitleNavigation:Hover,
-a.BabCategNavigationLink:Hover {
+.BabCategTitleNavigation a:Hover {
 	color: #FFFFFF; 
 	text-decoration: none;
+	}
+
+div.BabCategTitleNavigation {
+	margin-bottom:1em;
 	}
 
 

@@ -1,45 +1,28 @@
 <!--#begin default -->
 <!--#if parentscount -->
-<TABLE>
-<TR>
-<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
-<table border="0" width="100%" cellpadding="1" cellspacing="0">
-<tr>
-<td class="BabCategTitleNavigation">
-<!--#in getnextparent -->
-<!--#if burl -->
-<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-<!--#else burl -->
-{ parentname }
-<!--#endif burl -->
-<!--#endin getnextparent -->
-</td>
-</tr></table>
-<TABLE>
-<TR>
-<TD class="BabSectionSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></TD>
-</TR>
-</TABLE>
+<div class="BabCategTitleNavigation">
+<p>
+	<!--#in getnextparent -->
+	<!--#if burl -->
+	<a href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+	<!--#else burl -->
+	{ parentname }
+	<!--#endif burl -->
+	<!--#endin getnextparent -->
+</p>
+</div>
 <!--#endif parentscount -->
 
-<table width="100%" border="0" align="left" cellpadding="0" cellspacing="0">
-  <tr>
-    <td>
       <!--#if count -->
-      <table  width="100%" border="0" cellpadding="1" cellspacing="0" align="center">
+      <ul class="BabCategTitleNavigation">
         <!--#in getnext -->
-        <tr><td nowrap>&nbsp;{ babsectionbullet }&nbsp;</td><td width="100%"><a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td></tr>
-		<!--#if childdescription -->
-		<tr><td nowrap>&nbsp;</td><td class="BabCategChildNavigation">{ childdescription }</td></tr>
-		<!--#endif childdescription -->
-		<tr><td colspan="2"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></td></tr>
+        <li><a href="{ childurl }">{ childname }</a>
+			<!--#if childdescription -->
+			<p>{ childdescription }</p>
+			<!--#endif childdescription -->
+		</li>
         <!--#endin getnext -->
-      </table>
+	  <ul>
       <!--#endif count -->
-    </td>
-  </tr>
-</table>
 
 <!--#end default -->

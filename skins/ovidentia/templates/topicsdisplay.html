@@ -1,12 +1,12 @@
 <!--#begin head_default -->
 <!--#if parentscount -->
-<div id="BabCategTitleNavigation">
+<div class="BabCategTitleNavigation">
 	<table border="0" width="99%" cellpadding="1" cellspacing="0">
-		<tr class="BabCategTitleNavigation">
+		<tr>
 			<td>
 				<!--#in getnextparent -->
 				<!--#if burl -->
-				<a class="BabCategTitleNavigation" href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
+				<a href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
 				<!--#else burl -->
 				{ parentname }
 				<!--#endif burl -->
@@ -15,15 +15,10 @@
 		<!--#if bsubmit -->
 			<td align="right">
 				<span class="bab_buttons">
-					<a class="BabCategTitleNavigation" href="javascript: bab_popup('{ bsubmiturl }',6)">{ submittxt }</a>
+					<a href="javascript: bab_popup('{ bsubmiturl }',6)">{ submittxt }</a>
 				</span>
 			</td>
 		<!--#endif bsubmit -->
-		</tr>
-	</table>
-	<table>
-		<tr>
-			<td class="BabArticleSpacing"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></td>
 		</tr>
 	</table>
 </div>
