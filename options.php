@@ -24,7 +24,7 @@
 include_once "base.php";
 include $babInstallPath."admin/register.php";
 
-function changePassword()
+function changePassword($msgerror)
 	{
 	global $babBody,$BAB_SESS_USERID;
 	class tempb
@@ -35,13 +35,15 @@ function changePassword()
 		var $update;
 		var $title;
 
-		function tempb()
+		function tempb($msgerror,$changepwd)
 			{
+			$this->changepwd = $changepwd!=0 ? true : false;
 			$this->oldpwd = bab_translate("Old Password");
 			$this->newpwd = bab_translate("New Password");
 			$this->renewpwd = bab_translate("Retype New Password");
 			$this->update = bab_translate("Update Password");
 			$this->title = bab_translate("Change password");
+			$this->msgerror = $this->changepwd ? ($msgerror!='' ? $msgerror : false ) : bab_translate("Sorry, You cannot change your password. Please contact administrator");
 			}
 		}
 
@@ -50,13 +52,25 @@ function changePassword()
 	$res = $db->db_query($req);
 	$arr = $db->db_fetch_array($res);
 
-	if( $arr['changepwd'] != 0)
+	$tempb = new tempb($msgerror,$arr['changepwd']);
+	die(bab_printTemplate($tempb,"options.html", "changepassword"));
+	}
+
+
+function changePasswordUnload($msg)
+	{
+	class temp
 		{
-		$tempb = new tempb();
-		$babBody->babecho(	bab_printTemplate($tempb,"options.html", "changepassword"));
+		var $message;
+		var $close;
+		function temp($msg)
+			{
+			$this->message = $msg;
+			$this->close = bab_translate("Close");
+			}
 		}
-	else
-		$babBody->msgerror = bab_translate("Sorry, You cannot change your password. Please contact administrator");
+	$temp = new temp($msg, $refresh);
+	die(bab_printTemplate($temp,"options.html", "changePasswordUnload"));
 	}
 
 function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)
@@ -102,7 +116,7 @@ function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changeuserinfo"));
 	}
 
-function changeNickname($nickname)
+function changeNickname($nickname,$changePassword)
 	{
 	global $babBody,$BAB_SESS_USERID;
 	class temp
@@ -115,7 +129,7 @@ function changeNickname($nickname)
 		var $updateuserinfo;
 		var $urldbmod;
 
-		function temp($nickname)
+		function temp($nickname,$changePassword)
 			{
 			global $babDB;
 
@@ -137,7 +151,8 @@ function changeNickname($nickname)
 				$this->updateuserinfo = bab_translate("Update personal informations");
 				}
 
-
+			$this->changepassword = $changePassword ? bab_translate("Update Password") : false;
+			$this->urlchangepassword = $GLOBALS['babUrlScript']."?tg=options&idx=changePassword";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->nickname = bab_translate("Nickname");
 			$this->password = bab_translate("Password");
@@ -145,7 +160,7 @@ function changeNickname($nickname)
 			}
 		}
 
-	$temp = new temp($nickname);
+	$temp = new temp($nickname,$changePassword);
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changenickname"));
 	}
 
@@ -476,25 +491,23 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	global $babBody, $babInstallPath;
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
-		return;
+		return true;
 
 	if( empty($oldpwd) || empty($newpwd1) || empty($newpwd2))
 		{
-		$babBody->msgerror = bab_translate("You must complete all fields !!");
-		return;
+		return bab_translate("You must complete all fields !!");
 		}
 	if( $newpwd1 != $newpwd2)
 		{
-		$babBody->msgerror = bab_translate("Passwords not match !!");
-		return;
+		return bab_translate("Passwords not match !!");
 		}
 	if ( strlen($newpwd1) < 6 )
 		{
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
-		return;
+		return bab_translate("Password must be at least 6 characters !!");
 		}
 
 	userChangePassword( $oldpwd, $newpwd1);
+	return false;
 	}
 
 
@@ -651,6 +664,9 @@ if(!isset($skin))
 	$skin = "";
 	}
 
+if(!isset($msgerror))
+	$msgerror = '';
+
 $babBody->msgerror = "";
 
 if( isset($update))
@@ -658,7 +674,11 @@ if( isset($update))
     switch ($update)
         {
         case "password":
-        	updatePassword($oldpwd, $newpwd1, $newpwd2);
+			$msgerror = updatePassword($oldpwd, $newpwd1, $newpwd2);
+        	if (!$msgerror)
+				changePasswordUnload(bab_translate("Your password has been modified"));
+			else
+				$idx = "changePassword";
             break;
         case "lang":
         	updateLanguage($lang, $babLangFilter->convertFilterToInt($langfilter));
@@ -731,6 +751,15 @@ switch($idx)
 		updateStateSection($s, $w, "N");
 		break;
 
+	case "changePassword":
+		$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+		$res=$babDB->db_query($req);
+		$arr = $babDB->db_fetch_array($res);
+		if ($arr['change_password'] == 'Y' ) changePassword($msgerror);
+		break;
+	case "changePasswordUnload":
+		changePasswordUnload($msg);
+		break;
 	default:
 	case "global":
 		$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
@@ -738,8 +767,8 @@ switch($idx)
 		$arr = $babDB->db_fetch_array($res);
 		$babBody->title = bab_translate("Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		if ($arr['change_nickname'] == 'Y' ) changeNickname($nickname);
-		if ($arr['change_password'] == 'Y' ) changePassword();
+		if ($arr['change_nickname'] == 'Y' ) changeNickname($nickname,($arr['change_password'] == 'Y' ? true : false));
+		
 		changeSkin($skin);
 		changeLanguage();
 		$babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
