@@ -354,6 +354,7 @@ function summaryLdapContact($id, $cn)
 					$this->urlimg = "";
 					}
 				}
+			$this->bfieldv = true;
 			}
 
 		function getnextfield()
@@ -606,13 +607,15 @@ function addDbContact($id, $fields)
 					$this->fvalue = $this->fields[$arr['name']];
 				else
 					$this->fvalue = "";
-				$res = $this->db->db_query("select multilignes, required, modifiable from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$this->id."' and id_field='".$arr['id']."'");
+				$res = $this->db->db_query("select multilignes, required, modifiable, default_value from ".ADDON_DIRECTORIES_FIELDS_TBL." where id_directory='".$this->id."' and id_field='".$arr['id']."'");
 
 				if( $res && $this->db->db_num_rows($res) > 0)
 					{
 					$arr = $this->db->db_fetch_array($res);
 					$this->fieldt = $arr['multilignes'];
 					$this->required = $arr['required'];
+					if( !empty( $arr['default_value']) && empty($this->fvalue))
+						$this->fvalue = $arr['default_value'];
 					}
 				else
 					{
