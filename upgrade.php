@@ -2658,6 +2658,13 @@ while($arr = $db->db_fetch_array($res))
 	$db->db_query("update ".BAB_FAQCAT_TBL." set id_root='".$idscat."' where id='".$arr['id']."'");
 }
 
+$res = $db->db_query("ALTER TABLE ".BAB_USERS_LOG_TBL." ADD `cnx_try` INT( 2 ) UNSIGNED NOT NULL");
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FAQQR_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 ?>

@@ -246,6 +246,13 @@ function userLogin($nickname,$password)
 	$sql="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='". md5($password) ."'";
 	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
+	list($cnx_try) = $db->db_fetch_array($db->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
+	if( $cnx_try > 5)
+		{
+		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
+		return false;
+		}
 	if ($db->db_num_rows($result) < 1)
 		{
 		$babBody->msgerror = bab_translate("User not found or password incorrect");
@@ -393,6 +400,11 @@ if( $res && $db->db_num_rows($res) > 0 )
 if (!isset($lifetime))
 	{
 	$lifetime = 0;
+	}
+
+if (!isset($cmd))
+	{
+	$cmd = 'signon';
 	}
 
 if( isset($login) && $login == "login")

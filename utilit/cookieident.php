@@ -27,9 +27,16 @@ function cookieUserLogin($nickname,$password)
 	{
 	global $babBody;
 	$password=strtolower($password);
-	$sql="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='".$password."'";
+	$sql="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='". md5($password) ."'";
 	$db = $GLOBALS['babDB'];
 	$result=$db->db_query($sql);
+	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
+	list($cnx_try) = $db->db_fetch_array($db->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
+	if( $cnx_try > 5)
+		{
+		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
+		return false;
+		}
 	if ($db->db_num_rows($result) < 1)
 		{
 		$babBody->msgerror = bab_translate("User not found or password incorrect");
@@ -40,7 +47,7 @@ function cookieUserLogin($nickname,$password)
 		$arr = $db->db_fetch_array($result);
 		if( $arr['disabled'] == '1')
 			{
-			$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your adminsitrator");
+			$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
 			return false;
 			}
 		if ($arr['is_confirmed'] == '1')

@@ -686,7 +686,7 @@
 <string id="Sorry - You haven't Confirmed Your Account Yet">Désolé, vous n'avez pas encore confirmé votre inscription</string>
 <string id="Sorry, You cannot change your password. Please contact administrator">Désolé, vous ne pouvez pas modifier votre mot de passe. Contactez l'administrateur</string>
 <string id="Sorry, you cannot delete this user. He is already logged">Désolé, vous ne pouvez pas détruire cet utilisateur car il est connecté</string>
-<string id="Sorry, your account is disabled. Please contact your adminsitrator">Désolé, votre compte est inactif. Veuillez contacter l'administrateur</string>
+<string id="Sorry, your account is disabled. Please contact your administrator">Désolé, votre compte est inactif. Veuillez contacter l'administrateur</string>
 <string id="Sort ascending">Tri croissant</string>
 <string id="Sort descending">Tri décroissant</string>
 <string id="Starter">Initiateur</string>
@@ -1264,4 +1264,5 @@
 <string id="Staff schema">Schéma fonctionnel</string>
 <string id="The image file is too big, maximum is :">La taille du fichier est image est trop importante, le maximum est :</string>
 <string id="Configuration error : babSiteName in config.php not match site name in administration sites configuration">Erreur de configuration : babSiteName dans config.php ne correspond a aucun nom de site dans l'administration des sites</string>
+<string id="Maximum connexion attempts has been reached">Le nombre maximum de connexion à été atteint</string>
 </fr>
