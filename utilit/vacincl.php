@@ -199,4 +199,316 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false)
 	return $return;
 	}
 
+
+
+function viewVacationCalendar($users, $period = false )
+	{
+	global $babBody;
+
+	class temp
+		{
+		var $entries = array();
+		var $fullname;
+		var $vacwaitingtxt;
+		var $vacapprovedtxt;
+		var $print;
+		var $close;
+		var $emptylines = false;
+
+
+		function temp($users, $period)
+			{
+
+			$month = isset($_REQUEST['month']) ? $_REQUEST['month'] : Date("n");
+			$year = isset($_REQUEST['year']) ? $_REQUEST['year'] : Date("Y");
+
+			global $babMonths;
+			$this->db = &$GLOBALS['babDB'];
+			$this->month = $month;
+			$this->year = $year;
+
+			$this->idusers = $users;
+			$this->nbusers = count($this->idusers);
+			
+			$this->period = $period;
+			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
+			$this->vacapprovedtxt = bab_translate("Approved vacation request");
+			$this->print = bab_translate("Print");
+			$this->close = bab_translate("Close");
+
+			$this->t_previousmonth = bab_translate("Previous month");
+			$this->t_previousyear = bab_translate("Previous year");
+			$this->t_nextmonth = bab_translate("Next month");
+			$this->t_nextyear = bab_translate("Next year");
+
+			$this->t_nonworking = bab_translate("Non-working day");
+			$this->t_weekend = bab_translate("Week-end");
+
+			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx'];
+			if (!empty($_REQUEST['popup']))
+				{
+				$urltmp .= '&popup=1';
+				$this->popup = true;
+				}
+
+			if (!empty($_REQUEST['emptylines']))
+				{
+				$urltmp .= '&emptylines=1';
+				$this->emptylines = true;
+				}
+
+			if (isset($_REQUEST['ide']))
+				{
+				$urltmp .= '&ide='.$_REQUEST['ide'];
+				}
+			else
+				{
+				$urltmp .= '&idu='.implode(',',$this->idusers);
+				}
+			$this->previousmonth = $urltmp."&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
+			$this->previousmonth .= "&year=".date("Y", mktime( 0,0,0, $month-1, 1, $year));
+			$this->nextmonth = $urltmp."&month=". date("n", mktime( 0,0,0, $month+1, 1, $year));
+			$this->nextmonth .= "&year=". date("Y", mktime( 0,0,0, $month+1, 1, $year));
+
+			$this->previousyear = $urltmp."&month=".date("n", mktime( 0,0,0, $month, 1, $year-1));
+			$this->previousyear .= "&year=".date("Y", mktime( 0,0,0, $month, 1, $year-1));
+			$this->nextyear = $urltmp."&month=". date("n", mktime( 0,0,0, $month, 1, $year+1));
+			$this->nextyear .= "&year=". date("Y", mktime( 0,0,0, $month, 1, $year+1));
+
+			if( $month != 1 )
+				{
+				$dateb = $year."-".$month."-01";
+				$datee = ($year+1)."-".date("n", mktime( 0,0,0, $month + 11, 1, $year))."-01";
+				$this->yearname = ($year)."-".($year+1);
+				}
+			else
+				{
+				$dateb = $year."-01-01";
+				$datee = $year."-12-01";
+				$this->yearname = $year;
+				}
+
+
+			$res = $this->db->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user IN(".implode(',',$this->idusers).") and status!='N' and (date_end >= '".$dateb."' OR date_begin <='".$datee."')");
+
+			while( $row = $this->db->db_fetch_array($res))
+				{
+				$colors = array();
+				$req = "select e.quantity,t.color from ".BAB_VAC_ENTRIES_ELEM_TBL." e,".BAB_VAC_RIGHTS_TBL." r, ".BAB_VAC_TYPES_TBL." t  where e.id_entry='".$row['id']."' AND r.id=e.id_type AND t.id=r.id_type";
+
+				$res2 = $this->db->db_query($req);
+				while ($arr = $this->db->db_fetch_array($res2))
+					{
+					for ($i = 0 ; $i < $arr['quantity'] ; $i++)
+						$colors[] = $arr['color'];
+					}
+
+				$this->entries[] = array(
+									'id'=> $row['id'],
+									'id_user' => $row['id_user'],
+									'db'=> $row['date_begin'],
+									'de'=> $row['date_end'],
+									'st' => $row['status'],
+									'color' => $colors
+									);
+				}
+
+			$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
+
+			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
+			$this->nonWorkingDays = bab_getNonWorkingDays($year);
+			$this->nonWorkingDays = array_merge($this->nonWorkingDays, bab_getNonWorkingDays($year+1));
+
+			$this->restypes = $this->db->db_query("SELECT t.* FROM ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." ct, ".BAB_VAC_PERSONNEL_TBL." p WHERE p.id_user IN(".implode(',', $this->idusers).") AND p.id_coll=ct.id_coll AND ct.id_type=t.id GROUP BY t.id");
+
+			$this->counttypes = $this->db->db_num_rows($this->restypes);
+			}
+
+		function getdayname()
+			{
+			global $babDays;
+			static $i = 1;
+			if( $i <= 31)
+				{
+				$this->dayname = sprintf('%02d',$i);
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		
+		function getnextuser()
+			{
+			static $i = 0;
+
+			$n = $this->emptylines ? $this->nbusers : $this->nb_month_users;
+
+			if ( $n == 0 )
+				$n = 1;
+
+			$this->rowspan = $this->emptylines ? $this->nbusers : $n;
+
+			if ($i < $n)
+				{
+				$this->first = $i == 0 ;
+				if ($this->emptylines)
+					{
+					$this->id_user = $this->idusers[$i];
+					$this->username = bab_getUserName($this->id_user);
+					}
+				elseif (isset($this->month_users[$i]))
+					{
+					$this->id_user = $this->month_users[$i];
+					$this->username = bab_getUserName($this->id_user);
+					}
+				else
+					{
+					$this->id_user = 0;
+					$this->username = '';
+					}
+				
+				
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+		function getmonth()
+			{
+			static $i = 0;
+			if( $i < 12)
+				{
+				$this->curyear = date("Y", mktime( 0,0,0, $this->month + $i, 1, $this->year));
+				$this->curmonth = date("n", mktime( 0,0,0, $this->month + $i, 1, $this->year));
+				$this->monthname = $GLOBALS['babShortMonths'][$this->curmonth];
+				$this->totaldays = date("t", mktime(0,0,0,$this->month + $i,1,$this->year));
+
+				$startmonth = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, 1);
+				$endmonth = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $this->totaldays); 
+
+				$this->month_users = array();
+				$this->month_entries = array();
+
+				for( $k=0; $k < count($this->entries); $k++)
+					{
+					if( $startmonth <= $this->entries[$k]['db'] && $endmonth >= $this->entries[$k]['db'] || $startmonth <= $this->entries[$k]['de'] && $endmonth >= $this->entries[$k]['de'] )
+						{
+						$this->month_entries[] = $k;
+						if (!in_array($this->entries[$k]['id_user'],$this->month_users))
+							$this->month_users[] = $this->entries[$k]['id_user'];
+						}
+					}
+				$this->nb_month_users = count($this->month_users);
+				
+
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getday()
+			{
+			static $d = 1;
+			static $total = 0;
+			if( $d <= 31)
+				{
+				if( $d <= $this->totaldays )
+					{
+					$this->daynumbername = $d;
+					$curdate = mktime(0,0,0,$this->curmonth,$d,$this->curyear);
+					$dayweek = date("w", $curdate);
+					$this->titledate = bab_longdate($curdate,false);
+					$this->date = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $d);
+					$this->weekend = !in_array($dayweek, $this->workdays);
+					$this->nonworking = isset($this->nonWorkingDays[$this->date]);
+					$this->bvac = false;
+					$this->bwait = false;
+
+					foreach( $this->month_entries as $k)
+						{
+						if( $this->date >= $this->entries[$k]['db'] && $this->date <= $this->entries[$k]['de'] && $this->entries[$k]['id_user'] == $this->id_user )
+							{
+
+							if( $this->entries[$k]['st'] == "")
+								$this->bwait = true;
+							else
+								$this->bvac = true;
+
+							if (!$this->nonworking && !$this->weekend)
+								{
+								$this->color = current($this->entries[$k]['color']);
+								unset($this->entries[$k]['color'][key($this->entries[$k]['color'])]);
+								}
+
+							break;
+							}
+						}
+					$this->noday = false;
+					}
+				else
+					{
+					$this->noday = true;
+					$this->daynumbername = "";
+					}
+				$d++;
+				return true;
+				}
+			else
+				{
+				$d = 1;
+				return false;
+				}
+			}
+
+		function getnexttype()
+			{
+			static $i =1;
+			if ($this->arr = $this->db->db_fetch_array($this->restypes))
+				{
+				$this->newline = $i % 2 == 0 && $this->counttypes < $i-1;
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
+		function printhtml()
+			{
+			$html = & bab_printTemplate($this,"vacuser.html", "calendarbyuser");
+
+			if (isset($_REQUEST['popup']) && $_REQUEST['popup'] == 1)
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+				$GLOBALS['babBodyPopup'] = new babBodyPopup();
+				$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
+				$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
+				$GLOBALS['babBodyPopup']->babecho($html);
+				printBabBodyPopup();
+				die();
+				}
+			else
+				{
+				$GLOBALS['babBody']->babecho($html);
+				}
+			}
+
+		}
+
+	$temp = & new temp($users, $period);
+	$temp->printhtml();
+	}
+
+
+
 ?>

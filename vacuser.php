@@ -28,14 +28,14 @@ include_once $babInstallPath."utilit/vacincl.php";
 
 define("VAC_MAX_REQUESTS_LIST", 20);
 
-function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend)
+function requestVacation($begin,$end, $halfdaybegin, $halfdayend)
 	{
 	global $babBody;
 	class temp
 		{
 		
 
-		function temp($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend)
+		function temp($begin,$end, $halfdaybegin, $halfdayend)
 			{
 			global $babBody;
 			$this->datebegintxt = bab_translate("Begin date");
@@ -63,18 +63,26 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			$this->maxallowed = 0;
 			$this->db = & $GLOBALS['babDB'];
 
+
+			list($yearbegin, $monthbegin, $daybegin) = explode('-',$begin);
+			list($yearend, $monthend, $dayend) = explode('-',$end);
+
 			$yearbegin = date("Y") + $yearbegin - 1;
 			$yearend = date("Y") + $yearend - 1;
 
+			$begin = mktime(0, 0, 0, $monthbegin, $daybegin, $yearbegin );
+			$end = mktime(0, 0, 0, $monthend, $dayend, $yearend);
+
 			$this->begin = $yearbegin.'-'.$monthbegin.'-'.$daybegin;
 			$this->end = $yearend.'-'.$monthend.'-'.$dayend;
+
+
 			$this->halfdaybegin = $halfdaybegin;
 			$this->halfdayend = $halfdayend;
 
 			$this->rights = bab_getRightsOnPeriod($this->begin, $this->end);
 
-			$begin = mktime(0, 0, 0, $monthbegin, $daybegin, $yearbegin );
-			$end = mktime(0, 0, 0, $monthend, $dayend, $yearend);
+			
 
 			$this->datebegin = bab_longdate($begin,false);
 			$this->dateend = bab_longdate($end,false);
@@ -100,189 +108,10 @@ function requestVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 
 		}
 
-	$temp = new temp($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend);
+	$temp = new temp($begin,$end, $halfdaybegin, $halfdayend);
 	$babBody->babecho(	bab_printTemplate($temp,"vacuser.html", "newvacation"));
 	}
 
-
-function viewCalendarByUser($id, $month, $year, $period = false)
-	{
-	global $babBody;
-
-	class temp
-		{
-		var $entries = array();
-		var $fullname;
-		var $vacwaitingtxt;
-		var $vacapprovedtxt;
-		var $print;
-		var $close;
-
-
-		function temp($id, $month, $year, $period)
-			{
-			global $babMonths, $babDB;
-			$this->month = $month;
-			$this->year = $year;
-			$this->iduser = $id;
-			$this->period = $period;
-			$this->fullname = bab_getUserName($id);
-			$this->vacwaitingtxt = bab_translate("Waiting vacation request");
-			$this->vacapprovedtxt = bab_translate("Approved vacation request");
-			$this->print = bab_translate("Print");
-			$this->close = bab_translate("Close");
-
-			$this->t_previousmonth = bab_translate("Previous month");
-			$this->t_previousyear = bab_translate("Previous year");
-			$this->t_nextmonth = bab_translate("Next month");
-			$this->t_nextyear = bab_translate("Next year");
-
-			$this->t_nonworking = bab_translate("Non-working day");
-			$this->t_weekend = bab_translate("Week-end");
-
-			$urltmp = $GLOBALS['babUrlScript']."?tg=vacuser&idx=".$_REQUEST['idx']."&idu=".$this->iduser;
-			if (!empty($_REQUEST['popup']))
-				{
-				$urltmp .= '&popup=1';
-				$this->popup = true;
-				}
-			$this->previousmonth = $urltmp."&month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
-			$this->previousmonth .= "&year=".date("Y", mktime( 0,0,0, $month-1, 1, $year));
-			$this->nextmonth = $urltmp."&month=". date("n", mktime( 0,0,0, $month+1, 1, $year));
-			$this->nextmonth .= "&year=". date("Y", mktime( 0,0,0, $month+1, 1, $year));
-
-			$this->previousyear = $urltmp."&month=".date("n", mktime( 0,0,0, $month, 1, $year-1));
-			$this->previousyear .= "&year=".date("Y", mktime( 0,0,0, $month, 1, $year-1));
-			$this->nextyear = $urltmp."&month=". date("n", mktime( 0,0,0, $month, 1, $year+1));
-			$this->nextyear .= "&year=". date("Y", mktime( 0,0,0, $month, 1, $year+1));
-
-			if( $month != 1 )
-				{
-				$dateb = $year."-".$month."-01";
-				$datee = ($year+1)."-".date("n", mktime( 0,0,0, $month + 11, 1, $year))."-01";
-				$this->yearname = ($year)."-".($year+1);
-				}
-			else
-				{
-				$dateb = $year."-01-01";
-				$datee = $year."-12-01";
-				$this->yearname = $year;
-				}
-
-			$res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id_user='".$this->iduser."' and status!='N' and (date_end >= '".$dateb."' or date_begin <='".$datee."')");
-			while( $row = $babDB->db_fetch_array($res))
-				{
-				$this->entries[] = array('id'=> $row['id'], 'db'=> $row['date_begin'], 'de'=> $row['date_end'], 'st' => $row['status']);
-				}
-
-			$this->workdays = & explode(',',$GLOBALS['babBody']->icalendars->workdays);
-
-			include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
-			$this->nonWorkingDays = bab_getNonWorkingDays($year);
-			$this->nonWorkingDays = array_merge($this->nonWorkingDays, bab_getNonWorkingDays($year+1));
-
-			}
-
-		function getdayname()
-			{
-			global $babDays;
-			static $i = 1;
-			if( $i <= 31)
-				{
-				$this->dayname = sprintf('%02d',$i);
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getmonth()
-			{
-			static $i = 0;
-			if( $i < 12)
-				{
-				$this->curyear = date("Y", mktime( 0,0,0, $this->month + $i, 1, $this->year));
-				$this->curmonth = date("n", mktime( 0,0,0, $this->month + $i, 1, $this->year));
-				$this->monthname = $GLOBALS['babShortMonths'][$this->curmonth];
-				$this->totaldays = date("t", mktime(0,0,0,$this->month + $i,1,$this->year));
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getday()
-			{
-			static $d = 1;
-			static $total = 0;
-			if( $d <= 31)
-				{
-				if( $d <= $this->totaldays )
-					{
-					$this->daynumbername = $d;
-					$curdate = mktime(0,0,0,$this->curmonth,$d,$this->curyear);
-					$dayweek = date("w", $curdate);
-					$this->titledate = bab_longdate($curdate,false);
-					$this->date = sprintf("%04d-%02d-%02d", $this->curyear, $this->curmonth, $d);
-					$this->weekend = !in_array($dayweek, $this->workdays);
-					$this->nonworking = isset($this->nonWorkingDays[$this->date]);
-					$this->bvac = false;
-					$this->bwait = false;
-					for( $k=0; $k < count($this->entries); $k++)
-						{
-						if( $this->date >= $this->entries[$k]['db'] && $this->date <= $this->entries[$k]['de'] )
-							{
-							if( $this->entries[$k]['st'] == "")
-								$this->bwait = true;
-							else
-								$this->bvac = true;
-							break;
-							}
-						}
-					$this->noday = false;
-					}
-				else
-					{
-					$this->noday = true;
-					$this->daynumbername = "";
-					}
-				$d++;
-				return true;
-				}
-			else
-				{
-				$d = 1;
-				return false;
-				}
-			}
-
-		function printhtml()
-			{
-			$html = & bab_printTemplate($this,"vacuser.html", "calendarbyuser");
-
-			if (isset($_REQUEST['popup']) && $_REQUEST['popup'] == 1)
-				{
-				include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-				$GLOBALS['babBodyPopup'] = new babBodyPopup();
-				$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
-				$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
-				$GLOBALS['babBodyPopup']->babecho($html);
-				printBabBodyPopup();
-				die();
-				}
-			else
-				{
-				$GLOBALS['babBody']->babecho($html);
-				}
-			}
-
-		}
-
-	$temp = new temp($id, $month, $year, $period);
-	$temp->printhtml();
-	}
 
 
 function period()
@@ -507,18 +336,24 @@ function addNewVacation($begin,$end, $halfdaybegin, $halfdayend, $remarks, $tota
 
 	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
 
-	$res = $babDB->db_query("select ".BAB_VAC_RIGHTS_TBL.".id from ".BAB_VAC_RIGHTS_TBL." join ".BAB_VAC_COLL_TYPES_TBL." where ".BAB_VAC_RIGHTS_TBL.".id_type = ".BAB_VAC_COLL_TYPES_TBL.".id_type and ".BAB_VAC_COLL_TYPES_TBL.".id_coll='".$row['id_coll']."'");
+	$rights = bab_getRightsOnPeriod($begin, $end);
 
 	$ntotal = 0;
-	while( $arr = $babDB->db_fetch_array($res))
+	foreach($rights as $arr)
 	{
-		$tmp = 'nbdays'.$arr['id'];
-		if( isset($GLOBALS[$tmp]))
+
+		if( isset($_POST['nbdays'.$arr['id']]))
 		{
-			$nbd = $_POST[$tmp];
+			$nbd = $_POST['nbdays'.$arr['id']];
 			if( !is_numeric($nbd) || $nbd < 0 )
 				{
 				$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
+				return false;
+				}
+
+			if (!empty($nbd) && $arr['cbalance'] != 'Y' && ($arr['quantitydays'] - $nbd) < 0)
+				{
+				$babBody->msgerror = bab_translate("You can't take more than").' '.$arr['quantitydays'].' '.bab_translate("days on the right").' '.$arr['description'];
 				return false;
 				}
 			
@@ -914,13 +749,7 @@ $countt = $babDB->db_num_rows($res);
 switch($idx)
 	{
 	case "cal":
-		if( !isset($month))
-			$month = Date("n");
-
-		if( !isset($year))
-			$year = Date("Y");
-
-		viewCalendarByUser($idu, $month, $year);
+		viewVacationCalendar( explode(',',$_REQUEST['idu']));
 		break;
 
 	case "unload":
@@ -938,14 +767,8 @@ switch($idx)
 		$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
 
 		$babBody->title = bab_translate("Request vacation");
-		
-		if( !isset($month))
-			$month = Date("n");
 
-		if( !isset($year))
-			$year = Date("Y");
-
-		viewCalendarByUser($GLOBALS['BAB_SESS_USERID'], $month, $year, true);
+		viewVacationCalendar(array($GLOBALS['BAB_SESS_USERID']), true);
 		period();
 		break;
 
@@ -953,7 +776,18 @@ switch($idx)
 		$babBody->title = bab_translate("Request vacation");
 		if( $acclevel['user'] == true )
 			{
-			requestVacation($_POST['daybegin'], $_POST['monthbegin'], $_POST['yearbegin'],$_POST['dayend'], $_POST['monthend'], $_POST['yearend'], $_POST['halfdaybegin'], $_POST['halfdayend']);
+			if (isset($_POST['daybegin']))
+				{
+				$begin = $_POST['yearbegin'].'-'.$_POST['monthbegin'].'-'.$_POST['daybegin'];
+				$end = $_POST['yearend'].'-'.$_POST['monthend'].'-'.$_POST['dayend'];
+				}
+			else
+				{
+				$begin = $_POST['begin'];
+				$end = $_POST['end'];
+				}
+
+			requestVacation($begin , $end, $_POST['halfdaybegin'], $_POST['halfdayend']);
 			if( $countt > 0 )
 				$babBody->addItemMenu("vunew", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=vunew");
 			$babBody->addItemMenu("lvreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacuser&idx=lvreq");
@@ -962,7 +796,7 @@ switch($idx)
 			{
 			$idx = "lvt";
 			}
-		if( $acclevel['manager'] == true)
+		if( isset($acclevel['manager']) && $acclevel['manager'] == true)
 			$babBody->addItemMenu("list", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		break;
 

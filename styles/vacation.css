@@ -35,8 +35,12 @@
 /* calendar */
 
 
+
 #vacationcalendar {
 	font-size:9px;
+	text-align:center;
+	background-color:#fff;
+	margin:.5em;
 	}
 
 #vacationcalendar.popup {
@@ -74,14 +78,8 @@
 	border:#000 1px solid;
 	}
 
-#vacationcalendar .vac {
-	background-color:#080;
-	color:#fff;
-	}
-
-#vacationcalendar .wait {
-	background-color:#C40000;
-	color:#fff;
+#vacationcalendar .used {
+	background-color:#0a0;
 	}
 
 #vacationcalendar .noday {
@@ -113,6 +111,22 @@
 	}
 
 #vacationcalendar .selected {
-	background-color:red;
+	background-color:blue;
 	cursor:pointer;
+	}
+
+#vac_calendar_body .first td {
+	border-top:#000 2px solid;
+	border-bottom:#888 1px solid;
+	}
+
+#vac_calendar_body .inmonth td {
+	border-top:#888 1px solid;
+	border-bottom:#888 1px solid;
+	}
+
+th.user {
+	font-weight:normal;
+	white-space:nowrap;
+	padding:0 .2em;
 	}

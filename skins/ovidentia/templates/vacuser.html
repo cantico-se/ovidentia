@@ -178,22 +178,22 @@ return true;
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ totaltxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ datebtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ dateetxt }</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ total }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ dateb }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ datee }</td>
-</tr>
-<!--#endin getnext -->
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td>{ nametxt }</td>
+			<td>{ totaltxt }</td>
+			<td>{ datebtxt }</td>
+			<td>{ dateetxt }</td>
+		</tr>
+		<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td><a href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
+			<td>{ total }</td>
+			<td>{ dateb }</td>
+			<td>{ datee }</td>
+		</tr>
+		<!--#endin getnext -->
+	</table>
 </td>
 </tr>
 </table>
@@ -448,7 +448,7 @@ window.focus();
 			<a href="{ previousmonth }" title="{ t_previousmonth }" class="prev2"><strong>&lt;</strong></a> 
 			<a href="{ previousyear }" title="{ t_previousyear }" class="prev1"><strong>&lt;&lt;</strong></a>
 		</td>
-		<td align="center">{ fullname }&nbsp;{ yearname }</td>
+		<td align="center">{ yearname }</td>
 		<td align="right" class="next">
 			<a href="{ nextmonth }" title="{ t_nextmonth }" class="next2"><strong>&gt;</strong></a>
 			<a href="{ nextyear }" title="{ t_nextyear }" class="next1"><strong>&gt;&gt;</strong></a>
@@ -461,7 +461,12 @@ window.focus();
 <table class="calendar">
 <thead>
 	<tr>
+		
+		<!--#if nbusers "> 1" -->
+		<td colspan="2">&nbsp;</td>
+		<!--#else nbusers -->
 		<td>&nbsp;</td>
+		<!--#endif nbusers -->
 		<!--#in getdayname -->
 		<td>{ dayname }</td>
 		<!--#endin getdayname --> 
@@ -469,33 +474,44 @@ window.focus();
 </thead>
 <tbody id="vac_calendar_body">
 	<!--#in getmonth -->
-	<tr>
-		<th>{ monthname }</th> 
+	<!--#in getnextuser -->
+	<!--#if first -->
+	<tr <!--#if nbusers "> 1" --> class="first" <!--#endif nbusers -->>	
+		<th rowspan="{ rowspan }">{ monthname }</th>
+	<!--#else first -->
+	<tr class="inmonth">
+	<!--#endif first -->
+		<!--#if nbusers "> 1" -->
+		<th class="user">{ username }</th>
+		<!--#endif nbusers -->
 		<!--#in getday -->
-		<!--#if bvac -->
-		<td class="vac" title="{ vacapprovedtxt }">ok
-		<!--#else bvac -->
-			<!--#if bwait -->
-			<td class="wait" title="{ vacwaitingtxt }">?
-			<!--#else bwait -->
-				<!--#if noday -->
-				<td class="noday">
-				<!--#else noday -->
-					<!--#if nonworking -->
-					<td class="nonworking" title="{ t_nonworking }">
-					<!--#else nonworking -->
-						<!--#if weekend -->
-						<td  class="weekend" title="{ t_weekend }">
-						<!--#else weekend -->
+		
+		<!--#if noday -->
+		<td class="noday">
+		<!--#else noday -->
+			<!--#if nonworking -->
+			<td class="nonworking" title="{ titledate } : { t_nonworking }">
+			<!--#else nonworking -->
+				<!--#if weekend -->
+				<td  class="weekend" title="{ titledate } : { t_weekend }">
+				<!--#else weekend -->
+					<!--#if bvac -->
+					<td class="used" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacapprovedtxt }">ok
+					<!--#else bvac -->
+						<!--#if bwait -->
+						<td class="used" <!--#if color --> style="background-color:#{ color }" <!--#endif color --> title="{ titledate } : { vacwaitingtxt }">?
+						<!--#else bwait -->
 						<td <!--#if period --> class="free" onclick="setPeriod(this)" <!--#else period --> class="default" <!--#endif period -->  id="{ date }" title="{ titledate }">
-						<!--#endif weekend -->
-					<!--#endif nonworking -->
-				<!--#endif noday -->
-			<!--#endif bwait -->
-		<!--#endif bvac -->
+						<!--#endif bwait -->
+					<!--#endif bvac -->
+				<!--#endif weekend -->
+			<!--#endif nonworking -->
+		<!--#endif noday -->
+			
 		</td> 
 		<!--#endin getday -->
 	</tr>
+	<!--#endin getnextuser -->
 	<!--#endin getmonth -->
 </tbody>
 </table>
@@ -503,19 +519,22 @@ window.focus();
 
 
 <table class="legend">
+	
 	<tr>
-		<td class="vac">ok</td>
-		<th>{ vacapprovedtxt }</th>
+		<!--#in getnexttype -->
+		<td class="used" style="background-color:#{ arr[color] }">&nbsp;</td>
+		<th title="{ arr[description] }">{ arr[name] }</th>
+	<!--#if newline -->
+	</tr>
 	<tr>
+	<!--#endif newline -->
+		<!--#endin getnexttype -->
 	</tr>
-		<td class="wait">?</td>
-		<th>{ vacwaitingtxt }</th>
-	</tr>
-	</tr>
+	
+	<tr>
 		<td class="nonworking">&nbsp;</td>
 		<th>{ t_nonworking }</th>
-	</tr>
-	</tr>
+
 		<td class="weekend">&nbsp;</td>
 		<th>{ t_weekend }</th>
 	</tr>

@@ -719,6 +719,12 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "vacuser";
 		break;
+	case "vacchart":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Vacation");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "vacchart";
+		break;
 	case "directory":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Directories");
