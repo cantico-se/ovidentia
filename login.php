@@ -237,7 +237,7 @@ function displayRegistration($nickname, $fields, $cagree)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->fieldname = bab_translate($arr['description']);
+				$this->fieldname = translateDirectoryField($arr['description']);
 				$this->fieldv = $arr['name'];
 				$this->bfieldphoto = false;
 				if( isset($this->fields[$arr['name']]))
@@ -981,6 +981,7 @@ switch($cmd)
 		if( !isset($cagree)) { $cagree = '';}
 		//userCreate($firstname, $middlename, $lastname, $nickname, $email);
 		if( !isset($fields)) { $fields = array();}
+		include_once $babInstallPath."utilit/dirincl.php";
 		displayRegistration($nickname, $fields, $cagree);
 		break;
 

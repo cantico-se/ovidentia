@@ -730,7 +730,7 @@ function siteRegistration($id)
 					}
 
 				$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$this->fieldn = bab_translate($arr['description']);
+				$this->fieldn = translateDirectoryField($arr['description']);
 				$this->fieldv = $arr['name'];
 				$i++;
 				return true;
@@ -1139,6 +1139,7 @@ switch($idx)
 		break;
 	case "cnx":
 		$babBody->title = bab_translate("Registration").": ".getSiteName($item);
+		include_once $babInstallPath."utilit/dirincl.php";
 		siteRegistration($item);
 		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);

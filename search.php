@@ -26,6 +26,7 @@ include_once $babInstallPath."utilit/topincl.php";
 include_once $babInstallPath."utilit/forumincl.php";
 include_once $babInstallPath."utilit/fileincl.php";
 include_once $babInstallPath."utilit/calincl.php";
+include_once $babInstallPath."utilit/dirincl.php";
 
 $babLimit = 5;
 $navbaritems = 10;
@@ -217,7 +218,7 @@ function searchKeyword($item , $option = "OR")
 			while ($arr = $this->db->db_fetch_array($this->resfields))
 				{
 				$this->tbln[$i] = $arr['name'];
-				$this->tbld[$i] = bab_translate($arr['description']);
+				$this->tbld[$i] = translateDirectoryField($arr['description']);
 				$i++;
 				}
 			$fliped = array_flip($this->tbld);
@@ -1271,7 +1272,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$this->name = $this->dirfields['name'][$i];
 				$this->ordercmd = $this->name == 'sn' ? 'sn, givenname':($this->name == 'givenname' ? 'givenname, sn' : $this->name);
-				$this->t_name = bab_translate($this->dirfields['description'][$i]);
+				$this->t_name = translateDirectoryField($this->dirfields['description'][$i]);
 				if (isset($this->dir))
 				switch ($this->name)
 					{
@@ -1787,7 +1788,6 @@ function viewContact($id, $what)
 function viewDirectoryUser($id, $what)
 {
 	global $babBody, $babDB, $babInstallPath;
-	include_once $babInstallPath."utilit/dirincl.php";
 	list($idd, $idu) = $babDB->db_fetch_array($babDB->db_query("select id_directory, id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$id."'"));
 	$access = false;
 	if( $idd == 0 )
