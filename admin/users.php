@@ -73,7 +73,7 @@ function listUsers($pos, $grp)
 			$this->t_online = bab_translate("Online");
 			$this->t_unconfirmed = bab_translate("Unconfirmed");
 			$this->t_disabled = bab_translate("Disabled");
-			$this->t_disabled = bab_translate("Disabled");
+			$this->t_dirdetail = bab_translate("Detail");
 
 			$this->db = $GLOBALS['babDB'];
 			$this->group = bab_getGroupName($grp);
