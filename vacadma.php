@@ -305,7 +305,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 					}
 				}
 
-			if( sizeof($aaareq) > 0 )
+			if( isset($aaareq) && sizeof($aaareq) > 0 )
 				{
 				if( sizeof($aaareq) > 1 )
 					$req .= implode(' and ', $aaareq);
