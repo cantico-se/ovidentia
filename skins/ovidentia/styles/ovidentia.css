@@ -1,12 +1,12 @@
-body {  margin: 0px 0px; background: #CCCCCC}
+body {  margin: 0px 0px; background: #FFFFFF}
 
 /* input */
 INPUT { font-family: Verdana;font-size:10px; color:#000000;background-color:#FFFFFF;border-width:1;border-color:#000000;font-weight:bold }
 
-/* links algemeen */
-a:link {color: #000000 }
+/* general links */
+a:link {color: #cccccc }
 a:active {color: #FF3333 }
-a:visited {COLOR: #000000 }
+a:visited {COLOR: #cccccc }
 /*copyrightlink*/
 a.copy:link {color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
 a.copy:active {color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 11px}
@@ -14,10 +14,10 @@ a.copy:visited {COLOR: #000000; font-family: Arial, Helvetica, sans-serif; font-
 
 .BabHeaderBackground	{ background: #CCCCCC}
 .BabCnxMenuBackground { background: #111166}
-.BabMenuBackground { background: #CCCCCC}
+.BabMenuBackground { background: #FFFFFF}
 .BabContentBackground {  background: #111166}
-.BabFooterBackground {background: #CCCCCC ;COLOR: #000000; font-family : Verdana, Arial, sans-serif; font-size : 10px }
-.BabSectionsColBackground {background: #CCCCCC}
+.BabFooterBackground {background: #FFFFFF ;COLOR: #000000; font-family : Verdana, Arial, sans-serif; font-size : 10px }
+.BabSectionsColBackground {background: #FFFFFF}
 
 .Babhighlight { background: #FF0000}
 .Blackbg { background: #000000}
@@ -145,19 +145,19 @@ a.BabTopicsFooterLink:Hover {COLOR: #009933; font : 10px Verdana, Arial, sans-se
 
 /********** AGENDA **** CALENDAR ******************************/
 
-.BabCalendarCadreBackground {background: #D1D1D9 }
+.BabCalendarCadreBackground {background: #D1D1D9}
 .BabCalendarMenuBackground {background: #D1D1D9; COLOR: #000000;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
 .BabCalendarMenuActiveBackground {background: #D1D1D9; COLOR: #111166; font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
-.BabCalendarBodyBackground { BACKGROUND: #FFFFFF  }
-.BabCalendarBodyBadMonthBackground {background: #CCCCCC }
-.BabMonthCalendarCurentDayBackground { BACKGROUND: #E6E6F7  }
+.BabCalendarBodyBackground { BACKGROUND: #000000 ; font: 10px Verdana, Arial, sans-serif }
+.BabCalendarBodyBadMonthBackground {background: #CCCCCC ; font: 10px Verdana, Arial, sans-serif}
+.BabMonthCalendarCurentDayBackground { BACKGROUND: #E6E6F7 ; font: 10px Verdana, Arial, sans-serif }
 /*also in use on inbox  */
 .BabCalendarBodyFont { COLOR: #000000;  font: 10px Verdana, Arial, sans-serif}
 
-.BabMonthCalendarEventLegendFont { COLOR: #FFFFFF;  font: 10px Verdana, Arial, sans-serif}
+.BabMonthCalendarEventLegendFont { COLOR: #FFFFFF; font: 10px Verdana, Arial, sans-serif}
 .BabMonthCalendarEventLegendTitleFont { COLOR: #FFFFFF;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
 /*names of the days on top of monthcalendar*/
-.BabCalendarDays {background: #E6E6F7; COLOR: #000000;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
+.BabCalendarDays {background: #181A91; COLOR: #FFFFFF;  font: 12px Verdana, Arial, sans-serif; FONT-WEIGHT: bold}
 
 .BabMonthCalendarEventHourfont { BACKGROUND: #FFFFFF; COLOR: #OO9933; font: 10px Verdana, Aria }
 
@@ -357,4 +357,15 @@ a.BabToChoiceMailPopupNavigLink:Hover { COLOR: #FF3333 ; font : 10px Verdana, Ar
 
 /**** END Classes USED BY THE SCRIPT FOR FORMATTING MESSAGES WYSIWYG */
 
-
+/*Ovidentia 3.3 add*/
+.BabTodayEvent {
+	BACKGROUND: #E6E6F7 ; 
+	font: 10px Verdana, Arial, sans-serif ;
+       border-left: 1px solid red;
+       border-right: 1px solid red;
+       border-bottom: 1px solid red;
+	   border-top: 1px solid red
+			}
+.HeaderDayCalendar {
+					BACKGROUND: #FFFFFF
+					}
