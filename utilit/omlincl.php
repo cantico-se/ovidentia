@@ -2333,7 +2333,7 @@ class bab_RecentFiles extends bab_handler
 
 		if( count($arrid) > 0 )
 			{
-			$req = "select distinct f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
+			$req = "select f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
 			$path = $ctx->get_value('path');
 			if( $path === false || $path === '' )
 				{
@@ -2361,7 +2361,11 @@ class bab_RecentFiles extends bab_handler
 				default: $order = "f.modified DESC"; break;
 			}
 
+			$req .= " group by f.id";
+
 			$req .= " order by ".$order;
+
+			
 			
 			
 			if( $this->last !== false)

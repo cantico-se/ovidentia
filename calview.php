@@ -239,7 +239,7 @@ function newFiles($nbdays)
 			global $babBody, $BAB_SESS_USERID, $BAB_HASH_VAR;
 			$this->nbdays = $nbdays;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select distinct f.* from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y' and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
+			$req = "select f.* from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y' and fmg.id_object = f.id_owner and ( fmg.id_group='2'";
 			if( $BAB_SESS_USERID != "" )
 			$req .= " or fmg.id_group='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
 			$req .= ")";
@@ -248,6 +248,8 @@ function newFiles($nbdays)
 				$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
 			else
 				$req .= " and f.modified >= '".$babBody->lastlog."'";
+
+			$req .= " group by f.id";
 		
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
