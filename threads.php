@@ -356,7 +356,8 @@ function saveThread($forum, $name, $subject, $message, $notifyme)
 
 	if( $arr['notification'] == "Y" )
 		{
-	    notifyModerator($forum, stripslashes($subject), stripslashes($name), $arr['name']);
+		$url = $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$idthread."&flat=1";
+	    notifyModerator($forum, stripslashes($subject), stripslashes($name), $arr['name'], $url);
 		}
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);

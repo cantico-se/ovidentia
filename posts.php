@@ -722,7 +722,8 @@ function saveReply($forum, $thread, $post, $name, $subject, $message)
 	$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_FORUMS_TBL." where id='".$forum."'"));
 	if( $arr['notification'] == "Y" )
 		{
-	    notifyModerator($forum, stripslashes($subject), stripslashes($name), $arr['name']);
+		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1";
+	    notifyModerator($forum, stripslashes($subject), stripslashes($name), $arr['name'],$url);
 		}
 	if (!isset($flat)) $flat = '';
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);

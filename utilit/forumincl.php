@@ -96,7 +96,7 @@ function bab_getForumThreadTitle($id)
 		}
 	}
 
-function notifyModerator($forum, $threadTitle, $author, $forumname)
+function notifyModerator($forum, $threadTitle, $author, $forumname, $url = '')
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
  
@@ -113,7 +113,7 @@ function notifyModerator($forum, $threadTitle, $author, $forumname)
         var $dateval;
 
 
-		function tempa($threadTitle, $author, $forumname)
+		function tempa($threadTitle, $author, $forumname, $url)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->message = bab_translate("A new post has been registered on forum") .": ".$forumname;
@@ -124,8 +124,8 @@ function notifyModerator($forum, $threadTitle, $author, $forumname)
             $this->sitename = $babSiteName;
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
-
             $this->author = $author;
+			$this->url = !empty($url) ? $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url) : false;
 			}
 		}
 	
@@ -136,7 +136,7 @@ function notifyModerator($forum, $threadTitle, $author, $forumname)
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("New post"));
 
-	$tempa = new tempa($threadTitle, $author, $forumname);
+	$tempa = new tempa($threadTitle, $author, $forumname, $url);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "newpost"));
 	$messagetxt = bab_printTemplate($tempa,"mailinfo.html", "newposttxt");
 
@@ -163,6 +163,7 @@ function notifyModerator($forum, $threadTitle, $author, $forumname)
 			if( $res2 && $db->db_num_rows($res2) > 0 )
 				{
 				$count = 0;
+				$mail->mailTo('');
 				while(($arr = $db->db_fetch_array($res2)) && $count < 25)
 					{
 					if( count($arrusers) == 0 || !in_array($arr['id'], $arrusers))

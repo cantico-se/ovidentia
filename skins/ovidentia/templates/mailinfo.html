@@ -118,13 +118,16 @@ Ovidentia is a registered trademark of Cantico - http://www.cantico.fr
 
 
 <!--#begin newpost -->
-<font color="#000000" size="2" face="Arial, Helvetica, sans-serif"><br>
+<font color="#000000" size="2" face="Arial, Helvetica, sans-serif"><br />
 
-      <strong>{ message }</strong><br>
-      <br>
-      <strong>{ thread }&nbsp;:&nbsp;{ threadname }</strong><br>
-      { from }&nbsp;:&nbsp;{ author }<br>
-      { date }&nbsp;:&nbsp;{ dateval }<br><br>
+      <strong>{ message }</strong><br />
+      <br />
+      <strong>{ thread }&nbsp;:&nbsp;{ threadname }</strong><br />
+      { from }&nbsp;:&nbsp;{ author }<br />
+      { date }&nbsp;:&nbsp;{ dateval }<br /><br />
+	  <!--#if url -->
+	  <a href="{ url }" target="_blank">{ threadname }</a><br /><br />
+	  <!--#endif url -->
       </font>
 <!--#end newpost -->
 <!--#begin newposttxt -->
@@ -135,6 +138,7 @@ Ovidentia is a registered trademark of Cantico - http://www.cantico.fr
 { thread }: { threadname }
 { from }: { author }
 { date }: { dateval }
+<!--#if url -->{ url }<!--#endif url -->
 
 Portal powered by OVIDENTIA - http://www.ovidentia.org
 Ovidentia is a registered trademark of Cantico - http://www.cantico.fr
