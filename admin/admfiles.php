@@ -68,7 +68,7 @@ function listGroups()
 			}
 		}
 
-	$temp = new temp($id);
+	$temp = new temp();
 	$body->babecho(	babPrintTemplate($temp, "admfiles.html", "admfileslist"));
 	}
 
