@@ -135,7 +135,7 @@ function newEvent($calendarid, $day, $month, $year, $view, $title, $description)
 					$this->countcat = 0;
 					break;
 				}
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	

@@ -277,7 +277,7 @@ function submitArticle($topics)
 			$this->body = babTranslate("Body");
 			$this->title = babTranslate("Title");
 			$this->modify = babTranslate("Add Article");
-			if( strtolower(browserAgent()) == "msie")
+			if(( strtolower(browserAgent()) == "msie") and (browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	

@@ -51,9 +51,39 @@ function composeName( $firstname, $lastname)
 	return trim($firstname . " " . $lastname);
 	}
 
+function browserOS()
+	{
+	global $HTTP_USER_AGENT;
+	if ( stristr($HTTP_USER_AGENT, "windows"))
+		{
+	 	return "windows";
+		}
+	if ( stristr($HTTP_USER_AGENT, "macintosh"))
+		{
+		return "macos";
+		}
+	if ( stristr($HTTP_USER_AGENT, "mac_powerpc"))
+		{
+		return "macos";
+		}
+	if ( stristr($HTTP_USER_AGENT, "ppc mac os x"))
+		{
+		return "macos";
+		}
+	if ( stristr($HTTP_USER_AGENT, "linux"))
+		{
+		return "linux";
+		}
+	return "";
+	}
+
 function browserAgent()
 	{
 	global $HTTP_USER_AGENT;
+	if ( stristr($HTTP_USER_AGENT, "konqueror"))
+		{
+		return "konqueror";
+		}
 	if( stristr($HTTP_USER_AGENT, "opera"))
 		{
 		return "opera";
