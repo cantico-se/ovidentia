@@ -826,9 +826,9 @@ CREATE TABLE bab_ini (
 	UNIQUE KEY foption (foption)
 );
 
-INSERT INTO bab_ini VALUES ('ver_major', '3');
-INSERT INTO bab_ini VALUES ('ver_minor', '4');
-INSERT INTO bab_ini VALUES ('ver_build', '3');
+INSERT INTO bab_ini VALUES ('ver_major', '4');
+INSERT INTO bab_ini VALUES ('ver_minor', '0');
+INSERT INTO bab_ini VALUES ('ver_build', '0');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1283,6 +1283,7 @@ CREATE TABLE bab_vac_users_rights (
   id int(11) unsigned NOT NULL auto_increment,
   id_user int(11) unsigned NOT NULL default '0',
   id_right int(11) unsigned NOT NULL default '0',
+  quantity char(5) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_user (id_user),
   KEY id_right (id_right)

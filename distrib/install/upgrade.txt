@@ -11,12 +11,12 @@ version after upgrade.
 ( ATTENTION!!: this can have some security issues. 
 Please consult your system Administrator )
 
-Also you need to move base.php located in install folder to your web root
-folder where there are config.php and index.php files
-
 Otherwise you must do this by hand in config.php:
 
-$babVersion="3.4"
+$babVersion="4.0"
+
+Also you need to move base.php located in install folder to your web root
+folder where there are config.php and index.php files
 
 point your browser to:
 

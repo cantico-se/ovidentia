@@ -1,5 +1,10 @@
 /************************************************************************/
-Janvier 2003: Version 3.4.3
+February 2003: Version 4.0.0
+/************************************************************************/
+- Fixed some minors bugs
+
+/************************************************************************/
+January 2003: Version 3.4.3
 /************************************************************************/
 - Possibilty to view forums in flat or hierachically mode
 - Added support for update and delete reccurrent events
@@ -15,7 +20,7 @@ Janvier 2003: Version 3.4.3
 - Fixed some minors bugs
 
 /************************************************************************/
-Novembre 2002: Version 3.4.2
+November 2002: Version 3.4.2
 /************************************************************************/
 - Moderator can now close threads of non moderated forums
 - Vacation emails notification are enhanced
@@ -26,7 +31,7 @@ Novembre 2002: Version 3.4.2
 - Improved performance
 
 /************************************************************************/
-Septembre 2002: Version 3.4.1b
+September 2002: Version 3.4.1b
 /************************************************************************/
 - Possibility to upload and link images to faq
 - Possibility to assign user to one group after registration
@@ -50,7 +55,7 @@ August 2002: Version 3.4.0b
 - Fixed some minors bugs
 
 /************************************************************************/
-Juillet 2002: Version 3.3.3
+July 2002: Version 3.3.3
 /************************************************************************/
 - Possibility to upload and link images to articles
 - Added $FILE to reference a file 
@@ -58,7 +63,7 @@ Juillet 2002: Version 3.3.3
 - Fixed some minors bugs
 
 /************************************************************************/
-Juillet 2002: Version 3.3.2
+July 2002: Version 3.3.2
 /************************************************************************/
 - Added Calendar sharing:  Consultation, Creation and update, and Total access
 - Introduction of a new mail class that addresses some problems in automatic mail
@@ -82,7 +87,7 @@ Juillet 2002: Version 3.3.2
 - Administrators are notified by email when an article is proposed for home pages
 - Fixed some minors bugs
 /************************************************************************/
-Mai 2002: Version 3.3.1
+May 2002: Version 3.3.1
 /************************************************************************/
 - Fixed Add-ons bug: Functions xxx_OnUserCreate(), xxx_OnUserDelete(), 
   xxx_OnGroupDelete() and xxx_OnGroupCreate() are not collaed
@@ -95,12 +100,12 @@ Mai 2002: Version 3.3.1
 - Addde $ARTICLEPOPUP: view article in popup window
 - Fixed some minors bugs
 /************************************************************************/
-Mai 2002: Version 3.3
+May 2002: Version 3.3
 /************************************************************************/
 - Fixed some minors bugs
 
 /************************************************************************/
-Mai 2002: Version 3.3b
+May 2002: Version 3.3b
 /************************************************************************/
 - Add-on support (see the "Ovidentia add-ons tutorial" part in 
   the Developer's Guide for more information). 
