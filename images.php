@@ -8,6 +8,13 @@ include_once "base.php";
 include $babInstallPath."utilit/tempfile.php";
 include $babInstallPath."utilit/imgincl.php";
 
+function bab_mkdir($path, $mode)
+{
+	if( substr($path, -1) == "/" )
+		$path = substr($path, 0, -1);
+	mkdir($path, $mode);
+}
+
 function getResizedImage($img, $w, $h, $com)
 	{
 	$type = "";
@@ -131,11 +138,11 @@ function listImages($editor)
 			$this->comnum = 0;
 			$this->editor = $editor;
 			if( !is_dir(BAB_IUD_TMP))
-				mkdir(BAB_IUD_TMP, 0700);
+				bab_mkdir(BAB_IUD_TMP, 0700);
 			if( !is_dir(BAB_IUD_COMMON))
-				mkdir(BAB_IUD_COMMON, 0700);
+				bab_mkdir(BAB_IUD_COMMON, 0700);
 			if( !is_dir(BAB_IUD_ARTICLES))
-				mkdir(BAB_IUD_ARTICLES, 0700);
+				bab_mkdir(BAB_IUD_ARTICLES, 0700);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
 			$h = opendir(BAB_IUD_COMMON);
 			while (($f = readdir($h)) != false)
