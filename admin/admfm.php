@@ -71,7 +71,7 @@ function modifyFolder($fid)
 				$this->ynfsel = "";
 				}
 			$arr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_FLOW_APPROVERS_TBL." where id='".$arr['idsa']."'"));
-			$this->saname = $arr['name'];
+			$this->saname = $arr['name'] == "" ? "": $arr['name'];
 			}
 
 		}
