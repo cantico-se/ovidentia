@@ -67,18 +67,72 @@
 <input type="hidden" name="modify" value="modify">
 <center>
 <table class="BabDialogBgnd" width="50%" border="0" cellspacing="5" cellpadding="0">
+<!-- Instanciation de la barre d'outils -->
+<!--#if msie "== 1" -->
+<SCRIPT SRC="templates/SaisieFormatee.js"></SCRIPT>
+<tr>
+<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="headtext">{ headval }</textarea>
+<textarea cols="0" rows="0" style="VISIBILITY: hidden" name="bodytext">{ bodyval }</textarea>
+</tr>
+<tr>
+<td align="right" nowrap>&nbsp;</td>
+<td>
+<SCRIPT LANGUAGE="JavaScript"> 
+	var idGenerator = new IDGenerator(0);
+	var editor = new Editor(idGenerator);
+	editor.ToolBar();
+</SCRIPT>
+</td>
+</tr>
+<!--#endif msie -->
+<tr>
+<td align="right" nowrap>{ title }</td>
+<td >
+<input type="text" name="title" size="60" value="{ titleval }">
+</td>
+</tr>
 <tr>
 <td align="right">{ head }</td>
-<td><textarea cols="70" rows="10" name="headtext">{ headval }</textarea></td>
+<td>
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(0, "headtext", "0", "100%", "160");
+</SCRIPT>
+<!--#else msie -->
+<textarea cols="70" rows="10" name="headtext">{ headval }</textarea>
+<!--#endif msie -->
+</td>
 </tr>
 <tr>
 <td align="right">{ body }</td>
-<td><textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea></td>
+<td>
+<!--#if msie "== 1" -->
+<SCRIPT LANGUAGE="JavaScript">
+	editor.InFrame(1, "bodytext", "0", "100%", "200");
+</SCRIPT>
+<!--#else msie -->
+<textarea cols="70" rows="20" name="bodytext">{ bodyval }</textarea>
+<!--#endif msie -->
+</td>
+<!--#if msie "== 1" -->
+<tr>
+<td align="right">&nbsp;</td>
+<td><input onclick=SetVals() type="submit" name="submit" value="{ modify }"></td>
+
+</tr>
+
+<SCRIPT LANGUAGE="JavaScript">
+	editor.FinalInstantiate(0);
+	editor.FinalInstantiate(1);
+	editor.CloseInitSection();
+</SCRIPT>
+<!--#else msie -->
 </tr>
 <tr>
 <td align="right">&nbsp;</td>
 <td><input type="submit" name="submit" value="{ modify }"></td>
 </tr>
+<!--#endif msie -->
 </table>
 </center>
 </form>

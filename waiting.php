@@ -112,6 +112,8 @@ function modifyArticle($topics, $article)
 		var $headval;
 		var $body;
 		var $bodyval;
+		var $title;
+		var $titleval;
 		var $modify;
 		var $topics;
 		var $article;
@@ -119,6 +121,7 @@ function modifyArticle($topics, $article)
 		var $db;
 		var $count;
 		var $res;
+		var $msie;
 
 		function temp($topics, $article)
 			{
@@ -126,6 +129,7 @@ function modifyArticle($topics, $article)
 			$this->topics = $topics;
 			$this->head = babTranslate("Head");
 			$this->body = babTranslate("Body");
+			$this->title = babTranslate("Title");
 			$this->modify = babTranslate("Modify");
 			$this->db = new db_mysql();
 			$req = "select * from articles where id='$article' and confirmed='N'";
@@ -136,7 +140,12 @@ function modifyArticle($topics, $article)
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->headval = htmlentities($this->arr[head]);
 				$this->bodyval = htmlentities($this->arr[body]);
+				$this->titleval = $this->arr[title];
 				}
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 	
@@ -427,9 +436,15 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	}
 
 
-function updateArticle($topics, $article, $headtext, $bodytext)
+function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	{
 	global $body;
+
+	if( empty($title))
+		{
+		$body->msgerror = babTranslate("ERROR: You must provide a title");
+		return;
+		}
 
 	$db = new db_mysql();
 	if(get_cfg_var("magic_quotes_gpc"))
@@ -441,7 +456,7 @@ function updateArticle($topics, $article, $headtext, $bodytext)
 	$headtext = addslashes($headtext);
 	$bodytext = addslashes($bodytext);
 	$db = new db_mysql();
-	$req = "update articles set head='$headtext', body='$bodytext' where id='$article'";
+	$req = "update articles set title='$title', head='$headtext', body='$bodytext' where id='$article'";
 	$res = $db->db_query($req);		
 	}
 
@@ -489,7 +504,7 @@ if( !isUserApprover($topics))
 
 if( isset($modify))
 	{
-	updateArticle($topics, $article, $headtext, $bodytext);
+	updateArticle($topics, $article, $title, $headtext, $bodytext);
 	}
 
 if( isset($confirm) )
