@@ -308,6 +308,7 @@
 <string id="ERROR: You must provide server address !!">ERREUR: Vous devez donner l'addresse d'un serveur !!</string>
 <string id="ERROR: You must provide signature !!">ERREUR: Vous devez spécifier une signature !!</string>
 <string id="ERROR: You must provide topic manager !!">ERREUR: Vous devez indiquer un gestionnaire pour le thème d'articles !!</string>
+<string id="ERROR: You must provide manager !!">ERREUR: Vous devez indiquer un gestionnaire !!</string>
 <string id="ERROR: Your email is not valid !!">ERREUR: Votre adresse de messagerie n'est pas correct !!</string>
 <string id="Edit request vacation">Modifier une demande de congé</string>
 <string id="Edit">Editer</string>
