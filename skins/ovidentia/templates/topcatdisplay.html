@@ -30,26 +30,12 @@
       <!--#if count -->
       <table  width="100%" border="0" cellpadding="1" cellspacing="0" align="center">
         <!--#in getnext -->
-        <!--#if istopcat -->
-		<tr>
-          <td colspan="2" class="BabHeaderBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="0" border="0"></td>
-        </tr>
         <tr>
           <td colspan="2">{ babsectionbullet }&nbsp;&nbsp;<a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
         </tr>
 		<tr>
           <td colspan="2"><table border="0" align="left" cellpadding="0" cellspacing="0"><tr><td>&nbsp;&nbsp;&nbsp;</td><td class="BabCategChildNavigation">{ childdescription }<br><br></td></tr></table></td>
         </tr>
-        <!--#else istopcat -->
-        <tr>
-		  <td width="2%">&nbsp;</td>
-		  <td>{ babsectionbullet }&nbsp;&nbsp;<a class="BabCategNavigationLink" href="{ childurl }">{ childname }</a></td>
-        </tr>
-		<tr>
-          <td  width="2%" class="BabCategChildNavigation">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-		  <td colspan="2"><table border="0" align="left" cellpadding="0" cellspacing="0"><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="BabCategChildNavigation">{ childdescription }<br><br></td></tr></table></td>
-        </tr>
-        <!--#endif istopcat -->
         <!--#endin getnext -->
       </table>
       <!--#endif count -->
