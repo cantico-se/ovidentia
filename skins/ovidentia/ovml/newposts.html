@@ -15,12 +15,26 @@
 <tr>
 <td class="BabLoginCadreBackground"> 
 <table  border="0" width="100%" cellpadding="3" cellspacing="0">
-<OCRecentPosts from_lastlog="<OVnbdays>"> 
 <tr>
-<td class="BabSummaryContentBackground"><OVPostDate date="%d %j %M %Y - %H:%i"></td>
-<td class="BabSummaryContentBackground">
+	<td class="BabTitleSmallFontBg"><OFTranslate text="Date">&nbsp;</td>
+	<td class="BabTitleSmallFontBg">&nbsp;</td>
+	<td class="BabTitleSmallFontBg"><OFTranslate text="Contribution">&nbsp;</td>
+	<td class="BabTitleSmallFontBg"><OFTranslate text="Author">&nbsp;</td>
+</tr>
+<OCRecentPosts from_lastlog="<OVnbdays>"> 
+<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
+<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSummaryContentBackground</OCIfEqual>
+<OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
+<td width="120"><OVPostDate date="%j/%n/%Y - %H:%i"></td>
+<td align="right"><span style="font-Size:9">
+
+<OCForum forumid="<OVPostForumId>"><OVForumName striptags="1" strlen="20,..."> / </OCForum>
+<OCPost postid="<OVPostThreadId>"><OVPostTitle striptags="1" strlen="20,..."> / </OCPost>
+</span>
+</td>
+<td align="left">
 <a class="BabSummaryLinkColor" href="<OVPostUrl>"><OVPostTitle striptags="1" strlen="100,..."></a></td>
-<td class="BabSummaryContentBackground"><OVPostAuthor></td>
+<td width="130"><OVPostAuthor></td>
 </tr>
 </OCRecentPosts>
 </table>

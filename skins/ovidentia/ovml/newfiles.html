@@ -15,11 +15,24 @@
 <tr>
 <td class="BabLoginCadreBackground"> 
 <table class="BabSummaryContentBackground" border="0" width="100%" cellpadding="3" cellspacing="0">
+<tr>
+	<td class="BabTitleSmallFontBg"><OFTranslate text="Date">&nbsp;</td>
+	<td class="BabTitleSmallFontBg"><OFTranslate text="File">&nbsp;</td>
+	<td class="BabTitleSmallFontBg"><OFTranslate text="Author">&nbsp;</td>
+</tr>
 <OCRecentFiles from_lastlog="<OVnbdays>"> 
-<tr> 
-<td class="BabSummaryContentBackground" nowrap valign="middle" width="1%"><a 
-class="BabSummaryLinkColor" href="javascript: Start('<OVFilePopupUrl>', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVFileName>&nbsp;</a></td>
-<td class="BabSummaryContentBackground" valign="middle">&nbsp;<OVFileDesc></td>
+<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
+<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSummaryContentBackground</OCIfEqual>
+<OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
+<td width="120"><OVFileDate date="%j/%n/%Y - %H:%i"></td>
+<td colspan="2"><OCFolders folderid="<OVFileFolderId>"><OVFolderName></OCFolders>
+/ <OVFilePath></td>
+<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSummaryContentBackground</OCIfEqual>
+<OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
+<td>&nbsp;</td>
+<td nowrap valign="middle"><a 
+class="BabSummaryLinkColor" href="javascript: Start('<OVFilePopupUrl>', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');" title="<OVFileDescription>"><OVFileName>&nbsp;</a></td>
+<td width="130"><OVFileAuthor author="%F %L"></td>
 </tr>
 </OCRecentFiles>
 </table>
