@@ -100,8 +100,8 @@ function bab_getResizedImage($imgf, $w, $h)
 					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
 					}
 				
-				$out = imagecreate($wimg, $himg);
-				imagecopyresized($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
+				$out = imagecreatetruecolor($wimg, $himg);
+				imagecopyresampled($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
 				imagedestroy($tmp);
 					
 				switch($imgsize[2])
