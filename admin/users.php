@@ -186,7 +186,7 @@ function updateGroup( $grp, $users, $userst)
 
 	for( $i = 0; $i < count($tab); $i++)
 	{
-		if( !in_array($tab[$i], $users))
+		if( count($users) < 1 || !in_array($tab[$i], $users))
 		{
 			$req = "delete from users_groups where id_group='".$grp."' and id_object='".$tab[$i]."'";
 			$res = $db->db_query($req);
@@ -194,7 +194,7 @@ function updateGroup( $grp, $users, $userst)
 	}
 	for( $i = 0; $i < count($users); $i++)
 	{
-		if( !in_array($users[$i], $tab))
+		if( count($tab) < 1 || !in_array($users[$i], $tab))
 		{
 			$req = "insert into users_groups (id_group, id_object) VALUES ('" .$grp. "', '" . $users[$i]. "')";
 			$res = $db->db_query($req);

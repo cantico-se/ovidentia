@@ -418,7 +418,7 @@ function vacationGroup($usevacation, $approver, $item)
 
 function confirmDeleteMembers($item, $names)
 {
-	if( !empty($names)
+	if( !empty($names))
 	{
 		$arr = explode(",", $names);
 		$cnt = count($arr);
@@ -490,12 +490,8 @@ function confirmDeleteGroup($id)
 	$req = "delete from calendar where owner='$id' and type='2'";
 	$res = $db->db_query($req);	
 
-	// delete user from mailview_groups
-	$req = "delete from mailview_groups where id_group='$id'";
-	$res = $db->db_query($req);	
-
-	// delete user from mailview_domains
-	$req = "delete from mailview_groups where owner='$id' and bgroup='Y'";
+	// delete user from mail_domains
+	$req = "delete from mail_domains where owner='$id' and bgroup='Y'";
 	$res = $db->db_query($req);	
 
     // delete group

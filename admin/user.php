@@ -139,6 +139,7 @@ function listGroups($id)
 				$this->groupname = $this->arrgroups[name];
 				$this->groupurl = $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$this->arrgroups[id];
 				$this->checked = "";
+				$this->primary = "";
 				if($this->count1 > 0)
 					{
 					$this->db->db_data_seek($this->res1, 0);
@@ -220,7 +221,7 @@ function updateGroups($id, $groups, $groupst)
 		$tab = array();
 	for( $i = 0; $i < count($tab); $i++)
 	{
-		if( !in_array($tab[$i], $groups))
+		if( count($groups) < 1  || !in_array($tab[$i], $groups))
 		{
 			$req = "delete from users_groups where id_group='".$tab[$i]."' and id_object='".$id."'";
 			$res = $db->db_query($req);
@@ -228,7 +229,7 @@ function updateGroups($id, $groups, $groupst)
 	}
 	for( $i = 0; $i < count($groups); $i++)
 	{
-		if( !in_array($groups[$i], $tab))
+		if( count($tab) < 1 || !in_array($groups[$i], $tab))
 		{
 			$req = "insert into users_groups (id_group, id_object) VALUES ('" .$groups[$i]. "', '" . $id. "')";
 			$res = $db->db_query($req);
