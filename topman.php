@@ -99,6 +99,9 @@ function listArticles($id)
 		var $addtohome;
 		var $siteid;
 		var $userid;
+		var $badmin;
+		var $homepages;
+		var $homepagesurl;
 
 		function temp($id)
 			{
@@ -108,9 +111,13 @@ function listArticles($id)
 			$this->homepage0 = babTranslate("Unregistered users home page");
 			$this->homepage1 = babTranslate("Registered users home page");
 			$this->deletea = babTranslate("Delete");
+			$this->homepages = babTranslate("Customize home pages");
+			$this->badmin = isUserAdministrator();
 
 			$this->item = $id;
 			$this->db = new db_mysql();
+			$r = $this->db->db_fetch_array($this->db->db_query("select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'"));
+			$this->homepagesurl = $GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$r['id'];
 			$req = "select * from articles where id_topic='$id' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);

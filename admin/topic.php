@@ -33,6 +33,9 @@ function listArticles($id, $userid)
 		var $addtohome;
 		var $siteid;
 		var $userid;
+		var $badmin;
+		var $homepages;
+		var $homepagesurl;
 
 		function temp($id, $userid)
 			{
@@ -42,6 +45,8 @@ function listArticles($id, $userid)
 			$this->homepage0 = babTranslate("Unregistered users home page");
 			$this->homepage1 = babTranslate("Registered users home page");
 			$this->deletea = babTranslate("Delete");
+			$this->homepages = babTranslate("Customize home pages");
+			$this->badmin = isUserAdministrator();
 
 			$this->userid = $userid;
 			$this->item = $id;
@@ -52,6 +57,7 @@ function listArticles($id, $userid)
 			$req="select * from sites where name='".addslashes($GLOBALS['babSiteName'])."'";
 			$r = $this->db->db_fetch_array($this->db->db_query($req));
 			$this->siteid = $r['id'];
+			$this->homepagesurl = $GLOBALS['babUrl']."index.php?tg=site&idx=modify&item=".$r['id'];
 			}
 
 		function getnext()
