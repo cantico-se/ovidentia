@@ -141,7 +141,8 @@ class listFiles
 					}
 				}
 			closedir($h);
-			sort ($this->arrdir);
+			natcasesort($this->arrdir);
+			$this->arrdir = array_values($this->arrdir);
 			reset ($this->arrdir);
 			foreach ( $this->arrdir as $f )
 				{
