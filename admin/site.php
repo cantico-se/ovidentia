@@ -1139,7 +1139,17 @@ function siteUpdate_bloc4($item)
 		$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_CONFIG_TBL."  where id_site='".$item."'");
 		foreach($_POST['nonworking'] as $value)
 			{
-			list($text,$nonworking) = explode('#',$value);
+			$tmp = explode('#',$value);
+			if (count($tmp) == 2)
+				{
+				$text = &$tmp[0];
+				$nonworking = &$tmp[1];
+				}
+			else
+				{
+				$text = '';
+				$nonworking = &$tmp[0];
+				}
 			$arr = explode(',',$nonworking);
 			$type = $arr[0];
 			$nw = isset($arr[1]) ? $arr[1] : '';
