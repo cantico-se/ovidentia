@@ -4470,6 +4470,21 @@ if ( $arr[0] != 'trigger_type' )
 		}
 	}
 
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `stat_log` ENUM('Y','N') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (19, 'Login / Registration')");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (20, 'User options'");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (21, 'Workflow approbations'");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (22, 'Ovidentia Editor'");
+$db->db_query("INSERT INTO ".BAB_STATS_IMODULES_TBL." VALUES (23, 'OvML'");
+
 return $ret;
 }
 

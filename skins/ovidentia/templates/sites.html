@@ -78,6 +78,16 @@ function validateNum(field)
             </td>
 </tr>
           <tr valign="middle"> 
+            <td class="BabLoginMenuBackground"  align="left" nowrap>{ 
+              stattxt }</td>
+            <td class="BabLoginMenuBackground" align="left"> 
+              <select name="statlog">
+                  <option value="Y" selected>{ yes }</option>
+                  <option value="N">{ no }</option>
+                </select>
+            </td>
+</tr>
+          <tr valign="middle"> 
             <td class="BabLoginMenuBackground" align="left" nowrap>{ 
               siteemail }</td>
             <td> 
@@ -399,6 +409,15 @@ function validateNum(field)
               <select name="register">
                   <option value="Y" { yregister }>{ yes }</option>
                   <option value="N" { nregister }>{ no }</option>
+                </select>
+            </td>
+</tr>
+          <tr> 
+            <td>{ stattxt }</td>
+            <td> 
+              <select name="statlog">
+                  <option value="Y" { ystatlog }>{ yes }</option>
+                  <option value="N" { nstatlog }>{ no }</option>
                 </select>
             </td>
 </tr>

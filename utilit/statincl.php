@@ -197,6 +197,12 @@ class bab_WebStatEvent
 	}
 }
 
+list($babStatOnOff) = $babDB->db_fetch_row($babDB->db_query("select stat_log from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+if( $babStatOnOff != 'Y' )
+	{
+	return;
+	}
+
 if( isset($tg) && $tg == "statinfo" )
 {
 	$res = $babDB->db_query("select evt_info from ".BAB_STATS_EVENTS_TBL." where id='".$statevt."'");
@@ -245,4 +251,6 @@ if( isset($tg) && $tg == "statinfo" )
 	}
   exit;
 }
+
+$babWebStat =& new bab_WebStatEvent();
 ?>

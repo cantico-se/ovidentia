@@ -127,6 +127,7 @@ function siteModify($id)
 			$this->delete = bab_translate("Delete");
 			$this->confirmation = bab_translate("Send email confirmation")."?";
 			$this->registration = bab_translate("Activate Registration")."?";
+			$this->stattxt = bab_translate("Enable statistics recording")."?";
 			$this->disabled = bab_translate("Disabled");
 			$this->mailfunction = bab_translate("Mail function");
 			$this->server = bab_translate("Smtp server");
@@ -219,6 +220,16 @@ function siteModify($id)
 					{
 					$this->yregister = "";
 					$this->nregister = "selected";
+					}
+				if( $arr['stat_log'] == "Y")
+					{
+					$this->nstatlog = "";
+					$this->ystatlog = "selected";
+					}
+				else
+					{
+					$this->ystatlog = "";
+					$this->nstatlog = "selected";
 					}
 				switch($arr['mailfunc'])
 					{
@@ -1002,7 +1013,7 @@ function editDisclaimerPrivacy($id, $content)
 	}
 
 
-function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter, $adminname)
+function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $statlog, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $langfilter, $adminname)
 	{
 	global $babBody;
 	if( empty($name))
@@ -1074,7 +1085,7 @@ function siteUpdate_bloc1($id, $name, $description, $lang, $style, $siteemail, $
 
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', adminname='".$adminname."', skin='".$skin."', style='".$style."', registration='".$register."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
+		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', adminname='".$adminname."', skin='".$skin."', style='".$style."', registration='".$register."', stat_log='".$statlog."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
 		$db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -1309,7 +1320,7 @@ switch ($_POST['modify'])
 	case 'bloc1':
 		if( !empty($Submit))
 			{
-			if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter), $adminname))
+			if(!siteUpdate_bloc1($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $statlog, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter), $adminname))
 				$idx = "modify";
 			}
 		else if( !empty($delete))

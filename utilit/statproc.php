@@ -145,66 +145,80 @@ class bab_stats_modules extends bab_stats_base
 		{
 		global $babDB, $babStatRefs;
 		bab_stat_debug("Modules process...<br>");	
-		switch($datas['tg'])
+
+		$tg = $datas['tg'];
+		if( empty($tg))
 			{
-			case 'articles': // articles
-			case 'topman':
-			case 'topusr':
+			$mcount = count($datas['info']['bab_module']);
+			if(  $mcount > 0 )
+				{
+				for( $i=0; $i < $mcount; $i++ )
+					{
+					if( !empty($datas['info']['bab_module'][$i]) )
+						{
+						$tg = $datas['info']['bab_module'][$i];
+						break;
+						}
+					}
+				}
+			}
+
+		switch($tg)
+			{
+			case "topman":
+			case "topusr":
+			case "articles":
 			case "artedit":
 			case "comments":
-			case "editorarticle":
-				$id = 2;
+				$id = 2; /* articles */
 				break;
-			case 'threads': // forums
-			case 'posts':
-				$id = 3;
+			case "threads":
+			case "posts":
+				$id = 3; /* Forums */
 				break;
-			case 'fileman': // Files manager
-			case 'filever':
-				$id = 4;
+			case "fileman":
+			case "filever":
+				$id = 4; /* Files Manager */
 				break;
-			case 'faq': // Faqs
-			case "editorfaq":
-				$id = 5;
+			case "faq":
+				$id = 5; /* Faqs */
 				break;
-			case 'calendar': // Calendar
+			case "calendar":
 			case "calmonth":
 			case "calweek":
 			case "calday":
 			case "event":
-				$id = 8;
+			case "month":
+				$id = 8; /* Calendar */
 				break;
-			case 'calview': // Summary page
-				$id = 9;
+			case "calview":
+				$id = 9; /* Summary page */
 				break;
-			case 'directory': // Directories
-				$id = 10;
+			case "directory":
+				$id = 10; /* Directories */
 				break;
-			case 'search': // Search
-				$id = 11;
+			case "search":
+				$id = 11; /* Search */
 				break;
-			case 'chart': // Charts
 			case "charts":
-			case 'flbchart':
-			case 'frchart':
-			case 'fltchart':
-				$id = 12;
+			case "chart":
+			case "frchart":
+			case "fltchart":
+			case "flbchart":
+				$id = 12; /* Charts */
 				break;
-			case 'notes': // Notes
+			case "notes":
 			case "note":
-				$id = 13;
+				$id = 13; /* Notes */
 				break;
-			case 'contacts': // Contacts
-			case 'contact':
-				$id = 14;
+			case "contacts":
+			case "contact":
+				$id = 14; /* Contacts */
 				break;
-			case 'admcals': // Administration
-			case 'admcal':
 			case "sections":
-			case "section":
-			case "register":
 			case "users":
 			case "user":
+			case "section":
 			case "groups":
 			case "group":
 			case "profiles":
@@ -215,7 +229,6 @@ class bab_stats_modules extends bab_stats_base
 			case "apprflow":
 			case "admfms":
 			case "admfm":
-			case "topman":
 			case "topics":
 			case "topic":
 			case "forums":
@@ -232,29 +245,76 @@ class bab_stats_modules extends bab_stats_base
 			case "admdir":
 			case "delegat":
 			case "admstats":
-			case "aclug":
 			case "delegusr":
 			case "maildoms":
 			case "maildom":
 			case "confcals":
 			case "confcal":
-				$id = 15;
+			case "statproc":
+			case "statconf":
+			case "stat":
+				$id = 15; /* Administration */
 				break;
-
+			case "vacuser":
+			case "vacchart":
 			case "vacadm":
 			case "vacadma":
 			case "vacadmb":
-				$id = 16;  // Vacation 
+				$id = 16;  /* Vacation */
 				break;
 			case "mail":
 			case "mailopt":
 			case "inbox":
 			case "address":
-				$id = 17;  // Mail 
+				$id = 17; /* Mail */
+				break;
+			case "register":
+			case "login":
+				$id = 19; /* Login/Logout and registration  */
+				break;
+			case "calopt":
+			case "sectopt":
+			case "options":
+				$id = 20; /* Options  */
+				break;
+			case "approb":
+				$id = 21; /* Workflow  */
+				break;
+			case "htmlarea":
+			case "editorovml":
+			case "editorcontdir":
+			case "selectcolor":
+			case "editorfaq":
+			case "editorarticle":
+				$id = 22; /* Editor  */
+				break;
+			case "oml":
+				$id = 23; /* OvML  */
 				break;
 
+			case "aclug":
+			case "lusers":
+			case "lsa":
+			case "images":
+			case "version":
+			case "imgget":
+			case "link":
+				echo $datas['url']."<br>";
+				$id = 1; /* others */
+				break;
+			case "accden":
+			case "entry":
+				if( empty($datas['iduser']) )
+					{
+					$id = 7; // public home page
+					}
+				else
+					{
+					$id = 6; // private home page
+					}
+				break;
 			default:
-				if( empty($datas['tg']) ) // home pages
+				if( empty($tg) ) // home pages
 				{
 					if( empty($datas['iduser']) )
 					{
@@ -267,7 +327,7 @@ class bab_stats_modules extends bab_stats_base
 				}
 				else  // others
 				{
-					$arr = explode("/", $datas['tg']);
+					$arr = explode("/", $tg);
 					if( sizeof($arr) >= 3 && $arr[0] == "addon")
 						{
 						$id = 18; // addons
@@ -275,6 +335,7 @@ class bab_stats_modules extends bab_stats_base
 					else
 						{
 						$id = 1;
+						echo $datas['url']."<br>";
 						}
 				}
 				break;
