@@ -102,6 +102,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $criteria;
 		var $reverse;
 		var $send;
+		var $cancel;
 		var $from;
 		var $to;
 		var $cc;
@@ -130,11 +131,17 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $urlto;
 		var $msie;
 		var $bhtml;
+		var $style;
+		var $sitename;
+		var $babUrl;
 
 
 		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
 			{
 			global $BAB_SESS_USERID,$BAB_SESS_USER,$BAB_SESS_EMAIL;
+			$this->style = $GLOBALS[babStyle];
+			$this->babUrl = $GLOBALS[babUrl];
+			$this->sitename = $GLOBALS[babSiteName];
 			$this->psigid = $psigid;
 			$this->toval = "";
 			if( !empty($pto))
@@ -175,6 +182,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			if( !empty($reverse))
 				$this->reverse = $reverse;
 			$this->send = babTranslate("Send");
+			$this->cancel = babTranslate("Cancel");
 			$this->from = babTranslate("From");
 			$this->to = babTranslate("To");
 			$this->cc = babTranslate("Cc");
@@ -262,7 +270,8 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		}
 	
 	$temp = new temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid);
-	$body->babecho(	babPrintTemplate($temp,"mail.html", "mailcompose"));
+	//$body->babecho(	babPrintTemplate($temp,"mail.html", "mailcompose"));
+	echo babPrintTemplate($temp,"mail.html", "mailcompose");
 	}
 
 function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid)
@@ -271,17 +280,17 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 	if( empty($to))
 		{
 		$body->msgerror = babTranslate("You must fill to field !!");
-		return;
+		return false;
 		}
 	if( empty($subject))
 		{
 		$body->msgerror = babTranslate("You must fill subject field !!");
-		return;
+		return false;
 		}
 	if( empty($message))
 		{
 		$body->msgerror = babTranslate("You must fill message field !!");
-		return;
+		return false;
 		}
 
 	$db = new db_mysql();
@@ -338,19 +347,20 @@ function createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_n
 				}
 			else
 				{
+				return true;
 				Header("Location: index.php?tg=inbox&idx=list&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 				}
 			}
 		else
 			{
 			$body->msgerror = babTranslate("Invalid mail domain !!");
-			return;
+			return false;
 			}
 		}
 	else
 		{
 		$body->msgerror = babTranslate("Invalid mail account !!");
-		return;
+		return false;
 		}
 	}
 
@@ -448,6 +458,31 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
     composeMail($accid, $criteria, $reverse, trim($toval), trim($ccval), "", $subjectval, array(), $format, $messageval, 0);
 	}
 
+function mailUnload()
+	{
+	class temp
+		{
+		var $style;
+		var $babUrl;
+		var $sitename;
+		var $message;
+		var $close;
+		var $url;
+
+		function temp()
+			{
+			$this->style = $GLOBALS[babStyle];
+			$this->babUrl = $GLOBALS[babUrl];
+			$this->sitename = $GLOBALS[babSiteName];
+			$this->message = babTranslate("Your message has been sent");
+			$this->close = babTranslate("Close");
+			}
+		}
+
+	$temp = new temp();
+	echo babPrintTemplate($temp,"mail.html", "mailunload");
+	}
+
 /* main */
 if(!isset($idx))
 	{
@@ -457,12 +492,17 @@ if(!isset($idx))
 
 if( isset($compose) && $compose == "message")
 	{
-	createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid);
-	$idx = "compose";
+	if(!createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid))
+		$idx = "compose";
+	else
+		$idx = "unload";
 	}
 
 switch($idx)
 	{
+	case "unload":
+		mailUnload();
+		break;
 	case "reply":
 	case "replyall":
 	case "forward":
@@ -480,6 +520,8 @@ switch($idx)
 	    composeMail($accid, $criteria, $reverse, $to, $cc, $bcc, $subject, /*$files_name*/array(), $format, $message, $sigid);
 		break;
 	}
+
+exit;
 $body->setCurrentItemMenu($idx);
 
 ?>

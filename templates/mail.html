@@ -1,26 +1,36 @@
 
 <!--#begin mailcompose -->
-<script language="JavaScript">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
 function Start(page)
 {
 	var dummy;
 	OpenWin = this.open(page, "", "width=650,height=500,status=no,resizable=yes,top=200,left=200, scrollbars=yes");
 }
-</script>
+
 <!--#if bhtml "== 1" -->
-<script language="JavaScript">
-<!--
 function mm()
 {
   document.forms.composef.compose.value = "";
   document.forms.composef.idx.value = "compose";
   document.forms.composef.submit.click();
 }
+<!--#endif bhtml -->
 //-->
 </script>
-<!--#endif bhtml -->
-
-
+</HEAD>
+<BODY class="BabBackground">
+<center>
 <form method="post" name="composef" action="index.php" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="mail">
 <input type="hidden" name="idx" value="compose">
@@ -140,7 +150,7 @@ function mm()
           <!--#if msie "== 1" -->
           <tr> 
             <td class="" colspan="2" align="center" nowrap valign="middle"> 
-              <input onClick=SetVals() type="submit" name="submit" value="{ send }">
+              <input onClick="SetVals();document.composef.submit();window.close()" type="submit" name="submit" value="{ send }">&nbsp;&nbsp;&nbsp;<input type="button" name="cancel" value="{ cancel }" onclick="window.close()">
             </td>
           </tr>
           <SCRIPT LANGUAGE="JavaScript">
@@ -150,7 +160,7 @@ function mm()
           <!--#else msie -->
           <tr> 
             <td class="" colspan="2" align="center" nowrap valign="middle"> 
-              <input type="submit" name="submit" value="{ send }">
+              <input type="submit" name="submit" value="{ send }" onclick="document.composef.submit();window.close()">&nbsp;&nbsp;&nbsp;<input type="button" name="cancel" value="{ cancel }" onclick="window.close()">
             </td>
           </tr>
           <!--#endif msie -->
@@ -159,6 +169,55 @@ function mm()
     </tr>
   </table>
 </form>
+</center>
+</BODY></HTML>
 
 <!--#end mailcompose -->
+
+<!--#begin mailunload -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>{ sitename }</TITLE>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META NAME="Generator" CONTENT="Bab">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<LINK rel="stylesheet" title="Default" href="{ babUrl }styles/{ style }" type="text/css">
+<script type="text/javascript">
+<!--
+//-->
+</script>
+</HEAD>
+<BODY class="BabBackground">
+<br><br><br><br>
+<center>
+  <table class="BabContactsCardCadreFontBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr> 
+      <td> 
+        <table class="BabContactsCardBodyFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr align="left" valign="middle"> 
+            <td class="BabContactsCardErrorsFontBackground" width="91%" colspan="2" align="center">{ 
+              message } </td>
+          </tr>
+          <tr align="left" valign="middle">
+            <td class="BabContactsCardErrorsFontBackground" width="91%" colspan="2" align="center"><a href="javascript:this.close()">{ 
+              close }</a> </td>
+          </tr>
+          <script src="templates/SaisieFormatee.js"></script>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <br>
+</center>
+<script type="text/javascript">
+	setTimeout("this.close()","1000");
+</script>
+
+</BODY>
+</HTML>
+
+<!--#end mailunload -->
 
