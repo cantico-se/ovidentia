@@ -132,11 +132,17 @@ function listQuestions($idcat)
 		var $res;
 		var $question;
 		var $questionurl;
+		var $faqname;
 
 		function temp($id)
 			{
 			$this->idcat = $id;
 			$this->db = $GLOBALS['babDB'];
+			$req = "select category name from ".BAB_FAQCAT_TBL." where id='$id'";
+			$this->res = $this->db->db_query($req);
+			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->faqname = $this->arr['name'];
+
 			$req = "select * from ".BAB_FAQQR_TBL." where idcat='$id' order by id asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
