@@ -241,54 +241,57 @@ class cal_weekCls extends cal_wmdbaseCls
 			{
 			$i = 0;
 			$this->bevent = false;
-			while( $i < count($this->harray[$this->cindex-1][$this->icols]))
+			if (isset($this->harray[$this->cindex-1][$this->icols]))
 				{
-				$arr = & $this->harray[$this->cindex-1][$this->icols][$i];
-				if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
+				while( $i < count($this->harray[$this->cindex-1][$this->icols]))
 					{
-					if( !isset($this->bfirstevents[$this->cindex-1][$arr['id']]) )
+					$arr = & $this->harray[$this->cindex-1][$this->icols][$i];
+					if( $arr['end_date'] > $this->startdt && $arr['start_date'] < $this->enddt )
 						{
-						$this->first=1;
-						$this->bfirstevents[$this->cindex-1][$arr['id']] = 1;
+						if( !isset($this->bfirstevents[$this->cindex-1][$arr['id']]) )
+							{
+							$this->first=1;
+							$this->bfirstevents[$this->cindex-1][$arr['id']] = 1;
+							}
+						else
+							{
+							$this->first=0;
+							}
+						$this->bevent = true;
+						$this->idcal = $arr['id_cal'];
+						$this->status = $arr['status'];
+						if( $arr['id_cat'] == 0 )
+							{
+							$this->bgcolor = $arr['color'];
+							}
+						else
+							{
+							$this->bgcolor = $this->mcals->getCategoryColor($arr['id_cat']);
+							}
+						$this->idevent = $arr['id'];
+						$time = bab_mktime($arr['start_date']);
+						$this->starttime = bab_time($time);
+						$this->startdate = bab_shortDate($time, false);
+						$time = bab_mktime($arr['end_date']);
+						$this->endtime = bab_time($time);
+						$this->enddate = bab_shortDate($time, false);
+						$this->id_cat = $arr['id_cat'];
+						$this->id_creator = $arr['id_creator'];
+						$this->hash = $arr['hash'];
+						$this->bprivate = $arr['bprivate'];
+						$this->block = $arr['block'];
+						$this->bfree = $arr['bfree'];
+						$this->description = $arr['description'];
+						$this->title = $arr['title'];
+						$this->titleten = htmlentities(substr($arr['title'], 0, 10));
+						$this->nbowners = $arr['nbowners'];
+						$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+						$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
+						$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
+						break;
 						}
-					else
-						{
-						$this->first=0;
-						}
-					$this->bevent = true;
-					$this->idcal = $arr['id_cal'];
-					$this->status = $arr['status'];
-					if( $arr['id_cat'] == 0 )
-						{
-						$this->bgcolor = $arr['color'];
-						}
-					else
-						{
-						$this->bgcolor = $this->mcals->getCategoryColor($arr['id_cat']);
-						}
-					$this->idevent = $arr['id'];
-					$time = bab_mktime($arr['start_date']);
-					$this->starttime = bab_time($time);
-					$this->startdate = bab_shortDate($time, false);
-					$time = bab_mktime($arr['end_date']);
-					$this->endtime = bab_time($time);
-					$this->enddate = bab_shortDate($time, false);
-					$this->id_cat = $arr['id_cat'];
-					$this->id_creator = $arr['id_creator'];
-					$this->hash = $arr['hash'];
-					$this->bprivate = $arr['bprivate'];
-					$this->block = $arr['block'];
-					$this->bfree = $arr['bfree'];
-					$this->description = $arr['description'];
-					$this->title = $arr['title'];
-					$this->titleten = htmlentities(substr($arr['title'], 0, 10));
-					$this->nbowners = $arr['nbowners'];
-					$this->attendeesurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-					$this->vieweventurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
-					$this->editurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
-					break;
+					$i++;
 					}
-				$i++;
 				}
 			$this->icols++;
 			return true;
