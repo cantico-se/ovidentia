@@ -181,7 +181,7 @@ function bab_OCGetSuperior($identity)
 {
 	global $babDB;
 	
-	$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '1'");
+	$res = $babDB->db_query("SELECT det.id_user.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role left join ".BAB_DB_DIRENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '1'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -219,7 +219,7 @@ function bab_OCGetSuperiors($idoc='')
 
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '1'");
+	$res = $babDB->db_query("SELECT det.id_user  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DB_DIRENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '1'");
 	if( $res && $babDB->db_num_rows($res) > 1 )
 	{
 		while($arr = $babDB->db_fetch_array($res))
@@ -235,7 +235,7 @@ function bab_OCGetTemporaryEmployee($identity)
 {
 	global $babDB;
 	
-	$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '2'");
+	$res = $babDB->db_query("SELECT det.id_user  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DB_DIRENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '2'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -273,7 +273,7 @@ function bab_OCGetTemporaryEmployees($idoc='')
 
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '2'");
+	$res = $babDB->db_query("SELECT det.id_user  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DB_DIRENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '2'");
 	if( $res && $babDB->db_num_rows($res) > 1 )
 	{
 		while($arr = $babDB->db_fetch_array($res))
@@ -291,7 +291,7 @@ function bab_OCGetCollaborators($identity)
 	
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_entity='".$identity."'  AND ocrt.type != '1' and ocrt.type != '2'");
+	$res = $babDB->db_query("SELECT det.id_user  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DB_DIRENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."' AND ocrt.type != '1' and ocrt.type != '2'");
 	if( $res && $babDB->db_num_rows($res) > 1 )
 	{
 		while( $arr = $babDB->db_fetch_array($res))
@@ -333,21 +333,22 @@ function bab_OCGetUserEntities($iduser, $idoc='')
 		}
 	}
 
-	$res = $babDB->db_query("SELECT ocrt.*  FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role  WHERE ocrut.id_user='".$iduser."' and ocrt.id_oc='".$idoc."'");
+	$res = $babDB->db_query("SELECT ocrt.name, ocet.name as entity_name  FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role  left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity WHERE ocrut.id_user='".$iduser."' and ocrt.id_oc='".$idoc."'");
 	if( $res && $babDB->db_num_rows($res) > 1 )
 	{
 		while( $arr = $babDB->db_fetch_array($res))
 			{
+			$rr = array( 'id'=> $arr['id_entity'], 'name' => $arr['entity_name'] );
 			switch($arr['type'])
 				{
 				case '1':
-					$ret['superior'][] = $arr['id_entity'];
+					$ret['superior'][] = $rr;
 					break;
 				case '2':
-					$ret['temporary'][] = $arr['id_entity'];
+					$ret['temporary'][] = $rr;
 					break;
 				default:
-					$ret['members'][] = $arr['id_entity'];
+					$ret['members'][] = $rr;
 					break;
 				}
 			}
