@@ -522,6 +522,5 @@ if( !empty($incl))
 $babBody->loadSections();
 printBody();
 unset($tg);
-echo $BAB_SESS_USERID ."  ". session_id();
 ?>
 
