@@ -57,6 +57,8 @@ function listMails($accid, $criteria, $reverse, $start)
 		var $checkall;
 		var $maxrows;
 		var $mailboxname;
+		var $bunseen;
+		var $access;
 
 		function temp($accid, $criteria, $reverse, $start)
 			{
@@ -146,6 +148,7 @@ function listMails($accid, $criteria, $reverse, $start)
 				if( $res2 && $this->db->db_num_rows($res2) > 0 )
 					{
 					$arr2 = $this->db->db_fetch_array($res2);
+					$this->access = $arr2['access'];
 					$cnxstring = "{".$arr2['inserver']."/".$arr2['access'].":".$arr2['inport']."}INBOX";
 					$this->mbox = @imap_open($cnxstring, $arr['account'], $arr['accpass']);
 					if(!$this->mbox)
@@ -216,7 +219,7 @@ function listMails($accid, $criteria, $reverse, $start)
 				$arr = imap_mime_header_decode($this->msgfromurlname);
 				$this->msgfromurlname = htmlentities($arr[0]->text);
 				$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
-				//$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
+
 				$arr = imap_mime_header_decode($headinfo->subject);
 				$this->msgsubjecturlname = htmlentities($arr[0]->text);
 				$this->msgsubjecturl = $this->msgfromurl;
@@ -225,16 +228,20 @@ function listMails($accid, $criteria, $reverse, $start)
 
 				$fh = imap_fetchheader($this->mbox, $this->msgid, FT_UID);
 
+				if( $this->access == "imap" && ($headinfo->Unseen == 'U' || $headinfo->Recent == 'N'))
+					$this->bunseen = true;
+				else
+					$this->bunseen = false;
 				$this->attachment = 0;
 				$this->priority = 0;
-				$reg = "/Content-Type:\s+([^;]*)/s";
+				$reg = "/Content-Type:\s+([^ ;\n\t]*)/s";
 				if( preg_match($reg, $fh, $m) && !empty($m[1]))
 					{
 					$reg = "/([^\/]*)\/(.*)/s";
 					if( preg_match($reg, $m[1], $m))
 						{
                         //echo "m1 = ". $m[1]."m2 = ". $m[2]."<br>";
-						if( strtolower($m[1]) != "text" && strtolower($m[2]) != "alternative")
+						if( !empty($m[2]) && strtolower($m[1]) != "text" && strtolower($m[2]) != "alternative")
 							{
 							$this->attachment = 1;
 							}
@@ -427,7 +434,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->attachmenturl = $GLOBALS['babUrlScript']."?tg=inbox&idx=attach&accid=".$this->accid."&msg=".$this->msg."&part=".$this->attachment[$i]['part_number']."&mime=".strtolower($this->attachment[$i]['mime_type']."&enc=".$this->attachment[$i]['encoding']."&file=".$this->attachment[$i]['filename']);
+				$this->attachmenturl = $GLOBALS['babUrlScript']."?tg=inbox&idx=attach&accid=".$this->accid."&msg=".$this->msg."&part=".$this->attachment[$i]['part_number']."&mime=".strtolower($this->attachment[$i]['mime_type']."&enc=".$this->attachment[$i]['encoding']."&file=".urlencode (htmlentities ($this->attachment[$i]['filename'])));
 				$this->attachmentval = $this->attachment[$i]['filename'];
 				$i++;
 				return true;
@@ -567,7 +574,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 							$part_number = "1";
 						*/
 						$this->attachment[] = array( "part_number" => urlencode (htmlentities ($part_number))
-													,"filename" => urlencode (htmlentities ($filename))
+													,"filename" => $filename
 													,"encoding" => urlencode (htmlentities ($structure->encoding))
 													,"mime_type" => urlencode (htmlentities (bab_getMimeType($structure->type, $structure->subtype))));
 						}
