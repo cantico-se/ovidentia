@@ -74,7 +74,7 @@ function browseUsers($pos, $cb)
 			else
 				$reqa = "select * from ".BAB_USERS_TBL." where is_confirmed ='1' and disabled='0'";
 
-			if( $pos[0] == "-" )
+			if( strlen($pos) > 0 && $pos[0] == "-" )
 				{
 				$this->pos = $pos[1];
 				$this->ord = $pos[0];
@@ -164,6 +164,8 @@ function browseUsers($pos, $cb)
 switch($idx)
 	{	
 	case "brow":
+		if( !isset($pos)) { $pos = '';}
+		if( !isset($cb)) { $cb = '';}
 		browseUsers($pos, $cb);
 		exit;
 		break;
