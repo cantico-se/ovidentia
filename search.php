@@ -1659,7 +1659,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 	$babBody->babecho(	bab_printTemplate($temp,"search.html", "searchresult"));
 	}
 
-function viewArticle($article)
+function viewArticle($article,$w)
 	{
 	global $babBody;
 
@@ -1680,7 +1680,7 @@ function viewArticle($article)
 		var $altbg = false;
 
 
-		function temp($article)
+		function temp($article,$w)
 			{
 			$this->close = bab_translate("Close");
 			$this->attachmentxt = bab_translate("Associated documents");
@@ -1691,11 +1691,12 @@ function viewArticle($article)
 			$this->arr = $this->db->db_fetch_array($this->res);
 			$this->countf = 0;
 			$this->countcom = 0;
+			$this->w = $w;
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
 				$GLOBALS['babWebStat']->addArticle($this->arr['id']);
-				$this->content = bab_replace($this->arr['body']);
-				$this->head = bab_replace($this->arr['head']);
+				$this->content = highlightWord($w,bab_replace($this->arr['body']));
+				$this->head = highlightWord($w,bab_replace($this->arr['head']));
 
 				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
 				$this->countf = $this->db->db_num_rows($this->resf);
@@ -1746,9 +1747,9 @@ function viewArticle($article)
 				$arr = $this->db->db_fetch_array($this->rescom);
 				$this->altbg = !$this->altbg;
 				$this->commentdate = bab_strftime(bab_mktime($arr['date']));
-				$this->authorname = $arr['name'];
-				$this->commenttitle = $arr['subject'];
-				$this->commentbody = bab_replace($arr['message']);
+				$this->authorname = highlightWord($this->w,$arr['name']);
+				$this->commenttitle = highlightWord($this->w,$arr['subject']);
+				$this->commentbody = highlightWord($this->w,bab_replace($arr['message']));
 				$i++;
 				return true;
 				}
@@ -1761,7 +1762,7 @@ function viewArticle($article)
 			}
 		}
 	
-	$temp = new temp($article);
+	$temp = new temp($article,$w);
 	echo bab_printTemplate($temp,"search.html", "viewart");
 	}
 

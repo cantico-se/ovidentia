@@ -26,13 +26,13 @@ include_once "base.php";
 
 function bab_highlightWord( $w, $text)
 {
-	$arr = explode(" ",urldecode($w));
+	$arr = explode(" ",trim(urldecode($w)));
 	foreach($arr as $mot)
 		{
 		$mot_he = htmlentities($mot);
-		$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+		$text = preg_replace("/".$mot."/i", "<span class=\"Babhighlight\">".$mot."</span>", $text);
 		if ($mot != $mot_he)
-			$text = preg_replace("/(\s*>[^<]*|\s+)(".$mot_he.")(\s+|[^>]*<\s*)/si", "\\1<span class=\"Babhighlight\">\\2</span>\\3", $text);
+			$text = preg_replace("/".$mot_he."/i", "<span class=\"Babhighlight\">".$mot_he."</span>", $text);
 		}
 	return $text;
 }
