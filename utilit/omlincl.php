@@ -3131,47 +3131,10 @@ class bab_CalendarCategories extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$filter = $ctx->get_value('filter');
-		if (strtoupper($filter) == "NO") 
-			{
-			$filter = false;
-			}
-		else
-			{
-			$filter = true;
-			}
+		$req = "select * from ".BAB_CATEGORIESCAL_TBL." order by name asc";
 
-		$req = '';
-		if( $filter )
-		{
-			$arrgrp = array();
-			for( $i = 0; $i < count($babBody->calendarids); $i++ )
-				{
-				if($babBody->calendarids[$i]['type'] == 2 )
-					{
-					$arrgrp[] = $babBody->calendarids[$i]['owner'];
-					}
-				}
-
-			if( count($arrgrp) > 0 )
-				{
-				$req = "select * from ".BAB_CATEGORIESCAL_TBL." where id_group IN (".implode(',', $arrgrp).") order by name asc";
-				}
-		}
-		else
-		{
-			$req = "select * from ".BAB_CATEGORIESCAL_TBL." order by name asc";
-		}
-
-		if( !empty($req) )
-			{
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
-			}
-		else
-			{
-				$this->count = 0;
-			}
+		$this->res = $babDB->db_query($req);
+		$this->count = $babDB->db_num_rows($this->res);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -3305,7 +3268,7 @@ class bab_CalendarUserEvents extends bab_handler
 
 		//$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		
-		$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
@@ -3344,7 +3307,8 @@ class bab_CalendarUserEvents extends bab_handler
 				}
 			
 			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], BAB_CAL_USER_TYPE));
-			$date = explode('-', explode(' ', $arr['start_date']));
+			$date = explode(' ', $arr['start_date']);
+			$date = explode('-', $date[0]);
 			$this->ctx->curctx->push('EventUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
 			$this->ctx->curctx->push('EventCalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$arr['id_cal']."&date=".$date[0].",".$date[1].",".$date[2]);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$arr['id_cal']);
@@ -3468,7 +3432,7 @@ class bab_CalendarGroupEvents extends bab_handler
 
 		//$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 
-		$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
@@ -3507,7 +3471,8 @@ class bab_CalendarGroupEvents extends bab_handler
 				$this->ctx->curctx->push('EventCategoryColor', $arr['bgcolor']);
 				}
 			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], BAB_CAL_PUB_TYPE));
-			$date = explode('-', $arr['start_date']);
+			$date = explode(' ', $arr['start_date']);
+			$date = explode('-', $date[0]);
 			$this->ctx->curctx->push('EventUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
 			$this->ctx->curctx->push('EventCalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$arr['id_cal']."&date=".$date[0].",".$date[1].",".$date[2]);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$arr['id_cal']);
@@ -3632,7 +3597,7 @@ class bab_CalendarResourceEvents extends bab_handler
 			}
 
 		//$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
-		$req = "select cet.*, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		$req = "select cet.*, ceot.id_cal, rct.name, rct.bgcolor from ".BAB_CAL_EVENTS_OWNERS_TBL." ceot left join ".BAB_CAL_EVENTS_TBL." cet on ceot.id_event=cet.id left join ".BAB_CAL_CATEGORIES_TBL." rct on rct.id=cet.id_cat where ceot.id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
 		if( !empty($categoryid))
 			{
 			$req .= " and cet.id_cat IN (".$categoryid.")";
@@ -3671,7 +3636,8 @@ class bab_CalendarResourceEvents extends bab_handler
 				$this->ctx->curctx->push('EventCategoryColor', $arr['bgcolor']);
 				}
 			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], BAB_CAL_RES_TYPE));
-			$date = explode('-', $arr['start_date']);
+			$date = explode(' ', $arr['start_date']);
+			$date = explode('-', $date[0]);
 			$this->ctx->curctx->push('EventUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
 			$this->ctx->curctx->push('EventCalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$arr['id_cal']."&date=".$date[0].",".$date[1].",".$date[2]);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl', $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc&calid=".$arr['id_cal']);

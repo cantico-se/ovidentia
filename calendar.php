@@ -208,6 +208,47 @@ function displayEventDetail($evtid, $idcal)
 	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "eventdetail"));
 }
 
+function categoriesList()
+{
+	global $babBodyPopup;
+	class categoriesListCls
+		{
+
+		function categoriesListCls()
+			{
+			global $babBodyPopup, $babBody, $babDB;
+			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL."");
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+
+		function getnextcat()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $babDB->db_fetch_array($this->res);
+				if (trim($arr['description']) == '') 
+					{
+					$arr['description'] = $arr['name'];
+					}
+				$this->catdesc = $arr['description'];
+				$this->bgcolor = $arr['bgcolor'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+
+			}
+		}
+
+	$temp = new categoriesListCls();
+	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "categorieslist"));
+}
 
 function confirmWaitingEvent($evtid, $idcal)
 {
@@ -304,6 +345,14 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		$popupmessage = bab_translate("Your event has been updated");
 		popupUnload($popupmessage, '');
+		exit;
+		break;
+	case "viewc":
+		include_once $babInstallPath."utilit/uiutil.php";
+		$babBodyPopup = new babBodyPopup();
+		$babBodyPopup->title = bab_translate("Categories");
+		categoriesList();
+		printBabBodyPopup();
 		exit;
 		break;
 	case "confvent":

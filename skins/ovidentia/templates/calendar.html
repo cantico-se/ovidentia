@@ -333,3 +333,36 @@ movecalendar(0);
 </table>
 </form>
 <!--#end confirmevent -->
+
+<!--#begin categorieslist -->
+<BR>
+<table  width="0" cellpadding="5" cellspacing="0" align="left">
+<tr>
+<td > 
+<table cellpadding="2" cellspacing="2">        
+<tr>
+<td>
+&nbsp;
+</td>
+<td class="BabDayCalendarTitleFont">
+{ description } 
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td><td>
+&nbsp;
+</td>
+</tr>
+<!--#in getnextcat -->
+<tr> 
+<td bgcolor="#{ bgcolor }" width="10">&nbsp;</td>
+<td>&nbsp;{ catdesc }</td>
+</tr>
+<!--#endin getnextcat -->
+</table>
+</td>
+</tr>
+</table>
+<!--#end categorieslist -->
