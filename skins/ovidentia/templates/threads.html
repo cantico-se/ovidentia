@@ -59,7 +59,7 @@
     <!--#if disabled "== 1" -->
     <table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ subjectname }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
     <!--#else disabled -->  
-    <table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ subjectname }" border="0" align="absmiddle"></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
+    <table border="0" cellspacing="0" cellpadding="0" align="left"><tr><td align="center" width="1%" nowrap><a class="BabContentLinkColor" href="{ subjecturl }"><!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><!--#else brecent --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ subjectname }" border="0" align="absmiddle"><!--#endif brecent --></a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"></td>
     <!--#endif disabled --> 
            <!--#if disabled "== 1" -->
            <td align="left">{ subjectname }</td></tr></table>
@@ -104,7 +104,7 @@
 <!--#endif replymail -->
 </td>
 <td class="BabForumBackground" align="center" width="1%">{ arrthread[views] }</td>
-          <td class="BabForumBackground" align="center" nowrap width="1%"><!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0"><!--#endif brecent -->{ lastpostdate }</td>
+          <td class="BabForumBackground" align="center" nowrap width="1%">{ lastpostdate }</td>
 </tr>
 
 <!--#endin getnext -->
