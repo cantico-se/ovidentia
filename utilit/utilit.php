@@ -1804,7 +1804,7 @@ function bab_updateSiteSettings()
 	// options bloc2
 	if( $arr['total_diskspace'] != "")
 		{
-		$GLOBALS['babMaxTotalSize'] = $arr['total_diskspace'];
+		$GLOBALS['babMaxTotalSize'] = $arr['total_diskspace']*1048576;
 		}
 	else
 		$GLOBALS['babMaxTotalSize'] = "200000000";
@@ -1828,7 +1828,7 @@ function bab_updateSiteSettings()
 		$GLOBALS['babMaxFileSize'] = "30000000";
 	if( $arr['uploadpath'] != "")
 		{
-		$GLOBALS['babUploadPath'] = $arr['uploadpath']*1048576;
+		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
 		}
 	else
 		$GLOBALS['babUploadPath'] = "";
