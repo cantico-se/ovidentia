@@ -225,6 +225,15 @@ function addAdDb($adname, $description)
 	global $babBody;
 	class temp
 		{
+		var $vname;
+		var $vdescription;
+		var $name;
+		var $description;
+		var $multilignes;
+		var $db;
+		var $res;
+		var $fieldn;
+		var $fieldid;
 		var $field;
 		var $defaultvalue;
 		var $rw;
@@ -232,6 +241,8 @@ function addAdDb($adname, $description)
 		var $add;
 		var $count;
 		var $arr = array();
+		var $reqchecked;
+		var $mlchecked;
 
 		function temp($adname, $description)
 			{
@@ -293,6 +304,12 @@ function modifyDb($id)
 		var $arr = array();
 		var $bdel;
 		var $bfields;
+		var $allowuserupdate;
+		var $no;
+		var $yes;
+		var $noselected;
+		var $yesselected;
+		var $ballowuserupdate;
 
 		function temp($id)
 			{
@@ -306,8 +323,12 @@ function modifyDb($id)
 			$this->multilignes = bab_translate("Multilignes");
 			$this->add = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
+			$this->no = bab_translate("No");
+			$this->yes = bab_translate("Yes");
+			$this->allowuserupdate = bab_translate("Allow user update personnal information");
 			$this->bdel = true;
 			$this->bfields = true;
+			$this->ballowuserupdate = false;
 			$this->db = $GLOBALS['babDB'];
 			$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			$this->vname = $arr['name'];
@@ -316,8 +337,19 @@ function modifyDb($id)
 				{
 				$iddir = 0;
 				$this->bdel = false;
+				$this->ballowuserupdate = true;
 				if( $arr['id_group'] != 1 )
 					$this->bfields = false;
+				if( $arr['user_update'] == 'Y')
+					{
+					$this->noselected = "";
+					$this->yesselected = "selected";
+					}
+				else
+					{
+					$this->noselected = "selected";
+					$this->yesselected = "";
+					}
 				}
 			else
 				{
@@ -625,7 +657,7 @@ function modifyAdLdap($id, $name, $description, $host, $basedn, $userdn, $passwo
 	return true;
 	}
 
-function modifyAdDb($id, $name, $description, $fields, $rw, $rq, $ml)
+function modifyAdDb($id, $name, $description, $fields, $rw, $rq, $ml, $allowuu)
 	{
 	global $babBody;
 
@@ -652,10 +684,15 @@ function modifyAdDb($id, $name, $description, $fields, $rw, $rq, $ml)
 		{
 		$arr = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 		if( $arr['id_group'] != 0)
+			{
 			$iddir = 0;
+			}
 		else
+			{
 			$iddir = $id;
-		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$name."', description='".$description."' where id='".$id."'";
+			$allowuu = "N";
+			}
+		$req = "update ".BAB_DB_DIRECTORIES_TBL." set name='".$name."', description='".$description."', user_update='".$allowuu."' where id='".$id."'";
 		$db->db_query($req);
 		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
 		while( $arr = $db->db_fetch_array($res))
@@ -748,7 +785,7 @@ if( isset($modify))
 				break;
 
 			case "db":
-				if( !modifyAdDb($id, $adname, $description, $fields, $rw, $req, $ml))
+				if( !modifyAdDb($id, $adname, $description, $fields, $rw, $req, $ml, $allowuu))
 				{
 				$idx = "mdb";
 				}

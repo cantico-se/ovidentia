@@ -98,14 +98,58 @@ function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)
 			}
 		}
 
-	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_USERS_TBL." where id='$BAB_SESS_USERID'";
-	$res = $db->db_query($req);
-	$arr = $db->db_fetch_array($res);
-
 	$temp = new temp($firstname, $middlename, $lastname, $nickname, $email);
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changeuserinfo"));
 	}
+
+function changeNickname($nickname)
+	{
+	global $babBody,$BAB_SESS_USERID;
+	class temp
+		{
+		var $nickname;
+		var $nicknameval;
+		var $password;
+		var $update;
+		var $bupdateuserinfo;
+		var $updateuserinfo;
+		var $urldbmod;
+
+		function temp($nickname)
+			{
+			global $babDB;
+
+			$this->bupdateuserinfo = false;
+
+			list($id, $allowuu) = $babDB->db_fetch_array($babDB->db_query("select id, user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+			if( $allowuu == "N")
+				{
+				$res = $babDB->db_query("select dbd.id from ".BAB_DB_DIRECTORIES_TBL." dbd join ".BAB_USERS_GROUPS_TBL." ug where ug.id_object='".$GLOBALS['BAB_SESS_USERID']."' and ug.id_group=dbd.id_group and dbd.user_update='Y'");
+				if( $res && $babDB->db_num_rows($res) > 0 )
+					$allowuu = "Y";
+				}
+
+			if( $allowuu == "Y")
+				{
+				list($idu) = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$GLOBALS['BAB_SESS_USERID']."'"));
+				$this->bupdateuserinfo = true;
+				$this->urldbmod = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&idu=".$idu."&refresh=1";
+				$this->updateuserinfo = bab_translate("Update personnal informations");
+				}
+
+
+			$this->nicknameval = $nickname != ""? $nickname: "";
+			$this->nickname = bab_translate("Nickname");
+			$this->password = bab_translate("Password");
+			$this->update = bab_translate("Update nickname");
+			}
+		}
+
+	$temp = new temp($nickname);
+	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changenickname"));
+	}
+
+
 
 function changeLanguage()
 	{
@@ -544,6 +588,54 @@ function updateUserInfo($password, $firstname, $middlename, $lastname, $nickname
 	}
 
 
+function updateNickname($password, $nickname)
+	{
+	global $babBody, $BAB_HASH_VAR, $BAB_SESS_NICKNAME, $BAB_SESS_USERID, $BAB_SESS_USER, $BAB_SESS_EMAIL;
+
+	if( empty($GLOBALS['BAB_SESS_USERID']))
+		return false;
+
+	$password = strtolower($password);
+	$req = "select id from ".BAB_USERS_TBL." where nickname='".$BAB_SESS_NICKNAME."' and password='". md5($password) ."'";
+	$db = $GLOBALS['babDB'];
+	$res = $db->db_query($req);
+	if (!$res || $db->db_num_rows($res) < 1)
+		{
+		$babBody->msgerror = bab_translate("Password incorrect");
+		return false;
+		}
+	else
+		{
+		$arr = $db->db_fetch_array($res);
+		if( empty($nickname))
+			{
+			$babBody->msgerror = bab_translate( "You must complete all fields !!");
+			return false;
+			}
+
+	
+		if( $BAB_SESS_NICKNAME != $nickname )
+			{
+			$req = "select id from ".BAB_USERS_TBL." where nickname='".$nickname."'";	
+			$res = $db->db_query($req);
+			if( $db->db_num_rows($res) > 0)
+				{
+				$babBody->msgerror = bab_translate("This nickname already exists !!");
+				return false;
+				}
+			}
+
+		$hash=md5($nickname.$BAB_HASH_VAR);
+		$req = "update ".BAB_USERS_TBL." set nickname='".$nickname."' where id='".$BAB_SESS_USERID."'";
+		$res = $db->db_query($req);
+
+		$BAB_SESS_NICKNAME = $nickname;
+		return true;
+		}
+	}
+
+
+
 /* main */
 if(!isset($idx))
 	{
@@ -569,6 +661,12 @@ if( isset($update))
             break;
         case "skin":
         	updateSkin($skin, $style);
+            break;
+        case "nickname":
+        	if(updateNickname($password, $nickname))
+				{
+				unset($nickname);
+				}
             break;
         case "userinfo":
         	if(updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email))
@@ -631,9 +729,9 @@ switch($idx)
 
 	default:
 	case "global":
-		//$babBody->title = bab_translate("");
+		$babBody->title = bab_translate("Options");
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
-		changeUserInfo($firstname, $middlename, $lastname, $nickname, $email);
+		changeNickname($nickname);
 		changePassword();
 		changeSkin($skin);
 		changeLanguage();

@@ -506,29 +506,14 @@ function summaryDbContact($id, $idu)
 
 		function temp($id, $idu)
 			{
-			$this->del = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
-			$this->modify = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
-			if( $this->modify )
-				{
-				$this->modifytxt = bab_translate("Modify");
-				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&idu=".$idu;
-				}
-
-			if( $this->del )
-				{
-				$this->deltxt = bab_translate("Delete");
-				$this->delurl = $GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu;
-				}
-
 			$this->db = $GLOBALS['babDB'];
+			list($idgroup, $allowuu) = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+
 			$this->res = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
 			if( $this->res && $this->db->db_num_rows($this->res) > 0)
 				$this->count = $this->db->db_num_rows($this->res);
 			else
 				$this->count = 0;
-			list($idgroup) = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
-			if( $idgroup != 0 )
-				$this->del = false;
 			$res = $this->db->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup != 0? 0: $id)."' and id='".$idu."'");
 			$this->showph = false;
 			if( $res && $this->db->db_num_rows($res) > 0)
@@ -539,6 +524,32 @@ function summaryDbContact($id, $idu)
 					$this->showph = true;
 
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu;
+
+				if( $idgroup != 0 )
+					$this->del = false;
+				else
+					{
+					$allowuu = "N";
+					$this->del = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+					}
+
+				$this->modify = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
+
+				if( $this->modify == false && $allowuu == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
+					$this->modify = true;
+
+				if( $this->modify )
+					{
+					$this->modifytxt = bab_translate("Modify");
+					$this->modifyurl = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&idu=".$idu;
+					}
+
+				if( $this->del )
+					{
+					$this->deltxt = bab_translate("Delete");
+					$this->delurl = $GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$id."&idu=".$idu;
+					}
+
 				}
 			else
 				{
@@ -572,14 +583,15 @@ function summaryDbContact($id, $idu)
 	echo bab_printTemplate($temp, "directory.html", "summarydbcontact");
 }
 
-function modifyDbContact($id, $idu, $fields)
+function modifyDbContact($id, $idu, $fields, $refresh)
 {
 	global $babBody;
 
 	class temp
 		{
+		var $refresh;
 
-		function temp($id, $idu, $fields)
+		function temp($id, $idu, $fields, $refresh)
 			{
 			global $babBody;
 			$this->helpfields = bab_translate("Those fields must be filled");
@@ -592,6 +604,7 @@ function modifyDbContact($id, $idu, $fields)
 			$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
 			$this->bupd = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
 			$this->buserinfo = false;
+			$this->refresh = $refresh;
 
 			if( !empty($babBody->msgerror))
 				{
@@ -605,7 +618,7 @@ function modifyDbContact($id, $idu, $fields)
 			else
 				$this->count = 0;
 			
-			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+			$arr = $this->db->db_fetch_array($this->db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 			$this->idgroup = $arr['id_group'];
 
 			$this->showph = false;
@@ -619,6 +632,10 @@ function modifyDbContact($id, $idu, $fields)
 					$this->showph = true;
 					$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->id."&idu=".$idu;
 					}
+
+				if( $this->bupd == false && $arr['user_update'] == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
+					$this->bupd = true;
+
 				}
 			else
 				{
@@ -682,7 +699,7 @@ function modifyDbContact($id, $idu, $fields)
 
 		}
 
-	$temp = new temp($id, $idu, $fields);
+	$temp = new temp($id, $idu, $fields, $refresh);
 	echo bab_printTemplate($temp, "directory.html", "modifycontact");
 }
 
@@ -692,6 +709,38 @@ function addDbContact($id, $fields)
 
 	class temp
 		{
+		var $helpfields;
+		var $file;
+		var $update;
+		var $id;
+		var $idu;
+		var $fields;
+		var $what;
+		var $modify;
+		var $showph;
+		var $msgerror;
+		var $error;
+		var $db;
+		var $res;
+		var $count;
+		var $name;
+		var $urlimg;
+		var $idgroup;
+		var $buserinfo;
+		var $nickname;
+		var $password;
+		var $repassword;
+		var $notifyuser;
+		var $sendpassword;
+		var $yes;
+		var $no;
+		var $fieldn;
+		var $fieldv;
+		var $fvalue;
+		var $fieldt;
+		var $required;
+		var $refresh;
+
 		function temp($id, $fields)
 			{
 			global $babBody;
@@ -704,6 +753,7 @@ function addDbContact($id, $fields)
 			$this->what = "dbac";
 			$this->modify = true;
 			$this->showph = false;
+			$this->refresh = '';
 
 			if( !empty($babBody->msgerror))
 				{
@@ -992,21 +1042,26 @@ function emptyDb($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function contactDbUnload($msg)
+function contactDbUnload($msg, $refresh)
 	{
 	class temp
 		{
 		var $message;
 		var $close;
+		var $refresh;
 
-		function temp($msg)
+		function temp($msg, $refresh)
 			{
+			if( empty($refresh))
+				$this->refresh = true;
+			else
+				$this->refresh = false;
 			$this->message = $msg;
 			$this->close = bab_translate("Close");
 			}
 		}
 
-	$temp = new temp($msg);
+	$temp = new temp($msg, $refresh);
 	echo bab_printTemplate($temp,"directory.html", "dbcontactunload");
 	}
 
@@ -1240,72 +1295,77 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file)
 	{
 	global $babBody;
 	$db = $GLOBALS['babDB'];
-	list($idgroup) = $db->db_fetch_array($db->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
 
-	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
-	$req = "";
-	while( $arr = $db->db_fetch_array($res))
+	list($idgroup, $allowuu) = $db->db_fetch_array($db->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$id."'"));
+
+	list($iduser) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
+
+	if(bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id) || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID']))
 		{
-		if( isset($fields[$arr['name']]))
+		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where name !='jpegphoto'");
+		$req = "";
+		while( $arr = $db->db_fetch_array($res))
 			{
-			$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
-			if( $rr['required'] == "Y" && empty($fields[$arr['name']]))
+			if( isset($fields[$arr['name']]))
 				{
-				$babBody->msgerror = bab_translate("You must complete required fields");
-				return false;
+				$rr = $db->db_fetch_array($db->db_query("select required from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $id)."' and id_field='".$arr['id']."'"));
+				if( $rr['required'] == "Y" && empty($fields[$arr['name']]))
+					{
+					$babBody->msgerror = bab_translate("You must complete required fields");
+					return false;
+					}
+				$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
 				}
-			$req .= $arr['name']."='".addslashes($fields[$arr['name']])."',";
 			}
-		}
 
-	if( empty($fields['sn']) || empty($fields['givenname']))
-		{
-		$babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
-		return false;
-		}
-
-	if ( !empty($fields['email']) && !bab_isEmailValid($fields['email']))
-		{
-		$babBody->msgerror = bab_translate("Your email is not valid !!");
-		return false;
-		}
-
-	if( $idgroup > 0)
-		{
-		list($iduser) = $db->db_fetch_array($db->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$idu."'"));
-
-		$replace = array( " " => "", "-" => "");
-
-		$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
-		$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$iduser."'";	
-		$res = $db->db_query($query);
-		if( $db->db_num_rows($res) > 0)
+		if( empty($fields['sn']) || empty($fields['givenname']))
 			{
-			$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
+			$babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
 			return false;
 			}
 
-		$db->db_query("update ".BAB_USERS_TBL." set firstname='".addslashes($fields['givenname'])."', lastname='".addslashes($fields['sn'])."', email='".addslashes($fields['email'])."', hashname='".$hashname."' where id='".$iduser."'");
-		}
-	if( !empty($file) && $file != "none")
-		{
-		$fp=fopen($tmp_file,"rb");
-		if( $fp )
+		if ( !empty($fields['email']) && !bab_isEmailValid($fields['email']))
 			{
-			$cphoto = addslashes(fread($fp,filesize($tmp_file)));
-			fclose($fp);
+			$babBody->msgerror = bab_translate("Your email is not valid !!");
+			return false;
 			}
-		}
-	if( !empty($cphoto))
-		$req .= " photo_data='".$cphoto."'";
-	else
-		$req = substr($req, 0, strlen($req) -1);
 
-	if( !empty($req))
-		{
-		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-		$req .= " where id='".$idu."'";
-		$db->db_query($req);
+		if( $idgroup > 0)
+			{
+
+			$replace = array( " " => "", "-" => "");
+
+			$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
+			$query = "select * from ".BAB_USERS_TBL." where hashname='".$hashname."' and id!='".$iduser."'";	
+			$res = $db->db_query($query);
+			if( $db->db_num_rows($res) > 0)
+				{
+				$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
+				return false;
+				}
+
+			$db->db_query("update ".BAB_USERS_TBL." set firstname='".addslashes($fields['givenname'])."', lastname='".addslashes($fields['sn'])."', email='".addslashes($fields['email'])."', hashname='".$hashname."' where id='".$iduser."'");
+			}
+		if( !empty($file) && $file != "none")
+			{
+			$fp=fopen($tmp_file,"rb");
+			if( $fp )
+				{
+				$cphoto = addslashes(fread($fp,filesize($tmp_file)));
+				fclose($fp);
+				}
+			}
+		if( !empty($cphoto))
+			$req .= " photo_data='".$cphoto."'";
+		else
+			$req = substr($req, 0, strlen($req) -1);
+
+		if( !empty($req))
+			{
+			$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
+			$req .= " where id='".$idu."'";
+			$db->db_query($req);
+			}
 		}
 	return true;
 	}
@@ -1395,7 +1455,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 		{
 		if( $idgroup > 0 )
 			{
-			$req .= " photo_data='".$cphoto."'";
+			$req .= " photo_data='".$cphoto."',";
 			}
 		else
 			$req .= "photo_data,";
@@ -1536,7 +1596,7 @@ if( isset($action) && $action == "Yes")
 
 if( isset($modify))
 	{
-		if( $modify == "dbc" && bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id))
+		if( $modify == "dbc" )
 			{
 			$idx = "dbmod";
 			if(updateDbContact($id, $idu, $fields, $photof_name,$photof))
@@ -1572,12 +1632,12 @@ switch($idx)
 		deleteDbContact($id, $idu);
 		/* no break */
 	case "dbcunload":
-		contactDbUnload($msg);
+		contactDbUnload($msg, $refresh);
 		exit();
 		break;
 
 	case "dbmod":
-		modifyDbContact($id, $idu, $fields);
+		modifyDbContact($id, $idu, $fields, $refresh);
 		exit;
 		break;
 	case "getimg":

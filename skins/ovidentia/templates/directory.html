@@ -469,6 +469,7 @@ xxxhier <br>
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
 <input type="hidden" name="idu" value="{ idu }">
+<input type="hidden" name="refresh" value="{ refresh }">
 <input type="hidden" name="modify" value="{ what }">
 <!--#if modify -->
 <center><b>{ file }:</b>&nbsp;&nbsp;<input type="file" name="photof" size="40" maxlength="255" value=""></center>
@@ -545,7 +546,7 @@ xxxhier <br>
 </script>
 
 </HEAD>
-<BODY onUnload="this.opener.location.reload()">
+<BODY <!--#if refresh --> onUnload="this.opener.location.reload()" <!--#endif refresh -->>
 <br><br><br><br>
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 

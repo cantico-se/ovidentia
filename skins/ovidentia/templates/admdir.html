@@ -267,6 +267,17 @@
 <input type="text" name="description" size="45" value="{ vdescription }">
 </td>
 </tr>
+<!--#if ballowuserupdate -->
+<tr> 
+<td align="right" nowrap valign="middle">{ allowuserupdate }</td>
+<td valign="middle">
+<select name="allowuu">
+<option value="N" { noselected }>{ no }</option>
+<option value="Y" { yesselected }>{ yes }</option>
+</select>
+</td>
+</tr>
+<!--#endif ballowuserupdate -->
 </table>
 </td>
 </tr>
