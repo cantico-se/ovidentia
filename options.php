@@ -118,7 +118,7 @@ function changeLanguage()
                 $this->userlang = "";
            
             if( $this->userlang == "")
-                $this->userlang = $GLOBAL['babLanguage'];
+                $this->userlang = $GLOBALS['babLanguage'];
 
             $this->title .= " : ".$this->userlang;
 
