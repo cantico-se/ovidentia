@@ -395,10 +395,17 @@ function bab_replace( $txt )
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			$searcharr = explode(",", $m[1][$k]);
-			if( sizeof($searcharr) > 1)
+			$tab = preg_split("/(\"[\s],)|(,[\s]\")|(\"[\s],[\s]\")+/", $m[1][$k]);
+			if( sizeof($tab) > 1)
 				{
-				$req = "select * from topics where category='".addslashes(trim($searcharr[0]))."'";
+				$topic = trim($tab[0]);
+				if( $topic[0] == '"' )
+					$topic = substr($topic, 1);
+
+				$article = trim($tab[1]);
+				if( $article[strlen($article)-1] == '"' )
+					$article = substr($article, 0, -1);
+				$req = "select * from topics where category='".addslashes($topic)."'";
 				$res = $db->db_query($req);
 				if( $res && $db->db_num_rows($res) > 0)
 					{
@@ -406,22 +413,41 @@ function bab_replace( $txt )
 					$idtopic = $arr['id'];
 					}
 				}
+			else
+				{
+				$tab = preg_split("/[,]+/", $m[1][$k]);
+				if( sizeof( $tab ) > 1 )
+					{
+					$article = trim($tab[0]);
+					$req = "select * from topics where category='".addslashes(trim($tab[0]))."'";
+					$res = $db->db_query($req);
+					if( $res && $db->db_num_rows($res) > 0)
+						{
+						$arr = $db->db_fetch_array($res);
+						$idtopic = $arr['id'];
+						}
+					}
+				else
+					{
+					$article = trim($m[1][$k]);
+					}
+				}
 
 			if( isset($idtopic))
-				$req = "select * from articles where id_topic='".$idtopic."' and title= '".addslashes(trim($searcharr[1]))."'";
-			else if( sizeof($searcharr) > 1)
-				$req = "select * from articles where title='".addslashes(trim($searcharr[1]))."'";
+				$req = "select * from articles where id_topic='".$idtopic."' and title= '".addslashes($article)."'";
 			else
-				$req = "select * from articles where title like '%".addslashes(trim($searcharr[0]))."%'";
+				{
+				$req = "select * from articles where title like '%".addslashes($article)."%'";
+				}
 
 			$res = $db->db_query($req);
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
 				if(bab_isAccessValid("topicsview_groups", $arr['id_topic'])) 
-					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=topic&idx=viewa&item=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$arr['title']."</a>", $txt);
+					$txt = preg_replace("/\\\$ARTICLE\(".preg_quote($m[1][$k])."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=topic&idx=viewa&item=".$arr['id']."', 'Article', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$arr['title']."</a>", $txt);
 				else
-					$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr['title'], $txt);
+					$txt = preg_replace("/\\\$ARTICLE\(".preg_quote($m[1][$k])."\)/", $arr['title'], $txt);
 				}
 			}
 		}
@@ -436,10 +462,10 @@ function bab_replace( $txt )
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
+				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$arr['id']."&bliste=0', 'Contact', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[1][$k]." ".$m[2][$k]."</a>", $txt);
 				}
 			else
-				$txt = preg_replace("/\\\$CONTACT\(".$m[1][$k].",".$m[2][$k]."\)/", $m[1][$k]." ".$m[2][$k], $txt);
+				$txt = preg_replace("/\\\$CONTACT\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[1][$k]." ".$m[2][$k], $txt);
 			}
 		}
 
@@ -461,13 +487,13 @@ function bab_replace( $txt )
 					if( $res && $db->db_num_rows($res) > 0)
 						{
 						$arr = $db->db_fetch_array($res);
-						$txt = preg_replace("/\\\$FAQ\(".$m[1][$k].",".$m[2][$k]."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[2][$k]."</a>", $txt);
+						$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", "<a href=\"javascript:{var d=window.open('".$GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']."', 'Faq', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');}\">".$m[2][$k]."</a>", $txt);
 						$repl = true;
 						}
 					}
 				}
 			if( $repl == false )
-				$txt = preg_replace("/\\\$FAQ\(".$m[1][$k].",".$m[2][$k]."\)/", $m[2][$k], $txt);
+				$txt = preg_replace("/\\\$FAQ\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k])."\)/", $m[2][$k], $txt);
 			}
 		}
 
