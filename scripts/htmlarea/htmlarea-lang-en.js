@@ -26,7 +26,7 @@ HTMLArea.I18N = {
 		popupeditor:    "Enlarge Editor",
 		about:          "About this editor",
 		help:           "Help using editor",
-		textindicator:  "Current style"
+		textindicator:  "Current style",
 		babimage:		"Insert Ovidentia image",
 		bablink:		"Insert Web Link",
 		cleanhtml:		"Clean HTML code",

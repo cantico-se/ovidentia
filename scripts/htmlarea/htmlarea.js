@@ -13,7 +13,7 @@
 // Creates a new HTMLArea object.  Tries to replace the textarea with the given
 // ID with it.
 
-function HTMLArea(textarea,baburl,babInstallPath, babLanguage,enabled,config) {
+function HTMLArea(textarea,baburl,babInstallPath, babLanguage,babPhpSelf,enabled,config) {
 	
 	if (HTMLArea.checkSupportedBrowser()) {
 		if (typeof baburl == "undefined") {
@@ -26,6 +26,12 @@ function HTMLArea(textarea,baburl,babInstallPath, babLanguage,enabled,config) {
 		} else {
 			this.babInstallPath = babInstallPath;
 			HTMLArea.babInstallPath = babInstallPath;
+		}
+		if (typeof babPhpSelf == "undefined") {
+			alert('HTMLArea : babPhpSelf missing');
+		} else {
+			this.babPhpSelf = babPhpSelf;
+			HTMLArea.babPhpSelf = babPhpSelf;
 		}
 		if (typeof babLanguage == "undefined" || babLanguage == 'en') {
 			this.babLanguage = '';
@@ -132,7 +138,9 @@ HTMLArea.Config = function (babLanguage) {
 		"Formatted": "pre"
 	};
 	
+
 	this.babstyle = HTMLArea.babstyle;
+
 
 	//      ID              CMD                      ToolTip               Icon                        Enabled in text mode?
 	this.btnList = {
@@ -573,7 +581,7 @@ HTMLArea.prototype.generate = function () {
 		doc.open();
 		var html = "<html>\n";
 		html += "<head>\n";
-		html += "<link rel=stylesheet href="+editor.baburl+"index.php?tg=htmlarea&idx=css type=text/css>\n";
+		html += "<link rel=stylesheet href="+editor.baburl+editor.babPhpSelf+"?tg=htmlarea&idx=css type=text/css>\n";
 		html += "<style>body,tbody { " + editor.config.bodyStyle + " }</style>\n";
 		html += "</head>\n";
 		html += "<body>\n";
@@ -910,7 +918,7 @@ HTMLArea.prototype._insertBabImage = function() {
 	var sel = this._getSelection();
 	var range = this._createRange(sel);
 	var editor = this;	// for nested functions
-	this._babDialog(this.baburl+"index.php?tg=images&editor=0&callback=EditorOnCreateImage", function(param) {
+	this._babDialog(this.baburl+this.babPhpSelf+"?tg=images&editor=0&callback=EditorOnCreateImage", function(param) {
 		if (!param) {	// user must have pressed Cancel
 			return false;
 		}
@@ -1179,11 +1187,11 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 		break;
 	    case "popupeditor":
 		if (HTMLArea.is_ie) {
-			fullview = window.open(this.popupURL("fullscreen.html?baburl="+this.baburl+"&babInstallPath="+this.babInstallPath), "ha_fullscreen",
+			fullview = window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf="+escape(this.babPhpSelf)), "ha_fullscreen",
 				    "toolbar=no,location=no,directories=no,status=yes,menubar=no," +
 				    "scrollbars=no,resizable=yes,width=640,height=480");
 		} else {
-			window.open(this.popupURL("fullscreen.html?baburl="+this.baburl+"&babInstallPath="+this.babInstallPath), "ha_fullscreen",
+			window.open(this.popupURL("fullscreen.html?baburl="+escape(this.baburl)+"&babInstallPath="+escape(this.babInstallPath)+"&babPhpSelf"+escape(this.babPhpSelf)), "ha_fullscreen",
 				    "toolbar=no,menubar=no,personalbar=no,width=640,height=480," +
 				    "scrollbars=no,resizable=yes");
 		}
@@ -1203,7 +1211,7 @@ HTMLArea.prototype._buttonClicked = function(txt) {
 		this._insertbablink();
 		break;
 		case "babfile":
-		this._babDialog(this.baburl+"index.php?tg=fileman&idx=brow&callback=EditorOnCreateFile", null, null,'toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
+		this._babDialog(this.baburl+this.babPhpSelf+"?tg=fileman&idx=brow&callback=EditorOnCreateFile&editor=1", null, null,'toolbar=no,menubar=no,personalbar=no,width=400,height=470,scrollbars=yes,resizable=yes');
 
 		break;
 		case "cleanhtml":
@@ -1828,9 +1836,32 @@ editor.insertHTML('$FILE('+idf+','+txt+')');
 
 var editor = null;
 
-function initEditor(what,ta, babUrl, babInstallPath, babLanguage)
+var babUrl = null;
+var babInstallPath = null;
+var babLanguage = null;
+var babPhpSelf = null;
+
+function initEditorVars(var1, var2, var3, var4)
 	{
-	editor = new HTMLArea(ta,babUrl,babInstallPath,babLanguage);
+	babUrl = var1;
+	babInstallPath = var2;
+	babLanguage = var3;
+	if (var4.substr(0, 1) == '/')
+		{
+		babPhpSelf = var4.substr(1, var4.length);
+		}
+	}
+
+function initEditor(what,ta)
+	{
+	
+	if (typeof babPhpSelf  == "undefined")
+	{
+		babPhpSelf = 'index.php';
+	}
+
+
+	editor = new HTMLArea(ta,babUrl,babInstallPath,babLanguage,babPhpSelf);
 	if( what == 1 )
 		{
 	  	editor.config.toolbar = [ [ "fontname", "space" ],
@@ -1847,5 +1878,11 @@ function initEditor(what,ta, babUrl, babInstallPath, babLanguage)
 			 ["cleanhtml","babimage","babfile"]
 		];
 		}
+
+	if (typeof HTMLArea.babstyle.Normal != "string")
+	{
+		editor.config.toolbar[3] = [ "space", "textindicator","linebreak" ];
+	}
+	
 	editor.generate();
 	}

@@ -26,7 +26,7 @@ HTMLArea.I18N = {
 		popupeditor:    "Editor vergroten",
 		about:          "Betreffende deze editor",
 		help:           "Hulp bij gebruik editor",
-		textindicator:  "Huidige stijl"
+		textindicator:  "Huidige stijl",
 		babimage:		"Ovidentia afbeelding tussenvoegen",
 		bablink:		"Web link tussenvoegen",
 		cleanhtml:		"HTML code oppoetsen",
