@@ -3725,6 +3725,9 @@ while( $arr = $db->db_fetch_array($res))
 		case '1': // user
 			break;
 		case '2': // group
+			list($countevt) = $db->db_fetch_row($db->db_query("select count(id) from ".BAB_CAL_EVENTS_TBL." where id_cal='".$arr['id']."'"));
+			if( $countevt > 0 )
+			{
 			list($grpname) = $db->db_fetch_row($db->db_query("select name from ".BAB_GROUPS_TBL." where id='".$arr['owner']."'"));
 			$db->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description) values ('".$grpname."','')");
 			$idcal = $db->db_insert_id();
@@ -3743,6 +3746,11 @@ while( $arr = $db->db_fetch_array($res))
 				{
 				$db->db_query("insert into ".BAB_CAL_PUB_GRP_GROUPS_TBL." ( id_object, id_group ) values ('".$idcal."','".$arr['owner']."')");
 				}
+			}
+			else
+			{
+				$db->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$arr['id']."'");
+			}
 			break;
 		case '3': // resource
 			$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_RESOURCESCAL_TBL." where id='".$arr['owner']."'"));
