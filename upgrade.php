@@ -2033,7 +2033,7 @@ if( !$res)
 	return $ret;
 	}
 
-$req = "ALTER TABLE ".BAB_USERS_LOG_TBL." ADD id_dgowner INT( 11 ) UNSIGNED NOT NULL";
+$req = "ALTER TABLE ".BAB_USERS_LOG_TBL." ADD id_dggroup INT( 11 ) UNSIGNED NOT NULL";
 $res = $db->db_query($req);
 if( !$res)
 	{

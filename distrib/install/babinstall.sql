@@ -496,7 +496,7 @@ CREATE TABLE bab_users_log (
    sessid tinytext NOT NULL,
    remote_addr varchar(255) NOT NULL default '',
    forwarded_for varchar(255) NOT NULL default '',
-   id_dgowner int(11) unsigned NOT NULL default '0',
+   id_dggroup int(11) unsigned NOT NULL default '0',
    PRIMARY KEY (id),
    KEY id_user (id_user)
 );
