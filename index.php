@@ -209,6 +209,9 @@ function printBody()
 	echo babPrintTemplate($temp,"page.html", "");
 	}
 
+if( !isset($tg))
+	$tg = "";
+
 switch($tg)
 	{
 	case "login":
