@@ -322,7 +322,7 @@ function notifyUserPassword($passw, $email)
 	
     $mail->mailTo($email);
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject("Ovidentia: ". bab_translate("Password Reset"));
+    $mail->mailSubject(bab_translate("Password Reset"));
 
 	$tempa = new tempa($passw);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "sendpassword"));
