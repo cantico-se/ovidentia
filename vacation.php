@@ -89,13 +89,13 @@ function listVacations()
 
 		function getnext()
 			{
-			static $half = array(1=>"Whole day", "Morning", "Afternoon");
+			global $babDayType;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->datebegin = bab_strftime(bab_mktime($this->arr[datebegin]), false) . "  " . babTranslate($half[$this->arr[daybegin]]);
-				$this->dateend = bab_strftime(bab_mktime($this->arr[dateend]), false) . "  " . babTranslate($half[$this->arr[dayend]]);
+				$this->datebegin = bab_strftime(bab_mktime($this->arr[datebegin]), false) . "  " . $babDayType[$this->arr[daybegin]];
+				$this->dateend = bab_strftime(bab_mktime($this->arr[dateend]), false) . "  " . $babDayType[$this->arr[dayend]];
 				$this->statusval = getStatusName($this->arr[status]);
 				$req = "select * from vacations_types where id='".$this->arr[type]."'";
 				$r = $this->db->db_query($req);
@@ -233,12 +233,12 @@ EOD;
 			}
 		function getnexthalf()
 			{
+			global $babDayType;
 			static $i = 1;
-			static $half = array(1=>"Whole day", "Morning", "Afternoon");
 			static $count = 4;
 			if( $i < $count)
 				{
-				$this->halfname = babTranslate($half[$i]);
+				$this->halfname = $babDayType[$i];
 				$this->halfid = $i;
 				$i++;
 				return true;
@@ -340,7 +340,7 @@ function confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 
 		function temp($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $vactype, $remarks)
 			{
-			$half = array(1=>"Whole day", "Morning", "Afternoon");
+			global $babDayType;
 			$yearbegin = date("Y") + $yearbegin - 1;
 			$yearend = date("Y") + $yearend - 1;
 
@@ -365,8 +365,8 @@ function confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 				$this->typename = $arr[name];
 				}
 			$this->vactype = $vactype;
-			$this->halfdayfrom = $half[$halfdaybegin];
-			$this->halfdayto = $half[$halfdayend];
+			$this->halfdayfrom = $babDayType[$halfdaybegin];
+			$this->halfdayto = $babDayType[$halfdayend];
 			}
 		}
 

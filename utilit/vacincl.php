@@ -4,6 +4,8 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+$babDayType = array(1=>babTranslate("Whole day"), babTranslate("Morning"), babTranslate("Afternoon"));
+
 function getVacationName($id)
 	{
 	$db = new db_mysql();
