@@ -284,8 +284,9 @@ function utilit()
 			$this->t_ok = bab_translate('Ok');
 			$this->js_alert = bab_translate('Day number must be 1 at least');
 			
-			$query = "SELECT COUNT(DISTINCT t1.id) nb_total_users, COUNT(DISTINCT t2.id) nb_unconfirmed_users FROM ".BAB_USERS_TBL." t1 LEFT JOIN ".BAB_USERS_TBL." t2 ON t2.is_confirmed='0'";
-			$this->arr = $this->db->db_fetch_array($this->db->db_query($query));
+			list($this->arr['nb_total_users']) = $this->db->db_fetch_array($this->db->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL.""));
+
+			list($this->arr['nb_unconfirmed_users']) = $this->db->db_fetch_array($this->db->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL." WHERE is_confirmed='0'"));
 			}
 		}
 
@@ -297,7 +298,7 @@ function delete_unconfirmed()
 	{
 	include $GLOBALS['babInstallPath']."utilit/delincl.php";
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("SELECT id FROM ".BAB_USERS_TBL." WHERE is_confirmed='0' AND DATE_ADD(datelog, INTERVAL ".$_POST['nb_days']." DAY) < NOW()");
+	$res = $db->db_query("SELECT id FROM ".BAB_USERS_TBL." WHERE is_confirmed='0' AND (DATE_ADD(datelog, INTERVAL ".$_POST['nb_days']." DAY) < NOW() OR datelog = '0000-00-00 00:00:00')");
 	while (list($id) = $db->db_fetch_array($res))
 		bab_deleteUser($id);
 	}
