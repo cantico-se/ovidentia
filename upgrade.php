@@ -2361,4 +2361,11 @@ if( !$res)
 return $ret;
 }
 
+function upgrade407to408()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+return $ret;
+}
 ?>
