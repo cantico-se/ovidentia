@@ -933,7 +933,7 @@ function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspa
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
-function siteUpdate_authentification($id, $authtype, $host, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype)
+function siteUpdate_authentification($id, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype)
 	{
 	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname;
 
@@ -962,7 +962,7 @@ function siteUpdate_authentification($id, $authtype, $host, $basedn, $userdn, $l
 	$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
 	if( $authtype == 1 )
 		{
-		$req .= ", ldap_host='".$host."', ldap_basedn='".$basedn."', ldap_userdn='".$userdn."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_passwordtype='".$passtype."'";
+		$req .= ", ldap_host='".$host."', ldap_allowadmincnx='".$ldpapchkcnx."', ldap_basedn='".$basedn."', ldap_userdn='".$userdn."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_passwordtype='".$passtype."'";
 		if( !empty($ldappass1) )
 			$req .= ", ldap_password=ENCODE(\"".$ldappass1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
 
@@ -1063,8 +1063,9 @@ elseif( isset($modify) && $modify =="bloc3")
 	if( !empty($Submit))
 		{
 		if( !isset($passtype)) { $passtype='text';}
+		if( !isset($ldpapchkcnx)) { $ldpapchkcnx='N';}
 		//if(!siteUpdate_authentification($item, $authtype, $host, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $ldapattr, $passtype))
-		if(!siteUpdate_authentification($item, $authtype, $host, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype))
+		if(!siteUpdate_authentification($item, $authtype, $host, $ldpapchkcnx, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype))
 			$idx = "auth";
 		}
 	}
