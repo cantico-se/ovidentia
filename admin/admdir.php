@@ -52,12 +52,15 @@ function listAds()
 		var $gviewurl;
 		var $gmodifyurl;
 		var $gaddurl;
+		var $grouptxt;
+		var $group;
 
 		function temp()
 			{
 			global $babBody;
 			$this->directories = bab_translate("Directories");
 			$this->desctxt = bab_translate("Description");
+			$this->grouptxt = bab_translate("Group");
 			$this->databasetitle = bab_translate("Databases Directories list");
 			$this->add = bab_translate("Add");
 			$this->gmodify = bab_translate("Modify");
@@ -95,6 +98,16 @@ function listAds()
 			if( $i < $this->countdb)
 				{
 				$arr = $this->db->db_fetch_array($this->resdb);
+				if( $arr['id_group'] != '0' )
+					{
+					list($this->bshow) = $this->db->db_fetch_row($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$arr['id_group']."'"));
+					$this->group = bab_getGroupName($arr['id_group']);
+					}
+				else
+					{
+					$this->bshow = 'Y';
+					$this->group = "";
+					}
 				$this->description = $arr['description'];
 				$this->url = $GLOBALS['babUrlScript']."?tg=admdir&idx=mdb&id=".$arr['id'];
 				$this->urlname = $arr['name'];

@@ -34,19 +34,23 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ directories }</b> </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap ><b>{ grouptxt }</b> </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle" align="left" colspan="4"><b>&nbsp;{ desctxt }</b></td>
 </tr>
 <!--#in getnextdb -->
+<!--#if bshow "== Y" -->
 <tr> 
 <td class="BabSiteAdminFontBackground" valign="middle"><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+<td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ group }</td>
 <td class="BabSiteAdminFontBackground" align="left" valign="middle">&nbsp;{ description }</td>
 <td class="BabSiteAdminFontBackground" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gviewurl }">{ gview }</a></td>
 <td class="BabSiteAdminFontBackground" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gmodifyurl }">{ gmodify }</a></td>
 <td class="BabSiteAdminFontBackground" align="left" valign="middle"><a class="BabSiteAdminListLink" href="{ gaddurl }">{ gadd }</a></td>
 </tr>
+<!--#endif bshow -->
 <!--#endin getnextdb -->
 <tr> 
-<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap colspan="5"><a class="BabSiteAdminListLink" href="{ urladddb }">{ add }</a></td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle" nowrap colspan="6"><a class="BabSiteAdminListLink" href="{ urladddb }">{ add }</a></td>
 </tr>
 </table>
 </td>
