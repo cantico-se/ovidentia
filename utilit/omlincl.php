@@ -385,7 +385,8 @@ class bab_ArticleCategories extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0)
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".implode(',', $this->IdEntries).")");
+			$req = "select tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".implode(',', $this->IdEntries).") and tot.type='1' order by tot.ordering asc";
+			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -604,7 +605,8 @@ class bab_ArticleTopics extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id IN (".implode(',', $this->IdEntries).")");
+			$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".implode(',', $this->IdEntries).") and tot.type='2' order by tot.ordering asc";
+			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
