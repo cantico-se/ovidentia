@@ -231,6 +231,7 @@ function bab_deleteUploadDir($path)
 function bab_deleteUploadUserFiles($gr, $id)
 	{
 	global $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 	$pathx = bab_getUploadFullPath($gr, $id);
 	$babDB->db_query("delete from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."'");
 	@bab_deleteUploadDir($pathx);
