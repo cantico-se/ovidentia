@@ -319,7 +319,8 @@ class cal_weekCls extends cal_wmdbaseCls
 					$i++;
 					}
 				}
-			$this->md5 = md5($this->icols.$this->dayname.$this->currday.$this->h_start);
+			
+			$this->md5 = md5($this->cindex.$this->dayname.$this->currday.$this->h_start);
 			$this->icols++;
 			return true;
 			}

@@ -165,9 +165,9 @@ function bab_calendar(year,month)
 	
 	if (month < 11)
 		out += '<a href="javascript:next_month()" title="{ t_next_month }"><img src="{ babSkinPath }images/Puces/arrowNext3a.gif" border="0" alt="{ t_next_month }" /></a>';
-	out += '</tr><tr align="center">';
+	out += '</tr><tr class="BabCalendarDaySection" align="center">';
    <!--#in getnextwday -->
-   out += '<td class="BabCalendarDaySection">{ text }</td>';
+   out += '<td>{ text }</td>';
    <!--#endin getnextwday -->
    
    out += '</tr><tr align="center">';
@@ -183,11 +183,11 @@ function bab_calendar(year,month)
 		if (thisyear == today.getYear() && thismonth == today.getMonth() && i == selectedday)
 			{
 
-			out += '<td class="BabCalendarCurrentDayNumberSection"><a class="BabSectionsDayLink" href="javascript:callback('+i+','+(month+1)+','+year+')">'+i+'</a></td>';
+			out += '<td class="BabCalendarCurrentDayNumberSection"><a  href="javascript:callback('+i+','+(month+1)+','+year+')">'+i+'</a></td>';
 			}
 		else
 			{
-			out += '<td class="BabCalendarDayNumberSection"><a class="BabSectionsLinkColor" href="javascript:callback('+i+','+(month+1)+','+year+')">'+i+'</a></td>';
+			out += '<td><a  href="javascript:callback('+i+','+(month+1)+','+year+')">'+i+'</a></td>';
 			}
 
       column++;

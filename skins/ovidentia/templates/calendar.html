@@ -314,27 +314,33 @@ movecalendar(0);
 
 
 <!--#begin categorieslist -->
-<table  width="70%" cellpadding="5" cellspacing="0" align="center">
-	<tr >
-		<td width="20">
-			&nbsp;
-		</td>
-		<td class="BabLoginMenuBackground">
-			{ t_name } 
-		</td>
-		<td class="BabLoginMenuBackground">
-			{ t_description } 
-		</td>
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td width="20">
+				&nbsp;
+			</td>
+			<td class="BabLoginMenuBackground">
+				{ t_name } 
+			</td>
+			<td class="BabLoginMenuBackground">
+				{ t_description } 
+			</td>
+		</tr>
+		<!--#in getnextcat -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td bgcolor="#{ bgcolor }" >&nbsp;</td>
+			<td>{ name }</td>
+			<td>{ description }</td>
+		</tr>
+		<!--#endin getnextcat -->
+	</table>
+	</td>
 	</tr>
-	<!--#in getnextcat -->
-	<tr> 
-		<td bgcolor="#{ bgcolor }" >&nbsp;</td>
-		<td>{ name }</td>
-		<td>{ description }</td>
-	</tr>
-	<!--#endin getnextcat -->
 </table>
-<br /><br /><br />
+	<br /><br /><br />
 <div align="center">
 	<input type="button" onclick="window.close()" value="{ t_close }" />
 </div>

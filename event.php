@@ -719,6 +719,7 @@ function addEvent(&$message)
 		switch($_POST['repeat'] )
 			{
 			case '2': /* weekly */
+				echo 'weekly<br>';
 				if( empty($_POST['repeat_n_2']))
 					{
 					$_POST['repeat_n_2'] = 1;
@@ -735,11 +736,17 @@ function addEvent(&$message)
 				if( !isset($_POST['repeat_wd']) )
 					{
 					$time = $begin;
+					$daylightSavingTime = date('I',$time);
 					do
 						{
 						$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 						$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 						$time += $rtime;
+
+						if ($daylightSavingTime < date('I',$time))
+							$time -= 3600;
+						elseif ($daylightSavingTime > date('I',$time))
+							$time += 3600;
 						}
 					while( $time < $repeatdate );
 					}
@@ -754,10 +761,16 @@ function addEvent(&$message)
 							}
 
 						$time = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin+$delta, $yearbegin );
+						$daylightSavingTime = date('I',$time);
 						do
 							{
 							$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 							$time += $rtime;
+							
+							if ($daylightSavingTime < date('I',$time))
+								$time -= 3600;
+							elseif ($daylightSavingTime > date('I',$time))
+								$time += 3600;
 							$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 							}
 						while( $time < $repeatdate );
@@ -818,10 +831,15 @@ function addEvent(&$message)
 					}
 
 				$time = $begin;
+				$daylightSavingTime = date('I',$time);
 				do
 					{
 					$arrf = createEvent(explode(',', $GLOBALS['calid']), $title, $description, $time, $time+$duration, $category, $color, $bprivate, $block, $bfree, $hash);
 					$time += $rtime;
+					if ($daylightSavingTime < date('I',$time))
+						$time -= 3600;
+					elseif ($daylightSavingTime > date('I',$time))
+						$time += 3600;
 					$arrnotify = array_unique(array_merge($arrnotify, $arrf));
 					}
 				while( $time < $repeatdate );

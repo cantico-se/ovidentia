@@ -261,7 +261,7 @@ a.BabSectionsLinkColor:Hover {
 	}
 
 /*font current day */
-#bab_montha .bab_content .BabCalendarCurrentDayNumberSection {
+.BabCalendarCurrentDayNumberSection {
 	background-color: #D1D1D9;
 	color: #000;
 	}

@@ -217,7 +217,8 @@ class cal_dayCls extends cal_wmdbaseCls
 					$i++;
 					}
 				}
-			$this->md5 = md5($this->icols.$this->h_start);
+
+			$this->md5 = md5($this->cindex.$this->h_start);
 			$this->icols++;
 			return true;
 			}
