@@ -176,7 +176,7 @@ a.BabTopicsFooterMoreLink:Hover {COLOR: black; font : 10px Verdana, Arial, sans-
 
 .BabTopicsButtonBackground {background: #FFFFFF }
 
-.BabTopicsTitleNavigation {COLOR: white; font : 10px Verdana, Arial, sans-serif; FONT-WEIGHT: bold ; text-decoration: underline}
+.BabTopicsTitleNavigation { FONT-WEIGHT: bold ; text-decoration: underline}
 
 a.BabTopicsTitleNavigationLink:Link { COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
 a.BabTopicsTitleNavigationLink:Visited { COLOR: #003399; font : 9px Verdana, Arial, sans-serif; text-decoration: none }
