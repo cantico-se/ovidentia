@@ -902,6 +902,167 @@ function viewArticleProperties($item, $idart)
 	}
 
 
+function siteHomePage0($id)
+	{
+
+	global $babBody;
+	class temp0
+		{
+		var $create;
+	
+		var $moveup;
+		var $movedown;
+
+		var $id;
+		var $arr = array();
+		var $db;
+		var $res;
+
+		var $listhometxt;
+		var $listpagetxt;
+		var $title;
+
+		function temp0($id)
+			{
+			$this->title = bab_translate("Unregistered users home page");
+			$this->listhometxt = bab_translate("---- Proposed Home articles ----");
+			$this->listpagetxt = bab_translate("---- Home page articles ----");
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->create = bab_translate("Modify");
+			$this->id = $id;
+
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='2' and id_site='$id' and ordering='0'";
+			$this->reshome0 = $this->db->db_query($req);
+			$this->counthome0 = $this->db->db_num_rows($this->reshome0);
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='2' and id_site='$id' and ordering!='0' order by ordering asc";
+			$this->respage0 = $this->db->db_query($req);
+			$this->countpage0 = $this->db->db_num_rows($this->respage0);
+			}
+
+		function getnexthome0()
+			{
+			static $i = 0;
+			if( $i < $this->counthome0 )
+				{
+				$arr = $this->db->db_fetch_array($this->reshome0 );
+				$this->home0id = $arr['id_article'];
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->home0id."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->home0val = $arr['title'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextpage0()
+			{
+			static $k = 0;
+			if( $k < $this->countpage0 )
+				{
+				$arr = $this->db->db_fetch_array($this->respage0 );
+				$this->page0id = $arr['id_article'];
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->page0id."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->page0val = $arr['title'];
+				$k++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp0 = new temp0($id);
+	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "scripts"));
+	$babBody->babecho(	bab_printTemplate($temp0, "topman.html", "sitehomepage0"));
+	}
+
+function siteHomePage1($id)
+	{
+
+	global $babBody;
+	class temp1
+		{
+		var $create;
+	
+		var $moveup;
+		var $movedown;
+
+		var $id;
+		var $arr = array();
+		var $db;
+		var $res;
+
+		var $listhometxt;
+		var $listpagetxt;
+		var $title;
+
+		function temp1($id)
+			{
+			$this->title = bab_translate("Registered users home page");
+			$this->listhometxt = bab_translate("---- Proposed Home articles ----");
+			$this->listpagetxt = bab_translate("---- Home page articles ----");
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->create = bab_translate("Modify");
+			$this->id = $id;
+
+			$this->db = $GLOBALS['babDB'];
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='1' and id_site='$id' and ordering='0'";
+			$this->reshome1 = $this->db->db_query($req);
+			$this->counthome1 = $this->db->db_num_rows($this->reshome1);
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='1' and id_site='$id' and ordering!='0' order by ordering asc";
+			$this->respage1 = $this->db->db_query($req);
+			$this->countpage1 = $this->db->db_num_rows($this->respage1);
+			}
+
+		function getnexthome1()
+			{
+			static $i = 0;
+			if( $i < $this->counthome1 )
+				{
+				$arr = $this->db->db_fetch_array($this->reshome1 );
+				$this->home1id = $arr['id_article'];
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->home1id."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->home1val = $arr['title'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextpage1()
+			{
+			static $k = 0;
+			if( $k < $this->countpage1 )
+				{
+				$arr = $this->db->db_fetch_array($this->respage1 );
+				$this->page1id = $arr['id_article'];
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$this->page1id."'";
+				$res = $this->db->db_query($req);
+				$arr = $this->db->db_fetch_array($res);
+				$this->page1val = $arr['title'];
+				$k++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp0 = new temp1($id);
+	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "scripts"));
+	$babBody->babecho(	bab_printTemplate($temp0, "topman.html", "sitehomepage1"));
+	}
 
 function addToHomePages($item, $homepage, $art)
 {
@@ -1036,6 +1197,35 @@ function saveArticleProperties()
 	}
 }
 
+function siteUpdateHomePage0($item, $listpage0)
+	{
+	$db = $GLOBALS['babDB'];
+	$req = "update ".BAB_HOMEPAGES_TBL." set ordering='0' where id_site='".$item."' and id_group='2'";
+	$res = $db->db_query($req);
+
+	for($i=0; $i < count($listpage0); $i++)
+		{
+		$req = "update ".BAB_HOMEPAGES_TBL." set ordering='".($i + 1)."' where id_group='2' and id_site='".$item."' and id_article='".$listpage0[$i]."'";
+		$res = $db->db_query($req);
+		}
+	return true;
+	}
+
+function siteUpdateHomePage1($item, $listpage1)
+	{
+	$db = $GLOBALS['babDB'];
+	$req = "update ".BAB_HOMEPAGES_TBL." set ordering='0' where id_site='".$item."' and id_group='1'";
+	$res = $db->db_query($req);
+
+	for($i=0; $i < count($listpage1); $i++)
+		{
+		$req = "update ".BAB_HOMEPAGES_TBL." set ordering='".($i + 1)."' where id_group='1' and id_site='".$item."' and id_article='".$listpage1[$i]."'";
+		$res = $db->db_query($req);
+		}
+	return true;
+	}
+
+
 function topman_init($item)
 {
 	global $babBody, $babDB;
@@ -1046,6 +1236,8 @@ function topman_init($item)
 
 	$res = $babDB->db_query("select count(id) from ".BAB_ARTICLES_TBL." where id_topic='".$item."' and archive='N'");
 	list($arrinit['nbonline']) = $babDB->db_fetch_row($res);
+
+	$arrinit['hman'] = bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']);
 
 	return $arrinit;
 }
@@ -1117,7 +1309,18 @@ elseif( isset($update)  && $manager)
 		$refreshurl = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item;
 		}
 	}
-
+elseif( isset($updateh)  && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
+	{
+	if( $updateh == "homepage0" )
+		{
+		siteUpdateHomePage0($item, $listpage0);
+		}
+	else if( $updateh == "homepage1" )
+		{
+		siteUpdateHomePage1($item, $listpage1);
+		}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=list");
+	}
 
 switch($idx)
 	{
@@ -1177,6 +1380,10 @@ switch($idx)
 			{
 			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item);
 			}
+		if( $arrinit['hman'] > 0)
+			{
+			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			}
 		}
 		else
 		{
@@ -1197,6 +1404,10 @@ switch($idx)
 			$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
 			}
 		$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item);
+		if( $arrinit['hman'] > 0)
+			{
+			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			}
 		}
 		else
 		{
@@ -1229,6 +1440,10 @@ switch($idx)
 			{
 			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item);
 			}
+		if( $arrinit['hman'] > 0)
+			{
+			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			}
 		}
 		else
 		{
@@ -1250,6 +1465,10 @@ switch($idx)
 			{
 			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item);
 			}
+		if( $arrinit['hman'] > 0)
+			{
+			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			}
 		}
 		else
 		{
@@ -1257,6 +1476,45 @@ switch($idx)
 			break;
 		}
 		break;
+
+	case "hpriv":
+		if( $manager || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
+		{
+		$babBody->title = bab_translate("Registered users home page for site").": ".$babBody->babsite['name'];
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
+		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
+			{
+			siteHomePage1($ids);
+			$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
+			}
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+			break;
+		}
+		break;
+
+	case "hpub":
+		if( $manager || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
+		{
+		$babBody->title = bab_translate("Unregistered users home page for site").": ".$babBody->babsite['name'];
+		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
+		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
+			{
+			siteHomePage0($ids);
+			$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
+			}
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+			break;
+		}
+		break;
+
 	default:
 	case "list":
 		$babBody->title = bab_translate("List of managed topics");
@@ -1267,6 +1525,10 @@ switch($idx)
 		else
 		{
 			$babBody->title = bab_translate("There is no topic");
+		}
+		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
+		{
+			$babBody->addItemMenu("hman", bab_translate("Home pages"), $GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
 		}
 		break;
 	}

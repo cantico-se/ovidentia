@@ -3271,6 +3271,25 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "CREATE TABLE ".BAB_SITES_HPMAN_GROUPS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "id_object int(11) unsigned NOT NULL default '0',";
+$req .= "id_group int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (id),";
+$req .= "KEY id_object (id_object),";
+$req .= "KEY id_group (id_group)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_SITES_HPMAN_GROUPS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$arr= $db->db_fetch_array($db->db_query("select id from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
+$db->db_query("INSERT INTO ".BAB_SITES_HPMAN_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."', '3')");
+
 return $ret;
 }
 ?>

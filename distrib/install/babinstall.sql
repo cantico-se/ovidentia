@@ -790,6 +790,23 @@ CREATE TABLE `bab_sites` (
 
 INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'ovidentia_mp', 'ovidentia.css');
 
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_topicscom_groups'
+#
+
+CREATE TABLE bab_sites_hpman_groups (
+   id int(11) unsigned NOT NULL auto_increment,
+   id_object int(11) unsigned DEFAULT '0' NOT NULL,
+   id_group int(11) unsigned DEFAULT '0' NOT NULL,
+   PRIMARY KEY (id),
+   KEY id_object (id_object),
+   KEY id_group (id_group)
+);
+
+INSERT INTO bab_sites_hpman_groups (id_object, id_group) values ('1', '3');
+
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_homepages'

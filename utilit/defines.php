@@ -98,6 +98,7 @@ define("BAB_SECTIONS_GROUPS_TBL", "bab_sections_groups");
 define("BAB_SECTIONS_ORDER_TBL", "bab_sections_order");
 define("BAB_SECTIONS_STATES_TBL", "bab_sections_states");
 define("BAB_SITES_TBL", "bab_sites");
+define("BAB_SITES_HPMAN_GROUPS_TBL", "bab_sites_hpman_groups");
 define("BAB_SITES_FIELDS_REGISTRATION_TBL", "bab_sites_fields_registration");
 define("BAB_SITES_DISCLAIMERS_TBL", "bab_sites_disclaimers");
 define("BAB_THREADS_TBL", "bab_threads");

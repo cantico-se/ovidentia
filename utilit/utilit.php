@@ -699,7 +699,7 @@ function babAdminSection($close)
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['faqs'] == 'Y')
 		$this->array_urls[bab_translate("Faq")] = $GLOBALS['babUrlScript']."?tg=admfaqs";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['articles'] == 'Y')
-		$this->array_urls[bab_translate("Topics categories")] = $GLOBALS['babUrlScript']."?tg=topcats";
+		$this->array_urls[bab_translate("Articles")] = $GLOBALS['babUrlScript']."?tg=topcats";
 	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['forums'] == 'Y')
 		$this->array_urls[bab_translate("Forums")] = $GLOBALS['babUrlScript']."?tg=forums";
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
@@ -873,9 +873,9 @@ function babUserSection($close)
 			}
 		}
 
-	if( count($babBody->topman) > 0 )
+	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
 		{
-		$this->array_urls[bab_translate("Managed topics")] = $GLOBALS['babUrlScript']."?tg=topman";
+		$this->array_urls[bab_translate("Articles management")] = $GLOBALS['babUrlScript']."?tg=topman";
 		}
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
