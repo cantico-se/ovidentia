@@ -4,7 +4,8 @@ February 2004: Version 5.0.0
 - New articles publication system 
 - Forums are now managed with groups of users
 - Groups profiles
-- Now Administrators can fileds to add in registration form
+- Possibility to add discliamer text in registration process
+- Now Administrators can chhose fields to add in registration form
 - Home pages are managed by groups
 - Fixed some minors bugs
 
