@@ -149,7 +149,7 @@ function newVacation()
 			$this->dateend = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=2";
 			$this->dateendtxt = bab_translate("End date");
 			$this->vactype = bab_translate("Vacation type");
-			$this->addvac = bab_translate("Add Vacation");
+			$this->addvac = bab_translate("Request vacation");
 			$this->remark = bab_translate("Remarks");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_VACATIONS_TYPES_TBL."";
@@ -344,8 +344,8 @@ function confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, 
 			$yearbegin = date("Y") + $yearbegin - 1;
 			$yearend = date("Y") + $yearend - 1;
 
-			$this->from = bab_translate("From");
-			$this->to = bab_translate("To");
+			$this->from = bab_translate("from");
+			$this->to = bab_translate("until");
 			$this->type = bab_translate("Vacation type");
 			$this->confirm = bab_translate("Confirm");
 			$this->begindate = sprintf("%04d-%02d-%02d 00:00:00", $yearbegin, $monthbegin, $daybegin);
@@ -386,10 +386,17 @@ function confirmAddVacation($begindate, $enddate, $halfdaybegin, $halfdayend, $v
 	if( !empty($emailapprover))
 		{
 		$subject = bab_translate("Vacation request is waiting to be validated");
-		$message = bab_translate("Mr")."/".bab_translate("Mrs"). " ". $BAB_SESS_USER . " ." .bab_translate("request a vacation").":\n";
-		$message .= bab_translate("Vacation").":\n";
+	
+		$message = "Site : ";
+		$message .= $GLOBALS['babSiteName'];
+		$message .= "\n";
+		$message .= $GLOBALS['babUrl'];
+		$message .= "\n";
+		$message .= "\n";
+		$message .= bab_translate("Mr")."/".bab_translate("Mrs")." ". $BAB_SESS_USER . " " .bab_translate("request a vacation")." :\n";
+		$message .= "\n";
 		$message .= bab_translate("from"). " " . bab_strftime(bab_mktime($begindate), false). " ". bab_translate($half[$halfdaybegin]) . "\n";
-		$message .= bab_translate("to"). " " . bab_strftime(bab_mktime($enddate), false). " ". bab_translate($half[$halfdayend]) . "\n";
+		$message .= bab_translate("until"). " " . bab_strftime(bab_mktime($enddate), false). " ". bab_translate($half[$halfdayend]) . "\n";
 
 		mail($emailapprover,$subject,$message,"From: ".$babAdminEmail);
 		}
@@ -418,7 +425,7 @@ switch($idx)
 		if( bab_isUserUseVacation($GLOBALS['BAB_SESS_USERID']))
 			{
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacation&idx=listvac");
-			$babBody->addItemMenu("newvac", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=vacation&idx=newvac");
+			$babBody->addItemMenu("newvac", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacation&idx=newvac");
 			$babBody->addItemMenu("confirmvac", bab_translate("Confirm"), $GLOBALS['babUrlScript']."?tg=vacation");
 			confirmVacation($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $vactype, $remarks);
 			}
@@ -431,7 +438,7 @@ switch($idx)
 		if( bab_isUserUseVacation($GLOBALS['BAB_SESS_USERID']))
 			{
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacation&idx=listvac");
-			$babBody->addItemMenu("newvac", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=vacation&idx=newvac");
+			$babBody->addItemMenu("newvac", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacation&idx=newvac");
 			newVacation();
 			}
 		if( bab_isUserVacationApprover())
@@ -444,7 +451,7 @@ switch($idx)
 		if( bab_isUserUseVacation($GLOBALS['BAB_SESS_USERID']))
 			{
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacation&idx=listvac");
-			$babBody->addItemMenu("newvac", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=vacation&idx=newvac");
+			$babBody->addItemMenu("newvac", bab_translate("Request"), $GLOBALS['babUrlScript']."?tg=vacation&idx=newvac");
 			listVacations();
 			}
 		if( bab_isUserVacationApprover())

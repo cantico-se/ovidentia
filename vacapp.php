@@ -257,7 +257,7 @@ function updateVacation($vacid, $groupid)
 			$arr = $db->db_fetch_array($res);
 			$this->groupid = $groupid;
 			$this->from = bab_translate("From");
-			$this->to = bab_translate("To");
+			$this->to = bab_translate("Until");
 			$this->type = bab_translate("Vacation type");
 			$this->remarkstext = bab_translate("Remarks");
 			$this->confirm = bab_translate("Update");
@@ -319,12 +319,20 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		$subject = bab_translate("Vacation request"); 
 		$username = bab_getUserName($arr['userid']);
 	
-		$message = bab_translate("Mr")."/".bab_translate("Mrs"). " ". $username . " ." .bab_translate("request a vacation").":\n";
-		$message .= bab_translate("Request date") .": " . bab_strftime(bab_mktime($arr['date']), false) ."\n";
-
-		$message .= bab_translate("Vacation").":\n";
+		$message = "Site : ";
+		$message .= $GLOBALS['babSiteName'];
+		$message .= "\n";
+		$message .= $GLOBALS['babUrl'];
+		$message .= "\n";
+		$message .= "\n";	
+		$message .= bab_translate("Mr")."/".bab_translate("Mrs")." ". $username . " " .bab_translate("request a vacation")." :\n";
+		//$message .= bab_translate("Request date") .": " . bab_strftime(bab_mktime($arr['date']), false) ."\n";
+		$message .= "\n";
+		//$message .= bab_translate("Vacation").":\n";
 		$message .= bab_translate("from"). " " . bab_strftime(bab_mktime($arr['datebegin']), false). " ". $babDayType[$arr['daybegin']] . "\n";
-		$message .= bab_translate("to"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend']] . "\n";
+		$message .= bab_translate("until"). " " . bab_strftime(bab_mktime($arr['dateend']), false). " ". $babDayType[$arr['dayend']] . "\n";
+		$message .= "\n";
+
 
 		$req = "select * from ".BAB_USERS_TBL." where id='".$arr['userid']."'";
 		$res = $db->db_query($req);
@@ -333,7 +341,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 
 		if( $status == 0) // refused
 		{
-			$result = "has been refused";
+			$result = bab_translate("Vacation has been refused");
 			$newstatus = 1;
 			if( $ordering == 0 )
 				{
@@ -352,7 +360,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 				{
 				$req = "select * from ".BAB_VACATIONSMAN_GROUPS_TBL." where id_group='".$groupid."' and id_object!='".$BAB_SESS_USERID."'";
 				$newstatus = 2;
-				$result = bab_translate("has been accepted");
+				$result = bab_translate("Vacation has been accepted");
 				}
 			else
 				{
@@ -360,7 +368,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 				$res = $db->db_query($req);
 				$r = $db->db_fetch_array($res);
 				$newstatus = $r['status'];
-				$result = bab_translate("has a new status")." :" . bab_getStatusName($newstatus);
+				$result = bab_translate("status")." :" . bab_getStatusName($newstatus);
 			}
 		}
 
@@ -379,7 +387,7 @@ function confirmUpdateVacation($vacid, $ordering, $status, $groupid, $comref)
 		if( $status != 0 && $ordering != 0)
 		{
 			mail($email, $subject, $message.$result, $header);
-			$result = bab_translate("is waiting to be validated");
+			$result = bab_translate("Vacation is waiting to be validated");
 			$email = implode($arrrecipients, " ");
 			mail($email, $subject, $message.$result, $header);
 		}
@@ -416,6 +424,7 @@ switch($idx)
 	case "updatevac":
 		if( bab_isUserVacationApprover())
 			{
+			$babBody->title = bab_translate("Vacation request");
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=listvac");
 			//$babBody->addItemMenu("findvac", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=findvac");
 			$babBody->addItemMenu("updatevac", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=updatevac&item=".$item);
@@ -437,6 +446,7 @@ switch($idx)
 	default:
 		if( bab_isUserVacationApprover())
 			{
+			$babBody->title = bab_translate("Vacation request");
 			$babBody->addItemMenu("listvac", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=listvac");
 			//$babBody->addItemMenu("findvac", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=vacapp&idx=findvac");
 			listVacations("","");
