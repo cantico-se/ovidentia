@@ -100,7 +100,7 @@ function babTranslate($str)
 		$langcontent = fread($file, filesize($filename));
 		fclose($file);
 		}
-	$reg = "/<".$GLOBALS['babLanguage'].">(.*)<string\s+id=\"".$str."\">(.*?)<\/string>(.*)<\/".$GLOBALS['babLanguage'].">/s";
+	$reg = "/<".$GLOBALS['babLanguage'].">(.*)<string\s+id=\"".preg_quote($str)."\">(.*?)<\/string>(.*)<\/".$GLOBALS['babLanguage'].">/s";
 	if( preg_match($reg, $langcontent, $m))
 		return $m[2];
 	else
