@@ -429,6 +429,11 @@ if( isset($adduser))
 		$idx = "List";
 		if( $notifyuser == "Y" )
 			{
+			if( bab_isMagicQuotesGpcOn())
+				{
+				$firstname = addslashes($firstname);
+				$lastname = addslashes($lastname);
+				}
 			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $email, $nickname, $sendpwd == "Y"? $password1: "" );
 			}
 		}

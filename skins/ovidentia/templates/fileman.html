@@ -187,7 +187,7 @@ src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="mid
 <!--#in getnextxfile --> <tr valign="middle"> 
 <td class="BabSiteAdminFontBackground" width="1%" align="center"> 
 { fileimage }</td>          
-                <td class="BabSiteAdminFontBackground">&nbsp; 
+                <td class="BabSiteAdminFontBackground" colspan="2">&nbsp;{ name }
                 </td>
 <td align="center" nowrap class="BabSiteAdminFontBackground">&nbsp;{ sizef }&nbsp;</td>
                 <td align="center" nowrap class="BabSiteAdminFontBackground">{ modified }&nbsp;</td>
@@ -531,7 +531,7 @@ window.focus();
 </script>
 
 </HEAD>
-<BODY onUnload="this.opener.location.href='{ url }'">
+<BODY onUnload="this.opener.location.reload()">
 <br><br><br><br>
 
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">

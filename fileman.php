@@ -41,6 +41,8 @@ class listFiles
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 		$this->fullpath = bab_getUploadFullPath($gr, $id);
 		$this->path = $path;
+		$this->jpath = str_replace("'", "\'", $path);
+		$this->jpath = str_replace('"', "'+String.fromCharCode(34)+'",$this->jpath);
 		$this->id = $id;
 		$this->gr = $gr;
 		$this->countmgrp = 0;
@@ -62,7 +64,7 @@ class listFiles
 
 				if( $what == "list" && $gr == "Y" && $babBody->aclfm['idsa'][$i] != 0 && isUserApproverFlow($babBody->aclfm['idsa'][$i], $BAB_SESS_USERID) )
 					{
-					$req = "select ".BAB_FILES_TBL.".* from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+					$req = "select ".BAB_FILES_TBL.".* from ".BAB_FILES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_FILES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
 					$this->reswf = $this->db->db_query($req);
 					$this->countwf = $this->db->db_num_rows($this->reswf);
 					}
@@ -109,7 +111,7 @@ class listFiles
 					}
 				}
 			closedir($h);
-			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and confirmed='Y'";
+			$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and confirmed='Y'";
 			$req .= " order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -505,7 +507,7 @@ function listFiles($id, $gr, $path, $bmanager)
 
 			$this->rooturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list";
 			$this->refreshurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path;
-			$this->urldiskspace = $GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".$path;
+			$this->urldiskspace = $GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$id."&gr=".$gr."&path=".$this->jpath;
 
 			$this->upfolderimg = bab_printTemplate($this, "config.html", "parentfolder");
 			$this->usrfolderimg = bab_printTemplate($this, "config.html", "userfolder");
@@ -619,7 +621,7 @@ function listFiles($id, $gr, $path, $bmanager)
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$jfname = str_replace("'", "\'", $arr['name']);
 				$jfname = str_replace('"', "'+String.fromCharCode(34)+'",$jfname);
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$jfname;
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->jpath."&file=".$jfname;
 				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
@@ -641,7 +643,7 @@ function listFiles($id, $gr, $path, $bmanager)
 				$this->url = $GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$jfname = str_replace("'", "\'", $arr['name']);
 				$jfname = str_replace('"', "'+String.fromCharCode(34)+'",$jfname);
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$jfname;
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewfile&idf=".$arr['id']."&id=".$this->id."&gr=".$this->gr."&path=".$this->jpath."&file=".$jfname;
 				$this->urlget = $GLOBALS['babUrlScript']."?tg=fileman&idx=get&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];
 				$this->cuturl = $GLOBALS['babUrlScript']."?tg=fileman&idx=cut&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=del&id=".$this->id."&gr=".$this->gr."&path=".$this->path."&file=".$arr['name'];				
@@ -997,7 +999,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	$bexist = false;
 	if( file_exists($pathx.$osfname))
 		{
-		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and name='".$name."' and path='".$path."'");
+		$res = $db->db_query("select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and name='".$name."' and path='".addslashes($path)."'");
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
@@ -1044,7 +1046,7 @@ function saveFile($id, $gr, $path, $filename, $size, $tmp, $description, $keywor
 	else
 		{
 		$req = "insert into ".BAB_FILES_TBL." (name, description, keywords, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed) values ";
-		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" . $path. "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
+		$req .= "('" .$name. "', '" . $description. "', '" . $keywords. "', '" . addslashes($path). "', '" . $id. "', '" . $gr. "', '0', '" . $readonly. "', '', now(), '" . $idcreator. "', now(), '" . $idcreator. "', '". $confirmed."')";
 		$db->db_query($req);
 		$idf = $db->db_insert_id(); 
 		}
@@ -1247,6 +1249,11 @@ function createDirectory($dirname, $id, $gr, $path)
 		return false;
 		}
 
+	if( bab_isMagicQuotesGpcOn())
+		{
+		$dirname = stripslashes($dirname);
+		}
+
 	if( isset($GLOBALS['babFileNameTranslation']))
 		$dirname = strtr($dirname, $GLOBALS['babFileNameTranslation']);
 
@@ -1301,6 +1308,10 @@ function renameDirectory($dirname, $id, $gr, $path)
 		}
 
 
+	if( bab_isMagicQuotesGpcOn())
+		{
+		$dirname = stripslashes($dirname);
+		}
 	$pathx = bab_getUploadFullPath($gr, $id);
 
 	if( $pos = strrpos($path, "/"))
@@ -1334,7 +1345,7 @@ function renameDirectory($dirname, $id, $gr, $path)
 				{
 				if( substr($arr['path'], 0, $len) == $path )
 					{
-					$req = "update ".BAB_FILES_TBL." set path='".str_replace($path, $uppath.$dirname, $arr['path'])."' where id='".$arr['id']."'";
+					$req = "update ".BAB_FILES_TBL." set path='".addslashes(str_replace($path, $uppath.$dirname, $arr['path']))."' where id='".$arr['id']."'";
 					$db->db_query($req);
 					}
 				}
@@ -1384,7 +1395,7 @@ function removeDirectory($id, $gr, $path)
 	if( is_dir($pathx.$path))
 		{
 		$db = $GLOBALS['babDB'];
-		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."'";
+		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."'";
 		$res = $db->db_query($req);
 		while( $arr = $db->db_fetch_array($res))
 			{
@@ -1430,6 +1441,7 @@ function getFile( $file, $id, $gr, $path, $inl)
 
 	if( $access )
 		{
+		$file = stripslashes($file);
 		$db = $GLOBALS['babDB'];
 		$req = "select * from ".BAB_FILES_TBL." where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
 		$res = $db->db_query($req);
@@ -1492,7 +1504,7 @@ function cutFile( $file, $id, $gr, $path, $bmanager)
 		return false;
 		}
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_FILES_TBL." set state='X' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
+	$req = "update ".BAB_FILES_TBL." set state='X' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and name='".$file."'";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -1507,7 +1519,7 @@ function delFile( $file, $id, $gr, $path, $bmanager)
 		return false;
 		}
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_FILES_TBL." set state='D' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."' and name='".$file."'";
+	$req = "update ".BAB_FILES_TBL." set state='D' where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".addslashes($path)."' and name='".$file."'";
 	$res = $db->db_query($req);
 	return true;
 	}
@@ -1522,13 +1534,15 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 		return false;
 		}
 
+	$file = stripslashes($file);
+	$tp = stripslashes($tp);
 	$pathx = bab_getUploadFullPath($gr, $id);
 	if( file_exists($pathx.$tp."/".$file))
 		{
 		if( $path == $tp )
 			{
 			$db = $GLOBALS['babDB'];
-			$req = "update ".BAB_FILES_TBL." set state='' where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+			$req = "update ".BAB_FILES_TBL." set state='' where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
 			$res = $db->db_query($req);
 			return true;
 			}
@@ -1539,7 +1553,7 @@ function pasteFile( $file, $id, $gr, $path, $tp, $bmanager)
 	if( rename( $pathx.$path."/".$file, $pathx.$tp."/".$file))
 		{
 		$db = $GLOBALS['babDB'];
-		$req = "update ".BAB_FILES_TBL." set state='', path='".$tp."' where id_owner='".$id."' and bgroup='".$gr."' and path='".$path."' and name='".$file."'";
+		$req = "update ".BAB_FILES_TBL." set state='', path='".addslashes($tp)."' where id_owner='".$id."' and bgroup='".$gr."' and path='".addslashes($path)."' and name='".addslashes($file)."'";
 		$res = $db->db_query($req);
 		return true;
 		}
@@ -1807,6 +1821,8 @@ if(!isset($path))
 	{
 	$path = "";
 	}
+else if( bab_isMagicQuotesGpcOn())
+	$path = stripslashes($path);
 
 if( !empty($BAB_SESS_USERID) && $babBody->ustorage)
 	{
@@ -1883,7 +1899,11 @@ if( isset($mkdir) && $mkdir == "mkdir")
 if( $idx == "paste")
 	{
 	if( pasteFile($file, $id, $gr, $path, $tp, $bmanager))
+		{
 		$path = $tp;
+		if( bab_isMagicQuotesGpcOn())
+			$path = stripslashes($path);
+		}
 	$idx = "list";
 	}
 
