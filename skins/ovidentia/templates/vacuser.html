@@ -1,9 +1,7 @@
-
+<link href="../styles/standard.css" rel="stylesheet" type="text/css">
 <!--#begin newvacation -->
-<BR>
 <SCRIPT language="JavaScript">
 <!--
-
 function validateNum(field) {
 var valid = ".0123456789"
 var ok = "yes";
@@ -127,7 +125,10 @@ return true;
 }
 //-->
 </SCRIPT>
-<center><a class="BabTopicsTitleNavigationLink" href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=710,height=400,status=no,resizable=yes,top=200,left=200');">{ calendar }</a></center>
+<center>
+<a class="BabSiteAdminListLink" href="javascript: Start('{ calurl }', 'VacCalWindow', 'width=710,height=400,status=no,resizable=yes,top=200,left=200');">{ 
+calendar }</a>
+</center>
 <br>
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
 <input type="hidden" name="tg" value="vacuser">
@@ -136,7 +137,7 @@ return true;
 <table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
 <tr> 
 <td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
 <td valign="middle"> 
@@ -169,7 +170,7 @@ return true;
 </td>
 </tr>
 <tr> 
-<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"">{ dateendtxt }</a>: </td>
+<td width="45%" align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
 <td valign="middle"> 
 <select name="dayend">
   <!--#in getnextday -->
@@ -200,9 +201,10 @@ return true;
 </td>
 </tr>
 <tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ nbdaystxt }: </td>
-<td class="BabLoginMenuBackground" colspan="4" valign="middle">
-<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<td class="BabLoginMenuBackground" align="right" valign="bottom">{ nbdaystxt }: 
+</td>
+<td class="BabLoginMenuBackground" colspan="4" valign="bottom"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >&nbsp;</td><td class="BabLoginMenuBackground" >{ balancetxt }</td></tr>
 <!--#in getnexttype -->
 <!--#in getnextright -->
@@ -269,7 +271,46 @@ return true;
 </form>
 <br>
 <!--#end vwaitinglist -->
+<!--#begin vrequestslist -->
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ begindatetxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ enddatetxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ statustxt }</td>
+</tr>
+<!--#in getnext -->
+<tr> 
+<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ begindate }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ enddate }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
+<td class="BabSiteAdminFontBackground" valign="middle">{ status }</td>
+</tr>
+<!--#endin getnext -->
+<tr>
+<td colspan="8" nowrap class="BabSiteAdminTitleFontBackground"> 
+<table border="0" cellpadding="0" cellspacing="0" align="right" class="BabSiteAdminTitleFontBackground">
+<tr> 
+<td width="1%" nowrap>&nbsp;</td>
+<td width="1%" nowrap><a href="{ topurl }">{ topname }</a></td>
+<td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a></td>
+<td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a></td>
+<td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
 
+</table>
+<!--#end vrequestslist -->
 <!--#begin vwdetail -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -284,10 +325,6 @@ window.focus();
 </script>
 </HEAD>
 <BODY class="BabBackground">
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ fullname }</td>
-</tr></table></center>
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
@@ -385,46 +422,6 @@ close }</a> </td>
 </BODY>
 </HTML>
 <!--#end vedunload -->
-<!--#begin vrequestslist -->
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">{ nametxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ begindatetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ enddatetxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ quantitytxt }</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ statustxt }</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" nowrap valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ url }', 'VacationWindow', 'width=500,height=380,status=no,resizable=yes,top=200,left=200');">{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ begindate }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ enddate }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ quantity }</td>
-<td class="BabSiteAdminFontBackground" valign="middle">{ status }</td>
-</tr>
-<!--#endin getnext -->
-</table>
-</td>
-</tr>
-<tr>
-<td>
-<table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="1%"><a href="{ topurl }">{ topname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td class="BabSiteAdminTitleFontBackground" width="1%"><a href="{ prevurl }">{ prevname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td class="BabSiteAdminTitleFontBackground" width="1%"><a href="{ nexturl }">{ nextname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td class="BabSiteAdminTitleFontBackground" width="1%"><a href="{ bottomurl }">{ bottomname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> </td>
-<td class="BabSiteAdminTitleFontBackground" width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<!--#end vrequestslist -->
 
 <!--#begin ventrydetail -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -440,10 +437,8 @@ window.focus();
 </script>
 </HEAD>
 <BODY class="BabBackground">
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ fullname }</td>
-</tr></table></center>
+
+
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
@@ -486,6 +481,9 @@ window.focus();
 </tr>
 <tr>
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
+</tr>
+</table>
+</td>
 </tr>
 </table>
 </BODY>
