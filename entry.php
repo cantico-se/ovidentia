@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."utilit/topincl.php";
+include_once $babInstallPath."utilit/artincl.php";
 
 function ListArticles($idgroup)
 	{
@@ -44,11 +45,13 @@ function ListArticles($idgroup)
 			{
 			global $babBody;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$babBody->babsite['id']."' and ordering!='0' order by ordering asc";
+			$this->idgroup = $idgroup;
+			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head , LENGTH(at.body) as blen, at.restriction   from ".BAB_HOMEPAGES_TBL." ht left join ".BAB_ARTICLES_TBL." at on ht.id_article=at.id where ht.id_group='".$idgroup."' and ht.id_site='".$babBody->babsite['id']."' and ht.ordering!='0' order by ht.ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->countres = $this->db->db_num_rows($this->res);
 			$this->morename = bab_translate("Read More");
 			$this->printable = bab_translate("Print Friendly");
+			$this->attachmentxt = bab_translate("Associated documents");
 			}
 
 		function getnext(&$skip)
@@ -58,9 +61,6 @@ function ListArticles($idgroup)
 			if( $i < $this->countres)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select id, id_topic ,id_author, date, title, head , LENGTH(body) as blen, restriction  from ".BAB_ARTICLES_TBL." where id='".$arr['id_article']."'";
-				$res = $this->db->db_query($req);
-				$arr = $this->db->db_fetch_array($res);
 				if( $arr['restriction'] != '' && !bab_articleAccessByRestriction($arr['restriction']))
 					{
 					$skip = true;
@@ -71,26 +71,63 @@ function ListArticles($idgroup)
 				$this->title = $arr['title'];
 				$this->content = bab_replace($arr['head']);
 				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
+					{
 					$this->articleauthor = $author;
+					}
 				else
+					{
 					$this->articleauthor = bab_translate("Anonymous");
-				$this->articledate = bab_strftime(bab_mktime($arr['date']));
+					}
+				$this->articledate = bab_strftime(bab_mktime($arr['date_modification']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
-				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id'];
+				$this->moreurl = $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup;
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=entry&idx=print&topics=".$arr['id_topic']."&article=".$arr['id'];
+
+				$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$arr['id']."'");
+				$this->countf = $this->db->db_num_rows($this->resf);
+
+				if( $this->countf > 0 )
+					{
+					$this->battachments = true;
+					}
+				else
+					{
+					$this->battachments = false;
+					}
 				$i++;
 				return true;
 				}
 			else
 				return false;
 			}
+
+		function getnextdoc()
+			{
+			global $arrtop;
+			static $i = 0;
+			if( $i < $this->countf)
+				{
+				$arr = $this->db->db_fetch_array($this->resf);
+				$this->docurl = $GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup;
+				$this->docname = $arr['name'];
+				$this->docdesc = $arr['description'];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+		
 		}
 	
 	$temp = new temp($idgroup);
 	$babBody->babecho(	bab_printTemplate($temp,"entry.html", "homepage0"));
 	}
 
-function readMore($article)
+function readMore($article, $idg)
 	{
 	global $babBody;
 
@@ -104,37 +141,63 @@ function readMore($article)
 		var $title;
 		var $author;
 
-		function temp($article)
+		function temp($article, $idg)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='Y'";
+			$this->idgroup = $idg;
+			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$article."'";
 			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$arr = $this->db->db_fetch_array($this->res);
+			$this->content = bab_replace($arr['body']);
+			$this->title = $arr['title'];
+			if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
+				{
+				$this->articleauthor = $author;
+				}
+			else
+				{
+				$this->articleauthor = bab_translate("Anonymous");
+				}
+			$this->articledate = bab_strftime(bab_mktime($arr['date']));
+			$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
+
+			$this->resf = $this->db->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$article."'");
+			$this->countf = $this->db->db_num_rows($this->resf);
+
+			if( $this->countf > 0 )
+				{
+				$this->attachmentxt = bab_translate("Associated documents");
+				$this->battachments = true;
+				}
+			else
+				{
+				$this->battachments = false;
+				}
 			}
 
-		function getnext()
+		function getnextdoc()
 			{
+			global $arrtop;
 			static $i = 0;
-			if( $i < $this->count)
+			if( $i < $this->countf)
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->content = bab_replace($arr['body']);
-				$this->title = $arr['title'];
-				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
-					$this->articleauthor = $author;
-				else
-					$this->articleauthor = bab_translate("Anonymous");
-				$this->articledate = bab_strftime(bab_mktime($arr['date']));
-				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
+				$arr = $this->db->db_fetch_array($this->resf);
+				$this->docurl = $GLOBALS['babUrlScript']."?tg=entry&idx=getf&idf=".$arr['id']."&article=".$arr['id_article']."&idg=".$this->idgroup;
+				$this->docname = $arr['name'];
+				$this->docdesc = $arr['description'];
 				$i++;
 				return true;
 				}
 			else
+				{
+				$i = 0;
 				return false;
+				}
 			}
+
 		}
 	
-	$temp = new temp($article);
+	$temp = new temp($article, $idg);
 	$babBody->babecho(	bab_printTemplate($temp,"entry.html", "readmore"));
 	}
 
@@ -172,6 +235,29 @@ function articlePrint($topics, $article)
 	echo bab_printTemplate($temp,"articleprint.html");
 	}
 
+
+function getDocumentArticle($idf, $article)
+{
+	global $babDB;
+	$arr = $babDB->db_fetch_array($babDB->db_query("select id_article from ".BAB_ART_FILES_TBL." where id='".$idf."'"));
+
+	$access = false;
+	if( $arr['id_article'] == $article )
+		{
+		$access = true;
+		}
+
+	if( !$access )
+	{
+		echo bab_translate("Access denied");
+	}
+	else
+	{
+		bab_getDocumentArticle($idf);
+	}
+}
+
+
 function isAccessValid($article, $idg)
 {
 	global $babBody;
@@ -201,15 +287,30 @@ if(!isset($idg))
 	}
 
 if( $BAB_SESS_LOGGED)
+	{
 	$idg = 1; // registered users
+	}
 
 switch($idx)
 	{
+	case "getf":
+		if( !isAccessValid($article, $idg) )
+			{
+			$babBody->msgerror = bab_translate("Access denied");
+			return;
+			}
+		else
+			{
+			getDocumentArticle($idf, $article);
+			exit;
+			}
+		break;
+
 	case "print":
 		if( !isAccessValid($article, $idg) )
 			{
-				$babBody->msgerror = bab_translate("Access denied");
-				return;
+			$babBody->msgerror = bab_translate("Access denied");
+			return;
 			}
 		else
 			{
@@ -221,12 +322,12 @@ switch($idx)
 	case "more":
 		if( !isAccessValid($article, $idg) )
 			{
-				$babBody->msgerror = bab_translate("Access denied");
-				return;
+			$babBody->msgerror = bab_translate("Access denied");
+			return;
 			}
 		else
 			{
-			readMore($article);
+			readMore($article, $idg);
 			$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=entry");
 			$babBody->addItemMenu("more", bab_translate("Article"), $GLOBALS['babUrlScript']."?tg=entry&idx=more");
 			}
@@ -235,9 +336,13 @@ switch($idx)
 	default:
 	case "list":
 		if( $idg == 1 )
+			{
 			$babBody->title = bab_translate("Private home page articles");
+			}
 		else
+			{
 			$babBody->title = bab_translate("Public home page articles");
+			}
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=entry");
 		listArticles($idg);
 		break;

@@ -9,6 +9,16 @@
   <tr valign="top"> 
     <td colspan="2" class="BabTopicsBackground">{ content }</td>
   </tr>
+<!--#if battachments -->
+  <tr> 
+    <td class="BabTopicsBackground" colspan="2"><b>{ attachmentxt }:</b><br>
+<!--#in getnextdoc -->
+<a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;<!--#if docdesc -->({ docdesc })<!--#endif docdesc --><br>
+<!--#endin getnextdoc -->
+	</td>
+  </tr>
+<!--#endif battachments -->
+  
   <tr valign="middle" align="right"> 
     <td colspan="2" class="BabTopicsButtonBackground"> <a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printable }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="2" height="1" border="0">{ 
       printable }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
@@ -38,13 +48,20 @@
 
 <!--#begin readmore -->
 <br>
-<!--#in getnext -->
 <table border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
 <tr>
 <td class="BabTopicsTitleBackground" valign="middle">{ title }</td>
 </tr>
 <tr><td class="BabTopicsBackground" >{ content }</td></tr>
+<!--#if battachments -->
+  <tr> 
+    <td class="BabTopicsBackground"><b>{ attachmentxt }:</b><br>
+<!--#in getnextdoc -->
+<a class="BabForumTopicsNavContribution" href="{ docurl }">{ docname }</a>&nbsp;&nbsp;<!--#if docdesc -->({ docdesc })<!--#endif docdesc --><br>
+<!--#endin getnextdoc -->
+	</td>
+  </tr>
+<!--#endif battachments -->
 <tr><td colspan="2" class="" align="right" nowrap></td></tr>
 </table>
-<!--#endin getnext -->
 <!--#end readmore -->

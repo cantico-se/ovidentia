@@ -169,6 +169,7 @@ class bab_ArticlesHomePages extends bab_handler
 	var $arrid = array();
 	var $index;
 	var $count;
+	var $idgroup;
 
 	function bab_ArticlesHomePages( &$ctx)
 	{
@@ -176,7 +177,7 @@ class bab_ArticlesHomePages extends bab_handler
 
 		$this->bab_handler($ctx);
 		$arr['id'] = $babBody->babsite['id'];
-		$idgroup = $ctx->get_value('type');
+		$this->idgroup = $ctx->get_value('type');
 		$order = $ctx->get_value('order');
 		if( $order === false || $order === '' )
 			$order = "asc";
@@ -189,20 +190,20 @@ class bab_ArticlesHomePages extends bab_handler
 			default: $order = "ht.ordering"; break;
 		}
 
-		switch(strtolower($idgroup))
+		switch(strtolower($this->idgroup))
 			{
 			case "public":
-				$idgroup = 2; // non registered users
+				$this->idgroup = 2; // non registered users
 				break;
 			case "private":
 			default:
 				if( $GLOBALS['BAB_SESS_LOGGED'])
 					{
-					$idgroup = 1; // registered users
+					$this->idgroup = 1; // registered users
 					}
 				else
 					{
-					$idgroup = 2; // non registered users
+					$this->idgroup = 2; // non registered users
 					}
 				break;
 			}
@@ -214,7 +215,7 @@ class bab_ArticlesHomePages extends bab_handler
 		else
 			$filter = true;
 
-		$res = $babDB->db_query("select at.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$idgroup."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' group by at.id order by ".$order);
+		$res = $babDB->db_query("select at.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$this->idgroup."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' group by at.id order by ".$order);
 		while($arr = $babDB->db_fetch_array($res))
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
@@ -253,7 +254,7 @@ class bab_ArticlesHomePages extends bab_handler
 			else
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
