@@ -392,10 +392,12 @@ function bab_deleteGroup($id)
 	$db->db_query("delete from ".BAB_SECTIONS_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_FAQCAT_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$id."'");	
-	$db->db_query("delete from ".BAB_CATEGORIESCAL_TBL." where id_group='".$id."'");
 	$db->db_query("delete from ".BAB_FMDOWNLOAD_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_FMUPDATE_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_FMUPLOAD_GROUPS_TBL." where id_group='".$id."'");	
+
+	$db->db_query("delete from ".BAB_OCVIEW_GROUPS_TBL." where id_group='".$id."'");	
+	$db->db_query("delete from ".BAB_OCUPDATE_GROUPS_TBL." where id_group='".$id."'");	
 
 	$db->db_query("delete from ".BAB_CAL_PUB_GRP_GROUPS_TBL." where id_group='".$id."'");	
 	$db->db_query("delete from ".BAB_CAL_PUB_MAN_GROUPS_TBL." where id_group='".$id."'");	
