@@ -34,6 +34,8 @@ function showOthers()
 
 		function tempA()
 			{
+			$this->approbations = bab_translate("Approbations");
+			$this->news = bab_translate("New documents");
 			}
 		}
 
