@@ -1,42 +1,43 @@
-<br>
+<div id="bab_summary_newposts" style="display:none">
+<br />
 <OFIfNotIsSet name="nbdays" value="7">
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-<tr> 
-<td class="BabSummaryTitleFontBackground" width="90%" valign="middle"><OFTranslate text="New posts"></td>
-</tr>
-</table>
-</td>
-</tr>
+	<tr> 
+	<td class="BabLoginCadreBackground"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="2">
+		<tr> 
+			<td class="BabSummaryTitleFontBackground" width="90%" valign="middle"><OFTranslate text="New posts"></td>
+		</tr>
+		</table>
+	</td>
+	</tr>
 </table>
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="3" cellspacing="0">
-<tr>
-	<td class="BabTitleSmallFontBg"><OFTranslate text="Date">&nbsp;</td>
-	<td class="BabTitleSmallFontBg">&nbsp;</td>
-	<td class="BabTitleSmallFontBg"><OFTranslate text="Contribution">&nbsp;</td>
-	<td class="BabTitleSmallFontBg"><OFTranslate text="Author">&nbsp;</td>
+	<td class="BabLoginCadreBackground"> 
+	<table  border="0" width="100%" cellpadding="3" cellspacing="0">
+		<tr>
+			<td class="BabTitleSmallFontBg"><OFTranslate text="Date">&nbsp;</td>
+			<td class="BabTitleSmallFontBg">&nbsp;</td>
+			<td class="BabTitleSmallFontBg"><OFTranslate text="Contribution">&nbsp;</td>
+			<td class="BabTitleSmallFontBg"><OFTranslate text="Author">&nbsp;</td>
+		</tr>
+		<OCRecentPosts from_lastlog="<OVnbdays>">
+				<OCIfEqual expr1="<OVCIndex>" expr2="0">
+				<script type="text/javascript">
+					document.getElementById('bab_summary_newposts').style.display = '';
+				</script>
+				</OCIfEqual>
+		<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
+		<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSummaryContentBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
+			<td width="120"><OVPostDate date="%j/%n/%Y - %H:%i"></td>
+			<td align="right"><span style="font-Size:9"><OCForum forumid="<OVPostForumId>"><OVForumName striptags="1" strlen="20,..."> / </OCForum><OCPost postid="<OVPostThreadId>"><OVPostTitle striptags="1" strlen="20,..."> / </OCPost></span></td>
+			<td align="left"><a class="BabSummaryLinkColor" href="<OVPostUrl>"><OVPostTitle striptags="1" strlen="100,..."></a></td>
+			<td width="130"><OVPostAuthor></td>
+		</tr>
+	</OCRecentPosts>
+	</table>
+	</td>
 </tr>
-<OCRecentPosts from_lastlog="<OVnbdays>"> 
-<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
-<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSummaryContentBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabTopicsAuthorBackground</OCIfNotEqual>">
-<td width="120"><OVPostDate date="%j/%n/%Y - %H:%i"></td>
-<td align="right"><span style="font-Size:9">
-
-<OCForum forumid="<OVPostForumId>"><OVForumName striptags="1" strlen="20,..."> / </OCForum>
-<OCPost postid="<OVPostThreadId>"><OVPostTitle striptags="1" strlen="20,..."> / </OCPost>
-</span>
-</td>
-<td align="left">
-<a class="BabSummaryLinkColor" href="<OVPostUrl>"><OVPostTitle striptags="1" strlen="100,..."></a></td>
-<td width="130"><OVPostAuthor></td>
-</tr>
-</OCRecentPosts>
 </table>
-</td>
-</tr>
-</table>
+</div>
