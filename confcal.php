@@ -204,7 +204,10 @@ function modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $id
 		$babBody->msgerror = bab_translate("You must provide a name !!");
 		return;
 		}
-
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$oldname = addslashes($oldname);
+		}
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='$oldname'";	
 	$res = $db->db_query($query);
@@ -214,6 +217,11 @@ function modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $id
 		}
 	else
 		{
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$name = addslashes($name);
+			$description = addslashes($description);
+			}
 		$query = "update ".BAB_CATEGORIESCAL_TBL." set name='$name', description='$description', bgcolor='$bgcolor' where id='$id'";
 		$db->db_query($query);
 		}
@@ -238,6 +246,11 @@ function modifyResourceCal($userid, $oldname, $name, $description, $id)
 		}
 	else
 		{
+		if( !bab_isMagicQuotesGpcOn())
+			{
+			$name = addslashes($name);
+			$description = addslashes($description);
+			}
 		$query = "update ".BAB_RESOURCESCAL_TBL." set name='$name', description='$description' where id='$id'";
 		$db->db_query($query);
 		}
