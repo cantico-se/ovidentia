@@ -88,7 +88,7 @@ function deleteCategory($id)
 			{
 			$this->message = babTranslate("Are you sure you want to delete this faq");
 			$this->title = getFaqName($id);
-			$this->warning = babTranslate("WARNING: This operation will delete category with all questions/responses"). "!";
+			$this->warning = babTranslate("WARNING: This operation will delete category with all questions and responses"). "!";
 			$this->urlyes = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Delete&item=".$id."&action=Yes";
 			$this->yes = babTranslate("Yes");
 			$this->urlno = $GLOBALS['babUrl']."index.php?tg=admfaq&idx=Modify&item=".$id;
