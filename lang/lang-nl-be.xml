@@ -1257,4 +1257,16 @@
 <string id="Principal role">Principal role</string>
 <string id="Unlock">Unlock</string>
 <string id="Locked">Locked</string>
+<string id="Authentification">Authentification</string>
+<string id="Those fields are required">Those fields are required</string>
+<string id="Base DN">Base DN</string>
+<string id="Bind DN">Bind DN</string>
+<string id="Search base">Search base</string>
+<string id="Attribute">Attribute</string>
+<string id="Password encryption type">Password encryption type</string>
+<string id="Allow administrators to connect if LDAP authentification fails">Allow administrators to connect if LDAP authentification fails</string>
+<string id="You must provide a nickname">You must provide a nickname</string>
+<string id="LDAP connection failed. Please contact your administrator">LDAP connection failed. Please contact your administrator</string>
+<string id="LDAP authentification failed. Please verify your nickname and your password">LDAP authentification failed. Please verify your nickname and your password</string>
+<string id="LDAP bind failed. Please contact your administratorrrrr">LDAP bind failed. Please contact your administratorrrrr</string>
 </nl-be>

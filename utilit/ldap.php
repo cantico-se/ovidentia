@@ -33,14 +33,11 @@ class babLDAP
 	var $bindpw;
 
 
-	function babLDAP($host, $port = "", $basedn = "" , $binddn = "", $bindpw = "", $die = false)
+	function babLDAP($host, $port = "", $die = false)
 	{
 		$this->ldap_die_on_fail = $die;
 		$this->host = $host;
 		$this->port = $port;
-		$this->basedn = $basedn;
-		$this->binddn = $binddn;
-		$this->bindpw = $bindpw;
 	}
 
 	function print_error($text)
@@ -64,22 +61,39 @@ class babLDAP
 	function connect()
 	{
 		if( !isset($this->port) || empty($this->port))
+			{
 			$this->idlink = ldap_connect($this->host);
+			}
 		else
+			{
 			$this->idlink = ldap_connect($this->host, $this->port);
+			}
 
 		if( $this->idlink === false )
 			{
 			$this->print_error("Cannot connect to ldap server : " . $this->host);
 			return false;
 			}
-		if(ldap_bind($this->idlink, $this->binddn, $this->bindpw))
-			return $this->idlink;
+		return $this->idlink;
+	}
+
+	function bind($bind = "" , $pass = "")
+	{
+		if( !empty($bind) || !empty($pass))
+			{
+			$ret = ldap_bind($this->idlink, $bind, $pass);
+			}
 		else
 			{
-			$this->print_error("Cannot bind to : " . $this->binddn);
-			return false;
+			/* bind as anonymous */
+			$ret = ldap_bind($this->idlink);
 			}
+
+		if($ret === false)
+			{
+			$this->print_error("Cannot bind to : " . $bind);
+			}
+		return $ret;
 	}
 
 	function close()
@@ -87,12 +101,12 @@ class babLDAP
 		return ldap_close($this->idlink);
 	}
 
-	function search($filter, $attributes = array(), $attronly = 0, $sizelimit = 0)
+	function search($basedn, $filter, $attributes = array(), $attronly = 0, $sizelimit = 0)
 	{
-		$res = ldap_search($this->idlink, $this->basedn, $filter, $attributes, $attronly, $sizelimit);
+		$res = ldap_search($this->idlink, $basedn, $filter, $attributes, $attronly, $sizelimit);
 		if( $res === false )
 			{
-			$this->print_error("Search failed : " . $this->basedn ." - ". $filter);
+			$this->print_error("Search failed : " . $basedn ." - ". $filter);
 			return false;
 			}
 		else
@@ -148,6 +162,10 @@ class babLDAP
 			}
 	}
 
+	function compare($dn, $attr, $value)
+	{
+		return ldap_compare($this->idlink, $dn, $attr, $value);
+	}
 }
 
 ?>

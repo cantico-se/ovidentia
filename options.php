@@ -131,12 +131,9 @@ function changeNickname($nickname)
 
 		function temp($nickname)
 			{
-			global $babDB;
-			
-			
+			global $babBody, $babDB;
 
 			$this->bupdateuserinfo = false;
-
 			list($id, $allowuu) = $babDB->db_fetch_array($babDB->db_query("select id, user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
 			if( $allowuu == "N")
 				{
@@ -153,11 +150,10 @@ function changeNickname($nickname)
 				$this->updateuserinfo = bab_translate("Update personal informations");
 				}
 
-			$req="select s.change_nickname,s.change_password,u.changepwd from ".BAB_SITES_TBL." s LEFT JOIN ".BAB_USERS_TBL." u ON u.id='".$GLOBALS['BAB_SESS_USERID']."' where name='".addslashes($GLOBALS['babSiteName'])."'";
-			$res=$babDB->db_query($req);
+			$res=$babDB->db_query("select changepwd from ".BAB_USERS_TBL." where id='".$GLOBALS['BAB_SESS_USERID']."'");
 			$arr = $babDB->db_fetch_array($res);
-			$this->changenickname = $arr['change_nickname'] == 'Y' ? true : false;
-			$this->changepassword = $arr['change_password'] == 'Y' && $arr['changepwd'] == 1 ? bab_translate("Update Password") : false;
+			$this->changenickname = $babBody->babsite['change_nickname'] == 'Y' ? true : false;
+			$this->changepassword = $babBody->babsite['change_password'] == 'Y'? ($arr['changepwd'] == 1 ? bab_translate("Update Password") : false): false;
 			$this->urlchangepassword = $GLOBALS['babUrlScript']."?tg=options&idx=changePassword";
 			$this->nicknameval = $nickname != ""? $nickname: "";
 			$this->nickname = bab_translate("Nickname");
@@ -758,10 +754,10 @@ switch($idx)
 		break;
 
 	case "changePassword":
-		$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-		$res=$babDB->db_query($req);
-		$arr = $babDB->db_fetch_array($res);
-		if ($arr['change_password'] == 'Y' ) changePassword($msgerror);
+		if ($babBody->babsite['change_password'] == 'Y' ) 
+			{
+			changePassword($msgerror);
+			}
 		break;
 	case "changePasswordUnload":
 		changePasswordUnload($msg);

@@ -2667,4 +2667,110 @@ if( !$res)
 
 return $ret;
 }
+
+function upgrade409to410()
+{
+$ret = "";
+$db = $GLOBALS['babDB'];
+
+$req = "CREATE TABLE ".BAB_LDAP_SITES_FIELDS_TBL." (";
+$req .= "id int(11) unsigned NOT NULL auto_increment,";
+$req .= "name varchar(255) NOT NULL default '',";
+$req .= "x_name varchar(255) NOT NULL default '',";
+$req .= "id_site int(11) unsigned NOT NULL default '0',";
+$req .= "PRIMARY KEY  (`id`),";
+$req .= "KEY `name` (`name`),";
+$req .= "KEY `id_site` (`id_site`)";
+$req .= ");";
+
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_LDAP_SITES_FIELDS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD ldap_allowadmincnx ENUM('N','Y') DEFAULT 'N' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD ldap_passwordtype ENUM('text','md5','unix','sha') DEFAULT 'text' NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD ldap_attribute TEXT NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD ldap_searchdn TEXT NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `ldap_password` tinyblob NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `ldap_userdn` TEXT NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `ldap_basedn` TEXT NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `ldap_host` tinytext NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD `authentification` smallint(5) unsigned NOT NULL default '0'";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+$res = $db->db_query("select id from ".BAB_SITES_TBL."");
+while( $arr = $db->db_fetch_array($res))
+	{
+	while( $row = $db->db_fetch_array($resf))
+		{
+		$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (name, x_name, id_site) values ('".$row['name']."','','".$arr['id']."')");
+		}
+	$db->db_data_seek($resf, 0 );
+	}
+return $ret;
+}
 ?>

@@ -542,6 +542,12 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 			$imgsize = 50;
 		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup, smtpuser, smtppassword, langfilter,total_diskspace, user_diskspace, folder_diskspace, maxfilesize, uploadpath, babslogan, remember_login, change_password, change_nickname, name_order) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $adminname. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group. "', '" . $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\",'". $total_diskspace ."','". $user_diskspace ."','". $folder_diskspace."','".$maxfilesize."', '".$uploadpath."','". $babslogan."','". $remember_login."', '".$change_password."','". $change_nickname."','". $name_order."')";
 		$db->db_query($query);
+		$idsite = $db->db_insert_id();
+		$resf = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+		while( $row = $db->db_fetch_array($resf))
+			{
+			$db->db_query("insert into ".BAB_LDAP_SITES_FIELDS_TBL." (name, x_name, id_site) values ('".$row['name']."','','".$idsite."')");
+			}
 		}
 	return true;
 	}

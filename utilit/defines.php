@@ -68,6 +68,7 @@ define("BAB_IMAGES_TEMP_TBL", "bab_images_temp");
 define("BAB_INI_TBL", "bab_ini");
 define("BAB_LDAP_DIRECTORIES_TBL", "bab_ldap_directories");
 define("BAB_LDAPDIRVIEW_GROUPS_TBL", "bab_ldapdirview_groups");
+define("BAB_LDAP_SITES_FIELDS_TBL", "bab_ldap_sites_fields");
 define("BAB_MAIL_ACCOUNTS_TBL", "bab_mail_accounts");
 define("BAB_MAIL_DOMAINS_TBL", "bab_mail_domains");
 define("BAB_MAIL_SIGNATURES_TBL", "bab_mail_signatures");

@@ -268,17 +268,11 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 
 		if( !$badmin )
 			{
-			$result=$db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
-			if( $result && $db->db_num_rows($result) > 0 )
-				{
-				$r = $db->db_fetch_array($result);
-				}
-
 			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
 			$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
 			$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($nickname);
 			$fullname = bab_composeUserName($firstname , $lastname);
-			if( $r['email_confirm'] == 'Y')
+			if( isset($babBody->babsite['email_confirm']) && $babBody->babsite['email_confirm'] == 'Y')
 				{
 				notifyUserRegistration($link, $fullname, $email);
 				$warning = "";
@@ -288,6 +282,13 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 				$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
 				}
 			notifyAdminRegistration($fullname, $email, $warning);
+			}
+		else
+			{
+			if( isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
+				{
+				bab_addUserToGroup($id, $babBody->babsite['idgroup']);
+				}
 			}
 		bab_callAddonsFunction('onUserCreate', $id);
 		return $id;

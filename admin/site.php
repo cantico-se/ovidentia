@@ -24,6 +24,9 @@
 include_once "base.php";
 include $babInstallPath."admin/acl.php";
 
+$bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber', 'mobile', 'homephone', 'facsimiletelephonenumber', 'title', 'o', 'street', 'l', 'postalcode', 'st', 'homepostaladdress', 'jpegphoto', 'departmentnumber');
+
+
 function getSiteName($id)
 	{
 	$db = $GLOBALS['babDB'];
@@ -161,7 +164,7 @@ function siteModify($id)
 			$this->langfiltertxt = bab_translate("Language filter");
 
 			$this->db = $GLOBALS['babDB'];
-			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
+			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_password, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldappass  from ".BAB_SITES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
@@ -220,7 +223,9 @@ function siteModify($id)
 						$this->disabledselected = "selected";
 						break;
 					}
+
 				}
+
 			$this->langfiltersite = $arr['langfilter'];
 			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
@@ -574,6 +579,225 @@ function siteHomePage1($id)
 	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "sitehomepage1"));
 	}
 
+function siteAuthentification($id)
+	{
+
+	global $babBody;
+	class clsSiteAuthentification
+		{
+
+		function clsSiteAuthentification($id)
+			{
+			global $bab_ldapAttributes;
+			$this->db = $GLOBALS['babDB'];
+			$this->id = $id;
+			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_password, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldappass  from ".BAB_SITES_TBL." where id='$id'";
+			$this->res = $this->db->db_query($req);
+			if( $this->db->db_num_rows($this->res) > 0 )
+				{
+				$this->showform = true;
+				$arr = $this->db->db_fetch_array($this->res);
+				$this->modify = bab_translate("Modify");
+				$this->authsite = $arr['authentification'];
+				$this->ldaphost = $arr['ldap_host'];
+				$this->ldappasssite = $arr['ldappass'];
+				$this->ldapbasednsite = $arr['ldap_basedn'];
+				$this->ldapuserdnsite = $arr['ldap_userdn'];
+				$this->ldapsearchdnsite = $arr['ldap_searchdn'];
+				$this->ldapattributesite = $arr['ldap_attribute'];
+				$this->ldappasstypesite = $arr['ldap_passwordtype'];
+
+				$this->authentificationtxt = bab_translate("Authentification");
+				$this->arrayauth = array(0 => "OVIDENTIA", 1 => "LDAP");
+				$this->arrayauthpasstype = array('text' => 'plaintext', 'md5' => 'md5', 'unix' => 'unix', 'sha' => 'sha-1');
+
+				$this->fieldrequiredtxt = bab_translate("Those fields are required");
+				$this->authpasstxt = bab_translate("Password");
+				$this->authpassconftxt = bab_translate("Confirm");
+				$this->hosttxt = bab_translate("Host");
+				$this->basedntxt = bab_translate("Base DN");
+				$this->userdntxt = bab_translate("Bind DN");
+				$this->searchbasetxt = bab_translate("Search base");
+				$this->attributetxt = bab_translate("Attribute");
+				$this->authpasstypetxt = bab_translate("Password encryption type");
+				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
+				if( $arr['ldap_allowadmincnx']  == 'Y' )
+					{
+					$this->ldpachkcnxchecked = 'checked';
+					}
+				else
+					{
+					$this->ldpachkcnxchecked = '';
+					}
+
+				$this->resf = $this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
+				if( $this->resf && $this->db->db_num_rows($this->resf) > 0)
+					{
+					$this->countf = $this->db->db_num_rows($this->resf);
+					$this->countf++;
+					}
+				else
+					{
+					$this->countf = 0;
+					}
+
+				$this->siteattributes = array();
+				$res = $this->db->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
+				while($row = $this->db->db_fetch_array($res))
+					{
+					$this->siteattributes[$row['name']] = $row['x_name'];
+					}
+
+
+				sort($bab_ldapAttributes);
+				$this->countv = count($bab_ldapAttributes);
+				}
+			else
+				{
+				$this->showform = false;
+				}
+			}
+
+		function getnextauth()
+			{
+			static $i = 0;
+			if( $i < count($this->arrayauth))
+				{
+                $this->authval = $i;
+                $this->authname = $this->arrayauth[$i];
+                if( $this->authsite == $this->authval )
+					{
+                    $this->authselected = "selected";
+					}
+                else
+					{
+                    $this->authselected = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextpasstype()
+			{
+			static $i = 0;
+			if( $i < count($this->arrayauthpasstype))
+				{
+				list($this->passtypeval, $this->passtypename) = each($this->arrayauthpasstype);
+                if( $this->ldappasstypesite == $this->passtypeval )
+					{
+                    $this->passtypeselected = "selected";
+					}
+                else
+					{
+                    $this->passtypeselected = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextfield()
+			{
+			global $bab_ldapAttributes;
+			static $i = 0;
+			if( $i < $this->countf)
+				{
+				if( 0  == $i )
+					{
+					$this->ofieldname = bab_translate("Nickname");
+					$this->ofieldv = "nickname";
+					$this->required = true;				
+					if( in_array($this->ldapattributesite, $bab_ldapAttributes) )
+						{
+						$this->ofieldval = '';
+						}
+					else
+						{
+						$this->ofieldval = $this->ldapattributesite;
+						}
+					}
+				else
+					{
+					$arr = $this->db->db_fetch_array($this->resf);
+					$this->required = false;				
+					$this->ofieldname = bab_translate($arr['description']);
+					$this->ofieldv = $arr['name'];
+					if( in_array($arr['x_name'], $bab_ldapAttributes) && $this->siteattributes[$this->ofieldv] == $arr['x_name'])
+						{
+						$this->ofieldval = '';
+						}
+					else
+						{
+						$this->ofieldval = isset($this->siteattributes[$this->ofieldv])? $this->siteattributes[$this->ofieldv]: '';
+						}
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				if( $this->countf > 0 )
+					{
+					$this->db->db_data_seek($this->resf, 0);
+					}
+				return false;
+				}
+			}
+		
+		function getnextval()
+			{
+			global $bab_ldapAttributes;
+			static $k = 0;
+			if( $k < $this->countv)
+				{
+				$this->ffieldid = $bab_ldapAttributes[$k];
+				$this->ffieldname = $bab_ldapAttributes[$k];
+
+				if( $this->ofieldv == "nickname" )
+					{
+						if( $this->ffieldname == $this->ldapattributesite)
+						{
+						$this->fselected = "selected";
+						}
+						else
+						{
+						$this->fselected = "";
+						}
+					}
+				else
+					{
+						if( isset($this->siteattributes[$this->ofieldv]) && $this->ffieldname == $this->siteattributes[$this->ofieldv] )
+						{
+						$this->fselected = "selected";
+						}
+						else
+						{
+						$this->fselected = "";
+						}
+					}
+
+				$k++;
+				return true;
+				}
+			else
+				{
+				$k = 0;
+				return false;
+				}
+			}
+		}
+
+	$temp = new clsSiteAuthentification($id);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "siteauthentification"));
+	}
+
+
 function sectionDelete($id)
 	{
 	global $babBody;
@@ -709,11 +933,71 @@ function siteUpdate_bloc2($id,$total_diskspace, $user_diskspace, $folder_diskspa
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
+function siteUpdate_authentification($id, $authtype, $host, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype)
+	{
+	global $babBody, $bab_ldapAttributes, $nickname, $i_nickname;
+
+	if( empty($host))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a host address !!");
+		return false;
+		}
+
+	if( $ldappass1 != $ldappass2)
+		{
+		$babBody->msgerror = bab_translate("ERROR: Passwords not match !!");
+		return false;
+		}
+
+	if( (!isset($nickname) || empty($nickname)) && (!isset($i_nickname) || empty($i_nickname)))
+		{
+		$babBody->msgerror = bab_translate("You must provide a nickname");
+		return false;
+		}
+
+	$ldapattr = empty($nickname) ? $i_nickname: $nickname;
+
+	$db = $GLOBALS['babDB'];
+
+	$req = "update ".BAB_SITES_TBL." set authentification='".$authtype."'";
+	if( $authtype == 1 )
+		{
+		$req .= ", ldap_host='".$host."', ldap_basedn='".$basedn."', ldap_userdn='".$userdn."', ldap_searchdn='".$searchdn."', ldap_attribute='".$ldapattr."', ldap_passwordtype='".$passtype."'";
+		if( !empty($ldappass1) )
+			$req .= ", ldap_password=ENCODE(\"".$ldappass1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
+
+		}
+	$req .= " where id='".$id."'";
+	$db->db_query($req);
+
+	$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
+	while( $row = $db->db_fetch_array($res))
+		{
+		$val = '';
+		if( isset($GLOBALS[$row['name']]) && !empty($GLOBALS[$row['name']]))
+			{
+			$val = $GLOBALS[$row['name']];
+			}
+		else
+			{
+			$var = "i_".$row['name'];
+			if( isset($GLOBALS[$var]) && !empty($GLOBALS[$var]))
+				{
+				$val = $GLOBALS[$var];
+				}
+			}
+		$db->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$val."' where name='".$row['name']."' and id_site='".$id."'");
+		}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+	}
+
 function confirmDeleteSite($id)
 	{
 	$db = $GLOBALS['babDB'];
 	// delete homepages
 	$db->db_query("delete from ".BAB_HOMEPAGES_TBL." where id_site='".$id."'");
+	// delete ldap settings
+	$db->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$id."'");
 	// delete site
 	$db->db_query("delete from ".BAB_SITES_TBL." where id='".$id."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -766,13 +1050,22 @@ if( isset($modify) && $modify=="bloc1")
 		$idx = "Delete";
 		}
 	}
-
-if( isset($modify) && $modify=="bloc2")
+elseif( isset($modify) && $modify=="bloc2")
 	{
 	if( !empty($Submit))
 		{
 		if(!siteUpdate_bloc2($item,$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password,  $change_password, $change_nickname, $name_order))
 			$idx = "modify";
+		}
+	}
+elseif( isset($modify) && $modify =="bloc3")
+	{
+	if( !empty($Submit))
+		{
+		if( !isset($passtype)) { $passtype='text';}
+		//if(!siteUpdate_authentification($item, $authtype, $host, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $ldapattr, $passtype))
+		if(!siteUpdate_authentification($item, $authtype, $host, $basedn, $userdn, $ldappass1, $ldappass2, $searchdn, $passtype))
+			$idx = "auth";
 		}
 	}
 
@@ -800,6 +1093,16 @@ if( isset($action) && $action == "Yes")
 
 switch($idx)
 	{
+	case "auth":
+		$babBody->title = bab_translate("Authentification").": ".getSiteName($item);
+		siteAuthentification($item);
+		$babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
+		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
+		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
+		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
+		break;
+
 	case "hpriv":
 		$babBody->title = bab_translate("Registered users home page for site").": ".getSiteName($item);
 		siteHomePage1($item);
@@ -807,6 +1110,7 @@ switch($idx)
 		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
 		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
 		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
+		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
 		break;
 
 	case "hpub":
@@ -816,6 +1120,7 @@ switch($idx)
 		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
 		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
 		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
+		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
 		break;
 
 	case "Delete":
@@ -833,6 +1138,7 @@ switch($idx)
 		$babBody->addItemMenu("modify", bab_translate("Modify"),$GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$item);
 		$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=site&idx=hpriv&item=".$item);
 		$babBody->addItemMenu("hpub", bab_translate("Public"),$GLOBALS['babUrlScript']."?tg=site&idx=hpub&item=".$item);
+		$babBody->addItemMenu("auth", bab_translate("Authentification"),$GLOBALS['babUrlScript']."?tg=site&idx=auth&item=".$item);
 		break;
 	}
 

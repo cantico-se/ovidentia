@@ -79,10 +79,8 @@ function listArticles($id)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and confirmed='Y' and archive='N' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-			$r = $this->db->db_fetch_array($this->db->db_query($req));
-			$this->siteid = $r['id'];
-			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$r['id'];
+			$this->siteid = $babBody->babsite['id'];
+			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$babBody->babsite['id'];
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 				$this->bshowhpg = true;
 			else
@@ -704,16 +702,14 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 
 function addToHomePages($item, $homepage, $art)
 {
-	global $idx;
+	global $babBody, $idx;
 
 	$idx = "Articles";
 	$count = count($art);
 
 	$db = $GLOBALS['babDB'];
 
-	$res = $db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
-	$arr = $db->db_fetch_array($res);
-	$idsite = $arr['id'];
+	$idsite = $babBody->babsite['id'];
 
 	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$item."' order by date desc";
 	$res = $db->db_query($req);

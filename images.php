@@ -127,18 +127,10 @@ function listImages($editor,$path="")
 
 		function temp($editor,$path)
 			{
+			global $babBody;
 			$db = $GLOBALS['babDB'];
 
-			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-			$res=$db->db_query($req);
-
-			if( $res && $db->db_num_rows($res) > 0 )
-				{
-				$arr = $db->db_fetch_array($res);
-				$this->maximagessize = $arr['imgsize'];
-				}
-			else
-				$this->maximagessize = 25;
+			$this->maximagessize = $babBody->babsite['imgsize'];
 			$this->maxsizetxt = bab_translate("Image size must not exceed")." ".$this->maximagessize. " ". bab_translate("Kb");
 			$this->maximagessize *= 1000 ;
 			$this->file = bab_translate("File");
@@ -222,18 +214,10 @@ function iframe($editor,$path="")
 
 		function temp($editor,$path)
 			{
+			global $babBody;
 			$db = $GLOBALS['babDB'];
 
-			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-			$res=$db->db_query($req);
-
-			if( $res && $db->db_num_rows($res) > 0 )
-				{
-				$arr = $db->db_fetch_array($res);
-				$this->maximagessize = $arr['imgsize'];
-				}
-			else
-				$this->maximagessize = 25;
+			$this->maximagessize = $babBody->babsite['imgsize'];
 
 			$this->del = bab_translate("Delete");
 			$this->editor = $editor;

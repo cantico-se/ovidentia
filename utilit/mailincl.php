@@ -230,9 +230,9 @@ class babMailSmtp extends babMail
 
 function bab_mail()
 {
-	$db = $GLOBALS['babDB'];
-	$arr = $db->db_fetch_array($db->db_query("select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
-	if( empty($arr['mailfunc']))
+	global $babBody;
+
+	if( empty($babBody->babsite['mailfunc']))
 		return false;
 
 	$mail = false;
@@ -245,18 +245,18 @@ function bab_mail()
 		case "sendmail":
 			$mail = new babMail();
 			$mail->mail->IsSendmail();
-			$mail->mail->Sendmail = $arr['smtpserver'];
+			$mail->mail->Sendmail = $babBody->babsite['smtpserver'];
 			break;
 		case "smtp":
 			$mail = new babMail();
 			$mail->mail->IsSMTP();
-			$mail->mail->Host = $arr['smtpserver'];
-			$mail->mail->Port = $arr['smtpport'];
-			if( $arr['smtpuser'] != "" ||  $arr['smtppass'] != "")
+			$mail->mail->Host = $babBody->babsite['smtpserver'];
+			$mail->mail->Port = $babBody->babsite['smtpport'];
+			if( $arr['smtpuser'] != "" ||  $babBody->babsite['smtppass'] != "")
 				{
 				$mail->mail->SMTPAuth = true;;
-				$mail->mail->Username = $arr['smtpuser'];
-				$mail->mail->Password = $arr['smtppass'];
+				$mail->mail->Username = $babBody->babsite['smtpuser'];
+				$mail->mail->Password = $babBody->babsite['smtppass'];
 				}
 			break;
 	}

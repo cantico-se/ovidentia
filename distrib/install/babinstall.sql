@@ -766,6 +766,15 @@ CREATE TABLE `bab_sites` (
   `change_nickname` enum('Y','N') NOT NULL default 'Y',
   `name_order` enum('F L','L F') NOT NULL default 'F L',
   `email_password` enum('Y','N') NOT NULL default 'Y',
+  `authentification` smallint(5) unsigned NOT NULL default '0',
+  `ldap_host` tinytext NOT NULL,
+  `ldap_basedn` text NOT NULL,
+  `ldap_userdn` text NOT NULL,
+  `ldap_password` tinyblob NOT NULL,
+  `ldap_searchdn` text NOT NULL,
+  `ldap_attribute` text NOT NULL,
+  `ldap_passwordtype` enum('text','md5','unix','sha') NOT NULL default 'text',
+  `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 ) TYPE=MyISAM AUTO_INCREMENT=16 ;
@@ -903,8 +912,8 @@ CREATE TABLE bab_ini (
 );
 
 INSERT INTO bab_ini VALUES ('ver_major', '4');
-INSERT INTO bab_ini VALUES ('ver_minor', '0');
-INSERT INTO bab_ini VALUES ('ver_build', '9');
+INSERT INTO bab_ini VALUES ('ver_minor', '1');
+INSERT INTO bab_ini VALUES ('ver_build', '0');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
@@ -1623,4 +1632,18 @@ CREATE TABLE bab_faq_trees (
   KEY id_parent (id_parent),
   KEY id_user (id_user),
   KEY info_user (info_user)
+);
+
+#
+# Structure de la table `bab_ldap_sites_fields`
+#
+
+CREATE TABLE `bab_ldap_sites_fields` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  `x_name` varchar(255) NOT NULL default '',
+  `id_site` int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`),
+  KEY `id_site` (`id_site`)
 );

@@ -167,6 +167,8 @@ function listArticles($id)
 
 		function temp($id)
 			{
+			global $babBody;
+
 			$this->titlename = bab_translate("Title");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -183,14 +185,11 @@ function listArticles($id)
 
 			$this->item = $id;
 			$this->db = $GLOBALS['babDB'];
-			$r = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
-			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$r['id'];
+			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$babBody->babsite['id'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='$id' and archive='N' and confirmed='Y' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-			$r = $this->db->db_fetch_array($this->db->db_query($req));
-			$this->siteid = $r['id'];
+			$this->siteid = $babBody->babsite['id'];
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$id."' and archive='Y'");
 			list($this->nbarch) = $this->db->db_fetch_row($res);
 			}
@@ -396,17 +395,14 @@ function deleteArticles($art, $item)
 
 function addToHomePages($item, $homepage, $art)
 {
-	global $idx;
+	global $babBody, $idx;
 
 	$idx = "Articles";
 	$count = count($art);
 
 	$db = $GLOBALS['babDB'];
 
-	$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-	$res = $db->db_query($req);
-	$arr = $db->db_fetch_array($res);
-	$idsite = $arr['id'];
+	$idsite = $babBody->babsite['id'];
 
 	$req = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$item."' order by date desc";
 	$res = $db->db_query($req);

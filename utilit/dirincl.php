@@ -302,7 +302,9 @@ function summaryDbContact($id, $idu, $update=true)
 				$this->arr = $this->db->db_fetch_array($res);
 				$this->name = stripslashes($this->arr['givenname']). " ". stripslashes($this->arr['sn']);
 				if( $this->arr['plen'] > 0 )
+					{
 					$this->showph = true;
+					}
 
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu;
 
@@ -369,10 +371,14 @@ function summaryDbContact($id, $idu, $update=true)
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldn = bab_translate($arr['description']);
 				$this->fieldv = stripslashes($this->arr[$arr['name']]);
-				if( strlen($this->arr[$arr['name']]) > 0 )
+				if( strlen($this->fieldv) > 0 )
+					{
 					$this->bfieldv = true;
+					}
 				else
+					{
 					$this->bfieldv = false;
+					}
 				$i++;
 				return true;
 				}

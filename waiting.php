@@ -599,30 +599,24 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 			$subject = bab_translate("Your article has been accepted");
 			if( $homepage0 == "2" || $homepage1 == "1" )
 				{
-				$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-				$res = $db->db_query($req);
-				if( $res && $db->db_num_rows($res) > 0)
+				if( $homepage0 == "2")
 					{
-					$arr = $db->db_fetch_array($res);
-					if( $homepage0 == "2")
-						{
-						$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr['id']. "', '" . $homepage0. "')";
-						$res = $db->db_query($req);
-						}
+					$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $babBody->babsite['id']. "', '" . $homepage0. "')";
+					$res = $db->db_query($req);
+					}
 
-					if( $homepage1 == "1")
-						{
-						$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr['id']. "', '" . $homepage1. "')";
-						$res = $db->db_query($req);
-						}
+				if( $homepage1 == "1")
+					{
+					$req = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $babBody->babsite['id']. "', '" . $homepage1. "')";
+					$res = $db->db_query($req);
+					}
 
-					if( $homepage0 == "2" || $homepage1 == "1" )
-						{
-						$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
-						$res = $db->db_query($req);
-						$arrtop = $db->db_fetch_array($res);
-						notifyArticleHomePage($arrtop['category'], $arrart['title'], $homepage0, $homepage1);
-						}
+				if( $homepage0 == "2" || $homepage1 == "1" )
+					{
+					$req = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
+					$res = $db->db_query($req);
+					$arrtop = $db->db_fetch_array($res);
+					notifyArticleHomePage($arrtop['category'], $arrart['title'], $homepage0, $homepage1);
 					}
 				}
 

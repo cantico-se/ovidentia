@@ -42,12 +42,9 @@ function ListArticles($idgroup)
 
 		function temp($idgroup)
 			{
+			global $babBody;
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-			$res = $this->db->db_query($req);
-			$arr = $this->db->db_fetch_array($res);
-			$idsite = $arr['id'];
-			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$idsite."' and ordering!='0' order by ordering asc";
+			$req = "select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idgroup."' and id_site='".$babBody->babsite['id']."' and ordering!='0' order by ordering asc";
 			$this->res = $this->db->db_query($req);
 			$this->countres = $this->db->db_num_rows($this->res);
 			$this->morename = bab_translate("Read More");
@@ -177,22 +174,17 @@ function articlePrint($topics, $article)
 
 function isAccessValid($article, $idg)
 {
+	global $babBody;
 	$access = false;
 	$db = $GLOBALS['babDB'];
 
 	if( !bab_articleAccessById($article))
 		return $access;
 
-	$req = "select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
-	$res = $db->db_query($req);
-	if( $res &&  $db->db_num_rows($res) > 0)
+	$res = $db->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idg."' and id_site='".$babBody->babsite['id']."' and id_article='".$article."' and ordering!='0'");
+	if( $res && $db->db_num_rows($res) > 0 )
 		{
-		$arr = $db->db_fetch_array($res);
-		$res = $db->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$idg."' and id_site='".$arr['id']."' and id_article='".$article."' and ordering!='0'");
-		if( $res && $db->db_num_rows($res) > 0 )
-			{
-			$access = true;
-			}
+		$access = true;
 		}
 	return $access;
 }

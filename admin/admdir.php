@@ -790,6 +790,8 @@ if( isset($add))
 				}
 			break;
 		case "db":
+			if (!isset($ml)) { $ml = array(); }
+			if (!isset($rw)) { $rw = array(); }
 			if( !addDbDirectory($adname, $description, $fields, $rw, $req, $ml))
 				{
 				$idx = "new";
@@ -841,6 +843,7 @@ if( isset($action) && $action == "Yes")
 
 if( isset($aclview))
 	{
+	if (!isset($groups)) { $groups = array(); }
 	aclUpdate($table, $item, $groups, $what);
 	$id = $item;
 	}
@@ -929,6 +932,11 @@ switch($idx)
 
 	case "ldap":
 		$babBody->title = bab_translate("Add new ldap directory");
+		if( !isset($adname) ) { $adname ='';}
+		if( !isset($description) ) { $description ='';}
+		if( !isset($host) ) { $host ='';}
+		if( !isset($basedn) ) { $basedn ='';}
+		if( !isset($userdn) ) { $userdn ='';}
 		addAdLdap($adname, $description, $host, $basedn, $userdn);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
 		$babBody->addItemMenu("ldap", bab_translate("New"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldap");
@@ -936,6 +944,8 @@ switch($idx)
 
 	case "db":
 		$babBody->title = bab_translate("Add new database directory");
+		if( !isset($adname) ) { $adname ='';}
+		if( !isset($description) ) { $description ='';}
 		addAdDb($adname, $description);
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
 		$babBody->addItemMenu("db", bab_translate("New"), $GLOBALS['babUrlScript']."?tg=admdir&idx=db");

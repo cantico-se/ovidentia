@@ -656,8 +656,6 @@ function validateNum(field)
 </form>
 <br>
 
-
-
 <!--#end sitemodify -->
 
 
@@ -986,3 +984,134 @@ mm(sksel);
 //-->
 </script>
 <!--#end skinscripts -->
+
+
+<!--#begin siteauthentification -->
+<!--#if showform -->
+<script type="text/javascript">
+<!--
+function hideShowCnx() 
+	{
+	var sf = document.forms.formsiteauth;
+	var obj1 = document.getElementById('ldpapchkcnxid');
+	var obj2 = document.getElementById('ldpaptxtcnxid');
+
+	if( sf.authtype[sf.authtype.selectedIndex].value == 0 )
+	{
+	if (obj1.style.display == '') obj1.style.display = 'none';
+	if (obj2.style.display == '') obj2.style.display = 'none';
+	}
+	else
+	{
+	if (obj1.style.display == 'none') obj1.style.display = '';
+	if (obj2.style.display == 'none') obj2.style.display = '';
+	}
+	}
+//-->
+</script>
+
+<form name="formsiteauth" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="modify" value="bloc3">
+<table class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authentificationtxt }</td>
+<td valign="middle">
+<select name="authtype" onchange="javascript:hideShowCnx();">
+<!--#in getnextauth -->
+<option value="{ authval }" { authselected }>{ authname }</option>
+<!--#endin getnextauth -->
+</select>
+&nbsp;&nbsp;
+<input type="checkbox" id="ldpapchkcnxid" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked }>&nbsp;<span class="BabLoginMenuBackground" id="ldpaptxtcnxid" nowrap>{ ldpachkcnxtxt }</span>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"><font color="red">*</font>&nbsp;{ fieldrequiredtxt }</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ hosttxt }&nbsp;<font color="red">*</font></td>
+<td valign="middle">
+<input type="text" name="host" size="50" value="{ ldaphost }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ basedntxt }</td>
+<td valign="middle">
+<input type="text" name="basedn" size="70" value="{ ldapbasednsite }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ userdntxt }</td>
+<td valign="middle">
+<input type="text" name="userdn" size="70" value="{ ldapuserdnsite }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpasstxt }</td>
+<td valign="middle">
+<input type="password" name="ldappass1" size="30" value="{ ldappasssite }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpassconftxt }</td>
+<td valign="middle">
+<input type="password" name="ldappass2" size="30" value="{ ldappasssite }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ searchbasetxt }</td>
+<td valign="middle">
+<input type="text" name="searchdn" size="70" value="{ ldapsearchdnsite }">
+</td>
+</tr>
+<!--#if 0 -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ attributetxt }</td>
+<td valign="middle">
+<input type="text" name="ldapattr" size="50" value="{ ldapattributesite }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ authpasstypetxt }</td>
+<td valign="middle">
+<select name="passtype">
+<!--#in getnextpasstype -->
+<option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
+<!--#endin getnextpasstype -->
+</select>
+</td>
+</tr>
+<!--#endif 0 -->
+<!--#in getnextfield -->
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ ofieldname }&nbsp;<!--#if required "== Y" --><font color="red">*</font><!--#endif required -->&nbsp;&nbsp;</td>
+<td>
+<select name="{ ofieldv }">
+<option value=""></option>
+<!--#in getnextval -->
+<option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
+<!--#endin getnextval -->
+</select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="30" value="{ ofieldval }">
+</td>
+</tr>
+<!--#endin getnextfield -->
+<tr> 
+<td nowrap>&nbsp;</td>
+<td valign="middle">
+<input type="Submit" name="Submit" value="{ modify }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#endif showform -->
+<!--#end siteauthentification -->

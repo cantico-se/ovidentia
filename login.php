@@ -239,13 +239,15 @@ function sendPassword ($nickname)
 		}
 }
 
+
 function userLogin($nickname,$password)
 	{
 	global $babBody;
-	$password=strtolower($password);
-	$sql="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='". md5($password) ."'";
+
 	$db = $GLOBALS['babDB'];
-	$result=$db->db_query($sql);
+	$iduser = 0;
+	$logok = true;
+
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
 	list($cnx_try) = $db->db_fetch_array($db->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
 	if( $cnx_try > 5)
@@ -253,59 +255,246 @@ function userLogin($nickname,$password)
 		$babBody->msgerror = bab_translate("Maximum connexion attempts has been reached");
 		return false;
 		}
-	if ($db->db_num_rows($result) < 1)
+
+	if( isset($babBody->babsite['authentification']) && $babBody->babsite['authentification'] == 1 )
 		{
-		$babBody->msgerror = bab_translate("User not found or password incorrect");
-		return false;
-		} 
-	else 
-		{
-		$arr = $db->db_fetch_array($result);
-		if( $arr['disabled'] == '1')
+		// ldap authentification
+		include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
+		$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
+		$ret = $ldap->connect();
+		if( $ret === false )
 			{
-			$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your adminsitrator");
-			return false;
+			$babBody->msgerror = bab_translate("LDAP connection failed. Please contact your administrator");
+			$logok = false;
 			}
-		if ($arr['is_confirmed'] == '1')
+
+		if( $logok )
 			{
-			if( isset($_SESSION))
+			$updattributes = array();
+			$res = $db->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babBody->babsite['id']."'");
+			while( $row = $db->db_fetch_array($res))
 				{
-				$_SESSION['BAB_SESS_NICKNAME'] = $arr['nickname'];
-				$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
-				$_SESSION['BAB_SESS_FIRSTNAME'] = $arr['firstname'];
-				$_SESSION['BAB_SESS_LASTNAME'] = $arr['lastname'];
-				$_SESSION['BAB_SESS_EMAIL'] = $arr['email'];
-				$_SESSION['BAB_SESS_USERID'] = $arr['id'];
-				$_SESSION['BAB_SESS_HASHID'] = $arr['confirm_hash'];
-				$_SESSION['BAB_SESS_GROUPID'] = bab_getPrimaryGroupId($arr['id']);
-				$_SESSION['BAB_SESS_GROUPNAME'] = bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
-				$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
-				$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
-				$GLOBALS['BAB_SESS_FIRSTNAME'] = $_SESSION['BAB_SESS_FIRSTNAME'];
-				$GLOBALS['BAB_SESS_LASTNAME'] = $_SESSION['BAB_SESS_LASTNAME'];
-				$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
-				$GLOBALS['BAB_SESS_USERID'] = $_SESSION['BAB_SESS_USERID'];
-				$GLOBALS['BAB_SESS_HASHID'] = $_SESSION['BAB_SESS_HASHID'];
+				if( !empty($row['x_name']) )
+					{
+					$updattributes[$row['x_name']] = $row['name'];
+					}
 				}
-			else
+			
+			$attributes = array("dn", "modifyTimestamp", $babBody->babsite['ldap_attribute'], "cn");
+			reset($updattributes);
+			while(list($key, $val) = each($updattributes))
 				{
-				$GLOBALS['BAB_SESS_NICKNAME'] = $arr['nickname'];
-				$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
-				$GLOBALS['BAB_SESS_FIRSTNAME'] = $arr['firstname'];
-				$GLOBALS['BAB_SESS_LASTNAME'] = $arr['lastname'];
-				$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
-				$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
-				$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
-				$GLOBALS['BAB_SESS_GROUPID']  = bab_getPrimaryGroupId($arr['id']);
-				$GLOBALS['BAB_SESS_GROUPNAME'] = bab_getGroupName($GLOBALS['BAB_SESS_GROUPID']);
+				if( !in_array($key, $attributes))
+					{
+					$attributes[] = $key;
+					}
 				}
-			return true;
+
+			if( !isset($updattributes['sn']))
+				{
+				$attributes[] = "sn";
+				}
+
+			if( !isset($updattributes['mail']))
+				{
+				$attributes[] = "mail";
+				}
+			if( !isset($updattributes['givenname']))
+				{
+				$attributes[] = $updattributes['givenname'];
+				}
+
+			$entries = $ldap->search($babBody->babsite['ldap_searchdn'], "(|(".$babBody->babsite['ldap_attribute']."=".$nickname."))", $attributes);
+
+			if( $entries === false )
+				{
+				$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+				$logok = false;
+				}
+
+			if( is_array($entries) && !isset($entries[0]['dn']) )
+				{
+				$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+				$logok = false;
+				}
+
+			if( $logok )
+				{
+				$ret = $ldap->bind($entries[0]['dn'], $password);
+				if( !$ret )
+					{
+					$babBody->msgerror = bab_translate("LDAP bind failed. Please contact your administrator");
+					$logok = false;
+					}
+
+				if( $ret )
+					{
+					$req = "select * from ".BAB_USERS_TBL." where nickname='".$nickname."'";
+					$res=$db->db_query($req);
+					if( $res && $db->db_num_rows($res) > 0 )
+						{
+						$arruser = $db->db_fetch_array($res);
+						$iduser = $arruser['id'];
+						if( $arruser['disabled'] == '1')
+							{
+							$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
+							return false;
+							}
+						}
+					else
+						{
+						$givenname = isset($updattributes['givenname'])?$entries[0][$updattributes['givenname']][0]:$entries[0]['givenname'][0];
+						$sn = isset($updattributes['sn'])?$entries[0][$updattributes['sn']][0]:$entries[0]['sn'][0];
+						$mn = isset($updattributes['mn'])?$entries[0][$updattributes['mn']][0]:'';
+						$mail = isset($updattributes['email'])?$entries[0][$updattributes['email']][0]:$entries[0]['mail'][0];
+						$iduser = registerUser(utf8_decode($givenname), utf8_decode($sn), utf8_decode($mn), utf8_decode($mail),$nickname, $password, $password, true);
+						if( $iduser === false )
+							{
+							return false;
+							}
+						$arruser = $db->db_fetch_array($db->db_query("select * from ".BAB_USERS_TBL." where id='".$iduser."'"));
+						}
+					}
+				}
+			}
+
+		if( $logok )
+			{
+			$req = "update ".BAB_USERS_TBL." set password='".md5($password)."'";
+			reset($updattributes);
+			while(list($key, $val) = each($updattributes))
+				{
+				switch($key)
+					{
+					case "sn":
+						$req .= ", lastname='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+						break;
+					case "givenname":
+						$req .= ", firstname='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+						break;
+					case "mail":
+						$req .= ", email='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+						break;
+					default:
+						break;
+					}
+				}
+			$req .= " where id='".$iduser."'";
+			$db->db_query($req);
+			$req = "";
+
+			if( count($updattributes) > 0 )
+				{
+				reset($updattributes);
+				while(list($key, $val) = each($updattributes))
+					{
+					switch($key)
+						{
+						case "jpegphoto":
+							$res = $ldap->read("cn=".$entries[0]['cn'][0].",".$babBody->babsite['ldap_searchdn'], "objectClass=*", array("jpegphoto"));
+							if( $res)
+								{
+								$ei = $ldap->first_entry($res);
+								if( $ei)
+									{
+									$info = $ldap->get_values_len($ei, "jpegphoto");
+									$req .= ", photo_data='".addslashes($info[0])."'";
+									}
+								}
+							break;
+						case "mail":
+							$req .= ", email='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+							break;
+						default:
+							$req .= ", ".$val."='".addslashes(utf8_decode($entries[0][$key][0]))."'";
+							break;
+						}
+					}
+
+				$req = "update ".BAB_DBDIR_ENTRIES_TBL." set ".substr($req, 1);
+				$req .= " where id_directory='0' and id_user='".$iduser."'";
+				$db->db_query($req);
+				}
+			}
+
+		if( $logok)
+			{
+			$ldap->close();
+			}
+		}
+
+	if( $babBody->babsite['authentification'] == '0' || (!$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y') )
+		{
+		$password=strtolower($password);
+		$req="select * from ".BAB_USERS_TBL." where nickname='$nickname' and password='". md5($password) ."'";
+		$res = $db->db_query($req);
+		if( $res && $db->db_num_rows($res) > 0 )
+			{
+			$arruser = $db->db_fetch_array($res);
+			$iduser = $arruser['id'];
+			if( !$logok && $babBody->babsite['ldap_allowadmincnx'] == 'Y' )
+				{
+				$res = $db->db_query("select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$iduser."' and id_group='3'");
+				if( $db->db_num_rows($res) == 0)
+					{
+					$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+					return false;
+					}
+				}
+
+			if( $arruser['disabled'] == '1')
+				{
+				$babBody->msgerror = bab_translate("Sorry, your account is disabled. Please contact your administrator");
+				return false;
+				}
 			}
 		else
 			{
-			$babBody->msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
+			$babBody->msgerror = bab_translate("User not found or password incorrect");
 			return false;
 			}
+		}
+	
+	$babBody->msgerror = "";
+	if ($arruser['is_confirmed'] == '1')
+		{
+		if( isset($_SESSION))
+			{
+			$_SESSION['BAB_SESS_NICKNAME'] = $arruser['nickname'];
+			$_SESSION['BAB_SESS_USER'] = bab_composeUserName($arruser['firstname'], $arruser['lastname']);
+			$_SESSION['BAB_SESS_FIRSTNAME'] = $arruser['firstname'];
+			$_SESSION['BAB_SESS_LASTNAME'] = $arruser['lastname'];
+			$_SESSION['BAB_SESS_EMAIL'] = $arruser['email'];
+			$_SESSION['BAB_SESS_USERID'] = $arruser['id'];
+			$_SESSION['BAB_SESS_HASHID'] = $arruser['confirm_hash'];
+			$_SESSION['BAB_SESS_GROUPID'] = bab_getPrimaryGroupId($arruser['id']);
+			$_SESSION['BAB_SESS_GROUPNAME'] = bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
+			$GLOBALS['BAB_SESS_NICKNAME'] = $_SESSION['BAB_SESS_NICKNAME'];
+			$GLOBALS['BAB_SESS_USER'] = $_SESSION['BAB_SESS_USER'];
+			$GLOBALS['BAB_SESS_FIRSTNAME'] = $_SESSION['BAB_SESS_FIRSTNAME'];
+			$GLOBALS['BAB_SESS_LASTNAME'] = $_SESSION['BAB_SESS_LASTNAME'];
+			$GLOBALS['BAB_SESS_EMAIL'] = $_SESSION['BAB_SESS_EMAIL'];
+			$GLOBALS['BAB_SESS_USERID'] = $_SESSION['BAB_SESS_USERID'];
+			$GLOBALS['BAB_SESS_HASHID'] = $_SESSION['BAB_SESS_HASHID'];
+			}
+		else
+			{
+			$GLOBALS['BAB_SESS_NICKNAME'] = $arruser['nickname'];
+			$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arruser['firstname'], $arruser['lastname']);
+			$GLOBALS['BAB_SESS_FIRSTNAME'] = $arruser['firstname'];
+			$GLOBALS['BAB_SESS_LASTNAME'] = $arruser['lastname'];
+			$GLOBALS['BAB_SESS_EMAIL'] = $arruser['email'];
+			$GLOBALS['BAB_SESS_USERID'] = $arruser['id'];
+			$GLOBALS['BAB_SESS_HASHID'] = $arruser['confirm_hash'];
+			$GLOBALS['BAB_SESS_GROUPID']  = bab_getPrimaryGroupId($arruser['id']);
+			$GLOBALS['BAB_SESS_GROUPNAME'] = bab_getGroupName($GLOBALS['BAB_SESS_GROUPID']);
+			}
+		return true;
+		}
+	else
+		{
+		$babBody->msgerror =  bab_translate("Sorry - You haven't Confirmed Your Account Yet");
+		return false;
 		}
 	}
 	
@@ -329,13 +518,12 @@ function confirmUser($hash, $nickname)
 			$babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
 			$sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE id='".$arr['id']."'";
 			$db->db_query($sql);
-			$arr2 = $db->db_fetch_array($db->db_query("select idgroup from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
-			if( $arr2['idgroup'] != 0)
+			if( $babBody->babsite['idgroup'] != 0)
 				{
-				$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['id']."' and id_group='".$arr2['idgroup']."'");
+				$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['id']."' and id_group='".$babBody->babsite['idgroup']."'");
 				if( !$res || $db->db_num_rows($res) < 1)
 					{
-					bab_addUserToGroup($arr['id'], $arr2['idgroup']);
+					bab_addUserToGroup($arr['id'], $babBody->babsite['idgroup']);
 					}
 				}
 			return true;
@@ -388,14 +576,6 @@ function addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $pas
 	}
 
 /* main */
-
-$db = $GLOBALS['babDB'];
-$res=$db->db_query("select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'");
-if( $res && $db->db_num_rows($res) > 0 )
-{
-	$r = $db->db_fetch_array($res);
-}
-
 // ajout cookie
 if (!isset($lifetime))
 	{
@@ -420,7 +600,7 @@ if( isset($login) && $login == "login")
 			Header("Location: ". $GLOBALS['babUrlScript']);
 		}
 	}
-else if( isset($adduser) && $adduser == "register" && $r['registration'] == 'Y')
+else if( isset($adduser) && $adduser == "register" && $babBody->babsite['registration'] == 'Y')
 	{
 	if( !addNewUser( $firstname, $middlename, $lastname, $nickname, $email, $password1, $password2))
 		$cmd = "register";
@@ -452,7 +632,7 @@ switch($cmd)
 	case "register":
 		$babBody->title = bab_translate("Register");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		if( $r['registration'] == 'Y')
+		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if ($GLOBALS['babEmailPassword'] ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
@@ -467,7 +647,7 @@ switch($cmd)
 	case "emailpwd":
 		$babBody->title = bab_translate("Email a new password");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		if( $r['registration'] == 'Y')
+		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if ($GLOBALS['babEmailPassword'] ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
@@ -478,7 +658,7 @@ switch($cmd)
 	default:
 		$babBody->title = bab_translate("Login");
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
-		if( $r['registration'] == 'Y')
+		if( $babBody->babsite['registration'] == 'Y')
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 		if ($GLOBALS['babEmailPassword'] ) 
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");

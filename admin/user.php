@@ -373,10 +373,9 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $group)
 
 	if( $is_confirmed == 1 && $r['is_confirmed'] == 0 )
 		{
-		$arr2 = $db->db_fetch_array($db->db_query("select idgroup from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'"));
-		if( $arr2['idgroup'] != 0)
+		if( $babBody->babsite['idgroup'] != 0)
 			{
-			bab_addUserToGroup( $id, $arr2['idgroup']);
+			bab_addUserToGroup( $id, $babBody->babsite['idgroup']);
 			}
 		notifyUserconfirmation( bab_composeUserName($r['firstname'] , $r['lastname']), $r['email']);
 		}

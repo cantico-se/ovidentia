@@ -185,9 +185,10 @@ function browseLdapDirectory($id, $pos)
 			if( $res && $db->db_num_rows($res) > 0)
 				{
 				$arr = $db->db_fetch_array($res);
-				$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
+				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
-				$this->entries = $this->ldap->search("(|(cn=".$pos."*))", array("cn", "telephonenumber", "mail", "homephone"));
+				$this->ldap->bind($arr['userdn'], $arr['adpass']);
+				$this->entries = $this->ldap->search($arr['basedn'], "(|(cn=".$pos."*))", array("cn", "telephonenumber", "mail", "homephone"));
 				if( is_array($this->entries))
 					{
 					$this->count = $this->entries['count'];
@@ -225,9 +226,9 @@ function browseLdapDirectory($id, $pos)
 				$this->email = "";
 				$this->cn = quoted_printable_decode($this->entries[$i]['cn'][0]);
 				$this->url = $GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".$this->cn."&pos=".$this->pos;
-				$this->btel = quoted_printable_decode($this->entries[$i]['telephonenumber'][0]);
-				$this->htel = quoted_printable_decode($this->entries[$i]['homephone'][0]);
-				$this->email = $this->entries[$i]['mail'][0];
+				$this->btel = isset($this->entries[$i]['telephonenumber'][0])?quoted_printable_decode($this->entries[$i]['telephonenumber'][0]):"";
+				$this->htel = isset($this->entries[$i]['homephone'][0])?quoted_printable_decode($this->entries[$i]['homephone'][0]):"";
+				$this->email = isset($this->entries[$i]['mail'][0])?$this->entries[$i]['mail'][0]:"";
 				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->email;
 				$i++;
 				return true;
@@ -464,9 +465,10 @@ function summaryLdapContact($id, $cn)
 			if( $res && $this->db->db_num_rows($res) > 0)
 				{
 				$arr = $this->db->db_fetch_array($res);
-				$this->ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
+				$this->ldap = new babLDAP($arr['host'], "", true);
 				$this->ldap->connect();
-				$this->entries = $this->ldap->search("(|(cn=".$cn."))");
+				$this->ldap->bind($arr['userdn'], $arr['adpass']);
+				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".$cn."))");
 				$this->ldap->close();
 				$this->name = $this->entries[0]['cn'][0];
 				$this->urlimg = $GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".$cn;
@@ -482,7 +484,7 @@ function summaryLdapContact($id, $cn)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldn = bab_translate($arr['description']);
-				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? quoted_printable_decode($this->entries[0][$arr['x_name']][0]) : '';
+				$this->fieldv = isset($this->entries[0][$arr['x_name']][0]) ? utf8_decode($this->entries[0][$arr['x_name']][0]) : '';
 				$i++;
 				return true;
 				}
@@ -1196,8 +1198,9 @@ function getLdapContactImage($id, $cn)
 	if( $res && $db->db_num_rows($res) > 0)
 		{
 		$arr = $db->db_fetch_array($res);
-		$ldap = new babLDAP($arr['host'], "", $arr['basedn'], $arr['userdn'], $arr['adpass'], true);
+		$ldap = new babLDAP($arr['host'], "", true);
 		$ldap->connect();
+		$ldap->bind($arr['userdn'], $arr['adpass']);
 	
 		$res = $ldap->read("cn=".$cn.",".$arr['basedn'], "objectClass=*", array("jpegphoto"));
 		if( $res)
@@ -1363,7 +1366,9 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
 		$iduser = registerUser($fields['givenname'], $fields['sn'], $fields['mn'], $fields['email'], $nickname, $password1, $password2, true);
 		if( $iduser == false )
+			{
 			return false;
+			}
 		if( $idgroup > 1 )
 			{
 			bab_addUserToGroup($iduser, $idgroup);

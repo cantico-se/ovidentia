@@ -2120,10 +2120,12 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 
-	$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_password, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldap_password  from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
 	if ($babDB->db_num_rows($res) == 0)
+		{
 		$babBody->msgerror = bab_translate("Configuration error : babSiteName in config.php not match site name in administration sites configuration");
+		}
 	$arr = $babDB->db_fetch_array($res);
 	$babBody->babsite = $arr;
 
@@ -2131,59 +2133,59 @@ function bab_updateSiteSettings()
 		{
 		$GLOBALS['babSkin'] = $arr['skin'];
 		}
-	else
-		$GLOBALS['babSkin'] = "ovidentia";
+	else {
+		$GLOBALS['babSkin'] = "ovidentia"; }
 
 	if( $arr['style'] != "")
 		{
 		$GLOBALS['babStyle'] = $arr['style'];
 		}
-	else
-		$GLOBALS['babStyle'] = "ovidentia.css";
+	else {
+		$GLOBALS['babStyle'] = "ovidentia.css"; }
 
 	if( $arr['lang'] != "")
 		{
 		$GLOBALS['babLanguage'] = $arr['lang'];
 		}
-	else
-		$GLOBALS['babLanguage'] = "en";
+	else {
+		$GLOBALS['babLanguage'] = "en"; }
 	if( $arr['adminemail'] != "")
 		{
 		$GLOBALS['babAdminEmail'] = $arr['adminemail'];
 		}
-	else
-		$GLOBALS['babAdminEmail'] = "admin@your-domain.com";
+	else {
+		$GLOBALS['babAdminEmail'] = "admin@your-domain.com"; }
 	if( $arr['langfilter'] != "")
 		{
 		$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
 		}
-	else
-		$GLOBALS['babLangFilter']->setFilter(0);
+	else {
+		$GLOBALS['babLangFilter']->setFilter(0); }
 	// options bloc2
 	if( $arr['total_diskspace'] != 0)
 		{
 		$GLOBALS['babMaxTotalSize'] = $arr['total_diskspace']*1048576;
 		}
-	elseif ($GLOBALS['babMaxTotalSize'] == 0)
-		$GLOBALS['babMaxTotalSize'] = "200000000";
+	elseif ($GLOBALS['babMaxTotalSize'] == 0) {
+		$GLOBALS['babMaxTotalSize'] = "200000000";}
 	if( $arr['user_diskspace'] != 0)
 		{
 		$GLOBALS['babMaxUserSize'] = $arr['user_diskspace']*1048576;
 		}
-	elseif ($GLOBALS['babMaxUserSize'] == 0)
-		$GLOBALS['babMaxUserSize'] = "30000000";
+	elseif ($GLOBALS['babMaxUserSize'] == 0) {
+		$GLOBALS['babMaxUserSize'] = "30000000";}
 	if( $arr['folder_diskspace'] != 0)
 		{
 		$GLOBALS['babMaxGroupSize'] = $arr['folder_diskspace']*1048576;
 		}
-	elseif ($GLOBALS['babMaxGroupSize'] == 0)
-		$GLOBALS['babMaxGroupSize'] = "50000000";
+	elseif ($GLOBALS['babMaxGroupSize'] == 0) {
+		$GLOBALS['babMaxGroupSize'] = "50000000"; }
 	if( $arr['maxfilesize'] != 0)
 		{
 		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize']*1048576;
 		}
-	elseif ($GLOBALS['babMaxFileSize'] == 0)
-		$GLOBALS['babMaxFileSize'] = "30000000";
+	elseif ($GLOBALS['babMaxFileSize'] == 0) {
+		$GLOBALS['babMaxFileSize'] = "30000000"; }
 	if( $arr['uploadpath'] != "")
 		{
 		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
@@ -2196,20 +2198,28 @@ function bab_updateSiteSettings()
 		{
 		$GLOBALS['babBody']->nameorder = explode(" ",$arr['name_order']);
 		}
-	else
-		$GLOBALS['babBody']->nameorder = Array('F','L');
+	else {
+		$GLOBALS['babBody']->nameorder = Array('F','L');}
 	if( $arr['remember_login'] == "Y")
 		{
 		$GLOBALS['babCookieIdent'] = true;
 		}
-	else
-		$GLOBALS['babCookieIdent'] = false;
-	if( $arr['email_password'] == "Y")
-		$GLOBALS['babEmailPassword'] = true;
-	else
-		$GLOBALS['babEmailPassword'] = false;
+	else {
+		$GLOBALS['babCookieIdent'] = false ; }
+	if( $arr['email_password'] == "Y") {
+		$GLOBALS['babEmailPassword'] = true ; }
+	else {
+		$GLOBALS['babEmailPassword'] = false ; }
 
 	$GLOBALS['babAdminName'] = $arr['adminname'];
+
+	if( $arr['authentification'] == 1 ) // LDAP authentification
+		{
+		$babBody->babsite['registration'] ='N';
+		$babBody->babsite['change_password'] ='N';
+		$babBody->babsite['change_nickname'] ='N';
+		}
+
 }
 
 class babLanguageFilter
