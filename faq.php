@@ -439,7 +439,7 @@ if( isset($action) && $action == "Yes" && isUserManager($item))
 switch($idx)
 	{
 	case "questions":
-		$body->title = "questions / Responses";
+		$body->title = babTranslate("Questions and Answers");
 		if( isAccessValid("faqcat_groups", $item))
 			{
 			listQuestions($item);
@@ -454,7 +454,7 @@ switch($idx)
 		break;
 
 	case "viewq":
-		$body->title = "questions / Responses";
+		$body->title = babTranslate("Questions and Answers");
 		if( isAccessValid("faqcat_groups", $item))
 			{
 			viewQuestion($item, $idq);
