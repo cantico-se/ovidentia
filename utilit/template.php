@@ -33,7 +33,7 @@ function printTemplate(&$class, $file, $section="")
 		if( $res )
 			$str = $m[1];
 		else
-			return $str;
+			return "";
 		}
 	return $this->processTemplate($class, $str);
 	}
