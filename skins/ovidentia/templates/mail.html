@@ -157,7 +157,7 @@ function mm()
 <!--#if msie "== 1" -->
 <tr> 
 <td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-<input onClick="SetVals();document.composef.submit();window.close()" type="submit" name="submit" value="{ send }">
+<input onClick="SetVals();" type="submit" name="submit" value="{ send }">
 &nbsp;&nbsp;&nbsp;
 <input type="button" name="cancel" value="{ cancel }" onClick="window.close()">
 </td>
@@ -169,7 +169,7 @@ function mm()
 <!--#else msie -->
 <tr> 
 <td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-<input type="submit" name="submit" value="{ send }" onClick="document.composef.submit();window.close()">
+<input type="submit" name="submit" value="{ send }">
 &nbsp;&nbsp;&nbsp;
 <input type="button" name="cancel" value="{ cancel }" onClick="window.close()">
 </td>
