@@ -1293,14 +1293,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->addons->setSearchParam($this->like2, $this->like, $option, $navpos, $babLimit);
 
 			$this->addonsdata = array();
-			
+			$first_addon_searchresults = array();
+
 			if (is_array($this->addonSearchArray))
 				while (list($addon_id,$addon_title) = each($this->addonSearchArray))
 					{
 					if (isset($addon_id) && is_numeric($addon_id))
 						{
-						$first_addon_searchresults = $this->addons->callSearchFunction($addon_id);
-						$nbrows = $first_addon_searchresults[1];
+						$first_addon_searchresults[$addon_id] = $this->addons->callSearchFunction($addon_id);
+						$nbrows = $first_addon_searchresults[$addon_id][1];
 						$navpos = $this->navitem == 'as-'.$addon_id ? $this->navpos : 0;
 						$this->addons->pos = $navpos;
 						$navbar_i = navbar($GLOBALS['babLimit'],$nbrows,'as-'.$addon_id,$navpos);
@@ -1640,10 +1641,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			{
 			if (isset($this->addon_id) && is_numeric($this->addon_id))
 				{
-				if (isset($this->first_addon_searchresults))
+				if (isset($this->first_addon_searchresults[$this->addon_id]))
 					{
-					$addon_searchresults = $this->first_addon_searchresults;
-					unset($this->first_addon_searchresults);
+					$addon_searchresults = $this->first_addon_searchresults[$this->addon_id];
+					unset($this->first_addon_searchresults[$this->addon_id]);
 					}
 				else
 					$addon_searchresults = $this->addons->callSearchFunction($this->addon_id);
