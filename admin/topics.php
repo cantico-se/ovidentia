@@ -16,6 +16,7 @@ function addCategory()
 		var $description;
 		var $approver;
 		var $add;
+		var $msie;
 
 		function temp()
 			{
@@ -23,6 +24,10 @@ function addCategory()
 			$this->description = babTranslate("Description");
 			$this->approver = babTranslate("Approver");
 			$this->add = babTranslate("Add");
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;	
 			}
 		}
 

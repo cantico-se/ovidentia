@@ -42,6 +42,7 @@ function modifyCategory($id)
 		var $db;
 		var $arr = array();
 		var $res;
+		var $msie;
 
 		function temp($id)
 			{
@@ -58,6 +59,10 @@ function modifyCategory($id)
 			$this->res = $this->db->db_query($req);
 			$this->arr2 = $this->db->db_fetch_array($this->res);
 			$this->managername = composeName( $this->arr2[firstname], $this->arr2[lastname]);
+			if( strtolower(browserAgent()) == "msie")
+				$this->msie = 1;
+			else
+				$this->msie = 0;
 			}
 		}
 
