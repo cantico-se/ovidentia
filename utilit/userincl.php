@@ -1316,7 +1316,8 @@ function bab_replace( $txt, $remove = '' )
 
 			if( $access )
 				{
-				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=fileman&idx=get&inl=1&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name'])."\" target=_blank>".$urltxt."</a>", $txt);
+				$inl = empty($GLOBALS['files_as_attachment']) ? '&inl=1' : '';
+				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", "<a href=\"".$GLOBALS['babUrlScript']."?tg=fileman&idx=get".$inl."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name'])."\" target=_blank>".$urltxt."</a>", $txt);
 				}
 			else
 				$txt = preg_replace("/\\\$FILE\(".preg_quote($m[1][$k]).",".preg_quote($m[2][$k], "/")."\)/", $urltxt, $txt);
