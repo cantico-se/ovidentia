@@ -116,7 +116,7 @@ switch($idx)
 		$babBody->title = bab_translate("List of all topics"). " [ " . $babLevelTwo . " ]";
 		if( listCategories($cat) > 0 )
 			{
-			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
+			$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topusr&idx=list&cat=".$cat);
 			}
 		else
 			$babBody->title = bab_translate("There is no topic"). " [ " . $babLevelTwo . " ]";
