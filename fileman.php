@@ -191,8 +191,8 @@ function listFiles($id, $gr, $path, $bmanager)
 					}
 				}
 
-			if( $gr == "N" && in_array(1, $aclfm['pr']) || $gr == "Y")
-				{
+			//if( $gr == "N" && in_array(1, $aclfm['pr']) || $gr == "Y")
+			//	{
 				if( $gr == "Y" || ($gr == "N" && !empty($path)))
 					{
 					$this->countmgrp = 0;
@@ -213,25 +213,28 @@ function listFiles($id, $gr, $path, $bmanager)
 					$this->arrdir[] = ". .";
 					$this->arrudir[] = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$p;
 					}
-				$h = opendir($this->fullpath.$path."/");
-				while (($f = readdir($h)) != false)
+
+				if( $gr == "N" && in_array(1, $aclfm['pr']) || $gr == "Y" )
 					{
-					if ($f != "." and $f != "..") 
+					$h = opendir($this->fullpath.$path."/");
+					while (($f = readdir($h)) != false)
 						{
-						if (is_dir($this->fullpath.$path."/".$f))
+						if ($f != "." and $f != "..") 
 							{
-							$this->arrdir[] = $f;
-							$this->arrudir[] = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
+							if (is_dir($this->fullpath.$path."/".$f))
+								{
+								$this->arrdir[] = $f;
+								$this->arrudir[] = $GLOBALS['babUrl']."index.php?tg=fileman&idx=list&id=".$id."&gr=".$gr."&path=".$path.($path ==""?"":"/").$f;
+								}
 							}
 						}
+					closedir($h);
+					$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."'";
+					if( !$this->bmanager )
+						$req .= "and confirmed='Y'";
+					$this->res = $this->db->db_query($req);
+					$this->count = $this->db->db_num_rows($this->res);
 					}
-				closedir($h);
-				$req = "select * from files where id_owner='".$id."' and bgroup='".$gr."' and state='' and path='".$path."'";
-				if( !$this->bmanager )
-					$req .= "and confirmed='Y'";
-				$this->res = $this->db->db_query($req);
-				$this->count = $this->db->db_num_rows($this->res);
-
 				$this->bdel = false;
 				if( $this->bmanager )
 					{
@@ -245,7 +248,7 @@ function listFiles($id, $gr, $path, $bmanager)
 					{
 					$this->xcount = 0;
 					}
-				}
+				//}
 			}
 
 		function getnextdir()
@@ -1161,11 +1164,18 @@ else
 
 $upload = false;
 $bmanager = false;
-if( $gr == "N" && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id && in_array(1, $aclfm['pr']))
+$access = false;
+if( $gr == "N" && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id )
 	{
-	$access = true;
-	$upload = true;
-	$bmanager = true;
+	if( in_array(1, $aclfm['pr']) )
+		{
+		$upload = true;
+		$bmanager = true;
+		$access = true;
+		}
+	if( !$access && count($aclfm['pu']) > 0)
+		$access = true;
+
 	}
 
 if( $gr == "Y")
@@ -1191,7 +1201,6 @@ if( $gr == "Y")
 					$upload = true;
 					}
 				}
-			break;
 			}
 		}
 	}
