@@ -1,3 +1,4 @@
+<!--#begin old -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
@@ -67,5 +68,175 @@ window.focus();
 </table>
 </body>
 </html>
+<!--#end old -->
+
+<!--#begin new -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<head>
+<title>{ babSiteName }</title>
+{ babCss }
+</head>
+
+<body>
+
+<table border="0" height="100%" width="100%">
+<tr><td>
+<div id="calendar">
+</div>
 
 
+<div align="center">
+	<select id="select_month" onchange="select_date()">
+	 <!--#in getnextmonth -->
+	   <option value="{ num }" { selected }>{ text }</option>
+	 <!--#endin getnextmonth -->
+	</select>
+	<select id="select_year" onchange="select_date()">
+	 <!--#in getnextyear -->
+	   <option value="{ value }" { selected }>{ value }</option>
+	 <!--#endin getnextyear -->
+	</select>
+	&nbsp;<a href="javascript:today()" title="{ t_today }"><img valign="middle" src="{ babSkinPath }images/Puces/PuceAgenda.gif" border="0" alt="{ t_today }" /></a>
+</div>
+
+</td></tr>
+</table>
+
+<script type="text/JavaScript">
+<!--
+
+
+function callback(d,m,y)
+	{
+	//}
+	self.opener.{ callback }(d,m,y);
+	window.close();
+	}
+
+function montharr(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11)
+   {
+   this[0] = m0;
+   this[1] = m1;
+   this[2] = m2;
+   this[3] = m3;
+   this[4] = m4;
+   this[5] = m5;
+   this[6] = m6;
+   this[7] = m7;
+   this[8] = m8;
+   this[9] = m9;
+   this[10] = m10;
+   this[11] = m11;
+   return '';
+   }
+
+function bab_calendar(year,month)
+   {
+   month--;
+   var out = '';
+   var monthName = Array();
+   <!--#in getnextmonth -->
+   monthName[{ index }] = '{ text }';
+   <!--#endin getnextmonth -->
+
+   var today = new Date();
+	var selectedday = today.getDate();
+   var thisDate = new Date(year,month,1);
+   var monthDays = new montharr(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+   
+   var thismonth = thisDate.getMonth();
+   var thisyear = thisDate.getYear();
+
+   if (((thisyear % 4 == 0) && (thisyear % 100 != 0)) || (thisyear % 400 == 0))
+      monthDays[1] = 29;
+
+   nDays = monthDays[thisDate.getMonth()];
+
+   firstDay = today;
+   firstDay.setDate(1);
+   startDay = firstDay.getDay();
+
+   out = '<table class="class="BabSectionBackground" width="150" cellpadding="2" cellspacing="0" border="0" align="center">';
+   out += '<tr class="BabTitleSectionBackground"><td align="left">';
+   if (month > 0)
+		out += '<a href="javascript:prev_month()" title="{ t_previous_month }"><img src="{ babSkinPath }images/Puces/arrowPrev3a.gif" border="0" alt="{ t_previous_month }" /></a>';
+	out += '&nbsp;</td><td align="center" colspan="5">'+monthName[thismonth]+' '+year+'</td><td align="right">&nbsp;';
+	
+	if (month < 11)
+		out += '<a href="javascript:next_month()" title="{ t_next_month }"><img src="{ babSkinPath }images/Puces/arrowNext3a.gif" border="0" alt="{ t_next_month }" /></a>';
+	out += '</tr><tr align="center">';
+   <!--#in getnextwday -->
+   out += '<td class="BabCalendarDaySection">{ text }</td>';
+   <!--#endin getnextwday -->
+   
+   out += '</tr><tr align="center">';
+   column = 0;
+   for (i=0; i<startDay; i++)
+      {
+      out += '<td>&nbsp;</td>';
+      column++;
+      }
+
+   for (i=1; i<=nDays; i++)
+      {
+		if (thisyear == today.getYear() && thismonth == today.getMonth() && i == selectedday)
+			{
+
+			out += '<td class="BabCalendarCurrentDayNumberSection"><a class="BabSectionsDayLink" href="javascript:callback('+i+','+(month+1)+','+year+')">'+i+'</a></td>';
+			}
+		else
+			{
+			out += '<td class="BabCalendarDayNumberSection"><a class="BabSectionsLinkColor" href="javascript:callback('+i+','+(month+1)+','+year+')">'+i+'</a></td>';
+			}
+
+      column++;
+      if (column == 7)
+         {
+         out += '</tr><tr align="center">';
+         column = 0;
+         }
+      }
+   out += '</tr></table>';
+   return out;
+   }
+
+
+
+function select_date()
+	{
+	var month = document.getElementById('select_month').value;
+	var year = document.getElementById('select_year').value;
+	var calendar = document.getElementById('calendar');
+	calendar.innerHTML = bab_calendar(year,month);
+	}
+
+function prev_month()
+	{
+	document.getElementById('select_month').value--;
+	select_date();
+	}
+
+function next_month()
+	{
+	document.getElementById('select_month').value++;
+	select_date();
+	}
+
+function today()
+	{
+	//}
+	document.getElementById('select_month').value = '{ current_month }';
+	document.getElementById('select_year').value = '{ current_year }';
+	select_date();
+	}
+
+select_date();
+
+//-->
+</script>
+
+</body>
+</html>
+
+<!--#end new -->

@@ -149,7 +149,7 @@ function printout()
 		$this->nextyear = "&nbsp;";
 
 
-	echo bab_printTemplate($this,"month.html", "");
+	echo bab_printTemplate($this,"month.html", "old");
 	}
 
 	function getnextday3()
@@ -226,10 +226,102 @@ function printout()
 		}
 }
 
+
+class bab_calendar
+{
+
+
+function bab_calendar($month, $year, $callback, $ymin, $ymax)
+	{
+	$this->year = $year;
+	$this->month = $month;
+	$this->callback = $callback;
+	$this->ymin = $year - $ymin;
+	$this->ymax = $year + $ymax;
+	$this->value = $this->ymin;
+	reset($GLOBALS['babMonths']);
+	reset($GLOBALS['babDays']);
+
+	$this->t_previous_month = bab_translate("Previous month");
+	$this->t_next_month = bab_translate("Next month");
+	$this->t_today = bab_translate("Today");
+
+	$this->current_month = date('n');
+	$this->current_year = date('Y');
+	}
+
+
+function getnextyear()
+	{
+	if ($this->value < $this->ymax)
+		{
+		
+		$this->value++;
+		$this->selected = $this->value == $this->year ? 'selected' : '';
+		return true;
+		}
+	else
+		{
+		return false;
+		}
+
+	}
+
+function getnextmonth()
+	{
+	$this->text = current($GLOBALS['babMonths']);
+	if ($this->text)
+		{
+		$this->num = key($GLOBALS['babMonths']);
+		$this->index = $this->num - 1;
+		next($GLOBALS['babMonths']);
+		$this->selected = $this->num == $this->month ? 'selected' : '';
+		return true;
+		}
+	else
+		{
+		reset($GLOBALS['babMonths']);
+		return false;
+		}
+	
+	}
+
+function getnextwday()
+	{
+	$this->text = substr(current($GLOBALS['babDays']),0,3);
+	if ($this->text)
+		{
+		next($GLOBALS['babDays']);
+		return true;
+		}
+	else
+		{
+		reset($GLOBALS['babDays']);
+		return false;
+		}
+	}
+	
+}
+
+/*
 if( !isset($month)) { $month ='';}
 if( !isset($year)) { $year ='';}
 $m = new babMonthX($month, $year, $callback);
 $m->setMaxYear($ymax);
 $m->setMinYear($ymin);
 $m->printout();
+
+*/
+
+if (!isset($_GET['callback']))
+	die('missing callback');
+
+$month = isset($_GET['month']) ? $_GET['month'] : date('m');
+$year = isset($_GET['year']) ? $_GET['year'] : date('Y');
+$ymin = isset($_GET['ymin']) ? $_GET['ymin'] : 5;
+$ymax = isset($_GET['ymax']) ? $_GET['ymax'] : 60;
+
+$m = new bab_calendar($month, $year, $_GET['callback'], $ymin, $ymax);
+echo bab_printTemplate($m,"month.html", "new");
+
 ?>
