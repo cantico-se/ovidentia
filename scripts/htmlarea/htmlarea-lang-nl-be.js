@@ -36,7 +36,8 @@ HTMLArea.I18N = {
 		babfile:		"Ovidentia file link tussenvoegen",
 		undo:			"Ongedaan maken",
 		redo:			"Terug uitvoeren",
-		babarticle:		"Ovidentia Article link"
+		babarticle:		"Ovidentia Article link",
+		babfaq:			"Ovidentia FAQ link"
 	}
 };
 

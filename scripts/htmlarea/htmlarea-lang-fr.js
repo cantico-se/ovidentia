@@ -36,7 +36,8 @@ HTMLArea.I18N = {
 		babfile:		"Insérer un fichier Ovidentia",
 		undo:			"Annuler",
 		redo:			"Rétablir",
-		babarticle:		"Lien d'article Ovidentia"
+		babarticle:		"Lien d'article Ovidentia",
+		babfaq:			"Lien de FAQ Ovidentia"
 	},
 	formatblock : {
 		"Titre 1": "h1",
