@@ -1047,7 +1047,7 @@
 <string id="Field name">Libellé du champ</string>
 <string id="Default value">Valeur par défaut</string>
 <string id="Modfiy">Modifier</string>
-<string id="Are you sure you want to delete slecetde fields">Etes-vous sûr de vouloir supprimer les champs séléctionnés</string>
+<string id="Are you sure you want to delete selected fields">Etes-vous sûr de vouloir supprimer les champs séléctionnés</string>
 <string id="WARNING: This operation will delete those fields with their values">ATTENTION: Cette opération supprime ces champs et leurs valeurs</string>
 <string id="This field already exists">Ce champ existe déjà</string>
 <string id="Modify folder's field">Modifier un champ</string>
