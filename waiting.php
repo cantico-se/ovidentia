@@ -4,7 +4,7 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
-
+include $babInstallPath."utilit/mailincl.php";
 include $babInstallPath."utilit/topincl.php";
 
 function listArticles($topics, $new)
@@ -448,6 +448,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	$query = "select * from ".BAB_TOPICS_TBL." where id='$topics'";
 	$res = $db->db_query($query);
 	$arr2 = $db->db_fetch_array($res);
+	$topicname = $arr2['category'];
 
 	$query = "select * from ".BAB_USERS_TBL." where id='".$arr2['id_approver']."'";
 	$res = $db->db_query($query);
@@ -474,6 +475,11 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 				{
 				$query = "insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$article. "', '" . $arr3['id']. "', '" . $homepage1. "')";
 				$res = $db->db_query($query);
+				}
+
+			if( $homepage0 == "2" || $homepage1 == "1" )
+				{
+				notifyArticleHomePage($topicname, $title, $homepage0, $homepage1);
 				}
 			}
 
