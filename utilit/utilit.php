@@ -1986,6 +1986,8 @@ function bab_updateSiteSettings()
 
 	$req="select * from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
+	if ($babDB->db_num_rows($res) == 0)
+		$babBody->msgerror = bab_translate("Configuration error : babSiteName in config.php not match site name in administration sites configuration");
 	$arr = $babDB->db_fetch_array($res);
 	$babBody->babsite = $arr;
 
