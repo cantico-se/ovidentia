@@ -1,5 +1,13 @@
 
 <!--#begin calmonth -->
+<script type="text/javascript">
+<!--
+document.onmousemove = bab_tooltipPosition;
+-->
+</script>
+<style type="text/css">
+@import url('{ babInstallPath }skins/ovidentia/styles/calendar.css');
+</style>
 <table width="100%" cellpadding="5" cellspacing="0" align="center" border="0">
 	<tr valign="middle"> 
 		<td class="BabCalendarMenuBackground" width="25%"> &nbsp; 
@@ -30,7 +38,7 @@
 
 <br />
 
-<table class="BabCalendarBodyBackground" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
+<table id="bab_calday" class="bab_calendar" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
 	<tr>
 	<!--#in getnextdayname -->
 	<th width="14%" class="BabCalendarDays">{ dayname }</th>
@@ -67,12 +75,23 @@
 			</div>
 			<!--#endif countevent -->
 			<!--#in getnextevent -->
-			<div style="background-color : { bgcolor }; width :100%;padding:2px" nowrap>
+			<div>
 				<table width="100%" border="0" align="center">
 					<tr>
-						<td align="left" valign="middle">{ starttime }&nbsp;&nbsp;<a class="BabMonthCalendarEventLink" href="javascript:bab_popup('{ titletenurl }',3)">{ titleten }</a>
+						<td class="event" style="background-color:#{ bgcolor }" onclick="bab_popup('{ titletenurl }',5)"  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">{ starttime }&nbsp;&nbsp;{ titleten }
+						<div id="calevent{ idcal }{ idevent }" class="bab_tooltip" style="background-color:#{ bgcolor }">
+							<h3>{ title }</h3>
+							<h5>
+								<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
+								<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
+								<!--#if category -->
+								<p><strong>{ t_category } : </strong> { category }</p>
+								<!--#endif category -->
+							</h5>
+							<div class="description">{ description }</div>
+						</div>
 						</td>
-						<td align="right" valign="middle">&nbsp;
+						<td class="event" style="background-color:#{ bgcolor }" align="right" valign="middle">&nbsp;
 						<!--#if nbowners -->
 						<a class="BabDayCalendarEventLink" href="javascript:bab_popup('{ attendeesurl }',2)" title="{ attendeestxt }" nowrap><img src="{ babSkinPath }images/Puces/head.gif" border="0"></a>&nbsp;
 						<!--#endif nbowners -->

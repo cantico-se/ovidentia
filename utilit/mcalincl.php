@@ -416,13 +416,15 @@ class cal_wmdbaseCls
 {
 	function cal_wmdbaseCls($tg, $idx, $calids, $date)
 	{
+		$this->currentidcals = $calids;
+		$this->currentdate = $date;
 		$this->idcals = explode(",", $calids);
 		$rr = explode(',', $date);
 		$this->year = $rr[0];
 		$this->month = $rr[1];
 		$this->day = $rr[2];
 
-		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$calids;
+		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
 
 		$time = mktime( 0,0,0, $this->month-1, $this->day, $this->year);
 		$this->previousmonthurl = $this->commonurl."&date=".date("Y", $time).",".date("n", $time).",".date("j", $time);
@@ -450,17 +452,17 @@ class cal_wmdbaseCls
 		{
 			case "calmonth":
 				$this->monthurl = "";
-				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$calids."&date=".$date;
-				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calids."&date=".$date;
+				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$this->currentidcals."&date=".$date;
+				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$this->currentidcals."&date=".$date;
 				break;
 			case "calday":
-				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calids."&date=".$date;
+				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$this->currentidcals."&date=".$date;
 				$this->dayurl = "";
-				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calids."&date=".$date;
+				$this->weekurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$this->currentidcals."&date=".$date;
 				break;
 			case "calweek":
-				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$calids."&date=".$date;
-				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$calids."&date=".$date;
+				$this->monthurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$this->currentidcals."&date=".$date;
+				$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".$this->currentidcals."&date=".$date;
 				$this->weekurl = "";
 				break;
 		}
@@ -484,7 +486,7 @@ class cal_wmdbaseCls
 		$this->t_next_day = bab_translate('Next day');
 
 		$backurl = urlencode(urlencode($GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid="));
-		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$calids."&date=".$date."&backurl=".$backurl;
+		$this->calendarchoiceurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".$backurl;
 
 	}
 }

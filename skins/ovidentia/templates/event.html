@@ -246,14 +246,13 @@
 <!--#begin modifyevent -->
 <form name="vacform" method="post" action="{ babPhpSelf }" >
 <input type="hidden" name="tg" value="event" />
-<input type="hidden" name="idx" value="modify" />
-<input type="hidden" name="curday" value="{ curday }" />
-<input type="hidden" name="curmonth" value="{ curmonth }" />
-<input type="hidden" name="curyear" value="{ curyear }" />
+<input type="hidden" name="idx" value="unload" />
+<input type="hidden" name="date" value="{ curdate }" />
 <input type="hidden" name="view" value="{ curview }" />
+<input type="hidden" name="curcalids" value="{ ccids }" />
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="evtid" value="{ evtid }" />
-<input type="hidden" name="modifyevent" value="modify" />
+<input type="hidden" name="action" value="modifyevent" />
 <table class="BabLoginCadreBackground" width="60%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
@@ -327,7 +326,7 @@
 
 			<select name="timeend">
 			<!--#in getnexttime -->
-			<option value="{ time }" { selected }>{ time }</option>
+			<option value="{ timeval }" { selected }>{ time }</option>
 			<!--#endin getnexttime -->
 			</select >
 		</td>

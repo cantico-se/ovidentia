@@ -200,7 +200,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 			$this->bfree = $arr['bfree'];
 			$this->description = $arr['description'];
 			$this->nbowners = $arr['nbowners'];
-			$this->title = $this->startdate." ".$this->starttime. "-".$this->enddate." ".$this->endtime." ".$arr['title'];
+			$this->title = $arr['title'];
 			$this->titleten = htmlentities(substr($arr['title'], 0, 10));
 			$this->titletenurl = $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal'];
 			switch( $iarr['type'] )
@@ -208,7 +208,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 				case BAB_CAL_USER_TYPE:
 					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $iarr['access'] != BAB_CAL_ACCESS_VIEW )
 						{
-						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal'];
+						$this->titletenurl = $GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$arr['id']."&calid=".$arr['id_cal']."&cci=".$this->currentidcals."&view=viewm&date=".$this->currentdate;
 						}
 					break;
 				case BAB_CAL_PUB_TYPE:

@@ -326,7 +326,7 @@ function newEvent()
 	}
 
 
-function modifyEvent($idcal, $evtid)
+function modifyEvent($idcal, $evtid, $cci, $view, $date)
 	{
 	global $babBody,$babBodyPopup;
 	class temp
@@ -363,7 +363,7 @@ function modifyEvent($idcal, $evtid)
 		var $thisone;
 		var $updaterec;
 
-		function temp($idcal, $evtid)
+		function temp($idcal, $evtid, $cci, $view, $date)
 			{
 			global $babBody, $BAB_SESS_USERID, $babBodyPopup;
 
@@ -372,6 +372,9 @@ function modifyEvent($idcal, $evtid)
 			$this->calid = $idcal;
 			$this->evtid = $evtid;
 			$this->bmodif = false;
+			$this->ccids = $cci;
+			$this->curview = $view;
+			$this->curdate = $date;
 			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
 			switch( $iarr['type'] )
 				{
@@ -566,16 +569,16 @@ function modifyEvent($idcal, $evtid)
 
 		}
 
-	$temp = new temp($idcal, $evtid);
+	$temp = new temp($idcal, $evtid, $cci, $view, $date);
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "modifyevent"));
 	}
 
-function deleteEvent($evtid, $bupdrec)
+function deleteEvent()
 	{
-	global $babBody;
+	global $babBody,$babBodyPopup;
 	
-	class temp extends bab_event
+	class deleteEventCls extends bab_event
 		{
 		var $warning;
 		var $message;
@@ -587,28 +590,30 @@ function deleteEvent($evtid, $bupdrec)
 		var $topics;
 		var $article;
 
-		function temp($evtid, $bupdrec)
+		function deleteEventCls()
 			{
-			if( $bupdrec == "1" )
+			if( isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
 				{
+				$bupd = 1;
 				$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all occurrences");
 				$this->warning = bab_translate("WARNING: This operation will delete all occurrences permanently"). "!";
 				}
 			else
 				{
+				$bupd = 2;
 				$this->message = bab_translate("Are you sure you want to delete this event");
 				$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
 				}
-			$this->title = bab_getCalendarEventTitle($evtid);
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=event&idx=viewm&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&action=Yes&view=".$view."&bupdrec=".$bupdrec;
+			$this->title = bab_getCalendarEventTitle($_POST['evtid']);
+			$this->urlyes = $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".$_POST['evtid']."&action=yes&view=".$_POST['view']."&bupdrec=".$bupd."&curcalids=".$_POST['curcalids'];
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$calid."&evtid=".$evtid."&view=".$view;
+			$this->urlno = $GLOBALS['babUrlScript']."?tg=event&idx=unload&action=no&calid=".$_POST['calid']."&view=";
 			$this->no = bab_translate("No");
 			}
 		}
 
-	$temp = new temp($evtid, $bupdrec);
-	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
+	$temp = new deleteEventCls();
+	$babBodyPopup->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 function viewEvent($evtid)
@@ -966,145 +971,81 @@ function addEvent(&$message)
 	return true;	
 	}
 
-function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $category, $bupdrec)
+//function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $category, $bupdrec)
+function updateEvent(&$message)
 {
 	global $babBody;
 	
-	if( empty($title))
+	if( empty($_POST['title']))
 		{
-		$babBody->msgerror = bab_translate("You must provide a title")." !!";
-		return;
+		$message = bab_translate("You must provide a title")." !!";
+		return false;
 		}
 
 	if( !bab_isMagicQuotesGpcOn())
 		{
-		$title = addslashes($title);
+		$title = addslashes($_POST['title']);
+		$description = addslashes($_POST['evtdesc']);
 		}
 		
 	$db = $GLOBALS['babDB'];
 
-	if( empty($category))
+	if( empty($_POST['category']))
 		$catid = 0;
 	else
-		$catid = $category;
+		$catid = $_POST['category'];
 
-	if( $bupdrec == "1" )
+	if( isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
 	{
-		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
+		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$_POST['evtid']."'");
 		$arr = $db->db_fetch_array($res);
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', id_cat='".$catid."' where id_cal='".$calid."' and hash='".$arr['hash']."'";
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', id_cat='".$catid."' where hash='".$arr['hash']."'";
 		$db->db_query($req);
 	}
 	else
 	{
-		$begin = mktime( 0,0,0,$monthbegin, $daybegin, $yearbegin );
-		$end = mktime( 0,0,0,$monthend, $dayend, $yearend );
+		$begin = mktime( 0,0,0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
+		$end = mktime( 0,0,0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
 
 		if( $begin > $end )
 			{
-			$babBody->msgerror = bab_translate("End date must be older")." !!";
-			return;
+			$message = bab_translate("End date must be older")." !!";
+			return false;
 			}
 
-		$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
-		$starttime = sprintf("%s:00", $timebegin);
-		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
-		$endtime = sprintf("%s:00", $timeend);
+		$startdate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearbegin'], $_POST['monthbegin'], $_POST['daybegin'], $_POST['timebegin']);
+		$enddate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearend'], $_POST['monthend'], $_POST['dayend'], $_POST['timeend']);
 
-		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', start_date='".$startdate."', start_time='".$starttime."', end_date='".$enddate."', end_time='".$endtime."', id_cat='".$catid."' where id='".$evtid."'";
+		$req = "update ".BAB_CAL_EVENTS_TBL." set title='".$title."', description='".$description."', start_date='".$startdate."', end_date='".$enddate."', id_cat='".$catid."' where id='".$_POST['evtid']."'";
 		$db->db_query($req);
 	}
 
+	return true;
 }
 
-function confirmDeleteEvent($calid, $evtid, $bupdrec)
+function confirmDeleteEvent()
 {
 	$db = $GLOBALS['babDB'];
-	if( $bupdrec == "1" )
+	if( $GLOBALS['bupdrec'] == "1" )
 		{
-		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
+		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$GLOBALS['evtid']."'");
 		$arr = $db->db_fetch_array($res);
-		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id_cal='".$calid."' and hash='".$arr['hash']."'");
-		}
-	else
-		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='$evtid'");
-
-}
-
-function updateDescription($calid, $evtid, $content, $bupdrec)
-{
-	$db = $GLOBALS['babDB'];
-	
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$content = addslashes($content);
-		}
-
-	if( $bupdrec == "1" )
-		{
-		$res = $db->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'");
-		$arr = $db->db_fetch_array($res);
-		$db->db_query("update ".BAB_CAL_EVENTS_TBL." set description='".$content."' where id_cal='".$calid."' and hash='".$arr['hash']."'");
-		}
-	else
-		$db->db_query("update ".BAB_CAL_EVENTS_TBL." set description='".$content."' where id='".$evtid."'");
-}
-
-function isUpdateEvent($calid, $evtid)
-{
-global $babBody, $babDB;
-$bmodif = 0;
-
-list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id ='".$evtid."'"));
-if( substr($hash, 0, 2) == "V_")
-	return $bmodif;
-
-$caltype = bab_getCalendarType($calid);
-$owner = bab_getCalendarOwner($calid);
-switch($caltype)
-	{
-	case 1:
-		if( $owner == $GLOBALS['BAB_SESS_USERID'])
-			$bmodif = 1;
-		else
+		if( $arr['hash'] != "" && $arr['hash'][0] == 'R')
 			{
-			$res = $babDB->db_query("select bwrite from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$GLOBALS['BAB_SESS_USERID']."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
+			$res = $db->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$arr['hash']."'");
+			while( $arr = $db->db_fetch_array($res) )
 				{
-				$arr = $babDB->db_fetch_array($res);
-				if( $arr['bwrite'] == 2 )
-					$bmodif = 1;
-				else
-					{
-					$arr = $babDB->db_fetch_array($babDB->db_query("select id_creator from ".BAB_CAL_EVENTS_TBL." where id='".$evtid."'"));
-					if( $arr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] )
-						$bmodif = 1;
-					}
+				$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$arr['id']."'");
+				$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arr['id']."'");
 				}
 			}
-		break;
-	case 2:
-		if( count($babBody->usergroups) > 0 && in_array($owner, $babBody->usergroups))
-		{
-			$bmodif = 1;
 		}
-		elseif( $owner == 1 && bab_isUserAdministrator())
+	else
 		{
-			$bmodif = 1;
+		$db->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$GLOBALS['evtid']."'");
+		$db->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$arr['id']."'");
 		}
-		else
-		{
-			$bmodif = 0;
-		}
-		break;
-	case 3:
-		$bmodif = 1;
-		break;
-	default:
-		$bmodif = 0;
-		break;	
-	}
-return $bmodif;
+
 }
 
 
@@ -1130,13 +1071,13 @@ if( !$calid )
 	exit;
 	}
 
-if (isset($_POST['action']))
+if (isset($action))
 	{
-	switch($_POST['action'])
+	switch($action)
 		{
 		case 'yes':
-			confirmDeleteEvent($calid, $evtid, $bupdrec);
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view.calendarquerystring());
+			confirmDeleteEvent();
+			$idx="unload";
 			break;
 
 		case 'addevent':
@@ -1152,12 +1093,29 @@ if (isset($_POST['action']))
 			break;
 
 		case 'modifyevent':
-			if (updateEvent())
-				$idx = "unload";
-			break;
-
-		case 'delevent':
-			deleteEvent($calid, $evtid, $curday, $curmonth, $curyear, $view, $bupdrec);
+			if( isset($_POST['Submit']))
+				{
+				$message = '';
+				if (updateEvent($message))
+					{
+					$idx = "unload";
+					}
+				else
+					{
+					$idx = "modevent";
+					$cci = $_POST['curcalids'];
+					}
+				}
+			elseif( isset($_POST['evtdel']))
+				{
+				$message = '';
+				$babBodyPopup = new babBodyPopup();
+				$babBodyPopup->msgerror = $message;
+				deleteEvent();
+				printBabBodyPopup();
+				exit;
+				}
+			
 			break;
 		}
 	}
@@ -1178,8 +1136,11 @@ switch($idx)
 				$refreshurl = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$curcalids."&date=".$date;
 				break;
 			case 'viewm':
-			default:
 				$refreshurl = $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$curcalids."&date=".$date;
+				break;
+			default:
+				$popupmessage = "";
+				$refreshurl = "";
 				break;
 		}
 		popupUnload($popupmessage, $refreshurl);
@@ -1187,8 +1148,10 @@ switch($idx)
 		break;
 
 	case "modevent":
+		if( !isset($message)) { $message = '';}
 		$babBodyPopup = new babBodyPopup();
-		modifyEvent($calid, $evtid);
+		$babBodyPopup->msgerror = $message;
+		modifyEvent($calid, $evtid, $cci, $view, $date);
 		printBabBodyPopup();
 		exit;
 		break;
