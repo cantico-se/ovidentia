@@ -22,24 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-function listUsersUnload()
-	{
-	class temp
-		{
-		var $babCss;
-		var $message;
-		var $close;
-
-		function temp()
-			{
-			$this->message = bab_translate("Calendar access has been updated");
-			$this->close = bab_translate("Close");
-			}
-		}
-
-	$temp = new temp();
-	echo bab_printTemplate($temp,"calopt.html", "listunload");
-	}
 
 function browseUsers($pos, $cb, $idcal)
 	{
@@ -208,40 +190,19 @@ function accessCalendar($calid)
 	
 	class temp
 		{
-		var $userstxt;
-		var $textinfo;
-		var $calid;
-		var $addusers;
-		var $useraccess;
-		var $fullname;
-		var $accessname;
-		var $yesno;
-		var $delusers;
-		var $fullnameval;
-
-		var $vaccname0;
-		var $vaccname1;
-		var $vaccname2;
-
-		var $db;
-		var $res;
-		var $count;
-		var $arr = array();
-
 		function temp($calid)
 			{
 			$this->db = $GLOBALS['babDB'];
 			$this->calid = $calid;
-			$this->userstxt = bab_translate("Update");
-			$this->textinfo = bab_translate("Add user");
-			$this->addusers = bab_translate("Update access");
 			$this->fullname = bab_translate("Fullname");
-			$this->accessname = bab_translate("Access");
-			$this->delusers = bab_translate("Delete users");
-			$this->vaccname0 = bab_translate("Consultation");
-			$this->vaccname1 = bab_translate("Creation and modification");
-			$this->vaccname2 = bab_translate("Total access");
-			$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."'";
+			$this->access0txt = bab_translate("Consultation");
+			$this->access1txt = bab_translate("Creation and modification");
+			$this->access2txt = bab_translate("Full access");
+			$this->deletetxt = bab_translate("Delete");
+			$this->upduserstxt = bab_translate("Update access");
+			$this->usertxt = bab_translate("Add user");
+			$this->addtxt = bab_translate("Add");
+			$req = "select cut.id_user, cut.bwrite, ut.firstname, ut.lastname from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_USERS_TBL." ut on ut.id=cut.id_user where cut.id_cal='".$calid."'";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=calopt&idx=brow";
@@ -253,21 +214,24 @@ function accessCalendar($calid)
 			if( $k < $this->count)
 				{
 				$arr = $this->db->db_fetch_array($this->res);
-				$req = "select * from ".BAB_USERS_TBL." where id='".$arr['id_user']."'";
-				$res = $this->db->db_query($req);
-				$this->arr = $this->db->db_fetch_array($res);
-				$this->fullnameval = bab_composeUserName($this->arr['firstname'], $this->arr['lastname']);
+				$this->fullnameval = bab_composeUserName($arr['firstname'], $arr['lastname']);
 				$this->userid = $arr['id_user'];
 				switch( $arr['bwrite'])
 					{
 					case 1:
-						$this->yesno = $this->vaccname1;
+						$this->cheched0 = "";
+						$this->cheched1 = "checked";
+						$this->cheched2 = "";
 						break;
 					case 2:
-						$this->yesno = $this->vaccname2;
+						$this->cheched0 = "";
+						$this->cheched1 = "";
+						$this->cheched2 = "checked";
 						break;
 					default:
-						$this->yesno = $this->vaccname0;
+						$this->cheched0 = "checked";
+						$this->cheched1 = "";
+						$this->cheched2 = "";
 						break;
 					}
 				$k++;
@@ -285,39 +249,47 @@ function accessCalendar($calid)
 	$babBody->babecho(	bab_printTemplate($temp,"calopt.html", "access"));
 }
 
-function addAccessUsers( $users, $calid, $baccess)
+function addAccessUsers( $nuserid, $calid)
 {
 
 	$db = $GLOBALS['babDB'];
-	for( $i=0; $i < sizeof($users); $i++)
-	{
-	$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$users[$i]."'";
-	$res = $db->db_query($req);
-	if( $res && $db->db_num_rows($res) > 0)
+	if( !empty($nuserid) && $nuserid != $GLOBALS['BAB_SESS_USERID'])
 		{
-		$rr = $db->db_fetch_array($res);
-		$req = "update ".BAB_CALACCESS_USERS_TBL." set id_user='".$users[$i]."', bwrite='".$baccess."' where id='".$rr['id']."'";
+		$req = "select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$nuserid."'";
 		$res = $db->db_query($req);
+		if( !$res || $db->db_num_rows($res) == 0)
+			{
+			$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$calid."', '".$nuserid."', '0')";
+			$res = $db->db_query($req);
+			}
 		}
-	else
-		{
-		$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values ('".$calid."', '".$users[$i]."', '".$baccess."')";
-		$res = $db->db_query($req);
-		}
-	}
-
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access");
+	exit;
 }
 
-function delAccessUsers( $users, $calid)
+function updateAccessUsers( $users, $calid)
 {
 
 	$db = $GLOBALS['babDB'];
-
-	for( $i = 0; $i < count($users); $i++)
+	$res = $db->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."'");
+	while( $arr = $db->db_fetch_array($res))
+	{
+		if( count($users) > 0 && in_array($arr['id_user'], $users))
 		{
-		$db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$users[$i]."'");
+			$db->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$calid."' and id_user='".$arr['id_user']."'");
+		}
+		else
+		{
+			$opt = 'acc_'.$arr['id_user'];
+			if( isset($GLOBALS[$opt]) )
+			{
+				$db->db_query("update ".BAB_CALACCESS_USERS_TBL." set bwrite='".$GLOBALS[$opt]."' where id_cal='".$calid."' and id_user='".$arr['id_user']."'");
+			}
 		}
 
+	}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access");
+	exit;
 }
 
 function calendarOptions($calid)
@@ -577,17 +549,14 @@ if(!isset($idx))
 	}
 
 
-if( isset($accessadd) && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
+if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
-	addAccessUsers($users, $idcal, $baccess);
-	$idx = "lunload";
-}
-
-if( isset($accessdel) && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
+	addAccessUsers($nuserid, $idcal);
+}elseif( isset($update) && $update == "access" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
-	delAccessUsers($users, $idcal);
-}
-if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
+	if( !isset($users)) { $users = array();}
+	updateAccessUsers($users, $idcal);
+}elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	if( !isset($workdays)) { $workdays = array();}
 	updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $workdays, $useweeknb);
@@ -595,10 +564,6 @@ if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 
 switch($idx)
 	{
-	case "lunload":
-		listUsersUnload();
-		exit;
-		break;
 	case "brow":
 		$idcal = bab_getCalendarId($BAB_SESS_USERID, 1);
 		if( $idcal != 0 )
