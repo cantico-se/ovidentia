@@ -152,13 +152,16 @@ function bab_getAddonsMenus($addonName, $what)
 	$addonpath = $GLOBALS['babAddonsPath'].$GLOBALS['babAddons'][$addonName]['bab_folder'];
 	if( strtolower($GLOBALS['babAddons'][$addonName]['bab_enabled']) == "yes" && is_dir($addonpath))
 		{
-		require_once( $addonpath."/".$GLOBALS['babAddons'][$addonName]['bab_init_file'] );
-		$func = $GLOBALS['babAddons'][$addonName][$what];
-		if( !empty($func) && function_exists($func))
-			while( $func($url, $txt))
-				{
-				$addon_urls[$txt] = $url;
-				}
+		if( is_file($addonpath."/".$GLOBALS['babAddons'][$addonName]['bab_init_file'] ))
+			{
+			require_once( $addonpath."/".$GLOBALS['babAddons'][$addonName]['bab_init_file'] );
+			$func = $GLOBALS['babAddons'][$addonName][$what];
+			if( !empty($func) && function_exists($func))
+				while( $func($url, $txt))
+					{
+					$addon_urls[$txt] = $url;
+					}
+			}
 		}
 	return $addon_urls;
 }
