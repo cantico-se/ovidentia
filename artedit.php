@@ -386,7 +386,7 @@ function showChoiceTopic()
 
 		function temp()
 			{
-			global $babBodyPopup, $babBody, $babDB, $idart, $topicid, $articleid, $title, $headtext, $bodytext, $lang;
+			global $babBodyPopup, $babBody, $babDB, $idart, $topicid, $articleid, $title, $headtext, $bodytext, $lang, $rfurl;
 			$this->count = $babBody->topsub;
 			if( $this->count > 0 )
 				{
@@ -397,6 +397,7 @@ function showChoiceTopic()
 				if( !isset($headtext)) { $headtext = '';}
 				if( !isset($bodytext)) { $bodytext = '';}
 				if( !isset($lang)) { $lang = '';}
+				$this->rfurl = $rfurl;
 				$this->idart = $idart;
 				$this->idtopicsel = $topicid;
 				$this->title = htmlentities($title);
@@ -460,10 +461,11 @@ function showEditArticle()
 
 		function temp()
 			{
-			global $babBodyPopup, $babBody, $babDB, $idart, $topicid, $articleid, $title, $headtext, $bodytext, $lang;
+			global $babBodyPopup, $babBody, $babDB, $idart, $topicid, $articleid, $title, $headtext, $bodytext, $lang, $rfurl;
 			if(!isset($idart)) { $idart = 0;}
 			if(!isset($topicid)) { $topicid = 0;}
 			if(!isset($articleid)) { $articleid = 0;}
+			$this->rfurl = $rfurl;
 			$this->access = false;
 			$this->bprev = false;
 			$this->warnmessage = '';
@@ -641,8 +643,9 @@ function showPreviewArticle($idart)
 		{
 		function temp($idart)
 			{
-			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID;
+			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $rfurl;
 			$babBodyPopup->title = bab_translate("Preview article");
+			$this->rfurl = $rfurl;
 			$this->access = false;
 			$res = $babDB->db_query("select id_topic, id_article, title, head, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$idart."' and id_author='".$BAB_SESS_USERID."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
@@ -731,8 +734,9 @@ function showSetArticleProperties($idart)
 
 		function temp($idart)
 			{
-			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid;
+			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid, $rfurl;
 			$this->access = false;
+			$this->rfurl = $rfurl;
 
 			$req = "select * from ".BAB_ART_DRAFTS_TBL." where id_author='".$GLOBALS['BAB_SESS_USERID']."' and id='".$idart."'";
 			$res = $babDB->db_query($req);
@@ -1698,17 +1702,39 @@ function submitArticleDraft( $idart, $message)
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_array($res);
-		if( $arr['id_topic'] == 0 )
+		if( $arr['id_article'] !=  0 )
 			{
-			$message = bab_translate("You must specify a topic");
-			return false;
+			$access = false;
+			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id  where at.id='".$arr['id_article']."'");
+			if( $res && $babDB->db_num_rows($res) == 1 )
+				{
+				$rr = $babDB->db_fetch_array($res);
+				if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $rr['id_topic']) || ( $rr['allow_update'] != '0' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $rr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'])))
+					{
+					$access = true;
+					}
+				}
+
+			if( !$access )
+				{
+				$message = bab_translate("You don't have rights to modify this article");
+				return false;
+				}
+			}
+		else
+			{
+			if( $arr['id_topic'] == 0 )
+				{
+				$message = bab_translate("You must specify a topic");
+				return false;
+				}
+			elseif( !bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+				{
+				$message = bab_translate("You don't have rights to submit articles in this topic");
+				return false;
+				}			
 			}
 
-		if( !bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
-			{
-			$message = bab_translate("You don't have rights to submit articles in this topic");
-			return false;
-			}
 		return bab_submitArticleDraft( $idart);
 		}
 	else
@@ -1764,6 +1790,11 @@ if(!isset($idx))
 	$idx = "list";
 	}
 
+if(!isset($rfurl))
+	{
+	$rfurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+	}
+
 if( isset($updstep0))
 {
 	if( $updstep0 == 'cancel' )
@@ -1772,13 +1803,9 @@ if( isset($updstep0))
 			{
 			deleteDraft($idart);
 			unset($idart);
-			$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
-			}
-		else
-			{
-			$refreshurl = "";
 			}
 		$idx='unload';
+		$refreshurl = $rfurl;
 		$popupmessage = "";
 	}
 }
@@ -1790,13 +1817,9 @@ elseif( isset($updstep1))
 			{
 			deleteDraft($idart);
 			unset($idart);
-			$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
-			}
-		else
-			{
-			$refreshurl = "";
 			}
 		$idx='unload';
+		$refreshurl = $rfurl;
 		$popupmessage = "";
 	}
 	elseif( $updstep1 == 'save' )
@@ -1821,7 +1844,7 @@ elseif( isset($updstep1))
 		{
 		$idx='unload';
 		$popupmessage = bab_translate("Update done");
-		$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+		$refreshurl = $rfurl;
 		}
 	}
 	elseif( $updstep1 == 'prev' )
@@ -1857,7 +1880,7 @@ elseif( isset($updstep1))
 			{
 			$idx='unload';
 			$popupmessage = bab_translate("Update done");
-			$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+			$refreshurl = $rfurl;
 			}
 		}
 	}
@@ -1893,13 +1916,9 @@ elseif( isset($updstep2))
 			{
 			deleteDraft($idart);
 			unset($idart);
-			$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
-			}
-		else
-			{
-			$refreshurl = "";
 			}
 		$idx='unload';
+		$refreshurl = $rfurl;
 		$popupmessage = "";
 	}
 	elseif( $updstep2 == 'save' )
@@ -1910,7 +1929,7 @@ elseif( isset($updstep2))
 			savePreviewDraft($idart, $approbid);
 			}
 		$popupmessage = bab_translate("Update done");
-		$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+		$refreshurl = $rfurl;
 	}
 	elseif( $updstep2 == 'submit' )
 	{
@@ -1927,7 +1946,7 @@ elseif( isset($updstep2))
 			{
 			$idx='unload';
 			$popupmessage = bab_translate("Update done");
-			$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+			$refreshurl = $rfurl;
 			}
 	}
 	elseif( $updstep2 == 'next' )
@@ -1951,13 +1970,9 @@ elseif( isset($updstep3))
 			{
 			deleteDraft($idart);
 			unset($idart);
-			$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
-			}
-		else
-			{
-			$refreshurl = "";
 			}
 		$idx='unload';
+		$refreshurl = $rfurl;
 		$popupmessage = "";
 	}
 	elseif( $updstep3 == 'fadd')
@@ -1995,7 +2010,7 @@ elseif( isset($updstep3))
 		updatePropertiesArticleDraft();
 		$idx='unload';
 		$popupmessage = bab_translate("Update done");
-		$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+		$refreshurl = $rfurl;
 	}
 	elseif( $updstep3 == 'submit' )
 	{
@@ -2009,7 +2024,7 @@ elseif( isset($updstep3))
 			{
 			$idx='unload';
 			$popupmessage = bab_translate("Update done");
-			$refreshurl = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+			$refreshurl = $rfurl;
 			}
 	}
 	elseif( $updstep3 == 'prev' )
@@ -2101,7 +2116,7 @@ switch($idx)
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
 		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
+		if( !isset($refreshurl)) { $refreshurl = isset($rfurl)? $rfurl :'';}
 		popupUnload($popupmessage, $refreshurl);
 		exit;
 	case "getf":

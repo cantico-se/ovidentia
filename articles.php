@@ -989,7 +989,7 @@ function confirmModifyArticle($topics, $article, $comment)
 					$comment = stripslashes($comment);
 					}
 				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$article."', '".$GLOBALS['BAB_SESS_USERID']."', now(), 'lock', '".addslashes($comment)."')");		
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart);
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".$topics));
 				exit;
 			}
 			else
@@ -1009,7 +1009,7 @@ function confirmModifyArticle($topics, $article, $comment)
 function submitArticle($topics)
 {
 	global $babBody, $babDB;
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&topicid=".$topics);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&topicid=".$topics."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".$topics));
 	exit;
 }
 
