@@ -25,6 +25,7 @@ include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/artincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/forumincl.php";
 
 function bab_deleteSection($id)
 {
@@ -235,11 +236,22 @@ function bab_deleteApprobationSchema($id)
 
 function bab_deleteForum($id)
 {
-	$db = $GLOBALS['babDB'];
+	
+
+	$db = & $GLOBALS['babDB'];
 	// delete all posts
 	$res = $db->db_query("select id from ".BAB_THREADS_TBL." where forum='".$id."'");
 	while( $arr = $db->db_fetch_array($res))
 		{
+		$respost = $db->db_query("SELECT id from ".BAB_POSTS_TBL." where id_thread='".$arr['id']."'");
+		while (list($id_post) = $db->db_fetch_array($respost))
+			{
+			$files = bab_getPostFiles($id,$id_post);
+			foreach($files as $f)
+				{
+				@unlink($f['path']);
+				}
+			}
 		$db->db_query("delete from ".BAB_POSTS_TBL." where id_thread='".$arr['id']."'");
 		}
 
