@@ -97,7 +97,7 @@ function bab_getResizedImage($imgf, $w, $h)
 				else  
 					{  
 					$himg = $h;  
-					$wimg = $w;  
+					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
 					}
 				
 				$out = imagecreate($wimg, $himg);
