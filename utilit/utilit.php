@@ -102,34 +102,42 @@ function bab_formatDate($format, $time)
 function bab_formatAuthor($format, $id)
 {
 	global $babDB;
+	static $bab_authors = array();
 
-	$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	$txt = bab_translate("Anonymous");
+
+	if( !empty($id))
 		{
-		$arr = $babDB->db_fetch_array($res);
-		$txt = $format;
+		if( !isset($bab_authors[$id]))
+			{	
+			$res = $babDB->db_query("select givenname, sn, mn from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$id."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$bab_authors[$id] = $babDB->db_fetch_array($res);
+				}
+			}
+
 		if(preg_match_all("/%(.)/", $format, $m))
 			{
+			$txt = $format;
 			for( $i = 0; $i< count($m[1]); $i++)
 				{
 				switch($m[1][$i])
 					{
 					case 'F':
-						$val = $arr['givenname'];
+						$val = $bab_authors[$id]['givenname'];
 						break;
 					case 'L':
-						$val = $arr['sn'];
+						$val = $bab_authors[$id]['sn'];
 						break;
 					case 'M':
-						$val = $arr['mn'];
+						$val = $bab_authors[$id]['mn'];
 						break;
 					}
 				$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
 				}
 			}
 		}
-	else
-		$txt = bab_translate("Anonymous");
 
 	return $txt;
 }
