@@ -211,6 +211,7 @@ if( isset($add))
 
 if( isset($aclfaq))
 	{
+	if( !isset($groups)) { $groups = array(); }
 	aclUpdate($table, $item, $groups, $what);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 	}
