@@ -1004,15 +1004,16 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Add Article");
-			$this->notearticle = bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
+			
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			$this->files = bab_translate("Files");
 			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select lang, article_tmpl from ".BAB_TOPICS_TBL." where id='".$topics."'");
+			$this->res = $this->db->db_query("select lang, article_tmpl, idsaart from ".BAB_TOPICS_TBL." where id='".$topics."'");
 			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->notearticle = ($this->arr['idsaart'] == 0) ? "" : bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
 			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
 				if($this->arr['lang'] != '*')
