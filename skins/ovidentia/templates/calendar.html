@@ -258,6 +258,7 @@ function calendarChoice_selectAll(formname)
 <table align="center" width="100%">
 	<tr>
 		<td width="45%">
+		<h5>{ t_calendars1 }</h5>
 		<select name="calendars" multiple="multiple" size="10" style="width:100%">
 			<optgroup class="usr" label="{ usrcalendarstxt }">
 			<!--#in getnextusrcal -->
@@ -284,6 +285,7 @@ function calendarChoice_selectAll(formname)
 		</td>
 
 		<td width="45%">
+			<h5>{ t_calendars2 }</h5>
 			<select name="selected_calendars[]" multiple="multiple" size="10" style="width:100%">
 				<optgroup class="usr" label="{ usrcalendarstxt }">
 				</optgroup>
@@ -435,11 +437,11 @@ function dateEnd(day, month, year)
 <ul id="eventlist">
 <!--#in getnextevent -->
 	<!--#if evt[private] -->
-	<li id="event{ id }">
+	<li id="event{ idevent }">
 		<h3>{ t_private }</h3>
 	</li>
 	<!--#else evt[private] -->
-	<li id="event{ id }" style="color:#{ evt[color] }">
+	<li id="event{ idevent }" style="color:#{ evt[color] }">
 		<h3>{ evt[title] }</h3>
 		<h4>{ evt[start_date] } <span>-</span> { evt[end_date] }</h4>
 		<!--#if evt[categoryname] -->

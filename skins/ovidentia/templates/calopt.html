@@ -416,12 +416,23 @@ function submitCtrl(form)
 		}
 	}
 
+function calview()
+	{
+	if (typeof calendarChoice_selectAll == 'function')
+		{
+		calendarChoice_selectAll('calendarchoice');
+		}
+	document.forms['calendarchoice'].database_record.value = 0;
+	document.forms['calendarchoice'].submit();
+	}
+
 //-->
 </script>
 
 <form name="calendarchoice" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this))">
 <input type="hidden" name="tg" value="calopt" />
 <input type="hidden" name="idx" value="unload" />
+<input type="hidden" name="database_record" value="1" />
 <input type="hidden" name="backurl" value="{ backurl }" />
 
 <table width="98%" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
@@ -429,6 +440,7 @@ function submitCtrl(form)
 		<td align="center">
 			{ calendars }<br />
 			<input type="submit" value="{ t_record }" />
+			<input type="button" value="{ t_view }" onclick="calview()" />
 		</td>
 	</tr>
 </table>
