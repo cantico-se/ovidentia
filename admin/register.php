@@ -269,11 +269,11 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		if( !$badmin )
 			{
 			$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br>";
-			$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
-			$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($nickname);
 			$fullname = bab_composeUserName($firstname , $lastname);
 			if( isset($babBody->babsite['email_confirm']) && $babBody->babsite['email_confirm'] == 'Y')
 				{
+				$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
+				$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($nickname);
 				notifyUserRegistration($link, $fullname, $email);
 				$warning = "";
 				}
