@@ -603,11 +603,13 @@ var $now;
 var $w;
 var $event;
 var $dayurl;
+var $babCalendarStartDay;
 
 var $db;
 
 function babMonthA($month = "", $year = "")
 	{
+	global $BAB_SESS_USERID;
 
 	$this->db = new db_mysql();
 
@@ -628,6 +630,14 @@ function babMonthA($month = "", $year = "")
 		$this->currentYear = $year;
 		}
 
+	$req = "select * from caloptions where id_user='".$BAB_SESS_USERID."'";
+	$res = $this->db->db_query($req);
+	$this->babCalendarStartDay = 0;
+	if( $res && $this->db->db_num_rows($res) > 0)
+		{
+		$arr = $this->db->db_fetch_array($res);
+		$this->babCalendarStartDay = $arr[startday];
+		}
 	}
 
 function printout()
@@ -653,7 +663,10 @@ function printout()
 		static $i = 0;
 		if( $i < 7)
 			{
-			$this->day3 = substr($babDays[$i], 0, 1);
+			$a = $i + $this->babCalendarStartDay;
+			if( $a > 6)
+				$a -=  7;
+			$this->day3 = substr($babDays[$a], 0, 1);
 			$i++;
 			return true;
 			}
@@ -683,7 +696,11 @@ function printout()
 			$this->bgcolor = 0;
 			$this->event = 0;
 
-			if( $this->w == 1 &&  $d < $this->daynumber)
+			$a = $this->daynumber - $this->babCalendarStartDay;
+			if( $a < 0)
+				$a += 7;
+
+			if( $this->w == 1 &&  $d < $a)
 				{
 				$this->day = "&nbsp;";
 				}
