@@ -875,8 +875,8 @@ class bab_Article extends bab_handler
 			if( $this->count > 0 )
 				{
 				$this->res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id IN (".implode(',', $this->IdEntries).")");
+				$this->count = $babDB->db_num_rows($this->res);
 				}
-			$this->count = $babDB->db_num_rows($this->res);
 		}
 		
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -2944,7 +2944,577 @@ class bab_FaqQuestionNext extends bab_FaqQuestion
 }
 
 
+class bab_Calendars extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
 
+	function bab_Calendars( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$type = $ctx->get_value('type');
+		if( $type === false || $type === '' )
+			{
+			for( $i = 0; $i < count($babBody->calendarids); $i++ )
+				{
+				switch($babBody->calendarids[$i]['type'])
+					{
+					case 1: $typename = 'user';	break;
+					case 2: $typename = 'group'; break;
+					case 3: $typename = 'resource';	break;
+					default: $typename = ''; break;
+					}
+				$this->IdEntries[] = array('id' => $babBody->calendarids[$i]['id'], 'name' => bab_getCalendarOwnerName($babBody->calendarids[$i]['id'], $babBody->calendarids[$i]['type']), 'type' => $typename, 'owner' => $babBody->calendarids[$i]['owner'] );
+				}
+			}
+		else
+			{
+			$typename = strtolower($type);
+			switch($typename)
+				{
+				case 'user': $type = 1;	break;
+				case 'group': $type = 2;	break;
+				case 'resource': $type = 3;	break;
+				default: $type = ''; break;
+				}
+
+			for( $i = 0; $i < count($babBody->calendarids); $i++ )
+				{
+				if( $babBody->calendarids[$i]['type'] == $type )
+					{
+					$this->IdEntries[] = array('id' => $babBody->calendarids[$i]['id'], 'name' => bab_getCalendarOwnerName($babBody->calendarids[$i]['id'], $babBody->calendarids[$i]['type']), 'type' => $typename, 'owner' => $babBody->calendarids[$i]['owner'] );
+					}
+				}
+			}
+
+		$this->count = count($this->IdEntries);
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babBody,$babDB;
+		if( $this->idx < $this->count)
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('CalendarId', $this->IdEntries[$this->idx]['id']);
+			$this->ctx->curctx->push('CalendarName', $this->IdEntries[$this->idx]['name']);
+			$this->ctx->curctx->push('CalendarOwnerId', $this->IdEntries[$this->idx]['owner']);
+			$this->ctx->curctx->push('CalendarType', $this->IdEntries[$this->idx]['type']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_CalendarCategories extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_CalendarCategories( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$arrgrp = array();
+		for( $i = 0; $i < count($babBody->calendarids); $i++ )
+			{
+			if($babBody->calendarids[$i]['type'] == 2 )
+				{
+				$arrgrp[] = $babBody->calendarids[$i]['owner'];
+				}
+			}
+		if( count($arrgrp) > 0 )
+		{
+		$this->res = $babDB->db_query("select * from ".BAB_CATEGORIESCAL_TBL." where id_group IN (".implode(',', $arrgrp).") order by name asc");
+		$this->count = $babDB->db_num_rows($this->res);
+		}
+		else
+		{
+			$this->count = 0;
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babBody,$babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('CalendarCategoryId', $arr['id']);
+			$this->ctx->curctx->push('CalendarCategoryName', $arr['name']);
+			$this->ctx->curctx->push('CalendarCategoryDescription', $arr['description']);
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+class bab_CalendarUserEvents extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_CalendarUserEvents( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$userid = $ctx->get_value('userid');
+		$calid = '';
+		if( $userid === false || $userid === '' )
+			{
+			for( $i = 0; $i < count($babBody->calendarids); $i++ )
+				{
+				if( $babBody->calendarids[$i]['type'] == '1' && $babBody->calendarids[$i]['owner'] == $GLOBALS['BAB_SESS_USERID'] )
+					{
+					$calid = $babBody->calendarids[$i]['id'];
+					break;
+					}
+				}
+			}
+		else
+			{
+			$ar = array();
+			$rr = explode(',', $userid);
+			for($k=0; $k < count($rr); $k++ )
+				{
+				for( $i = 0; $i < count($babBody->calendarids); $i++ )
+					{
+					if( $babBody->calendarids[$i]['type'] == '1' && $babBody->calendarids[$i]['owner'] == $rr[$k] )
+						{
+						$ar[] = $babBody->calendarids[$i]['id'];
+						break;
+						}
+					}
+				}
+
+			if( count($ar) > 0 )
+				{
+				$calid = implode(',', $ar);
+				}
+			else
+				{
+				$calid = '';
+				}
+			}
+
+		$date = $ctx->get_value('date');
+		if( $date === false || $date === '' )
+			{
+			$date = 'CURDATE()';
+			}
+		else
+			{
+			$date = "'".$date."'";
+			}
+		$limit = $ctx->get_value('limit');
+		$lf = $lr = 0;
+
+		if( $limit !== false && $limit !== '' )
+			{
+			$limit = explode(',', $limit);
+			if( count($limit) > 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				$lr = empty($limit[1])?0:$limit[1];
+				}
+			elseif ( count($limit) == 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				}
+			}
+
+		if( !empty($calid))
+		{
+		$categoryid = $ctx->get_value('categoryid');
+		if( $categoryid === false || $categoryid === '' )
+			{
+			$categoryid = '';
+			}
+
+		$req = "select cet.*, rct.name from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		if( !empty($categoryid))
+			{
+			$req .= " and cet.id_cat IN (".$categoryid.")";
+			}
+		$req .= " order by start_date, start_time asc";
+		$this->res = $babDB->db_query($req);
+		$this->count = $babDB->db_num_rows($this->res);
+		}
+		else
+		{
+		$this->count = 0;
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	function getnext()
+	{
+		global $babBody,$babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('EventTitle', $arr['title']);
+			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']." ".$arr['start_time']));
+			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']." ".$arr['end_time']));
+			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
+			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], 1));
+			if( isset($arr['name']))
+				{
+				$this->ctx->curctx->push('EventCategoryName', $arr['name']);
+				}
+			else
+				{
+				$this->ctx->curctx->push('EventCategoryName', '');
+				}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+class bab_CalendarGroupEvents extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_CalendarGroupEvents( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$groupid = $ctx->get_value('groupid');
+		$ar = array();
+		if( $groupid === false || $groupid === '' )
+			{
+			for( $i = 0; $i < count($babBody->calendarids); $i++ )
+				{
+				if( $babBody->calendarids[$i]['type'] == '2')
+					{
+					$ar[] = $babBody->calendarids[$i]['id'];
+					}
+				}
+			}
+		else
+			{
+			$filter = $ctx->get_value('filter');
+
+			if (strtoupper($filter) == "NO") 
+				{
+				$filter = false;
+				}
+			else
+				{
+				$filter = true;
+				}
+
+			$rr = explode(',', $groupid);
+			if( $filter )
+				{
+				for($k=0; $k < count($rr); $k++ )
+					{
+					for( $i = 0; $i < count($babBody->calendarids); $i++ )
+						{
+						if( $babBody->calendarids[$i]['type'] == '2' && $babBody->calendarids[$i]['owner'] == $rr[$k] )
+							{
+							$ar[] = $babBody->calendarids[$i]['id'];
+							}
+						}
+					}
+				}
+			elseif( !empty($groupid))
+				{
+				for($k=0; $k < count($rr); $k++ )
+					{
+					$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner IN (".$groupid.") and type='2' and actif='Y'");
+					while( $arr = $babDB->db_fetch_array($res) )
+						{
+						$ar[] = $arr['id'];
+						}
+					}
+				}
+			}
+		if( count($ar) > 0 )
+			{
+			$calid = implode(',', $ar);
+			}
+		else
+			{
+			$calid = '';
+			}
+
+		$date = $ctx->get_value('date');
+		if( $date === false || $date === '' )
+			{
+			$date = 'CURDATE()';
+			}
+		else
+			{
+			$date = "'".$date."'";
+			}
+		$limit = $ctx->get_value('limit');
+		$lf = $lr = 0;
+
+		if( $limit !== false && $limit !== '' )
+			{
+			$limit = explode(',', $limit);
+			if( count($limit) > 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				$lr = empty($limit[1])?0:$limit[1];
+				}
+			elseif ( count($limit) == 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				}
+			}
+
+		if( !empty($calid))
+		{
+		$categoryid = $ctx->get_value('categoryid');
+		if( $categoryid === false || $categoryid === '' )
+			{
+			$categoryid = '';
+			}
+
+		$req = "select cet.*, rct.name from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		if( !empty($categoryid))
+			{
+			$req .= " and cet.id_cat IN (".$categoryid.")";
+			}
+		$req .= " order by start_date, start_time asc";
+		$this->res = $babDB->db_query($req);
+		$this->count = $babDB->db_num_rows($this->res);
+		}
+		else
+		{
+		$this->count = 0;
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	
+	function getnext()
+	{
+		global $babBody,$babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('EventTitle', $arr['title']);
+			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']." ".$arr['start_time']));
+			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']." ".$arr['end_time']));
+			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
+			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], 2));
+			if( isset($arr['name']))
+				{
+				$this->ctx->curctx->push('EventCategoryName', $arr['name']);
+				}
+			else
+				{
+				$this->ctx->curctx->push('EventCategoryName', '');
+				}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_CalendarResourceEvents extends bab_handler
+{
+	var $res;
+	var $IdEntries = array();
+	var $index;
+	var $count;
+
+	function bab_CalendarResourceEvents( &$ctx)
+	{
+		global $babBody, $babDB;
+		$this->bab_handler($ctx);
+		$resourceid = $ctx->get_value('resourceid');
+		$claid = '';
+		if( $resourceid === false || $resourceid === '' )
+			{
+			$ar = array();
+			for( $i = 0; $i < count($babBody->calendarids); $i++ )
+				{
+				if( $babBody->calendarids[$i]['type'] == '3')
+					{
+					$ar[] = $babBody->calendarids[$i]['owner'];
+					}
+				}
+			}
+		else
+			{
+			$filter = $ctx->get_value('filter');
+
+			if (strtoupper($filter) == "NO") 
+				{
+				$filter = false;
+				}
+			else
+				{
+				$filter = true;
+				}
+
+			$ar = array();
+			$rr = explode(',', $resourceid);
+			if( $filter )
+				{
+				for($k=0; $k < count($rr); $k++ )
+					{
+					for( $i = 0; $i < count($babBody->calendarids); $i++ )
+						{
+						if( $babBody->calendarids[$i]['type'] == '3' && $babBody->calendarids[$i]['owner'] == $rr[$k] )
+							{
+							$ar[] = $babBody->calendarids[$i]['id'];
+							}
+						}
+					}
+				}
+			elseif( !empty($resourceid))
+				{
+				for($k=0; $k < count($rr); $k++ )
+					{
+					$res = $babDB->db_query("select ct.id from ".BAB_CALENDAR_TBL." ct left join ".BAB_RESOURCESCAL_TBL." rt where rt.id_group IN (".$resourceid.") and ct.owner=rt.id and ct.type='3' and ct.actif='Y'");
+					while( $arr = $babDB->db_fetch_array($res) )
+						{
+						$ar[] = $arr['id'];
+						}
+					}
+				}
+			}
+		if( count($ar) > 0 )
+			{
+			$calid = implode(',', $ar);
+			}
+		else
+			{
+			$calid = '';
+			}
+
+		$date = $ctx->get_value('date');
+		if( $date === false || $date === '' )
+			{
+			$date = 'CURDATE()';
+			}
+		else
+			{
+			$date = "'".$date."'";
+			}
+		$limit = $ctx->get_value('limit');
+		$lf = $lr = 0;
+
+		if( $limit !== false && $limit !== '' )
+			{
+			$limit = explode(',', $limit);
+			if( count($limit) > 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				$lr = empty($limit[1])?0:$limit[1];
+				}
+			elseif ( count($limit) == 1 )
+				{
+				$lf = empty($limit[0])?0:$limit[0];
+				}
+			}
+
+		if( !empty($calid))
+		{
+		$categoryid = $ctx->get_value('categoryid');
+		if( $categoryid === false || $categoryid === '' )
+			{
+			$categoryid = '';
+			}
+
+		$req = "select cet.*, rct.name from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CATEGORIESCAL_TBL." rct on rct.id=cet.id_cat where id_cal IN (".$calid.") and ((start_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ) or (end_date between ".$date." - INTERVAL ".$lf." DAY and  ".$date." + INTERVAL ".$lr." DAY ))";
+		if( !empty($categoryid))
+			{
+			$req .= " and cet.id_cat IN (".$categoryid.")";
+			}
+		$req .= " order by start_date, start_time asc";
+		$this->res = $babDB->db_query($req);
+		$this->count = $babDB->db_num_rows($this->res);
+		}
+		else
+		{
+		$this->count = 0;
+		}
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+	
+	function getnext()
+	{
+		global $babBody,$babDB;
+		if( $this->idx < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			$this->ctx->curctx->push('EventTitle', $arr['title']);
+			$this->ctx->curctx->push('EventDescription', $arr['description']);
+			$this->ctx->curctx->push('EventBeginDate', bab_mktime($arr['start_date']." ".$arr['start_time']));
+			$this->ctx->curctx->push('EventEndDate', bab_mktime($arr['end_date']." ".$arr['end_time']));
+			$this->ctx->curctx->push('EventCategoryId', $arr['id_cat']);
+			$this->ctx->curctx->push('EventOwner', bab_getCalendarOwnerName($arr['id_cal'], 3));
+			if( isset($arr['name']))
+				{
+				$this->ctx->curctx->push('EventCategoryName', $arr['name']);
+				}
+			else
+				{
+				$this->ctx->curctx->push('EventCategoryName', '');
+				}
+			$this->idx++;
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
 
 
 

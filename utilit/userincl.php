@@ -657,90 +657,107 @@ function bab_articleAccessById($id, $iduser ='')
 	
 function bab_getCalendarId($iduser, $type)
 {
+	global $babBody;
+
 	if( empty($iduser))
 		return 0;
-	$db = $GLOBALS['babDB'];
-	if( $type == 1)
+	
+	for( $i = 0; $i < count($babBody->calendarids); $i++ )
 	{
-	$res = $db->db_query("select id from ".BAB_GROUPS_TBL." where id='1' and pcalendar='Y'");
-
-	if( !$res || $db->db_num_rows($res) == 0 )
+		if( $babBody->calendarids[$i]['owner'] == $iduser && $babBody->calendarids[$i]['type'] == $type )
 		{
-		$res = $db->db_query("select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$iduser."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group and ".BAB_GROUPS_TBL.".pcalendar ='Y'");
-
-		if( !$res || $db->db_num_rows($res) == 0 )
-			return 0;
+			return $babBody->calendarids[$i]['id'];
 		}
 	}
+	return 0;
 
-	$query = "select id from ".BAB_CALENDAR_TBL." where owner='$iduser' and actif='Y' and type='".$type."'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return $arr['id'];
-		}
-	else
-		{
-		return 0;
-		}
 }
 
 function bab_calendarAccess()
 	{
 	global $babBody;
+	return count($babBody->calendarids)> 0? true: false;
+	}
+
+function bab_getCalendarIds()
+	{
+	global $babBody;
 	$db = $GLOBALS['babDB'];
 	include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
 
+	$babBody->calendarids = array();
+
 	if( $GLOBALS['BAB_SESS_USERID'] != "" )
 		{
-		$idcal = bab_getCalendarId($GLOBALS['BAB_SESS_USERID'], 1);
-		if( $idcal != 0 )
-			return $idcal;
-	
-		$idcal = bab_getCalendarId(1, 2);
-		if( $idcal != 0 )
-			return $idcal;
-
-		if( count($babBody->usergroups) > 0 )
+		$pcalendar = false;
+		reset($babBody->ovgroups);
+		while( $row=each($babBody->ovgroups) ) 
+			{ 
+			if( $row[1]['member'] == 'Y' && $row[1]['pcalendar'] == 'Y')
+				{
+				$pcalendar = true;
+				}
+			}
+		if( $pcalendar )
 			{
-			$res = $db->db_query("select id from ".BAB_CALENDAR_TBL." where owner IN (".implode(',', $babBody->usergroups).") and type='2' and actif='Y' limit 0, 1");
-			if( $res && $db->db_num_rows($res) > 0 )
+			$res = $db->db_query("select id, owner from ".BAB_CALENDAR_TBL." where owner='".$GLOBALS['BAB_SESS_USERID']."' and actif='Y' and type='1'");
+			if( $res && $db->db_num_rows($res) >  0)
 				{
 				$arr = $db->db_fetch_array($res);
-				return $arr['id'];
+				$babBody->calendarids[] = array('id' => $arr['id'], 'type' => 1, 'owner' => $GLOBALS['BAB_SESS_USERID'], 'access' => 2);
 				}
+			//return $idcal;
 			}
-
-		$res = $db->db_query("select ".BAB_CALENDAR_TBL.".id from ".BAB_CALENDAR_TBL." join ".BAB_RESOURCESCAL_TBL." where ".BAB_RESOURCESCAL_TBL.".id_group='1' and ".BAB_CALENDAR_TBL.".owner=".BAB_RESOURCESCAL_TBL.".id and ".BAB_CALENDAR_TBL.".type='3' and ".BAB_CALENDAR_TBL.".actif='Y' limit 0, 1");
-
-		if( $res && $db->db_num_rows($res) > 0 )
+	
+		$res = $db->db_query("select id, owner from ".BAB_CALENDAR_TBL." where owner='1' and actif='Y' and type='2'");
+		while( $arr = $db->db_fetch_array($res))
 			{
-			$arr = $db->db_fetch_array($res);
-			return $arr['id'];
+			$babBody->calendarids[] = array('id' => $arr['id'], 'type' => 2, 'owner' => 1);
+			//return $idcal;
 			}
 
 		if( count($babBody->usergroups) > 0 )
 			{
-			$res = $db->db_query("select id from ".BAB_RESOURCESCAL_TBL." where id_group IN (".implode(',', $babBody->usergroups).")");
+			$res = $db->db_query("select id, owner from ".BAB_CALENDAR_TBL." where owner IN (".implode(',', $babBody->usergroups).") and type='2' and actif='Y'");
 			while( $arr = $db->db_fetch_array($res) )
 				{
-				$idcal = bab_getCalendarId($arr['id'], 3);
-				if( $idcal != 0 )
-					return $idcal;
+				$babBody->calendarids[] = array('id' => $arr['id'], 'type' => 2, 'owner' => $arr['owner']);
+				//return $arr['id'];
 				}
 			}
 
-		$res = $db->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
-		while($row = $db->db_fetch_array($res))
+		$res = $db->db_query("select ".BAB_CALENDAR_TBL.".id, ".BAB_CALENDAR_TBL.".owner from ".BAB_CALENDAR_TBL." join ".BAB_RESOURCESCAL_TBL." where ".BAB_RESOURCESCAL_TBL.".id_group='1' and ".BAB_CALENDAR_TBL.".owner=".BAB_RESOURCESCAL_TBL.".id and ".BAB_CALENDAR_TBL.".type='3' and ".BAB_CALENDAR_TBL.".actif='Y'");
+
+		while( $arr = $db->db_fetch_array($res) )
 			{
-				if( bab_isCalendarAccessValid($row['id_cal']) )
+			$babBody->calendarids[] = array('id' => $arr['id'], 'type' => 3, 'owner' => $arr['owner']);
+			//return $arr['id'];
+			}
+
+		if( count($babBody->usergroups) > 0 )
+			{
+			$res = $db->db_query("select ct.id, ct.owner from ".BAB_CALENDAR_TBL." ct left join ".BAB_RESOURCESCAL_TBL." rt on rt.id = ct.owner where id_group IN (".implode(',', $babBody->usergroups).") and ct.actif='Y' and ct.type='3'");
+			while( $arr = $db->db_fetch_array($res) )
 				{
-					return $row['id_cal'];
+				$babBody->calendarids[] = array('id' => $arr['id'], 'type' => 3, 'owner' => $arr['owner']);
 				}
+			}
+
+		$res = $db->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal where id_user='".$GLOBALS['BAB_SESS_USERID']."' and ct.actif='Y'");
+		while($arr = $db->db_fetch_array($res))
+			{
+				$babBody->calendarids[] = array('id' => $arr['id_cal'], 'type' => 1, 'owner' => $arr['owner'], 'access' => $arr['bwrite']);
+			}
+
+		if( count($babBody->calendarids) > 0 )
+			{
+			return $babBody->calendarids[0]['id'];
+			}
+		else
+			{
+			return 0;
 			}
 		}
-
 	return 0;
 	}
 

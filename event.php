@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/calincl.php";
+include_once $babInstallPath."utilit/calincl.php";
 
 function bab_getCalendarEventTitle($evtid)
 {
@@ -1196,6 +1196,10 @@ switch($caltype)
 		{
 			$bmodif = 1;
 		}
+		elseif( $owner == 1 && bab_isUserAdministrator())
+		{
+			$bmodif = 1;
+		}
 		else
 		{
 			$bmodif = 0;
@@ -1214,7 +1218,8 @@ return $bmodif;
 if( !isset($idx))
 	$idx = "newevent";
 
-if( !bab_isCalendarAccessValid($calid) )
+$calid = bab_isCalendarAccessValid($calid);
+if( !$calid )
 	{
 	$babBody->title = bab_translate("Access denied");
 	$idx = "";
@@ -1252,12 +1257,12 @@ else
 
 	if( isset($addevent) && $addevent == "add")
 		{
-		if( !isset($usrcals))
-			$usrcals = array();
-		if( !isset($grpcals))
-			$grpcals = array();
-		if( !isset($rescals))
-			$rescals = array();
+		if( !isset($usrcals)){$usrcals = array();}
+		if( !isset($grpcals)){$grpcals = array();}
+		if( !isset($rescals)){$rescals = array();}
+		if( !isset($days)){$days = array();}
+		if( !isset($daytype)) {$daytype = '';}
+		if( !isset($repeat)) {$repeat = '';}
 		if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $evtdesc, $category, $usrcals, $grpcals, $rescals))
 			{
 			$day = $daybegin;
@@ -1315,6 +1320,9 @@ switch($idx)
 		break;
 
 	case "newevent":
+		if( !isset($title)) { $title='';}
+		if( !isset($evtdesc)) { $evtdesc='';}
+		if( !isset($st)) { $st='';}
 		newEvent($calid, $day, $month, $year, $view, $title, $evtdesc, $st);
 		if( bab_isUserGroupManager())
 			{

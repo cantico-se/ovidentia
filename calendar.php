@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include $babInstallPath."utilit/calincl.php";
+include_once $babInstallPath."utilit/calincl.php";
 
 function isCalUpdate($mcals)
 {
@@ -1152,8 +1152,11 @@ switch($idx)
 		echo categoriesList($calid);
 		exit;
 	case "viewd":
-		if( !bab_isCalendarAccessValid($calid) )
+		$calid = bab_isCalendarAccessValid($calid);
+		if( !$calid )
+			{
 			$babBody->title = bab_translate("Acces denied");
+			}
 		else
 			{
 			$babBody->title = bab_translate("Calendar");
@@ -1163,8 +1166,11 @@ switch($idx)
 		break;
 	case "viewqc":
 	case "viewq":
-		if( !bab_isCalendarAccessValid($calid) )
+		$calid = bab_isCalendarAccessValid($calid);
+		if( !$calid )
+			{
 			$babBody->title = bab_translate("Acces denied");
+			}
 		else
 			{
 			$babBody->title = bab_translate("Calendar");
@@ -1174,8 +1180,11 @@ switch($idx)
 		break;
 	default:
 	case "viewm":
-		if( !bab_isCalendarAccessValid($calid) )
+		$calid = bab_isCalendarAccessValid($calid);
+		if( !$calid )
+			{
 			$babBody->title = bab_translate("Acces denied");
+			}
 		else
 			{
 			$babBody->title = bab_translate("Calendar");

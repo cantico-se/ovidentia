@@ -740,8 +740,7 @@ function babUserSection($close)
 		}
 	if( $vac )
 		$this->array_urls[bab_translate("Vacation")] = $GLOBALS['babUrlScript']."?tg=vacuser";
-	$idcal = bab_calendarAccess();
-	if( $idcal != 0 )
+	if( bab_calendarAccess() )
 		{
 		$babBody->calaccess = true;
 		list($view, $wv) = $babDB->db_fetch_row($babDB->db_query("select defaultview, defaultviewweek from ".BAB_CALOPTIONS_TBL." where id_user='".$BAB_SESS_USERID."'"));
@@ -756,7 +755,7 @@ function babUserSection($close)
 			case '2': $view='viewd'; break;
 			default: $view='viewm'; break;
 			}
-		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$idcal;
+		$this->array_urls[bab_translate("Calendar")] = $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view."&calid=".$babBody->calendarids[0]['id'];
 		}
 	if( $bemail )
 		$this->array_urls[bab_translate("Mail")] = $GLOBALS['babUrlScript']."?tg=inbox";
@@ -1225,6 +1224,7 @@ var $ovgroups; /* all ovidentia groups */
 var $babsite;
 var $babmanagertopics;
 var $ocids; /* orgnization chart ids */
+var $calendarids = array(); /* calendar ids */
 
 //var $aclfm;
 //var $babsite;
@@ -1808,6 +1808,7 @@ function bab_updateUserSettings()
 	if( !empty($BAB_SESS_USERID))
 		{
 		$res=$babDB->db_query("select id_group, isprimary from ".BAB_USERS_GROUPS_TBL." where id_object='".$BAB_SESS_USERID."'");
+		$babBody->ovgroups[1]['member'] = 'Y'; /* registered user */
 		while( $arr = $babDB->db_fetch_array($res))
 			{
 			$babBody->usergroups[] = $arr['id_group'];
@@ -1815,6 +1816,8 @@ function bab_updateUserSettings()
 			$babBody->ovgroups[$arr['id_group']]['primary'] = $arr['isprimary'];
 			}
 		}
+
+	bab_getCalendarIds();
 
 	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $arr = $babDB->db_fetch_array($res))
