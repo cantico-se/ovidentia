@@ -32,9 +32,9 @@ else
           <tr> 
             <td> <table class="BabLoginMenuBackground" width="100%" >
                 <tr> 
-                  <td nowrap class="BabSiteAdminTitleFontBackground"> { title }: &nbsp; <input type="text" name="category" size="30" maxlength="60" value="{ category }"> 
+                  <td class="BabLoginMenuBackground"> { title }: &nbsp; <input type="text" name="category" size="30" maxlength="60" value="{ category }"> 
                   </td>
-                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ topcat }:&nbsp; <select name="ncat">
+                  <td align="right" class="BabLoginMenuBackground">{ topcat }:&nbsp; <select name="ncat">
                       <!--#in getnextcat -->
                       <option value="{ topid }" { topselected }>{ toptitle }</option>
                       <!--#endin getnextcat -->
@@ -45,21 +45,21 @@ else
            <tr> 
             <td> <table class="BabLoginMenuBackground" width="100%" >
                 <tr> 
-                  <td nowrap align="left" class="BabSiteAdminTitleFontBackground">{ 
+                  <td align="left" class="BabLoginMenuBackground">{ 
                     langLabel }:&nbsp;<select name="lang">
                       <!--#in getnextlang -->
                       <option value="{ langValue }" { langselected }>{ langValue 
                       }</option>
                       <!--#endin getnextlang -->
                     </select></td>
-                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ disptmpltxt }:&nbsp; 
+                  <td align="right" class="BabLoginMenuBackground">{ disptmpltxt }:&nbsp; 
 					<select name="disptid">
                       <option value="">{ none }</option>
                       <!--#in getnextdisptmpl -->
                       <option value="{ disptmplid }" { disptmplselected }>{ disptmplval }</option>
                       <!--#endin getnextdisptmpl -->
                     </select> </td>
-                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ arttmpltxt }:&nbsp; 
+                  <td align="right" class="BabLoginMenuBackground">{ arttmpltxt }:&nbsp; 
 					<select name="atid">
                       <option value="">{ none }</option>
                       <!--#in getnextarttmpl -->
@@ -70,7 +70,7 @@ else
               </table></td>
           </tr>
          <tr> 
-            <td align="center" class="BabSiteAdminTitleFontBackground">{ desctitle }</td>
+            <td align="center" class="BabLoginMenuBackground">{ desctitle }</td>
           </tr>
           <!-- Instanciation de la barre d'outils -->
           <!--#if msie "== 1" -->
@@ -120,17 +120,17 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
             </td>
           </tr>
           <tr> 
-            <td align="center"> <table class="BabLoginMenuBackground" width="60%" >
+            <td align="center"> <table class="BabLoginMenuBackground" width="100%" >
                 <tr> 
                   <td nowrap align="right"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ 
                     approver }</a>:</td>
-                  <td nowrap><input type="text" name="manager" size="40" maxlength="80" value="{ managerval }" disabled> 
+                  <td nowrap><input type="text" name="manager" size="25" maxlength="80" value="{ managerval }" disabled> 
                     <input type="hidden" name="managerid" value="{ managerid }"></td>
                 </tr>
                 <tr> 
-                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ 
+                  <td nowrap align="right" class="BabLoginMenuBackground">{ 
                     modart }:</td>
-                  <td nowrap> <select name="saart">
+                  <td> <select name="saart">
                       <option value="0">{ none }</option>
                       <!--#in getnextschapp -->
                       <option value="{ said }" { saartsel }>{ saname }</option>
@@ -138,7 +138,7 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ 
+                  <td align="right" class="BabLoginMenuBackground">{ 
                     modcom }:</td>
                   <td nowrap> <select name="sacom">
                       <option value="0">{ none }</option>
@@ -148,7 +148,7 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ 
+                  <td align="right" class="BabLoginMenuBackground">{ 
                     notiftxt }:</td>
                   <td nowrap> <select name="bnotif">
                       <option value="Y" { notifysel }>{ yes }</option>
@@ -156,7 +156,7 @@ initEditorVars('{ babUrl }','{ babInstallPath }','{ babLanguage }','{ babPhpSelf
                     </select> </td>
                 </tr>
                 <tr> 
-                  <td nowrap align="right" class="BabSiteAdminTitleFontBackground">{ 
+                  <td align="right" class="BabLoginMenuBackground">{ 
                     restricttxt }:</td>
                   <td nowrap> <select name="restrict">
                       <option value="Y" { restrictysel }>{ yes }</option>
