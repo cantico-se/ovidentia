@@ -161,7 +161,7 @@ function locateArticle( $txt )
 		if( $res && $db->db_num_rows($res) > 0)
 			{
 			$arr = $db->db_fetch_array($res);
-			if(isAccessValid("topicsview_groups", $arr[id_topic]) 
+			if(isAccessValid("topicsview_groups", $arr[id_topic])) 
 				$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", "<a href=\"".$GLOBALS[babUrl]."index.php?tg=articles&idx=More&topics=".$arr[id_topic]."&article=".$arr[id]."\">".$arr[title]."</a>", $txt);
 			else
 				$txt = preg_replace("/\\\$ARTICLE\(".$m[1][$k]."\)/", $arr[title], $txt);
