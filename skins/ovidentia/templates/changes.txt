@@ -56,23 +56,34 @@ month.html                              Added <html>....<body>
                                         Added </body>....</html>
                                         Changed href="{ dayurl }" to href={ dayurl }
 montha.html
+
 notes.html					            changed action="index.php" to action="{ babPhpSelf }"
+
 options.html					        changed action="index.php" to action="{ babPhpSelf }"
                         changeskin      Added javascript                                 
                         changeskin      Added to form tag : name="formskin"
                         changeskin      Added <select name="style"> ... </select>
+
 page.html
+
 posts.html					            changed action="index.php" to action="{ babPhpSelf }"
                         newpostslist    added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
                                         to let user email contributors
 readme.txt
+
 search.html					            changed action="index.php" to action="{ babPhpSelf }"
+
 sections.html					        changed action="index.php" to action="{ babPhpSelf }"
+
 sectiontemplate.html
+
 sites.html					            changed action="index.php" to action="{ babPhpSelf }"
                         sitecreate      Added two select options ( register and confirm )
                         sitemodify      Added two select options ( register and confirm )
+                                        Added <input type="submit" name="delete" value="{ delete }">
+
 threads.html					        changed action="index.php" to action="{ babPhpSelf }"
+                        threadlist      added <!--#if replymail "!= 0" -->...<!--#endif replymail -->
 topcats.html					        changed action="index.php" to action="{ babPhpSelf }"
 topcatsection.html
 topics.html					            changed action="index.php" to action="{ babPhpSelf }"
