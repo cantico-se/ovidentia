@@ -1278,6 +1278,8 @@ function getFile( $file, $id, $gr, $path, $inl)
 
 	$fullpath .= $file;
 	$fsize = filesize($fullpath);
+	if( strtolower(bab_browserAgent()) == "msie")
+		header('Cache-Control: public');
 	if( $inl == "1" )
 		header("Content-Disposition: inline; filename=\"$file\""."\n");
 	else
