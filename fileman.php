@@ -1203,7 +1203,18 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			if( isset($GLOBALS['babFileNameTranslation']))
 				$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
 			if( rename($pathx.$arr['name'], $pathx.$osfname))
+				{
 				$frename = true;
+				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
+					{
+					$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
+					while($rr = $db->db_fetch_array($res))
+						{
+						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
+						rename($pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$arr['name'], $pathx.BAB_FVERSION_FOLDER."/".$rr['ver_major'].",".$rr['ver_minor'].",".$osfname);
+						}
+					}
+				}
 			}
 
 		$mqgo = bab_isMagicQuotesGpcOn();
@@ -1232,7 +1243,7 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 			}
 		if( $frename)
 			{
-			$tmp[] = "name='".$name."'";
+			$tmp[] = "name='".$fname."'";
 			}
 		else
 			$osfname = $arr['name'];
@@ -1249,6 +1260,20 @@ function saveUpdateFile($idf, $uploadf_name, $uploadf_size,$uploadf, $fname, $de
 				$tmp[] = "id_owner='".$newfolder."'";
 				$tmp[] = "path=''";
 				$arr['id_owner'] = $newfolder;
+
+				if( is_dir($pathx.BAB_FVERSION_FOLDER."/"))
+					{
+					if( !is_dir($pathxnew.BAB_FVERSION_FOLDER."/"))
+						mkdir($pathxnew.BAB_FVERSION_FOLDER, 0700);
+
+					$res = $db->db_query("select * from ".BAB_FM_FILESVER_TBL." where id_file='".$idf."'");
+					while($rr = $db->db_fetch_array($res))
+						{
+						$filename = $rr['ver_major'].",".$rr['ver_minor'].",".$osfname;
+						rename($pathx.BAB_FVERSION_FOLDER."/".$filename, $pathxnew.BAB_FVERSION_FOLDER."/".$filename);
+						}
+					}
+
 				}
 			}
 
@@ -1955,7 +1980,6 @@ function viewFile( $idf)
 			if(  $arr['edit'] != 0 || $bversion ==  'Y')
 				{
 				$bupdate = false;
-				$bmanager = false;
 				}
 			}
 		}
