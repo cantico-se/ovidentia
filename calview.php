@@ -49,9 +49,10 @@ function upComingEvents($idcal)
 				{
 				$arr = $this->db->db_fetch_array($this->resevent);
 				$this->time = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5);
-				$this->date = bab_strftime(bab_mktime($arr['start_date']), false);
+				$this->date = bab_strftime(bab_mktime($arr['start_date']." ". $arr['start_time']), false);
 				$this->title = $arr['title'];
-				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$this->calid. "&evtid=".$arr['id'];
+				$rr = explode("-", $arr['start_date']);
+				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=event&idx=modify&day=".$rr[2]."&month=".$rr[1]."&year=".$rr[0]. "&calid=".$this->calid. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
@@ -73,9 +74,10 @@ function upComingEvents($idcal)
 				{
 				$arr = $this->db->db_fetch_array($this->resgrpevent);
 				$this->time = substr($arr['start_time'], 0 ,5). " " . substr($arr['end_time'], 0 ,5);
-				$this->date = bab_strftime(bab_mktime($arr['start_date']), false);
+				$this->date = bab_strftime(bab_mktime($arr['start_date']." ". $arr['start_time']), false);
 				$this->title = $arr['title'] . " ( ". $this->grpname ." )";
-				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=event&idx=modify&day=".$day."&month=".$month."&year=".$year. "&calid=".$arr['id_cal']. "&evtid=".$arr['id'];
+				$rr = explode("-", $arr['start_date']);
+				$this->titleurl = $GLOBALS['babUrl']."index.php?tg=event&idx=modify&day=".$rr[2]."&month=".$rr[1]."&year=".$rr[0]. "&calid=".$arr['id_cal']. "&evtid=".$arr['id'];
 				if( $k % 2)
 					$this->alternate = 1;
 				else
