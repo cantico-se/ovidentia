@@ -2661,7 +2661,7 @@ while($arr = $db->db_fetch_array($res))
 $res = $db->db_query("ALTER TABLE ".BAB_USERS_LOG_TBL." ADD `cnx_try` INT( 2 ) UNSIGNED NOT NULL");
 if( !$res)
 	{
-	$ret = "Alteration of <b>".BAB_FAQQR_TBL."</b> table failed !<br>";
+	$ret = "Alteration of <b>".BAB_USERS_LOG_TBL."</b> table failed !<br>";
 	return $ret;
 	}
 
