@@ -47,6 +47,9 @@ function sectionsList()
 		var $uncheckall;
 		var $update;
 		var $idvalue;
+		var $access;
+		var $accessurl;
+		var $groups;
 
 		function temp()
 			{
@@ -56,6 +59,8 @@ function sectionsList()
 			$this->uncheckall = babTranslate("Uncheck all");
 			$this->checkall = babTranslate("Check all");
 			$this->update = babTranslate("Update");
+			$this->access = babTranslate("Access");
+			$this->groups = babTranslate("Groups");
 			$this->db = new db_mysql();
 			$req = "select * from sections";
 			$this->res = $this->db->db_query($req);
@@ -118,6 +123,7 @@ function sectionsList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrl']."index.php?tg=section&idx=Modify&item=".$this->arr['id'];
+				$this->accessurl = $GLOBALS['babUrl']."index.php?tg=section&idx=Groups&item=".$this->arr['id'];
 				$this->idvalue = $this->arr['id']."-2";
 				if( $this->arr['enabled'] == "N")
 					$this->secchecked = "checked";
