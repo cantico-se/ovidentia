@@ -71,6 +71,7 @@ function delgatList($res)
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = $this->altbg ? false : true;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->delegval = $arr['description'];
 				$this->urltxt = $arr['name'];
