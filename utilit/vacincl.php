@@ -719,7 +719,6 @@ function listVacationRequests($id_user)
 			$this->statustxt = bab_translate("Status");
 			$this->calendar = bab_translate("Planning");
 			$this->t_edit = bab_translate("Modification");
-			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1";
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";
@@ -730,6 +729,8 @@ function listVacationRequests($id_user)
 			$this->prevname = "";
 			if (is_array($id_user))
 				$id_user = implode(',',$id_user);
+
+			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1";
 			$this->personal = $id_user == $GLOBALS['BAB_SESS_USERID'];
 			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
 			$this->db = $GLOBALS['babDB'];
