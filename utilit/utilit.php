@@ -1908,6 +1908,7 @@ function babMonthA($month = "", $year = "")
 		}
 
 	$this->babCalendarStartDay = $babBody->icalendars->startday;
+	$this->curDay = 0;
 	}
 
 function printout()
@@ -1987,7 +1988,7 @@ function printout()
 
 	function getnextweek()
 		{
-		if( $this->w < 7)
+		if( $this->w < 7 && $this->curDay < $this->days)
 			{
 			$this->w++;
 			return true;
@@ -2012,16 +2013,21 @@ function printout()
 			if( $a < 0)
 				$a += 7;
 
-			if( $this->w == 1 &&  $d < $a)
+
+			if( ($this->w == 1 &&  $d < $a) || $total >= $this->days )
 				{
 				$this->day = "&nbsp;";
 				}
 			else
 				{
 				$total++;
+				$this->curDay++;
 
 				if( $total > $this->days)
+					{
 					return false;
+					}
+
 				$this->day = $total;
 				if( count($this->idcals) > 0 )
 					{
@@ -2042,10 +2048,12 @@ function printout()
 					}
 
 				}
+
 			if( $total > $this->days)
 				{
 				return false;
 				}
+				
 			$d++;
 			return true;
 			}
