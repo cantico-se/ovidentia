@@ -110,7 +110,16 @@ valign="middle">{ password }:</td>
 
 <!--#begin changenickname -->
 <!--#if bupdateuserinfo -->
-<center><a class="BabSectionsLinkColor" href="javascript: Start('{ urldbmod }', 'OviDir', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">{ updateuserinfo }</a></center>
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<TABLE  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+	<TR><TD align="center" valign="middle">
+	<form method="post" action="javascript: Start('{ urldbmod }', 'OviDir', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');">
+	<input type="submit" name="submit" value="{ updateuserinfo }">
+	</form>
+	</TD></TR></TABLE>
+</TD></TR></TABLE>
 <!--#endif bupdateuserinfo -->
 <br>
 <form method="post" action="{ babPhpSelf }">

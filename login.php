@@ -424,11 +424,13 @@ if ($cmd == "emailpwd" && !$GLOBALS['babEmailPassword'])
 	$cmd = "signon";
 	}
 
+if ($cmd == "detect" && $GLOBALS['BAB_SESS_LOGGED'])
+	header( "location:".$referer );
 
 switch($cmd)
 	{
 	case "confirm":
-		confirmUser( $hash, $name);
+		confirmUser( $hash, $name );
 		break;
 
 	case "signoff":
