@@ -524,7 +524,7 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	$res = $db->db_query($req);		
 	}
 
-function notifyCommentAuthor($subject, $msg, $from, $to)
+function notifyCommentAuthor($subject, $msg, $idfrom, $to)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
@@ -557,7 +557,7 @@ function notifyCommentAuthor($subject, $msg, $from, $to)
 		return;
 
 	$mail->mailTo($to);
-    $mail->mailFrom($from, bab_translate("Ovidentia Administrator"));
+    $mail->mailFrom(bab_getUserEmail($idfrom), bab_getUserName($idfrom));
     $mail->mailSubject($subject);
 
 	$tempa = new tempa($subject, $msg, $from, $to);
@@ -572,7 +572,7 @@ function notifyCommentAuthor($subject, $msg, $from, $to)
 
 function updateConfirmComment($topics, $article, $action, $send, $author, $message, $com, $newc)
 	{
-	global $babBody, $new, $BAB_SESS_USER, $babAdminEmail;
+	global $babBody, $new, $BAB_SESS_USERID, $babAdminEmail;
 
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_COMMENTS_TBL." where id='".$com."'";
@@ -584,13 +584,16 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 	switch($res)
 		{
 		case 0:
+			$subject = "Your comment has been refused";
 			bab_deleteComments($com);
 			break;
 		case 1:
+			$subject = "Your comment has been accepted";
 			deleteFlowInstance($arr['idfai']);
 			$db->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y', idfai='0' where id = '".$com."'");
 			break;
 		default:
+			$subject = "About your comment";
 			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
 			if( count($nfusers) > 0 )
 				notifyCommentApprovers($com, $nfusers);
@@ -599,14 +602,10 @@ function updateConfirmComment($topics, $article, $action, $send, $author, $messa
 
 	if( $send == "1" && $arr['email'] != "")
 		{
-		if( $action == "1")
-			$subject = "Your comment has been accepted";
-		else
-			$subject = "Your comment has been refused";
 		$msg = nl2br($message);
 		if( bab_isMagicQuotesGpcOn())
 			$msg = stripslashes($msg);
-        notifyCommentAuthor($subject, $msg, empty($BAB_SESS_USER)? $babAdminEmail: $BAB_SESS_USER, $arr['email']);
+        notifyCommentAuthor($subject, $msg, $BAB_SESS_USERID, $arr['email']);
 		}
 	}
 
