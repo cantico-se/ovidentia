@@ -120,6 +120,23 @@
 <br>
 <br>
 <!--#begin modifyarticle -->
+<!--#if msie "!= 1" -->
+<script type="text/javascript">
+<!--
+var ctrlf = null;
+function onInsertFile(idf,txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+}
+
+function savef(t)
+{
+ctrlf = t;
+}
+//-->
+</script>
+<!--#endif msie -->
 <form name= "modarticle" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="articles">
 <input type="hidden" name="idx" value="More">
@@ -172,7 +189,7 @@
 	editor.InFrame(0, "headtext", "modarticle", "100%", "160");
 </script>
 <!--#else msie -->
-<textarea cols="50" rows="5" name="headtext">{ headval }</textarea>
+<textarea cols="50" rows="5" name="headtext" onfocus="savef(document.modarticle.headtext)">{ headval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
@@ -186,7 +203,7 @@
 	editor.InFrame(1, "bodytext", "modarticle", "100%", "200");
 </script>
 <!--#else msie -->
-<textarea cols="50" rows="20" name="bodytext">{ bodyval }</textarea>
+<textarea cols="50" rows="20" name="bodytext" onfocus="savef(document.modarticle.bodytext)">{ bodyval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
@@ -220,6 +237,23 @@
 <br>
 <br>
 <!--#begin createarticle -->
+<!--#if msie "!= 1" -->
+<script type="text/javascript">
+<!--
+var ctrlf = null;
+function onInsertFile(idf,txt)
+{
+if(ctrlf != null)
+ctrlf.value = ctrlf.value + '$FILE('+idf+','+txt+')';
+}
+
+function savef(t)
+{
+ctrlf = t;
+}
+//-->
+</script>
+<!--#endif msie -->
 <form name="createart" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="articles">
 <input type="hidden" name="idx" value="More">
@@ -271,7 +305,7 @@
 	editor.InFrame(0, "headtext", "createart", "100%", "160");
 </script>
 <!--#else msie -->
-<textarea cols="50" rows="5" name="headtext">{ headval }</textarea>
+<textarea cols="50" rows="5" name="headtext" onfocus="savef(document.createart.headtext)">{ headval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
@@ -285,7 +319,7 @@
 	editor.InFrame(1, "bodytext", "createart", "100%", "200");
 </script>
 <!--#else msie -->
-<textarea cols="50" rows="20" name="bodytext">{ bodyval }</textarea>
+<textarea cols="50" rows="20" name="bodytext" onfocus="savef(document.createart.bodytext)">{ bodyval }</textarea>
 <!--#endif msie -->
 </td>
 </tr>
