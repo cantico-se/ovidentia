@@ -165,7 +165,6 @@ function listCategories()
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$this->arr['id'];
 				$this->accessurl = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$this->arr['id'];
 				$this->namecategory = $this->arr['category'];
-				$this->managername = bab_getUserName($this->arr['id_manager']);
 				$i++;
 				return true;
 				}
@@ -179,7 +178,7 @@ function listCategories()
 	}
 
 
-function saveCategory($category, $description, $managerid, $lang)
+function saveCategory($category, $description, $lang)
 	{
 	global $babBody;
 	if( empty($category))
@@ -228,7 +227,7 @@ if(!isset($idx))
 
 if( isset($add))
 	{
-	saveCategory($category, $faqdesc, $managerid, $lang);
+	saveCategory($category, $faqdesc, $lang);
 	}
 
 switch($idx)
