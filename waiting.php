@@ -429,7 +429,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	$res = $db->db_query($query);
 	$arr2 = $db->db_fetch_array($res);
 
-	$query = "select * from users where id='$arr2['id_approver']'";
+	$query = "select * from users where id='".$arr2['id_approver']."'";
 	$res = $db->db_query($query);
 	$arr2 = $db->db_fetch_array($res);
 
