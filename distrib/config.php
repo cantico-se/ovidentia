@@ -2,7 +2,7 @@
 /***********************************************************************
 * Ovidentia                                                            *
 ************************************************************************
-* Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
+* Copyright (c) 2001-2002, CANTICO ( http://www.cantico.fr )                *
 * Ovidentia web site ( http://www.ovidentia.org )                      *
 ***********************************************************************/
 $babDBHost = "localhost"; /* MySql database server */
