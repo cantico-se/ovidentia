@@ -66,13 +66,13 @@ function listTopicCategory($cat)
 			$this->idcat = $cat;
 			if( $cat != 0 )
 				{
-				$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and  ".BAB_TOPICS_TBL.".id_cat='".$cat."' order by ordering asc";
+				$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_TBL." t where tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$cat."' order by tco.ordering asc";
 				$res = $this->db->db_query($req);
 				while( $row = $this->db->db_fetch_array($res))
 					{
-					if(in_array($row['id'], $babBody->topview))
+					if(in_array($row['id_topcat'], $babBody->topview))
 						{
-						array_push($this->arrid, $row['id']);
+						array_push($this->arrid, $row['id_topcat']);
 						}
 					}
 				$this->topicscount = count($this->arrid);

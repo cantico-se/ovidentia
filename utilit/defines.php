@@ -80,6 +80,7 @@ define("BAB_SECTIONS_ORDER_TBL", "bab_sections_order");
 define("BAB_SECTIONS_STATES_TBL", "bab_sections_states");
 define("BAB_SITES_TBL", "bab_sites");
 define("BAB_THREADS_TBL", "bab_threads");
+define("BAB_TOPCAT_ORDER_TBL", "bab_topcat_order");
 define("BAB_TOPICS_TBL", "bab_topics");
 define("BAB_TOPICS_CATEGORIES_TBL", "bab_topics_categories");
 define("BAB_TOPICSCOM_GROUPS_TBL", "bab_topicscom_groups");

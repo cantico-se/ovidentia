@@ -367,6 +367,7 @@ CREATE TABLE bab_topics (
    idsacom int(11) unsigned NOT NULL default '0',
    notify enum('N','Y') NOT NULL default 'N',
    lang varchar(10) NOT NULL default '',
+   article_tmpl varchar(255),
    PRIMARY KEY (id),
    KEY id_approver (id_approver),
    KEY id_cat (id_cat),

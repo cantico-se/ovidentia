@@ -805,7 +805,7 @@ function babTopcatSection($close)
 	$this->babSectionTemplate("topcatsection.html", "template");
 	$this->title = bab_translate("Topics categories");
 
-	$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and ".BAB_TOPICS_CATEGORIES_TBL.".id_parent='0'");
+	$res = $babDB->db_query("select distinct t.* from ".BAB_TOPICS_TBL." t, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPCAT_ORDER_TBL." toc where t.id_cat=tc.id and tc.id_parent='0' and toc.id_topcat=t.id_cat order by toc.ordering asc");
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		if( in_array($row['id'], $babBody->topview) )
@@ -870,11 +870,11 @@ function babTopicsSection($cat, $close)
 	$this->title = $r['title'];
 	$this->head = $r['description'];
 
-	$req = "select id, lang from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
+	$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$cat."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$cat."') order by tco.ordering asc";
 	$res = $babDB->db_query($req);
-	while( $row = $babDB->db_fetch_array($res))
+	while( $arr = $babDB->db_fetch_array($res))
 		{
-		if(in_array($row['id'], $babBody->topview)) //2003-02-27
+		if( $arr['type'] == 2 && in_array($arr['id_topcat'], $babBody->topview))
 			{
 			if( $close )
 				{
@@ -883,6 +883,7 @@ function babTopicsSection($cat, $close)
 				}
 
 			$whatToFilter = $GLOBALS['babLangFilter']->getFilterAsInt();
+			$row = $babDB->db_fetch_array($babDB->db_query("select id, lang from ".BAB_TOPICS_TBL." where id='".$arr['id_topcat']."'"));
 
 			if(($row['lang'] == '*') or ($row['lang'] == ''))
 				$whatToFilter = 0;
@@ -891,7 +892,16 @@ function babTopicsSection($cat, $close)
 
 			if(($whatToFilter == 0)	or ($whatToFilter == 1 and (substr($row['lang'], 0, 2) == substr($GLOBALS['babLanguage'], 0, 2)))
 				or ($whatToFilter == 2 and ($row['lang'] == $GLOBALS['babLanguage'])))
-				array_push($this->arrid, $row['id']);
+				array_push($this->arrid, $arr['id']);
+			}
+		else if( $arr['type'] == 1 && in_array($arr['id_topcat'], $babBody->topcatview))
+			{
+			if( $close )
+				{
+				$this->count = 1;
+				return;
+				}
+			array_push($this->arrid, $arr['id']);
 			}
 		}
 
@@ -918,28 +928,44 @@ function topicsGetNext()
 	static $i = 0;
 	if( $i < $this->count)
 		{
-		$req = "select id, idsaart, category  from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'";
-		$res = $babDB->db_query($req);
-		$this->newa = "";
-		$this->newc = "";
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$this->arr = $babDB->db_fetch_array($res);
-			if( isUserApproverFlow($this->arr['idsaart'], $BAB_SESS_USERID))
-				{
-				$this->bfooter = 1;
-				$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-				$res = $babDB->db_query($req);
-				if($babDB->db_num_rows($res) > 0)
-					$this->newa = "a";
+		list($id_topcat, $type) = $babDB->db_fetch_row($babDB->db_query("select id_topcat, type from ".BAB_TOPCAT_ORDER_TBL." where id='".$this->arrid[$i]."'"));
 
-				$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
-				$res = $babDB->db_query($req);
-				if($babDB->db_num_rows($res) > 0)
-					$this->newc = "c";
+		if( $type == 2 )
+			{
+			$res = $babDB->db_query("select id, idsaart, category  from ".BAB_TOPICS_TBL." where id='".$id_topcat."'");
+			$this->newa = "";
+			$this->newc = "";
+			if( $res && $babDB->db_num_rows($res) > 0)
+				{
+				$this->arr = $babDB->db_fetch_array($res);
+				if( isUserApproverFlow($this->arr['idsaart'], $BAB_SESS_USERID))
+					{
+					$this->bfooter = 1;
+					$req = "select ".BAB_ARTICLES_TBL.".id from ".BAB_ARTICLES_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_ARTICLES_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+					$res = $babDB->db_query($req);
+					if($babDB->db_num_rows($res) > 0)
+						$this->newa = "a";
+
+					$req = "select ".BAB_COMMENTS_TBL.".id from ".BAB_COMMENTS_TBL." join ".BAB_FAR_INSTANCES_TBL." where id_topic='".$this->arr['id']."' and confirmed='N' and ".BAB_FAR_INSTANCES_TBL.".idschi=".BAB_COMMENTS_TBL.".idfai and ".BAB_FAR_INSTANCES_TBL.".iduser='".$BAB_SESS_USERID."' and ".BAB_FAR_INSTANCES_TBL.".result='' and  ".BAB_FAR_INSTANCES_TBL.".notified='Y'";
+					$res = $babDB->db_query($req);
+					if($babDB->db_num_rows($res) > 0)
+						$this->newc = "c";
+					}
+				$this->text = $this->arr['category'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id'];
 				}
-			$this->text = $this->arr['category'];
-			$this->url = $GLOBALS['babUrlScript']."?tg=articles&topics=".$this->arr['id'];
+			}
+		else if( $type == 1 )
+			{
+			$res = $babDB->db_query("select id, title  from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$id_topcat."'");
+			$this->newa = "";
+			$this->newc = "";
+			if( $res && $babDB->db_num_rows($res) > 0)
+				{
+				$this->arr = $babDB->db_fetch_array($res);
+				$this->text = $this->arr['title'];
+				$this->url = $GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arr['id'];
+				}
 			}
 		$i++;
 		return true;
@@ -1081,6 +1107,7 @@ var $newarticles;
 var $newcomments;
 var $newposts;
 var $topview = array();
+var $topcatview = array();
 var $calaccess;
 var $isSuperAdmin;
 var $currentAdmGroup; /* current group administrated by current user */	
@@ -1537,12 +1564,14 @@ function bab_updateUserSettings()
 {
 	global $babDB, $babBody,$BAB_SESS_USERID;
 
-	$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL."");
+	$res = $babDB->db_query("select id, id_cat from ".BAB_TOPICS_TBL."");
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
 			{
 			$babBody->topview[] = $row['id'];
+			if( count($babBody->topcatview) == 0 || !in_array($row['id_cat'], $babBody->topcatview))
+				$babBody->topcatview[] = $row['id_cat'];
 			}
 		}
 

@@ -52,6 +52,10 @@ function bab_deleteTopicCategory($id)
 	$req = "delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$id."' and type='3'";
 	$res = $db->db_query($req);	
 
+	// delete from BAB_TOPCAT_ORDER_TBL
+	$req = "delete from ".BAB_TOPCAT_ORDER_TBL." where id_topcat='".$id."' and type='1'";
+	$res = $db->db_query($req);	
+
 	// delete from BAB_SECTIONS_STATES_TBL
 	$req = "delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$id."' and type='3'";
 	$res = $db->db_query($req);	
@@ -90,6 +94,10 @@ function bab_confirmDeleteTopic($id)
 
 	$req = "delete from ".BAB_TOPICSVIEW_GROUPS_TBL." where id_object='$id'";
 	$res = $db->db_query($req);
+
+	// delete from BAB_TOPCAT_ORDER_TBL
+	$req = "delete from ".BAB_TOPCAT_ORDER_TBL." where id_topcat='".$id."' and type='2'";
+	$res = $db->db_query($req);	
 
 	$req = "delete from ".BAB_TOPICS_TBL." where id='$id'";
 	$res = $db->db_query($req);

@@ -170,7 +170,7 @@ function deleteArticles($art, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif)
+function modifyCategory($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -205,7 +205,16 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $noselected;
 		var $delete;
 
-		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif)
+		var $arttmpltxt;
+		var $arttmplval;
+		var $arttmplid;
+		var $arttmplselected;
+		var $arttmpl;
+		var $atid;
+		var $arrarttmpl;
+		var $countarttmpl;
+
+		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid)
 			{
 			global $babBody;
 			$this->topcat = bab_translate("Topic category");
@@ -220,6 +229,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->add = bab_translate("Update Topic");
 			$this->none = bab_translate("None");
 			$this->delete = bab_translate("Delete");
+			$this->arttmpltxt = bab_translate("Article's model");
 			$this->tgval = "topic";
 			$this->item = $id;
 			$this->langLabel = bab_translate('Language');
@@ -277,6 +287,11 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				$this->notifysel = "selected";
 				}
 
+			if(empty($atid))
+				$this->atid = $this->arr['article_tmpl'];
+			else
+				$this->atid = $atid;
+
 			$this->bdel = true;
 			
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
@@ -295,6 +310,29 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+
+			$file = "articlestemplate.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$arr = $tpl->getTemplates($filepath);
+				for( $i=0; $i < count($arr); $i++)
+					{
+					if( strpos($arr[$i], "head_") !== false ||  strpos($arr[$i], "body_") !== false )
+						if( count($this->arrarttmpl) == 0  || !in_array(substr($arr[$i], 5), $this->arrarttmpl ))
+							$this->arrarttmpl[] = substr($arr[$i], 5);
+					}
+				}
+			$this->countarttmpl = count($this->arrarttmpl);
 			
 			}
 
@@ -374,9 +412,26 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			return false;
 			}
 
+		function getnextarttmpl()
+			{
+			static $i = 0;
+			if($i < $this->countarttmpl)
+				{
+				$this->arttmplid = $this->arrarttmpl[$i];
+				$this->arttmplval = $this->arrarttmpl[$i];
+				if( $this->arttmplid == $this->atid )
+					$this->arttmplselected = "selected";
+				else
+					$this->arttmplselected = "";
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
 		}
 
-	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif);
+	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
 
@@ -448,7 +503,7 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"topics.html", "articleview");
 	}
 
-function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang)
+function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang, $atid)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -518,8 +573,19 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 		$db->db_query($query);
 	}
 
-	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."', article_tmpl='".$atid."' where id = '".$id."'";
 	$db->db_query($query);
+
+	if( $arr['id_cat'] != $cat )
+		{
+		$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$cat."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$cat."')");
+		$arr = $db->db_fetch_array($res);
+		if( isset($arr[0]))
+			$ord = $arr[0] + 1;
+		else
+			$ord = 1;
+		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set ordering='".$ord."' where id_topcat='".$id."' and type='2'");
+		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
 
@@ -583,7 +649,7 @@ if( isset($add) )
 	{
 	if( isset($Submit))
 		{
-		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom, $bnotif, $lang))
+		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom, $bnotif, $lang, $atid))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))
@@ -698,7 +764,7 @@ switch($idx)
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a topic");
-		modifyCategory($item, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif);
+		modifyCategory($item, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif, $atid);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
 		$babBody->addItemMenu("Groups", bab_translate("View"), $GLOBALS['babUrlScript']."?tg=topic&idx=Groups&item=".$item);

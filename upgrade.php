@@ -2089,7 +2089,49 @@ if( !$res)
 	return $ret;
 	}
 
+
+$pos = 1;
+$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='0'");
+while( $arr = $db->db_fetch_array($res))
+	{
+	$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) values ('".$arr['id']."', '1', '".$pos."')");
+	$pos++;
+	}
+
+$res = $db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL."");
+while( $arr = $db->db_fetch_array($res))
+	{
+	$pos = 1;
+	$res2 = $db->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent='".$arr['id']."'");
+	while( $rr = $db->db_fetch_array($res2))
+		{
+		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) values ('".$rr['id']."', '1', '".$pos."')");
+		$pos++;
+		}
+
+	$res2 = $db->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$arr['id']."' order by ordering asc");
+	while( $rr = $db->db_fetch_array($res2))
+		{
+		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) values ('".$rr['id']."', '2', '".$pos."')");
+		$pos++;
+		}
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." DROP ordering";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_CATEGORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD article_tmpl varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
 return $ret;
 }
-
 ?>

@@ -273,6 +273,69 @@ function topcatsList($idp)
 	}
 
 
+function orderTopcat($idp)
+	{
+	global $babBody;
+	class temp
+		{		
+
+		var $sorta;
+		var $sortd;
+		var $idp;
+
+		function temp($idp)
+			{
+			global $babBody, $BAB_SESS_USERID;
+			if( $idp == 0 )
+				$catname = bab_translate("Top");
+			else
+				$catname = bab_getTopicCategoryTitle($idp);
+
+			$this->idp = $idp;
+			$this->catname = "---- ".$catname." ----";
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->sorta = bab_translate("Sort ascending");
+			$this->sortd = bab_translate("Sort descending");
+			$this->create = bab_translate("Modify");
+			$this->db = $GLOBALS['babDB'];
+			if( $idp == 0 && $babBody->isSuperAdmin )
+				$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$idp."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$idp."') order by tco.ordering asc";
+			else
+				$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tc.id_dgowner='".$babBody->currentAdmGroup."' and tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$idp."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$idp."') order by tco.ordering asc";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+			$this->idcat = $cat;
+			}
+
+		function getnext()
+			{
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				$arr = $this->db->db_fetch_array($this->res);
+				if( $arr['type'] == 1)
+					$this->topicval = bab_getTopicCategoryTitle($arr['id_topcat']);
+				else if( $arr['type'] == 2)
+					$this->topicval = bab_getCategoryTitle($arr['id_topcat']);
+				else
+					$this->topicval = "";
+
+				$this->topicid = $arr['id'];
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+	$temp = new temp($idp);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
+	$babBody->babecho(	bab_printTemplate($temp,"topcats.html", "topcatorder"));
+	return $temp->count;
+	}
+
+
 function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid)
 	{
 	global $babBody;
@@ -316,6 +379,14 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 		$db->db_query("update ".BAB_SECTIONS_ORDER_TBL." set ordering=ordering+1 where position='0' and ordering > '".$arr[0]."'");
 		$req = "insert into ".BAB_SECTIONS_ORDER_TBL." (id_section, position, type, ordering) VALUES ('" .$id. "', '0', '3', '" . ($arr[0]+1). "')";
 		$db->db_query($req);
+
+		$res = $db->db_query("select max(tco.ordering) from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_CATEGORIES_TBL." tc, ".BAB_TOPICS_TBL." t where (tco.type='1' and tco.id_topcat=tc.id and tc.id_parent='".$topcatid."') or (tco.type='2' and tco.id_topcat=t.id and t.id_cat='".$topcatid."')");
+		$arr = $db->db_fetch_array($res);
+		if( isset($arr[0]))
+			$ord = $arr[0] + 1;
+		else
+			$ord = 1;
+		$db->db_query("insert into ".BAB_TOPCAT_ORDER_TBL." (id_topcat, type, ordering) VALUES ('" .$id. "', '1', '" . $ord. "')");
 		}
 	}
 
@@ -334,6 +405,17 @@ function disableTopcats($topcats)
 
 		$req = "update ".BAB_TOPICS_CATEGORIES_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
 		$db->db_query($req);
+		}
+	}
+
+function saveOrderTopcats($idp, $listtopcats)
+	{
+	global $babBody;
+	$db = $GLOBALS['babDB'];
+	
+	for($i=0; $i < count($listtopcats); $i++)
+		{
+		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set ordering='".($i+1)."' where id='".$listtopcats[$i]."'");
 		}
 	}
 
@@ -357,14 +439,28 @@ if( isset($update))
 	{
 	if( $update == "disable" )
 		disableTopcats($topcats, $idp);
+	if( $update == "order" )
+		{
+		saveOrderTopcats($idp, $listtopcats);
+		}
 	}
 
 switch($idx)
 	{
+	case "Order":
+		orderTopcat($idp);
+		$babBody->title = bab_translate("Order a topic category");
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
+			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
+		break;
 	case "Create":
 		topcatCreate($idp);
 		$babBody->title = bab_translate("Create a topic category");
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
+			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		break;
 	case "List":
@@ -373,6 +469,8 @@ switch($idx)
 		{
 		$babBody->title = bab_translate("topics categories list");
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+		if( $idp != 0 || ( $idp == 0 && $babBody->isSuperAdmin ))
+			$babBody->addItemMenu("Order", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Order&idp=".$idp);
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		}
 		else

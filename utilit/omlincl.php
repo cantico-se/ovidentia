@@ -199,16 +199,25 @@ class bab_ArticleCategories extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$res = $babDB->db_query("select id, id_cat from ".BAB_TOPICS_TBL."");
+		$parentid = $ctx->get_value('parentid');
+
+		if( $parentid === false || $parentid === '' )
+			$parentid[] = 0;
+		else
+			$parentid = array_intersect($babBody->topcatview, explode(',', $parentid));
+
+		if( count($parentid) > 0 )
+		{
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".implode(',', $parentid).")");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if( in_array($row['id'], $babBody->topview) )
+			if( in_array($row['id'], $babBody->topcatview) )
 				{
-				if( !in_array($row['id_cat'], $this->arrid))
-					array_push($this->arrid, $row['id_cat']);
+				if( !in_array($row['id'], $this->arrid))
+					array_push($this->arrid, $row['id']);
 				}
 			}
-
+		}
 		$this->count = count($this->arrid);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -243,12 +252,20 @@ class bab_ArticleCategory extends bab_handler
 	function bab_ArticleCategory( &$ctx)
 	{
 		global $babBody, $babDB;
+		$this->count = 0;
 		$this->bab_handler($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$ctx->get_value('categoryid')."'");
-		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
-			$this->count = 1;
+		$catid = $ctx->get_value('categoryid');
+
+		if( $catid === false || $catid === '' )
+			$catid = $babBody->topcatview;
 		else
-			$this->count = 0;
+			$catid = array_intersect($babBody->topcatview, explode(',', $catid));
+		
+		if( count($catid) > 0 )
+		{
+		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".implode(',', $catid).")");
+		$this->count = $babDB->db_num_rows($this->res);
+		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -285,16 +302,26 @@ class bab_ArticleTopics extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$req = "select ".BAB_TOPICS_TBL.".* from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id and  ".BAB_TOPICS_TBL.".id_cat='".$ctx->get_value('categoryid')."'";
-		$req .= " order by ordering asc";
+		$catid = $ctx->get_value('categoryid');
+
+		if( $catid === false || $catid === '' )
+			$catid = $babBody->topcatview;
+		else
+			$catid = array_intersect($babBody->topcatview, explode(',', $catid));
+
+		if( count($catid) > 0 )
+		{
+		$req = "select distinct tco.* from ".BAB_TOPCAT_ORDER_TBL." tco, ".BAB_TOPICS_TBL." t where tco.type='2' and tco.id_topcat=t.id and t.id_cat IN (".implode(',', $catid).") order by tco.ordering asc";
+
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if(in_array($row['id'], $babBody->topview))
+			if(in_array($row['id_topcat'], $babBody->topview))
 				{
-				array_push($this->arrid, $row['id']);
+				array_push($this->arrid, $row['id_topcat']);
 				}
 			}
+		}
 		$this->count = count($this->arrid);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -329,17 +356,22 @@ class bab_ArticleTopics extends bab_handler
 
 class bab_ArticleTopic extends bab_handler
 {
+	var $arrid = array();
 	var $topicid;
+	var $count;
 
 	function bab_ArticleTopic( &$ctx)
 	{
-		global $babBody, $babDB;
+		global $babBody;
 		$this->bab_handler($ctx);
 		$this->topicid = $ctx->get_value('topicid');
-		if(in_array($this->topicid, $babBody->topview))
-			$this->count = 1;
+
+		if( $this->topicid === false || $this->topicid === '' )
+			$this->arrid = $babBody->topview;
 		else
-			$this->count = 0;
+			$this->arrid = array_values(array_intersect($babBody->topview, explode(',', $this->topicid)));
+
+		$this->count = count($this->arrid);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -349,7 +381,7 @@ class bab_ArticleTopic extends bab_handler
 		static $i=0;
 		if( $i < $this->count)
 		{
-			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->topicid."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$this->arrid[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
@@ -433,6 +465,7 @@ class bab_Articles extends bab_handler
 
 class bab_Article extends bab_handler
 {
+	var $arrid = array();
 	var $ctx;
 	var $count;
 
@@ -440,36 +473,41 @@ class bab_Article extends bab_handler
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
-
-		$req = "select * from ".BAB_ARTICLES_TBL." where id='".$ctx->get_value('articleid')."' and confirmed='Y'";
-		$res = $babDB->db_query($req);
-		$this->arr = $babDB->db_fetch_array($res);
-
-		if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']))
-			{
-			$this->count = 1;
-			}
-		else
-			{
+		$articleid = $ctx->get_value('articleid');
+		if( $articleid === false || $articleid === '' )
 			$this->count = 0;
+		else
+		{
+			$rr = explode(',', $articleid);
+			for( $i=0; $i < count($rr); $i++ )
+			{
+				$res = $babDB->db_query("select id_topic from ".BAB_ARTICLES_TBL." where id='".$rr[$i]."' and confirmed='Y'");
+				$arr = $babDB->db_fetch_array($res);
+				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
+					$this->arrid[] = $rr[$i];
 			}
+		$this->count = count($this->arrid);
+		}
+		
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 	function getnext()
 	{
+		global $babDB;
 		static $i=0;
 		if( $i < $this->count)
 		{
+			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$this->arrid[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
-			$this->ctx->curctx->push('ArticleTitle', $this->arr['title']);
-			$this->ctx->curctx->push('ArticleHead', bab_replace($this->arr['head']));
-			$this->ctx->curctx->push('ArticleBody', bab_replace($this->arr['body']));
-			$this->ctx->curctx->push('ArticleId', $this->arr['id']);
-			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->arr['id_topic']."&article=".$this->arr['id']);
-			$this->ctx->curctx->push('ArticleAuthor', $this->arr['id_author']);
-			$this->ctx->curctx->push('ArticleDate', bab_mktime($this->arr['date']));
-			$this->ctx->curctx->push('ArticleTopicId', $this->arr['id_topic']);
+			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
+			$this->ctx->curctx->push('ArticleHead', bab_replace($arr['head']));
+			$this->ctx->curctx->push('ArticleBody', bab_replace($arr['body']));
+			$this->ctx->curctx->push('ArticleId', $arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
+			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$i++;
 			return true;
 		}
@@ -492,8 +530,15 @@ class bab_Forums extends bab_handler
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
+		$forumid = $ctx->get_value('forumid');
+		if( $forumid === false || $forumid === '' )
+			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." order by ordering asc");
+		else
+			{
+			$forumid = explode(',', $forumid);
+			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where id IN (".implode(',', $forumid).") order by ordering asc");
+			}
 
-		$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." order by ordering asc");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
@@ -646,7 +691,6 @@ class bab_RecentComments extends bab_handler
 {
 	var $ctx;
 	var $db;
-	var $arrid = array();
 	var $count;
 	var $rescomments;
 	var $countcomments;
@@ -662,25 +706,29 @@ class bab_RecentComments extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->articleid = $ctx->get_value('articleid');
+		if( $this->articleid === false || $this->articleid === '' )
+			$arrid = array();
+		else
+			$arrid = explode(',', $this->articleid);
 
-		if( count($babBody->topview) > 0 )
+		if( count($arrid) > 0 )
 			{
-			if( $this->articleid !== false )
-				$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$this->articleid."' and confirmed='Y'";
-			else
-				$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y'";
-			if( $this->nbdays !== false)
-				$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
-
-			$req .= " and id_topic IN (".implode(',', $babBody->topview).")";
-			$req .= " order by date desc";
-			if( $this->last !== false)
-				$req .= " limit 0, ".$this->last;
-			$this->rescomments = $babDB->db_query($req);
-			$this->countcomments = $babDB->db_num_rows($this->resarticles);
+			$req = "select * from ".BAB_COMMENTS_TBL." where id_article IN (".implode(',', $arrid).") and confirmed='Y'";
 			}
 		else
-			$this->countcomments = 0;
+			{
+			$req = "select * from ".BAB_COMMENTS_TBL." where confirmed='Y' and id_topic IN (".implode(',', $babBody->topview).")";
+			}
+		
+		if( $this->nbdays !== false)
+			$req .= " and date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
+		$req .= " order by date desc";
+
+		if( $this->last !== false)
+			$req .= " limit 0, ".$this->last;
+		$this->rescomments = $babDB->db_query($req);
+		$this->countcomments = $babDB->db_num_rows($this->rescomments);
 		$this->ctx->curctx->push('CCount', $this->countcomments);
 		}
 
@@ -731,13 +779,19 @@ class bab_RecentPosts extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->forumid = $ctx->get_value('forumid');
+		if( $this->forumid === false || $this->forumid === '' )
+			$arr = array();
+		else
+			$arr = explode(',', $this->forumid);
 
-		if( $this->forumid !== false )
+		if( count($arr) > 0 )
 			{
-			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p,  ".BAB_THREADS_TBL." t where p.id_thread=t.id and t.forum=".$this->forumid." and p.confirmed='Y'";
+			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p,  ".BAB_THREADS_TBL." t where p.id_thread=t.id and t.forum IN (".implode(',', $arr).") and p.confirmed='Y'";
 			}
 		else
+			{
 			$req = "select p.id, p.id_thread from ".BAB_POSTS_TBL." p where p.confirmed='Y'";
+			}
 
 		if( $this->nbdays !== false)
 			$req .= " and p.date >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
@@ -805,24 +859,46 @@ class bab_RecentFiles extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->folderid = $ctx->get_value('folderid');
-
-		$req = "select distinct f.* from ".BAB_FILES_TBL." f, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg,  ".BAB_USERS_GROUPS_TBL." ug where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
-		if( $this->folderid !== false )
-			$req .= " and f.id_owner='".$this->folderid."'";
-
-		$req .= " and ( f.id_owner='2'";
-		if( $BAB_SESS_USERID != "" )
-			{
-			$req .= " or f.id_owner='1' or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."' and fmg.id_object=f.id_owner)";
-			}
-		$req .= ")";
+		if( $this->folderid === false || $this->folderid === '' )
+			$arr = array();
+		else
+			$arr = explode(',', $this->folderid);
 		
-		if( $this->nbdays !== false)
-			$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+		if( count($arr) == 0 )
+			{
+			$req = "select distinct fo.* from ".BAB_FM_FOLDERS_TBL." fo, ".BAB_FMDOWNLOAD_GROUPS_TBL." fmg, ".BAB_USERS_GROUPS_TBL." ug where fo.active='Y' and fmg.id_object=fo.id and fmg.id_group='0'";
+			if( $BAB_SESS_USERID != "" )
+				{
+				$req.= "or fmg.id_group='1'";
+				$req.= "or (fmg.id_group=ug.id_group and ug.id_object='".$BAB_SESS_USERID."')";
+				}
+			else
+				$req.= "or fmg.id_group='2'";
+			}
+		else
+			{
+			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".implode(',', $arr).")";
+			}
 
-		$req .= " order by f.modified desc";
-		if( $this->last !== false)
-			$req .= " limit 0, ".$this->last;
+		$arrid = array();
+		$res = $babDB->db_query($req);
+		while( $arr = $babDB->db_fetch_array($res))
+			$arrid[] = $arr['id'];
+
+		if( count($arrid) > 0 )
+			{
+			$req = "select distinct f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".implode(',', $arrid).")";
+			if( $this->nbdays !== false)
+				$req .= " and f.modified >= DATE_ADD(\"".$babBody->lastlog."\", INTERVAL -".$this->nbdays." DAY)";
+
+			$req .= " order by f.modified desc";
+			if( $this->last !== false)
+				$req .= " limit 0, ".$this->last;
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+		else
+			$this->count = 0;
 
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);

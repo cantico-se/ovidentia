@@ -769,11 +769,11 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->files = bab_translate("Files");
 			$this->langLabel = bab_translate('Language');
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->db = $GLOBALS['babDB'];
+			$this->res = $this->db->db_query("select lang, article_tmpl from ".BAB_TOPICS_TBL." where id='".$topics."'");
+			$this->arr = $this->db->db_fetch_array($this->res);
 			if($GLOBALS['babApplyLanguageFilter'] == 'loose')
 			{
-				$this->db = $GLOBALS['babDB'];
-				$this->res = $this->db->db_query("select lang from ".BAB_TOPICS_TBL." where id='".$topics."'");
-				$this->arr = $this->db->db_fetch_array($this->res);
 				if($this->arr['lang'] != '*')
 				{
 					$this->langFiles = array();
@@ -785,7 +785,28 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
-				$this->msie = 0;	
+				$this->msie = 0;
+
+			if( $this->arr['article_tmpl'] != '' && $this->headval == '' && $this->bodyval == '')
+				{
+				$file = "articlestemplate.html";
+				$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+					if( !file_exists( $filepath ) )
+						{
+						$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+						}
+					}
+				if( file_exists( $filepath ) )
+					{
+					$tp = new babTemplate();
+					$this->headval = $tp->printTemplate($this, $filepath, "head_".$this->arr['article_tmpl']);
+					$this->bodyval = $tp->printTemplate($this, $filepath, "body_".$this->arr['article_tmpl']);
+					}
+				}
+
 			} // function temp
 			
 			function getnextlang()
@@ -797,14 +818,14 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 					if($this->langValue == $GLOBALS['babLanguage'])
 					{
 						$this->langSelected = 'selected';
-			}
+				}
 					else
 					{
 						$this->langSelected = '';
 					}
 					$i++;
 					return true;
-		}
+				}
 				return false;
 			} // function getnextlang
 
