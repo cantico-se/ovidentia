@@ -1,4 +1,3 @@
-
 <!--#begin categorycreate -->
 <script type="text/javascript">
 <!--
@@ -26,108 +25,119 @@ else
 <input type="hidden" name="item" value="{ item }">
 <input type="hidden" name="cat" value="{ cat }">
 <input type="hidden" name="add" value="add">
-<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td>
-<table class="BabLoginMenuBackground" width="100%" ><tr>
-<td nowrap> { title }: &nbsp; 
+          <tr> 
+            <td>
+<table class="BabLoginMenuBackground" width="100%" >
+                <tr>
+                  <td nowrap> { title }: &nbsp; 
 <input type="text" name="category" size="30" maxlength="60" value="{ category }">
 </td>
-<td nowrap align="right">{ topcat }:&nbsp; 
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td align="left">{ topcat }:&nbsp; 
 <select name="ncat">
-<!--#in getnextcat -->
-<option value="{ topid }" { topselected }>{ toptitle }</option>
- <!--#endin getnextcat -->
-</select>
+                      
+                <!--#in getnextcat -->
+                      
+                <option value="{ topid }" { topselected }>{ toptitle }</option>
+                      
+                <!--#endin getnextcat -->
+                    </select></td>
+          </tr>
+          <tr>
+            <td align="center">{ desctitle }</td>
+          </tr>
+          <!-- Instanciation de la barre d'outils -->
+          <!--#if msie "== 1" -->
+           
+          <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
+          <script src="{ babScriptPath }editor.js"></script>
+          <tr> 
+            <td> 
+<input name="description" type="text" style="VISIBILITY: hidden" value="{ description }" size="0">
 </td>
-</tr></table>
-</td>
-</tr>
-<tr>
-<td align="center">{ desctitle }</td>
-</tr>
-<!-- Instanciation de la barre d'outils -->
-<!--#if msie "== 1" --> 
-<script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>
-<script src="{ babScriptPath }editor.js"></script>
-<tr> 
-<td> 
-<textarea cols="1" rows="1" style="VISIBILITY: hidden" name="description">{ description }</textarea>
-</td>
-</tr>
-<tr> 
-<td align="center"> 
+          </tr>
+          <tr> 
+            <td align="center"> 
 <script language="JavaScript"> 
 	var idGenerator = new IDGenerator(0);
 	var editor = new Editor(idGenerator, '{ babEditorImages }');
 	editor.ToolBar();
 	</script>
 </td>
-</tr>
-<!--#endif msie --> 
-<tr>
-<td align="center"> 
-<!--#if msie "== 1" -->
-<script language="JavaScript">
+          </tr>
+          <!--#endif msie -->
+           
+          <tr>
+            <td align="center"> 
+              <!--#if msie "== 1" -->
+              <script language="JavaScript">
 	editor.InFrame(0, "description", "catcr", "90%", "160");
 		</script>
-<!--#else msie --> 
+              <!--#else msie -->
+               
 <textarea cols="50" rows="20" name="description">{ description }</textarea>
-<!--#endif msie -->
-</td>
-</tr>
+              <!--#endif msie -->
+            </td>
+          </tr>
 
-<tr>
-<td align="center">
+          <tr>
+            <td align="center">
 
 <table class="BabLoginMenuBackground" width="60%" >
-<tr>
-<td nowrap align="right"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ approver }</a>:</td> 
-<td nowrap><input type="text" name="manager" size="40" maxlength="80" value="{ managerval }" disabled>
+                <tr>
+                  <td nowrap align="right"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersbrowurl }');">{ approver }</a>:</td>
+                  <td nowrap><input type="text" name="manager" size="40" maxlength="80" value="{ managerval }" disabled>
 <input type="hidden" name="managerid" value="{ managerid }"></td>
-</tr>
-<tr> 
-<td nowrap align="right">{ modcomtxt }:</td> 
-<td nowrap>
+                </tr>
+                <tr> 
+                  <td nowrap align="right">{ modcomtxt }:</td>
+                  <td nowrap>
 <select name="modcom">
-<option value="Y" { modcomysel }>{ yes }</option>
-<option value="N" { modcomnsel }>{ no }</option>
-</select>
+                      <option value="Y" { modcomysel }>{ yes }</option>
+                      <option value="N" { modcomnsel }>{ no }</option>
+                    </select>
 </td>
-</tr>
-<tr> 
-<td nowrap align="right">{ notiftxt }:</td> 
-<td nowrap>
+                </tr>
+                <tr> 
+                  <td nowrap align="right">{ notiftxt }:</td>
+                  <td nowrap>
 <select name="bnotif">
-<option value="Y" { notifysel }>{ yes }</option>
-<option value="N" { notifnsel }>{ no }</option>
-</select>
+                      <option value="Y" { notifysel }>{ yes }</option>
+                      <option value="N" { notifnsel }>{ no }</option>
+                    </select>
 </td>
-</tr>
-</table>
-</td>
-</tr>
-<tr>
-<td align="center"> 
-<!--#if msie "== 1" --> 
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td align="center"> 
+              <!--#if msie "== 1" -->
+               
 <input onClick=SetVals() type="submit" name="Submit" value="{ add }">
 <script language="JavaScript">
 editor.FinalInstantiate(0);
 editor.CloseInitSection();
 </script>
-<!--#else msie --> 
+              <!--#else msie -->
+               
 <input type="submit" name="Submit" value="{ add }">
-<!--#endif msie --> 
-<!--#if bdel -->
-&nbsp;&nbsp;<input type="submit" name="topdel" value="{ delete }">
-<!--#endif bdel -->
-<br>
+              <!--#endif msie -->
+               
+              <!--#if bdel -->
+              &nbsp;&nbsp;
+              <input type="submit" name="topdel" value="{ delete }">
+              <!--#endif bdel -->
+              <br>
 </td>
-</tr>
-</table>
+          </tr>
+        </table>
 </td>
 </tr>
 </table>
