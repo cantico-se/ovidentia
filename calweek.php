@@ -169,12 +169,13 @@ class cal_weekCls extends cal_wmdbaseCls
 	
 	function getnextday()
 		{
-		global $babBody;
+		global $babDays;
 		static $d = 0;
 		if( $d < count($this->workdays))
 			{
 			
 			$this->mday = $this->dworkdays[$this->workdays[$d]];
+			$this->dayname = $babDays[$this->workdays[$d]];
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), date("j", $mktime));

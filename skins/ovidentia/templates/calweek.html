@@ -78,7 +78,7 @@ document.onmousemove = bab_tooltipPosition;
 			<!--#if currentday "== 1" --> class="BabCalendarMenuActiveBackground" <!--#else currentday --> class="BabCalendarDays" <!--#endif currentday -->>
 			<!--#else currentmonth -->
 			class="BabCalendarDays">
-			<!--#endif currentmonth -->{ dayname } { daynumbername }</td>
+			<!--#endif currentmonth -->{ dayname } { daynumbername }<span id="calfree_{ dayname }{ daynumbername }" class="calfreeover">{ dayname } { daynumbername }</span></td>
 		<!--#endin getnextdayname -->	
 	</tr>
 	</thead>
@@ -145,7 +145,7 @@ document.onmousemove = bab_tooltipPosition;
 						</td>
 						<!--#else bevent -->
 						<!--#if allow_create -->		
-						<td class="free" onmouseover="this.className='freeover';" onmouseout="this.className='free';" onclick="bab_popup('{ hoururl }',5)">{ h_start }</td>
+						<td class="free" onmouseover="this.className='freeover';bab_showOnMouse('calfree_{ dayname }{ mday }',1);" onmouseout="this.className='free';bab_showOnMouse('calfree_{ dayname }{ mday }',0);" onclick="bab_popup('{ hoururl }',5)">{ h_start }</td>
 						<!--#else allow_create -->		
 						<td>&nbsp;</td>
 						<!--#endif allow_create -->		
