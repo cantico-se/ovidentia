@@ -80,6 +80,13 @@ top.frames['fr'].document.location.reload();
 //-->
 </script>
 <!--#endif frrefresh -->
+<!--#if fltrefresh -->
+<script type="text/javascript">
+<!--
+top.frames['flt'].document.location.reload();
+//-->
+</script>
+<!--#endif fltrefresh -->
 </body>
 </html>
 <!--#end flbchartpage -->
@@ -308,10 +315,48 @@ function fulltext(el)
 </td>
 </tr>
 </table>
+<br>
 </form>
 <script type="text/javascript">
 <!--
 fulltext(document.forms.ocemove.parentid);
+//-->
+</script>
+<form name="ocemove2" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="flbchart">
+<input type="hidden" name="idx" value="adde">
+<input type="hidden" name="movoce" value="peroce">
+<input type="hidden" name="ocid" value="{ ocid }">
+<input type="hidden" name="oeid" value="{ oeid }">
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
+<table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" width="100%" valign="middle"> 
+{ permutewithtxt }<br>
+<span id="parententityfulltext2" style="width:100%"></span>
+<select name="permid" style="width:100%" onchange="fulltext(this)">
+<!--#in getnextparent -->
+<option value="{ pid }" alt="{ parententity }">{ parententity }</option>
+<!--#endin getnextparent -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabSiteAdminTitleFontBackground" valign="middle">
+<input type="submit" name="bpermute" value="{ permute }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<script type="text/javascript">
+<!--
+fulltext(document.forms.ocemove2.permid);
 //-->
 </script>
 

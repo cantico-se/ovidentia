@@ -416,7 +416,7 @@ switch($idx)
 
 	default:
 	case "modify":
-		$babBody->title = bab_translate("Modify a forum");
+		$babBody->title = bab_translate("Modify an organization chart");
 		modifyOrgChart($item);
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);

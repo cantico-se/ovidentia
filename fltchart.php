@@ -282,11 +282,33 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser)
 			global $babDB;
 			if( empty($iduser))
 				{
-				$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
-				if( $res )
+				$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.type='1' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
+				if( $res && $babDB->db_num_rows($res) == 1)
 					{
 					$arr = $babDB->db_fetch_array($res);
 					$iduser = $arr['id_user'];
+					}
+				else
+					{
+					$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.type='3' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
+					if( $res && $babDB->db_num_rows($res) == 1)
+						{
+						$arr = $babDB->db_fetch_array($res);
+						$iduser = $arr['id_user'];
+						}
+					else
+						{
+						$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.type='0' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
+						if( $res && $babDB->db_num_rows($res) == 1)
+							{
+							$arr = $babDB->db_fetch_array($res);
+							$iduser = $arr['id_user'];
+							}
+						else
+							{
+							$iduser = 0;
+							}
+						}
 					}
 				}
 			if( !empty($iduser))

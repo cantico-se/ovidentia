@@ -74,7 +74,7 @@ function listOrgCharts()
 				{
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->ocid = $arr['id'];
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id'];
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id']."&disp=disp3";
 				$this->urlname = $arr['name'];
 				$this->descval = $arr['description'];
 				$this->lock = $arr['edit'];
@@ -88,7 +88,7 @@ function listOrgCharts()
 							$this->edit = bab_translate("Edit");
 							$this->unlock = bab_translate("Unlock");
 							$this->unlockurl = $GLOBALS['babUrlScript']."?tg=charts&idx=unlock&ocid=".$arr['id'];
-							$this->editurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id'];
+							$this->editurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id']."&disp=disp1";
 							$this->bediturl = true;
 							}
 						else
@@ -99,7 +99,7 @@ function listOrgCharts()
 						}
 					else
 						{
-						$this->editurl = $GLOBALS['babUrlScript']."?tg=charts&idx=edit&ocid=".$arr['id'];
+						$this->editurl = $GLOBALS['babUrlScript']."?tg=charts&idx=edit&ocid=".$arr['id']."&disp=disp1";
 						$this->edit = bab_translate("Edit");
 						$this->bediturl = true;
 						}
@@ -146,7 +146,7 @@ if( count($babBody->ocids) > 0)
 			else
 				{
 				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='N' where id='".$ocid."'");
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=charts");
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=charts&disp=".$disp);
 				exit;
 				}
 			}
@@ -155,7 +155,7 @@ if( count($babBody->ocids) > 0)
 			if( $idx == "edit" )
 				{
 				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='Y', edit_author='".$BAB_SESS_USERID."', edit_date=now() where id='".$ocid."'");
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=chart&ocid=".$ocid);
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=chart&ocid=".$ocid."&disp=".$disp);
 				exit;
 				}
 			else

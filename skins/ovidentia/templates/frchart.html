@@ -137,7 +137,10 @@ changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');
 <a class="BabForumTopicsNavContribution" title="{ startnode }" href="{ startupnodeurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceArrowUp.gif" alt="{ startnode }" border="0"></a>
 <!--#endif bupbutton -->
 <!--#if update -->
+<!--#if first "== 1" -->
+<!--#else first -->
 <a class="BabForumTopicsNavContribution" title="{ delete }" href="javascript:updateFlbFrame('{ oeid }&idx=dele');updateFltFrame('{ oeid }&idx=listr')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ delete }" border="0"></a>
+<!--#endif first -->
 <!--#endif update -->
 
 
@@ -211,9 +214,12 @@ location.href = '#ENT{ coeid }';
 <!--#endif bparent -->
 <!--#endif parent -->
 <!--#if update -->
+<!--#if first "== 1" -->
+<!--#else first -->
 <TD>
 <a class="BabForumTopicsNavContribution" title="{ delete }" href="javascript:updateFlbFrame('{ oeid }&idx=dele');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ delete }" border="0"></a>
 </td>
+<!--#endif first -->
 <!--#endif update -->
 <td width="100%">
 &nbsp;
@@ -656,7 +662,9 @@ updateFltFrame('{ cuoeid }&idx=listr');
 function org_mm()
 {
   document.forms.eorgform.eid.value=document.eorgform.sentity.options[document.eorgform.sentity.selectedIndex].value;
+<!--#if update -->
   document.forms.eorgform.role.value=document.eorgform.srole.options[document.eorgform.srole.selectedIndex].value;
+<!--#endif update -->
   document.forms.eorgform.submit();
 }
 //-->
@@ -680,7 +688,8 @@ function org_mm()
 <input type="hidden" name="vpos" value="{ vpos }">
 <input type="hidden" name="role" value="{ role }">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-<tr valign="middle"> 
+<tr valign="middle">
+<!--#if update -->
 <td align="right" class="BabLetterlists">{ roletxt }&nbsp;&nbsp;
 <select name="srole" onchange="org_mm()">
 <option value="0"></option>
@@ -688,6 +697,11 @@ function org_mm()
 <option value="2" { tworoles }>{ notprovided }</option>
 </select>
 </td>
+<!--#else update -->
+<td align="right" class="BabLetterlists">&nbsp;
+<input type="hidden" name="srole" value="1">
+</td>
+<!--#endif update -->
 <td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
 </td>
 <td align="right" class="BabLetterlists">{ entitytxt }&nbsp;&nbsp;

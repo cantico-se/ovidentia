@@ -41,6 +41,7 @@ function babLittleBody()
 	$this->msgerror = "";
 	$this->content = "";
 	$this->frrefresh = false;
+	$this->fltrefresh = false;
 }
 
 function resetContent()
@@ -96,6 +97,7 @@ function printFlbChartPage()
 		var $title;
 		var $msgerror;
 		var $frrefresh;
+		var $fltrefresh;
 
 		function tpl()
 			{
@@ -108,7 +110,8 @@ function printFlbChartPage()
 			$this->content = $babLittleBody->printout();
 			$this->title = $babLittleBody->title;
 			$this->msgerror = $babLittleBody->msgerror;
-			$this->frrefresh = $babLittleBody->frrefresh;
+			$this->frrefresh = isset($babLittleBody->frrefresh)? $babLittleBody->frrefresh: false;
+			$this->fltrefresh = isset($babLittleBody->fltrefresh)? $babLittleBody->fltrefresh: false;
 			}
 
 		function getNextMenu()

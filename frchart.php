@@ -44,6 +44,7 @@ function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 			$this->delete = bab_translate("Delete");
 			$this->startnode = bab_translate("Start");
 			$this->closenode = bab_translate("Close");
+			$this->opennode = bab_translate("Open");
 
 			$this->babTree  = new bab_arraytree(BAB_OC_TREES_TBL, $ocid, "", $ocinfo['id_first_node']);
 
@@ -269,6 +270,7 @@ class orgtemp
 		$this->delete = $this->obj->delete;
 		$this->startnode = $this->obj->startnode;
 		$this->closenode = $this->obj->closenode;
+		$this->opennode = $this->obj->opennode;
 		$this->updateurlb = $this->obj->updateurlb;
 		$this->updateurlt = $this->obj->updateurlt;
 		$this->currentoe = $this->obj->currentoe;
@@ -419,6 +421,7 @@ function displayChartTree($ocid, $oeid, $update, $iduser)
 			$this->delete = bab_translate("Delete");
 			$this->startnode = bab_translate("Start");
 			$this->closenode = bab_translate("Close");
+			$this->opennode = bab_translate("Open");
 			$this->closednodes = array();
 			$this->coeid = $oeid;
 
@@ -743,12 +746,12 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 
 
 
-function browseRoles($ocid, $oeid, $role, $type, $vpos)
+function browseRoles($ocid, $oeid, $role, $type, $vpos, $update)
 	{
 	global $babBody;
 	class temp
 		{
-		function temp($ocid, $oeid, $role, $type, $vpos)
+		function temp($ocid, $oeid, $role, $type, $vpos, $update)
 			{
 			global $babBody, $babDB;
 			$this->ocid = $ocid;
@@ -756,6 +759,7 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos)
 			$this->role = $role;
 			$this->type = $type;
 			$this->vpos = $vpos;
+			$this->update = $update;
 
 			$this->entitytxt = bab_translate("Entity");
 			$this->roletxt = bab_translate("Role");
@@ -771,6 +775,10 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos)
 			$this->nextname = "";
 			$this->prevname = "";
 
+			if( !$this->update )
+				{
+				$role = 1;
+				}
 
 			$req = BAB_OC_ROLES_TBL." ocrt LEFT  JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role LEFT  JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity LEFT  JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON  ocrut.id_user = det.id where ocet.id_oc='".$this->ocid."'";
 			if( $type != "" )
@@ -924,7 +932,7 @@ function browseRoles($ocid, $oeid, $role, $type, $vpos)
 		
 		}
 
-	$temp = new temp($ocid, $oeid, $role, $type, $vpos);
+	$temp = new temp($ocid, $oeid, $role, $type, $vpos, $update);
 	echo bab_printTemplate($temp, "frchart.html", "browseroles");
 	}
 
@@ -1055,7 +1063,7 @@ if (!$update)
 $ocinfo['id_closed_nodes'] = isset($GLOBALS['BAB_SESS_CHARTCN-'.$ocid])? $GLOBALS['BAB_SESS_CHARTCN-'.$ocid]: '';
 $ocinfo['id_first_node'] = isset($GLOBALS['BAB_SESS_CHARTRN-'.$ocid])?$GLOBALS['BAB_SESS_CHARTRN-'.$ocid]:0;
 }
-$oeid = empty($oeid)?$GLOBALS['BAB_SESS_CHARTOEID-'.$ocid]:$oeid;
+$oeid = !isset($oeid)?$GLOBALS['BAB_SESS_CHARTOEID-'.$ocid]:$oeid;
 
 if(!isset($idx))
 	{
@@ -1116,7 +1124,7 @@ switch($idx)
 				if( !isset($vpos)) $vpos =0;
 				if( !isset($type)) $type ='';
 				if( !isset($eid)) $eid =0;
-				browseRoles($ocid, $eid, $role, $type, $vpos);
+				browseRoles($ocid, $eid, $role, $type, $vpos, $update);
 				break;
 			case "disp5":
 				if( !isset($pos )){	$pos = "A"; }

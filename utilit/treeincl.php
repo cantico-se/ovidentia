@@ -366,6 +366,9 @@ class bab_dbtree
 		if( !$nodeinfo )
 			return false;
 
+		if( $nodeinfo['id_parent'] == 0 )
+			return false;
+
 		if( $parentId || $previousId )
 		{
 			if( $previousId )
@@ -451,6 +454,9 @@ class bab_dbtree
 
 		$nodeinfo = $this->getNodeInfo($id);
 		if( !$nodeinfo )
+			return false;
+
+		if( $nodeinfo['id_parent'] == 0 )
 			return false;
 
 		if( $parentId || $previousId )

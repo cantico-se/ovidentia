@@ -1267,4 +1267,8 @@
 <string id="Maximum connexion attempts has been reached">Le nombre maximum de connexion à été atteint</string>
 <string id="Approbation can't be disabled">L'approbation ne peut pas être désactivée</string>
 <string id="file(s) must be accepted or refused before">fichier(s) en attente</string>
+<string id="Modify an organization chart">Modifier un organigramme</string>
+<string id="Permute">Permuter</string>
+<string id="Permute with">Permuter avec</string>
+<string id="Open">Ouvrir</string>
 </fr>

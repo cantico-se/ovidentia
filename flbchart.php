@@ -63,7 +63,7 @@ function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 				$this->nonetxt = "--- ".bab_translate("None")." ---";
 				$this->newgrouptxt = "--- ".bab_translate("New group")." ---";
 				$this->grouptxt = bab_translate("Group");
-				$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
+				$req = "select * from ".BAB_GROUPS_TBL." where id > 2 and id_dgowner='".$babBody->currentAdmGroup."' and id_ocentity='0' order by name asc";
 				$this->res = $babDB->db_query($req);
 				$this->count = $babDB->db_num_rows($this->res);
 				}
@@ -200,6 +200,7 @@ function moveOrgChartEntity($ocid, $eid)
 		var $previoussiblingtxt;
 		var $nextsiblingtxt;
 		var $astxt;
+		var $permute;
 
 		function temp($ocid, $eid)
 			{
@@ -208,7 +209,9 @@ function moveOrgChartEntity($ocid, $eid)
 			$this->oeid = $eid;
 			$this->thisentity = bab_translate("Only entity");
 			$this->entityandchild = bab_translate("Entity and children");
-			$this->add = bab_translate("Update");
+			$this->add = bab_translate("Move");
+			$this->permute = bab_translate("Permute");
+			$this->permutewithtxt = bab_translate("Permute with");
 			$this->astxt = bab_translate("As");
 			$this->childtxt = bab_translate("Child");
 			$this->previoussiblingtxt = bab_translate("Previous Sibling");
@@ -224,13 +227,18 @@ function moveOrgChartEntity($ocid, $eid)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->pid = $arr['id_node'];
+				$this->pid = $arr['id'];
 				$this->parententity = $arr['name'];
 				$i++;
 				return true;
 				}
 			else
+				{
+				$i = 0;
+				if( $this->count > 0 )
+					$babDB->db_data_seek($this->res, 0);
 				return false;
+				}
 
 			}
 		}
@@ -628,13 +636,13 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 		{
 		switch($hsel)
 			{
-			case 1:
+			case 1: /* previous sibling */
 				$idnode = $babTree->add(0, $oeinfo['id_node'], false);
 				break;
-			case 2:
+			case 2: /* next sibling */
 				$idnode = $babTree->add(0, $oeinfo['id_node']);
 				break;
-			case 0:
+			case 0: /* child */
 			default:
 				$idnode = $babTree->add($oeinfo['id_node']);
 				break;
@@ -852,16 +860,50 @@ function confirmDeleteOrgChartEntity($ocid, $oeid, $what)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&rf=1&ocid=".$ocid);
 	}
 
+function confirmPermuteOrgChartEntity($ocid, $oeid, $permid)
+{
+	global $babBody, $babDB, $babLittleBody, $oeinfo;
+
+	if( $oeid == $permid )
+	{
+		return true;
+	}
+	
+	$res = $babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."' and id_oc='".$ocid."'");
+	if( $res && $babDB->db_num_rows($res) == 1)
+	{
+		$arr = $babDB->db_fetch_array($res);
+		$res = $babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$permid."' and id_oc='".$ocid."'");
+		if( $res && $babDB->db_num_rows($res) == 1)
+		{
+			$row = $babDB->db_fetch_array($res);
+			$babDB->db_query("update ".BAB_OC_ENTITIES_TBL." set id_node='".$row['id_node']."' where id='".$oeid."'");
+			$babDB->db_query("update ".BAB_OC_ENTITIES_TBL." set id_node='".$arr['id_node']."' where id='".$permid."'");
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&rf=1&ocid=".$ocid);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
 function confirmMoveOrgChartEntity($ocid, $oeid, $what, $pid, $as)
 	{
 	global $babBody, $babDB, $babLittleBody, $oeinfo;
 
 	list($idnode) = $babDB->db_fetch_row($babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."'"));
+	list($pid) = $babDB->db_fetch_row($babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$pid."'"));
 
 	$babTree = new bab_dbtree(BAB_OC_TREES_TBL, $ocid);
 	switch($what)
 		{
-		case 1:
+		case 1: /* entity and children */
 			if( $as == 1 )
 			{
 				$babTree->moveTree($idnode, 0, $pid, false);
@@ -875,17 +917,17 @@ function confirmMoveOrgChartEntity($ocid, $oeid, $what, $pid, $as)
 			$babTree->moveTree($idnode, $pid);
 			}
 			break;
-		case 0:
+		case 0: /* only entity */
 		default:
-			if( $as == 1 )
+			if( $as == 1 ) /* as previous sibling */
 			{
 				$babTree->move($idnode, 0, $pid, false);
 			}
-			else if ( $as == 2 )
+			else if ( $as == 2 ) /* as next sibling */
 			{
 				$babTree->move($idnode, 0, $pid);
 			}
-			else
+			else /* as child */
 			{
 			$babTree->move($idnode, $pid);
 			}
@@ -944,7 +986,7 @@ function updateOrgChartRole($ocid, $name, $description, $oeid, $orid, $cardinali
 	
 	$req = "update ".BAB_OC_ROLES_TBL." set name='".$name."', description='".$description."', cardinality='".$cardinality."' where id='".$orid."'";
 	$babDB->db_query($req);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid."&ltf=1");
 	return true;
 	}
 
@@ -1054,18 +1096,18 @@ function updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles)
 	list($total) = $babDB->db_fetch_row($babDB->db_query("select count(orut.id) as total from ".BAB_OC_ROLES_USERS_TBL." orut left join ".BAB_OC_ROLES_TBL." ort on ort.id=orut.id_role left join ".BAB_OC_ENTITIES_TBL." oct on oct.id=ort.id_entity where orut.id_user='".$iduser."' and ort.id_entity='".$oeid."'"));
 	if($total)
 	{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&rf=1");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&rf=1&ltf=1");
 	}
 	else
 	{
 	list($iduser) = $babDB->db_fetch_row($babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_USERS_TBL." orut left join ".BAB_OC_ROLES_TBL." ort on ort.id=orut.id_role left join ".BAB_OC_ENTITIES_TBL." oct on oct.id=ort.id_entity where ort.id_entity='".$oeid."' limit 0,1"));
 	if( $iduser)
 		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&rf=1");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&rf=1&ltf=1");
 		}
 	else
 		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=&rf=1");
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=&rf=1&ltf=1");
 		}
 	}
 }
@@ -1073,6 +1115,7 @@ function updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles)
 /* main */
 $babLittleBody = new babLittleBody();
 $babLittleBody->frrefresh = isset($rf)? $rf: false;
+$babLittleBody->fltrefresh = isset($ltf)? $ltf: false;
 $access = false;
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 {
@@ -1091,7 +1134,7 @@ if( !$access)
 
 if( isset($oeid) && $oeid != 0)
 {
-$oeinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."'"));
+$oeinfo = $babDB->db_fetch_array($babDB->db_query("select oet.*, ctt.id_parent from ".BAB_OC_ENTITIES_TBL." oet left join ".BAB_OC_TREES_TBL." ctt on ctt.id=oet.id_node where oet.id='".$oeid."'"));
 }
 else
 {
@@ -1183,6 +1226,12 @@ else if( isset($movoce) )
 			$idx = "move";
 			}
 			break;
+		case "peroce":
+			if( !confirmPermuteOrgChartEntity($ocid, $oeid, $permid))
+			{
+			$idx = "move";
+			}
+			break;
 
 	}
 }else if( isset($updru) && $updru == "updru" )
@@ -1204,15 +1253,15 @@ switch($idx)
 		break;
 	case "delocf":
 		delOrgChartRoles($ocid, $oeid, $ocfid);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid."&ltf=1");
 		break;
 	case "delocu":
 		delUserOrgChartRole($ocid, $oeid, $ocfid);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid."&ltf=1");
 		break;
 	case "addur":
 		addUserOrgChartRole($ocid, $oeid, $orid, $iduser);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid."&ltf=1");
 		/* no break */
 	case "users":
 		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
@@ -1270,7 +1319,10 @@ switch($idx)
 		if( $oeid != 0 )
 			{
 			$babLittleBody->addItemMenu("mode", bab_translate("Entity"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=mode&ocid=".$ocid."&oeid=".$oeid);
-			$babLittleBody->addItemMenu("move", bab_translate("Move"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=move&ocid=".$ocid."&oeid=".$oeid);
+			if( isset($oeinfo['id_parent']) && $oeinfo['id_parent'] != 0 )
+				{
+				$babLittleBody->addItemMenu("move", bab_translate("Move"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=move&ocid=".$ocid."&oeid=".$oeid);
+				}
 			}
 		$babLittleBody->addItemMenu("adde", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=adde&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
@@ -1282,7 +1334,10 @@ switch($idx)
 		if( $oeid != 0 )
 			{
 			$babLittleBody->addItemMenu("mode", bab_translate("Entity"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=mode&ocid=".$ocid."&oeid=".$oeid);
-			$babLittleBody->addItemMenu("move", bab_translate("Move"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=move&ocid=".$ocid."&oeid=".$oeid);
+			if( isset($oeinfo['id_parent']) && $oeinfo['id_parent'] != 0 )
+				{
+				$babLittleBody->addItemMenu("move", bab_translate("Move"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=move&ocid=".$ocid."&oeid=".$oeid);
+				}
 			}
 		$babLittleBody->addItemMenu("adde", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=adde&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
