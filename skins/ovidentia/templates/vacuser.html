@@ -47,56 +47,12 @@ function validateDayField(field) {
 
 function validateForm(fr)
 {
-var ret = true;
-if( fr.yearbegin.selectedIndex > fr.yearend.selectedIndex )
-	{
-	ret = false;
-	}
-else if( fr.yearbegin.selectedIndex == fr.yearend.selectedIndex )
-	{
-		if( fr.monthbegin.selectedIndex > fr.monthend.selectedIndex )
-		{
-		ret = false;
-		}
-		else if( fr.monthbegin.selectedIndex == fr.monthend.selectedIndex ) 
-		{
-		if( fr.daybegin.selectedIndex > fr.dayend.selectedIndex )
-			{
-			ret = false;
-			}
-		}
-	}
-
-if( ret == false)
-	{
-	var d1;
-	alert ('{ invaliddate }');
-	return false;
-	}
-
-dateA = new Date(fr.yearbegin.options[fr.yearbegin.selectedIndex].text, fr.monthbegin.options[fr.monthbegin.selectedIndex].value-1, fr.daybegin.options[fr.daybegin.selectedIndex].text );
-dateB = new Date(fr.yearend.options[fr.yearend.selectedIndex].text, fr.monthend.options[fr.monthend.selectedIndex].value-1, fr.dayend.options[fr.dayend.selectedIndex].text );
-
-diff = ((dateB - dateA)/86400000)+1;
-
-if( parseFloat(fr.total.value) > diff )
-	{
-	var d2;
-	alert ( '{ invaliddate2 }');
-	return false;
-	}
-if( parseFloat(fr.total.value) > { maxallowed } )
-	{
-	var d2;
-	alert ( '{ invalidentry3 }');
-	return false;
-	}
 return true;
 }
 //-->
 </SCRIPT>
 <div align="center">
-	<a  href="{ calurl }" onclick="bab_popup(this.href,5);return false;">{ calendar }</a>
+	<a  href="{ calurl }" onclick="bab_popup(this.href,5,1);return false;">{ calendar }</a>
 </div>
 <br />
 <form name="vacform" method="post" action="{ babPhpSelf }" onSubmit="return validateForm(this);">
@@ -216,7 +172,7 @@ return true;
 
 <!--#begin vrequestslist -->
 <div align="center">
-	<a  href="{ calurl }" onclick="bab_popup(this.href,5);return false;">{ calendar }</a>
+	<a  href="{ calurl }" onclick="bab_popup(this.href,4,1);return false;">{ calendar }</a>
 </div>
 <br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -233,7 +189,7 @@ return true;
 		</tr>
 		<!--#in getnext -->
 		<tr class="BabSiteAdminFontBackground"> 
-			<td><a href="{ url }" onclick="bab_popup(this.href,2);return false;">{ urlname }</a></td>
+			<td><a href="{ url }" onclick="bab_popup(this.href,2,1);return false;">{ urlname }</a></td>
 			<td>{ begindate }</td>
 			<td>{ enddate }</td>
 			<td>{ quantity }</td>
@@ -462,13 +418,13 @@ window.focus();
 @import url('{ babInstallPath }styles/vacation.css');
 </style>
 
-<table class="bab_calnavbar" width="100%" cellpadding="2" cellspacing="0">
+<table class="noprint bab_calnavbar" width="100%" cellpadding="2" cellspacing="0">
 	<tr class="BabLoginMenuBackground"> 
 		<td class="prev">
 			<a href="{ previousmonth }" title="{ t_previousmonth }" class="prev2"><strong>&lt;</strong></a> 
 			<a href="{ previousyear }" title="{ t_previousyear }" class="prev1"><strong>&lt;&lt;</strong></a>
 		</td>
-		<td align="center">{ yearname } <!--#if nbusers "== 1" --> - { firstuser }<!--#endif nbusers --></td>
+		<td align="center">&nbsp;</td>
 		<td align="right" class="next">
 			<a href="{ nextmonth }" title="{ t_nextmonth }" class="next2"><strong>&gt;</strong></a>
 			<a href="{ nextyear }" title="{ t_nextyear }" class="next1"><strong>&gt;&gt;</strong></a>
@@ -476,9 +432,10 @@ window.focus();
 	</tr>
 </table>
  
-<div id="vacationcalendar" <!--#if popup --> class="popup" <!--#endif popup -->>
+<div id="vacationcalendar" <!--#if popup --> class="popup rotate" <!--#endif popup -->>
 
 <table class="calendar">
+<caption>{ yearname } <!--#if nbusers "== 1" --> - { firstuser }<!--#endif nbusers --></caption>
 <thead>
 	<tr>
 		
@@ -534,38 +491,50 @@ window.focus();
 	<!--#endin getnextuser -->
 	<!--#endin getmonth -->
 </tbody>
+<tfoot>
+	<tr>
+		<td class="legend" colspan="<!--#if nbusers "> 1" -->33<!--#else nbusers -->32<!--#endif nbusers -->">
+		
+		<ul>
+			<!--#in getnexttype -->
+			<li title="{ arr[description] }"><span class="used" style="background-color:#{ arr[color] }">&nbsp;</span>{ arr[name] }</li>
+			<!--#endin getnexttype -->
+			<li><span class="nonworking">&nbsp;</span>{ t_nonworking }</li>
+			<li><span class="weekend">&nbsp;</span>{ t_weekend }</li>
+		</ul>
+
+		</td>
+	</tr>
+</tfoot>
 </table>
 
 
-
-<table class="legend">
-	
-	<tr>
-		<!--#in getnexttype -->
-		<td class="used" style="background-color:#{ arr[color] }">&nbsp;</td>
-		<th title="{ arr[description] }">{ arr[name] }</th>
-	<!--#if newline -->
-	</tr>
-	<tr>
-	<!--#endif newline -->
-		<!--#endin getnexttype -->
-	</tr>
-	
-	<tr>
-		<td class="nonworking">&nbsp;</td>
-		<th>{ t_nonworking }</th>
-
-		<td class="weekend">&nbsp;</td>
-		<th>{ t_weekend }</th>
-	</tr>
-</table>
 
 </div>
 
 <!--#if popup -->
-<div align="center">
+<div class="noprint" align="center">
 <a href="javascript:window.print()"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ print }" align="absmiddle" />&nbsp;{ print }</a>&nbsp; &nbsp; &nbsp;
 	<a href="#" onclick="window.close();return false;">{ close }</a>
+
+	<script type="text/javascript">
+	<!--
+	function rotate(obj)
+		{
+		var el = document.getElementById('vacationcalendar');
+		if ( obj.checked )
+			{
+			el.className='popup rotate';
+			}
+		else
+			{
+			el.className='popup';
+			}
+		}
+	//-->
+	</script>
+
+	<p><input type="checkbox" id="rotate" checked="checked" onclick="rotate(this)" /> { t_rotate }</p>
 </div>
 <!--#endif popup -->
 

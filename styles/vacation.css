@@ -1,3 +1,6 @@
+
+
+
 .bab_calnavbar a strong {
 	display:none;
 	}
@@ -35,7 +38,6 @@
 /* calendar */
 
 
-
 #vacationcalendar {
 	font-size:9px;
 	text-align:center;
@@ -55,15 +57,13 @@
 	}
 
 #vacationcalendar .legend {
-	margin:.5em auto;
-	font-size:1em;
+	margin:0;
+	padding:0;
+	text-align:left;
+	border:0;
+	width:100%;
 	}
 
-#vacationcalendar .legend th {
-	font-weight:normal;
-	font-size:1.2em;
-	text-align:left;
-	}
 
 #vacationcalendar .calendar tbody th {
 	text-align:right;
@@ -129,4 +129,48 @@ th.user {
 	font-weight:normal;
 	white-space:nowrap;
 	padding:0 .2em;
+	}
+
+#vacationcalendar ul {
+	margin:0;
+	margin-top:.5em;
+	padding:0;
+	list-style-type:none;
+	text-align:left;
+	}
+
+#vacationcalendar li {
+	margin: .2em 0;
+	float:left;
+	width: 33%;
+	padding:.3em 0;
+	}
+
+#vacationcalendar li,
+#vacationcalendar caption {
+	font-size:1.2em;
+	}
+
+#vacationcalendar ul span {
+	padding:1px 5px;
+	margin:0 5px;
+	border:#000 1px solid;
+	}
+
+
+@media print {
+
+	.noprint {
+		display:none;
+		}
+
+	#vacationcalendar.popup {
+		font-size:18px;
+		}
+
+	#vacationcalendar.rotate {
+		height: 50%;
+		margin: 5% 0%;
+		filter: progid:DXImageTransform.Microsoft.BasicImage(Rotation=1);
+		}
 	}

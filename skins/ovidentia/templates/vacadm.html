@@ -206,7 +206,7 @@ for (i = 0; i < f.elements.length; i++)
 if (users != '')
 	{
 	//}
-	bab_popup('{ babUrlScript }?tg=vacuser&idx=cal&idu='+users+'&popup=1');
+	bab_popup('{ babUrlScript }?tg=vacuser&idx=cal&idu='+users+'&popup=1',5,1);
 	}
 }
 -->
@@ -259,7 +259,7 @@ if (users != '')
 			<td>{ collname }</td>
 			<td>{ saname }</td>
 			<td><a href="{ lrbuurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altlrbu }" border="0" align="middle"></a></td>
-			<td><a href="{ calurl }&popup=1" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
+			<td><a href="{ calurl }&popup=1" onclick="bab_popup(this.href,5,1);return false;"><img src="{ babSkinPath }images/Puces/PuceCalendar.gif" alt="{ altcal }" border="0" align="middle"></a></td>
 		</tr> 
 		<!--#endin getnext -->
 		<tr class="BabSiteAdminTitleFontBackground"> 

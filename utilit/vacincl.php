@@ -295,6 +295,7 @@ function viewVacationCalendar($users, $period = false )
 
 			$this->t_nonworking = bab_translate("Non-working day");
 			$this->t_weekend = bab_translate("Week-end");
+			$this->t_rotate = bab_translate("Print in landscape");
 			
 			$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
 
@@ -378,8 +379,6 @@ function viewVacationCalendar($users, $period = false )
 			$this->nonWorkingDays = array_merge(bab_getNonWorkingDays($year), bab_getNonWorkingDays($year+1));
 
 			$this->restypes = $this->db->db_query("SELECT t.* FROM ".BAB_VAC_TYPES_TBL." t, ".BAB_VAC_COLL_TYPES_TBL." ct, ".BAB_VAC_PERSONNEL_TBL." p WHERE p.id_user IN(".implode(',', $this->idusers).") AND p.id_coll=ct.id_coll AND ct.id_type=t.id GROUP BY t.id");
-
-			$this->counttypes = $this->db->db_num_rows($this->restypes);
 			}
 
 		function getdayname()
@@ -529,11 +528,8 @@ function viewVacationCalendar($users, $period = false )
 
 		function getnexttype()
 			{
-			static $i =1;
 			if ($this->arr = $this->db->db_fetch_array($this->restypes))
 				{
-				$this->newline = $i % 2 == 0 && $this->counttypes > $i-1;
-				$i++;
 				return true;
 				}
 			else
@@ -549,7 +545,7 @@ function viewVacationCalendar($users, $period = false )
 			if (isset($_REQUEST['popup']) && $_REQUEST['popup'] == 1)
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-				$GLOBALS['babBodyPopup'] = new babBodyPopup();
+				$GLOBALS['babBodyPopup'] = & new babBodyPopup();
 				$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
 				$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
 				$GLOBALS['babBodyPopup']->babecho($html);
@@ -561,7 +557,6 @@ function viewVacationCalendar($users, $period = false )
 				$GLOBALS['babBody']->babecho($html);
 				}
 			}
-
 		}
 
 	$temp = & new temp($users, $period);

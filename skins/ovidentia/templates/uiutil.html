@@ -1,8 +1,8 @@
 <!--#begin popupunload -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
+<html>
+<head>
+<title>{ babSiteName }</title>
 { babMeta }
 { babCss }
 <script type="text/javascript">
@@ -11,14 +11,14 @@ window.focus();
 //-->
 </script>
 
-</HEAD>
+</head>
 <!--#if redirecturl -->
-<BODY onUnload="javascript:this.opener.location.href='{ redirecturl }';">
+<body onUnload="javascript:this.opener.location.href='{ redirecturl }';">
 <!--#else redirecturl -->
 <!--#if openerreload -->
-<BODY onUnload="this.opener.location.reload()">
+<body onUnload="this.opener.location.reload()">
 <!--#else openerreload -->
-<BODY>
+<body>
 <!--#endif openerreload -->
 <!--#endif redirecturl -->
 <br><br><br><br>
@@ -48,79 +48,70 @@ close }</a> </td>
 <!--#end popupunload -->
 
 <!--#begin babbodypopup -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
-</HEAD>
-<body>
-<table width="100%" height="100%" border="0" cellspacing="10" cellpadding="0" align="center">
-<tr> 
-<td class="BabContentBackground" valign="top"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-	<tr> 
-	<td class="BabSiteAdminFontBackground"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-		<tr> 
-		<td align="center" valign="middle"> 
-			<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" border="0">
-				<tr> 
-				<!--#in getNextMenu -->
-				<!--#if enabled "== 0" -->
-				<td align="center" valign="middle" nowrap width="20%" class="BabMenuActiveBackground"> 
-				<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">{ menutext }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-				<!--#else enabled -->
-				<td width="20%" align="center" valign="middle" nowrap class="BabLoginMenuBackground"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"><a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ 
-				menutext }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-				<!--#endif enabled -->
-				<!--#endin getNextMenu -->
-				<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-				</tr>
-			</table>
-		</td>
-		</tr>
-		</table>
-	</td>
-	</tr>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{ babLanguage }" lang="{ babLanguage }">
+  <head>
+	<title>{ babSiteName } <!--#if title --> - { title } <!--#endif title --></title>
+	{ babMeta }
+	{ babCss }
 
+	<style type="text/css" media="screen">
+	.babbodypopup .BabContentBackground {
+		width:96%;
+		margin: .5em auto;
+		}
+	</style>
+
+	<script type="text/javascript" src="{ babOvidentiaJs }">
+	<!--
+	//-->
+	</script>
+</head>
+<body class="babbodypopup BabContentBackground">
+ 
+	<table class="BabSiteAdminFontBackground" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 	<tr> 
-	<td valign="top" width="100%"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="3" class="BabContentBackground">
-			<tr>
-			<td valign="top">
-				<br />
-				<!--#if msgerror -->
-				<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
-					<tr>
-					<td class="BabErrorMessage" align="center" >{ msgerror }</td>
-					</tr>
-				</table>
-				<br />
-				<!--#endif msgerror -->
-				<!--#if title -->
-				<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
-					<tr>
-					<td class="BabLoginMenuBackground" align="center" >{ title }</td>
-					</tr>
-				</table>
-				<br />
-				<!--#endif title --> 
-				{ content }
-			</td>
+	<td align="center" valign="middle"> 
+		<table width="100%" cellspacing="0" cellpadding="0" align="center" border="0">
+			<tr> 
+			<!--#in getNextMenu -->
+			<!--#if enabled "== 0" -->
+			<td align="center" width="20%" class="BabMenuActiveBackground"> 
+			&nbsp;&nbsp;{ menutext }&nbsp;&nbsp;</td>
+			<!--#else enabled -->
+			<td width="20%" align="center" class="BabLoginMenuBackground">
+			&nbsp;&nbsp;<a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ menutext }</a>&nbsp;&nbsp;</td>
+			<!--#endif enabled -->
+			<!--#endin getNextMenu -->
+			<td>&nbsp;</td>
 			</tr>
 		</table>
 	</td>
 	</tr>
 	</table>
-</td>
-</tr>
-</table>
+
+	<div class="BabContentBackground"> 
+
+		<br />
+		<!--#if msgerror -->
+		<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
+			<tr>
+			<td class="BabErrorMessage" align="center">{ msgerror }</td>
+			</tr>
+		</table>
+		<br />
+		<!--#endif msgerror -->
+		<!--#if title -->
+		<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
+			<tr>
+			<td class="BabLoginMenuBackground" align="center">{ title }</td>
+			</tr>
+		</table>
+		<br />
+		<!--#endif title --> 
+		{ content }
+
+	</div>
 </body>
 </html>
 <!--#end babbodypopup -->

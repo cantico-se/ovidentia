@@ -70,8 +70,16 @@ function bab_selectFirstInputField(filterclass)
 	}
 
 var bab_popup_obj = null;
-function bab_popup(url,divisor)
+function bab_popup(url,divisor,menubar)
 	{
+	if (!menubar)
+		{
+		var menubar = 'no';
+		}
+	else
+		{
+		var menubar = 'yes';
+		}
 	if (bab_popup_obj == null || bab_popup_obj.closed)
 		{
 		if (typeof divisor == 'undefined')
@@ -81,11 +89,11 @@ function bab_popup(url,divisor)
 		var wd = Math.round(screen.width/divisor);
 		var hd = Math.round(screen.height/divisor);
 		var w = screen.width-wd;
-		var h = screen.height-hd;
+		var h = menubar == 'yes' ? Math.round((screen.height-hd)/1.5) : screen.height-hd;
 		var l = Math.round(wd/2);
 		var t = Math.round(hd/2);
 		var name = 'bab_popup'+Math.floor(Math.random() * 99999999);
-		bab_popup_obj = window.open(url,name,'status=yes,menubar=no,personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+		bab_popup_obj = window.open(url,name,'status=yes,menubar='+menubar+',personalbar=no,width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
 		}
 	else
 		{
