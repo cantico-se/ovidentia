@@ -51,6 +51,8 @@ function browseUsers($pos, $cb, $idcal)
 		var $url;
 		var $email;
 		var $status;
+		var $checkall;
+		var $uncheckall;
 				
 		var $fullnameval;
 		var $emailval;
@@ -68,6 +70,8 @@ function browseUsers($pos, $cb, $idcal)
 
 		function temp($pos, $cb, $idcal)
 			{
+			$this->uncheckall = bab_translate("Uncheck all");
+			$this->checkall = bab_translate("Check all");
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Nickname");
 			$this->vaccname0 = bab_translate("Consultation");
