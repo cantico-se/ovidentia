@@ -261,6 +261,7 @@ if( isset($update))
 if( isset($acladd))
 	{
 	aclUpdate($table, $item, $groups, $what);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 	}
 
 switch($idx)
