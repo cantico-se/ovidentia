@@ -753,6 +753,10 @@ switch($tg)
 		include $babInstallPath."version.php";
 		exit;
 		break;
+	case "htmlarea":
+		include $babInstallPath."htmlarea.php";
+		exit;
+		break;
 	case "oml":
 		$incl = "oml";
 		break;
