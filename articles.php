@@ -196,6 +196,8 @@ function listOldArticles($topics, $pos, $approver)
 		var $commentsname;
 		var $moreurl;
 		var $morename;
+		var $delete;
+		var $modify;
 
 		function temp($topics, $pos, $approver)
 			{
@@ -209,6 +211,8 @@ function listOldArticles($topics, $pos, $approver)
 			$this->nextname = "";
 			$this->prevname = "";
 			$this->printable = bab_translate("Print Friendly");
+			$this->delete = bab_translate("Delete");
+			$this->modify = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
 
 			$res = $this->db->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y'");
@@ -281,6 +285,9 @@ function listOldArticles($topics, $pos, $approver)
 				$this->title = stripslashes($this->arr['title']);
 				$this->blen = $this->arr['blen'];
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
+
+				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
+				$this->delurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id'];
 
 				if( $this->com)
 					{

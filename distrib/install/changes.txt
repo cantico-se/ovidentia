@@ -1,6 +1,7 @@
 /************************************************************************/
 October 2002: Version 3.4.1
 /************************************************************************/
+- Folder manager can move files between folders 
 - Fixed some minors bugs
 - Improved performance
 
