@@ -3,10 +3,12 @@
 <!--
 function changestyle(ent,oldstyle,newstyle)
 {
+
 	var ctrlPrefix = 'ENT';
 	var obj = document.getElementById(ent);
 	var objtag = obj.tagName;
 	var tas = document.getElementsByTagName(objtag);
+
 	for (i = 0; i < tas.length; i++)
 		{
 		if (tas.item(i).id.substring(0,ctrlPrefix.length) == ctrlPrefix)
@@ -110,9 +112,9 @@ top.flb.document.location.href=url;
 <TD><IMG src="{ babSkinPath }images/Puces/Puce-s.gif" width="5" height="21" border="0" alt=""></TD>
 <td class="BabForumTopicsNavTreeLive">
 <!--#if update -->
-<a id="ENT{ oeid }" name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');javascript:updateFlbFrame('{ oeid }&idx=mode'); updateFltFrame('{ oeid }&idx=listr')" class="BabForumTopicsNavContribution" >
+<a name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabLoginMenuBackground','BabMenuLink');javascript:updateFlbFrame('{ oeid }&idx=mode'); updateFltFrame('{ oeid }&idx=listr')" class="BabForumTopicsNavContribution" >
 <!--#else update -->
-<a id="ENT{ oeid }" name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');javascript:updateFlbFrame('{ oeid }&idx=detr');javascript:updateFltFrame('{ oeid }&idx=listr')" class="BabForumTopicsNavContribution" >
+<a name="ENT{ oeid }" href="javascript:changestyle('ENT{ oeid }','BabLoginMenuBackground','BabMenuLink');javascript:updateFlbFrame('{ oeid }&idx=detr');javascript:updateFltFrame('{ oeid }&idx=listr')" class="BabForumTopicsNavContribution" >
 <!--#endif update -->
 { entity }</a>
 <!--#if superior -->
@@ -121,7 +123,7 @@ top.flb.document.location.href=url;
 <!--#if current -->
 <script type="text/javascript">
 <!--
-changestyle('ENT{ oeid }','BabForumTopicsNavContribution','BabMenuLink');
+changestyle('ENT{ oeid }','BabLoginMenuBackground','BabMenuLink');
 //-->
 </script>
 <!--#endif current -->
@@ -174,12 +176,12 @@ location.href = '#ENT{ coeid }';
 <TR nowrap>
 <TD align="center" width="100%">
 <!--#if update -->
-<a id="ENT{ oeid }" name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFlbFrame('{ oeid }&idx=mode'); updateFltFrame('{ oeid }&idx=listr');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');">{ entity }</a>
+<a name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFlbFrame('{ oeid }&idx=mode'); updateFltFrame('{ oeid }&idx=listr');changestyle('ENT{ oeid }','BabLoginMenuBackground','BabTopicsButtonBackground');">{ entity }</a>
 <!--#else update -->
-<a id="ENT{ oeid }" name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFltFrame('{ oeid }&idx=listr');javascript:updateFlbFrame('{ oeid }&idx=detr');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');">{ entity }</a>
+<a name="ENT{ oeid }" class="BabForumTopicsNavContribution" href="javascript:updateFltFrame('{ oeid }&idx=listr');javascript:updateFlbFrame('{ oeid }&idx=detr');changestyle('ENT{ oeid }','BabLoginMenuBackground','BabTopicsButtonBackground');">{ entity }</a>
 <!--#endif update -->
 <br>{ description }
-<br><b><a class="BabSiteAdminListLink" href="javascript:flbhref('{ superiorurl }');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');updateFltFrame('{ oeid }&idx=listr');">{ superior }</a></b>
+<br><b><a class="BabSiteAdminListLink" href="javascript:flbhref('{ superiorurl }');changestyle('ENT{ oeid }','BabLoginMenuBackground','BabTopicsButtonBackground');updateFltFrame('{ oeid }&idx=listr');">{ superior }</a></b>
 </TD>
 </TR>
 <TR nowrap>
@@ -217,7 +219,7 @@ location.href = '#ENT{ coeid }';
 <!--#if first "== 1" -->
 <!--#else first -->
 <TD>
-<a class="BabForumTopicsNavContribution" title="{ delete }" href="javascript:updateFlbFrame('{ oeid }&idx=dele');changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ delete }" border="0"></a>
+<a class="BabForumTopicsNavContribution" title="{ delete }" href="javascript:updateFlbFrame('{ oeid }&idx=dele');changestyle('ENT{ oeid }','BabLoginMenuBackground','BabTopicsButtonBackground');"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ delete }" border="0"></a>
 </td>
 <!--#endif first -->
 <!--#endif update -->
@@ -293,7 +295,7 @@ location.href = '#ENT{ coeid }';
 <!--#if current -->
 <script type="text/javascript">
 <!--
-changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');
+changestyle('ENT{ oeid }','BabLoginMenuBackground','BabTopicsButtonBackground');
 //-->
 </script>
 <!--#endif current -->
@@ -380,7 +382,7 @@ location.href = '#ENT{ coeid }';
 <!--#if current -->
 <script type="text/javascript">
 <!--
-changestyle('ENT{ oeid }','BabForumNavigationBackground','BabTopicsButtonBackground');
+changestyle('ENT{ oeid }','BabLoginMenuBackground','BabTopicsButtonBackground');
 //-->
 </script>
 <!--#endif current -->
