@@ -248,19 +248,7 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			$this->langfiltertxt = bab_translate("Language filter");
 			$this->langfiltersite = $GLOBALS['babLangFilter']->getFilterAsInt();
 
-			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
-            while ( $file = readdir($h))
-                { 
-                if ($file != "." && $file != "..")
-                    {
-                    if( eregi("lang-([^.]*)", $file, $regs))
-                        {
-                        if( $file == "lang-".$regs[1].".xml")
-                            $this->arrfiles[] = $regs[1]; 
-                        }
-                    } 
-                }
-            closedir($h);
+			$this->arrfiles = bab_getAvailableLanguages();
             $this->count = count($this->arrfiles);
 
 			if( is_dir("skins/"))

@@ -284,6 +284,25 @@ function bab_time($time)
 	return date($GLOBALS['babTimeFormat'], $time);
 	}
 
+function bab_getAvailableLanguages()
+	{
+	$langs = array();
+	$h = opendir($GLOBALS['babInstallPath']."lang/"); 
+	while ( $file = readdir($h))
+		{ 
+		if ($file != "." && $file != "..")
+			{
+			if( eregi("lang-([^.]*)", $file, $regs))
+				{
+				if( $file == "lang-".$regs[1].".xml")
+					$langs[] = $regs[1]; 
+				}
+			} 
+		}
+	closedir($h);
+	return $langs;
+	}
+
 function bab_printTemplate( &$class, $file, $section="")
 	{
 	global $babInstallPath, $babSkinPath;
