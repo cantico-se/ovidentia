@@ -1583,7 +1583,7 @@ class bab_RecentPosts extends bab_handler
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$this->arrid[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->ctx->curctx->push('PostText', $arr['message']);
+			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
@@ -1931,7 +1931,7 @@ class bab_WaitingPosts extends bab_handler
 			$this->ctx->curctx->push('CIndex', $i);
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->ctx->curctx->push('PostText', $arr['message']);
+			$this->ctx->curctx->push('PostText', bab_replace($arr['message']));
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
@@ -2127,7 +2127,7 @@ class bab_FaqQuestions extends bab_handler
 			$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$this->IdEntries[$i]."'"));
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
@@ -2214,7 +2214,7 @@ class bab_FaqQuestion extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $i);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->ctx->curctx->push('FaqResponse', bab_replace($arr['response']));
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['id']);
