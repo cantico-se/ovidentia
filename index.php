@@ -214,7 +214,7 @@ function printBody()
 	}
 
 if( !isset($tg))
-	$tg = "";
+	$tg = "entry";
 
 switch($tg)
 	{
@@ -434,10 +434,22 @@ switch($tg)
 		include $babInstallPath."$incl.php";
 		exit;
 		break;
-	default:
+	case "entry":
 		$incl = "entry";
 		break;
+	default:
+		$arr = explode("/", $tg);
+		if( sizeof($arr) >= 3 && $arr[0] == "addon")
+			{
+			$incl = "addons/".$GLOBALS['babAddons'][$arr[1]]['bab_folder'];
+			for($i = 2; $i < sizeof($arr); $i++)
+				$incl .= "/".$arr[$i];
+			}
+		else
+			$incl = "entry";
+		break;
 	}
+
 if( !empty($incl))
 	{
 	include $babInstallPath."$incl.php";
