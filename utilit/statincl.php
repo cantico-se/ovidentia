@@ -41,23 +41,26 @@ class bab_WebStatEvent
 
 		if ($_SERVER["REMOTE_ADDR"])
 			{
-			$this->host = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
 			$this->ip = $_SERVER["REMOTE_ADDR"];
 			}
 		else if (getenv("HTTP_X_FORWARDED_FOR"))
 			{
-			$this->host = gethostbyaddr(getenv("HTTP_X_FORWARDED_FOR"));
 			$this->ip = getenv("HTTP_X_FORWARDED_FOR");
 			}
-		else if (getenv("REMOTE_HOST"))
-			{
-			$this->host = getenv("REMOTE_HOST");
-			$this->ip = gethostbyname(getenv("REMOTE_HOST"));
-			}
-		if (!$this->ip)
+		else
 			{
 			$this->ip = "unknown";
 			}
+		
+		if (getenv("REMOTE_HOST"))
+			{
+			$this->host = getenv("REMOTE_HOST");
+			}
+		else
+			{
+			$this->host = "unknown";
+			}
+
 		$this->referer = isset($_SERVER["HTTP_REFERER"])? $_SERVER["HTTP_REFERER"]: '';
 		$this->client = $_SERVER["HTTP_USER_AGENT"];
 		$this->url = $_SERVER["REQUEST_URI"];
