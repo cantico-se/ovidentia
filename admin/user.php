@@ -475,7 +475,7 @@ if( isset($action) && $action == "Yes")
 if( isset($updategroups) && $updategroups == "update")
 	{
 	updateGroups($item, $groups, $groupst);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=Groups&pos=".$pos."&grp=".$grp."&item=".$item);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=user&idx=Groups&pos=".$pos."&grp=".$grp."&item=".$item);
 	exit;
 	}
 
