@@ -231,6 +231,12 @@ function babLoadLanguage($lang, $folder, &$arr)
 					{
 					$arr[2][$arr_tmp[$value]] = $arr_replace[2][$key];
 					}
+				else
+					{
+					$arr[0][] = $arr_replace[0][$key];
+					$arr[1][] = $arr_replace[1][$key];
+					$arr[2][] = $arr_replace[2][$key];
+					}
 				}
 			}
 		}
