@@ -314,38 +314,24 @@ class bab_icalendars
 
 		$res = $babDB->db_query("select cpt.*, ct.id as idcal, ct.owner from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and ct.actif='Y'");
 		while( $arr = $babDB->db_fetch_array($res))
-		{
-			$this->pubcal[$arr['idcal']]['name'] = $arr['name'];
-			$this->pubcal[$arr['idcal']]['description'] = $arr['description'];
-			$this->pubcal[$arr['idcal']]['type'] = BAB_CAL_PUB_TYPE;
-			$this->pubcal[$arr['idcal']]['idowner'] = $arr['owner'];
+			{
+			$bgroup = bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $arr['idcal']);
+			$bview = bab_isAccessValid(BAB_CAL_PUB_VIEW_GROUPS_TBL, $arr['idcal']);
+			$bman = bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $arr['idcal']);
 
-			if( bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $arr['idcal']))
-			{
-				$this->pubcal[$arr['idcal']]['group'] = true;
-			}
-			else
-			{
-				$this->pubcal[$arr['idcal']]['group'] = false;
-			}
+			if ($bgroup || $bview || $bman)
+				{
+				$this->pubcal[$arr['idcal']]['name'] = $arr['name'];
+				$this->pubcal[$arr['idcal']]['description'] = $arr['description'];
+				$this->pubcal[$arr['idcal']]['type'] = BAB_CAL_PUB_TYPE;
+				$this->pubcal[$arr['idcal']]['idowner'] = $arr['owner'];
+				
+				$this->pubcal[$arr['idcal']]['group'] = $bgroup;
+				$this->pubcal[$arr['idcal']]['view'] = $bview;
+				$this->pubcal[$arr['idcal']]['manager'] = $bman;
+				}
 
-			if( bab_isAccessValid(BAB_CAL_PUB_VIEW_GROUPS_TBL, $arr['idcal']))
-			{
-				$this->pubcal[$arr['idcal']]['view'] = true;
 			}
-			else
-			{
-				$this->pubcal[$arr['idcal']]['view'] = false;
-			}
-			if( bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $arr['idcal']))
-			{
-				$this->pubcal[$arr['idcal']]['manager'] = true;
-			}
-			else
-			{
-				$this->pubcal[$arr['idcal']]['manager'] = false;
-			}
-		}
 		if( empty($this->user_calendarids) && count($this->pubcal) > 0)
 			{
 			$keys = array_keys($this->pubcal);
@@ -361,36 +347,23 @@ class bab_icalendars
 		$res = $babDB->db_query("select crt.*, ct.id as idcal, ct.owner from ".BAB_CAL_RESOURCES_TBL." crt left join ".BAB_CALENDAR_TBL." ct on ct.owner=crt.id where ct.type='".BAB_CAL_RES_TYPE."' and ct.actif='Y'");
 		while( $arr = $babDB->db_fetch_array($res))
 		{
-			$this->rescal[$arr['idcal']]['name'] = $arr['name'];
-			$this->rescal[$arr['idcal']]['description'] = $arr['description'];
-			$this->rescal[$arr['idcal']]['type'] = BAB_CAL_RES_TYPE;
-			$this->rescal[$arr['idcal']]['idowner'] = $arr['owner'];
 
-			if( bab_isAccessValid(BAB_CAL_RES_GRP_GROUPS_TBL, $arr['idcal']))
-			{
-				$this->rescal[$arr['idcal']]['group'] = true;
-			}
-			else
-			{
-				$this->rescal[$arr['idcal']]['group'] = false;
-			}
+			$bgroup = bab_isAccessValid(BAB_CAL_RES_GRP_GROUPS_TBL, $arr['idcal']);
+			$bview = bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']);
+			$bman = bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']);
 
-			if( bab_isAccessValid(BAB_CAL_RES_VIEW_GROUPS_TBL, $arr['idcal']))
-			{
-				$this->rescal[$arr['idcal']]['view'] = true;
-			}
-			else
-			{
-				$this->rescal[$arr['idcal']]['view'] = false;
-			}
-			if( bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $arr['idcal']))
-			{
-				$this->rescal[$arr['idcal']]['manager'] = true;
-			}
-			else
-			{
-				$this->rescal[$arr['idcal']]['manager'] = false;
-			}
+			if ($bgroup || $bview || $bman)
+				{
+				$this->rescal[$arr['idcal']]['name'] = $arr['name'];
+				$this->rescal[$arr['idcal']]['description'] = $arr['description'];
+				$this->rescal[$arr['idcal']]['type'] = BAB_CAL_RES_TYPE;
+				$this->rescal[$arr['idcal']]['idowner'] = $arr['owner'];
+
+				$this->rescal[$arr['idcal']]['group'] = $bgroup;
+				$this->rescal[$arr['idcal']]['view'] = $bview;
+				$this->rescal[$arr['idcal']]['manager'] = $bman;
+				}
+
 		}
 		if( empty($this->user_calendarids) && count($this->rescal) > 0)
 			{
