@@ -418,14 +418,17 @@ function vacationGroup($usevacation, $approver, $item)
 
 function confirmDeleteMembers($item, $names)
 {
-	$arr = explode(",", $names);
-	$cnt = count($arr);
-	$db = new db_mysql();
-	for($i = 0; $i < $cnt; $i++)
-		{
-		$req = "delete from users_groups where id_object='".$arr[$i]."' and id_group='".$item."'";	
-		$res = $db->db_query($req);
-		}
+	if( !empty($names)
+	{
+		$arr = explode(",", $names);
+		$cnt = count($arr);
+		$db = new db_mysql();
+		for($i = 0; $i < $cnt; $i++)
+			{
+			$req = "delete from users_groups where id_object='".$arr[$i]."' and id_group='".$item."'";	
+			$res = $db->db_query($req);
+			}
+	}
 }
 
 function confirmDeleteGroup($id)

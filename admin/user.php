@@ -114,6 +114,7 @@ function listGroups($id)
 			$this->name = babTranslate("Groups Names");
 			$this->group = babTranslate("Group");
 			$this->updategroups = babTranslate("Update Groups");
+			$this->groupst = "";
 			$this->id = $id;
 			$this->db = new db_mysql();
 			$req = "select * from users_groups where id_object='$id'";
@@ -137,6 +138,7 @@ function listGroups($id)
 				$this->groupid = $this->arrgroups[id];
 				$this->groupname = $this->arrgroups[name];
 				$this->groupurl = $GLOBALS[babUrl]."index.php?tg=group&idx=Members&item=".$this->arrgroups[id];
+				$this->checked = "";
 				if($this->count1 > 0)
 					{
 					$this->db->db_data_seek($this->res1, 0);
@@ -212,8 +214,10 @@ function updateGroups($id, $groups, $groupst)
 	{
 	$db = new db_mysql();
 
-	$tab = explode(",", $groupst);
-
+	if( !empty($groupst))
+		$tab = explode(",", $groupst);
+	else
+		$tab = array();
 	for( $i = 0; $i < count($tab); $i++)
 	{
 		if( !in_array($tab[$i], $groups))

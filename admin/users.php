@@ -179,7 +179,10 @@ function updateGroup( $grp, $users, $userst)
 {
 	$db = new db_mysql();
 
-	$tab = explode(",", $userst);
+	if( !empty($userst))
+		$tab = explode(",", $userst);
+	else
+		$tab = array();
 
 	for( $i = 0; $i < count($tab); $i++)
 	{
