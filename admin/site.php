@@ -24,6 +24,7 @@
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
 include_once $babInstallPath."utilit/dirincl.php";
+include_once $babInstallPath."utilit/nwdaysincl.php";
 
 $bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber', 'mobile', 'homephone', 'facsimiletelephonenumber', 'title', 'o', 'street', 'l', 'postalcode', 'st', 'homepostaladdress', 'jpegphoto', 'departmentnumber');
 
@@ -172,13 +173,7 @@ function siteModify($id)
 			$this->t_ok = bab_translate("Ok");
 			$this->t_delete = bab_translate("Delete");
 			$this->t_load_date = bab_translate("Load date");
-
-			$this->t_type[101] = bab_translate("Day");
-			$this->t_type[102] = bab_translate("Repeat yearly");
-
-			$this->t_type[0] = bab_translate("Easter");
-			$this->t_type[1] = bab_translate("Rise");
-			$this->t_type[2] = bab_translate("Pentecost");
+			$this->t_type = bab_getNonWorkingDayTypes(true);
 
 			$this->id = $id;
 			$this->langfiltertxt = bab_translate("Language filter");
@@ -303,6 +298,8 @@ function siteModify($id)
 
 
 			$this->workdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['workdays']));
+
+			$this->resnw = $this->db->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id."'");
 
 			}
 		
@@ -500,7 +497,7 @@ function siteModify($id)
 
 		function getnextnonworking_type()
 			{
-			static $i = 0;
+			static $i = 1;
 			if ($i < 100 && isset($this->t_type[$i]))
 				{
 				$this->type = $i;
@@ -510,7 +507,7 @@ function siteModify($id)
 				}
 			else
 				{
-				$i = 0;
+				$i = 1;
 				return false;
 				}
 			}
@@ -518,7 +515,16 @@ function siteModify($id)
 
 		function getnextnonworking()
 			{
-			return false;
+			if ($arr = $this->db->db_fetch_array($this->resnw))
+				{
+				$this->value = $arr['nw_type'];
+				$this->value .= !empty($arr['nw_day']) ? ','.$arr['nw_day'] : '';
+				$this->nw_day = $arr['nw_day'];
+				$this->type = $this->t_type[$arr['nw_type']];
+				return true;
+				}
+			else
+				return false;
 			}
 
 		} // class temp
@@ -1095,11 +1101,30 @@ function siteUpdate_bloc3($item,$datelformat, $datesformat, $timeformat)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
-function siteUpdate_bloc4($item, $workdays)
+function siteUpdate_bloc4($item)
 	{
 	$db = & $GLOBALS['babDB'];
-	$req = "update ".BAB_SITES_TBL." set workdays='".implode(',',$workdays)."' where id='".$item."'";
-	$db->db_query($req);
+
+	if (isset($_POST['workdays']) && count($_POST['workdays']))
+		{
+		$db->db_query("update ".BAB_SITES_TBL." set workdays='".implode(',',$_POST['workdays'])."' where id='".$item."'");
+		}
+
+	if (isset($_POST['nonworking']) && count($_POST['nonworking']))
+		{
+		$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_CONFIG_TBL."  where id_site='".$item."'");
+		foreach($_POST['nonworking'] as $nonworking)
+			{
+			$arr = explode(',',$nonworking);
+			$type = $arr[0];
+			$nw = isset($arr[1]) ? $arr[1] : '';
+			$db->db_query("INSERT INTO ".BAB_SITES_NONWORKING_CONFIG_TBL." (id_site, nw_type, nw_day) VALUES ('".$item."', '".$type."', '".$nw."')");
+			}
+
+		}
+
+	bab_emptyNonWorkingDays($item);
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
 	}
 
@@ -1278,7 +1303,7 @@ switch ($_POST['modify'])
 		break;
 
 	case 'bloc4':
-		siteUpdate_bloc4($_POST['item'], $_POST['workdays']);
+		siteUpdate_bloc4($_POST['item']);
 
 		break;
 

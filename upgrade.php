@@ -4273,6 +4273,39 @@ if( !$res)
 	return $ret;
 	}
 
+
+$res = $db->db_query("CREATE TABLE `".BAB_SITES_NONWORKING_CONFIG_TBL."` (
+					`id` INT UNSIGNED NOT NULL ,
+					`id_site` INT UNSIGNED NOT NULL ,
+					`type_day` SMALLINT UNSIGNED NOT NULL ,
+					`nw_day` VARCHAR( 64 ) NOT NULL ,
+					PRIMARY KEY ( `id` ) ,
+					INDEX ( `id_site` , `type_day` )
+					)");
+
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_SITES_NONWORKING_CONFIG_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+
+$res = $db->db_query("CREATE TABLE `".BAB_SITES_NONWORKING_DAYS_TBL."` (
+					`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+					`id_site` INT UNSIGNED NOT NULL ,
+					`nw_day` DATE NOT NULL ,
+					`nw_type` VARCHAR( 64 ) NOT NULL ,
+					PRIMARY KEY ( `id` ) ,
+					INDEX ( `id_site` )
+					)");
+
+
+if( !$res)
+	{
+	$ret = "Creation of <b>".BAB_SITES_NONWORKING_DAYS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 

@@ -773,7 +773,9 @@ function selectAll()
 function nonworking_add_day()
 	{
 	var f = document.forms['formsite_bloc4'];
-	if (f.nonworking_day_to_add.value == '')
+
+	var type = parseInt(f.nonworking_day_type.value);
+	if (type > 100 && f.nonworking_day_to_add.value == '')
 		return;
 
 	var date = f.nonworking_day_to_add.value;
@@ -782,7 +784,7 @@ function nonworking_add_day()
 	var l = getDateList();
 	var srclen = l.options.length;
 
-	var type = parseInt(f.nonworking_day_type.value);
+	
 	
 	switch (type)
 		{
@@ -856,7 +858,7 @@ document.onkeypress = function(ev) {
 				<h5>{ t_nonworking }</h5>
 				<select name="nonworking[]" multiple="multiple" size="4" style="width:100%">
 				<!--#in getnextnonworking -->
-					<option value="">{ t_type }<!--#if date --> : { date }<!--#endif date --></option>
+					<option value="{ value }">{ type }<!--#if nw_day --> : { nw_day }<!--#endif nw_day --></option>
 				<!--#endin getnextnonworking -->
 				</select>
 				<div align="right">

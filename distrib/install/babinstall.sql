@@ -2418,3 +2418,22 @@ CREATE TABLE bab_forumsfiles_groups (
   KEY id_object (id_object),
   KEY id_group (id_group)
 );
+
+
+CREATE TABLE `bab_sites_nonworking_config` (
+`id` INT UNSIGNED NOT NULL ,
+`id_site` INT UNSIGNED NOT NULL ,
+`nw_type` SMALLINT UNSIGNED NOT NULL ,
+`nw_day` VARCHAR( 64 ) NOT NULL ,
+PRIMARY KEY ( `id` ) ,
+INDEX ( `id_site` , `type_day` )
+);
+
+CREATE TABLE `bab_sites_nonworking_days` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+`id_site` INT UNSIGNED NOT NULL ,
+`nw_day` DATE NOT NULL ,
+`nw_type` VARCHAR( 64 ) NOT NULL ,
+PRIMARY KEY ( `id` ) ,
+INDEX ( `id_site` )
+);
