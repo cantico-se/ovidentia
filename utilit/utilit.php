@@ -512,14 +512,17 @@ function babUserSection()
 	$res = $db->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y'");
 	while( $row = $db->db_fetch_array($res))
 		{
-		$addonpath = $GLOBALS['babAddonsPath'].$row['folder'];
-		if( is_dir($addonpath))
+		if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $row['id']))
 			{
-			$arr = bab_getAddonsMenus($row, 'usload');
-			reset ($arr);
-			while (list ($txt, $url) = each ($arr))
+			$addonpath = $GLOBALS['babAddonsPath'].$row['folder'];
+			if( is_dir($addonpath))
 				{
-				$this->addon_urls[$txt] = $url;
+				$arr = bab_getAddonsMenus($row, 'usload');
+				reset ($arr);
+				while (list ($txt, $url) = each ($arr))
+					{
+					$this->addon_urls[$txt] = $url;
+					}
 				}
 			}
 		}
@@ -1025,16 +1028,19 @@ function loadSections()
 					}
 				break;
 			case "4": // BAB_ADDONS_TBL sections
-				$r = $db->db_fetch_array($db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$arr['id_section']."'"));
-				if( $r['enabled'] == "Y" && $r['section'] == "Y")
+				if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id_section']))
 					{
-					require_once( $GLOBALS['babAddonsPath'].$r['folder']."/".$r['initfile'] );
-					if( !empty($r['sload']) && function_exists($r['sload']))
+					$r = $db->db_fetch_array($db->db_query("select * from ".BAB_ADDONS_TBL." where id='".$arr['id_section']."'"));
+					if( $r['enabled'] == "Y" && $r['section'] == "Y")
 						{
-						if( $r['sload']($stitle, $scontent))
+						require_once( $GLOBALS['babAddonsPath'].$r['folder']."/".$r['initfile'] );
+						if( !empty($r['sload']) && function_exists($r['sload']))
 							{
-							$add = true;
-							$sec = new babSection($stitle, $scontent);
+							if( $r['sload']($stitle, $scontent))
+								{
+								$add = true;
+								$sec = new babSection($stitle, $scontent);
+								}
 							}
 						}
 					}

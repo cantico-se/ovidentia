@@ -140,13 +140,15 @@ document.forms.listform.submit();
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ name } </td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle">{ description } </td>
+<td class="BabSiteAdminTitleFontBackground" valign="middle">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="1%" align="center">{ disabled }</td>
 </tr>
 
 <!--#in getnext --> 
 <tr> 
-<td valign="top"><a class="BabSiteAdminListLink" href="{ url }">{ arr[name] }</a></td>
+<td valign="top"><a class="BabSiteAdminListLink" href="{ url }">{ arr[title] }</a></td>
 <td class="BabSiteAdminFontBackground" valign="top">{ arr[description] }</td>
+<td valign="top"><a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a></td>
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="addons[]" { catchecked } value="{ arr[id] }">
 </td>

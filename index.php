@@ -447,18 +447,23 @@ switch($tg)
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")
 			{
 			$db = $GLOBALS['babDB'];
-			$res = $db->db_query("select id, folder from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
-			if( $res && $db->db_num_rows($res) > 0)
+			if(bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr[1]))
 				{
-				$row = $db->db_fetch_array($res);
-				$incl = "addons/".$row['folder'];
-				for($i = 2; $i < sizeof($arr); $i++)
-					$incl .= "/".$arr[$i];
-				$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
-				$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
-				$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['folder']."/";
-				$GLOBALS['babAddonHtmlPath'] = "addons/".$row['folder']."/";
+				$res = $db->db_query("select id, folder from ".BAB_ADDONS_TBL." where id='".$arr[1]."' and enabled='Y'");
+				if( $res && $db->db_num_rows($res) > 0)
+					{
+					$row = $db->db_fetch_array($res);
+					$incl = "addons/".$row['folder'];
+					for($i = 2; $i < sizeof($arr); $i++)
+						$incl .= "/".$arr[$i];
+					$GLOBALS['babAddonTarget'] = "addon/".$row['id'];
+					$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$row['id']."/";
+					$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$row['folder']."/";
+					$GLOBALS['babAddonHtmlPath'] = "addons/".$row['folder']."/";
+					}
 				}
+			else
+				$babBody->msgerror = bab_translate("Access denied");
 			}
 		break;
 	}

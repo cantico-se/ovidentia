@@ -4,6 +4,8 @@
  ************************************************************************
  * Copyright (c) 2001, CANTICO ( http://www.cantico.fr )                *
  ***********************************************************************/
+include $babInstallPath."admin/acl.php";
+
 function getAddonName($id)
 	{
 	$db = $GLOBALS['babDB'];
@@ -118,6 +120,8 @@ function addonsList()
 		var $topcount;
 		var $topcounturl;
 		var $topics;
+		var $view;
+		var $viewurl;
 
 		function temp()
 			{
@@ -127,6 +131,7 @@ function addonsList()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
+			$this->view = bab_translate("View");
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ADDONS_TBL."";
 			$this->res = $this->db->db_query($req);
@@ -140,6 +145,7 @@ function addonsList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=addons&idx=mod&item=".$this->arr['id'];
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$this->arr['id'];
 				if( $this->arr['enabled'] == "N")
 					$this->catchecked = "checked";
 				else
@@ -335,6 +341,11 @@ if( isset($update))
 		disableAddons($addons);
 	}
 
+if( isset($acladd))
+	{
+	aclUpdate($table, $item, $groups, $what);
+	}
+
 if( isset($action) && $action == "Yes")
 	{
 	if($idx == "del")
@@ -360,6 +371,15 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 		$babBody->addItemMenu("create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=addons&idx=create");
 		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=addons&idx=mod&item=".$item);
+		$babBody->addItemMenu("view", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$item);
+		break;
+	case "view":
+		$babBody->title = bab_translate("Access to Add-on")." :".getAddonName($item);
+		aclGroups("addons", "mod", BAB_ADDONS_GROUPS_TBL, $item, "acladd");
+		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		$babBody->addItemMenu("create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=addons&idx=create");
+		$babBody->addItemMenu("mod", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=addons&idx=mod&item=".$item);
+		$babBody->addItemMenu("view", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$item);
 		break;
 
 	case "create":
