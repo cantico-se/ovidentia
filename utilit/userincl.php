@@ -1219,15 +1219,21 @@ function bab_replace_ref( &$txt, $remove = '')
 							$id_object = $param[0];
 							$title_object = isset($param[1]) ? $param[1] : '';
 							$popup = isset($param[2]) ? $param[2] : false;
+							$connect = isset($param[3]) ? $param[3] : false;
 							$res = $db->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$id_object."'");
 							if( $res && $db->db_num_rows($res) > 0)
 								{
 								$arr = $db->db_fetch_array($res);
+								$title_object = empty($title_object) ? $arr['title'] : $title_object;
 								if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])))
 									{
-									$title_object = empty($title_object) ? $arr['title'] : $title_object;
 									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 									}
+								elseif (!$GLOBALS['BAB_SESS_LOGGED'] && $connect)
+									{
+									$title_object = bab_replace_make_link($GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic']),$title_object);
+									}
+
 								}
 							bab_replace_var($txt,$var,$title_object);
 							break;
