@@ -34,7 +34,6 @@ function listUsers($pos)
 
 		function temp($pos)
 			{
-			global $babMaxRows;
 			$this->fullname = babTranslate("Full Name");
 			$this->email = babTranslate("Email");
 			$this->allname = babTranslate("All");
