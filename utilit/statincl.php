@@ -73,7 +73,7 @@ class bab_WebStatEvent
 	function logEvent()
 	{
 		global $babBody, $babDB, $BAB_SESS_USERID;
-		$babDB->db_query("insert into ".BAB_STATS_EVENTS_TBL." (evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser) values (now(), '".$this->tg."', '0', '".$this->referer."', '".$this->ip."', '".$this->host."', '".$this->client."', '".$this->url."', '".session_id()."', '0')");
+		$babDB->db_query("insert into ".BAB_STATS_EVENTS_TBL." (evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser) values (now(), '".addslashes($this->tg)."', '0', '".addslashes($this->referer)."', '".$this->ip."', '".addslashes($this->host)."', '".addslashes($this->client)."', '".addslashes($this->url)."', '".session_id()."', '0')");
 		$this->idevt = $babDB->db_insert_id();
 	}
 
