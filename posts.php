@@ -955,6 +955,7 @@ switch($idx)
 		break;
 
 	case "Confirm":
+		confirm($forum, $thread, $post);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&idx=List&forum=".$forum);
 		exit;
 		break;
