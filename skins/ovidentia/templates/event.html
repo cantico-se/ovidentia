@@ -316,6 +316,9 @@ else
 	<tr id="event_owner">
 		<td align="right">{ t_event_owner }</td>
 		<td>
+			<!--#if arr[event_owner] -->
+			<input type="hidden" name="event_owner_post" value="{ arr[event_owner] }" />
+			<!--#endif arr[event_owner] -->
 			<select name="event_owner">
 				<option value=""></option>
 			</select>
@@ -742,10 +745,18 @@ function cal_movecalendar(action,text,value,classname)
 	{
 	var tr = document.getElementById('event_owner');
 	var sel = document.forms['vacform'].event_owner;
+	if (document.forms['vacform'].event_owner_post)
+		{
+		var post = document.forms['vacform'].event_owner_post;
+		}
 
 	if (action == 0 && classname == 'usr')
 		{
 		sel.options[sel.options.length] = new Option(text, value);
+		if (post && post.value != '' && value == post.value)
+			{
+			sel.selectedIndex = sel.options.length - 1;
+			}
 		}
 	else if (action == 1)
 		{
