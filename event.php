@@ -47,14 +47,13 @@ class bab_event
 	function bab_event()
 
 		{
-		$this->db = &$GLOBALS['babDB'];
+		$this->db = & $GLOBALS['babDB'];
 
-		$this->curday = !empty($_REQUEST['curday']) ? $_REQUEST['curday'] : date('d');
-		$this->curmonth = !empty($_REQUEST['curmonth']) ? $_REQUEST['curmonth'] : date('m');
-		$this->curyear = !empty($_REQUEST['curyear']) ? $_REQUEST['curyear'] : date('Y');
+		list($this->curyear,$this->curmonth,$this->curday) = !empty($_REQUEST['date']) ? explode(',',$_REQUEST['date']) : array(date('Y'),date('m'),date('d'));
+
 		$this->curview = !empty($_REQUEST['curview']) ? $_REQUEST['curview'] : 'viewm';
 
-		$this->calid = &$_REQUEST['calid'];
+		$this->calid = & $_REQUEST['calid'];
 
 		$this->datebegintxt = bab_translate("Begin date");
 		$this->dateendtxt = bab_translate("Until date");
@@ -704,201 +703,125 @@ function eventUnload()
 	echo bab_printTemplate($temp,"event.html", "eventunload");
 	}
 
-function insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, $md5)
+function insertEvent($tabcals, $title, $description, $startdate,  $enddate, $catid, $color, $md5)
 	{
 	$db = $GLOBALS['babDB'];
-	for( $k=0; $k < count($tabcals); $k++)
-		{
-		$arr = $db->db_fetch_array($db->db_query("select * from ".BAB_CALENDAR_TBL." where id='".$tabcals[$k]."'"));
-		$rr = $db->db_fetch_array($db->db_query("select * from ".BAB_CATEGORIESCAL_TBL." where id='".$catid."'"));
-		switch ($arr['type'])
-			{
-			case 1:
-				if( $arr['owner'] == $GLOBALS['BAB_SESS_USERID'])
-					$creator = 0;
-				else
-					$creator = $GLOBALS['BAB_SESS_USERID'];
-				if( $rr['id_group'] != 1 )
-					{
-					$res = $db->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$arr['owner']."' and id_group='".$rr['id_group']."'");
-					if( !$res || $db->db_num_rows($res) != 1)
-						$catid = 0;
-					}
 
-				break;
-			case 2:
-				$creator = 0;
-				if( $rr['id_group'] != 1 )
-					{
-					$res = $db->db_query("select * from ".BAB_CATEGORIESCAL_TBL." where id_group='".$arr['owner']."' and id='".$catid."'");
-					if( !$res || $db->db_num_rows($res) != 1)
-						$catid = 0;
-					}
-				break;
-			case 3:
-			default:
-				$creator = $GLOBALS['BAB_SESS_USERID'];
-				if( $rr['id_group'] != 1 )
-					{
-					$catid = 0;
-					}
-				break;
-			}
-		$req = "insert into ".BAB_CAL_EVENTS_TBL." ( id_cal, title, description, start_date, start_time, end_date, end_time, id_cat, id_creator, hash) values ";
-		$req .= "('".$tabcals[$k]."', '".$title."', '".$description."', '".$startdate."', '".$starttime."', '".$enddate."', '".$endtime."', '".$catid."', '".$creator."', '".$md5."')";
-		$db->db_query($req);
+	list($categorycolor) = $db->db_fetch_array($db->db_query("select bgcolor from ".BAB_CAL_CATEGORIES_TBL." where id='".$catid."'"));
+
+	if (!empty($categorycolor))
+		$color = $categorycolor;
+	elseif (strlen($color) != 6)
+		$color = 'FFFFFF';
+
+	$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, description, start_date, end_date, id_cat, id_creator, color, hash) values ('".$title."', '".$description."', '".date('Y-m-d H:i:s',$startdate)."', '".date('Y-m-d H:i:s',$enddate)."', '".$catid."', '".$GLOBALS['BAB_SESS_USERID']."', '".$color."', '".$md5."')";
+	
+	$db->db_query($req);
+
+	$id_event = $db->db_insert_id();
+
+	foreach($tabcals as $id_cal)
+		{
+		$db->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal) VALUES ('".$id_event."','".$id_cal."')");
 		}
 	}
 
-function addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $description, $category, $usrcals, $grpcals, $rescals)
+
+function post_string($key)
 {
+if( !bab_isMagicQuotesGpcOn())
+	return mysql_escape_string($_POST[$key]);
+else
+	return $_POST[$key];
+}
+
+function addEvent()
+	{
 	global $babBody;
 	
-	if( empty($title))
+	if( empty($_POST['title']))
 		{
 		$babBody->msgerror = bab_translate("You must provide a title")." !!";
 		return false;
 		}
 
-	if( count($usrcals) == 0 && count($grpcals) == 0 && count($rescals) == 0 )
+	if( !isset($_POST['selected_calendars']) || count($_POST['selected_calendars']) == 0 )
 		{
 		$babBody->msgerror = bab_translate("You must select at least one calendar type")." !!";
 		return false;
 		}
 
-	if( !bab_isMagicQuotesGpcOn())
-		{
-		$description = addslashes($description);
-		$title = addslashes($title);
-		}
+	$description = post_string('evtdesc');
+	$title = post_string('title');
 		
-	if( empty($category))
-		$catid = 0;
-	else
-		$catid = $category;
+	$category = empty($_POST['category']) ? '0' : $_POST['category'];
 
-	$tabcals = array_merge($usrcals, $grpcals, $rescals);
-	if( $repeat == "y")
-	{
-		$begin = mktime( 0,0,0,$monthbegin, $daybegin, $yearbegin );
-		$end = mktime( 0,0,0,$monthend, $dayend, $yearend );
+	$yearbegin = $_POST['yearbegin'];
+	$monthbegin = $_POST['monthbegin'];
+	$daybegin = $_POST['daybegin'];
+	$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : '00:00';
+	$yearend = $_POST['yearend'];
+	$monthend = $_POST['monthend'];
+	$dayend = $_POST['dayend'];
+	$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : '23:59';
 
-		if( $begin > $end || ( $daytype != "y" && $timebegin > $timeend))
-			{
-			$babBody->msgerror = bab_translate("End date must be older")." !!";
-			return false;
-			}
+
+	$tb = explode(':',$timebegin);
+	$te = explode(':',$timeend);
+
+	$begin = mktime( $tb[0],$tb[1],0,$monthbegin, $daybegin, $yearbegin );
+	$end = mktime( $te[0],$te[1],0,$monthend, $dayend, $yearend );
+
+	if( $begin > $end)
+		{
+		$babBody->msgerror = bab_translate("End date must be older")." !";
+		return false;
+		}
+
+
+
+	
+	if( $_POST['repeat'] == "y")
+		{
 
 		for( $i = 0; $i < 7; $i++)
 			{
 			$tab[$i] = 0;
 			}
 
-		if( count($days) > 0 )
+		for( $i = 0; $i < count($days); $i++)
 			{
-			for( $i = 0; $i < count($days); $i++)
-				{
-				$tab[$days[$i]] = 1;
-				}
-/*
-			for( $i = 6; $i >= 0; $i--)
-				{
-				if($i > 0 && $tab[$i] != 0 && $tab[$i-1] != 0)
-					{
-					$tab[$i-1] = $tab[$i-1] + $tab[$i];
-					$tab[$i] = 0;
-					}
-				}
-*/
-			$md5 = "R_".md5(uniqid(rand(),1));
-			for( $i=0; $i < 7; $i++)
-				{
-				if( $tab[$i] != 0 )
-					{
-					$delta = $i - Date("w", $begin);
-					if( $delta < 0)
-						$delta = 7 - Abs($delta);
-
-
-					$nextday = $daybegin + $delta;
-					$nextmont = $monthbegin;
-					$nextyear = $yearbegin;
-					while( $end > mktime( 0,0,0, $nextmont, $nextday+$tab[$i]-1, $nextyear ))
-						{
-						if( $daytype == "y")
-							{
-							$mktime = mktime( 0,0,0, $nextmont, $nextday, $nextyear );
-							$startdate = sprintf("%04d-%02d-%02d", Date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-							$starttime = "00:00:00";
-							$mktime = mktime( 0,0,0, $nextmont, $nextday+$tab[$i]-1, $nextyear );
-							$enddate = sprintf("%04d-%02d-%02d", Date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-							$endtime = "23:59:59";
-							}
-						else
-							{
-							$mktime = mktime( 0,0,0, $nextmont, $nextday, $nextyear );
-							$startdate = sprintf("%04d-%02d-%02d", Date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-							$starttime = sprintf("%s:00", $timebegin);
-							$mktime = mktime( 0,0,0, $nextmont, $nextday+$tab[$i]-1, $nextyear );
-							$enddate = sprintf("%04d-%02d-%02d", Date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
-							$endtime = sprintf("%s:00", $timeend);
-							}
-						insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, $md5);
-						$nextday += 7;
-						}
-					}
-				}
-
-			}
-		else
-			{
-			if( $daytype == "y")
-				{
-				$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
-				$starttime = "00:00:00";
-				$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
-				$endtime = "23:59:59";
-				}
-			else
-				{
-				$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
-				$starttime = sprintf("%s:00", $timebegin);
-				$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
-				$endtime = sprintf("%s:00", $timeend);
-				}
-			insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, "");
+			$tab[$days[$i]] = 1;
 			}
 
-	}
-	else
-	{
-	$begin = mktime( 0,0,0,$monthbegin, $daybegin, $yearbegin );
-	$end = mktime( 0,0,0,$monthend, $dayend, $yearend );
+		$md5 = "R_".md5(uniqid(rand(),1));
+		for( $i=0; $i < 7; $i++)
+			{
+			if( $tab[$i] != 0 )
+				{
+				$delta = $i - Date("w", $begin);
+				if( $delta < 0)
+					$delta = 7 - Abs($delta);
 
-	if( $begin > $end || ( $daytype != "y" && $begin == $end && $timebegin > $timeend))
-		{
-		$babBody->msgerror = bab_translate("End date must be older")." !!";
-		return false;
-		}
 
-	if( $daytype == "y")
-		{
-		$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
-		$starttime = "00:00:00";
-		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
-		$endtime = "23:59:59";
+				$nextday = $daybegin + $delta;
+				$nextmont = $monthbegin;
+				$nextyear = $yearbegin;
+				while( $end > mktime( 0,0,0, $nextmont, $nextday+$tab[$i]-1, $nextyear ))
+					{
+					die('répétition a faire');
+					insertEvent($_POST['selected_calendars'], $title, $description, $startdate, $enddate, $category, $_POST['color'], $md5);
+					$nextday += 7;
+					}
+				}
+			}
 		}
 	else
 		{
-		$startdate = sprintf("%04d-%02d-%02d", $yearbegin, $monthbegin, $daybegin);
-		$starttime = sprintf("%s:00", $timebegin);
-		$enddate = sprintf("%04d-%02d-%02d", $yearend, $monthend, $dayend);
-		$endtime = sprintf("%s:00", $timeend);
+		insertEvent($_POST['selected_calendars'], $title, $description, $begin, $end, $category, $_POST['color'], "");
 		}
-	insertEvent($tabcals, $title, $description, $startdate, $starttime, $enddate, $endtime, $catid, "");
-	}
 	return true;	
-}
+	}
 
 function updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $category, $bupdrec)
 {
@@ -1052,7 +975,7 @@ class calendarchoice
 		$this->db = $GLOBALS['babDB'];
 		$icalendars = &$GLOBALS['babBody']->icalendars;
 		$icalendars->initializeCalendars();
-		$this->selectedCalendars = is_array($icalendars->user_calendarids) ? $icalendars->user_calendarids : array();
+		$this->selectedCalendars = isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array();
 
 		$this->usrcalendarstxt = bab_translate('Users');
 		$this->grpcalendarstxt = bab_translate('Collectifs');
@@ -1069,14 +992,16 @@ class calendarchoice
 			$this->personal = $icalendars->id_percal;
 			$this->selected = in_array($icalendars->id_percal, $this->selectedCalendars) ? 'selected' : '';
 			}
-
 		}
 
 	function getnextusrcal()
 		{
-		$out = list($this->id, list($this->name)) = each($this->resuser);
+		$out = list($this->id, $name) = each($this->resuser);
 		if ($out)
+			{
+			$this->name = isset($name['name']) ? $name['name'] : '';
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
+			}
 		return $out;
 		}
 
@@ -1139,8 +1064,9 @@ function calendarquerystring()
 
 /* main */
 
-if( !isset($idx))
-	$idx = "newevent";
+
+$idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : "newevent";
+
 
 record_calendarchoice();
 
@@ -1148,64 +1074,39 @@ $calid = bab_isCalendarAccessValid($calid);
 if( !$calid )
 	{
 	$babBody->title = bab_translate("Access denied");
-	$idx = "";
+	exit;
 	}
-else
-	{
 
-	if( isset($action) && $action == "Yes")
+if (isset($_POST['action']))
+	switch($_POST['action'])
 		{
-		confirmDeleteEvent($calid, $evtid, $bupdrec);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view.calendarquerystring());
-		}
-
-	if( isset($update) && $update == "desc")
-		{
-		updateDescription($calid, $evtid, $content, $bupdrec);
-		$idx = "unload";
-		}
-
-	if( isset($modifyevent) && $modifyevent == "modify")
-		{
-		if( isset($Submit))
-			{
-			if( !isset($bupdrec)) { $bupdrec = '';}
-			updateEvent($calid, $daybegin, $monthbegin, $yearbegin, $evtid, $timebegin, $timeend, $dayend, $monthend, $yearend, $title, $category, $bupdrec);
+		case 'yes':
+			confirmDeleteEvent($calid, $evtid, $bupdrec);
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view.calendarquerystring());
-			}
-		else if( isset($evtdel))
-			{
-			$month = $curmonth;
-			$day = $curday;
-			$year = $curyear;
-			$idx = "delete";
-			}
+			break;
+
+		case 'desc':
+			updateDescription($calid, $evtid, $content, $bupdrec);
+			$idx = "unload";
+			break;
+
+		case 'addevent':
+			if (addEvent())
+				$idx = "unload";
+			break;
+
+		case 'modifyevent':
+			if (updateEvent())
+				$idx = "unload";
+			break;
+
+		case 'delevent':
+			deleteEvent($calid, $evtid, $curday, $curmonth, $curyear, $view, $bupdrec);
+			break;
 		}
 
-	if( isset($addevent) && $addevent == "add")
-		{
-		if( !isset($usrcals)){$usrcals = array();}
-		if( !isset($grpcals)){$grpcals = array();}
-		if( !isset($rescals)){$rescals = array();}
-		if( !isset($days)){$days = array();}
-		if( !isset($daytype)) {$daytype = '';}
-		if( !isset($repeat)) {$repeat = '';}
-		if( !isset($category)) {$category = '';}
-		if( !addEvent($calid, $daybegin, $monthbegin, $yearbegin, $daytype, $timebegin, $timeend, $repeat, $days, $dayend, $monthend, $yearend, $title, $evtdesc, $category, $usrcals, $grpcals, $rescals))
-			{
-			$day = $daybegin;
-			$month = $monthbegin;
-			$year = $yearbegin;
-			$view = $view;
-			$st = $timebegin;
-			$idx = "newevent";
-			$mcals = implode(",", array_merge($usrcals, $grpcals, $rescals));
-			}
-		else
-			Header("Location: ". $GLOBALS['babUrlScript']."?tg=calendar&idx=".$view.calendarquerystring());
-		}
 
-	}
+
 
 switch($idx)
 	{
@@ -1219,20 +1120,6 @@ switch($idx)
 		exit;
 		break;
 
-	case "delete":
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Delete calendar event");
-		if(!isset($bupdrec)) { $bupdrec = '';}
-		deleteEvent($calid, $evtid, $curday, $curmonth, $curyear, $view, $bupdrec);
-		
-		printBabBodyPopup();
-		exit;
-
-
-
-
-
-		break;
 
 	case "modify":
 		$bmodif = isUpdateEvent($calid, $evtid);
@@ -1254,12 +1141,8 @@ switch($idx)
 		$babBodyPopup = new babBodyPopup();
 
 		newEvent();
-
 		printBabBodyPopup();
 		exit;
-
-
-
 
 		break;
 

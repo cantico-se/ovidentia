@@ -9,7 +9,7 @@
 <input type="hidden" name="curyear" value="{ curyear }" />
 <input type="hidden" name="view" value="{ curview }" />
 <input type="hidden" name="calid" value="{ calid }" />
-<input type="hidden" name="addevent" value="add" />
+<input type="hidden" name="action" value="addevent" />
 <table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
@@ -156,19 +156,19 @@
 		<input type="text" name="title" size="45" maxlength="100" value="{ titleval }">
 		</td>
 	</tr>
-	<!--#if catarr -->
+	<!--#if rescat -->
 	<tr> 
 		<td align="right">{ category }:</td>
 		<td> 
 			<select name="category">
 			<option value="" selected ></option>
 			<!--#in getnextcat -->
-			<option value="{ catid }">{ catname }</option>
+			<option value="{ cat[id] }">{ cat[name] }</option>
 			<!--#endin getnextcat -->
 			</select>
 		</td>
 	</tr>
-	<!--#endif catarr -->
+	<!--#endif rescat -->
 	<tr> 
 		<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
 		<td> 
@@ -747,12 +747,8 @@ savef(document.descmod.headtext);
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>{ sitename }</TITLE>
-<META http-equiv="Pragma" content="no-cache">
-<META name="Generator" content="Bab">
-<META name="Author" content="">
-<META name="Keywords" content="">
-<META name="Description" content="">
+<TITLE>{ babSiteName }</TITLE>
+{ babMeta }
 { babCss }
 <script type="text/javascript">
 <!--
@@ -778,7 +774,9 @@ window.focus();
 <br>
 
 <script type="text/javascript">
-	setTimeout("this.close()","1000");
+<!--
+	//setTimeout("this.close()","1000");
+-->
 </script>
 
 </BODY>

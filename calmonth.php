@@ -36,6 +36,8 @@ class cal_monthCls  extends cal_wmdbaseCls
 
 		$this->w = 0;
 
+		$this->allow_insert = count($babBody->icalendars->usercal) > 0 || count($babBody->icalendars->pubcal) > 0 || count($babBody->icalendars->rescal) > 0;
+
 		$workdays = explode(',', $babBody->icalendars->workdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
@@ -123,7 +125,7 @@ class cal_monthCls  extends cal_wmdbaseCls
 				}
 			$this->daynumbername = $dday;
 			$this->daynumberurl = $this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday;
-			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&day=".$dday."&month=".date("n", $mktime). "&year=".date("Y", $mktime)."&calid=".$this->idcals."&view=viewm";
+			$this->neweventurl = $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewm";
 			$d++;
 			return true;
 			}
