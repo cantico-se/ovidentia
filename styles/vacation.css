@@ -46,7 +46,7 @@
 	}
 
 #vacationcalendar.popup {
-	font-size:11px;
+	font-size:14px;
 	}
 
 #vacationcalendar .calendar {
@@ -149,6 +149,11 @@ th.user {
 #vacationcalendar li,
 #vacationcalendar caption {
 	font-size:1.2em;
+	}
+
+#vacationcalendar caption {
+	color:#000;
+	text-align:center;
 	}
 
 #vacationcalendar ul span {

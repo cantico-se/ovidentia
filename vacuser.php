@@ -221,6 +221,7 @@ function period($id_user, $id = 0)
 			$this->t_total = bab_translate("Total");
 			$this->t_avariable_days = bab_translate("Avariable days");
 			$this->t_waiting_days = bab_translate("Waiting days");
+			$this->t_period_nbdays = bab_translate("Period days");
 
 			$this->totalval = 0;
 			$this->maxallowed = 0;

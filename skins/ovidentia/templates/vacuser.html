@@ -571,6 +571,11 @@ function setPeriod(obj)
 		var setbegin = true;
 		begindate = obj.id;
 		}
+	else
+		if(begindate > obj.id)
+			{
+			begindate = obj.id;
+			}
 
 	var arr1 = begindate.split('-');
 	var arr2 = obj.id.split('-');
@@ -599,15 +604,8 @@ function setPeriod(obj)
 		begindate = obj.id;
 
 	document.forms['vacform'].period_nbdays.value = nbd;
+	window.status = '{ t_period_nbdays } : '+nbd;
 	}
-
-function addevent(td, evname, func) {
-	if (document.all) {
-		td.attachEvent("on" + evname, func);
-	} else {
-		td.addEventListener(evname, func, true);
-	}
-};
 
 
 
@@ -637,19 +635,19 @@ function updateDates(elemDay, elemMonth, elemYear)
 function dateBegin(day, month, year)
 {
 	var f = document.forms['vacform'];
-	f.elements['daybegin'].options[day-1].selected = true;
 	f.elements['monthbegin'].options[month-1].selected = true;
 	f.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
 	updateDates(f.elements['daybegin'], f.elements['monthbegin'], f.elements['yearbegin']);
+	f.elements['daybegin'].options[day-1].selected = true;
 }
 
 function dateEnd(day, month, year)
 {
 	var f = document.forms['vacform'];
-	f.elements['dayend'].options[day-1].selected = true;
 	f.elements['monthend'].options[month-1].selected = true;
 	f.elements['yearend'].options[year-{ yearend }].selected = true;
 	updateDates(f.elements['dayend'], f.elements['monthend'], f.elements['yearend']);
+	f.elements['dayend'].options[day-1].selected = true;
 
 }
 
