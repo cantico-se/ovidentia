@@ -1282,7 +1282,7 @@ function bab_replace_ref( &$txt, $remove = '')
 						case 'FOLDER':
 							$id_object = $param[0];
 							$path_object = isset($param[1]) ? $param[1] : '';
-							$title_object = '';
+							$title_object = isset($param[2]) ? $param[2] : '';
 							include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 							$res = $db->db_query("select id,name from ".BAB_FM_FOLDERS_TBL." where id='".$id_object."' and active='Y'");
 							if( $res && $db->db_num_rows($res) > 0)
