@@ -45,6 +45,11 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 		var $notiftxt;
 		var $yes;
 		var $no;
+		var $langLabel;
+		var $langValue;
+		var $langselected;
+		var $langFiles;
+		var $countLangFiles;		
 
 		function temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif)
 			{
@@ -60,6 +65,9 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			$this->add = bab_translate("Add");
 			$this->none = bab_translate("None");
 			$this->tgval = "topics";
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->item = "";
 			$this->cat = $cat;
 			if(empty($description))
@@ -125,6 +133,7 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 			else
 				$this->sacount = $this->db->db_num_rows($this->sares);
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
+
 			}
 
 		function getnextcat()
@@ -170,6 +179,27 @@ function addCategory($cat, $ncat, $category, $description, $managerid, $saart, $
 				return false;
 				}
 			}
+			
+		function getnextlang()
+			{
+			static $i = 0;
+			if($i < $this->countLangFiles)
+				{
+				$this->langValue = $this->langFiles[$i];
+				if($this->langValue == $GLOBALS['babLanguage'])
+					{
+					$this->langselected = 'selected';
+					}
+				else
+					{
+					$this->langselected = '';
+					}
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
 		}
 
 	$temp = new temp($cat, $ncat, $category, $description, $managerid, $saart, $sacom, $bnotif);
@@ -310,7 +340,7 @@ function orderCategories($cat, $adminid, $catname)
 	return $temp->count;
 	}
 
-function saveCategory($category, $description, $cat, $sacom, $saart, $managerid, $bnotif)
+function saveCategory($category, $description, $cat, $sacom, $saart, $managerid, $bnotif, $lang)
 	{
 	global $babBody;
 	if( empty($category))
@@ -343,7 +373,7 @@ function saveCategory($category, $description, $cat, $sacom, $saart, $managerid,
 
 	$arr = $db->db_fetch_array($db->db_query("select max(ordering) from ".BAB_TOPICS_TBL." where id_cat='".$cat."'"));
 
-	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering, notify) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "', '" . $bnotify. "')";
+	$query = "insert into ".BAB_TOPICS_TBL." (id_approver, category, description, id_cat, idsaart, idsacom, ordering, notify, lang) values ('" .$managerid. "', '" . $category. "', '" . $description. "', '" . $cat. "', '" . $saart. "', '" . $sacom. "', '" . ($arr[0]+1). "', '" . $bnotify. "', '" .$lang. "')";
 	$db->db_query($query);
 	return true;
 	}
@@ -373,7 +403,7 @@ if(!isset($idx))
 
 if( isset($add) && $adminid > 0)
 	{
-	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif))
+	if(!saveCategory($category, $description, $ncat, $sacom, $saart, $managerid, $bnotif, $lang))
 		$idx = "addtopic";
 	else
 		{

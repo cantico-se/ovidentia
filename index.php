@@ -96,6 +96,7 @@ if( !isset($tg) || isset($tg) && $tg != "version" )
 	bab_isUserLogged();
 	bab_updateSiteSettings();
 	bab_updateUserSettings();
+	$babLangFilter->translateTexts();
 	}
 
 $babSkinPath = $babInstallPath."skins/".$babSkin."/";
@@ -730,8 +731,8 @@ switch($tg)
 		include $babInstallPath."version.php";
 		exit;
 		break;
-	case "ovt":
-		$incl = "ovt";
+	case "oml":
+		$incl = "oml";
 		break;
 	case "accden":
 		$babBody->msgerror = bab_translate("Access denied");
@@ -739,7 +740,17 @@ switch($tg)
 	case "entry":
 		$babLevelOne = bab_translate("Home");
 		$babLevelTwo = bab_translate("");
-		$incl = "entry";
+		if( $BAB_SESS_LOGGED)
+			$file = "private.html";
+		else
+			$file = "public.html";
+		if( file_exists("skins/".$GLOBALS['babSkin']."/templates/".$file))
+			{
+			$incl = "oml";
+			break;
+			}
+		else
+			$incl = "entry";
 		break;
 	default:
 		$babLevelOne = "";

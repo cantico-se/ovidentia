@@ -34,6 +34,11 @@ function topcatCreate()
 		var $no;
 		var $yes;
 		var $add;
+		var $arrtmpl;
+		var $counttmpl;
+		var $templatetxt;
+		var $templateval;
+		var $templateid;
 
 		function temp()
 			{
@@ -43,6 +48,36 @@ function topcatCreate()
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->add = bab_translate("Add");
+			$this->templatetxt = bab_translate('Template');
+			$file = "topicssection.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$this->arrtmpl = $tpl->getTemplates($filepath);
+				}
+			$this->counttmpl = count($this->arrtmpl);
+			}
+
+		function getnexttemplate()
+			{
+			static $i = 0;
+			if($i < $this->counttmpl)
+				{
+				$this->templateid = $this->arrtmpl[$i];
+				$this->templateval = $this->arrtmpl[$i];
+				$i++;
+				return true;
+				}
+			return false;
 			}
 		}
 
@@ -115,7 +150,7 @@ function topcatsList()
 	}
 
 
-function addTopCat($name, $description, $benabled)
+function addTopCat($name, $description, $benabled, $template)
 	{
 	global $babBody;
 	if( empty($name))
@@ -137,8 +172,9 @@ function addTopCat($name, $description, $benabled)
 			{
 			$description = addslashes($description);
 			$name = addslashes($name);
+			$template = addslashes($template);
 			}
-		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "')";
+		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template) VALUES ('" .$name. "', '" . $description. "', '" . $benabled. "', '" . $template. "')";
 		$db->db_query($req);
 
 		$id = $db->db_insert_id();
@@ -172,7 +208,7 @@ if( !isset($idx))
 	$idx = "List";
 
 if( isset($add))
-	addTopCat($name, $description, $benabled);
+	addTopCat($name, $description, $benabled, $template);
 
 if( isset($update))
 	{

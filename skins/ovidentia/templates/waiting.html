@@ -139,6 +139,13 @@ editor.ToolBar();
 <!--#endif msie -->
 </td>
 </tr>
+<tr><td align="center" valign="middle">
+{ langLabel }&nbsp;:&nbsp;<select name="lang">
+<!--#in getnextlang -->
+ <option value="{ langValue }" { langSelected }>{ langValue }</option>
+<!--#endin getnextlang -->
+</select>
+</td></tr>
 <!--#if msie "== 1" -->
 <tr> 
 <td align="center" valign="middle"> 

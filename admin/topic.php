@@ -187,6 +187,11 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $add;
 		var $approver;
 		var $approvername;
+		var $langLabel;
+		var $langValue;
+		var $langselected;
+		var $langFiles;
+		var $countLangFiles;
 
 		var $db;
 		var $arr = array();
@@ -202,7 +207,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 		var $noselected;
 		var $delete;
 
-		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom)
+		function temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif)
 			{
 			$this->topcat = bab_translate("Topic category");
 			$this->title = bab_translate("Topic");
@@ -218,7 +223,9 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			$this->delete = bab_translate("Delete");
 			$this->tgval = "topic";
 			$this->item = $id;
-
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_TOPICS_TBL." where id='".$id."'";
 			$res = $this->db->db_query($req);
@@ -292,6 +299,7 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 			
 			}
 
+
 		function getnextcat()
 			{
 			static $i = 0;
@@ -346,6 +354,27 @@ function modifyCategory($id, $cat, $category, $description, $managerid, $saart, 
 				return false;
 				}
 			}
+			
+		function getnextlang()
+			{
+			static $i = 0;
+			if($i < $this->countLangFiles)
+				{
+				$this->langValue = $this->langFiles[$i];
+				if($this->langValue == $this->arr['lang'])
+					{
+					$this->langselected = 'selected';
+					}
+				else
+					{
+					$this->langselected = '';
+					}
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
 		}
 
 	$temp = new temp($id, $cat, $category, $description, $managerid, $saart, $sacom, $bnotif);
@@ -420,7 +449,7 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"topics.html", "articleview");
 	}
 
-function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif)
+function updateCategory($id, $category, $description, $managerid, $cat, $saart, $sacom, $bnotif, $lang)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -483,7 +512,7 @@ function updateCategory($id, $category, $description, $managerid, $cat, $saart, 
 				}
 			}
 		}
-	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."' where id = '".$id."'";
+	$query = "update ".BAB_TOPICS_TBL." set id_approver='".$managerid."', category='".$category."', description='".$description."', id_cat='".$cat."', idsaart='".$saart."', idsacom='".$sacom."', notify='".$bnotif."', lang='".$lang."' where id = '".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topics&idx=list&cat=".$cat);
 	}
@@ -543,7 +572,7 @@ if( isset($add) && $adminid >0)
 	{
 	if( isset($Submit))
 		{
-		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom, $bnotif))
+		if(!updateCategory($item, $category, $description, $managerid, $ncat, $saart, $sacom, $bnotif, $lang))
 			$idx = "Modify";
 		}
 	else if( isset($topdel))

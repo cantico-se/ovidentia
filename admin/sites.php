@@ -152,6 +152,11 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 		var $smtppass;
 		var $smtppass2;
 
+		var $langfiltertxt;
+		var $langfilterval;
+		var $langfiltersite;
+		var $langfilterselected;
+
 		function temp($name, $description, $siteemail, $server, $serverport, $smtpuser)
 			{
 
@@ -187,6 +192,8 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 			$this->serverval = $server == ""? "": $server;
 			$this->serverportval = $serverport == ""? "25": $serverport;
 			$this->smtpuserval = $smtpuser == ""? "": $smtpuser;
+			$this->langfiltertxt = bab_translate("Language filter");
+			$this->langfiltersite = $GLOBALS['babLangFilter']->getFilterAsInt();
 
 			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
@@ -203,14 +210,14 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
             closedir($h);
             $this->count = count($this->arrfiles);
 
-			if( is_dir($GLOBALS['babInstallPath']."skins/"))
+			if( is_dir("skins/"))
 				{
-				$h = opendir($GLOBALS['babInstallPath']."skins/"); 
+				$h = opendir("skins/"); 
 				while ( $file = readdir($h))
 					{ 
 					if ($file != "." && $file != "..")
 						{
-						if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
+						if( is_dir("skins/".$file))
 							{
 								$this->arrskins[] = $file; 
 							}
@@ -331,8 +338,30 @@ function siteCreate($name, $description, $siteemail, $server, $serverport, $smtp
 				}
 			else
 				return false;
+			} // getnextgrp
+		function getnextlangfilter()
+		{
+			static $i = 0;
+			if( $i < ($GLOBALS['babLangFilter']->countFilters()))
+			{
+				$this->langfilterval =
+					$GLOBALS['babLangFilter']->getFilterStr($i);
+				if($this->langfiltersite == $i )
+				{
+					$this->langfilterselected = "selected";
+				}
+				else
+				{
+					$this->langfilterselected = "";
 			}
+				$i++;
+				return true;
 		}
+		else
+			return false;
+		} //getnextlangfilter 
+
+		} //class temp
 
 	$temp = new temp($name, $description, $siteemail, $server, $serverport, $smtpuser);
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "sitecreate"));
@@ -397,7 +426,7 @@ function viewVersion()
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
 	}
 
-function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2)
+function siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter)
 	{
 	global $babBody;
 	if( empty($name))
@@ -442,7 +471,7 @@ function siteSave($name, $description, $lang, $siteemail, $skin, $style, $regist
 		{
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup, smtpuser, smtppassword) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group. "', '" . $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"))";
+		$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, skin, style, registration, email_confirm, mailfunc, smtpserver, smtpport, imgsize, idgroup, smtpuser, smtppassword, langfilter) VALUES ('" .$name. "', '" . $description. "', '" . $lang. "', '" . $siteemail. "', '" . $skin. "', '" . $style. "', '" . $register. "', '" . $confirm. "', '" . $mailfunc. "', '" . $server. "', '" . $serverport. "', '" . $imgsize. "', '" . $group. "', '" . $smtpuser. "', ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"),\"".$langfilter."\")";
 		$db->db_query($query);
 		}
 	return true;
@@ -458,7 +487,7 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministr
 
 if( isset($create))
 	{
-	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2))
+	if(!siteSave($name, $description, $lang, $siteemail, $style, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter)))
 		$idx = "create";
 	}
 

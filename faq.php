@@ -82,8 +82,13 @@ function listCategories()
 				return false;
 			}
 		}
+		
 	$db = $GLOBALS['babDB'];
-	$req = "select * from ".BAB_FAQCAT_TBL."";
+	$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
+	$req = "select * from ".BAB_FAQCAT_TBL;
+	if( count($langFilterValues) > 0 )
+		$req .= " where SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
+
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{

@@ -12,27 +12,40 @@
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td colspan="2" class="BabSiteAdminTitleFontBackground">{ title }</td>
+            <td colspan="2" class="BabSiteAdminTitleFontBackground"><table width="100%" border="0" cellspacing="1" cellpadding="1">
+                <tr>
+                  <td width="50%" class="BabSiteAdminTitleFontBackground">{ 
+                    title }&nbsp;&nbsp; 
+                    <input type="text" name="title" size="20" maxlength="30"></td>
+                  <td width="50%" class="BabSiteAdminTitleFontBackground">&nbsp;{ 
+                    description }&nbsp;&nbsp;
+                    <input type="text" name="description" size="40" maxlength="80"></td>
+                </tr>
+              </table></td>
 </tr>
 <tr> 
-<td colspan="2"> 
-<input type="text" name="title" size="20" maxlength="30">
-</td>
-</tr>
-<tr> 
-<td colspan="2" class="BabSiteAdminTitleFontBackground">{ description }</td>
-</tr>
-<tr> 
-<td colspan="2"> 
-<input type="text" name="description" size="40" maxlength="80">
-</td>
-</tr>
-<tr> 
-<td width="30%" nowrap valign="middle" class="BabSiteAdminTitleFontBackground">{ position }&nbsp; 
-<select name="position">
-<option value="0" selected>{ left }</option>
-<option value="1">{ right }</option>
-</select>
+            <td colspan="2"><table width="100%" border="0" cellspacing="1" cellpadding="1">
+                <tr>
+                  <td width="33%" class="BabSiteAdminTitleFontBackground">{ position 
+                    }&nbsp; <select name="position">
+                      <option value="0" selected>{ left }</option>
+                      <option value="1">{ right }</option>
+                    </select></td>
+                  <td width="33%" class="BabSiteAdminTitleFontBackground">{ langLabel }&nbsp; <select name="lang">
+                      <!--#in getnextlang -->
+                      <option value="{ langValue }" { langSelected }>{ langValue 
+                      }</option>
+                      <!--#endin getnextlang -->
+                    </select></td>
+                  <td width="33%" class="BabSiteAdminTitleFontBackground">{ templatetxt 
+                    }&nbsp; <select name="template">
+                      <option value=""></option>
+                      <!--#in getnexttemplate -->
+                      <option value="{ templateid }">{ templateid }</option>
+                      <!--#endin getnexttemplate -->
+                    </select></td>
+                </tr>
+              </table> </td>
 </tr>
 <!-- Instanciation de la barre d'outils -->
 <!--#if msie "== 1" -->
@@ -67,6 +80,7 @@
 <!--#endif msie -->
 </td>
 </tr>
+            <td width="70%" nowrap valign="middle">&nbsp; </td>
 <!--#if msie "== 1" --> 
 <tr align="center"> 
 <td colspan="2"> 
@@ -164,20 +178,34 @@
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td colspan="2">{ title }</td>
+            <td colspan="2" class="BabSiteAdminTitleFontBackground"><table width="100%" border="0" cellspacing="1" cellpadding="1">
+                <tr>
+                  <td width="50%" class="BabSiteAdminTitleFontBackground">{ title }&nbsp;&nbsp; 
+                    <input type="text" name="title" size="20" maxlength="30" value="{ titleval }" ></td>
+                  <td width="50%" class="BabSiteAdminTitleFontBackground">&nbsp;{ 
+                    description }&nbsp;&nbsp;
+                    <input type="text" name="description" size="40" maxlength="80" value="{ descval }"></td>
+                </tr>
+              </table></td>
 </tr>
 <tr> 
-<td colspan="2"> 
-<input type="text" name="title" value="{ titleval }" size="15" maxlength="30">
-</td>
-</tr>
-<tr> 
-<td colspan="2">{ description }</td>
-</tr>
-<tr> 
-<td colspan="2"> 
-<input type="text" name="description" size="40" value="{ descval }" maxlength="80">
-</td>
+            <td colspan="2"><table width="100%" border="0" cellspacing="1" cellpadding="1">
+                <tr>
+                  <td width="33%" class="BabSiteAdminTitleFontBackground">{ langLabel }&nbsp; <select name="lang">
+                      <!--#in getnextlang -->
+                      <option value="{ langValue }" { langSelected }>{ langValue 
+                      }</option>
+                      <!--#endin getnextlang -->
+                    </select></td>
+                  <td width="33%" class="BabSiteAdminTitleFontBackground">{ templatetxt 
+                    }&nbsp; <select name="template">
+                      <option value=""></option>
+                      <!--#in getnexttemplate -->
+                      <option value="{ templateid }" { tmplselected }>{ templateval }</option>
+                      <!--#endin getnexttemplate -->
+                    </select></td>
+                </tr>
+              </table> </td>
 </tr>
 <!-- Instanciation de la barre d'outils --> <!--#if msie "== 1" --> 
 <script src="{ babScriptPath }{ babLanguage }/editorlang.js"></script>

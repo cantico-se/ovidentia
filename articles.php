@@ -41,12 +41,13 @@ function listSubmittedArticles($topics)
 		var $res;
 		var $topics;
 		var $date;
+		var $topictitle;
 
 
 		function temp($topics)
 			{
 			$this->db = $GLOBALS['babDB'];
-			$req = "select id, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
+			$req = "select id, id_topic, date, title, head from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='N' and archive='N' and id_author='".$GLOBALS['BAB_SESS_USERID']."' order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -63,6 +64,7 @@ function listSubmittedArticles($topics)
 				$this->date = bab_strftime(bab_mktime($this->arr['date']));
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
+				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$i++;
 				return true;
 				}
@@ -101,6 +103,7 @@ function listArticles($topics, $approver)
 		var $delete;
 		var $modifyurl;
 		var $delurl;
+		var $topictitle;
 
 
 		function temp($topics, $approver)
@@ -109,7 +112,12 @@ function listArticles($topics, $approver)
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select id, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N' order by date desc";
+			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
+			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='N'";
+			if( count($langFilterValues) > 0 )
+				$req .= " and SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
+
+			$req .= " order by date desc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			$this->topics = $topics;
@@ -140,6 +148,7 @@ function listArticles($topics, $approver)
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
 				$this->blen = $this->arr['blen'];
+				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->delurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Delete&topics=".$this->topics."&article=".$this->arr['id'];
@@ -215,6 +224,7 @@ function listOldArticles($topics, $pos, $approver)
 		var $morename;
 		var $delete;
 		var $modify;
+		var $topictitle;
 
 		function temp($topics, $pos, $approver)
 			{
@@ -270,7 +280,7 @@ function listOldArticles($topics, $pos, $approver)
 				$this->barch = false;
 
 
-			$req = "select id, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
+			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen from ".BAB_ARTICLES_TBL." where id_topic='$topics' and confirmed='Y' and archive='Y' order by date desc";
 			if( $total > MAX_ARTICLES)
 				{
 				$req .= " limit ".$pos.",".MAX_ARTICLES;
@@ -301,6 +311,7 @@ function listOldArticles($topics, $pos, $approver)
 				$this->content = bab_replace($this->arr['head']);
 				$this->title = stripslashes($this->arr['title']);
 				$this->blen = $this->arr['blen'];
+				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$this->printurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id'];
 
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
@@ -476,6 +487,12 @@ function submitArticleByFile($topics)
 		var $topics;
 		var $maxupload;
 		var $notearticle;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;
+		var $countLangFiles;
+
 
 		function temp($topics)
 			{
@@ -485,11 +502,35 @@ function submitArticleByFile($topics)
 			$this->introtag = bab_translate("Introduction Tag");
 			$this->filename = bab_translate("Filename");
 			$this->add = bab_translate("Add article");
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->topics = $topics;
 			$this->maxupload = $babMaxUpload;
 			$this->notearticle = bab_translate("Note: Articles are moderate and consequently your article will not be visible immediately");
+			} // function temp
+
+		function getnextlang()
+		{
+			static $i = 0;
+			if($i < $this->countLangFiles)
+			{
+				$this->langValue = $this->langFiles[$i];
+				if($this->langValue == $this->arr['lang'])
+				{
+					$this->langSelected = 'selected';
+				}
+				else
+				{
+					$this->langSelected = '';
 			}
+				$i++;
+				return true;
 		}
+			return false;
+		} // function getnextlang
+
+		} // class temp
 
 	$temp = new temp($topics);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "articlecreatebyfile"));
@@ -550,6 +591,12 @@ function modifyArticle($topics, $article)
 		var $res;
 		var $msie;
 		var $topicstxt;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;
+		var $countLangFiles;
+
 
 		function temp($topics, $article)
 			{
@@ -563,6 +610,9 @@ function modifyArticle($topics, $article)
 			$this->notifymembers = bab_translate("Notify group members by mail");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
 			$this->res = $this->db->db_query($req);
@@ -617,8 +667,29 @@ function modifyArticle($topics, $article)
 				}
 			else
 				return false;
+			} // function getnexttopic()
+		
+		function getnextlang()
+		{
+			static $i = 0;
+			if($i < $this->countLangFiles)
+			{
+				$this->langValue = $this->langFiles[$i];
+				if($this->langValue == $this->arr['lang'])
+				{
+					$this->langSelected = 'selected';
+				}
+				else
+				{
+					$this->langSelected = '';
 			}
+				$i++;
+				return true;
 		}
+			return false;
+		} // function getnextlang
+
+		} // class temp
 	
 	$temp = new temp($topics, $article);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "modifyarticle"));
@@ -638,6 +709,11 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 		var $title;
 		var $msie;
 		var $notearticle;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;	
+		var $countLangFiles;
 
 		function temp($title, $headtext, $bodytext, $topics)
 			{
@@ -662,13 +738,37 @@ function submitArticle($title, $headtext, $bodytext, $topics)
 			$this->images = bab_translate("Images");
 			$this->urlimages = $GLOBALS['babUrlScript']."?tg=images";
 			$this->files = bab_translate("Files");
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->urlfiles = $GLOBALS['babUrlScript']."?tg=fileman&idx=brow";
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+			} // function temp
+			
+			function getnextlang()
+			{
+				static $i = 0;
+				if($i < $this->countLangFiles)
+				{
+					$this->langValue = $this->langFiles[$i];
+					if($this->langValue == $GLOBALS['babLanguage'])
+					{
+						$this->langSelected = 'selected';
 			}
+					else
+					{
+						$this->langSelected = '';
+					}
+					$i++;
+					return true;
 		}
+				return false;
+			} // function getnextlang
+
+		} // class temp
 	
 	$temp = new temp($title, $headtext, $bodytext, $topics);
 	$babBody->babecho(	bab_printTemplate($temp,"articles.html", "createarticle"));
@@ -734,7 +834,7 @@ function notifyApprovers($id, $topics)
 		}
 	}
 
-function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
+function saveArticleByFile($filename, $title, $doctag, $introtag, $topics, $lang)
 	{
 	global $BAB_SESS_USERID, $babBody , $babAdminEmail;
 
@@ -763,15 +863,15 @@ function saveArticleByFile($filename, $title, $doctag, $introtag, $topics)
 	$bodytext = addslashes($bodytext);
 
 	$db = $GLOBALS['babDB'];
-	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date, title, body, head) values ";
-	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', 'N', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "')";
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date, title, body, head, lang) values ";
+	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', 'N', now(), '" . $title. "', '" . $bodytext. "', '" . $headtext. "', '" .$lang. "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 	notifyApprovers($id, $topics);
 	}
 
 
-function saveArticle($title, $headtext, $bodytext, $topics)
+function saveArticle($title, $headtext, $bodytext, $topics, $lang='')
 	{
 	global $BAB_SESS_USERID, $babBody ;
 
@@ -787,9 +887,10 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 		return false;
 		}
 
+	if($lang == '') $lang = $GLOBALS['babLanguage'];
 	$db = $GLOBALS['babDB'];
-	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date) values ";
-	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', 'N', now())";
+	$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, confirmed, date, lang) values ";
+	$req .= "('" .$topics. "', '" . $BAB_SESS_USERID. "', 'N', now(), '" .$lang. "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 
@@ -812,7 +913,7 @@ function saveArticle($title, $headtext, $bodytext, $topics)
 	}
 
 //@@: warn this function is duplicated in waiting.php file 
-function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif)
+function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif, $lang)
 	{
 	global $babBody;
 
@@ -837,7 +938,7 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid
 	$bodytext = imagesReplace($bodytext, $article."_art_", $ar);
 
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."' where id='".$article."'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='".addslashes($title)."', head='".addslashes(bab_stripDomainName($headtext))."', body='".addslashes(bab_stripDomainName($bodytext))."', date=now(), id_topic='".$topicid."', lang='" .$lang. "' where id='".$article."'";
 	$res = $db->db_query($req);
 
 	if( $bnotif == "Y" )
@@ -858,13 +959,13 @@ if( !isset($pos))
 
 if( isset($addarticle))
 	{
-	saveArticleByFile($filename, $title, $doctag, $introtag, $topics);
+	saveArticleByFile($filename, $title, $doctag, $introtag, $topics, $lang);
 	$idx = "Articles";
 	}
 
 if( isset($addart) && $addart == "add")
 	{
-	if( saveArticle($title, $headtext, $bodytext, $topics))
+	if( saveArticle($title, $headtext, $bodytext, $topics, $lang))
 		$idx = "Articles";
 	else
 		$idx = "Submit";
@@ -877,7 +978,7 @@ if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != "" && bab_isUserTo
 
 if( isset($modify))
 	{
-	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif);
+	updateArticle($topics, $title, $article, $headtext, $bodytext, $topicid, $bnotif, $lang);
 	$idx = "Articles";
 	}
 

@@ -343,7 +343,7 @@ var $position;
 var $close;
 var $boxurl;
 var $bbox;
-var $babsectionpuce;
+var $template;
 
 function babSection($title = "Section", $content="<br>This is a sample of content<br>")
 {
@@ -354,11 +354,18 @@ function babSection($title = "Section", $content="<br>This is a sample of conten
 	$this->close = 0;
 	$this->boxurl = "";
 	$this->bbox = 0;
+	$this->template = "default";
 }
 
 function getTitle() { return $this->title;}
 function setTitle($title) {	$this->title = $title;}
 function getContent() {	return $this->content;}
+function getTemplate() { return $this->template;}
+function setTemplate($template)
+	{
+	if( !empty($template))
+		$this->template = $template;
+	}
 
 function setContent($content)
 {
@@ -406,7 +413,7 @@ function open()
 function printout()
 {
 	$file = "sectiontemplate.html";
-	$str = bab_printTemplate($this,$file, $this->title);
+	$str = bab_printTemplate($this,$file, $this->template);
 	if( empty($str))
 		return bab_printTemplate($this,$file, "default");
 	else
@@ -419,17 +426,16 @@ function printout()
 class babSectionTemplate extends babSection
 {
 var $file;
-var $section;
 function babSectionTemplate($file, $section="")
 	{
 	$this->babSection("","");
 	$this->file = $file;
-	$this->section = $section;
+	$this->setTemplate($section);
 	}
 
 function printout()
 	{
-	$str = bab_printTemplate($this,$this->file, $this->section);
+	$str = bab_printTemplate($this,$this->file, $this->template);
 	if( empty($str))
 		return bab_printTemplate($this,$this->file, "template");
 	else
@@ -819,11 +825,17 @@ function babTopicsSection($cat, $close)
 	global $babDB, $babBody;
 	static $foot, $waitingc, $waitinga, $waitingaimg, $waitingcimg;
 	$this->babSectionTemplate("topicssection.html", "template");
-	$r = $babDB->db_fetch_array($babDB->db_query("select description, title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
-	$this->section = $r['title'];
+	$r = $babDB->db_fetch_array($babDB->db_query("select description, title, template from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
+	$this->setTemplate($r['template']);
 	$this->title = $r['title'];
 	$this->head = $r['description'];
-	$req = "select id from ".BAB_TOPICS_TBL." where id_cat='".$cat."' order by ordering asc";
+	$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
+	$req = "select id from ".BAB_TOPICS_TBL." where id_cat='".$cat."'";
+	if( count($langFilterValues) > 0 )
+		$req .= " and SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
+
+	$req .= " order by ordering asc";
+
 	$res = $babDB->db_query($req);
 	while( $row = $babDB->db_fetch_array($res))
 		{
@@ -1153,6 +1165,7 @@ function loadSections()
 									$sec = new babSection($stitle, $scontent);
 								else
 									$sec = new babSection($stitle, "");
+								$sec->setTemplate($r['title']);
 								}
 							}
 						}
@@ -1162,7 +1175,10 @@ function loadSections()
 				$add = bab_isAccessValid(BAB_SECTIONS_GROUPS_TBL, $arr['id_section']);
 				if( $add )
 					{
+					$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
 					$req = "select * from ".BAB_SECTIONS_TBL." where id='".$arr['id_section']."' and enabled='Y'";
+					if( count($langFilterValues) > 0 )
+						$req .= " and SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
 					$res2 = $babDB->db_query($req);
 					if( $res2 && $babDB->db_num_rows($res2) > 0)
 						{
@@ -1175,6 +1191,7 @@ function loadSections()
 							}
 						else
 							$sec = new babSection($arr2['title'], "");
+						$sec->setTemplate($arr2['template']);
 						}
 					else
 						$add = false;
@@ -1458,7 +1475,7 @@ function bab_updateUserSettings()
 	if( !empty($BAB_SESS_USERID))
 		{
 
-		$res=$babDB->db_query("select lang, skin, style, lastlog from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
+		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter from ".BAB_USERS_TBL." where id='".$BAB_SESS_USERID."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
@@ -1466,6 +1483,10 @@ function bab_updateUserSettings()
 				{
 				$GLOBALS['babLanguage'] = $arr['lang'];
 				}
+			
+			if($arr['langfilter'] != '')
+				$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
+			
 			if( $arr['skin'] != "" && (is_dir($GLOBALS['babInstallPath']."skins/".$arr['skin']) || is_dir("skins/".$arr['skin'])))
 				{
 				$GLOBALS['babSkin'] = $arr['skin'];
@@ -1541,7 +1562,7 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 
-	$req="select skin, style, adminemail, lang from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
+	$req="select skin, style, adminemail, lang, langfilter from ".BAB_SITES_TBL." where name='".addslashes($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
 	if( $arr['skin'] != "")
@@ -1570,9 +1591,162 @@ function bab_updateSiteSettings()
 		}
 	else
 		$GLOBALS['babAdminEmail'] = "admin@your-domain.com";
+	if( $arr['langfilter'] != "")
+		{
+		$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
+		}
+	else
+		$GLOBALS['babLangFilter']->setFilter(0);
 }
+
+class babLanguageFilter
+	{
+		var $langFilterNames;
+		var $activeLanguageFilter;
+		var $activeLanguageValues;
+
+		function babLanguageFilter()
+			{
+				$this->setFilter(0);
+			} //function LanguageFilter
+			
+		function translateTexts()
+		{
+			$this->langFilterNames = array(bab_translate("No filter")
+					,bab_translate("Filter language")
+					,bab_translate("Filter language and country")
+					//,bab_translate("Filter translated")
+					);
+		}
+
+		function setFilter($filterInt)
+			{
+				$this->activeLanguageValues = array();
+				switch($filterInt)
+				{
+					case 2:
+						$this->activeLanguageValues[] = '\'*\'';
+						$this->activeLanguageValues[] = '\'\'';
+						break;
+					case 1:
+						$this->activeLanguageValues[] = '\''.substr($GLOBALS['babLanguage'], 0, 2).'\'';
+						$this->activeLanguageValues[] = '\'*\'';
+						$this->activeLanguageValues[] = '\'\'';
+						break;
+					case 0:
+					default:
+						break;
+				}
+				$this->activeLanguageFilter = $filterInt;
+			}
+
+		function getFilterAsInt()
+			{
+				return $this->activeLanguageFilter;
+			}
+
+		function getFilterAsStr()
+			{
+				return $this->langFilterNames[$this->activeLanguageFilter];
+			}
+
+		function convertFilterToStr($filterInt)
+			{
+				return $this->langFilterNames[$filterInt];
+			}
+		
+		function convertFilterToInt($filterStr)
+			{
+				$i = 0;
+				while ($i < count($this->langFilterNames))
+					{
+						if ($this->langFilterNames[$i] == $filterStr) return $i;
+						$i++;
+					}
+				return 0;
+			}
+
+		function countFilters()
+			{
+				return count($this->langFilterNames);
+			}
+
+		function getFilterStr($i)
+			{
+				return $this->langFilterNames[$i];
+			} 
+
+		function isLangFile($fileName)
+			{
+				$res = substr($fileName, 0, 5);
+				if ($res != "lang-") return false;
+				$res = strtolower(strstr($fileName, "."));
+				if ($res != ".xml") return false;
+				return true;
+			}
+
+		function getLangCode($file)
+			{
+				$langCode = substr($file,5);
+				return substr($langCode,0,strlen($langCode)-4);
+			}
+
+		function readLangFiles()
+			{
+				global $babInstallPath;
+				$tmpLangFiles = array();
+				$i = 0;
+				if (file_exists($babInstallPath.'lang'))
+					{
+						$folder = opendir($babInstallPath.'lang');
+						while (false!==($file = readdir($folder)))
+							{
+								if ($this->isLangFile($file))
+									{
+										$tmpLangFiles[$i] = $this->getLangCode($file);
+										$i++;
+									}
+							}
+				closedir($folder);
+					}
+				if (file_exists("lang"))
+					{
+						$folder = opendir("lang");
+						while (false!==($file = readdir($folder)))
+							{
+								if ($this->isLangFile($file))
+									{
+										$tmpLangFiles[$i] = $this->getLangCode($file);
+										$i++;
+									}
+							}
+						closedir($folder);
+}
+				$tmpLangFiles[] = '*';
+				sort($tmpLangFiles);
+				$this->langFiles = array_unique($tmpLangFiles);
+			} // readLangFiles()
+		
+		function getLangFiles()
+			{
+				static $callNbr = 0;
+				if($callNbr == 0)
+					{
+						$this->readLangFiles();
+						$callNbr++;
+					}
+				return $this->langFiles;
+			}  // getLangFiles
+
+		function getLangValues()
+			{
+				return $this->activeLanguageValues;
+			}  // getLangFiles
+
+	} //class LanguageFilter
 
 $babDB = new babDatabase();
 $babBody = new babBody();
 $BAB_HASH_VAR='aqhjlongsmp';
+$babLangFilter = new babLanguageFilter();
 ?>

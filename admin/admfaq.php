@@ -62,6 +62,11 @@ function modifyCategory($id)
 		var $res;
 		var $msie;
 		var $delete;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;
+		var $countLangFiles;
 
 		function temp($id)
 			{
@@ -70,6 +75,9 @@ function modifyCategory($id)
 			$this->add = bab_translate("Update FAQ");
 			$this->delete = bab_translate("Delete");
 			$this->manager = bab_translate("Manager");
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FAQCAT_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
@@ -91,8 +99,29 @@ function modifyCategory($id)
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->faqname = $this->arr['category'];
 			$this->faqdesc = $this->arr['description'];
+			} // function temp
+			
+			function getnextlang()
+			{
+				static $i = 0;
+				if($i < $this->countLangFiles)
+				{
+					$this->langValue = $this->langFiles[$i];
+					if($this->langValue == $this->arr['lang'])
+					{
+						$this->langSelected = 'selected';
 			}
+					else
+					{
+						$this->langSelected = '';
+					}
+					$i++;
+					return true;
 		}
+				return false;
+			} // function getnextlang
+
+		} // class temp
 
 	$temp = new temp($id);
 	$babBody->babecho(	bab_printTemplate($temp,"admfaqs.html", "categorycreate"));
@@ -128,7 +157,7 @@ function deleteCategory($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function updateCategory($id, $category, $description, $managerid)
+function updateCategory($id, $category, $description, $managerid, $lang)
 	{
 	global $babBody;
 	if( empty($category))
@@ -144,7 +173,7 @@ function updateCategory($id, $category, $description, $managerid)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$query = "update ".BAB_FAQCAT_TBL." set id_manager='".$managerid."', category='".$category."', description='".$description."' where id = '".$id."'";
+	$query = "update ".BAB_FAQCAT_TBL." set id_manager='".$managerid."', category='".$category."', description='".$description."', lang='".$lang."' where id = '".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 
@@ -178,7 +207,7 @@ if( isset($add))
 	{
 	if( isset($submit))
 		{
-		if(!updateCategory($item, $category, $description, $managerid))
+		if(!updateCategory($item, $category, $description, $managerid, $lang))
 			$idx = "Modify";
 		}
 	else if( isset($faqdel))

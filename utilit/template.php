@@ -185,6 +185,18 @@ function processTemplate(&$class, $str)
 		}
 	return $str;
 	}
+
+function getTemplates($file)
+	{
+	$ret = array();
+	if(preg_match_all("/".$this->startPatternI."begin\s+(.*?)\s+".$this->endPatternI."/", implode("", @file($file)), $m))
+		{
+		for( $i = 0; $i < count($m[1]); $i++ )
+			$ret[] = $m[1][$i];
+
+		}
+	return $ret;;
+	}
 }
 
 ?>

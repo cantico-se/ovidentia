@@ -44,6 +44,7 @@ function listArticles($topics, $res)
 		var $confirm;
 		var $modifyurl;
 		var $confirmurl;
+		var $topictitle;
 
 
 		function temp($topics, $res)
@@ -69,6 +70,7 @@ function listArticles($topics, $res)
 				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->content = bab_replace($this->arr['head']);
+				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$this->modifyurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Modify&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->confirmurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=Confirm&topics=".$this->topics."&article=".$this->arr['id'];
 				$this->moreurl = $GLOBALS['babUrlScript']."?tg=waiting&idx=More&topics=".$this->topics."&article=".$this->arr['id'];
@@ -99,6 +101,7 @@ function readMore($topics, $article)
 		var $res;
 		var $more;
 		var $topics;
+		var $topictitle;
 
 		function temp($topics, $article)
 			{
@@ -122,6 +125,7 @@ function readMore($topics, $article)
 					$this->articleauthor = bab_translate("Anonymous");
 				$this->articledate = bab_strftime(bab_mktime($this->arr['date']));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
+				$this->topictitle = bab_getCategoryTitle($this->arr['id_topic']);
 				$i++;
 				return true;
 				}
@@ -156,6 +160,11 @@ function modifyArticle($topics, $article)
 		var $count;
 		var $res;
 		var $msie;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;
+		var $countLangFiles;
 
 		function temp($topics, $article)
 			{
@@ -165,6 +174,9 @@ function modifyArticle($topics, $article)
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
 			$this->modify = bab_translate("Modify");
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article' and confirmed='N'";
 			$this->res = $this->db->db_query($req);
@@ -184,8 +196,29 @@ function modifyArticle($topics, $article)
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+			} // function temp
+			
+		function getnextlang()
+		{
+			static $i = 0;
+			if($i < $this->countLangFiles)
+			{
+				$this->langValue = $this->langFiles[$i];
+				if($this->langValue == $this->arr['lang'])
+				{
+					$this->langSelected = 'selected';
+				}
+				else
+				{
+					$this->langSelected = '';
 			}
+				$i++;
+				return true;
 		}
+			return false;
+		} // function getnextlang
+
+		} // class temp
 	
 	$temp = new temp($topics, $article);
 	$babBody->babecho(	bab_printTemplate($temp,"waiting.html", "modifyarticle"));
@@ -541,7 +574,7 @@ function updateConfirmArticle($topics, $article, $action, $send, $author, $messa
 	}
 
 
-function updateArticle($topics, $article, $title, $headtext, $bodytext)
+function updateArticle($topics, $article, $title, $headtext, $bodytext, $lang)
 	{
 	global $babBody;
 
@@ -570,7 +603,7 @@ function updateArticle($topics, $article, $title, $headtext, $bodytext)
 	$bodytext = addslashes(bab_stripDomainName($bodytext));
 	$title = addslashes($title);
 	$db = $GLOBALS['babDB'];
-	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='".$headtext."', body='".$bodytext."', date=now() where id='$article'";
+	$req = "update ".BAB_ARTICLES_TBL." set title='$title', head='".$headtext."', body='".$bodytext."', date=now(), lang='" .$lang. "' where id='$article'";
 	$res = $db->db_query($req);		
 	}
 
@@ -674,7 +707,7 @@ if( !$uaapp && !$ucapp )
 
 if( $uaapp && isset($modify))
 	{
-	updateArticle($topics, $article, $title, $headtext, $bodytext);
+	updateArticle($topics, $article, $title, $headtext, $bodytext, $lang);
 	}
 
 if( isset($confirm) )

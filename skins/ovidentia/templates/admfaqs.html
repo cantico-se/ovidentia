@@ -80,6 +80,17 @@ valign="middle"><a class="BabAlphabetLink" href="javascript: openPopup('{ usersb
 </td>
 </tr>
 <tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" nowrap 
+valign="middle">{ langLabel } :</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle">
+<select name="lang">
+<!--#in getnextlang -->
+ <option value="{ langValue }" { langSelected }>{ langValue }</option>
+<!--#endin getnextlang -->
+</select>
+</td>
+</tr>
+<tr> 
 <td class="BabLoginMenuBackground">&nbsp; </td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <!--#if msie "== 1" -->

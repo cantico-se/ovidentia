@@ -282,6 +282,14 @@ function sectionCreate($jscript)
 		var $script;
 		var $msie;
 		var $jscript;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;
+		var $countLangFiles;
+		var $arrtmpl;
+		var $counttmpl;
+		var $templatetxt;
 
 		function temp($jscript)
 			{
@@ -293,12 +301,67 @@ function sectionCreate($jscript)
 			$this->left = bab_translate("Left");
 			$this->right = bab_translate("Right");
 			$this->script = bab_translate("PHP script");
+			$this->templatetxt = bab_translate('Template');
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->jscript = $jscript;
 			if(( $jscript == 0 && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+
+			$file = "sectiontemplate.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$this->arrtmpl = $tpl->getTemplates($filepath);
+				}
+			$this->counttmpl = count($this->arrtmpl);
 			}
+			
+		function getnexttemplate()
+			{
+			static $i = 0;
+			if($i < $this->counttmpl)
+				{
+				$this->templateid = $this->arrtmpl[$i];
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
+
+		function getnextlang()
+			{
+			static $i = 0;
+			if($i < $this->countLangFiles)
+				{
+				$this->langValue = $this->langFiles[$i];
+				if($this->langValue == $GLOBALS['babLanguage'])
+					{
+					$this->langSelected = 'selected';
+					}
+				else
+					{
+					$this->langSelected = '';
+					}
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
 		}
 
 	$temp = new temp($jscript);
@@ -307,7 +370,7 @@ function sectionCreate($jscript)
 
 
 
-function sectionSave($title, $pos, $desc, $content, $script, $js)
+function sectionSave($title, $pos, $desc, $content, $script, $js, $template, $lang)
 	{
 	global $babBody;
 	if( empty($title))
@@ -322,6 +385,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 		$desc = addslashes($desc);
 		$content = addslashes($content);
 		$title = addslashes($title);
+		$template = addslashes($template);
 		}
 
 	$db = $GLOBALS['babDB'];
@@ -343,7 +407,7 @@ function sectionSave($title, $pos, $desc, $content, $script, $js)
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
 		$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
@@ -424,7 +488,7 @@ function disableSections($sections)
 /* main */
 if( isset($create))
 	{
-	sectionSave($title, $position, $description, $content, $script, $js);
+	sectionSave($title, $position, $description, $content, $script, $js, $template, $lang);
 	}
 
 if( isset($update))
@@ -439,6 +503,11 @@ if( !isset($idx))
 	$idx = "List";
 
 
+if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
+	$msie = 1;
+else
+	$msie = 0;
+
 switch($idx)
 	{
 	case "Order":
@@ -446,24 +515,39 @@ switch($idx)
 		sectionsOrder();
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
-		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		if( $msie )
+			{
+			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+			$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+			}
+		else
+			$babBody->addItemMenu("ch", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
 		break;
 	case "ch":
 		$babBody->title = bab_translate("Create section");
 		sectionCreate(0);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
-		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		if( $msie )
+			{
+			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+			$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+			}
+		else
+			$babBody->addItemMenu("ch", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
 		break;
 	case "cj":
 		$babBody->title = bab_translate("Create section");
 		sectionCreate(1);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
-		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		if( $msie )
+			{
+			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+			$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+			}
+		else
+			$babBody->addItemMenu("ch", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
 		break;
 	case "List":
 	default:
@@ -476,8 +560,13 @@ switch($idx)
 			$babBody->title = bab_translate("There is no section");
 
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
-		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
-		$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+		if( $msie )
+			{
+			$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
+			$babBody->addItemMenu("cj", bab_translate("Create")."(script)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
+			}
+		else
+			$babBody->addItemMenu("ch", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
 		break;
 	}
 

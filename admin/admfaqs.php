@@ -50,6 +50,11 @@ function addCategory()
 		var $Manager;
 		var $add;
 		var $msie;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;
+		var $countLangFiles;
 
 		function temp()
 			{
@@ -57,6 +62,10 @@ function addCategory()
 			$this->description = bab_translate("Description");
 			$this->manager = bab_translate("Manager");
 			$this->add = bab_translate("Add");
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
+
 			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
@@ -69,8 +78,28 @@ function addCategory()
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->faqname = "";
 			$this->faqdesc = "";
+			} // function temp
+			
+		function getnextlang()
+			{
+				static $i = 0;
+				if($i < $this->countLangFiles)
+					{
+						$this->langValue = $this->langFiles[$i];
+						if($this->langValue == $GLOBALS['babLanguage'])
+							{
+								$this->langSelected = 'selected';
 			}
+						else
+							{
+								$this->langSelected = '';
 		}
+						$i++;
+						return true;
+					}
+				return false;
+			} // function getnextlang
+		} // class temp
 
 	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp,"admfaqs.html", "categorycreate"));
@@ -97,7 +126,11 @@ function listCategories()
 			{
 			$this->access = bab_translate("Access");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_FAQCAT_TBL."";
+			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
+			$req = "select * from ".BAB_FAQCAT_TBL;
+			if( count($langFilterValues) > 0 )
+				$req .= " where SUBSTRING(lang, 1, 2 ) IN (".implode(',', $langFilterValues).")";
+
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -129,7 +162,7 @@ function listCategories()
 	}
 
 
-function saveCategory($category, $description, $managerid)
+function saveCategory($category, $description, $managerid, $lang)
 	{
 	global $babBody;
 	if( empty($category))
@@ -152,11 +185,10 @@ function saveCategory($category, $description, $managerid)
 		$babBody->msgerror = bab_translate("ERROR: This FAQ already exists");
 		return;
 		}
-
-	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description) values ('" .$managerid. "', '" .$category. "', '" . $description. "')";
+	$query = "insert into ".BAB_FAQCAT_TBL." (id_manager, category, description, lang) values ('" .$managerid. "', '" .$category. "', '" . $description. "', '" .$lang. "')";
 	$db->db_query($query);
 
-	}
+	}  // saveCategory
 
 /* main */
 if(!isset($idx))
@@ -166,7 +198,7 @@ if(!isset($idx))
 
 if( isset($add))
 	{
-	saveCategory($category, $description, $managerid);
+	saveCategory($category, $description, $managerid, $lang);
 	}
 
 switch($idx)

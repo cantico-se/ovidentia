@@ -67,6 +67,15 @@ function sectionModify($id)
 		var $res;
 		var $msie;
 		var $delete;
+		var $langLabel;
+		var $langValue;
+		var $langSelected;
+		var $langFiles;
+		var $countLangFiles;
+		var $arrtmpl;
+		var $counttmpl;
+		var $templatetxt;
+		var $tmplselected;
 
 		function temp($id)
 			{
@@ -79,32 +88,86 @@ function sectionModify($id)
 			$this->script = bab_translate("PHP script");
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
+			$this->templatetxt = bab_translate('Template');
+			$this->langLabel = bab_translate('Language');
+			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles = count($this->langFiles);
 			$this->id = $id;
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_SECTIONS_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
-				$arr = $this->db->db_fetch_array($this->res);
-				$this->titleval = $arr['title'];
-				$this->pos = $arr['position'];
-				$this->descval = $arr['description'];
-				$this->contentval = $arr['content'];
-				if( $arr['script'] == "Y")
+				$this->arr = $this->db->db_fetch_array($this->res);
+				$this->titleval = $this->arr['title'];
+				$this->pos = $this->arr['position'];
+				$this->descval = $this->arr['description'];
+				$this->contentval = $this->arr['content'];
+				if( $this->arr['script'] == "Y")
 					$this->ischecked = "checked";
 				else
 					$this->ischecked = "";
 				}
-			if(( $arr['jscript'] == "N" && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
+			if(( $this->arr['jscript'] == "N" && strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows"))
 				$this->msie = 1;
 			else
 				$this->msie = 0;	
+
+			$file = "sectiontemplate.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$this->arrtmpl = $tpl->getTemplates($filepath);
+				}
+			$this->counttmpl = count($this->arrtmpl);
 			}
 
-		function getnext()
+		function getnexttemplate()
 			{
+			static $i = 0;
+			if($i < $this->counttmpl)
+				{
+				$this->templateid = $this->arrtmpl[$i];
+				$this->templateval = $this->arrtmpl[$i];
+				if( $this->templateid == $this->arr['template'])
+					$this->tmplselected = "selected";
+				else
+					$this->tmplselected = "";
+				$i++;
+				return true;
+				}
 			return false;
 			}
+			
+		function getnextlang()
+			{
+			static $i = 0;
+			if($i < $this->countLangFiles)
+				{
+				$this->langValue = $this->langFiles[$i];
+				if($this->langValue == $this->arr['lang'])
+					{
+					$this->langSelected = 'selected';
+					}
+				else
+					{
+					$this->langSelected = '';
+					}
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
 		}
 
 	$temp = new temp($id);
@@ -112,7 +175,7 @@ function sectionModify($id)
 		$babBody->babecho(	bab_printTemplate($temp, "sections.html", "sectionsmodify"));
 	else
 		$babBody->msgerror = bab_translate("ERROR: You must choose a valid section !!");
-	}
+	} // function sectionModify
 
 function sectionDelete($id)
 	{
@@ -146,7 +209,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function sectionUpdate($id, $title, $desc, $content, $script)
+function sectionUpdate($id, $title, $desc, $content, $script, $template, $lang)
 	{
 	if( $script == "Y")
 		$php = "Y";
@@ -163,9 +226,9 @@ function sectionUpdate($id, $title, $desc, $content, $script)
 		$desc = addslashes($desc);
 		$content = addslashes(bab_stripDomainName($content));
 		$title = addslashes($title);
+		$template = addslashes($template);
 		}
-			
-	$query = "update ".BAB_SECTIONS_TBL." set title='$title', description='$desc', content='$content', script='$php' where id=$id";
+	$query = "update ".BAB_SECTIONS_TBL." set title='".$title."', description='".$desc."', content='".$content."', script='".$php."', template='".$template."', lang='".$lang."' where id='".$id."'";
 	$db->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	}
@@ -196,7 +259,7 @@ function confirmDeleteSection($id)
 if( isset($modify))
 	{
 	if( isset($submit))
-		sectionUpdate($item, $title, $description, $content, $script);
+		sectionUpdate($item, $title, $description, $content, $script, $template, $lang);
 	else if(isset($secdel))
 		$idx = "Delete";
 	}

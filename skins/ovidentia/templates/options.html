@@ -144,6 +144,18 @@ valign="middle">{ password }:</td>
 </td>
 </tr>
 <tr> 
+<td align="center">{ langfiltertxt } </td>
+</tr>
+<tr>
+<td align="center" nowrap valign="middle">
+<select name="langfilter">
+<!--#in getnextlangfilter -->
+<option value="{ langfilterval }" { langfilterselected }>{ langfilterval }</option>
+<!--#endin getnextlangfilter -->
+</select>
+</td>
+</tr>
+<tr> 
 <td align="center"> 
 <input type="submit" name="submit" value="{ update }">
 <br>

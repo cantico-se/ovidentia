@@ -1617,6 +1617,72 @@ if( !$res)
 	return $ret;
 	}
 
+$req = "ALTER TABLE ".BAB_SECTIONS_TBL." ADD template varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SECTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_TOPICS_CATEGORIES_TBL." ADD template varchar(255) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_CATEGORIES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
+$req = "ALTER TABLE ".BAB_SITES_TBL." ADD COLUMN langfilter INTEGER DEFAULT 0";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SITES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+$req = "ALTER TABLE ".BAB_USERS_TBL." ADD COLUMN langfilter INTEGER DEFAULT 0";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_USERS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+$req = "ALTER TABLE ".BAB_ARTICLES_TBL." ADD lang VARCHAR( 10 ) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_ARTICLES_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+$req = "ALTER TABLE ".BAB_COMMENTS_TBL." ADD lang VARCHAR( 10 ) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_COMMENTS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+$req = "ALTER TABLE ".BAB_TOPICS_TBL." ADD lang VARCHAR( 10 ) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_TOPICS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+$req = "ALTER TABLE ".BAB_SECTIONS_TBL." ADD lang VARCHAR( 10 ) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_SECTIONS_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+$req = "ALTER TABLE ".BAB_FAQCAT_TBL." ADD lang VARCHAR( 10 ) NOT NULL";
+$res = $db->db_query($req);
+if( !$res)
+	{
+	$ret = "Alteration of <b>".BAB_FAQCAT_TBL."</b> table failed !<br>";
+	return $ret;
+	}
+
 return $ret;
 }
 

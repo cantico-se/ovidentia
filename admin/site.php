@@ -101,6 +101,11 @@ function siteModify($id)
 		var $smtppass2;
 		var $smtppassval;
 
+		var $langfiltertxt;
+		var $langfilterval;
+		var $langfiltersite;
+		var $langfilterselected;		
+
 		function temp($id)
 			{
 			$this->name = bab_translate("Site name");
@@ -133,6 +138,7 @@ function siteModify($id)
 			$this->sendmailselected = "";
 			$this->disabledselected = "";
 			$this->id = $id;
+			$this->langfiltertxt = bab_translate("Language Filter");
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass from ".BAB_SITES_TBL." where id='$id'";
@@ -189,6 +195,7 @@ function siteModify($id)
 						break;
 					}
 				}
+			$this->langfiltersite = $arr['langfilter'];
 			$h = opendir($GLOBALS['babInstallPath']."lang/"); 
             while ( $file = readdir($h))
                 { 
@@ -205,14 +212,14 @@ function siteModify($id)
 			$this->count = count($this->arrfiles);
 			sort($this->arrfiles);
 
-			if( is_dir($GLOBALS['babInstallPath']."skins/"))
+			if( is_dir("skins/"))
 				{
-				$h = opendir($GLOBALS['babInstallPath']."skins/"); 
+				$h = opendir("skins/"); 
 				while ( $file = readdir($h))
 					{ 
 					if ($file != "." && $file != "..")
 						{
-						if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
+						if( is_dir("skins/".$file))
 							{
 								$this->arrskins[] = $file; 
 							}
@@ -348,8 +355,31 @@ function siteModify($id)
 				}
 			else
 				return false;
+			} // getnextgrp
+
+		function getnextlangfilter()
+			{
+				static $i = 0;
+				if( $i < ($GLOBALS['babLangFilter']->countFilters()))
+				{
+					$this->langfilterval =
+						$GLOBALS['babLangFilter']->getFilterStr($i);
+					if($this->langfiltersite == $i )
+					{
+						$this->langfilterselected = "selected";
 			}
+					else
+					{
+						$this->langfilterselected = "";
+					}
+					$i++;
+					return true;
 		}
+				else
+					return false;
+			} //getnextlangfilter
+
+		} // class temp
 
 	$temp = new temp($id);
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "sitemodify"));
@@ -550,7 +580,7 @@ function sectionDelete($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2)
+function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $langfilter)
 	{
 	global $babBody;
 	if( empty($name))
@@ -619,7 +649,7 @@ function siteUpdate($id, $name, $description, $lang, $style, $siteemail, $skin, 
 
 		if( !is_numeric($imgsize))
 			$imgsize = 25;
-		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\") where id='".$id."'";
+		$req .= "description='".$description."', lang='".$lang."', adminemail='".$siteemail."', skin='".$skin."', style='".$style."', registration='".$register."', email_confirm='".$confirm."', mailfunc='".$mailfunc."', smtpserver='".$server."', smtpport='".$serverport."', imgsize='".$imgsize."', idgroup='".$group."', smtpuser='".$smtpuser."', smtppassword=ENCODE(\"".$smtppass."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), langfilter='" .$langfilter. "' where id='".$id."'";
 		$db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
@@ -674,7 +704,7 @@ if( isset($modify))
 	{
 	if( !empty($Submit))
 		{
-		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2))
+		if(!siteUpdate($item, $name, $description, $lang, $style, $siteemail, $skin, $register, $confirm, $mailfunc, $server, $serverport, $imgsize, $group, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter)))
 			$idx = "modify";
 		}
 	else if( !empty($delete))

@@ -47,6 +47,13 @@ function topcatModify($id)
 		var $arr = array();
 		var $res;
 
+		var $arrtmpl;
+		var $counttmpl;
+		var $templatetxt;
+		var $templateval;
+		var $templateid;
+		var $tmplselected;
+
 		function tempa($id)
 			{
 			$this->name = bab_translate("Name");
@@ -56,6 +63,7 @@ function topcatModify($id)
 			$this->yes = bab_translate("Yes");
 			$this->modify = bab_translate("Modify");
 			$this->delete = bab_translate("Delete");
+			$this->templatetxt = bab_translate('Template');
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
@@ -70,6 +78,40 @@ function topcatModify($id)
 				$this->noselected = "selected";
 				$this->yesselected = "";
 				}
+
+			$file = "topicssection.html";
+			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			if( !file_exists( $filepath ) )
+				{
+				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
+				if( !file_exists( $filepath ) )
+					{
+					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
+					}
+				}
+			if( file_exists( $filepath ) )
+				{
+				$tpl = new babTemplate();
+				$this->arrtmpl = $tpl->getTemplates($filepath);
+				}
+			$this->counttmpl = count($this->arrtmpl);
+			}
+
+		function getnexttemplate()
+			{
+			static $i = 0;
+			if($i < $this->counttmpl)
+				{
+				$this->templateid = $this->arrtmpl[$i];
+				$this->templateval = $this->arrtmpl[$i];
+				if( $this->templateid == $this->arr['template'])
+					$this->tmplselected = "selected";
+				else
+					$this->tmplselected = "";
+				$i++;
+				return true;
+				}
+			return false;
 			}
 		}
 
@@ -117,7 +159,7 @@ function topcatDelete($id)
 	return true;
 	}
 
-function modifyTopcat($oldname, $name, $description, $benabled, $id)
+function modifyTopcat($oldname, $name, $description, $benabled, $id, $template)
 	{
 	global $babBody;
 
@@ -127,8 +169,16 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id)
 		return;
 		}
 
+	if( !bab_isMagicQuotesGpcOn())
+		{
+		$oldname = addslashes($oldname);
+		$name = addslashes($name);
+		$description = addslashes($description);
+		$template = addslashes($template);
+		}
+
 	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='$oldname'";
+	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$oldname."'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) < 1)
 		{
@@ -136,7 +186,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id)
 		}
 	else
 		{
-		$query = "update ".BAB_TOPICS_CATEGORIES_TBL." set title='$name', description='$description', enabled='$benabled' where id='$id'";
+		$query = "update ".BAB_TOPICS_CATEGORIES_TBL." set title='".$name."', description='".$description."', enabled='".$benabled."', template='".$template."' where id='".$id."'";
 		$db->db_query($query);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List");
@@ -173,7 +223,7 @@ if( !isset($idx))
 if( isset($modify))
 	{
 	if( isset($submit))
-		modifyTopcat($oldname, $title, $description, $benabled, $item);
+		modifyTopcat($oldname, $title, $description, $benabled, $item, $template);
 	else if( isset($catdel))
 		$idx = "Delete";
 	}

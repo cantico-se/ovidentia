@@ -120,6 +120,10 @@ function changeLanguage()
         var $langselected;
         var $langname;
 		var $update;
+		var $langfiltertxt;
+		var $langfilterval;
+		var $langfilterselected;
+		var $userlangfilter;
 
         var $arrfiles = array();
 
@@ -162,6 +166,8 @@ function changeLanguage()
             $this->count = count($this->arrfiles);
 			sort($this->arrfiles);
 			reset($this->arrfiles);
+			$this->userlangfilter = $arr['langfilter'];
+			$this->langfiltertxt = bab_translate("Language filter") . " : " . $GLOBALS['babLangFilter']->convertFilterToStr($this->userlangfilter);
 			}
 
 		function getnextlang()
@@ -180,9 +186,26 @@ function changeLanguage()
 				}
 			else
 				return false;
-			}
+			} // function getnextlang
 
+		function getnextlangfilter()
+		{
+			static $i = 0;
+			if($i < $GLOBALS['babLangFilter']->countFilters())
+			{
+				$this->langfilterval = 
+					$GLOBALS['babLangFilter']->getFilterStr($i);
+				if($this->userlangfilter == $i)
+					{$this->langfilterselected = 'selected';}
+				else
+					{$this->langfilterselected = '';}
+				$i++;
+				return true;
 		}
+			else return false;
+		} //getnextlangfilter	
+
+		} //class tempa
 
 
     $tempa = new tempa();
@@ -248,23 +271,6 @@ function changeSkin($skin)
 			else
 				$this->skin = $skin;
 
-			if( is_dir($GLOBALS['babInstallPath']."skins/"))
-				{
-				$h = opendir($GLOBALS['babInstallPath']."skins/"); 
-				while ( $file = readdir($h))
-					{ 
-					if ($file != "." && $file != "..")
-						{
-						if( is_dir($GLOBALS['babInstallPath']."skins/".$file))
-							{
-								$this->arrskins[] = $file; 
-							}
-						} 
-					}
-				closedir($h);
-				$this->cntskins = count($this->arrskins);
-				}
-			
 			if( is_dir("skins/"))
 				{
 				$h = opendir("skins/"); 
@@ -274,8 +280,7 @@ function changeSkin($skin)
 						{
 						if( is_dir("skins/".$file))
 							{
-							if( count($this->arrskins) == 0 || !in_array($file, $this->arrskins) )
-								$this->arrskins[] = $file; 
+							$this->arrskins[] = $file; 
 							}
 						} 
 					}
@@ -444,13 +449,13 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	}
 
 
-function updateLanguage($lang)
+function updateLanguage($lang, $langfilter)
 	{
     global $BAB_SESS_USERID;
 	if( !empty($lang))
 		{
         $db = $GLOBALS['babDB'];
-        $req = "update ".BAB_USERS_TBL." set lang='".$lang."' where id='".$BAB_SESS_USERID."'";
+		$req = "update ".BAB_USERS_TBL." set lang='".$lang."', langfilter='" .$langfilter. "' where id='".$BAB_SESS_USERID."'";
         $res = $db->db_query($req);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
@@ -554,7 +559,7 @@ if( isset($update))
         	updatePassword($oldpwd, $newpwd1, $newpwd2);
             break;
         case "lang":
-        	updateLanguage($lang);
+        	updateLanguage($lang, $babLangFilter->convertFilterToInt($langfilter));
             break;
         case "skin":
         	updateSkin($skin, $style);
