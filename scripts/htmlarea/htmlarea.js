@@ -61,7 +61,7 @@ function HTMLArea(textarea,baburl,babInstallPath, babLanguage,babPhpSelf,enabled
 
 
 HTMLArea.Config = function (babLanguage) {
-	this.version = "3.0";
+	this.version = "3.10";
 
 	if (screen.width > 800)
 	{
@@ -736,7 +736,6 @@ HTMLArea.prototype.updateToolbar = function() {
 					span = range.parentElement();
 				}}
 				catch (e) {
-					//alert(e);
 					btn.element.selectedIndex = 0;
 					break;
 				}
@@ -752,7 +751,6 @@ HTMLArea.prototype.updateToolbar = function() {
 					var value = attrib.value.toLowerCase();
 				}}
 				catch (e) {
-					//alert(e);
 					btn.element.selectedIndex = 0;
 					break;
 				}
@@ -875,7 +873,6 @@ HTMLArea.prototype.getSelectedHTML = function() {
 	}
 	return existing;
 };
-
 
 
 // Called when the user clicks on "InsertImage" button
@@ -1264,12 +1261,44 @@ HTMLArea.prototype._comboSelected = function(el, txt) {
 		this._execCommand(txt, false, value);
 		break;
 		case "babstyle":
-		this._execCommand(txt, false, value);
+		this.babstyle(value);
 		break;
 	    default:
 		alert("FIXME: combo box " + txt + " not implemented");
 		break;
 	}
+};
+
+HTMLArea.prototype.babstyle = function(value) 
+{
+	var sel = this._getSelection();
+	var range = this._createRange(sel);
+	var editor = this;	// for nested functions
+
+		/*
+		var selected = range.parentElement();
+		var els = selected.all;
+		alert(els.length);
+		var found = true;
+		  while (found)
+		  {
+			found = false;
+			for (i=0; i<els.length; i++)
+			{
+			  // remove font and span tags
+			  if (els[i].tagName != null && (typeof(els[i].tagName) != "undefined") &&(els[i].tagName == "FONT" || els[i].tagName == "SPAN" || els[i].tagName == "DIV" || els[i].tagName == "IMG" || els[i].tagName == "F" || els[i].tagName == "IMAGEDATA"  || els[i].tagName == "FORMULAS" || els[i].tagName == "ACRONYM"))
+			  {
+				els[i].removeNode(false);
+				found = true;
+			  }
+			}
+		  }
+		 
+*/
+		range.execCommand('RemoveFormat'); 
+		this.surroundHTML('<span class="'+value+'">','</span>');
+
+
 };
 
 // the execCommand function (intercepts some commands and replaces them with
@@ -1293,10 +1322,7 @@ HTMLArea.prototype._execCommand = function(cmdID, UI, param) {
 			this._doc.execCommand("hilitecolor", UI, param);
 		}
 		break;
-		case "babstyle":
-		this._doc.execCommand('RemoveFormat', UI, null);
-		this.surroundHTML('<span class="'+param+'">','</span>');
-		break;
+
 	    default:
 		this._doc.execCommand(cmdID, UI, param);
 		break;
@@ -1839,7 +1865,7 @@ function initEditorVars(var1, var2, var3, var4)
 		}
 	}
 
-function initEditor(what,ta)
+function initEditor2(what,ta)
 	{
 	
 	if (typeof babPhpSelf  == "undefined")
@@ -1867,8 +1893,19 @@ function initEditor(what,ta)
 		}
 
 	if (typeof HTMLArea.babstyle.Normal != "string")
-	{
+		{
 		editor.config.toolbar[3] = [ "space", "textindicator","linebreak" ];
+		}
+
 	}
-	editor.generate();
+
+function initEditor(what,ta)
+	{
+	if (document.readyState != 'complete')
+		setTimeout(function() { initEditor(what,ta) }, 25);
+	else
+		{
+		initEditor2(what,ta);
+		editor.generate();
+		}
 	}
