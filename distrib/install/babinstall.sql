@@ -1349,7 +1349,9 @@ CREATE TABLE bab_vac_collections (
   id int(11) unsigned NOT NULL auto_increment,
   name varchar(25) NOT NULL default '',
   description varchar(255) NOT NULL default '',
-  PRIMARY KEY  (id)
+  id_cat int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_cat (id_cat)
 );
 
 #

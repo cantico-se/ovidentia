@@ -1154,10 +1154,12 @@ function confirmVacationRequest($veid, $remarks, $action)
 			$idcal = bab_getCalendarId($arr['id_user'], 1);
 			if( $idcal != 0 )
 				{
+				list($idcat) = $babDB->db_fetch_row($babDB->db_query("select vct.id_cat from ".BAB_VAC_COLLECTIONS_TBL." vct left join ".BAB_VAC_PERSONNEL_TBL." vpt on vpt.id_coll=vct.id left join ".BAB_VAC_ENTRIES_TBL." vet on vet.id_user=vpt.id_user where vet.id='".$veid."'"));
+
 				$tbegin = $arr['day_begin'] == 3? '12:00:00': '00:00:00';
 				$tend = $arr['day_end'] == 2? '12:00:00': '23:59:59';
-				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, start_date, end_date, id_creator, hash) values ";
-				$req .= "('".bab_translate("Vacation")."', '".$arr['date_begin']." ".$tbegin."', '".$arr['date_end']." ".$tend."', '0', 'V_".$veid."')";
+				$req = "insert into ".BAB_CAL_EVENTS_TBL." ( title, id_cat, start_date, end_date, id_creator, hash) values ";
+				$req .= "('".bab_translate("Vacation")."', '".$idcat."', '".$arr['date_begin']." ".$tbegin."', '".$arr['date_end']." ".$tend."', '0', 'V_".$veid."')";
 				$babDB->db_query($req);
 				$id_event = $babDB->db_insert_id();
 				$babDB->db_query("INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." (id_event,id_cal, status) VALUES ('".$id_event."','".$idcal."', '".BAB_CAL_STATUS_ACCEPTED."')");

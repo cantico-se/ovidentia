@@ -145,7 +145,7 @@ valign="middle">{ name }:</td>
 <input type="hidden" name="idx" value="lcol">
 <input type="hidden" name="add" value="{ what }">
 <input type="hidden" name="vcid" value="{ vcid }">
-<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
@@ -159,6 +159,17 @@ valign="middle">{ name }:</td>
 		<td align="right">{ description }:</td>
 		<td> 
 		<input type="text" name="description" size="50" maxlength="255" value="{ descriptionval }">
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ category }:</td>
+		<td> 
+			<select name="category">
+			<option value="0"></option>
+			<!--#in getnextcat -->
+			<option value="{ categid }" {  selected }>{ categname }</option>
+			<!--#endin getnextcat -->
+			</select>
 		</td>
 	</tr>
 	<tr> 

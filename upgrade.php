@@ -4530,8 +4530,7 @@ $db = & $GLOBALS['babDB'];
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_CAL_EVENTS_TBL." location"));
 if ( $arr[0] != 'location' )
 	{
-	$req = "ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD location VARCHAR(255) NOT NULL AFTER description";
-	$res = $db->db_query($req);
+	$res = $db->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD location VARCHAR(255) NOT NULL AFTER description");
 	if( !$res)
 		{
 		$ret = "Alteration of <b>".BAB_CAL_EVENTS_TBL."</b> table failed !<br>";
@@ -4630,7 +4629,7 @@ if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 
 
 $arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_FAQMANAGERS_GROUPS_TBL."'"));
-if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
+if ( $arr[0] != BAB_FAQMANAGERS_GROUPS_TBL )
 	{
 	$res = $db->db_query("
 		CREATE TABLE `".BAB_FAQMANAGERS_GROUPS_TBL."` (
@@ -4677,6 +4676,18 @@ if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 		}
 
 	$db->db_query("ALTER TABLE ".BAB_FAQCAT_TBL." DROP id_manager");
+	}
+
+$arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_VAC_COLLECTIONS_TBL." id_cat"));
+if ( $arr[0] != 'id_cat' )
+	{
+	$res = $db->db_query("ALTER TABLE ".BAB_VAC_COLLECTIONS_TBL." ADD id_cat INT(11) UNSIGNED NOT NULL");
+	if( !$res)
+		{
+		$ret = "Alteration of <b>".BAB_VAC_COLLECTIONS_TBL."</b> table failed !<br>";
+		return $ret;
+		}
+	$db->db_query("ALTER TABLE ".BAB_VAC_COLLECTIONS_TBL." ADD INDEX ( `id_cat` )");
 	}
 
 return $ret;

@@ -615,6 +615,7 @@ function deleteCalendarCategory($idcat)
 	
 	$babDB->db_query("delete from ".BAB_CAL_CATEGORIES_TBL." where id='".$idcat."'");
 	$babDB->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='0' where id_cat='".$idcat."'");
+	$babDB->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set id_cat='0' where id_cat='".$idcat."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 }
 

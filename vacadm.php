@@ -228,7 +228,7 @@ function listVacationTypes()
 
 	}
 
-function addVacationCollection($vcid, $what, $tname, $description, $vtypeids)
+function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $category)
 	{
 	global $babBody;
 	class temp
@@ -248,12 +248,13 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids)
 		var $db;
 		var $count;
 		var $res;
-		function temp($vcid, $what, $tname, $description, $vtypeids)
+		function temp($vcid, $what, $tname, $description, $vtypeids, $category)
 			{
 			global $babDB;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->vactypes = bab_translate("Vacations types");
+			$this->category = bab_translate("Category to use in calendar");
 			$this->vcid = $vcid;
 
 			if( $what == "modvc")
@@ -273,6 +274,7 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids)
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_COLLECTIONS_TBL." where id='".$vcid."'"));
 				$this->tnameval = $arr['name'];
 				$this->descriptionval = $arr['description'];
+				$this->categoryval = $arr['id_cat'];
 				$res = $babDB->db_query("select * from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$vcid."'");
 				while( $arr = $babDB->db_fetch_array($res))
 					$this->vtids[] = $arr['id_type'];
@@ -282,12 +284,16 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids)
 				$this->vtids = $vtypeids;
 				$this->tnameval = $tname;
 				$this->descriptionval = $description;
+				$this->categoryval = $category;
 				}
 
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_VAC_TYPES_TBL." order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
+
+			$this->rescat = $this->db->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
+			$this->catcount = $this->db->db_num_rows($this->rescat);
 			}
 
 		function getnext()
@@ -309,9 +315,33 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids)
 				return false;
 
 			}
+
+		function getnextcat()
+			{
+			static $i = 0;
+			if( $i < $this->catcount)
+				{
+				$arr = $this->db->db_fetch_array($this->rescat);
+				$this->categid = $arr['id'];
+				$this->categname = $arr['name'];
+				if( $this->categid == $this->categoryval )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+
+			}
 		}
 
-	$temp = new temp($vcid, $what, $tname, $description, $vtypeids);
+	$temp = new temp($vcid, $what, $tname, $description, $vtypeids, $category);
 	$babBody->babecho(	bab_printTemplate($temp,"vacadm.html", "vcolcreate"));
 	}
 
@@ -806,7 +836,7 @@ function deleteVacationType($vtid)
 		$babBody->msgerror = bab_translate("This vacation type is used and can't be deleted") ." !";
 	}
 
-function saveVacationCollection($tname, $description, $vtypeids)
+function saveVacationCollection($tname, $description, $vtypeids, $category)
 	{
 	global $babBody;
 	if( empty($tname))
@@ -837,8 +867,8 @@ function saveVacationCollection($tname, $description, $vtypeids)
 		return false;
 		}
 	
-	$req = "insert into ".BAB_VAC_COLLECTIONS_TBL." ( name, description )";
-	$req .= " values ('".$tname."', '" .$description. "')";
+	$req = "insert into ".BAB_VAC_COLLECTIONS_TBL." ( name, description, id_cat )";
+	$req .= " values ('".$tname."', '" .$description."', '" .$category. "')";
 	$res = $db->db_query($req);
 	$id = $db->db_insert_id();
 	for( $i=0; $i < count($vtypeids); $i++)
@@ -848,7 +878,7 @@ function saveVacationCollection($tname, $description, $vtypeids)
 	return true;
 	}
 
-function updateVacationCollection($vcid, $tname, $description, $vtypeids)
+function updateVacationCollection($vcid, $tname, $description, $vtypeids, $category)
 	{
 	global $babBody;
 	if( empty($tname))
@@ -873,8 +903,9 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids)
 		return false;
 		}
 	
-	$req = "update ".BAB_VAC_COLLECTIONS_TBL." set name='".$tname."', description='".$description."' where id='".$vcid."'";
-	$res = $db->db_query($req);
+	list($oldcateg) = $db->db_fetch_row($db->db_query("select id_cat from ".BAB_VAC_COLLECTIONS_TBL." where id='".$vcid."'"));
+
+	$res = $db->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set name='".$tname."', description='".$description."', id_cat='".$category."' where id='".$vcid."'");
 
 	if( count($vtypeids) > 0 )
 		{
@@ -899,7 +930,19 @@ function updateVacationCollection($vcid, $tname, $description, $vtypeids)
 	
 		}
 	else
+		{
 		$db->db_query("delete from ".BAB_VAC_COLL_TYPES_TBL." where id_coll='".$vcid."'");
+		}
+
+	if( $oldcateg != $category)
+		{
+		$res = $db->db_query("select vet.id from ".BAB_VAC_ENTRIES_TBL." vet left join ".BAB_VAC_PERSONNEL_TBL." vpt on vpt.id_user=vet.id_user where vpt.id_coll='".$vcid."'");
+		while( $arr = $db->db_fetch_array($res))
+			{
+			$db->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='".$category."' where hash='V_".$arr['id']."'");
+			}
+		}
+
 	return true;
 	}
 
@@ -961,9 +1004,6 @@ function updateVacationPersonnelGroup($groupid, $addmodify,  $idcol, $idsa)
 	
 	return true;
 }
-
-
-
 
 
 function deleteVacationCollection($vcid)
@@ -1048,7 +1088,8 @@ if( isset($_POST['add']) )
 			break;
 
 		case 'addvc':
-			if(!saveVacationCollection($tname, $description, $vtypeids))
+			if( !isset($vtypeids)) { $vtypeids = array();}
+			if(!saveVacationCollection($tname, $description, $vtypeids, $category))
 				$idx ='addvc';
 			
 			break;
@@ -1060,7 +1101,7 @@ if( isset($_POST['add']) )
 		
 			if( isset($bdel))
 				deleteVacationCollection($vcid);
-			else if(!updateVacationCollection($vcid, $tname, $description, $vtypeids))
+			else if(!updateVacationCollection($vcid, $tname, $description, $vtypeids, $category))
 				$idx ='addvc';
 
 			break;
@@ -1211,8 +1252,9 @@ switch($idx)
 		if( !isset($what)) $what ="modvc";
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";
+		if( !isset($category)) $category =0;
 		if( !isset($vtypeids)) $vtypeids =array();
-		addVacationCollection($vcid, $what, $tname, $description, $vtypeids);
+		addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $category);
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("modvc", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=modvc");
 		$babBody->addItemMenu("addvc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvc");
@@ -1228,8 +1270,9 @@ switch($idx)
 		if( !isset($what)) $what ="addvc";
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";
+		if( !isset($category)) $category =0;
 		if( !isset($vtypeids)) $vtypeids =array();
-		addVacationCollection($vcid, $what, $tname, $description, $vtypeids);
+		addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $category);
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("addvc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvc");
 
