@@ -33,6 +33,8 @@ function notesList()
 		var $content;
 		var $editurl;
 		var $editname;
+		var $delurl;
+		var $delname;
 		
 		var $id;
 		var $arr = array();
@@ -43,6 +45,8 @@ function notesList()
 		function temp()
 			{
 			global $BAB_SESS_USERID;
+			$this->editname = babTranslate("Edit");
+			$this->delname = babTranslate("Delete");
 			$this->date = babTranslate("Date");
 			$this->content = babTranslate("Content");
 			$this->db = new db_mysql();
@@ -58,7 +62,7 @@ function notesList()
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->editurl = $GLOBALS['babUrl']."index.php?tg=note&idx=Modify&item=".$this->arr['id'];
-				$this->editname = babTranslate("Edit");
+				$this->delurl = $GLOBALS['babUrl']."index.php?tg=note&idx=Delete&item=".$this->arr['id'];
 				$this->arr['content'] = babReplace($this->arr['content']);// nl2br($this->arr['content']);
 				$this->arr['date'] = bab_strftime(bab_mktime($this->arr['date']));
 				$i++;
