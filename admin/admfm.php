@@ -113,6 +113,11 @@ function modifyFolder($fid)
 
 			$this->safm = $arr['idsa'];
 
+			list($n) = $babDB->db_fetch_array($babDB->db_query("select COUNT(i.id) from ".BAB_FA_INSTANCES_TBL." i, ".BAB_FILES_TBL." f where i.idsch='".$this->safm."' AND i.id=f.idfai"));
+			if ($n > 0)
+				{
+				$this->js_appflowlock = bab_translate("Approbation can't be disabled").', '.$n.' '.bab_translate("file(s) must be accepted or refused before");
+				}
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;

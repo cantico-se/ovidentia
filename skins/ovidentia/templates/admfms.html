@@ -163,10 +163,24 @@ if( babOpUL == null || babOpUL.closed )
 else
 	babOpUL.focus();
 }
+<!--#if js_appflowlock -->
+function submitCtr()
+	{
+	var f = document.forms.fmcreate;
+	if (f.said.value == 0)
+		{
+		// { js_appflowlock }
+		alert('{ js_appflowlock }');
+		f.said.focus();
+		return false;
+		}
+	return true;
+	}
+<!--#endif js_appflowlock -->
 //-->
 </script>
 
-<form name="fmcreate" method="post" action="{ babPhpSelf }">
+<form name="fmcreate" method="post" action="{ babPhpSelf }" <!--#if js_appflowlock -->onSubmit="return(submitCtr())"<!--#endif js_appflowlock -->>
 <input type="hidden" name="tg" value="admfm">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="fid" value="{ fid }">

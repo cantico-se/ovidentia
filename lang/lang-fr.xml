@@ -1265,4 +1265,6 @@
 <string id="The image file is too big, maximum is :">La taille du fichier est image est trop importante, le maximum est :</string>
 <string id="Configuration error : babSiteName in config.php not match site name in administration sites configuration">Erreur de configuration : babSiteName dans config.php ne correspond a aucun nom de site dans l'administration des sites</string>
 <string id="Maximum connexion attempts has been reached">Le nombre maximum de connexion à été atteint</string>
+<string id="Approbation can't be disabled">L'approbation ne peut pas être désactivée</string>
+<string id="file(s) must be accepted or refused before">fichier(s) en attente</string>
 </fr>
