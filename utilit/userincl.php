@@ -807,7 +807,7 @@ function bab_getGroups()
 	reset($babBody->ovgroups);
 	while( $row=each($babBody->ovgroups) ) 
 		{ 
-		if( $row[1]['id'] == 1 && $row[1]['id'] == 2)
+		if( $row[1]['id'] != 1 && $row[1]['id'] != 2)
 			{
 			$arr['id'][] = $row[1]['id'];
 			$arr['name'][] = $row[1]['name'];
