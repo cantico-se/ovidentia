@@ -605,7 +605,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->title = substr($arr[start_time], 0 ,5). " " . substr($arr[end_time], 0 ,5). " " .$arr[title];
 				$this->titleten = $this->title ;
 				$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id]. "&view=viewq";
-				if( $babCalendarUsebgColor == "Y")
+				if( $this->babCalendarUsebgColor == "Y")
 					{
 					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
 					$res = $this->db->db_query($req);
@@ -637,7 +637,7 @@ function calendarWeek($calid, $day, $month, $year, $caltype, $owner, $bmanager)
 				$this->title = substr($arr[start_time], 0, 5). " " . substr($arr[end_time], 0, 5). " " .$arr[title];
 				$this->titleten = $this->title;
 				$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id]. "&view=viewq";
-				if( $babCalendarUsebgColor == "Y")
+				if( $this->babCalendarUsebgColor == "Y")
 					{
 					$req = "select * from categoriescal where id='".$arr[id_cat]."'";
 					$res = $this->db->db_query($req);
@@ -922,7 +922,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 					$this->titleten = $tab[$k];
 					$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id]. "&view=viewd";
 
-					if( $babCalendarUsebgColor == "Y")
+					if( $this->babCalendarUsebgColor == "Y")
 						{
 						$req = "select * from categoriescal where id='".$arr[id_cat]."'";
 						$res = $this->db->db_query($req);
@@ -975,7 +975,7 @@ function calendarDay($calid, $day, $month, $year, $starttime, $caltype, $owner, 
 
 					$this->titletenurl = $GLOBALS[babUrl]."index.php?tg=event&idx=modify&day=".$this->day."&month=".$this->month."&year=".$this->year. "&calid=".$arr[id_cal]. "&evtid=".$arr[id]. "&view=viewd";
 					$this->titleten = $tab[$k];
-					if( $babCalendarUsebgColor == "Y")
+					if( $this->babCalendarUsebgColor == "Y")
 						{
 						$req = "select * from categoriescal where id='".$arr[id_cat]."'";
 						$res = $this->db->db_query($req);
