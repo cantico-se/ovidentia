@@ -296,14 +296,8 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				}
 
 			$this->bdel = false;
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				{
-				$this->msie = 1;
-				}
-			else
-				{
-				$this->msie = 0;	
-				}
+			$this->editor = bab_editor($this->description, 'topdesc', 'catcr', 150);
+
 			$this->idcat = $cat;
 			$this->db = $GLOBALS['babDB'];
 
