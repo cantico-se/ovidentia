@@ -710,7 +710,7 @@ function babUserSection($close)
 		$vacacc = bab_vacationsAccess();
 		if( count($vacacc) > 0)
 			{
-			$this->vacwaiting = $vacacc['approver'];
+			$this->vacwaiting = isset($vacacc['approver']) ? $vacacc['approver'] : '';
 			$vac = true;
 			}
 
@@ -1001,7 +1001,7 @@ function babTopicsSection($cat, $close)
 			$whatToFilter = $GLOBALS['babLangFilter']->getFilterAsInt();
 			if(($arr['lang'] == '*') or ($arr['lang'] == ''))
 				$whatToFilter = 0;
-			else if(($GLOBALS['babApplyLanguageFilter'] == 'loose') and ( bab_isUserTopicManager($arr['id']) or bab_isCurrentUserApproverFlow($arr['idsaart']) or bab_isCurrentUserApproverFlow($arr['iddacom'])))
+			else if((isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') and ( bab_isUserTopicManager($arr['id']) or bab_isCurrentUserApproverFlow($arr['idsaart']) or bab_isCurrentUserApproverFlow($arr['iddacom'])))
 				$whatToFilter = 0;
 
 			if(($whatToFilter == 0)	or ($whatToFilter == 1 and (substr($arr['lang'], 0, 2) == substr($GLOBALS['babLanguage'], 0, 2)))
@@ -1432,6 +1432,7 @@ function loadSections()
 							$func = $arr2['title']."_onSectionCreate";
 							if(function_exists($func))
 								{
+									if (!isset($template)) $template = false;
 									if($func($stitle, $scontent, $template))
 										{
 											if( !$arrsectionsinfo[$objectid]['close'])
