@@ -24,8 +24,7 @@ $wr_array_status = array("En attente","Plannifié","En cours","Terminé","Suspendu
 
 function wr_translate($str)
 	{
-		//return bab_translate($str, $GLOBALS['babAddonFolder']);
-		return $str;
+		return bab_translate($str, $GLOBALS['babAddonFolder']);
 	}
 
 function wr_getWorkName($id)
