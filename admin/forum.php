@@ -181,7 +181,7 @@ switch($idx)
 		aclGroups("forum", "Modify", "forumsview_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("View"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Post&item=".$item);
 		$body->addItemMenu("Reply", babTranslate("Reply"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Reply&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Delete&item=".$item);
@@ -192,7 +192,7 @@ switch($idx)
 		aclGroups("forum", "Modify", "forumsreply_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("View"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Post&item=".$item);
 		$body->addItemMenu("Reply", babTranslate("Reply"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Reply&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Delete&item=".$item);
@@ -203,7 +203,7 @@ switch($idx)
 		aclGroups("forum", "Modify", "forumspost_groups", $item, "aclview");
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("View"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Post&item=".$item);
 		$body->addItemMenu("Reply", babTranslate("Reply"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Reply&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Delete&item=".$item);
@@ -214,7 +214,7 @@ switch($idx)
 		deleteForum($item);
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("View"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Post&item=".$item);
 		$body->addItemMenu("Reply", babTranslate("Reply"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Reply&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Delete&item=".$item);
@@ -226,7 +226,7 @@ switch($idx)
 		modifyForum($item);
 		$body->addItemMenu("List", babTranslate("Forums"), $GLOBALS['babUrl']."index.php?tg=forums&idx=List");
 		$body->addItemMenu("Modify", babTranslate("Modify"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Modify&item=".$item);
-		$body->addItemMenu("Groups", babTranslate("Groups"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
+		$body->addItemMenu("Groups", babTranslate("View"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Groups&item=".$item);
 		$body->addItemMenu("Post", babTranslate("Post"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Post&item=".$item);
 		$body->addItemMenu("Reply", babTranslate("Reply"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Reply&item=".$item);
 		$body->addItemMenu("Delete", babTranslate("Delete"), $GLOBALS['babUrl']."index.php?tg=forum&idx=Delete&item=".$item);
