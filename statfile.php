@@ -364,7 +364,7 @@ function summaryFmDownloads($col, $order, $pos)
 				$this->foldername = $this->arrinfo[$i]['folder'];
 				$this->pathname = $this->arrinfo[$i]['path'];
 				$this->nbhitspc = $this->totalhits > 0 ? round(($this->nbhits*100)/$this->totalhits,2): 0;
-				$taille=($this->nbhits*100)/$this->totalhits;
+				$taille= $this->totalhits > 0 ? (($this->nbhits*100)/$this->totalhits): 0;
 				$this->size=$taille;
 				$this->size2=100-$taille;
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=stat&idx=sfmdown&item=".$this->arrinfo[$i]['id']."&date=".$this->currentdate;
