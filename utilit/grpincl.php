@@ -141,9 +141,7 @@ function bab_addGroup($name, $description, $managerid, $grpdg)
 		$req = "insert into ".BAB_GROUPS_TBL." (name, description, mail, manager, id_dggroup, notes, contacts, pcalendar, id_dgowner) VALUES ('" .$name. "', '" . $description. "', 'N', '" . $managerid. "', '".$grpdg. "', 'N', 'N', 'N','".$babBody->currentAdmGroup."')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
-		$req = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$id. "', 'N', '2')";
 		bab_callAddonsFunction('onGroupCreate', $id);
-		$db->db_query($req);
 		return $id;
 		}
 	}
