@@ -22,3 +22,14 @@
 	var STR_UNCHEK = "doe het vinkje weg bij \"View HTML\" als u de Toolbar wenst te gebruiken!";
 	var STR_CONFIRM = "Uw formatering zal verloren gaan! Wenst u verder te gaan?";
 	var STR_INSERT_IMAGE = "Voeg afbeelding toe";
+	var STR_INSERT_TABLE = "Html tabel invoegen";
+	var STR_INSERT_FILE = "Invoegen link naar bestand";
+	var STR_TABLE_ROWS = "Rows";
+	var STR_TABLE_COLS = "Columns";
+	var STR_TABLE_WIDTH = "Width";
+	var STR_TABLE_SPACING = "Cells spacing";
+	var STR_TABLE_PADDING = "Cells padding";
+	var STR_TABLE_BORDER = "Border";
+	var STR_TABLE_CREATE = "Create";
+	var STR_TABLE_PERCENT = "Percentage";
+	var STR_TABLE_PIXELS = "Pixels";

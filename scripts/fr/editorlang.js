@@ -22,3 +22,14 @@
 	var STR_UNCHEK = "Veuillez décocher la case \"Afficher le code HTML\" pour utiliser la barre d'outils.";
 	var STR_CONFIRM = "Ceci convertira votre message en format texte. Toutes les dispositions d'affichage seront perdues. Souhaitez-vous continuer ? ";
 	var STR_INSERT_IMAGE = "Insérer une image";
+	var STR_INSERT_TABLE = "Insérer une table";
+	var STR_INSERT_FILE = "Insérer un lien vers un fichier";
+	var STR_TABLE_ROWS = "Lignes";
+	var STR_TABLE_COLS = "Colonnes";
+	var STR_TABLE_WIDTH = "Largeur";
+	var STR_TABLE_SPACING = "Espacements des cellules";
+	var STR_TABLE_PADDING = "Remplissage des cellules";
+	var STR_TABLE_BORDER = "Bordure";
+	var STR_TABLE_CREATE = "Créer";
+	var STR_TABLE_PERCENT = "Pourcentage";
+	var STR_TABLE_PIXELS = "Pixels";

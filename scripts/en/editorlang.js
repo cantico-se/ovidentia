@@ -22,3 +22,14 @@
 	var STR_UNCHEK = "Please ucheck the \"View HTML\" box to use the toolbar.";
 	var STR_CONFIRM = "You will loose your formatting, do you wish to proceed? ";
 	var STR_INSERT_IMAGE = "Insert image";
+	var STR_INSERT_TABLE = "Insert html table";
+	var STR_INSERT_FILE = "Insert link to file";
+	var STR_TABLE_ROWS = "Rows";
+	var STR_TABLE_COLS = "Columns";
+	var STR_TABLE_WIDTH = "Width";
+	var STR_TABLE_SPACING = "Cells spacing";
+	var STR_TABLE_PADDING = "Cells padding";
+	var STR_TABLE_BORDER = "Border";
+	var STR_TABLE_CREATE = "Create";
+	var STR_TABLE_PERCENT = "Percentage";
+	var STR_TABLE_PIXELS = "Pixels";

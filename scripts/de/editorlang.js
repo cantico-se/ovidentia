@@ -22,7 +22,7 @@
 	var STR_UNCHEK = "Bitte Kaestchen deaktivieren \"View HTML\" um die Werkzeugleiste benutzen zu koennen.";
 	var STR_CONFIRM = "Sie werden die Formatierung verlieren, wollen Sie fortfahren ? ";
 	var STR_INSERT_IMAGE = "Bild einfügen";
-	var STR_INSERT_TABLE = "Insert html table";
+	var STR_INSERT_TABLE = "Einfügen HTML Tabelle";
 	var STR_INSERT_FILE = "Insert link to file";
 	var STR_TABLE_ROWS = "Zeilen";
 	var STR_TABLE_COLS = "Spalten";

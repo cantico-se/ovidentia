@@ -22,3 +22,14 @@
 	var STR_UNCHEK = "Please ucheck the \"View HTML\" box to use the toolbar.";
 	var STR_CONFIRM = "Dit zal uw bericht in tekstformaat omzetten. Alle opmaak zal verloren gaan. Wenst u verder te gaan ? ";
 	var STR_INSERT_IMAGE = "Voeg afbeelding toe";
+	var STR_INSERT_TABLE = "HTML tabel invoegen";
+	var STR_INSERT_FILE = "Invoegen link naar bestand";
+	var STR_TABLE_ROWS = "Rijen";
+	var STR_TABLE_COLS = "Kolommen";
+	var STR_TABLE_WIDTH = "Breedte";
+	var STR_TABLE_SPACING = "Spatiëring cellen";
+	var STR_TABLE_PADDING = "Opvulling cellen";
+	var STR_TABLE_BORDER = "Boord";
+	var STR_TABLE_CREATE = "Creatie";
+	var STR_TABLE_PERCENT = "Percentage";
+	var STR_TABLE_PIXELS = "Beeldpunten";
