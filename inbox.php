@@ -111,7 +111,7 @@ function listMails($accid, $criteria, $reverse, $start)
 				}
 			else
 				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$accid."' and owner='".$BAB_SESS_USERID."'";
-			$this->composeurl = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse;
+			$this->composeurl = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&criteria=".$criteria."&reverse=".$reverse;
 
 			$res = $this->db->db_query($req);
 			if( $res && $this->db->db_num_rows($res) > 0 )
@@ -123,6 +123,9 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$this->accid = $arr['id'];
 					}
+				else
+					$this->accid = $accid;
+				$this->composeurl .= "&accid=".$this->accid;
 				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$arr['domain']."'";
 				$res2 = $this->db->db_query($req);
 				if( $res2 && $this->db->db_num_rows($res2) > 0 )

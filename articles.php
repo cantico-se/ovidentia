@@ -640,7 +640,7 @@ function updateArticle($topics, $title, $article, $headtext, $bodytext)
 		return;
 		}
 
-	if( strtolower(ini_get("magic_quotes_gpc")) == "off" || !get_cfg_var("magic_quotes_gpc"))
+	if( strtolower(ini_get("magic_quotes_gpc")) == "on" || get_cfg_var("magic_quotes_gpc"))
 		{
 		$headtext = stripslashes($headtext);
 		$bodytext = stripslashes($bodytext);
