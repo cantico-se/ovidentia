@@ -154,11 +154,11 @@ function random_password($length)
 
 function registerUser( $nickname, $firstname, $lastname, $email, $password1, $password2, $hashname)
 	{
-	global $BAB_HASH_VAR, $body, $babUrl, $babAdminEmail, $babSiteName;
+	global $BAB_HASH_VAR, $body, $babUrl, $babAdminEmail, $babSiteName, $babLanguage;
 	$password1=strtolower($password1);
 	$hash=md5($nickname.$BAB_HASH_VAR);
-	$sql="insert into users (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd) ".
-		"values ('$nickname','$firstname','$lastname','$hashname','". md5($password1) ."','$email', now(),'$hash','0','1')";
+	$sql="insert into users (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang) ".
+		"values ('$nickname','$firstname','$lastname','$hashname','". md5($password1) ."','$email', now(),'$hash','0','1','$babLanguage')";
 	$db = new db_mysql();
 	$result=$db->db_query($sql);
 	if ($result)
